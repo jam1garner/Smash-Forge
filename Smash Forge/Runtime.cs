@@ -334,7 +334,7 @@ namespace Smash_Forge
                                         if (File.Exists(node.InnerText) && node.InnerText.ToLower().EndsWith(".png"))
                                         {
                                             FloorURL = node.InnerText;
-                                            RenderTools.floorTexture = NUT.loadImage(new Bitmap(node.InnerText));
+                                            Rendering.RenderTools.floorTexture = NUT.loadImage(new Bitmap(node.InnerText));
                                             floorStyle = FloorStyle.UserTexture;
                                         }
                                         break;
@@ -353,7 +353,7 @@ namespace Smash_Forge
                         case "default_texture":
                             if (File.Exists(node.InnerText) && node.InnerText.ToLower().EndsWith(".png"))
                             {
-                                RenderTools.defaultTex = NUT.loadImage(new Bitmap(node.InnerText));
+                                Rendering.RenderTools.defaultTex = NUT.loadImage(new Bitmap(node.InnerText));
                             }
                             break;
                         case "size":

@@ -32,10 +32,10 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.ViewComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripCameraLabel = new System.Windows.Forms.ToolStripLabel();
             this.weightToolButton = new System.Windows.Forms.ToolStripButton();
-            this.ResetCamera = new System.Windows.Forms.ToolStripButton();
-            this.CameraSettings = new System.Windows.Forms.ToolStripButton();
+            this.toolStripResetCamera = new System.Windows.Forms.ToolStripButton();
+            this.toolStripCameraSettings = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
             this.modeBone = new System.Windows.Forms.ToolStripButton();
@@ -74,10 +74,10 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ViewComboBox,
             this.toolStripSeparator2,
-            this.toolStripLabel1,
+            this.toolStripCameraLabel,
             this.weightToolButton,
-            this.ResetCamera,
-            this.CameraSettings,
+            this.toolStripResetCamera,
+            this.toolStripCameraSettings,
             this.toolStripSeparator3,
             this.toolStripLabel2,
             this.modeBone,
@@ -117,11 +117,11 @@
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 31);
             // 
-            // toolStripLabel1
+            // toolStripCameraLabel
             // 
-            this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(48, 28);
-            this.toolStripLabel1.Text = "Camera";
+            this.toolStripCameraLabel.Name = "toolStripCameraLabel";
+            this.toolStripCameraLabel.Size = new System.Drawing.Size(48, 28);
+            this.toolStripCameraLabel.Text = "Camera";
             // 
             // weightToolButton
             // 
@@ -135,27 +135,27 @@
             this.weightToolButton.Visible = false;
             this.weightToolButton.Click += new System.EventHandler(this.weightToolButton_Click);
             // 
-            // ResetCamera
+            // toolStripResetCamera
             // 
-            this.ResetCamera.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.ResetCamera.Image = global::Smash_Forge.Properties.Resources.strip_camreset;
-            this.ResetCamera.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.ResetCamera.Name = "ResetCamera";
-            this.ResetCamera.Size = new System.Drawing.Size(28, 28);
-            this.ResetCamera.Text = "Reset Camera";
-            this.ResetCamera.ToolTipText = "Resets the camera to default view";
-            this.ResetCamera.Click += new System.EventHandler(this.ResetCamera_Click);
+            this.toolStripResetCamera.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripResetCamera.Image = global::Smash_Forge.Properties.Resources.strip_camreset;
+            this.toolStripResetCamera.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripResetCamera.Name = "toolStripResetCamera";
+            this.toolStripResetCamera.Size = new System.Drawing.Size(28, 28);
+            this.toolStripResetCamera.Text = "Reset Camera";
+            this.toolStripResetCamera.ToolTipText = "Resets the camera to the default view.";
+            this.toolStripResetCamera.Click += new System.EventHandler(this.ResetCamera_Click);
             // 
-            // CameraSettings
+            // toolStripCameraSettings
             // 
-            this.CameraSettings.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.CameraSettings.Image = global::Smash_Forge.Properties.Resources.strip_camsettings;
-            this.CameraSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.CameraSettings.Name = "CameraSettings";
-            this.CameraSettings.Size = new System.Drawing.Size(28, 28);
-            this.CameraSettings.Text = "Camera Settings";
-            this.CameraSettings.ToolTipText = "Change camera settings";
-            this.CameraSettings.Click += new System.EventHandler(this.CameraSettings_Click);
+            this.toolStripCameraSettings.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripCameraSettings.Image = global::Smash_Forge.Properties.Resources.strip_camsettings;
+            this.toolStripCameraSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripCameraSettings.Name = "toolStripCameraSettings";
+            this.toolStripCameraSettings.Size = new System.Drawing.Size(28, 28);
+            this.toolStripCameraSettings.Text = "Camera Settings";
+            this.toolStripCameraSettings.ToolTipText = "Change camera settings";
+            this.toolStripCameraSettings.Click += new System.EventHandler(this.CameraSettings_Click);
             // 
             // toolStripSeparator3
             // 
@@ -259,7 +259,7 @@
             this.RenderButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.RenderButton.Name = "RenderButton";
             this.RenderButton.Size = new System.Drawing.Size(28, 28);
-            this.RenderButton.Text = "toolStripButton1";
+            this.RenderButton.Text = "toolStripRenderAlpha";
             this.RenderButton.ToolTipText = "Render Viewport to File";
             this.RenderButton.Click += new System.EventHandler(this.RenderButton_Click);
             // 
@@ -270,7 +270,7 @@
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(28, 28);
-            this.toolStripButton1.Text = "toolStripButton1";
+            this.toolStripButton1.Text = "toolStripRenderNoAlpha";
             this.toolStripButton1.ToolTipText = "Render Viewport to File (No Alpha)";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
@@ -281,7 +281,7 @@
             this.GIFButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.GIFButton.Name = "GIFButton";
             this.GIFButton.Size = new System.Drawing.Size(28, 28);
-            this.GIFButton.Text = "toolStripButton2";
+            this.GIFButton.Text = "toolStripSaveGif";
             this.GIFButton.ToolTipText = "Render GIF of Current Animation";
             this.GIFButton.Click += new System.EventHandler(this.GIFButton_Click);
             // 
@@ -430,6 +430,7 @@
             this.glViewport.VSync = false;
             this.glViewport.Click += new System.EventHandler(this.glViewport_Click);
             this.glViewport.Paint += new System.Windows.Forms.PaintEventHandler(this.Render);
+            this.glViewport.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.glViewport_KeyPress);
             this.glViewport.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseDoubleClick);
             this.glViewport.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseMove);
             this.glViewport.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseUp);
@@ -476,11 +477,11 @@
         private System.Windows.Forms.NumericUpDown currentFrame;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private System.Windows.Forms.ToolStripLabel toolStripCameraLabel;
         private System.Windows.Forms.ToolStripButton weightToolButton;
         private System.Windows.Forms.TrackBar animationTrackBar;
-        private System.Windows.Forms.ToolStripButton ResetCamera;
-        private System.Windows.Forms.ToolStripButton CameraSettings;
+        private System.Windows.Forms.ToolStripButton toolStripResetCamera;
+        private System.Windows.Forms.ToolStripButton toolStripCameraSettings;
         public System.Windows.Forms.ToolStripComboBox ViewComboBox;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;

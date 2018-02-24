@@ -27,8 +27,6 @@ out vec2 texCoord2;
 out vec2 texCoord3;
 out vec2 normaltexCoord;
 
-out vec3 boneWeightsColored;
-
 uniform vec4 colorSamplerUV;
 uniform vec4 colorSampler2UV;
 uniform vec4 colorSampler3UV;
@@ -51,31 +49,11 @@ uniform int selectedBoneIndex;
 uniform int hasNrmSamplerAUV;
 uniform int hasNrmSamplerBUV;
 
-uniform sampler2D boneWeight;
-uniform int debug1;
-uniform int debug2;
-
 uniform bones
 {
     mat4 transforms[200];
 } bones_;
 
-uniform int renderType;
-
-float BoneWeightDisplay()
-{
-    float weight = 0;
-    if (selectedBoneIndex == vBone.x)
-        weight += vWeight.x;
-    if (selectedBoneIndex == vBone.y)
-        weight += vWeight.y;
-    if (selectedBoneIndex == vBone.z)
-        weight += vWeight.z;
-    if (selectedBoneIndex == vBone.w)
-        weight += vWeight.w;
-
-    return weight;
-}
 
 vec4 skin(vec3 po, ivec4 index)
 {
@@ -101,16 +79,9 @@ vec3 skinNRM(vec3 nr, ivec4 index)
     return nrmPos;
 }
 
-vec3 BoneWeightRamp(vec3 weights)
-{
-	float rampInputLuminance = weights.x;
-	rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
-	return texture(boneWeight, vec2(1 - rampInputLuminance, 0.50)).rgb;
-}
-
 void main()
 {
-    // vertex skinning
+    // Vertex Skinning
     vec4 objPos = vec4(vPosition.xyz, 1.0);
     if(vBone.x != -1.0)
        objPos = skin(vPosition, ivec4(vBone));
@@ -120,6 +91,7 @@ void main()
     objPos = mvpMatrix * vec4(objPos.xyz, 1.0);
     gl_Position = objPos;
 
+    // Texture samplers.
     vec4 sampler1 = colorSamplerUV;
     vec4 sampler2 = colorSampler2UV;
     if (hasNrmSamplerBUV == 1)
@@ -131,32 +103,25 @@ void main()
 
     if (useDirectUVTime == 1)
     {
-        texCoord = vec2((vUV * sampler1.xy) + (sampler1.zw * elapsedTime));
-        texCoord2 = vec2((vUV2 * sampler2.xy) + (sampler2.zw * elapsedTime));
-        texCoord3 = vec2((vUV3 * sampler3.xy) + (sampler3.zw * elapsedTime));
-        normaltexCoord = vec2((vUV * nrmSampler.xy) + (nrmSampler.zw * elapsedTime));
-    }
-    else
-    {
-        texCoord = vec2((vUV * sampler1.xy) + sampler1.zw);
-        texCoord2 = vec2((vUV2 * sampler2.xy) + (sampler2.zw));
-        texCoord3 = vec2((vUV3 * sampler3.xy) + (sampler3.zw));
-        normaltexCoord = vec2((vUV * nrmSampler.xy) + nrmSampler.zw);
+        // UV translation animation.
+        sampler1.zw *= elapsedTime;
+        sampler2.zw *= elapsedTime;
+        sampler3.zw *= elapsedTime;
+        nrmSampler.zw *= elapsedTime;
     }
 
-    tangent.xyz = vTangent.xyz;
-    bitangent.xyz = vBiTangent.xyz;
-    viewPosition = vec3(vPosition * mat3(mvpMatrix));
+    texCoord = vec2((vUV * sampler1.xy) + sampler1.zw);
+    texCoord2 = vec2((vUV2 * sampler2.xy) + sampler2.zw);
+    texCoord3 = vec2((vUV3 * sampler3.xy) + sampler3.zw);
+    normaltexCoord = vec2((vUV * nrmSampler.xy) + nrmSampler.zw);
 
-    // fragment shader attributes
-    float totalWeight = BoneWeightDisplay();
-    boneWeightsColored = vec3(totalWeight);
-    if (debug1 == 1)
-        boneWeightsColored = BoneWeightRamp(vec3(boneWeightsColored)).rgb;
-
+    // Vertex attributes for fragment shader.
     vertexColor = vColor;
 	fragpos = objPos.xyz;
     objectPosition = vPosition.xyz;
+    tangent.xyz = vTangent.xyz;
+    bitangent.xyz = vBiTangent.xyz;
+    viewPosition = vec3(vPosition * mat3(mvpMatrix));
 
     normal = vNormal;
 	if(vBone.x != -1.0)

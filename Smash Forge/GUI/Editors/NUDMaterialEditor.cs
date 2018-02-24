@@ -14,6 +14,7 @@ using OpenTK.Graphics.OpenGL;
 using System.Timers;
 using System.Windows.Input;
 using System.Diagnostics;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {
@@ -110,6 +111,7 @@ namespace Smash_Forge
         public NUDMaterialEditor()
         {
             InitializeComponent();
+            RenderTools.Setup();
         }
 
         public NUDMaterialEditor(NUD.Polygon p)
@@ -120,6 +122,9 @@ namespace Smash_Forge
             Init();
             FillForm();
             matsComboBox.SelectedIndex = 0;
+
+            // The dummy textures will be used later. 
+            RenderTools.Setup();
         }
 
         public void InitPropList()
@@ -781,84 +786,20 @@ namespace Smash_Forge
                     texprop4 = matFile.readInt()
                 };
 
-                // store all the tex IDs for each texture type before changing material
-                int diffuseID = poly.materials[0].diffuse1ID;
-                int nrmID = poly.materials[0].normalID;
-
-                // are these variables necessary?
-                int diffuse1ID = poly.materials[0].diffuse1ID;
-                int diffuse2ID = poly.materials[0].diffuse2ID;
-                int diffuse3ID = poly.materials[0].diffuse3ID;
-                int normalID = poly.materials[0].normalID;
-                int rampID = poly.materials[0].rampID;
-                int dummyRampID = poly.materials[0].dummyRampID;
-                int sphereMapID = poly.materials[0].sphereMapID;
-                int aoMapID = poly.materials[0].aoMapID;
-                int stageMapID = poly.materials[0].stageMapID;
-                int cubeMapID = poly.materials[0].cubeMapID;
+                // Store the original material to preserve Tex IDs. 
+                NUD.Material original = poly.materials[0].Clone();
 
                 poly.materials = NUD.readMaterial(matFile, pol, soff);
 
-                // might be a cleaner way to do this
-                int count = 0;
-                if (poly.materials[0].hasDiffuse && count < poly.materials[0].textures.Count)
-                {
-                    poly.materials[0].textures[count].hash = diffuse1ID;
-                    count++;
-                }
-                if (poly.materials[0].hasDiffuse2 && count < poly.materials[0].textures.Count)
-                {
-                    poly.materials[0].textures[count].hash = diffuse2ID;
-                    count++;
-                }
-                if (poly.materials[0].hasDiffuse3 && count < poly.materials[0].textures.Count)
-                {
-                    poly.materials[0].textures[count].hash = diffuse3ID;
-                    count++;
-                }
-                if (poly.materials[0].hasStageMap && count < poly.materials[0].textures.Count)
-                {
-                    // don't preserve stageMap ID
-                    count++;
-                }
-                if (poly.materials[0].hasCubeMap && count < poly.materials[0].textures.Count)
-                {
-                    poly.materials[0].textures[count].hash = cubeMapID;
-                    count++;
-                }
-                if (poly.materials[0].hasSphereMap && count < poly.materials[0].textures.Count)
-                {
-                    poly.materials[0].textures[count].hash = sphereMapID;
-                    count++;
-                }
-                if (poly.materials[0].hasAoMap && count < poly.materials[0].textures.Count)
-                {
-                    poly.materials[0].textures[count].hash = aoMapID;
-                    count++;
-                }
-                if (poly.materials[0].hasNormalMap && count < poly.materials[0].textures.Count)
-                {
-                    poly.materials[0].textures[count].hash = normalID;
-                    count++;
-                }
-                if (poly.materials[0].hasRamp && count < poly.materials[0].textures.Count)
-                {
-                    poly.materials[0].textures[count].hash = rampID;
-                    count++;
-                }
-                if (poly.materials[0].hasDummyRamp && count < poly.materials[0].textures.Count)
-                {
-                    // dummy ramp should almost always be 0x10080000
-                    count++;
-                }
+                // Copy the old Tex IDs. 
+                poly.materials[0].CopyTextureIds(original);
 
                 materials = poly.materials;
-                Console.WriteLine(materials.Count);
                 currentMatIndex = 0;
                 Init();
                 FillForm();
             }
-       
+
         }
 
         private void RenderTexture(bool justRenderAlpha = false)
@@ -867,33 +808,41 @@ namespace Smash_Forge
                 return;
 
             // Get the selected NUT texture.
-            NUT_Texture tex = null;
-            int texture = 0;
+            NUT_Texture nutTexture = null;
+            int displayTexture = 0;
             if (materials[currentMatIndex].entries.ContainsKey("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
             {
                 int hash = materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash;
 
+                // Display dummy textures from resources. 
+                if (hash == 0x10080000)
+                    displayTexture = RenderTools.dummyRamp;
+
                 foreach (NUT n in Runtime.TextureContainers)
+                {
                     if (n.draw.ContainsKey(hash))
                     {
-                        n.getTextureByID(hash, out tex);
-                        texture = n.draw[hash];
+                        n.getTextureByID(hash, out nutTexture);
+                        displayTexture = n.draw[hash];
                         break;
                     }
+                }
             }
+
+
 
             if (justRenderAlpha)
             {
                 texAlphaGlControl.MakeCurrent();
                 GL.Viewport(texAlphaGlControl.ClientRectangle);
-                RenderTools.DrawTexturedQuad(texture, 1, 1, false, false, false, true, true, false);
+                RenderTools.DrawTexturedQuad(displayTexture, 1, 1, false, false, false, true);
                 texAlphaGlControl.SwapBuffers();
             }
             else
             {
                 texRgbGlControl.MakeCurrent();
                 GL.Viewport(texRgbGlControl.ClientRectangle);
-                RenderTools.DrawTexturedQuad(texture, 1, 1, true, true, true, false, false, false);
+                RenderTools.DrawTexturedQuad(displayTexture, 1, 1);
                 texRgbGlControl.SwapBuffers();
             }
 

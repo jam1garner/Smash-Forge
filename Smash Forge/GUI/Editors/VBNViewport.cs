@@ -21,6 +21,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Gif.Components;
 using Smash_Forge.Rendering.Lights;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {
@@ -82,8 +83,8 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(glControl1.ClientRectangle);
 
-                vbnViewportCamera.setRenderWidth(glControl1.Width);
-                vbnViewportCamera.setRenderHeight(glControl1.Height);
+                vbnViewportCamera.renderWidth = (glControl1.Width);
+                vbnViewportCamera.renderHeight = (glControl1.Height);
                 vbnViewportCamera.Update();
             }
 
@@ -567,7 +568,7 @@ namespace Smash_Forge
         public void CalculateLightSource()
         {
             Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, Runtime.renderDepth, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, vbnViewportCamera.getMVPMatrix()).Normalized(),
+            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, vbnViewportCamera.mvpMatrix).Normalized(),
                 new Vector3(0),
                 new Vector3(0, 1, 0));
             lightMatrix = lightProjection * lightView;
@@ -598,7 +599,7 @@ namespace Smash_Forge
                 {
                     GL.PopAttrib();
                     BCH_Texture tex = ((BCH_Texture)MainForm.Instance.meshList.treeView1.SelectedNode);
-                    RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, true, true, true, false, true);
+                    RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, true, true, true, true);
                     glControl1.SwapBuffers();
                     return;
                 }
@@ -606,7 +607,7 @@ namespace Smash_Forge
                 {
                     GL.PopAttrib();
                     NUT_Texture tex = ((NUT_Texture)MainForm.Instance.meshList.treeView1.SelectedNode);
-                    RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, false, true);
+                    RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, true);
                     glControl1.SwapBuffers();
                     return;
                 }
@@ -637,7 +638,7 @@ namespace Smash_Forge
             vbnViewportCamera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
             SetCameraAnimation();
 
-            Matrix4 matrix = vbnViewportCamera.getMVPMatrix();
+            Matrix4 matrix = vbnViewportCamera.mvpMatrix;
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref matrix);
 
@@ -686,8 +687,7 @@ namespace Smash_Forge
                 DrawPathDisplay();
 
             // area light bounding boxes should intersect stage geometry and not render on top
-            if (Runtime.drawAreaLightBoundingBoxes)
-                DrawAreaLightBoundingBoxes();
+
 
             // clear depth buffer so stuff will render on top of the models
             GL.Clear(ClearBufferMask.DepthBufferBit);
@@ -725,38 +725,9 @@ namespace Smash_Forge
                 2.0f * (x / glControl1.Width) - 1.0f,
                 2.0f * ((glControl1.Height - y) / glControl1.Height) - 1.0f,
                 2.0f * z - 1.0f,
-                1.0f), vbnViewportCamera.getMVPMatrix().Inverted()).Xyz;
+                1.0f), vbnViewportCamera.mvpMatrix.Inverted()).Xyz;
         }
 
-        private static void DrawLightArrows(float rotX, float rotY, float rotZ, Vector3 center, float R, float G, float B)
-        {
-            // can reuse this function to draw arrows for all directional lights
-            // should use parameters for rotation, center point, color, and wireframe stuff
-
-            // set default rotation
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
-
-            // rotate arrow to match light direction
-            GL.Rotate(rotX, 1.0f, 0.0f, 0.0f);
-            GL.Rotate(-rotY, 0.0f, 0.0f, 1.0f);
-            GL.Rotate(rotZ, 0.0f, 1.0f, 0.0f);
-
-            Vector3 p1 = new Vector3(0.0f, 0.0f, 0.0f);
-            Vector3 p2 = new Vector3(0.0f, 5.0f, 0.0f);
-
-            // set color to light color
-            int r = (int)(LightTools.diffuseLight.difR * 255);
-            r = ColorTools.ClampInt(r);
-            int g = (int)(LightTools.diffuseLight.difG * 255);
-            g = ColorTools.ClampInt(g);
-            int b = (int)(LightTools.diffuseLight.difG * 255);
-            b = ColorTools.ClampInt(b);
-            GL.Color4(Color.FromArgb(255, r, g, b));
-
-            RenderTools.drawPyramidWireframe(p1, 5.0f, 3.0f);
-            RenderTools.drawRectangularPrismWireframe(p2, 2.0f, 5.0f, 2.0f, Color.White);
-        }
 
         private static void SetupFixedFunctionRendering()
         {
@@ -801,11 +772,11 @@ namespace Smash_Forge
             {
                 if (c.NUD != null)
                 {
-                    c.NUD.RenderShadow(lightMatrix, vbnViewportCamera.getMVPMatrix(), modelMatrix);
+                    c.NUD.RenderShadow(lightMatrix, vbnViewportCamera.mvpMatrix, modelMatrix);
                 }
             }
 
-            Matrix4 matrix = vbnViewportCamera.getMVPMatrix();
+            Matrix4 matrix = vbnViewportCamera.mvpMatrix;
             // reset matrices and viewport for model rendering again
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.LoadMatrix(ref matrix);
@@ -863,16 +834,7 @@ namespace Smash_Forge
                 RenderHitboxes();
         }
 
-        private static void DrawAreaLightBoundingBoxes()
-        {
-            foreach (AreaLight light in LightTools.areaLights)
-            {
-                Color color = Color.White;
-
-                RenderTools.drawRectangularPrismWireframe(new Vector3(light.positionX, light.positionY, light.positionZ),
-                    light.scaleX, light.scaleY, light.scaleZ, color);
-            }
-        }
+      
 
 
 
@@ -1069,7 +1031,7 @@ namespace Smash_Forge
                 GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                 if (m.DAT_MELEE != null && m.DAT_MELEE.itemSpawns != null)
                     foreach (Point r in m.DAT_MELEE.itemSpawns)
-                        RenderTools.drawCubeWireframe(new Vector3(r.x, r.y, 0), 3);
+                        RenderTools.DrawCube(new Vector3(r.x, r.y, 0), 3, true);
             }
 
             if (Runtime.TargetLVD != null)
@@ -1531,7 +1493,7 @@ namespace Smash_Forge
 
                         RenderTools.beginTopLevelStencil();
 
-                        RenderTools.drawRectangularPrism((va2 + va) / 2, 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) / 2);
+                        RenderTools.DrawRectangularPrism((va2 + va) / 2, 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) / 2);
 
                         RenderTools.endTopLevelStencilAndDraw();
 
@@ -1551,11 +1513,11 @@ namespace Smash_Forge
                         if (Runtime.gameAcmdScript != null)
                         {
                             if (Runtime.gameAcmdScript.ReverseLedgeGrabAllowed)
-                                RenderTools.drawRectangularPrism((((va2 + va) / 2) - new Vector3(0, 0, (va2.Z - va.Z))) * r, 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) * r.Z / 2);
+                                RenderTools.DrawRectangularPrism((((va2 + va) / 2) - new Vector3(0, 0, (va2.Z - va.Z))) * r, 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) * r.Z / 2);
                         }
                         else
                         {
-                            RenderTools.drawRectangularPrism((((va2 + va) / 2) - new Vector3(0, 0, (va2.Z - va.Z))) * r, 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) * r.Z / 2);
+                            RenderTools.DrawRectangularPrism((((va2 + va) / 2) - new Vector3(0, 0, (va2.Z - va.Z))) * r, 10, (va2.Y - va.Y) / 2, (va2.Z - va.Z) * r.Z / 2);
                         }
 
                         RenderTools.endTopLevelStencilAndDraw();
@@ -1846,9 +1808,7 @@ namespace Smash_Forge
 
         private void button1_Click(object sender, EventArgs e)
         {
-            vbnViewportCamera.setPosition(new Vector3(0, 10, -80));
-            vbnViewportCamera.setRotX(0);
-            vbnViewportCamera.setRotY(0);
+            vbnViewportCamera.ResetPositionRotation();
             UpdateMousePosition();
             UpdateCameraPositionControl();
         }
@@ -1992,8 +1952,8 @@ namespace Smash_Forge
 
             float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
             float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
-            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), vbnViewportCamera.getMVPMatrix().Inverted());
-            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), vbnViewportCamera.getMVPMatrix().Inverted());
+            Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), vbnViewportCamera.mvpMatrix.Inverted());
+            Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), vbnViewportCamera.mvpMatrix.Inverted());
 
             p1 = va.Xyz;
             p2 = p1 - (va - (va + vb)).Xyz * 100;
@@ -2091,8 +2051,8 @@ namespace Smash_Forge
 
                 float x = (2.0f * mouse_x) / glControl1.Width - 1.0f;
                 float y = 1.0f - (2.0f * mouse_y) / glControl1.Height;
-                Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), vbnViewportCamera.getMVPMatrix().Inverted());
-                Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), vbnViewportCamera.getMVPMatrix().Inverted());
+                Vector4 va = Vector4.Transform(new Vector4(x, y, -1.0f, 1.0f), vbnViewportCamera.mvpMatrix.Inverted());
+                Vector4 vb = Vector4.Transform(new Vector4(x, y, 1.0f, 1.0f), vbnViewportCamera.mvpMatrix.Inverted());
 
                 p1 = va.Xyz;
                 p2 = p1 - (va - (va + vb)).Xyz * 100;

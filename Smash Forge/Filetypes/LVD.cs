@@ -1139,8 +1139,8 @@ namespace Smash_Forge
                 {
                     foreach (Point target in m.dat_melee.targets)
                     {
-                        RenderTools.drawCircleOutline(new Vector3(target.x, target.y, 0), 2, 30);
-                        RenderTools.drawCircleOutline(new Vector3(target.x, target.y, 0), 4, 30);
+                        Rendering.RenderTools.drawCircleOutline(new Vector3(target.x, target.y, 0), 2, 30);
+                        Rendering.RenderTools.drawCircleOutline(new Vector3(target.x, target.y, 0), 4, 30);
                     }
                 }
 
@@ -1161,7 +1161,7 @@ namespace Smash_Forge
                 GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                 if (m.dat_melee != null && m.dat_melee.itemSpawns != null)
                     foreach (Point r in m.dat_melee.itemSpawns)
-                        RenderTools.drawCubeWireframe(new Vector3(r.x, r.y, 0), 3);
+                        Rendering.RenderTools.drawCubeWireframe(new Vector3(r.x, r.y, 0), 3);
             }
             */
             //if (Runtime.TargetLVD != null)
@@ -1224,7 +1224,7 @@ namespace Smash_Forge
             Vector3 pos = p.useStartPos ? p.startPos : new Vector3(p.x,p.y,p.z);
 
             GL.Color3(Color.Red);
-            RenderTools.drawCubeWireframe(pos, 3);
+            Rendering.RenderTools.DrawCube(pos, 3, true);
         }
 
         public static void DrawShape(object obj)
@@ -1257,9 +1257,9 @@ namespace Smash_Forge
             if(s.type == 1)
             {
                 if (useStartPos)
-                    RenderTools.drawCubeWireframe(sPos, 3);
+                    Rendering.RenderTools.DrawCube(sPos, 3, true);
                 else
-                    RenderTools.drawCubeWireframe(new Vector3(s.x1, s.y1, 0), 3);
+                    Rendering.RenderTools.DrawCube(new Vector3(s.x1, s.y1, 0), 3, true);
             }
             if(s.type == 3)
             {
@@ -1289,9 +1289,9 @@ namespace Smash_Forge
             Vector3 posd = new Vector3(s.dx, s.dy, s.dz);
 
             if (s.type == 2)
-                RenderTools.drawSphere(sPos+pos, s.radius, 24);
+                Rendering.RenderTools.drawSphere(sPos+pos, s.radius, 24);
             if (s.type == 3)
-                RenderTools.drawCylinder(sPos+pos, sPos+pos+posd, s.radius);
+                Rendering.RenderTools.drawCylinder(sPos+pos, sPos+pos+posd, s.radius);
         }
 
         public static void DrawEnemyGenerator(EnemyGenerator e)

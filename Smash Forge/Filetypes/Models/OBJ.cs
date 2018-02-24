@@ -155,7 +155,7 @@ namespace Smash_Forge
             }
 
             n.OptimizeFileSize();
-            n.PreRender();
+            n.UpdateVertexDataAndSort();
 
             return n;
         }

@@ -928,16 +928,16 @@ namespace Smash_Forge
                 GL.Color4(h.GetDisplayColor());
 
                 // Draw everything to the stencil buffer
-                RenderTools.beginTopLevelStencil();
+                Rendering.RenderTools.beginTopLevelStencil();
                 if (!h.IsSphere())
                 {
                     h.va2 = new Vector3(h.X2, h.Y2, h.Z2);
                     if (h.Bone != -1) h.va2 = Vector3.TransformPosition(h.va2, b.transform.ClearScale());
-                    RenderTools.drawCylinder(h.va, h.va2, h.Size);
+                    Rendering.RenderTools.drawCylinder(h.va, h.va2, h.Size);
                 }
                 else
                 {
-                    RenderTools.drawSphere(h.va, h.Size, 30);
+                    Rendering.RenderTools.drawSphere(h.va, h.Size, 30);
                 }
 
                 // n factorial (n!) algorithm (NOT EFFICIENT) to draw subsequent hitboxes around each other.
@@ -945,7 +945,7 @@ namespace Smash_Forge
                 if (Runtime.renderHitboxesNoOverlap)
                 {
                     // Remove the stencil for the already drawn hitboxes
-                    RenderTools.beginTopLevelAntiStencil();
+                    Rendering.RenderTools.beginTopLevelAntiStencil();
                     foreach (var pair2 in Hitboxes.Reverse())
                     {
                         if (pair2.Key == pair.Key)
@@ -961,11 +961,11 @@ namespace Smash_Forge
                             {
                                 var va2 = new Vector3(h2.X2, h2.Y2, h2.Z2);
                                 if (h2.Bone != -1) va2 = Vector3.TransformPosition(va2, b2.transform.ClearScale());
-                                RenderTools.drawCylinder(va, va2, h2.Size);
+                                Rendering.RenderTools.drawCylinder(va, va2, h2.Size);
                             }
                             else
                             {
-                                RenderTools.drawSphere(va, h2.Size, 30);
+                                Rendering.RenderTools.drawSphere(va, h2.Size, 30);
                             }
                         }
                     }
@@ -976,16 +976,16 @@ namespace Smash_Forge
                     GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorSelected));
                     if (!h.IsSphere())
                     {
-                        RenderTools.drawWireframeCylinder(h.va, h.va2, h.Size);
+                        Rendering.RenderTools.drawWireframeCylinder(h.va, h.va2, h.Size);
                     }
                     else
                     {
-                        RenderTools.drawWireframeSphere(h.va, h.Size, 10);
+                        Rendering.RenderTools.drawWireframeSphere(h.va, h.Size, 10);
                     }
                 }
 
                 // End stenciling and draw over all the stenciled bits
-                RenderTools.endTopLevelStencilAndDraw();
+                Rendering.RenderTools.endTopLevelStencilAndDraw();
             }
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);

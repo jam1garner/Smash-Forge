@@ -10,6 +10,7 @@ using OpenTK;
 using System.Windows.Forms;
 using SALT.Graphics;
 using Smash_Forge.Rendering.Lights;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {
@@ -43,7 +44,7 @@ namespace Smash_Forge
         public NUD(string fname) : this()
         {
             Read(fname);
-            PreRender();
+            UpdateVertexDataAndSort();
         }
 
         int vbo_position;
@@ -71,7 +72,7 @@ namespace Smash_Forge
 
         #region Rendering
 
-        private dVertex[] Vertices;
+        private DisplayVertex[] Vertices;
         private int[] Faces;
 
         public void Destroy()
@@ -154,11 +155,11 @@ namespace Smash_Forge
             depthSortedMeshes = meshes.OrderBy(o => (o.boundingBox[2] - o.boundingBox[3] + o.sortBias)).ToList();
         }
 
-        public void PreRender()
+        public void UpdateVertexDataAndSort()
         {
             int poffset = 0;
             int voffset = 0;
-            List<dVertex> Vs = new List<dVertex>();
+            List<DisplayVertex> Vs = new List<DisplayVertex>();
             List<int> Ds = new List<int>();
             for (int mes = Nodes.Count - 1; mes >= 0; mes--)
             {
@@ -167,7 +168,7 @@ namespace Smash_Forge
                 {
                     Polygon p = (NUD.Polygon)m.Nodes[pol];
                     p.Offset = poffset * 4;
-                    List<dVertex> pv = p.PreRender();
+                    List<DisplayVertex> pv = p.CreateDisplayVertices();
                     Vs.AddRange(pv);
                     //Console.WriteLine(p.displayFaceSize + " " + p.Offset/4);
                     for(int i = 0; i < p.displayFaceSize; i++)
@@ -187,7 +188,7 @@ namespace Smash_Forge
 
             // Bind only once!
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-            GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * dVertex.Size), Vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData<DisplayVertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
             GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
@@ -244,13 +245,13 @@ namespace Smash_Forge
             GL.UseProgram(0);
 
             GL.Color4(Color.GhostWhite);
-            RenderTools.drawCubeWireframe(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            RenderTools.DrawCube(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3], true);
 
             GL.Color4(Color.OrangeRed);
             foreach (NUD.Mesh mesh in Nodes)
             {
                 if (mesh.Checked)
-                    RenderTools.drawCubeWireframe(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3]);
+                    RenderTools.DrawCube(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3], true);
             }
         }
 
@@ -461,7 +462,7 @@ namespace Smash_Forge
             SetNSCUniform(p, shader);
 
             // Used for NU_universe material projection coords. 
-            GL.Uniform3(shader.getAttribute("cameraPosition"), camera.getPosition());
+            GL.Uniform3(shader.getAttribute("cameraPosition"), camera.position);
          
             p.isTransparent = false;
             if (material.srcFactor > 0 || material.dstFactor > 0 || material.AlphaFunc > 0 || material.AlphaTest > 0)
@@ -614,16 +615,16 @@ namespace Smash_Forge
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
             //GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
-            GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 12);
-            GL.VertexAttribPointer(shader.getAttribute("vTangent"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 24);
-            GL.VertexAttribPointer(shader.getAttribute("vBiTangent"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 36);
-            GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 48);
-            GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 56);
-            GL.VertexAttribIPointer(shader.getAttribute("vBone"), 4, VertexAttribIntegerType.Int, dVertex.Size, new IntPtr(72));
-            GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
-            GL.VertexAttribPointer(shader.getAttribute("vUV2"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 104);
-            GL.VertexAttribPointer(shader.getAttribute("vUV3"), 2, VertexAttribPointerType.Float, false, dVertex.Size, 112);
+            GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
+            GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
+            GL.VertexAttribPointer(shader.getAttribute("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
+            GL.VertexAttribPointer(shader.getAttribute("vBiTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 36);
+            GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 48);
+            GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 56);
+            GL.VertexAttribIPointer(shader.getAttribute("vBone"), 4, VertexAttribIntegerType.Int, DisplayVertex.Size, new IntPtr(72));
+            GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
+            GL.VertexAttribPointer(shader.getAttribute("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
+            GL.VertexAttribPointer(shader.getAttribute("vUV3"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
             //GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
@@ -762,7 +763,7 @@ namespace Smash_Forge
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
 
             GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.UVTestPattern);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern);
             GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
 
             GL.ActiveTexture(TextureUnit.Texture11);
@@ -885,7 +886,7 @@ namespace Smash_Forge
                 {
                     GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
                     //GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
-                    GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
+                    GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
 
                     GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
                     //GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
@@ -899,11 +900,11 @@ namespace Smash_Forge
             GL.UseProgram(0);
         }
 
-        public void DrawPoints(Camera cam, VBN vbn, PrimitiveType type)
+        public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)
         {
             Shader shader = Runtime.shaders["Point"];
             GL.UseProgram(shader.programID);
-            Matrix4 mat = cam.getMVPMatrix();
+            Matrix4 mat = camera.mvpMatrix;
             GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mat);
 
             if (type == PrimitiveType.Points)
@@ -924,9 +925,9 @@ namespace Smash_Forge
                 {
                     GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
                     //GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
-                    GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, dVertex.Size, 0);
-                    GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 72);
-                    GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, dVertex.Size, 88);
+                    GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
+                    GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 72);
+                    GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
 
                     GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_select);
                     if (p.selectedVerts == null) return;
@@ -999,7 +1000,7 @@ namespace Smash_Forge
             if (hash == (int)DummyTextures.DummyRamp)
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultRamp);
+                GL.BindTexture(TextureTarget.Texture2D, RenderTools.dummyRamp);
                 return 20 + loc;
             }
             GL.ActiveTexture(TextureUnit.Texture3 + loc);
@@ -2027,8 +2028,9 @@ namespace Smash_Forge
             public static int Size = 4 * sizeof(int);
         }
 
-        public struct dVertex
+        public struct DisplayVertex
         {
+            // Used for rendering.
             public Vector3 pos;
             public Vector3 nrm;
             public Vector3 tan;
@@ -2251,6 +2253,67 @@ namespace Smash_Forge
                 return material;
             }
 
+            public void CopyTextureIds(Material other)
+            {
+                // Copies all the texture IDs from the source material to the current material. 
+                // This is useful for preserving Tex IDs when using a preset or changing flags. 
+
+                for (int i = 0; i < textures.Count; i++)
+                {
+                    if (hasDiffuse)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasDiffuse2)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasDiffuse3)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasStageMap)
+                    {
+                        // Don't preserve stageMap ID.
+                        continue;
+                    }
+                    if (hasCubeMap)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasSphereMap)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasAoMap)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasNormalMap)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasRamp)
+                    {
+                        textures[i].hash = other.textures[i].hash;
+                        continue;
+                    }
+                    if (hasDummyRamp)
+                    {
+                        // Dummy ramp should almost always be 0x10080000.
+                        continue;
+                    }
+                }
+            }
+
+
             public void MakeMetal(int newDifTexId, int newCubeTexId, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor, bool preserveDiffuse = false, bool preserveNrmMap = true)
             {
                 float materialHash = -1f;
@@ -2443,18 +2506,18 @@ namespace Smash_Forge
                 }      
             }
 
-            public List<dVertex> PreRender()
+            public List<DisplayVertex> CreateDisplayVertices()
             {
                 // rearrange faces
                 display = getDisplayFace().ToArray();
 
-                List<dVertex> vert = new List<dVertex>();
+                List<DisplayVertex> displayVertList = new List<DisplayVertex>();
 
                 if (faces.Count <= 3)
-                    return vert;
+                    return displayVertList;
                 foreach (Vertex v in vertices)
                 {
-                    dVertex nv = new dVertex()
+                    DisplayVertex displayVert = new DisplayVertex()
                     {
                         pos = v.pos,
                         nrm = v.nrm,
@@ -2474,11 +2537,11 @@ namespace Smash_Forge
                         v.weight.Count > 3 ? v.weight[3] : 0),
                     };
 
-                    vert.Add(nv);
+                    displayVertList.Add(displayVert);
                 }
-                //vertdata = vert.ToArray();
-                selectedVerts = new int[vert.Count];
-                return vert;
+
+                selectedVerts = new int[displayVertList.Count];
+                return displayVertList;
             }
 
             public void CalculateTangentBitangent()
@@ -2493,8 +2556,7 @@ namespace Smash_Forge
                 Vector3[] bitanArray = new Vector3[vertices.Count];
 
                 CalculateTanBitanArrays(f, tanArray, bitanArray);
-                ApplyTanBitan(tanArray, bitanArray);
-                PreRender();
+                ApplyTanBitanArray(tanArray, bitanArray);
             }
 
             public void SetVertexColor(Vector4 intColor)
@@ -2504,11 +2566,10 @@ namespace Smash_Forge
                 {
                     v.col = intColor;
                 }
-                PreRender();
             }
 
 
-            private void ApplyTanBitan(Vector3[] tanArray, Vector3[] bitanArray)
+            private void ApplyTanBitanArray(Vector3[] tanArray, Vector3[] bitanArray)
             {
                 for (int i = 0; i < vertices.Count; i++)
                 {
@@ -2518,10 +2579,8 @@ namespace Smash_Forge
 
                     // The tangent and bitangent should be orthogonal to the normal. 
                     // Bitangents are not calculated with a cross product to prevent flipped shading  with mirrored normal maps.
-                    // Orthogonalizing the bitangent to the tangent removes some artifacts. 
                     v.tan = new Vector4(Vector3.Normalize(newTan - v.nrm * Vector3.Dot(v.nrm, newTan)), 1);
                     v.bitan = new Vector4(Vector3.Normalize(newBitan - v.nrm * Vector3.Dot(v.nrm, newBitan)), 1);
-                    v.bitan = new Vector4(Vector3.Normalize(v.bitan.Xyz - v.tan.Xyz * Vector3.Dot(v.bitan.Xyz, v.tan.Xyz)), 1);
                     v.bitan *= -1;
                 }
             }
@@ -2549,23 +2608,35 @@ namespace Smash_Forge
                     float t1 = v2.uv[0].Y - v1.uv[0].Y;
                     float t2 = v3.uv[0].Y - v1.uv[0].Y;
 
-                    // Prevent incorrect tangent calculation from division by 0.
-                    float r = 1.0f;
                     float div = (s1 * t2 - s2 * t1);
-                    if (div != 0)
-                        r = 1.0f / div;
+                    float r = 1.0f / div;
 
-                    Vector3 s = new Vector3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
-                        (t2 * z1 - t1 * z2) * r);
-                    Vector3 t = new Vector3((s1 * x2 - s2 * x1) * r, (s1 * y2 - s2 * y1) * r,
-                        (s1 * z2 - s2 * z1) * r);
+                    // Fix +/- infinity from division by 0.
+                    if (r == float.PositiveInfinity || r == float.NegativeInfinity)
+                        r = 1.0f;
 
-                    // Prevent black tangents or bitangents.
-                    if (Vector3.Dot(s, new Vector3(1)) == 0.0f)
-                        s = new Vector3(1).Normalized();
-                    if (Vector3.Dot(t, new Vector3(1)) == 0.0f)
-                        t = new Vector3(1).Normalized();
+                    float sX = t2 * x1 - t1 * x2;
+                    float sY = t2 * y1 - t1 * y2;
+                    float sZ = t2 * z1 - t1 * z2;
+                    Vector3 s = new Vector3(sX, sY, sZ) * r;
 
+                    float tX = s1 * x2 - s2 * x1;
+                    float tY = s1 * y2 - s2 * y1;
+                    float tZ = s1 * z2 - s2 * z1;
+                    Vector3 t = new Vector3(tX, tY, tZ) * r;
+
+                    // Prevents black tangents or bitangents due to having vertices with the same UV coordinates. 
+                    float delta = 0.00075f;
+                    bool sameU = (Math.Abs(v1.uv[0].X - v2.uv[0].X) < delta) && (Math.Abs(v2.uv[0].X - v3.uv[0].X) < delta);
+                    bool sameV = (Math.Abs(v1.uv[0].Y - v2.uv[0].Y) < delta) && (Math.Abs(v2.uv[0].Y - v3.uv[0].Y) < delta);
+                    if (sameU || sameV)
+                    {
+                        // Let's pick some arbitrary tangent vectors.
+                        s = new Vector3(1,0,0);
+                        t = new Vector3(0,1,0);
+                    }
+
+                    // Average tangents and bitangents.
                     tanArray[faces[i]] += s;
                     tanArray[faces[i + 1]] += s;
                     tanArray[faces[i + 2]] += s;
@@ -2579,9 +2650,6 @@ namespace Smash_Forge
             public void SmoothNormals()
             {
                 Vector3[] normals = new Vector3[vertices.Count];
-
-                for(int i = 0; i < normals.Length; i++)
-                    normals[i] = new Vector3(0, 0, 0);
 
                 List<int> f = getDisplayFace();
 
@@ -2600,22 +2668,26 @@ namespace Smash_Forge
                 for (int i = 0; i < normals.Length; i++)
                     vertices[i].nrm = normals[i].Normalized();
 
-                foreach (Vertex v in vertices)
+                // Compare each vertex with all the remaining vertices. This might skip some.
+                for (int i = 0; i < vertices.Count; i++)
                 {
-                    foreach (Vertex v2 in vertices)
+                    Vertex v = vertices[i];
+
+                    for (int j = i + 1; j < vertices.Count; j++)
                     {
-                        if (v == v2) continue;
+                        Vertex v2 = vertices[j];
+
+                        if (v == v2)
+                            continue;
                         float dis = (float)Math.Sqrt(Math.Pow(v.pos.X - v2.pos.X, 2) + Math.Pow(v.pos.Y - v2.pos.Y, 2) + Math.Pow(v.pos.Z - v2.pos.Z, 2));
                         if (dis <= 0f) // Extra smooth
                         {
-                            Vector3 nn = ((v2.nrm + v.nrm)/2).Normalized();
+                            Vector3 nn = ((v2.nrm + v.nrm) / 2).Normalized();
                             v.nrm = nn;
                             v2.nrm = nn;
                         }
                     }
                 }
-
-                PreRender();
             }
 
             public void CalculateNormals()
@@ -2634,15 +2706,13 @@ namespace Smash_Forge
                     Vertex v3 = vertices[f[i + 2]];
                     Vector3 nrm = CalculateNormal(v1, v2, v3);
 
-                    normals[f[i + 0]] += nrm;
-                    normals[f[i + 1]] += nrm;
-                    normals[f[i + 2]] += nrm;
+                    normals[f[i + 0]] += nrm * (nrm.Length / 2);
+                    normals[f[i + 1]] += nrm * (nrm.Length / 2);
+                    normals[f[i + 2]] += nrm * (nrm.Length / 2);
                 }
 
                 for (int i = 0; i < normals.Length; i++)
                     vertices[i].nrm = normals[i].Normalized();
-
-                PreRender();
             }
 
             private Vector3 CalculateNormal(Vertex v1, Vertex v2, Vertex v3)
@@ -2650,7 +2720,8 @@ namespace Smash_Forge
                 Vector3 U = v2.pos - v1.pos;
                 Vector3 V = v3.pos - v1.pos;
 
-                return Vector3.Cross(U, V).Normalized();
+                // Don't normalize here, so surface area can be calculated. 
+                return Vector3.Cross(U, V);
             }
 
             public void AddDefaultMaterial()
@@ -2924,7 +2995,7 @@ namespace Smash_Forge
             // Remove Duplicates
             MergePoly();
             MergeDuplicateVertices();
-            OptimizeSingleBind(true);
+            OptimizeSingleBind(false);
         }
 
         private void MergeDuplicateVertices()

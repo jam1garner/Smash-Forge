@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using OpenTK;
 using WeifenLuo.WinFormsUI.Docking;
 using OpenTK.Graphics.OpenGL;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {
@@ -312,7 +313,7 @@ namespace Smash_Forge
 
             foreach(NUT_Texture tex in nut.Nodes)
             {
-                RenderTools.DrawTexturedQuad(nut.draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, false, true);
+                RenderTools.DrawTexturedQuad(nut.draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, true);
             }
 
             glControl1.SwapBuffers();

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge.GUI.Menus
 {
@@ -36,10 +37,10 @@ namespace Smash_Forge.GUI.Menus
             numericZoom.Minimum = Decimal.MinValue;
 
             Camera = c;
-            depthSlider.Value = Math.Min((int)Camera.RenderDepth, depthSlider.Maximum);
-            fovSlider.Value = (int)(Camera.fov * 180.0f / Math.PI);
-            fovTB.Text = (int)(Camera.fov * 180.0f / Math.PI) + "";
-            renderDepthTB.Text = Camera.RenderDepth + "";
+            depthSlider.Value = Math.Min((int)Camera.renderDepth, depthSlider.Maximum);
+            fovSlider.Value = (int)(Camera.fovRadians * 180.0f / Math.PI);
+            fovTB.Text = (int)(Camera.fovRadians * 180.0f / Math.PI) + "";
+            renderDepthTB.Text = Camera.renderDepth + "";
             updatePosition();
         }
 
@@ -57,26 +58,26 @@ namespace Smash_Forge.GUI.Menus
             float height = Convert.ToSingle(numericPositionY.Value);
             float zoom = Convert.ToSingle(numericZoom.Value);
 
-            Camera.setPosition(new OpenTK.Vector3(width, height, zoom));
-            Camera.setRotX(xRotation);
-            Camera.setRotY(yRotation);
+            Camera.position = new OpenTK.Vector3(width, height, zoom);
+            Camera.rotX = xRotation;
+            Camera.rotY = yRotation;
             Camera.Update();
         }
 
         // Updates text controls based on parentViewport's current camera position
         public void updatePosition()
         {
-            OpenTK.Vector3 pos = Camera.getPosition();
+            OpenTK.Vector3 pos = Camera.position;
 
-            numericHorizontalRadians.Value = Convert.ToDecimal(Camera.getRotY());
-            numericVerticalRadians.Value = Convert.ToDecimal(Camera.getRotX());
+            numericHorizontalRadians.Value = Convert.ToDecimal(Camera.rotY);
+            numericVerticalRadians.Value = Convert.ToDecimal(Camera.rotX);
             numericPositionX.Value = Convert.ToDecimal(pos.X);
             numericPositionY.Value = Convert.ToDecimal(pos.Y);
             numericZoom.Value = Convert.ToDecimal(pos.Z);
 
             // derived values
-            numericHorizontalDegrees.Value = Convert.ToDecimal(Camera.getRotY() * (180 / Math.PI));
-            numericVerticalDegrees.Value = Convert.ToDecimal(Camera.getRotX() * (180 / Math.PI));
+            numericHorizontalDegrees.Value = Convert.ToDecimal(Camera.rotY * (180 / Math.PI));
+            numericVerticalDegrees.Value = Convert.ToDecimal(Camera.rotX * (180 / Math.PI));
 
             //buttonApply_Click(null, null);
         }
@@ -123,7 +124,7 @@ namespace Smash_Forge.GUI.Menus
             if (float.TryParse(renderDepthTB.Text, out i))
             {
                 renderDepthTB.BackColor = Color.White;
-                Camera.RenderDepth = i;
+                Camera.renderDepth = i;
             }
             else
                 renderDepthTB.BackColor = Color.Red;
@@ -142,7 +143,7 @@ namespace Smash_Forge.GUI.Menus
             if (float.TryParse(fovTB.Text, out i))
             {
                 fovTB.BackColor = Color.White;
-                Camera.fov = i * (float)Math.PI / 180.0f;
+                Camera.fovRadians = i * (float)Math.PI / 180.0f;
             }
             else
                 fovTB.BackColor = Color.Red;

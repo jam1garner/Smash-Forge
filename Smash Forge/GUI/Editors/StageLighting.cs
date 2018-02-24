@@ -13,6 +13,7 @@ using OpenTK.Graphics.OpenGL;
 using SALT.PARAMS;
 using System.Diagnostics;
 using Smash_Forge.Rendering.Lights;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge.GUI.Editors
 {
@@ -212,9 +213,8 @@ namespace Smash_Forge.GUI.Editors
         {
             charDifColorGLControl.MakeCurrent();
             GL.Viewport(charDifColorGLControl.ClientRectangle);
-            SetOpenGLSettings();
 
-            RenderTools.DrawQuadGradient(topColor.X, topColor.Y, topColor.Z, bottomColor.X, bottomColor.Y, bottomColor.Z);
+            RenderTools.DrawQuadGradient(topColor, bottomColor);
 
             charDifColorGLControl.SwapBuffers();
         }
@@ -223,24 +223,12 @@ namespace Smash_Forge.GUI.Editors
         {
             areaColorGLControl.MakeCurrent();
             GL.Viewport(areaColorGLControl.ClientRectangle);
-            SetOpenGLSettings();
 
-            RenderTools.DrawQuadGradient(selectedAreaLight.skyR, selectedAreaLight.skyG, selectedAreaLight.skyB, selectedAreaLight.groundR, selectedAreaLight.groundG, selectedAreaLight.groundB);
+            Vector3 topColor = new Vector3(selectedAreaLight.skyR, selectedAreaLight.skyG, selectedAreaLight.skyB);
+            Vector3 bottomColor = new Vector3(selectedAreaLight.groundR, selectedAreaLight.groundG, selectedAreaLight.groundB);
+            RenderTools.DrawQuadGradient(topColor, bottomColor);
 
             areaColorGLControl.SwapBuffers();
-        }
-
-        private static void SetOpenGLSettings()
-        {
-            GL.ClearColor(Color.White);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.MatrixMode(MatrixMode.Projection);
-
-            GL.Enable(EnableCap.Texture2D);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
         }
 
         private void renderStageLightCB_CheckedChanged(object sender, EventArgs e)

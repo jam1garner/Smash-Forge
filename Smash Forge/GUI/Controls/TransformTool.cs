@@ -7,6 +7,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using System.Diagnostics;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {
@@ -235,11 +236,11 @@ namespace Smash_Forge
 
 
             GL.Color3(_hiX ? Color.Yellow : Color.Red);
-            RenderTools.drawCube(new Vector3(2, 0, 0), 0.25f);
+            RenderTools.DrawCube(new Vector3(2, 0, 0), 0.25f);
             GL.Color3(_hiY ? Color.Yellow : Color.Green);
-            RenderTools.drawCube(new Vector3(0, 2, 0), 0.25f);
+            RenderTools.DrawCube(new Vector3(0, 2, 0), 0.25f);
             GL.Color3(_hiZ ? Color.Yellow : Color.Blue);
-            RenderTools.drawCube(new Vector3(0, 0, 2), 0.25f);
+            RenderTools.DrawCube(new Vector3(0, 0, 2), 0.25f);
             GL.PopMatrix();
         }
 
