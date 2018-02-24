@@ -812,7 +812,9 @@ namespace Smash_Forge
             float[] values;
             mat.entries.TryGetValue(propertyName, out values);
             if (mat.anims.ContainsKey(propertyName))
+            {
                 values = mat.anims[propertyName];
+            }
             if (values == null)
                 values = new float[] { default1, default2, default3, default4 };
             string uniformName = propertyName.Substring(3); // remove the NU_ from name
@@ -1075,12 +1077,11 @@ namespace Smash_Forge
 
                                     foreach(MatData md in mat.properties)
                                     {
-                                        if (md.frames.Count > 0 && md.frames.Count < frm)
+                                        if (md.frames.Count > 0 && md.frames.Count > frm)
                                         {
                                             if (ma.anims.ContainsKey(md.name))
                                                 ma.anims[md.name] = md.frames[frm].values;
                                             else
-                                                if(md.frames.Count > frm)
                                                     ma.anims.Add(md.name, md.frames[frm].values);
                                         }
                                             
@@ -1111,7 +1112,6 @@ namespace Smash_Forge
                     }
                 }
             }
-
         }
         #endregion
 

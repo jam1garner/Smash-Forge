@@ -376,6 +376,8 @@ namespace Smash_Forge
         public uint frameRate;
         public List<MatEntry> matEntries = new List<MatEntry>();
         public List<VisEntry> visEntries = new List<VisEntry>();
+        
+        MTAEditor Editor;
 
         public MTA()
         {
@@ -383,6 +385,33 @@ namespace Smash_Forge
             Endian = Endianness.Big;
             ImageKey = "image";
             SelectedImageKey = "image";
+
+
+            ContextMenu = new ContextMenu();
+
+            MenuItem OpenEdit = new MenuItem("Open Editor");
+            OpenEdit.Click += OpenEditor;
+            ContextMenu.MenuItems.Add(OpenEdit);
+
+            /*MenuItem save = new MenuItem("Save As");
+            ContextMenu.MenuItems.Add(save);
+            save.Click += Save;*/
+        }
+
+
+        private void OpenEditor(object sender, EventArgs args)
+        {
+            if (Editor == null || Editor.IsDisposed)
+            {
+                Editor = new MTAEditor(this);
+                //Editor.FilePath = FilePath;
+                Editor.Text = Parent.Text + "\\" + Text;
+                MainForm.Instance.AddDockedControl(Editor);
+            }
+            else
+            {
+                Editor.BringToFront();
+            }
         }
 
         public void ExpandNodes()

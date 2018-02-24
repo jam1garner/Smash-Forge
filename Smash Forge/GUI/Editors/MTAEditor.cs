@@ -12,7 +12,7 @@ using System.IO;
 
 namespace Smash_Forge
 {
-    public partial class MTAEditor : DockContent
+    public partial class MTAEditor : EditorBase
     {
         public MTAEditor(MTA Mta)
         {
@@ -25,6 +25,39 @@ namespace Smash_Forge
         private void MTAEditor_Load(object sender, EventArgs e)
         {
             richTextBox1.Text = mta.Decompile();
+        }
+
+        public override void Save()
+        {
+            if (FilePath.Equals(""))
+            {
+                SaveAs();
+                return;
+            }
+            FileOutput o = new FileOutput();
+            mta.Compile(new List<string>(richTextBox1.Text.Split('\n')));
+            byte[] n = mta.Rebuild();
+            o.writeBytes(n);
+            o.save(FilePath);
+            Edited = false;
+        }
+
+        public override void SaveAs()
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Material Animation (.mta)|*.mta|" +
+                             "All Files (*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    if (sfd.FileName.EndsWith(".mta"))
+                    {
+                        FilePath = sfd.FileName;
+                        Save();
+                    }
+                }
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
