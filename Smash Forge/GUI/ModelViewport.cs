@@ -829,48 +829,69 @@ namespace Smash_Forge
                 {
                     string[] files = Directory.GetFiles(ofd.SelectedPath, "*model.nud", SearchOption.AllDirectories);
 
-                    for (int i = 1490; i < files.Length; i++)
+                    for (int i = 0; i < files.Length; i++)
                     {
-                        try
-                        {
-                            OpenAndRenderModel(files[i], i);
-                        }
-                        catch
-                        {
-                            // Something went wrong. May as well skip that model. 
-                        }
+                        OpenAndRenderModel(files[i], i, ofd.SelectedPath);
                     }
                 }
             }
         }
 
-        private void OpenAndRenderModel(string fileName, int totalRenderCount)
+        private void OpenAndRenderModel(string fileName, int totalRenderCount, string path)
         {
             foreach (TreeNode node in draw)
             {
                 if (!(node is ModelContainer))
                     continue;
 
-                ModelContainer con = (ModelContainer)node;
+                LoadNewModelForRender(fileName, node);           
+                SetupNextRender();
+                string renderName = FormatRenderName(fileName, path);
+                CaptureScreen(true).Save(MainForm.executableDir + "\\Renders_Trophies\\" + renderName + "_" + totalRenderCount + ".png");
+            }
+        }
 
-                // Load the new model.
-                // Assume everything is called model.nud, model.nut, model.vbn.
-                Runtime.TextureContainers.Remove(con.NUT);
+        private void SetupNextRender()
+        {
+            // Setup before rendering the model. 
+            FrameAllModelContainers();
+            Render(null, null);
+            glViewport.SwapBuffers();
+        }
+
+        private static void LoadNewModelForRender(string fileName, TreeNode node)
+        {
+            // Loads the new model. Assumes everything is called model.nud, model.nut, model.vbn.
+            ModelContainer con = (ModelContainer)node;
+
+            Runtime.TextureContainers.Remove(con.NUT);
+            try
+            {
                 NUT newNut = new NUT(fileName.Replace("nud", "nut"));
                 Runtime.TextureContainers.Add(newNut);
                 con.NUT = newNut;
-
-                con.NUD = new NUD(fileName);
-                con.VBN = new VBN(fileName.Replace("nud", "vbn"));
-
-                // Setup before rendering the model. 
-                FrameAllModelContainers();
-                Render(null, null);
-                glViewport.SwapBuffers();
-
-                // Save the render.
-                CaptureScreen(true).Save(MainForm.executableDir + "\\Renders_Chars\\Render_" + totalRenderCount + ".png");
             }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
+
+
+            con.NUD = new NUD(fileName);
+
+            // Not all models have a vbn.
+            if (File.Exists(fileName.Replace("nud", "vbn")))
+                con.VBN = new VBN(fileName.Replace("nud", "vbn"));
+        }
+
+        private static string FormatRenderName(string fileName, string path)
+        {
+            // Save the render using the folder structure as the name.
+            string renderName = fileName.Replace(path, "");
+            renderName = renderName.Substring(1);
+            renderName = renderName.Replace("\\", "_");
+            renderName = renderName.Replace("model.nud", "");
+            return renderName;
         }
 
         public Bitmap CaptureScreen(bool saveAlpha)
