@@ -1459,20 +1459,24 @@ namespace Smash_Forge.Rendering
                     else
                         selectedBone = bone;
 
-                    if (vbn.SwingBones != null && Runtime.renderSwag)
+                    if (vbn.SwingBones != null && (Runtime.renderSwagY || Runtime.renderSwagZ))
                     {
-
                         SB.SBEntry sb = null;
                         vbn.SwingBones.TryGetEntry(bone.boneId, out sb);
                         if (sb != null)
                         {
                             float sf = Math.Abs(((swinganim - 50) / 50f));
+                            float sz = (sb.rz1 + (sb.rz2 - sb.rz1) * sf) * ToRad;
+                            float sy = (sb.ry1 + (sb.ry2 - sb.ry1) * sf) * ToRad;
+                            if (!Runtime.renderSwagY)
+                                sy = 0;
+                            if (!Runtime.renderSwagZ)
+                                sz = 0;
                             bone.rot = VBN.FromEulerAngles(bone.rotation[2], bone.rotation[1], bone.rotation[0]) *
-                                VBN.FromEulerAngles((sb.rz1 + (sb.rz2 - sb.rz1) * sf) * ToRad, (sb.ry1 + (sb.ry2 - sb.ry1) * sf)* ToRad, 0);
-                            
+                                VBN.FromEulerAngles(sz, sy, 0);
 
                             /*Matrix4 RotTran = bone.transform *
-                                Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(((sb.rz2 + sb.rz1) / 2) * ToRad, ((sb.ry2 + sb.ry1) / 2f)* ToRad, 0))
+                                Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(((sb.rz2 + sb.rz1) / 2) * ToRad, , 0))
                                 * Matrix4.CreateTranslation(0, 0, 0);
 
                             Vector3 pos_c = Vector3.TransformPosition(Vector3.Zero, bone.transform);
@@ -1535,7 +1539,7 @@ namespace Smash_Forge.Rendering
                     selectedBone.Draw();
                 }
 
-                if (vbn.SwingBones != null && Runtime.renderSwag)
+                if (vbn.SwingBones != null && (Runtime.renderSwagY || Runtime.renderSwagZ))
                     vbn.update();
             }
         }

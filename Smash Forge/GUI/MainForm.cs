@@ -121,7 +121,8 @@ namespace Smash_Forge
             Runtime.renderOtherLVDEntries = true;
             Runtime.renderAlpha = true;
             Runtime.renderVertColor = true;
-            Runtime.renderSwag = false;
+            Runtime.renderSwagZ = false;
+            Runtime.renderSwagY = false;
             Runtime.renderHurtboxes = true;
             Runtime.renderHurtboxesZone = true;
             Runtime.renderECB = false;

@@ -85,7 +85,8 @@ namespace Smash_Forge
         public static bool renderItemSpawners;
         public static bool renderGeneralPoints;
         public static bool renderOtherLVDEntries;
-        public static bool renderSwag;
+        public static bool renderSwagZ;
+        public static bool renderSwagY;
         public static bool renderBoundingBox;
         public static bool renderHurtboxes;
         public static bool renderHurtboxesZone;
@@ -408,7 +409,8 @@ namespace Smash_Forge
                         case "render_item_spawners": bool.TryParse(node.InnerText, out renderItemSpawners); break;
                         case "render_general_points": bool.TryParse(node.InnerText, out renderGeneralPoints); break;
                         case "render_otherLVDEntries": bool.TryParse(node.InnerText, out renderOtherLVDEntries); break;
-                        case "render_swag": bool.TryParse(node.InnerText, out renderSwag); break;
+                        case "render_swag": bool.TryParse(node.InnerText, out renderSwagY); break;
+                        case "render_swagZ": bool.TryParse(node.InnerText, out renderSwagZ); break;
                         case "fighter_dir": fighterDir = node.InnerText; break;
                         case "param_dir": paramDir = node.InnerText; break;
                         case "render_indicators": bool.TryParse(node.InnerText, out renderIndicators); break;
@@ -648,7 +650,8 @@ namespace Smash_Forge
                 node.AppendChild(createNode(doc, "render_item_spawners", renderItemSpawners.ToString()));
                 node.AppendChild(createNode(doc, "render_general_points", renderGeneralPoints.ToString()));
                 node.AppendChild(createNode(doc, "render_otherLVDEntries", renderOtherLVDEntries.ToString()));
-                node.AppendChild(createNode(doc, "render_swag", renderSwag.ToString()));
+                node.AppendChild(createNode(doc, "render_swag", renderSwagY.ToString()));
+                node.AppendChild(createNode(doc, "render_swagZ", renderSwagZ.ToString()));
             }
             {
                 XmlNode etcNode = doc.CreateElement("ETC");

@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -149,6 +149,7 @@
             this.reflectionCB = new System.Windows.Forms.CheckBox();
             this.useNormCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.swagYCB = new System.Windows.Forms.CheckBox();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -661,8 +662,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2});
+            listViewItem3,
+            listViewItem4});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -839,6 +840,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.swagYCB);
             this.groupBox2.Controls.Add(this.drawUvCB);
             this.groupBox2.Controls.Add(this.areaLightBoundingBoxCB);
             this.groupBox2.Controls.Add(this.renderGeneralShapesCB);
@@ -990,11 +992,11 @@
             // showSwagDataCB
             // 
             this.showSwagDataCB.AutoSize = true;
-            this.showSwagDataCB.Location = new System.Drawing.Point(48, 112);
+            this.showSwagDataCB.Location = new System.Drawing.Point(16, 112);
             this.showSwagDataCB.Name = "showSwagDataCB";
-            this.showSwagDataCB.Size = new System.Drawing.Size(109, 17);
+            this.showSwagDataCB.Size = new System.Drawing.Size(104, 17);
             this.showSwagDataCB.TabIndex = 18;
-            this.showSwagDataCB.Text = "Show Swag Data";
+            this.showSwagDataCB.Text = "Animate Swag Z";
             this.showSwagDataCB.UseVisualStyleBackColor = true;
             this.showSwagDataCB.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
             // 
@@ -1531,6 +1533,17 @@
             this.tabControl1.Size = new System.Drawing.Size(564, 698);
             this.tabControl1.TabIndex = 17;
             // 
+            // swagYCB
+            // 
+            this.swagYCB.AutoSize = true;
+            this.swagYCB.Location = new System.Drawing.Point(134, 112);
+            this.swagYCB.Name = "swagYCB";
+            this.swagYCB.Size = new System.Drawing.Size(104, 17);
+            this.swagYCB.TabIndex = 29;
+            this.swagYCB.Text = "Animate Swag Y";
+            this.swagYCB.UseVisualStyleBackColor = true;
+            this.swagYCB.CheckedChanged += new System.EventHandler(this.swagYCB_CheckedChanged);
+            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1698,5 +1711,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pbHitboxAnglesColor;
         private System.Windows.Forms.CheckBox drawUvCB;
+        private System.Windows.Forms.CheckBox swagYCB;
     }
 }

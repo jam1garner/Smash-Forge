@@ -33,7 +33,8 @@ namespace Smash_Forge.GUI
 
             // Bone settings
             renderBonesCB.Checked = Runtime.renderBones;
-            showSwagDataCB.Checked = Runtime.renderSwag;
+            showSwagDataCB.Checked = Runtime.renderSwagZ;
+            swagYCB.Checked = Runtime.renderSwagY;
 
             // Model Settings
             renderModelCB.Checked = Runtime.renderModel;
@@ -313,7 +314,7 @@ namespace Smash_Forge.GUI
 
         private void swagViewing_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.renderSwag = showSwagDataCB.Checked;
+            Runtime.renderSwagZ = showSwagDataCB.Checked;
         }
 
         private void lightCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -758,6 +759,11 @@ namespace Smash_Forge.GUI
         private void drawUvCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.drawUv = drawUvCB.Checked;
+        }
+
+        private void swagYCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderSwagY = swagYCB.Checked;
         }
     }
 }
