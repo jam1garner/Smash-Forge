@@ -827,23 +827,17 @@ namespace Smash_Forge
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    string[] files = Directory.GetFiles(ofd.SelectedPath, "*", SearchOption.AllDirectories);
+                    string[] files = Directory.GetFiles(ofd.SelectedPath, "*model.nud", SearchOption.AllDirectories);
 
-                    int totalRenderCount = 0;
-
-                    foreach (string filename in files)
+                    for (int i = 1490; i < files.Length; i++)
                     {
-                        if (filename.EndsWith("model.nud"))
+                        try
                         {
-                           try
-                           {
-                                OpenAndRenderModel(filename, totalRenderCount);
-                                totalRenderCount += 1;
-                           }
-                           catch
-                           {
-                                // Something went wrong. May as well skip that model. 
-                           }   
+                            OpenAndRenderModel(files[i], i);
+                        }
+                        catch
+                        {
+                            // Something went wrong. May as well skip that model. 
                         }
                     }
                 }
