@@ -864,7 +864,7 @@ namespace Smash_Forge
             // Loads the new model. Assumes everything is called model.nud, model.nut, model.vbn.
             ModelContainer con = (ModelContainer)node;
 
-            Runtime.TextureContainers.Remove(con.NUT);
+            Runtime.TextureContainers.Clear();
             try
             {
                 NUT newNut = new NUT(fileName.Replace("nud", "nut"));
@@ -876,7 +876,8 @@ namespace Smash_Forge
                 Debug.WriteLine(e.Message);
             }
 
-
+            // Help prevent memory leaks.
+            con.Destroy();
             con.NUD = new NUD(fileName);
 
             // Not all models have a vbn.
