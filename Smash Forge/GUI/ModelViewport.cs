@@ -795,7 +795,30 @@ namespace Smash_Forge
 
         private void RenderButton_Click(object sender, EventArgs e)
         {
-            CaptureScreen(true).Save(MainForm.executableDir + "\\Render.png");
+            foreach (TreeNode node in draw)
+            {
+                if (!(node is ModelContainer))
+                    continue;
+
+                ModelContainer con = (ModelContainer)node;
+
+                // Load the new model.
+                Runtime.TextureContainers.Remove(con.NUT);
+                NUT newNut = new NUT("");
+                Runtime.TextureContainers.Add(newNut);
+                con.NUT = newNut;
+
+                con.NUD = new NUD("");
+                con.VBN = new VBN("");
+
+                // Setup before rendering the model. 
+                FrameSelection();
+                Render(null, null);
+                glViewport.SwapBuffers();
+
+                // Save the render.
+                CaptureScreen(true).Save(MainForm.executableDir + "\\Render.png");
+            }
         }
 
         public Bitmap CaptureScreen(bool saveAlpha)
