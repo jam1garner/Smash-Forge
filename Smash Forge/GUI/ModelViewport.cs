@@ -847,7 +847,7 @@ namespace Smash_Forge
                 LoadNewModelForRender(fileName, node);           
                 SetupNextRender();
                 string renderName = FormatRenderName(fileName, path);
-                CaptureScreen(true).Save(MainForm.executableDir + "\\Renders_Trophies\\" + renderName + "_" + totalRenderCount + ".png");
+                CaptureScreen(true).Save(MainForm.executableDir + "\\Renders_Chars\\" + renderName + "_" + totalRenderCount + ".png");
             }
         }
 
@@ -862,14 +862,14 @@ namespace Smash_Forge
         private static void LoadNewModelForRender(string fileName, TreeNode node)
         {
             // Loads the new model. Assumes everything is called model.nud, model.nut, model.vbn.
-            ModelContainer con = (ModelContainer)node;
+            ModelContainer modelContainer = (ModelContainer)node;
 
             Runtime.TextureContainers.Clear();
             try
             {
                 NUT newNut = new NUT(fileName.Replace("nud", "nut"));
                 Runtime.TextureContainers.Add(newNut);
-                con.NUT = newNut;
+                modelContainer.NUT = newNut;
             }
             catch (Exception e)
             {
@@ -877,12 +877,33 @@ namespace Smash_Forge
             }
 
             // Help prevent memory leaks.
-            con.Destroy();
-            con.NUD = new NUD(fileName);
+            modelContainer.Destroy();
+            modelContainer.NUD = new NUD(fileName);
+
+            // Read pacs to hide meshes.
+            string[] pacs = Directory.GetFiles(fileName.Replace("model.nud", ""), "*.pac");
+            foreach (string s in pacs)
+            {
+                PAC p = new PAC();
+                p.Read(s);
+                byte[] data;
+                if (p.Files.TryGetValue("display", out data))
+                {
+                    MTA m = new MTA();
+                    m.read(new FileData(data));
+                    modelContainer.NUD.applyMTA(m, 0);
+                }
+                if (p.Files.TryGetValue("default.mta", out data))
+                {
+                    MTA m = new MTA();
+                    m.read(new FileData(data));
+                    modelContainer.NUD.applyMTA(m, 0);
+                }
+            }
 
             // Not all models have a vbn.
             if (File.Exists(fileName.Replace("nud", "vbn")))
-                con.VBN = new VBN(fileName.Replace("nud", "vbn"));
+                modelContainer.VBN = new VBN(fileName.Replace("nud", "vbn"));
         }
 
         private static string FormatRenderName(string fileName, string path)
