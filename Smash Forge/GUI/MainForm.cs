@@ -327,7 +327,6 @@ namespace Smash_Forge
         public List<SwagEditor> SwagEditors = new List<SwagEditor>() { };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
         public HurtboxList hurtboxList = new HurtboxList() { ShowHint = DockState.DockLeft };
-        public List<VBNViewport> viewports = new List<VBNViewport>() { new VBNViewport() }; // Default viewport (may mess up with more or less?)
         public NUTEditor nutEditor = null;
         public NUS3BANKEditor nusEditor = null;
         public _3DSTexEditor texEditor = null;
@@ -508,7 +507,6 @@ namespace Smash_Forge
         {
             if (!Runtime.MaterialAnimations.ContainsValue(m) && !Runtime.MaterialAnimations.ContainsKey(name))
                 Runtime.MaterialAnimations.Add(name, m);
-            viewports[0].loadMTA(m);
             animList.treeView1.Nodes.Add(name);
         }
 
@@ -1796,7 +1794,6 @@ namespace Smash_Forge
             {
                 MTA TargetMTA = new MTA();
                 TargetMTA.Read(fileName);
-                viewports[0].loadMTA(TargetMTA);
                 Runtime.TargetMTA.Clear();
                 Runtime.TargetMTA.Add(TargetMTA);
                 MTAEditor temp = new MTAEditor(TargetMTA) {ShowHint = DockState.DockLeft};
@@ -2241,8 +2238,6 @@ namespace Smash_Forge
         {
             if (cameraForm == null || cameraForm.IsDisposed)
             {
-                cameraForm = new CameraSettings(viewports[0].vbnViewportCamera);
-                viewports[0].cameraPosForm = cameraForm;
             }
             cameraForm.Show();
         }
