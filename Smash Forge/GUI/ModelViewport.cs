@@ -795,6 +795,35 @@ namespace Smash_Forge
 
         private void RenderButton_Click(object sender, EventArgs e)
         {
+            using (var ofd = new FolderSelectDialog())
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string[] files = Directory.GetFiles(ofd.SelectedPath, "*", SearchOption.AllDirectories);
+
+                    int totalRenderCount = 0;
+
+                    foreach (string filename in files)
+                    {
+                        if (filename.EndsWith("model.nud"))
+                        {
+                            try
+                            {
+                                OpenAndRenderModel(filename, totalRenderCount);
+                                totalRenderCount += 1;
+                            }
+                            catch
+                            {
+                                // Something went wrong. May as well skip that model. 
+                            }   
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OpenAndRenderModel(string fileName, int totalRenderCount)
+        {
             foreach (TreeNode node in draw)
             {
                 if (!(node is ModelContainer))
@@ -803,13 +832,14 @@ namespace Smash_Forge
                 ModelContainer con = (ModelContainer)node;
 
                 // Load the new model.
+                // Assume everything is called model.nud, model.nut, model.vbn.
                 Runtime.TextureContainers.Remove(con.NUT);
-                NUT newNut = new NUT("");
+                NUT newNut = new NUT(fileName.Replace("nud", "nut"));
                 Runtime.TextureContainers.Add(newNut);
                 con.NUT = newNut;
 
-                con.NUD = new NUD("");
-                con.VBN = new VBN("");
+                con.NUD = new NUD(fileName);
+                con.VBN = new VBN(fileName.Replace("nud", "vbn"));
 
                 // Setup before rendering the model. 
                 FrameSelection();
@@ -817,7 +847,7 @@ namespace Smash_Forge
                 glViewport.SwapBuffers();
 
                 // Save the render.
-                CaptureScreen(true).Save(MainForm.executableDir + "\\Render.png");
+                CaptureScreen(true).Save(MainForm.executableDir + "\\Renders\\Render_" + totalRenderCount + ".png");
             }
         }
 
