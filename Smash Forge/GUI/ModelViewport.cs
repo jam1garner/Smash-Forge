@@ -621,7 +621,35 @@ namespace Smash_Forge
                     ModelContainer modelContainer = (ModelContainer)node;
                     if (modelContainer.NUD.boundingBox[3] > boundingBox[3])
                     {
-                        boundingBox = modelContainer.NUD.boundingBox;
+                        boundingBox[0] = modelContainer.NUD.boundingBox[0];
+                        boundingBox[1] = modelContainer.NUD.boundingBox[1];
+                        boundingBox[2] = modelContainer.NUD.boundingBox[2];
+                        boundingBox[3] = modelContainer.NUD.boundingBox[3];
+
+                        Debug.WriteLine(modelContainer.NUD.boundingBox[3]);
+                    }
+                }
+            }
+
+            // It's possible that only the individual meshes have bounding boxes, so we'll take the max of those.
+            if (boundingBox[3] < 1)
+            {
+                foreach (TreeNode node in MeshList.treeView1.Nodes)
+                {
+                    if (node is ModelContainer)
+                    {
+                        ModelContainer modelContainer = (ModelContainer)node;
+                        
+                        foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
+                        {
+                            if (mesh.boundingBox[3] > boundingBox[3])
+                            {                            
+                                boundingBox[0] = mesh.boundingBox[0];
+                                boundingBox[1] = mesh.boundingBox[1];
+                                boundingBox[2] = mesh.boundingBox[2];
+                                boundingBox[3] = mesh.boundingBox[3];
+                            }
+                        }
                     }
                 }
             }
@@ -807,15 +835,15 @@ namespace Smash_Forge
                     {
                         if (filename.EndsWith("model.nud"))
                         {
-                            try
-                            {
+                           try
+                           {
                                 OpenAndRenderModel(filename, totalRenderCount);
                                 totalRenderCount += 1;
-                            }
-                            catch
-                            {
+                           }
+                           catch
+                           {
                                 // Something went wrong. May as well skip that model. 
-                            }   
+                           }   
                         }
                     }
                 }
@@ -842,12 +870,12 @@ namespace Smash_Forge
                 con.VBN = new VBN(fileName.Replace("nud", "vbn"));
 
                 // Setup before rendering the model. 
-                FrameSelection();
+                FrameAllModelContainers();
                 Render(null, null);
                 glViewport.SwapBuffers();
 
                 // Save the render.
-                CaptureScreen(true).Save(MainForm.executableDir + "\\Renders\\Render_" + totalRenderCount + ".png");
+                CaptureScreen(true).Save(MainForm.executableDir + "\\Renders_Chars\\Render_" + totalRenderCount + ".png");
             }
         }
 
