@@ -2303,8 +2303,10 @@ namespace Smash_Forge
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
+            // I got tired of looking at it.
             glControl1.MakeCurrent();
-            Rendering.RenderTools.RenderBackground();
+            GL.ClearColor(System.Drawing.Color.FromArgb(255, 250, 250, 250));
+            GL.Clear(ClearBufferMask.ColorBufferBit);
             glControl1.SwapBuffers();
         }
 
