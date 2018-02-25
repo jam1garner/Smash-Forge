@@ -198,7 +198,7 @@ namespace Smash_Forge
 
         public static float specularHue = 360.0f;
         public static float specularSaturation = 0.0f;
-        public static float specularIntensity = 0.675f;
+        public static float specularIntensity = 0.65f;
         public static float specularRotX = 0.0f;
         public static float specularRotY = 0.0f;
         public static float specularRotZ = 0.0f;

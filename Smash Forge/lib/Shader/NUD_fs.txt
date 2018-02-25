@@ -414,9 +414,11 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixInten
     if ((flags & 0x00E10000u) == 0x00E10000u)
         specColorTotal *= 0;
 
-    specularPass += specColorTotal;
+    // It sort of conserves energy but only for very low specular values.
+    specularPass += max(specColorTotal - vec3(0.5 * Luminance(diffuseMap.rgb)), vec3(0));
 
     specularPass *= mix(aoMap, 1, aoMixIntensity);
+
     specularPass *= tintColor;
     specularPass *= specLightColor;
     specularPass *= specularIntensity;
