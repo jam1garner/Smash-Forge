@@ -823,21 +823,33 @@ namespace Smash_Forge
 
         private void RenderButton_Click(object sender, EventArgs e)
         {
-            using (var ofd = new FolderSelectDialog())
-            {
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    string[] files = Directory.GetFiles(ofd.SelectedPath, "*model.nud", SearchOption.AllDirectories);
+            CaptureScreen(true).Save(MainForm.executableDir + "\\Render.png");
+        }
 
-                    for (int i = 0; i < files.Length; i++)
+        private void BatchRenderModels()
+        {
+            // Get the source model folder and then the output folder. 
+            using (var folderSelect = new FolderSelectDialog())
+            {
+                if (folderSelect.ShowDialog() == DialogResult.OK)
+                {
+                    string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*model.nud", SearchOption.AllDirectories);
+
+                    using (var outputFolderSelect = new FolderSelectDialog())
                     {
-                        OpenAndRenderModel(files[i], i, ofd.SelectedPath);
+                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
+                        {
+                            for (int i = 0; i < files.Length; i++)
+                            {
+                                OpenAndRenderModel(files[i], i, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+                            }
+                        }
                     }
                 }
             }
         }
 
-        private void OpenAndRenderModel(string fileName, int totalRenderCount, string path)
+        private void OpenAndRenderModel(string fileName, int totalRenderCount, string path, string outputPath)
         {
             foreach (TreeNode node in draw)
             {
@@ -847,7 +859,7 @@ namespace Smash_Forge
                 LoadNewModelForRender(fileName, node);           
                 SetupNextRender();
                 string renderName = FormatRenderName(fileName, path);
-                CaptureScreen(true).Save(MainForm.executableDir + "\\Renders_Chars\\" + renderName + "_" + totalRenderCount + ".png");
+                CaptureScreen(true).Save(outputPath + "\\" + renderName + "_" + totalRenderCount + ".png");
             }
         }
 
@@ -869,6 +881,10 @@ namespace Smash_Forge
             {
                 NUT newNut = new NUT(fileName.Replace("nud", "nut"));
                 Runtime.TextureContainers.Add(newNut);
+
+                // Free memory used by OpenTK.
+                modelContainer.NUT.Destroy(); 
+
                 modelContainer.NUT = newNut;
             }
             catch (Exception e)
@@ -876,8 +892,9 @@ namespace Smash_Forge
                 Debug.WriteLine(e.Message);
             }
 
-            // Help prevent memory leaks.
+            // Free memory used by OpenTK.
             modelContainer.Destroy();
+
             modelContainer.NUD = new NUD(fileName);
 
             // Read pacs to hide meshes.
@@ -1089,6 +1106,7 @@ namespace Smash_Forge
         
         private void ModelViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
+
         }
 
         private void totalFrame_ValueChanged(object sender, EventArgs e)
@@ -1479,6 +1497,12 @@ namespace Smash_Forge
                 Runtime.renderB = !Runtime.renderB;
             if (e.KeyChar == 'a')
                 Runtime.renderAlpha = !Runtime.renderAlpha;
+        }
+
+        private void ModelViewport_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.G))
+                BatchRenderModels();
         }
 
         private void DrawNutTexAndUvs()
