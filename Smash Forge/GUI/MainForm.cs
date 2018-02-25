@@ -41,7 +41,7 @@ namespace Smash_Forge
         public static string executableDir = null;
         public static csvHashes Hashes;
         public ProgessAlert Progress = new ProgessAlert();
-        public static DiscordController DiscordController = new DiscordController();
+        
 
         public MainForm()
         {
@@ -67,18 +67,10 @@ namespace Smash_Forge
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            DiscordSettings.DiscordController = new DiscordController();
             //This is test code if it gets pushed then rip
-            DiscordController.Initialize();
-            DiscordRpc.UpdatePresence(DiscordController.presence);
-            DiscordController.presence = new DiscordRpc.RichPresence()
-            {
-                smallImageKey = "",
-                smallImageText = "",
-                largeImageKey = "forge",
-                largeImageText = ""
-            };
-            DiscordController.presence.state = "Working on a mod";
-            DiscordRpc.UpdatePresence(DiscordController.presence);
+            DiscordSettings.DiscordController.Initialize();
+            DiscordSettings.Update();
             //end of test code
 
             ThreadStart t = new ThreadStart(Smash_Forge.Update.CheckLatest);

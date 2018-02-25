@@ -304,6 +304,7 @@ namespace Smash_Forge
 
         public static void StartupFromConfig(string config)
         {
+            int temp;
             if (!File.Exists(config)) SaveConfig();
             else
             {
@@ -429,6 +430,14 @@ namespace Smash_Forge
                         case "shieldBubble_color": try { Runtime.shieldBubbleColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "absorbBubble_color": try { Runtime.absorbBubbleColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
                         case "wtSlowdownBubble_color": try { Runtime.wtSlowdownBubbleColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+
+                        //Discord Stuff
+                        case "image_key_mode": int.TryParse(node.InnerText, out temp); DiscordSettings.imageKeyMode = (DiscordSettings.ImageKeyMode)temp; break;
+                        case "user_image_key": DiscordSettings.userPickedImageKey = node.InnerText; break;
+                        case "user_mod_name": DiscordSettings.userNamedMod = node.InnerText; break;
+                        case "use_user_mod_name": bool.TryParse(node.InnerText, out DiscordSettings.useUserModName); break;
+                        case "show_last_opened_file": bool.TryParse(node.InnerText, out DiscordSettings.showLastOpenedFile); break;
+                        case "show_time_elapsed": bool.TryParse(node.InnerText, out DiscordSettings.showTimeElapsed); break;
 
                         case "enabled":
                             if (node.ParentNode != null)
@@ -656,6 +665,18 @@ namespace Smash_Forge
                 XmlNode etcNode = doc.CreateElement("ETC");
                 mainNode.AppendChild(etcNode);
                 etcNode.AppendChild(createNode(doc, "param_dir", paramDir));
+            }
+
+            //Discord settings
+            {
+                XmlNode discordNode = doc.CreateElement("DISCORDSETTINGS");
+                discordNode.AppendChild(createNode(doc, "image_key_mode", ((int)DiscordSettings.imageKeyMode).ToString()));
+                discordNode.AppendChild(createNode(doc, "user_image_key", DiscordSettings.userPickedImageKey));
+                discordNode.AppendChild(createNode(doc, "use_user_mod_name", DiscordSettings.useUserModName.ToString()));
+                discordNode.AppendChild(createNode(doc, "user_mod_name", DiscordSettings.userNamedMod));
+                discordNode.AppendChild(createNode(doc, "show_last_opened_file", DiscordSettings.showLastOpenedFile.ToString()));
+                discordNode.AppendChild(createNode(doc, "show_time_elapsed", DiscordSettings.showTimeElapsed.ToString()));
+                mainNode.AppendChild(discordNode);
             }
 
             doc.Save(MainForm.executableDir + "\\config.xml");
