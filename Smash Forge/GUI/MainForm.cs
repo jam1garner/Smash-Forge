@@ -68,10 +68,9 @@ namespace Smash_Forge
         private void MainForm_Load(object sender, EventArgs e)
         {
             DiscordSettings.DiscordController = new DiscordController();
-            //This is test code if it gets pushed then rip
+            
             DiscordSettings.DiscordController.Initialize();
             DiscordSettings.Update();
-            //end of test code
 
             ThreadStart t = new ThreadStart(Smash_Forge.Update.CheckLatest);
             Thread thread = new Thread(t);
@@ -240,7 +239,9 @@ namespace Smash_Forge
 
             DiscordRpc.Shutdown();
 
-            /*foreach (ModelContainer n in Runtime.ModelContainers)
+            /* Throwback code
+             * 
+            foreach (ModelContainer n in Runtime.ModelContainers)
             {
                 n.Destroy();
             }
@@ -1565,6 +1566,7 @@ namespace Smash_Forge
         public void openFile(string fileName)
         {
             glControl1.MakeCurrent();
+            DiscordSettings.lastFileOpened = Path.GetFileName(fileName);
 
             // Reassigned if a valid model file is opened. 
             ModelViewport mvp = new ModelViewport();

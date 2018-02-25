@@ -438,7 +438,7 @@ namespace Smash_Forge
                         case "use_user_mod_name": bool.TryParse(node.InnerText, out DiscordSettings.useUserModName); break;
                         case "show_last_opened_file": bool.TryParse(node.InnerText, out DiscordSettings.showLastOpenedFile); break;
                         case "show_time_elapsed": bool.TryParse(node.InnerText, out DiscordSettings.showTimeElapsed); break;
-
+                        
                         case "enabled":
                             if (node.ParentNode != null)
                             {

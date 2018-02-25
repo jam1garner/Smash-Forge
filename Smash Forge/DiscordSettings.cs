@@ -48,7 +48,23 @@ namespace Smash_Forge
             }
             else
             {
+                string key = "file";
+                if (lastFileOpened.EndsWith("vbn"))
+                    key = "vbn";
+                if (lastFileOpened.EndsWith("nud"))
+                    key = "nud";
+                if (lastFileOpened.EndsWith("nut"))
+                    key = "nut";
+                if (lastFileOpened.EndsWith("omo") || lastFileOpened.EndsWith("anim") || lastFileOpened.EndsWith("pac"))
+                    key = "big_icon_anim";
 
+                DiscordController.presence = new DiscordRpc.RichPresence()
+                {
+                    smallImageKey = "",
+                    smallImageText = "",
+                    largeImageKey = userPickedImageKey,
+                    largeImageText = ""
+                };
             }
 
             if (!useUserModName)
@@ -58,8 +74,8 @@ namespace Smash_Forge
 
             DiscordRpc.UpdatePresence(DiscordController.presence);
         }
-        
-        // Temporary fields for keeping track of stuff
-        
+
+        //Temporary, don't save to config
+        public static string lastFileOpened = null;
     }
 }
