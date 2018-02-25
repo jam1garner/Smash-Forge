@@ -189,6 +189,8 @@ vec3 TintColor(vec3 diffuseColor, float tintAmount)
 {
     // Approximates an overlay blend mode. Cheaper than converting to HSV/HSL.
     // Normalize the color to avoid color tint making the model darker.
+    if (Luminance(diffuseColor) < 0.0001)
+        return vec3(1);
     vec3 colorTint = mix(vec3(1), (normalize(diffuseColor) * 2), min(tintAmount * 0.5, 1));
     return colorTint;
 }

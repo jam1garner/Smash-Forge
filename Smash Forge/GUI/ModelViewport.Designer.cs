@@ -445,11 +445,13 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.glViewport);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.KeyPreview = true;
             this.Name = "ModelViewport";
             this.Text = "ModelViewport";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ModelViewport_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ModelViewport_FormClosed);
             this.Load += new System.EventHandler(this.ModelViewport_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModelViewport_KeyDown);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ModelViewport_KeyPress);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();

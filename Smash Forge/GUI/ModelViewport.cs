@@ -621,7 +621,35 @@ namespace Smash_Forge
                     ModelContainer modelContainer = (ModelContainer)node;
                     if (modelContainer.NUD.boundingBox[3] > boundingBox[3])
                     {
-                        boundingBox = modelContainer.NUD.boundingBox;
+                        boundingBox[0] = modelContainer.NUD.boundingBox[0];
+                        boundingBox[1] = modelContainer.NUD.boundingBox[1];
+                        boundingBox[2] = modelContainer.NUD.boundingBox[2];
+                        boundingBox[3] = modelContainer.NUD.boundingBox[3];
+
+                        Debug.WriteLine(modelContainer.NUD.boundingBox[3]);
+                    }
+                }
+            }
+
+            // It's possible that only the individual meshes have bounding boxes, so we'll take the max of those.
+            if (boundingBox[3] < 1)
+            {
+                foreach (TreeNode node in MeshList.treeView1.Nodes)
+                {
+                    if (node is ModelContainer)
+                    {
+                        ModelContainer modelContainer = (ModelContainer)node;
+                        
+                        foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
+                        {
+                            if (mesh.boundingBox[3] > boundingBox[3])
+                            {                            
+                                boundingBox[0] = mesh.boundingBox[0];
+                                boundingBox[1] = mesh.boundingBox[1];
+                                boundingBox[2] = mesh.boundingBox[2];
+                                boundingBox[3] = mesh.boundingBox[3];
+                            }
+                        }
                     }
                 }
             }
@@ -798,6 +826,113 @@ namespace Smash_Forge
             CaptureScreen(true).Save(MainForm.executableDir + "\\Render.png");
         }
 
+        private void BatchRenderModels()
+        {
+            // Get the source model folder and then the output folder. 
+            using (var folderSelect = new FolderSelectDialog())
+            {
+                if (folderSelect.ShowDialog() == DialogResult.OK)
+                {
+                    string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*model.nud", SearchOption.AllDirectories);
+
+                    using (var outputFolderSelect = new FolderSelectDialog())
+                    {
+                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
+                        {
+                            for (int i = 0; i < files.Length; i++)
+                            {
+                                OpenAndRenderModel(files[i], i, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OpenAndRenderModel(string fileName, int totalRenderCount, string path, string outputPath)
+        {
+            foreach (TreeNode node in draw)
+            {
+                if (!(node is ModelContainer))
+                    continue;
+
+                LoadNewModelForRender(fileName, node);           
+                SetupNextRender();
+                string renderName = FormatRenderName(fileName, path);
+                CaptureScreen(true).Save(outputPath + "\\" + renderName + "_" + totalRenderCount + ".png");
+            }
+        }
+
+        private void SetupNextRender()
+        {
+            // Setup before rendering the model. 
+            FrameAllModelContainers();
+            Render(null, null);
+            glViewport.SwapBuffers();
+        }
+
+        private static void LoadNewModelForRender(string fileName, TreeNode node)
+        {
+            // Loads the new model. Assumes everything is called model.nud, model.nut, model.vbn.
+            ModelContainer modelContainer = (ModelContainer)node;
+
+            Runtime.TextureContainers.Clear();
+            try
+            {
+                NUT newNut = new NUT(fileName.Replace("nud", "nut"));
+                Runtime.TextureContainers.Add(newNut);
+
+                // Free memory used by OpenTK.
+                modelContainer.NUT.Destroy(); 
+
+                modelContainer.NUT = newNut;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.Message);
+            }
+
+            // Free memory used by OpenTK.
+            modelContainer.Destroy();
+
+            modelContainer.NUD = new NUD(fileName);
+
+            // Read pacs to hide meshes.
+            string[] pacs = Directory.GetFiles(fileName.Replace("model.nud", ""), "*.pac");
+            foreach (string s in pacs)
+            {
+                PAC p = new PAC();
+                p.Read(s);
+                byte[] data;
+                if (p.Files.TryGetValue("display", out data))
+                {
+                    MTA m = new MTA();
+                    m.read(new FileData(data));
+                    modelContainer.NUD.applyMTA(m, 0);
+                }
+                if (p.Files.TryGetValue("default.mta", out data))
+                {
+                    MTA m = new MTA();
+                    m.read(new FileData(data));
+                    modelContainer.NUD.applyMTA(m, 0);
+                }
+            }
+
+            // Not all models have a vbn.
+            if (File.Exists(fileName.Replace("nud", "vbn")))
+                modelContainer.VBN = new VBN(fileName.Replace("nud", "vbn"));
+        }
+
+        private static string FormatRenderName(string fileName, string path)
+        {
+            // Save the render using the folder structure as the name.
+            string renderName = fileName.Replace(path, "");
+            renderName = renderName.Substring(1);
+            renderName = renderName.Replace("\\", "_");
+            renderName = renderName.Replace("model.nud", "");
+            return renderName;
+        }
+
         public Bitmap CaptureScreen(bool saveAlpha)
         {
             int width = glViewport.Width;
@@ -971,6 +1106,7 @@ namespace Smash_Forge
         
         private void ModelViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
+
         }
 
         private void totalFrame_ValueChanged(object sender, EventArgs e)
@@ -1361,6 +1497,12 @@ namespace Smash_Forge
                 Runtime.renderB = !Runtime.renderB;
             if (e.KeyChar == 'a')
                 Runtime.renderAlpha = !Runtime.renderAlpha;
+        }
+
+        private void ModelViewport_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.G))
+                BatchRenderModels();
         }
 
         private void DrawNutTexAndUvs()
