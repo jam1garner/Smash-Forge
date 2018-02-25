@@ -75,6 +75,7 @@
     <Compile Include="ACMDScript.cs" />
     <Compile Include="Animation.cs" />
     <Compile Include="CharacterParamManager.cs" />
+    <Compile Include="DiscordSettings.cs" />
     <Compile Include="Filetypes\Animation\BCHan.cs" />
     <Compile Include="Filetypes\Animation\OMO.cs" />
     <Compile Include="Filetypes\ATKD.cs" />
@@ -119,6 +120,8 @@
     <Compile Include="GUI\Controls\VertexTool.Designer.cs">
       <DependentUpon>VertexTool.cs</DependentUpon>
     </Compile>
+    <Compile Include="lib\DiscordController.cs" />
+    <Compile Include="lib\DiscordRpc.cs" />
     <Compile Include="GUI\EditorBase.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -942,6 +945,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="lib\discord-rpc.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\libg7221_decode.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -92,6 +92,7 @@
             this.RendererLabel = new System.Windows.Forms.Label();
             this.OpenGLVersionLabel = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.swagYCB = new System.Windows.Forms.CheckBox();
             this.drawUvCB = new System.Windows.Forms.CheckBox();
             this.areaLightBoundingBoxCB = new System.Windows.Forms.CheckBox();
             this.renderGeneralShapesCB = new System.Windows.Forms.CheckBox();
@@ -149,7 +150,7 @@
             this.reflectionCB = new System.Windows.Forms.CheckBox();
             this.useNormCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.swagYCB = new System.Windows.Forms.CheckBox();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -662,8 +663,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3,
-            listViewItem4});
+            listViewItem1,
+            listViewItem2});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -865,6 +866,17 @@
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Display Settings";
+            // 
+            // swagYCB
+            // 
+            this.swagYCB.AutoSize = true;
+            this.swagYCB.Location = new System.Drawing.Point(134, 112);
+            this.swagYCB.Name = "swagYCB";
+            this.swagYCB.Size = new System.Drawing.Size(104, 17);
+            this.swagYCB.TabIndex = 29;
+            this.swagYCB.Text = "Animate Swag Y";
+            this.swagYCB.UseVisualStyleBackColor = true;
+            this.swagYCB.CheckedChanged += new System.EventHandler(this.swagYCB_CheckedChanged);
             // 
             // drawUvCB
             // 
@@ -1527,22 +1539,21 @@
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(564, 698);
             this.tabControl1.TabIndex = 17;
             // 
-            // swagYCB
+            // tabPage3
             // 
-            this.swagYCB.AutoSize = true;
-            this.swagYCB.Location = new System.Drawing.Point(134, 112);
-            this.swagYCB.Name = "swagYCB";
-            this.swagYCB.Size = new System.Drawing.Size(104, 17);
-            this.swagYCB.TabIndex = 29;
-            this.swagYCB.Text = "Animate Swag Y";
-            this.swagYCB.UseVisualStyleBackColor = true;
-            this.swagYCB.CheckedChanged += new System.EventHandler(this.swagYCB_CheckedChanged);
+            this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(556, 672);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Discord Rich Presence";
             // 
             // RenderSettings
             // 
@@ -1712,5 +1723,6 @@
         private System.Windows.Forms.PictureBox pbHitboxAnglesColor;
         private System.Windows.Forms.CheckBox drawUvCB;
         private System.Windows.Forms.CheckBox swagYCB;
+        private System.Windows.Forms.TabPage tabPage3;
     }
 }
