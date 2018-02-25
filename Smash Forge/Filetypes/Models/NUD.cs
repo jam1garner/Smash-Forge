@@ -2258,7 +2258,7 @@ namespace Smash_Forge
                 // Copies all the texture IDs from the source material to the current material. 
                 // This is useful for preserving Tex IDs when using a preset or changing flags. 
 
-                for (int i = 0; i < textures.Count; i++)
+                for (int i = 0; i < Math.Min(textures.Count, other.textures.Count); i++)
                 {
                     if (hasDiffuse)
                     {
