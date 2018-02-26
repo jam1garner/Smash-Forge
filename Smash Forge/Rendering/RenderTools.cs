@@ -21,6 +21,9 @@ namespace Smash_Forge.Rendering
         public static int uvTestPattern;
         public static int boneWeightGradient;
         public static int boneWeightGradient2;
+        public static int pokemonStadiumDummyTex;
+        public static int punchOutDummyTex;
+        public static int shadowMapDummyTex;
 
         public static int cubeVAO, cubeVBO;
 
@@ -32,6 +35,9 @@ namespace Smash_Forge.Rendering
                 cubeMapHigh = LoadCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
                 cubeMapLow = LoadCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
                 dummyRamp = NUT.loadImage(Properties.Resources._10080000);
+                pokemonStadiumDummyTex = NUT.loadImage(Properties.Resources._10040001);
+                punchOutDummyTex = NUT.loadImage(Properties.Resources._10040000);
+                shadowMapDummyTex = NUT.loadImage(Properties.Resources._10100000);
 
                 // Helpful textures. 
                 uvTestPattern = NUT.loadImage(Properties.Resources.UVPattern);

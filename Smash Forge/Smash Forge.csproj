@@ -966,6 +966,9 @@
     <Content Include="lib\SALT.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\_10100000.png" />
+    <None Include="Resources\_10040001.png" />
+    <None Include="Resources\_10040000.png" />
     <None Include="Resources\strip_sca.png" />
     <None Include="Resources\strip_rot.png" />
     <None Include="Resources\strip_pos.png" />

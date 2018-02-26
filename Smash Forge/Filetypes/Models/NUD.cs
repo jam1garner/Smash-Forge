@@ -101,7 +101,10 @@ namespace Smash_Forge
         {
             StageMapLow = 0x10101000,
             StageMapHigh = 0x10102000,
-            DummyRamp = 0x10080000
+            PokemonStadium = 0x10040001,
+            PunchOut = 0x10040000,
+            DummyRamp = 0x10080000,
+            ShadowMap = 0x10100000
         }
 
         public enum LightSetColors
@@ -1003,6 +1006,24 @@ namespace Smash_Forge
             {
                 GL.ActiveTexture(TextureUnit.Texture20 + loc);
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.dummyRamp);
+                return 20 + loc;
+            }
+            if (hash == (int)DummyTextures.PokemonStadium)
+            {
+                GL.ActiveTexture(TextureUnit.Texture20 + loc);
+                GL.BindTexture(TextureTarget.Texture2D, RenderTools.pokemonStadiumDummyTex);
+                return 20 + loc;
+            }
+            if (hash == (int)DummyTextures.PunchOut)
+            {
+                GL.ActiveTexture(TextureUnit.Texture20 + loc);
+                GL.BindTexture(TextureTarget.Texture2D, RenderTools.punchOutDummyTex);
+                return 20 + loc;
+            }
+            if (hash == (int)DummyTextures.ShadowMap)
+            {
+                GL.ActiveTexture(TextureUnit.Texture20 + loc);
+                GL.BindTexture(TextureTarget.Texture2D, RenderTools.shadowMapDummyTex);
                 return 20 + loc;
             }
             GL.ActiveTexture(TextureUnit.Texture3 + loc);
