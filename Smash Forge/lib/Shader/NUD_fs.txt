@@ -363,7 +363,9 @@ vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixInt
 
 	reflectionPass += SphereMapColor(normal.xyz) * reflectionColor.xyz * tintColor;
 
-
+    // It sort of conserves energy for low values.
+    reflectionPass -= 0.5 * Luminance(diffuseMap.rgb);
+    reflectionPass = max(vec3(0), reflectionPass);
 
     reflectionPass *= mix(aoMap, 1, aoMixIntensity);
     reflectionPass *= refLightColor;
@@ -414,7 +416,7 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixInten
     if ((flags & 0x00E10000u) == 0x00E10000u)
         specColorTotal *= 0;
 
-    // It sort of conserves energy but only for very low specular values.
+    // It sort of conserves energy for low values.
     specularPass += max(specColorTotal - vec3(0.5 * Luminance(diffuseMap.rgb)), vec3(0));
 
     specularPass *= mix(aoMap, 1, aoMixIntensity);
