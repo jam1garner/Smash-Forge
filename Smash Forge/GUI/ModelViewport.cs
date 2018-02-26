@@ -619,39 +619,29 @@ namespace Smash_Forge
                 if (node is ModelContainer)
                 {
                     ModelContainer modelContainer = (ModelContainer)node;
+
+                    // Use the main bounding box for the NUD.
                     if (modelContainer.NUD.boundingBox[3] > boundingBox[3])
                     {
                         boundingBox[0] = modelContainer.NUD.boundingBox[0];
                         boundingBox[1] = modelContainer.NUD.boundingBox[1];
                         boundingBox[2] = modelContainer.NUD.boundingBox[2];
                         boundingBox[3] = modelContainer.NUD.boundingBox[3];
-
-                        Debug.WriteLine(modelContainer.NUD.boundingBox[3]);
                     }
-                }
-            }
 
-            // It's possible that only the individual meshes have bounding boxes, so we'll take the max of those.
-            if (boundingBox[3] < 1)
-            {
-                foreach (TreeNode node in MeshList.treeView1.Nodes)
-                {
-                    if (node is ModelContainer)
+                    // It's possible that only the individual meshes have bounding boxes.
+                    foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
                     {
-                        ModelContainer modelContainer = (ModelContainer)node;
-                        
-                        foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
+                        if (mesh.boundingBox[3] > boundingBox[3])
                         {
-                            if (mesh.boundingBox[3] > boundingBox[3])
-                            {                            
-                                boundingBox[0] = mesh.boundingBox[0];
-                                boundingBox[1] = mesh.boundingBox[1];
-                                boundingBox[2] = mesh.boundingBox[2];
-                                boundingBox[3] = mesh.boundingBox[3];
-                            }
+                            boundingBox[0] = mesh.boundingBox[0];
+                            boundingBox[1] = mesh.boundingBox[1];
+                            boundingBox[2] = mesh.boundingBox[2];
+                            boundingBox[3] = mesh.boundingBox[3];
                         }
                     }
                 }
+
             }
 
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
