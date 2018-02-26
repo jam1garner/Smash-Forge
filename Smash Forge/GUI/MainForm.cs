@@ -41,7 +41,7 @@ namespace Smash_Forge
         public static string executableDir = null;
         public static csvHashes Hashes;
         public ProgessAlert Progress = new ProgessAlert();
-        
+        public static DockPanel dockPanel;
 
         public MainForm()
         {
@@ -57,7 +57,8 @@ namespace Smash_Forge
         private void AppIdle(object sender, EventArgs e)
         {
             if (Smash_Forge.Update.Downloaded)
-                MainForm.Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
+                Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
+            DiscordSettings.Update();
         }
 
         ~MainForm()
@@ -67,6 +68,8 @@ namespace Smash_Forge
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            DiscordSettings.startTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            dockPanel = dockPanel1;
             DiscordSettings.DiscordController = new DiscordController();
             
             DiscordSettings.DiscordController.Initialize();
@@ -141,6 +144,7 @@ namespace Smash_Forge
             openFiles();
 
             Runtime.StartupFromConfig(MainForm.executableDir + "\\config.xml");
+            DiscordSettings.Update();
 
             ShaderTools.SetupShaders();
         }

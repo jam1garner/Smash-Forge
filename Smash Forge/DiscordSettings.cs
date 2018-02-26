@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Smash_Forge
 {
@@ -20,7 +21,7 @@ namespace Smash_Forge
         public static string userPickedImageKey = "forge";
         public static bool useUserModName;
         public static string userNamedMod = "ModNameHere";
-        public static bool showLastOpenedFile;
+        public static bool showCurrentWindow;
         public static bool showTimeElapsed;
         public static DiscordController DiscordController;
 
@@ -62,7 +63,7 @@ namespace Smash_Forge
                 {
                     smallImageKey = "",
                     smallImageText = "",
-                    largeImageKey = userPickedImageKey,
+                    largeImageKey = key,
                     largeImageText = ""
                 };
             }
@@ -72,10 +73,23 @@ namespace Smash_Forge
             else
                 DiscordController.presence.state = $"Working on {userNamedMod}";
 
+            if (showCurrentWindow)
+            {
+                if (MainForm.dockPanel.ActiveContent != null)
+                {
+                    string tabName = ((DockContent)MainForm.dockPanel.ActiveContent).Text;
+                    DiscordController.presence.details = $"{tabName}";
+                }
+            }
+
+            if (showTimeElapsed)
+                DiscordController.presence.startTimestamp = startTime;
+            
             DiscordRpc.UpdatePresence(DiscordController.presence);
         }
 
         //Temporary, don't save to config
         public static string lastFileOpened = null;
+        public static long startTime;
     }
 }

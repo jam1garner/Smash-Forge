@@ -436,7 +436,7 @@ namespace Smash_Forge
                         case "user_image_key": DiscordSettings.userPickedImageKey = node.InnerText; break;
                         case "user_mod_name": DiscordSettings.userNamedMod = node.InnerText; break;
                         case "use_user_mod_name": bool.TryParse(node.InnerText, out DiscordSettings.useUserModName); break;
-                        case "show_last_opened_file": bool.TryParse(node.InnerText, out DiscordSettings.showLastOpenedFile); break;
+                        case "show_current_window": bool.TryParse(node.InnerText, out DiscordSettings.showCurrentWindow); break;
                         case "show_time_elapsed": bool.TryParse(node.InnerText, out DiscordSettings.showTimeElapsed); break;
                         
                         case "enabled":
@@ -674,7 +674,7 @@ namespace Smash_Forge
                 discordNode.AppendChild(createNode(doc, "user_image_key", DiscordSettings.userPickedImageKey));
                 discordNode.AppendChild(createNode(doc, "use_user_mod_name", DiscordSettings.useUserModName.ToString()));
                 discordNode.AppendChild(createNode(doc, "user_mod_name", DiscordSettings.userNamedMod));
-                discordNode.AppendChild(createNode(doc, "show_last_opened_file", DiscordSettings.showLastOpenedFile.ToString()));
+                discordNode.AppendChild(createNode(doc, "show_current_window", DiscordSettings.showCurrentWindow.ToString()));
                 discordNode.AppendChild(createNode(doc, "show_time_elapsed", DiscordSettings.showTimeElapsed.ToString()));
                 mainNode.AppendChild(discordNode);
             }
