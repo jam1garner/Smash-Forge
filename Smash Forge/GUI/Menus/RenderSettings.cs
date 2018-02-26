@@ -76,12 +76,18 @@ namespace Smash_Forge.GUI
             pbAbsorbColor.BackColor = Runtime.absorbBubbleColor;
             pbShieldColor.BackColor = Runtime.shieldBubbleColor;
 
-            // Discord Settings
-            customComboBox.SelectedIndex = customComboBox.Items.IndexOf(DiscordSettings.userNamedMod);
-            customRadioButton.Checked = (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.UserPicked);
-            customComboBox.Enabled = (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.UserPicked);
-            defaultRadioButton.Checked = (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.Default);
-            filenameRadioButton.Checked = (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.LastFileOpened);
+            // Discord Settings        
+            if (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.UserPicked)
+            {
+                customRadioButton.Checked = true;
+                customComboBox.Enabled = true;
+            }
+            else if (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.Default)
+                defaultRadioButton.Checked = true;
+            else if (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.LastFileOpened)
+                filenameRadioButton.Checked = true;
+
+            customComboBox.SelectedIndex = customComboBox.Items.IndexOf(DiscordSettings.userPickedImageKey);
             modNameTextBox.Text = DiscordSettings.userNamedMod;
             timeElapsedCheckbox.Checked = DiscordSettings.showTimeElapsed;
             showActiveWindowCheckbox.Checked = DiscordSettings.showCurrentWindow;
