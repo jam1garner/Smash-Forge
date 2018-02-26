@@ -580,10 +580,44 @@ namespace Smash_Forge
             {
                 FrameSelectedPolygon();
             }
+            else if (MeshList.treeView1.SelectedNode is ModelContainer)
+            {
+                FrameSelectedModelContainer();
+            }
             else
             {
                 FrameAllModelContainers();
             }
+        }
+
+        private void FrameSelectedModelContainer()
+        {
+            ModelContainer modelContainer = (ModelContainer)MeshList.treeView1.SelectedNode;
+            float[] boundingBox = new float[] { 0, 0, 0, 0 };
+
+            // Use the main bounding box for the NUD.
+            if (modelContainer.NUD.boundingBox[3] > boundingBox[3])
+            {
+                boundingBox[0] = modelContainer.NUD.boundingBox[0];
+                boundingBox[1] = modelContainer.NUD.boundingBox[1];
+                boundingBox[2] = modelContainer.NUD.boundingBox[2];
+                boundingBox[3] = modelContainer.NUD.boundingBox[3];
+            }
+
+            // It's possible that only the individual meshes have bounding boxes.
+            foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
+            {
+                if (mesh.boundingBox[3] > boundingBox[3])
+                {
+                    boundingBox[0] = mesh.boundingBox[0];
+                    boundingBox[1] = mesh.boundingBox[1];
+                    boundingBox[2] = mesh.boundingBox[2];
+                    boundingBox[3] = mesh.boundingBox[3];
+                }
+            }
+
+            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.Update();
         }
 
         private void FrameSelectedMesh()
@@ -612,6 +646,7 @@ namespace Smash_Forge
 
         private void FrameAllModelContainers()
         {
+            float maxBoundingRadius = 5000;
             // Find the max NUD bounding box for all models. 
             float[] boundingBox = new float[] { 0, 0, 0, 0 };
             foreach (TreeNode node in MeshList.treeView1.Nodes)
@@ -621,7 +656,7 @@ namespace Smash_Forge
                     ModelContainer modelContainer = (ModelContainer)node;
 
                     // Use the main bounding box for the NUD.
-                    if (modelContainer.NUD.boundingBox[3] > boundingBox[3])
+                    if (modelContainer.NUD.boundingBox[3] > boundingBox[3] && modelContainer.NUD.boundingBox[3] < maxBoundingRadius)
                     {
                         boundingBox[0] = modelContainer.NUD.boundingBox[0];
                         boundingBox[1] = modelContainer.NUD.boundingBox[1];
@@ -632,7 +667,7 @@ namespace Smash_Forge
                     // It's possible that only the individual meshes have bounding boxes.
                     foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
                     {
-                        if (mesh.boundingBox[3] > boundingBox[3])
+                        if (mesh.boundingBox[3] > boundingBox[3] && mesh.boundingBox[3] < maxBoundingRadius)
                         {
                             boundingBox[0] = mesh.boundingBox[0];
                             boundingBox[1] = mesh.boundingBox[1];
@@ -643,6 +678,8 @@ namespace Smash_Forge
                 }
 
             }
+
+            Debug.WriteLine("Bounding box: " + boundingBox[3]);
 
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
