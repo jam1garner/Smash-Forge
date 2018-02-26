@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -151,6 +151,15 @@
             this.useNormCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.defaultRadioButton = new System.Windows.Forms.RadioButton();
+            this.customRadioButton = new System.Windows.Forms.RadioButton();
+            this.filenameRadioButton = new System.Windows.Forms.RadioButton();
+            this.customComboBox = new System.Windows.Forms.ComboBox();
+            this.userModCheckbox = new System.Windows.Forms.CheckBox();
+            this.modNameTextBox = new System.Windows.Forms.TextBox();
+            this.showActiveWindowCheckbox = new System.Windows.Forms.CheckBox();
+            this.timeElapsedCheckbox = new System.Windows.Forms.CheckBox();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -176,6 +185,8 @@
             this.groupBox5.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabPage2
@@ -663,8 +674,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2});
+            listViewItem7,
+            listViewItem8});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -1549,11 +1560,127 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage3.Controls.Add(this.timeElapsedCheckbox);
+            this.tabPage3.Controls.Add(this.showActiveWindowCheckbox);
+            this.tabPage3.Controls.Add(this.modNameTextBox);
+            this.tabPage3.Controls.Add(this.userModCheckbox);
+            this.tabPage3.Controls.Add(this.groupBox7);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(556, 672);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Discord Rich Presence";
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.customComboBox);
+            this.groupBox7.Controls.Add(this.filenameRadioButton);
+            this.groupBox7.Controls.Add(this.customRadioButton);
+            this.groupBox7.Controls.Add(this.defaultRadioButton);
+            this.groupBox7.Location = new System.Drawing.Point(14, 12);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(248, 100);
+            this.groupBox7.TabIndex = 0;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Image Mode";
+            // 
+            // defaultRadioButton
+            // 
+            this.defaultRadioButton.AutoSize = true;
+            this.defaultRadioButton.Checked = true;
+            this.defaultRadioButton.Location = new System.Drawing.Point(6, 19);
+            this.defaultRadioButton.Name = "defaultRadioButton";
+            this.defaultRadioButton.Size = new System.Drawing.Size(59, 17);
+            this.defaultRadioButton.TabIndex = 0;
+            this.defaultRadioButton.TabStop = true;
+            this.defaultRadioButton.Text = "Default";
+            this.defaultRadioButton.UseVisualStyleBackColor = true;
+            this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
+            // 
+            // customRadioButton
+            // 
+            this.customRadioButton.AutoSize = true;
+            this.customRadioButton.Location = new System.Drawing.Point(6, 42);
+            this.customRadioButton.Name = "customRadioButton";
+            this.customRadioButton.Size = new System.Drawing.Size(60, 17);
+            this.customRadioButton.TabIndex = 1;
+            this.customRadioButton.Text = "Custom";
+            this.customRadioButton.UseVisualStyleBackColor = true;
+            this.customRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
+            // 
+            // filenameRadioButton
+            // 
+            this.filenameRadioButton.AutoSize = true;
+            this.filenameRadioButton.Location = new System.Drawing.Point(6, 65);
+            this.filenameRadioButton.Name = "filenameRadioButton";
+            this.filenameRadioButton.Size = new System.Drawing.Size(82, 17);
+            this.filenameRadioButton.TabIndex = 2;
+            this.filenameRadioButton.Text = "By Filename";
+            this.filenameRadioButton.UseVisualStyleBackColor = true;
+            this.filenameRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
+            // 
+            // customComboBox
+            // 
+            this.customComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.customComboBox.Enabled = false;
+            this.customComboBox.FormattingEnabled = true;
+            this.customComboBox.Items.AddRange(new object[] {
+            "forge",
+            "file",
+            "mario",
+            "mesh",
+            "nud",
+            "nut",
+            "vbn",
+            "sexy_green_down_arrow",
+            "default_texture",
+            "big_icon_anim"});
+            this.customComboBox.Location = new System.Drawing.Point(95, 41);
+            this.customComboBox.Name = "customComboBox";
+            this.customComboBox.Size = new System.Drawing.Size(134, 21);
+            this.customComboBox.TabIndex = 3;
+            this.customComboBox.SelectedIndexChanged += new System.EventHandler(this.customImageKeyChange);
+            // 
+            // userModCheckbox
+            // 
+            this.userModCheckbox.AutoSize = true;
+            this.userModCheckbox.Location = new System.Drawing.Point(14, 128);
+            this.userModCheckbox.Name = "userModCheckbox";
+            this.userModCheckbox.Size = new System.Drawing.Size(121, 17);
+            this.userModCheckbox.TabIndex = 1;
+            this.userModCheckbox.Text = "Display Working on ";
+            this.userModCheckbox.UseVisualStyleBackColor = true;
+            this.userModCheckbox.CheckedChanged += new System.EventHandler(this.userModCheckbox_CheckedChanged);
+            // 
+            // modNameTextBox
+            // 
+            this.modNameTextBox.Location = new System.Drawing.Point(131, 125);
+            this.modNameTextBox.Name = "modNameTextBox";
+            this.modNameTextBox.Size = new System.Drawing.Size(113, 20);
+            this.modNameTextBox.TabIndex = 2;
+            this.modNameTextBox.TextChanged += new System.EventHandler(this.modNameTextBox_TextChanged);
+            // 
+            // showActiveWindowCheckbox
+            // 
+            this.showActiveWindowCheckbox.AutoSize = true;
+            this.showActiveWindowCheckbox.Location = new System.Drawing.Point(14, 156);
+            this.showActiveWindowCheckbox.Name = "showActiveWindowCheckbox";
+            this.showActiveWindowCheckbox.Size = new System.Drawing.Size(128, 17);
+            this.showActiveWindowCheckbox.TabIndex = 3;
+            this.showActiveWindowCheckbox.Text = "Show Active Window";
+            this.showActiveWindowCheckbox.UseVisualStyleBackColor = true;
+            this.showActiveWindowCheckbox.CheckedChanged += new System.EventHandler(this.discordCheckChanged);
+            // 
+            // timeElapsedCheckbox
+            // 
+            this.timeElapsedCheckbox.AutoSize = true;
+            this.timeElapsedCheckbox.Location = new System.Drawing.Point(14, 182);
+            this.timeElapsedCheckbox.Name = "timeElapsedCheckbox";
+            this.timeElapsedCheckbox.Size = new System.Drawing.Size(154, 17);
+            this.timeElapsedCheckbox.TabIndex = 4;
+            this.timeElapsedCheckbox.Text = "Show Time Spent Modding";
+            this.timeElapsedCheckbox.UseVisualStyleBackColor = true;
+            this.timeElapsedCheckbox.CheckedChanged += new System.EventHandler(this.discordCheckChanged);
             // 
             // RenderSettings
             // 
@@ -1597,6 +1724,10 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.tabControl1.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1724,5 +1855,14 @@
         private System.Windows.Forms.CheckBox drawUvCB;
         private System.Windows.Forms.CheckBox swagYCB;
         private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.RadioButton filenameRadioButton;
+        private System.Windows.Forms.RadioButton customRadioButton;
+        private System.Windows.Forms.RadioButton defaultRadioButton;
+        private System.Windows.Forms.ComboBox customComboBox;
+        private System.Windows.Forms.CheckBox userModCheckbox;
+        private System.Windows.Forms.TextBox modNameTextBox;
+        private System.Windows.Forms.CheckBox timeElapsedCheckbox;
+        private System.Windows.Forms.CheckBox showActiveWindowCheckbox;
     }
 }

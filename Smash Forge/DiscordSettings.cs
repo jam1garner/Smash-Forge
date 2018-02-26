@@ -84,7 +84,6 @@ namespace Smash_Forge
 
             if (showTimeElapsed)
                 DiscordController.presence.startTimestamp = startTime;
-            
             DiscordRpc.UpdatePresence(DiscordController.presence);
         }
 

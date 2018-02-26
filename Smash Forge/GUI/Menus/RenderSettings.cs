@@ -76,6 +76,18 @@ namespace Smash_Forge.GUI
             pbAbsorbColor.BackColor = Runtime.absorbBubbleColor;
             pbShieldColor.BackColor = Runtime.shieldBubbleColor;
 
+            // Discord Settings
+            customComboBox.SelectedIndex = customComboBox.Items.IndexOf(DiscordSettings.userNamedMod);
+            customRadioButton.Checked = (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.UserPicked);
+            customComboBox.Enabled = (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.UserPicked);
+            defaultRadioButton.Checked = (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.Default);
+            filenameRadioButton.Checked = (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.LastFileOpened);
+            modNameTextBox.Text = DiscordSettings.userNamedMod;
+            timeElapsedCheckbox.Checked = DiscordSettings.showTimeElapsed;
+            showActiveWindowCheckbox.Checked = DiscordSettings.showCurrentWindow;
+            userModCheckbox.Checked = DiscordSettings.useUserModName;
+
+
             // LVD Settings
             renderLvdCB.Checked = Runtime.renderLVD;
             renderCollisionsCB.Checked = Runtime.renderCollisions;
@@ -764,6 +776,43 @@ namespace Smash_Forge.GUI
         private void swagYCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderSwagY = swagYCB.Checked;
+        }
+
+        private void imageModeChanged(object sender, EventArgs e)
+        {
+            customComboBox.Enabled = (sender == customRadioButton);
+            if (sender == defaultRadioButton)
+                DiscordSettings.imageKeyMode = DiscordSettings.ImageKeyMode.Default;
+            else if (sender == customRadioButton)
+                DiscordSettings.imageKeyMode = DiscordSettings.ImageKeyMode.UserPicked;
+            else if (sender == filenameRadioButton)
+                DiscordSettings.imageKeyMode = DiscordSettings.ImageKeyMode.LastFileOpened;
+            DiscordSettings.Update();
+        }
+
+        private void customImageKeyChange(object sender, EventArgs e)
+        {
+            DiscordSettings.userPickedImageKey = customComboBox.Text;
+            DiscordSettings.Update();
+        }
+
+        private void userModCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            modNameTextBox.Enabled = userModCheckbox.Checked;
+            DiscordSettings.useUserModName = userModCheckbox.Checked;
+        }
+
+        private void discordCheckChanged(object sender, EventArgs e)
+        {
+            if (sender == showActiveWindowCheckbox)
+                DiscordSettings.showCurrentWindow = showActiveWindowCheckbox.Checked;
+            if (sender == timeElapsedCheckbox)
+                DiscordSettings.showTimeElapsed = timeElapsedCheckbox.Checked;
+        }
+
+        private void modNameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            DiscordSettings.userNamedMod = modNameTextBox.Text;
         }
     }
 }
