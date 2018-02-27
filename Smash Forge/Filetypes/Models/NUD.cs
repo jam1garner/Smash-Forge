@@ -2030,6 +2030,46 @@ namespace Smash_Forge
                 Nodes.Add(nmesh[n]);
             }
         }
+
+        public void ChangeTextureIds(int newTexId)
+        {
+            foreach (Mesh mesh in Nodes)
+            {
+                foreach (Polygon polygon in mesh.Nodes)
+                {
+                    foreach (Material material in polygon.materials)
+                    {
+                        foreach (MatTexture matTexture in material.textures)
+                        {
+                            // Only change the first 3 bytes.
+                            matTexture.hash = matTexture.hash & 0xFF;
+                            int first3Bytes = (int)(newTexId & 0xFFFFFF00);
+                            matTexture.hash = matTexture.hash | first3Bytes;
+                        }
+                    }
+                }
+            }
+        }
+
+        public int GetFirstTexId()
+        {
+            foreach (Mesh m in Nodes)
+            {
+                foreach (Polygon poly in m.Nodes)
+                {
+                    foreach (Material mat in poly.materials)
+                    {
+                        foreach (MatTexture matTex in mat.textures)
+                        {
+                            return matTex.hash;
+                        }
+                    }
+                }
+            }
+
+            return 0;
+        }
+
         #endregion
 
         #region ClassStructure

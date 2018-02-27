@@ -695,6 +695,47 @@ namespace Smash_Forge
             return false;
         }
 
+        public void ChangeTextureIds(int newTexId)
+        {
+            // Check if tex ID fixing would cause any naming conflicts. 
+            if (TexIdDuplicate4thByte())
+            {
+                MessageBox.Show("The first six digits should be the same for all textures to prevent duplicate IDs after changing the Tex ID.",
+                    "Duplicate Texture ID");
+                return;
+            }
+
+            foreach (NUT_Texture tex in Nodes)
+            {
+                int originalTexture = draw[tex.HASHID];
+                draw.Remove(tex.HASHID);
+
+                // Only change the first 3 bytes.
+                tex.HASHID = tex.HASHID & 0xFF;
+                int first3Bytes = (int)(newTexId & 0xFFFFFF00);
+                tex.HASHID = tex.HASHID | first3Bytes;
+
+                draw.Add(tex.HASHID, originalTexture);
+            }
+        }
+
+        public bool TexIdDuplicate4thByte()
+        {
+            // Check for duplicates. 
+            List<byte> previous4thBytes = new List<byte>();
+            foreach (NUT_Texture tex in Nodes)
+            {
+                byte fourthByte = (byte) (tex.HASHID & 0xFF);
+                if (!(previous4thBytes.Contains(fourthByte)))
+                    previous4thBytes.Add(fourthByte);
+                else
+                    return true;
+                    
+            }
+
+            return false;
+        }
+
         public void Destroy()
         {
             foreach (var kv in draw)

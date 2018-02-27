@@ -85,6 +85,7 @@
             this.exportAsXMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importFromXMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.useAOAsSpecToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.texIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.addBlankMeshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.smoothNormalsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -107,9 +108,8 @@
             this.mergeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.belowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.texIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.texIDNUDNUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -530,7 +530,7 @@
             this.openEditToolStripMenuItem,
             this.vertexColorToolStripMenuItem2});
             this.nudContextMenu.Name = "nudContextMenu";
-            this.nudContextMenu.Size = new System.Drawing.Size(210, 208);
+            this.nudContextMenu.Size = new System.Drawing.Size(210, 230);
             // 
             // saveToolStripMenuItem
             // 
@@ -577,6 +577,13 @@
             this.useAOAsSpecToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
             this.useAOAsSpecToolStripMenuItem.Text = "AO Spec/Ref Blend";
             this.useAOAsSpecToolStripMenuItem.Click += new System.EventHandler(this.useAOAsSpecToolStripMenuItem_Click);
+            // 
+            // texIDToolStripMenuItem
+            // 
+            this.texIDToolStripMenuItem.Name = "texIDToolStripMenuItem";
+            this.texIDToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
+            this.texIDToolStripMenuItem.Text = "Tex ID";
+            this.texIDToolStripMenuItem.Click += new System.EventHandler(this.texIDToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -706,7 +713,7 @@
             this.mergeToolStripMenuItem,
             this.texIDNUDNUTToolStripMenuItem});
             this.ModelContainerContextMenu.Name = "MCContextMenu";
-            this.ModelContainerContextMenu.Size = new System.Drawing.Size(167, 114);
+            this.ModelContainerContextMenu.Size = new System.Drawing.Size(167, 92);
             // 
             // importFromDAEToolStripMenuItem
             // 
@@ -745,6 +752,13 @@
             this.aboveToolStripMenuItem.Text = "Above";
             this.aboveToolStripMenuItem.Click += new System.EventHandler(this.aboveToolStripMenuItem_Click_1);
             // 
+            // texIDNUDNUTToolStripMenuItem
+            // 
+            this.texIDNUDNUTToolStripMenuItem.Name = "texIDNUDNUTToolStripMenuItem";
+            this.texIDNUDNUTToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.texIDNUDNUTToolStripMenuItem.Text = "Tex ID NUD/NUT";
+            this.texIDNUDNUTToolStripMenuItem.Click += new System.EventHandler(this.texIDNUDNUTToolStripMenuItem_Click);
+            // 
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -757,20 +771,6 @@
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model List";
-            // 
-            // texIDToolStripMenuItem
-            // 
-            this.texIDToolStripMenuItem.Name = "texIDToolStripMenuItem";
-            this.texIDToolStripMenuItem.Size = new System.Drawing.Size(174, 22);
-            this.texIDToolStripMenuItem.Text = "Tex ID";
-            this.texIDToolStripMenuItem.Click += new System.EventHandler(this.texIDToolStripMenuItem_Click);
-            // 
-            // texIDNUDNUTToolStripMenuItem
-            // 
-            this.texIDNUDNUTToolStripMenuItem.Name = "texIDNUDNUTToolStripMenuItem";
-            this.texIDNUDNUTToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
-            this.texIDNUDNUTToolStripMenuItem.Text = "Tex ID NUD/NUT";
-            this.texIDNUDNUTToolStripMenuItem.Click += new System.EventHandler(this.texIDNUDNUTToolStripMenuItem_Click);
             // 
             // MeshList
             // 

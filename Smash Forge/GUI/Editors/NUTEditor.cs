@@ -725,22 +725,16 @@ namespace Smash_Forge
         {
             if (NUT != null)
             {
-                // TODO: Check if tex id fixing would cause any naming conflicts. 
+                if (NUT.Nodes.Count == 0)
+                    return;
 
                 using (var texIdSelector = new TexIdSelector())
                 {
-                    if (NUT.Nodes.Count == 0)
-                        return;
-                    int hash = ((NUT_Texture)NUT.Nodes[0]).HASHID;
-
-                    texIdSelector.Set(hash);
+                    texIdSelector.Set(((NUT_Texture)NUT.Nodes[0]).HASHID);
                     texIdSelector.ShowDialog();
                     if (texIdSelector.exitStatus == TexIdSelector.ExitStatus.Opened)
                     {
-
-                        // TODO: Actually apply the Id to all the textures in the nut.
-                        int newTexId = texIdSelector.getNewTexId();
-
+                        NUT.ChangeTextureIds(texIdSelector.getNewTexId());
                         FillForm();
                         Edited = true;
                     }
