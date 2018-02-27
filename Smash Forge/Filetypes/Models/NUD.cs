@@ -2041,6 +2041,10 @@ namespace Smash_Forge
                     {
                         foreach (MatTexture matTexture in material.textures)
                         {
+                            // Don't change dummy texture IDs.
+                            if (Enum.IsDefined(typeof(DummyTextures), matTexture.hash))
+                                continue;
+
                             // Only change the first 3 bytes.
                             matTexture.hash = matTexture.hash & 0xFF;
                             int first3Bytes = (int)(newTexId & 0xFFFFFF00);

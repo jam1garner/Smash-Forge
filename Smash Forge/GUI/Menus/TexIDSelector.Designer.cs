@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TexIdSelector));
             this.typeComboBox = new System.Windows.Forms.ComboBox();
             this.characterComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -38,11 +39,14 @@
             this.typeTB = new System.Windows.Forms.TextBox();
             this.slotUD = new System.Windows.Forms.NumericUpDown();
             this.charTB = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.slotUD)).BeginInit();
             this.SuspendLayout();
             // 
             // typeComboBox
             // 
+            this.typeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.typeComboBox.FormattingEnabled = true;
             this.typeComboBox.Location = new System.Drawing.Point(73, 37);
             this.typeComboBox.Name = "typeComboBox";
@@ -52,6 +56,7 @@
             // 
             // characterComboBox
             // 
+            this.characterComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.characterComboBox.FormattingEnabled = true;
             this.characterComboBox.Location = new System.Drawing.Point(73, 65);
             this.characterComboBox.Name = "characterComboBox";
@@ -97,7 +102,7 @@
             // 
             // applyButton
             // 
-            this.applyButton.Location = new System.Drawing.Point(73, 128);
+            this.applyButton.Location = new System.Drawing.Point(73, 122);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(75, 23);
             this.applyButton.TabIndex = 7;
@@ -107,10 +112,11 @@
             // 
             // typeTB
             // 
-            this.typeTB.Location = new System.Drawing.Point(193, 37);
+            this.typeTB.Location = new System.Drawing.Point(226, 37);
             this.typeTB.Name = "typeTB";
             this.typeTB.Size = new System.Drawing.Size(27, 20);
             this.typeTB.TabIndex = 8;
+            this.typeTB.TextChanged += new System.EventHandler(this.typeTB_TextChanged);
             // 
             // slotUD
             // 
@@ -126,16 +132,37 @@
             // 
             // charTB
             // 
-            this.charTB.Location = new System.Drawing.Point(193, 66);
+            this.charTB.Location = new System.Drawing.Point(226, 66);
             this.charTB.Name = "charTB";
             this.charTB.Size = new System.Drawing.Size(27, 20);
             this.charTB.TabIndex = 10;
+            this.charTB.TextChanged += new System.EventHandler(this.charTB_TextChanged);
             // 
-            // NUT_TexIDEditor
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(193, 40);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(27, 13);
+            this.label5.TabIndex = 11;
+            this.label5.Text = "hex:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(193, 69);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(27, 13);
+            this.label6.TabIndex = 12;
+            this.label6.Text = "hex:";
+            // 
+            // TexIdSelector
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(232, 163);
+            this.ClientSize = new System.Drawing.Size(261, 162);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.charTB);
             this.Controls.Add(this.slotUD);
             this.Controls.Add(this.typeTB);
@@ -146,7 +173,9 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.characterComboBox);
             this.Controls.Add(this.typeComboBox);
-            this.Name = "NUT_TexIDEditor";
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "TexIdSelector";
             this.Text = "TexID Editor";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.NUT_TexIDEditor_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.slotUD)).EndInit();
@@ -167,5 +196,7 @@
         public System.Windows.Forms.TextBox typeTB;
         public System.Windows.Forms.NumericUpDown slotUD;
         public System.Windows.Forms.TextBox charTB;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
     }
 }

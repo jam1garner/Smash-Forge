@@ -20,6 +20,10 @@ namespace Smash_Forge
 
         public ExitStatus exitStatus = ExitStatus.NotDone;
 
+        private int type = 0;
+        private int character = 0;
+        private int slot = 0;
+
         public Dictionary<string, int> types = new Dictionary<string, int>()
         {
             {"Nothing", 0x00 },
@@ -176,6 +180,16 @@ namespace Smash_Forge
         private void characterCB_SelectedIndexChanged(object sender, EventArgs e)
         {
             charTB.Text = characters[(string)characterComboBox.SelectedItem] + "";
+        }
+
+        private void typeTB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charTB_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
