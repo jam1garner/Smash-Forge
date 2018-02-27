@@ -150,14 +150,6 @@ namespace Smash_Forge
 
         public int getNewTexId()
         {
-            int type = 0;
-            int.TryParse(typeTB.Text, out type);
-
-            int character = 0;
-            int.TryParse(charTB.Text, out character);
-
-            int slot = (int)slotUD.Value;
-
             return ((type & 0xFF) << 24) | ((character & 0xFF) << 16) | ((slot & 0xFF) << 8);
         }
 
@@ -184,12 +176,28 @@ namespace Smash_Forge
 
         private void typeTB_TextChanged(object sender, EventArgs e)
         {
-
+            type = GuiTools.TryParseTBInt(typeTB);
+            var keyValue = types.FirstOrDefault(x => x.Value == type);
+            if(keyValue.Key != null)
+                typeComboBox.SelectedItem = keyValue.Key;
         }
 
         private void charTB_TextChanged(object sender, EventArgs e)
         {
+            character = GuiTools.TryParseTBInt(charTB);
+            var keyValue = characters.FirstOrDefault(x => x.Value == character);
+            if (keyValue.Key != null)
+                characterComboBox.SelectedItem = keyValue.Key;
+        }
 
+        private void slotUD_ValueChanged(object sender, EventArgs e)
+        {
+            // Max slot number is 255 (0xFF).
+            if (slotUD.Value > 255)
+                slotUD.Value = new decimal(255);
+            if (slotUD.Value < 0)
+                slotUD.Value = new decimal(0);
+            slot = (int)slotUD.Value;
         }
     }
 }

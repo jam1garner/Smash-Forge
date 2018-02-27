@@ -48,9 +48,10 @@
             // 
             this.typeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.typeComboBox.FormattingEnabled = true;
-            this.typeComboBox.Location = new System.Drawing.Point(73, 37);
+            this.typeComboBox.Location = new System.Drawing.Point(146, 71);
+            this.typeComboBox.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.typeComboBox.Name = "typeComboBox";
-            this.typeComboBox.Size = new System.Drawing.Size(114, 21);
+            this.typeComboBox.Size = new System.Drawing.Size(224, 33);
             this.typeComboBox.TabIndex = 0;
             this.typeComboBox.SelectedIndexChanged += new System.EventHandler(this.typeCB_SelectedIndexChanged);
             // 
@@ -58,53 +59,59 @@
             // 
             this.characterComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.characterComboBox.FormattingEnabled = true;
-            this.characterComboBox.Location = new System.Drawing.Point(73, 65);
+            this.characterComboBox.Location = new System.Drawing.Point(146, 125);
+            this.characterComboBox.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.characterComboBox.Name = "characterComboBox";
-            this.characterComboBox.Size = new System.Drawing.Size(114, 21);
+            this.characterComboBox.Size = new System.Drawing.Size(224, 33);
             this.characterComboBox.TabIndex = 1;
             this.characterComboBox.SelectedIndexChanged += new System.EventHandler(this.characterCB_SelectedIndexChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 40);
+            this.label1.Location = new System.Drawing.Point(24, 77);
+            this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(31, 13);
+            this.label1.Size = new System.Drawing.Size(60, 25);
             this.label1.TabIndex = 3;
             this.label1.Text = "Type";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 68);
+            this.label2.Location = new System.Drawing.Point(24, 131);
+            this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(53, 13);
+            this.label2.Size = new System.Drawing.Size(106, 25);
             this.label2.TabIndex = 4;
             this.label2.Text = "Character";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 96);
+            this.label3.Location = new System.Drawing.Point(24, 185);
+            this.label3.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(25, 13);
+            this.label3.Size = new System.Drawing.Size(49, 25);
             this.label3.TabIndex = 5;
             this.label3.Text = "Slot";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(54, 9);
+            this.label4.Location = new System.Drawing.Point(108, 17);
+            this.label4.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(97, 13);
+            this.label4.Size = new System.Drawing.Size(192, 25);
             this.label4.TabIndex = 6;
             this.label4.Text = "Change Texture ID";
             // 
             // applyButton
             // 
-            this.applyButton.Location = new System.Drawing.Point(73, 122);
+            this.applyButton.Location = new System.Drawing.Point(146, 235);
+            this.applyButton.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.applyButton.Name = "applyButton";
-            this.applyButton.Size = new System.Drawing.Size(75, 23);
+            this.applyButton.Size = new System.Drawing.Size(150, 44);
             this.applyButton.TabIndex = 7;
             this.applyButton.Text = "Apply";
             this.applyButton.UseVisualStyleBackColor = true;
@@ -112,55 +119,61 @@
             // 
             // typeTB
             // 
-            this.typeTB.Location = new System.Drawing.Point(226, 37);
+            this.typeTB.Location = new System.Drawing.Point(452, 71);
+            this.typeTB.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.typeTB.Name = "typeTB";
-            this.typeTB.Size = new System.Drawing.Size(27, 20);
+            this.typeTB.Size = new System.Drawing.Size(50, 31);
             this.typeTB.TabIndex = 8;
             this.typeTB.TextChanged += new System.EventHandler(this.typeTB_TextChanged);
             // 
             // slotUD
             // 
-            this.slotUD.Location = new System.Drawing.Point(73, 96);
+            this.slotUD.Location = new System.Drawing.Point(146, 185);
+            this.slotUD.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.slotUD.Maximum = new decimal(new int[] {
             255,
             0,
             0,
             0});
             this.slotUD.Name = "slotUD";
-            this.slotUD.Size = new System.Drawing.Size(114, 20);
+            this.slotUD.Size = new System.Drawing.Size(228, 31);
             this.slotUD.TabIndex = 9;
+            this.slotUD.ValueChanged += new System.EventHandler(this.slotUD_ValueChanged);
             // 
             // charTB
             // 
-            this.charTB.Location = new System.Drawing.Point(226, 66);
+            this.charTB.Location = new System.Drawing.Point(452, 127);
+            this.charTB.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.charTB.Name = "charTB";
-            this.charTB.Size = new System.Drawing.Size(27, 20);
+            this.charTB.Size = new System.Drawing.Size(50, 31);
             this.charTB.TabIndex = 10;
             this.charTB.TextChanged += new System.EventHandler(this.charTB_TextChanged);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(193, 40);
+            this.label5.Location = new System.Drawing.Point(386, 77);
+            this.label5.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(27, 13);
+            this.label5.Size = new System.Drawing.Size(53, 25);
             this.label5.TabIndex = 11;
             this.label5.Text = "hex:";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(193, 69);
+            this.label6.Location = new System.Drawing.Point(386, 133);
+            this.label6.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(27, 13);
+            this.label6.Size = new System.Drawing.Size(53, 25);
             this.label6.TabIndex = 12;
             this.label6.Text = "hex:";
             // 
             // TexIdSelector
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(261, 162);
+            this.ClientSize = new System.Drawing.Size(522, 312);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.charTB);
@@ -175,6 +188,7 @@
             this.Controls.Add(this.typeComboBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.Name = "TexIdSelector";
             this.Text = "TexID Editor";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.NUT_TexIDEditor_FormClosed);
