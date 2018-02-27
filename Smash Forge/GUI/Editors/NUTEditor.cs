@@ -724,17 +724,28 @@ namespace Smash_Forge
         private void texIDToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (NUT != null)
-                using (var v = new NUT_TexIDEditor())
+            {
+                // TODO: Check if tex id fixing would cause any naming conflicts. 
+
+                using (var texIdSelector = new TexIdSelector())
                 {
-                    v.Set(NUT);
-                    v.ShowDialog();
-                    if (v.exitStatus == NUT_TexIDEditor.Opened)
+                    if (NUT.Nodes.Count == 0)
+                        return;
+                    int hash = ((NUT_Texture)NUT.Nodes[0]).HASHID;
+
+                    texIdSelector.Set(hash);
+                    texIdSelector.ShowDialog();
+                    if (texIdSelector.exitStatus == TexIdSelector.ExitStatus.Opened)
                     {
-                        v.Apply();
+
+                        // TODO: Actually apply the Id to all the textures in the nut.
+                        int newTexId = texIdSelector.getNewTexId();
+
                         FillForm();
                         Edited = true;
                     }
                 }
+            }
         }
 
         private void renderChannelR_Click_1(object sender, EventArgs e)

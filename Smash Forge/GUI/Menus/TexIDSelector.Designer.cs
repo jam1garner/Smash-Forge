@@ -1,6 +1,6 @@
 ﻿namespace Smash_Forge
 {
-    partial class NUT_TexIDEditor
+    partial class TexIdSelector
     {
         /// <summary>
         /// Required designer variable.
@@ -28,36 +28,36 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.typeCB = new System.Windows.Forms.ComboBox();
-            this.characterCB = new System.Windows.Forms.ComboBox();
+            this.typeComboBox = new System.Windows.Forms.ComboBox();
+            this.characterComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.applyButton = new System.Windows.Forms.Button();
             this.typeTB = new System.Windows.Forms.TextBox();
             this.slotUD = new System.Windows.Forms.NumericUpDown();
             this.charTB = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.slotUD)).BeginInit();
             this.SuspendLayout();
             // 
-            // typeCB
+            // typeComboBox
             // 
-            this.typeCB.FormattingEnabled = true;
-            this.typeCB.Location = new System.Drawing.Point(73, 37);
-            this.typeCB.Name = "typeCB";
-            this.typeCB.Size = new System.Drawing.Size(114, 21);
-            this.typeCB.TabIndex = 0;
-            this.typeCB.SelectedIndexChanged += new System.EventHandler(this.typeCB_SelectedIndexChanged);
+            this.typeComboBox.FormattingEnabled = true;
+            this.typeComboBox.Location = new System.Drawing.Point(73, 37);
+            this.typeComboBox.Name = "typeComboBox";
+            this.typeComboBox.Size = new System.Drawing.Size(114, 21);
+            this.typeComboBox.TabIndex = 0;
+            this.typeComboBox.SelectedIndexChanged += new System.EventHandler(this.typeCB_SelectedIndexChanged);
             // 
-            // characterCB
+            // characterComboBox
             // 
-            this.characterCB.FormattingEnabled = true;
-            this.characterCB.Location = new System.Drawing.Point(73, 65);
-            this.characterCB.Name = "characterCB";
-            this.characterCB.Size = new System.Drawing.Size(114, 21);
-            this.characterCB.TabIndex = 1;
-            this.characterCB.SelectedIndexChanged += new System.EventHandler(this.characterCB_SelectedIndexChanged);
+            this.characterComboBox.FormattingEnabled = true;
+            this.characterComboBox.Location = new System.Drawing.Point(73, 65);
+            this.characterComboBox.Name = "characterComboBox";
+            this.characterComboBox.Size = new System.Drawing.Size(114, 21);
+            this.characterComboBox.TabIndex = 1;
+            this.characterComboBox.SelectedIndexChanged += new System.EventHandler(this.characterCB_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -95,15 +95,15 @@
             this.label4.TabIndex = 6;
             this.label4.Text = "Change Texture ID";
             // 
-            // button1
+            // applyButton
             // 
-            this.button1.Location = new System.Drawing.Point(73, 128);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "Go";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.applyButton.Location = new System.Drawing.Point(73, 128);
+            this.applyButton.Name = "applyButton";
+            this.applyButton.Size = new System.Drawing.Size(75, 23);
+            this.applyButton.TabIndex = 7;
+            this.applyButton.Text = "Apply";
+            this.applyButton.UseVisualStyleBackColor = true;
+            this.applyButton.Click += new System.EventHandler(this.button1_Click);
             // 
             // typeTB
             // 
@@ -139,13 +139,13 @@
             this.Controls.Add(this.charTB);
             this.Controls.Add(this.slotUD);
             this.Controls.Add(this.typeTB);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.applyButton);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.characterCB);
-            this.Controls.Add(this.typeCB);
+            this.Controls.Add(this.characterComboBox);
+            this.Controls.Add(this.typeComboBox);
             this.Name = "NUT_TexIDEditor";
             this.Text = "TexID Editor";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.NUT_TexIDEditor_FormClosed);
@@ -157,13 +157,13 @@
 
         #endregion
 
-        private System.Windows.Forms.ComboBox typeCB;
-        private System.Windows.Forms.ComboBox characterCB;
+        private System.Windows.Forms.ComboBox typeComboBox;
+        private System.Windows.Forms.ComboBox characterComboBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button applyButton;
         public System.Windows.Forms.TextBox typeTB;
         public System.Windows.Forms.NumericUpDown slotUD;
         public System.Windows.Forms.TextBox charTB;

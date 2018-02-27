@@ -10,16 +10,15 @@ using System.Windows.Forms;
 
 namespace Smash_Forge
 {
-    public partial class NUT_TexIDEditor : Form
+    public partial class TexIdSelector : Form
     {
+        public enum ExitStatus
+        {
+            NotDone = 0,
+            Opened = 1
+        }
 
-        public static int Running = 0;
-        public static int Opened = 1;
-        public static int Cancelled = 2;
-
-        public string path = null;
-
-        public int exitStatus = 0; //0 - not done, 1 - one is selected, 2 - cancelled
+        public ExitStatus exitStatus = ExitStatus.NotDone;
 
         public Dictionary<string, int> types = new Dictionary<string, int>()
         {
@@ -114,96 +113,53 @@ namespace Smash_Forge
             {"Mii Gunner Enemy", 0x38 }
         };
         
-        public NUT_TexIDEditor()
+        public TexIdSelector()
         {
             InitializeComponent();
 
-            typeCB.Items.AddRange(types.Keys.ToArray());
-            characterCB.Items.AddRange(characters.Keys.ToArray());
+            typeComboBox.Items.AddRange(types.Keys.ToArray());
+            characterComboBox.Items.AddRange(characters.Keys.ToArray());
         }
 
-        public NUT nut;
-
-        public void Set(NUT n)
+        public void Set(int originalHash)
         {
-            this.nut = n;
-            if (n.Nodes.Count == 0) return;
-            int hash = ((NUT_Texture)n.Nodes[0]).HASHID;
-            int type = hash >> 24;
-            int chr = (hash >> 16) & 0xFF;
-            int slot = (hash >> 8) & 0xFF;
+            int type = originalHash >> 24;
+            int chr = (originalHash >> 16) & 0xFF;
+            int slot = (originalHash >> 8) & 0xFF;
 
-            Console.WriteLine(hash.ToString("x"));
-
-            foreach (KeyValuePair<string, int> p in types)
-                if (p.Value == type)
+            foreach (KeyValuePair<string, int> typeKeyValuePair in types)
+                if (typeKeyValuePair.Value == type)
                 {
-                    typeCB.SelectedItem = p.Key;
+                    typeComboBox.SelectedItem = typeKeyValuePair.Key;
                     break;
                 }
 
-            foreach (KeyValuePair<string, int> p in characters)
-                if (p.Value == chr)
+            foreach (KeyValuePair<string, int> charKeyValuePair in characters)
+                if (charKeyValuePair.Value == chr)
                 {
-                    characterCB.SelectedItem = p.Key;
+                    characterComboBox.SelectedItem = charKeyValuePair.Key;
                     break;
                 }
 
             slotUD.Value = slot;
         }
 
-        public void Apply()
+        public int getNewTexId()
         {
-            Dictionary<int, int> oldtonew = new Dictionary<int, int>();
-            int i = 0;
+            int type = 0;
+            int.TryParse(typeTB.Text, out type);
 
-            Dictionary<int, int> old = new Dictionary<int, int>();
-            foreach (int k in nut.draw.Keys)
-                old.Add(k, nut.draw[k]);
-            nut.draw.Clear();
-            foreach (NUT_Texture tex in nut.Nodes)
-            {
-                int t = 0;
-                int.TryParse(typeTB.Text, out t);
-                int chr = 0;
-                int.TryParse(charTB.Text, out chr);
-                int s = (int)slotUD.Value;
+            int character = 0;
+            int.TryParse(charTB.Text, out character);
 
-                int newid = ((t & 0xFF) << 24) | ((chr & 0xFF) << 16) | ((s & 0xFF) << 8) | i;
-                i++;
+            int slot = (int)slotUD.Value;
 
-                if (!oldtonew.ContainsKey(tex.HASHID))
-                {
-                    oldtonew.Add(tex.HASHID, newid);
-                    nut.draw.Add(newid, old[tex.HASHID]);
-                    //nut.draw.Remove(tex.HASHID);
-                    tex.HASHID = newid;
-                }
-            }
-
-            /*foreach(ModelContainer mc in Runtime.ModelContainers)
-            {
-                if(mc.NUD != null)
-                {
-                    foreach(NUD.Mesh m in mc.NUD.Nodes)
-                    {
-                        foreach(NUD.Polygon p in m.Nodes)
-                        {
-                            foreach(NUD.Material mat in p.materials)
-                            {
-                                foreach (NUD.Mat_Texture tex in mat.textures)
-                                    if (oldtonew.ContainsKey(tex.hash))
-                                        tex.hash = oldtonew[tex.hash];
-                            }
-                        }
-                    }
-                }
-            }*/
+            return ((type & 0xFF) << 24) | ((character & 0xFF) << 16) | ((slot & 0xFF) << 8);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            exitStatus = Opened;
+            exitStatus = ExitStatus.Opened;
             Close();
         }
 
@@ -214,12 +170,12 @@ namespace Smash_Forge
 
         private void typeCB_SelectedIndexChanged(object sender, EventArgs e)
         {
-            typeTB.Text = types[(string)typeCB.SelectedItem] + "";
+            typeTB.Text = types[(string)typeComboBox.SelectedItem] + "";
         }
 
         private void characterCB_SelectedIndexChanged(object sender, EventArgs e)
         {
-            charTB.Text = characters[(string)characterCB.SelectedItem] + "";
+            charTB.Text = characters[(string)characterComboBox.SelectedItem] + "";
         }
     }
 }

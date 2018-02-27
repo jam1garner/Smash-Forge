@@ -339,7 +339,7 @@ namespace Smash_Forge
                 else
                 if (treeView1.SelectedNode is ModelContainer)
                 {
-                    MCContextMenu.Show(this, e.X, e.Y);
+                    ModelContainerContextMenu.Show(this, e.X, e.Y);
                 }
                 else
                 if(treeView1.SelectedNode == null)
@@ -1373,6 +1373,16 @@ namespace Smash_Forge
 
             // Update the data for rendering.
             n.UpdateVertexDataAndSort();
+        }
+
+        private void texIDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void texIDNUDNUTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
