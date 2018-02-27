@@ -724,17 +724,22 @@ namespace Smash_Forge
         private void texIDToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (NUT != null)
-                using (var v = new NUT_TexIDEditor())
+            {
+                if (NUT.Nodes.Count == 0)
+                    return;
+
+                using (var texIdSelector = new TexIdSelector())
                 {
-                    v.Set(NUT);
-                    v.ShowDialog();
-                    if (v.exitStatus == NUT_TexIDEditor.Opened)
+                    texIdSelector.Set(((NUT_Texture)NUT.Nodes[0]).HASHID);
+                    texIdSelector.ShowDialog();
+                    if (texIdSelector.exitStatus == TexIdSelector.ExitStatus.Opened)
                     {
-                        v.Apply();
+                        NUT.ChangeTextureIds(texIdSelector.getNewTexId());
                         FillForm();
                         Edited = true;
                     }
                 }
+            }
         }
 
         private void renderChannelR_Click_1(object sender, EventArgs e)
