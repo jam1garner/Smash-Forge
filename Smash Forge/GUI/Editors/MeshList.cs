@@ -339,7 +339,7 @@ namespace Smash_Forge
                 else
                 if (treeView1.SelectedNode is ModelContainer)
                 {
-                    MCContextMenu.Show(this, e.X, e.Y);
+                    ModelContainerContextMenu.Show(this, e.X, e.Y);
                 }
                 else
                 if(treeView1.SelectedNode == null)
@@ -1373,6 +1373,47 @@ namespace Smash_Forge
 
             // Update the data for rendering.
             n.UpdateVertexDataAndSort();
+        }
+
+        private void texIDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is NUD))
+                return;
+
+            NUD n = (NUD)treeView1.SelectedNode;
+
+            using (var texIdSelector = new TexIdSelector())
+            {              
+                texIdSelector.Set(n.GetFirstTexId());
+                texIdSelector.ShowDialog();
+                if (texIdSelector.exitStatus == TexIdSelector.ExitStatus.Opened)
+                {
+                    n.ChangeTextureIds(texIdSelector.getNewTexId());
+                }
+            }
+        }
+
+        private void texIDNUDNUTToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(treeView1.SelectedNode is ModelContainer))
+                return;
+
+            ModelContainer modelContainer = (ModelContainer)treeView1.SelectedNode;
+
+            if (modelContainer.NUT.Nodes.Count == 0)
+                return;
+
+            using (var texIdSelector = new TexIdSelector())
+            {
+                // Match the texture IDs. Assume the NUT is the correct one to initialize the gui.
+                texIdSelector.Set(((NUT_Texture)modelContainer.NUT.Nodes[0]).HASHID);
+                texIdSelector.ShowDialog();
+                if (texIdSelector.exitStatus == TexIdSelector.ExitStatus.Opened)
+                {
+                    modelContainer.NUD.ChangeTextureIds(texIdSelector.getNewTexId());
+                    modelContainer.NUT.ChangeTextureIds(texIdSelector.getNewTexId());
+                }
+            }
         }
     }
 }

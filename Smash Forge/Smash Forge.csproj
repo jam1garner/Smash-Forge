@@ -405,11 +405,11 @@
       <DependentUpon>DAEImportSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Filetypes\Models\ModelContainer.cs" />
-    <Compile Include="GUI\Menus\NUT_TexIDEditor.cs">
+    <Compile Include="GUI\Menus\TexIDSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Menus\NUT_TexIDEditor.Designer.cs">
-      <DependentUpon>NUT_TexIDEditor.cs</DependentUpon>
+    <Compile Include="GUI\Menus\TexIDSelector.Designer.cs">
+      <DependentUpon>TexIDSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Menus\PolygonSelector.cs">
       <SubType>Form</SubType>
@@ -604,8 +604,8 @@
     <EmbeddedResource Include="GUI\Menus\DAEImportSettings.resx">
       <DependentUpon>DAEImportSettings.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Menus\NUT_TexIDEditor.resx">
-      <DependentUpon>NUT_TexIDEditor.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Menus\TexIDSelector.resx">
+      <DependentUpon>TexIDSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\PolygonSelector.resx">
       <DependentUpon>PolygonSelector.cs</DependentUpon>
