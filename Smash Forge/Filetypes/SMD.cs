@@ -223,17 +223,6 @@ namespace Smash_Forge
                             poly.AddDefaultMaterial();
                             mes.Nodes.Add(poly);
                         }
-                        bool found = false;
-                        foreach (NUD.Vertex nv in ((NUD.Polygon)mes.Nodes[0]).vertices)
-                        {
-                            if (nv.pos.Equals(vert.pos))
-                            {
-                                ((NUD.Polygon)mes.Nodes[0]).faces.Add(((NUD.Polygon)mes.Nodes[0]).vertices.IndexOf(nv));
-                                found = true;
-                                break;
-                            }
-                        }
-                        if (!found)
                         {
                             ((NUD.Polygon)mes.Nodes[0]).faces.Add(((NUD.Polygon)mes.Nodes[0]).vertices.Count);
                             ((NUD.Polygon)mes.Nodes[0]).vertices.Add(vert);
@@ -242,6 +231,7 @@ namespace Smash_Forge
                 }
             }
 
+            nud.OptimizeFileSize();
             nud.UpdateVertexDataAndSort();
             return nud;
         }

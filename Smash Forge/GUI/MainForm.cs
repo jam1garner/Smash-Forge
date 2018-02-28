@@ -1747,9 +1747,11 @@ namespace Smash_Forge
             {
                 if(CheckCurrentViewport(out mvp))
                 {
+                    mvp.ViewComboBox.SelectedItem = "LVD Editor";
                     mvp.LVD = new LVD(fileName);
                 }else
                 {
+                    mvp.ViewComboBox.SelectedItem = "LVD Editor";
                     mvp.Text = fileName;
                     mvp.LVD = new LVD(fileName);
                 }
@@ -1770,12 +1772,33 @@ namespace Smash_Forge
 
                 if (CheckCurrentViewport(out mvp))
                 {
-                    mvp.draw.Add(con);
+                    mvp.MeshList.treeView1.Nodes.Add(con);
                 }
                 else
                 {
                     mvp.Text = fileName;
-                    mvp.draw.Add(con);
+                    mvp.MeshList.treeView1.Nodes.Add(con);
+                }
+            }
+
+
+            if (fileName.EndsWith(".smd"))
+            {
+                ModelContainer m = new ModelContainer();
+                VBN TargetVBN = new VBN();
+                SMD.read(fileName, new Animation(fileName), TargetVBN);
+                m.VBN = TargetVBN;
+                m.NUD = SMD.toNUD(fileName);
+                m.VBN.reset();
+
+                if (CheckCurrentViewport(out mvp))
+                {
+                    mvp.MeshList.treeView1.Nodes.Add(m);
+                }
+                else
+                {
+                    mvp.Text = fileName;
+                    mvp.MeshList.treeView1.Nodes.Add(m);
                 }
             }
 
@@ -1885,19 +1908,6 @@ namespace Smash_Forge
                 }
             }
 
-            /*if (fileName.EndsWith(".smd"))
-            {
-                Runtime.TargetVBN = new VBN();
-                SMD.read(fileName, new Animation(fileName), Runtime.TargetVBN);
-
-                ModelContainer m = resyncTargetVBN();
-                if (m != null)
-                {
-                    m.NUD = SMD.toNUD(fileName);
-                    meshList.refresh();
-                }
-            }*/
-
             if (fileName.ToLower().EndsWith(".dae"))
             {
                 DAEImportSettings daeImport = new DAEImportSettings();
@@ -2000,14 +2010,12 @@ namespace Smash_Forge
                 if (dialogResult == DialogResult.No)
                 {
                     mvp = new ModelViewport();
-                    mvp.ViewComboBox.SelectedItem = "LVD Editor";
                     AddDockedControl(mvp);
                     return false;
                 }
             }else
             {
                 mvp = new ModelViewport();
-                mvp.ViewComboBox.SelectedItem = "LVD Editor";
                 AddDockedControl(mvp);
                 return false;
             }

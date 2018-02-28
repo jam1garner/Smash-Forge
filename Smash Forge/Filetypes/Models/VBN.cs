@@ -310,10 +310,11 @@ namespace Smash_Forge
 
         public void SetSwingMax(object sender, EventArgs args)
         {
+
             float ToRad = (float)Math.PI / 180;
             if(_swingBones != null)
             {
-                foreach(SB.SBEntry sb in _swingBones.bones)
+                foreach (SB.SBEntry sb in _swingBones.bones)
                 {
                     foreach(Bone b in bones)
                     {
