@@ -1802,6 +1802,37 @@ namespace Smash_Forge
                 }
             }
 
+
+            if (fileName.ToLower().EndsWith(".dae"))
+            {
+                DAEImportSettings daeImport = new DAEImportSettings();
+                daeImport.ShowDialog();
+                if (daeImport.exitStatus == DAEImportSettings.ExitStatus.Opened)
+                {
+                    ModelContainer con = new ModelContainer();
+
+                    // load vbn
+                    con.VBN = daeImport.getVBN();
+
+                    Collada.DaetoNud(fileName, con, daeImport.importTexCB.Checked);
+                    
+                    // apply settings
+                    daeImport.Apply(con.NUD);
+                    con.NUD.MergePoly();
+
+                    if (CheckCurrentViewport(out mvp))
+                    {
+                        mvp.MeshList.treeView1.Nodes.Add(con);
+                    }
+                    else
+                    {
+                        con.Text = fileName;
+                        mvp.Text = fileName;
+                        mvp.MeshList.treeView1.Nodes.Add(con);
+                    }
+                }
+            }
+
             //---------------------------------------------------------
 
 
@@ -1905,29 +1936,6 @@ namespace Smash_Forge
                 {
                     Runtime.TargetCMR0 = new CMR0();
                     Runtime.TargetCMR0.read(new FileData(fileName));
-                }
-            }
-
-            if (fileName.ToLower().EndsWith(".dae"))
-            {
-                DAEImportSettings daeImport = new DAEImportSettings();
-                daeImport.ShowDialog();
-                if (daeImport.exitStatus == DAEImportSettings.ExitStatus.Opened)
-                {
-                    ModelContainer con = new ModelContainer();
-
-                    // load vbn
-                    con.VBN = daeImport.getVBN();
-
-                    Collada.DaetoNud(fileName, con, daeImport.importTexCB.Checked);
-
-                    mvp = new ModelViewport();
-                    mvp.draw.Add(con);
-                    AddDockedControl(mvp);
-
-                    // apply settings
-                    daeImport.Apply(con.NUD);
-                    con.NUD.MergePoly();
                 }
             }
 

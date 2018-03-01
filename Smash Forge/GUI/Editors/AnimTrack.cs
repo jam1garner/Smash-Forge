@@ -439,7 +439,7 @@ namespace Smash_Forge
             animation.FrameCount = anim.frameCount;
 
             int i = 0;
-            foreach (Bone b in vbn.getBoneTreeOrder())
+            foreach (Bone b in vbn.bones)
             {
                 i = vbn.boneIndex(b.Text);
 
@@ -448,7 +448,6 @@ namespace Smash_Forge
                     List<DAT_Animation.DATAnimTrack> tracks = anim.nodes[i];
                     
                     Animation.KeyNode node = new Animation.KeyNode(b.Text);
-                    animation.Bones.Add(node);
                     node.RotType = Animation.RotationType.EULER;
 
                     foreach (DAT_Animation.DATAnimTrack track in tracks)
@@ -484,6 +483,11 @@ namespace Smash_Forge
                                 break;
                         }
                     }
+
+                    if(node.XSCA.HasAnimation() || node.YSCA.HasAnimation() || node.ZSCA.HasAnimation()
+                        || node.XPOS.HasAnimation() || node.YPOS.HasAnimation() || node.ZPOS.HasAnimation()
+                        || node.XROT.HasAnimation() || node.YROT.HasAnimation() || node.ZROT.HasAnimation())
+                        animation.Bones.Add(node);
                 }
             }
 
@@ -648,7 +652,7 @@ namespace Smash_Forge
                 {
                     cvalue = no.value;
                     ctan = curve.tan;
-                    group.Keys.Add(new Animation.KeyFrame() { Weighted = true, Frame = time, Value = cvalue * (rotation ? 180 / (float)Math.PI : 1), In = no.tan, Out = ctan, InterType = Animation.InterpolationType.HERMITE});
+                    group.Keys.Add(new Animation.KeyFrame() { Weighted = true, Frame = time, Value = cvalue, In = no.tan, Out = ctan, InterType = Animation.InterpolationType.HERMITE});
                     //file.WriteLine(" " + (time + 1) + " {0:N6} fixed fixed 1 1 0 {1:N6} 1 {2:N6} 1;", cvalue * (rotation ? 180 / (float)Math.PI : 1), no.tan, ctan);
                 }
                 else
@@ -658,7 +662,7 @@ namespace Smash_Forge
                             {
                                 cvalue = no.value;
                                 ctan = no.tan;
-                                group.Keys.Add(new Animation.KeyFrame() { Weighted = true, Frame = time, Value = cvalue * (rotation ? 180 / (float)Math.PI : 1), In = ctan, Out = ctan, InterType = Animation.InterpolationType.HERMITE });
+                                group.Keys.Add(new Animation.KeyFrame() { Weighted = true, Frame = time, Value = cvalue, In = ctan, Out = ctan, InterType = Animation.InterpolationType.HERMITE });
                                 //file.WriteLine(" " + (time + 1) + " {0:N6} fixed fixed 1 1 0 {1:N6} 1 {2:N6} 1;", cvalue * (rotation ? 180 / (float)Math.PI : 1), ctan, ctan);
                             }
                             break;
@@ -666,21 +670,21 @@ namespace Smash_Forge
                             {
                                 cvalue = no.value;
                                 ctan = 0;
-                                group.Keys.Add(new Animation.KeyFrame() { Weighted = true, Frame = time, Value = cvalue * (rotation ? 180 / (float)Math.PI : 1), In = ctan, Out = ctan, InterType = Animation.InterpolationType.HERMITE });
+                                group.Keys.Add(new Animation.KeyFrame() { Weighted = true, Frame = time, Value = cvalue, In = ctan, Out = ctan, InterType = Animation.InterpolationType.HERMITE });
                                 //file.WriteLine(" " + (time + 1) + " {0:N6} fixed fixed 1 1 0 {1:N6} 1 {2:N6} 1;", cvalue * (rotation ? 180 / (float)Math.PI : 1), ctan, ctan);
                             }
                             break;
                         case DAT_Animation.InterpolationType.Step:
                             {
                                 cvalue = no.value;
-                                group.Keys.Add(new Animation.KeyFrame() { Weighted = false, Frame = time, Value = cvalue * (rotation ? 180 / (float)Math.PI : 1), InterType = Animation.InterpolationType.STEP });
+                                group.Keys.Add(new Animation.KeyFrame() { Weighted = false, Frame = time, Value = cvalue, InterType = Animation.InterpolationType.STEP });
                                 //file.WriteLine(" " + (time + 1) + " {0:N6} fixed fixed 1 1 0 0 1 0 1;", cvalue * (rotation ? 180 / (float)Math.PI : 1));
                             }
                             break;
                         case DAT_Animation.InterpolationType.Linear:
                             {
                                 cvalue = no.value;
-                                group.Keys.Add(new Animation.KeyFrame() { Weighted = false, Frame = time, Value = cvalue * (rotation ? 180 / (float)Math.PI : 1), InterType = Animation.InterpolationType.LINEAR });
+                                group.Keys.Add(new Animation.KeyFrame() { Weighted = false, Frame = time, Value = cvalue, InterType = Animation.InterpolationType.LINEAR });
                                 //file.WriteLine(" " + (time + 1) + " {0:N6} linear linear 1 1 0", cvalue * (rotation ? 180 / (float)Math.PI : 1));
                             }
                             break;

@@ -274,6 +274,7 @@ namespace Smash_Forge
 
             displayList.Clear();
             List<JOBJ> boneTrack = new List<JOBJ>();
+            bones.bones.Clear();
             while (queue.Any())
             {
                 TreeNode node = queue.Pop();

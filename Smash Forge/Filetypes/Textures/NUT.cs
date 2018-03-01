@@ -743,6 +743,7 @@ namespace Smash_Forge
                 if (GL.IsTexture(kv.Value))
                     GL.DeleteTexture(kv.Value);
             }
+            Nodes.Clear();
         }
 
         public override string ToString()

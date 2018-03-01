@@ -300,15 +300,14 @@ namespace Smash_Forge
             // next will be nodes then controllers
             // craft vbn :>
             // find joint node
-            if (con.VBN == null)
-                con.VBN = new VBN();
-
-            VBN vbn = con.VBN;
+            
             foreach (ColladaNode node in dae.scene.nodes)
             {
                 if (node.type.Equals("JOINT") && con.VBN == null)
                 {
                     // joint tree
+                    con.VBN = new VBN();
+                    VBN vbn = con.VBN;
 
                     List<ColladaNode> parenttrack = new List<ColladaNode>();
                     Queue<ColladaNode> nodes = new Queue<ColladaNode>();
@@ -1985,6 +1984,9 @@ namespace Smash_Forge
                         mat.ClearTranslation();
                         mat.Invert();
                         rot = ANIM.quattoeul(mat.ExtractRotation()); // TODO: We need a better conversion code for this
+                        if (float.IsNaN(rot.X)) rot.X = 0;
+                        if (float.IsNaN(rot.Y)) rot.Y = 0;
+                        if (float.IsNaN(rot.Z)) rot.Z = 0;
 
                         mat.M11 = float.Parse(data[0]); mat.M12 = float.Parse(data[1]); mat.M13 = float.Parse(data[2]); mat.M14 = float.Parse(data[3]);
                         mat.M21 = float.Parse(data[4]); mat.M22 = float.Parse(data[5]); mat.M23 = float.Parse(data[6]); mat.M24 = float.Parse(data[7]);

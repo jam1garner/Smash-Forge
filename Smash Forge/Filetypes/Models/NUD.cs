@@ -72,8 +72,6 @@ namespace Smash_Forge
 
         #region Rendering
 
-        private DisplayVertex[] Vertices;
-        private int[] Faces;
 
         public void Destroy()
         {
@@ -160,6 +158,9 @@ namespace Smash_Forge
 
         public void UpdateVertexDataAndSort()
         {
+            DisplayVertex[] Vertices;
+            int[] Faces;
+
             int poffset = 0;
             int voffset = 0;
             List<DisplayVertex> Vs = new List<DisplayVertex>();
@@ -174,7 +175,7 @@ namespace Smash_Forge
                     List<DisplayVertex> pv = p.CreateDisplayVertices();
                     Vs.AddRange(pv);
                     //Console.WriteLine(p.displayFaceSize + " " + p.Offset/4);
-                    for(int i = 0; i < p.displayFaceSize; i++)
+                    for (int i = 0; i < p.displayFaceSize; i++)
                     {
                         Ds.Add(p.display[i] + voffset);
                     }

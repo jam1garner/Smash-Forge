@@ -138,6 +138,7 @@ namespace Smash_Forge
             set
             {
                 dat_melee = value;
+                VBN = dat_melee.bones;
                 Refresh();
             }
         }
@@ -170,7 +171,9 @@ namespace Smash_Forge
             {
                 Text = "Melee DAT";
                 Nodes.AddRange(DAT_MELEE.tree.ToArray());
-            }else
+                if (vbn != null && vbn.Parent == null) Nodes.Add(vbn);
+            }
+            else
             if(bch != null)
             {
                 Nodes.Add(bch);

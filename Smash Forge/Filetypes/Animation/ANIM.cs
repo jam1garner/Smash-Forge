@@ -116,7 +116,7 @@ namespace Smash_Forge
                         if (args.Length > 7 && att.Weighted)
                         {
                             k.In = float.Parse(args[7]) * (float)(Math.PI / 180f);
-                            k.Out = float.Parse(args[8]);
+                            k.Out = float.Parse(args[8]) * (float)(Math.PI / 180f);
                         }
                     }
 
@@ -328,7 +328,7 @@ namespace Smash_Forge
                         break;
                 }
 
-                file.WriteLine(" " + (key.Frame + 1) + " {0:N6} fixed fixed 1 1 0 " + key.In + " 1 " + key.In + " 1;", v);
+                file.WriteLine(" " + (key.Frame + 1) + " {0:N6} fixed fixed 1 1 0 " + key.In * (float)(180f/Math.PI) + " 1 " + key.In * (float)(180f / Math.PI) + " 1;", v);
             }
 
             file.WriteLine(" }");

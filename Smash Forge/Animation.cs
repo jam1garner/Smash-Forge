@@ -320,7 +320,7 @@ namespace Smash_Forge
                 if (k1.InterType == InterpolationType.LINEAR)
                     return Lerp(k1.Value, k2.Value, k1.Frame, k2.Frame, frame);
                 if (k1.InterType == InterpolationType.HERMITE)
-                    return Hermite(frame, k1.Frame, k2.Frame, k1.Weighted ? k1.In : 0, k1.Out != -1 ? k1.Out : (k2.Weighted ? k2.In : 0), k1.Value, k2.Value);//k1.Out != -1 ? k1.Out : 
+                    return Hermite(frame, k1.Frame, k2.Frame, k1.Weighted ? k1.In : 0, (k2.Weighted ? k2.In : 0), k1.Value, k2.Value);//k1.Out != -1 ? k1.Out :  
 
                 return k1.Value;
             }
@@ -444,7 +444,7 @@ namespace Smash_Forge
                     b = skeleton.GetBone((uint)node.Hash);
                 if (b == null) continue;
                 Updated = true;
-                 
+
                 if (node.XPOS.HasAnimation() && b.boneType != 3)
                     b.pos.X = node.XPOS.GetValue(Frame);
                 if (node.YPOS.HasAnimation() && b.boneType != 3)
@@ -461,9 +461,9 @@ namespace Smash_Forge
                 if (node.ZSCA.HasAnimation())
                     b.sca.Z = node.ZSCA.GetValue(Frame);
                 else b.sca.Z = 1;
-                
-                
-                if (node.XROT.HasAnimation())
+
+
+                if (node.XROT.HasAnimation() || node.YROT.HasAnimation() || node.ZROT.HasAnimation())
                 {
                     if (node.RotType == RotationType.QUATERNION)
                     {
