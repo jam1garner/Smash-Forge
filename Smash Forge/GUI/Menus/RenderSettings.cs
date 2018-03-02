@@ -30,6 +30,8 @@ namespace Smash_Forge.GUI
             textParamDir.Text = Runtime.paramDir;
             RendererLabel.Text = "Renderer: " + Runtime.renderer;
             OpenGLVersionLabel.Text = "OpenGL Version: " + Runtime.GLSLVersion;
+            BackgroundGradient1.BackColor = Runtime.back1;
+            BackgroundGradient2.BackColor = Runtime.back2;
 
             // Bone settings
             renderBonesCB.Checked = Runtime.renderBones;
@@ -819,6 +821,26 @@ namespace Smash_Forge.GUI
         private void modNameTextBox_TextChanged(object sender, EventArgs e)
         {
             DiscordSettings.userNamedMod = modNameTextBox.Text;
+        }
+
+        private void BackgroundGradient1_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.back1 = Color.FromArgb(0xFF, colorDialog.Color);
+                BackgroundGradient1.BackColor = Runtime.back1;
+            }
+        }
+
+        private void BackgroundGradient2_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.back2 = Color.FromArgb(0xFF, colorDialog.Color);
+                BackgroundGradient2.BackColor = Runtime.back2;
+            }
         }
     }
 }

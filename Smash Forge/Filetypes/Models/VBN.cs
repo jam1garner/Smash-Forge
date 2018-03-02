@@ -626,8 +626,35 @@ namespace Smash_Forge
                 file.writeInt(bones.Count);
                 if (boneCountPerType[0] == 0)
                     boneCountPerType[0] = (uint)bones.Count;
-                for (int i = 0; i < 4; i++)
-                    file.writeInt((int)boneCountPerType[i]);
+
+                List<Bone> Normal = new List<Bone>();
+                List<Bone> Unk = new List<Bone>();
+                List<Bone> Helper = new List<Bone>();
+                List<Bone> Swing = new List<Bone>();
+                //Gather Each Bone Type
+                foreach(Bone b in bones)
+                {
+                    switch (b.boneType)
+                    {
+                        case 0: Normal.Add(b); break;
+                        case 2: Helper.Add(b); break;
+                        case 3: Swing.Add(b); break;
+                        default: Unk.Add(b); break;
+                    }
+                }
+
+                file.writeInt(Normal.Count);
+                file.writeInt(Unk.Count);
+                file.writeInt(Helper.Count);
+                file.writeInt(Swing.Count);
+                
+                List<Bone> NewBoneOrder = new List<Bone>();
+                NewBoneOrder.AddRange(Normal);
+                NewBoneOrder.AddRange(Unk);
+                NewBoneOrder.AddRange(Helper);
+                NewBoneOrder.AddRange(Swing);
+                bones.Clear();
+                bones = NewBoneOrder;
 
                 for (int i = 0; i < bones.Count; i++)
                 {

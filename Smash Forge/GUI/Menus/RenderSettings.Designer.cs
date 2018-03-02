@@ -151,15 +151,19 @@
             this.useNormCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.defaultRadioButton = new System.Windows.Forms.RadioButton();
-            this.customRadioButton = new System.Windows.Forms.RadioButton();
-            this.filenameRadioButton = new System.Windows.Forms.RadioButton();
-            this.customComboBox = new System.Windows.Forms.ComboBox();
-            this.userModCheckbox = new System.Windows.Forms.CheckBox();
-            this.modNameTextBox = new System.Windows.Forms.TextBox();
-            this.showActiveWindowCheckbox = new System.Windows.Forms.CheckBox();
             this.timeElapsedCheckbox = new System.Windows.Forms.CheckBox();
+            this.showActiveWindowCheckbox = new System.Windows.Forms.CheckBox();
+            this.modNameTextBox = new System.Windows.Forms.TextBox();
+            this.userModCheckbox = new System.Windows.Forms.CheckBox();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.customComboBox = new System.Windows.Forms.ComboBox();
+            this.filenameRadioButton = new System.Windows.Forms.RadioButton();
+            this.customRadioButton = new System.Windows.Forms.RadioButton();
+            this.defaultRadioButton = new System.Windows.Forms.RadioButton();
+            this.BackgroundGradient1 = new System.Windows.Forms.PictureBox();
+            this.BackgroundGradient2 = new System.Windows.Forms.PictureBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -187,6 +191,8 @@
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient2)).BeginInit();
             this.SuspendLayout();
             // 
             // tabPage2
@@ -852,6 +858,10 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label3);
+            this.groupBox2.Controls.Add(this.label2);
+            this.groupBox2.Controls.Add(this.BackgroundGradient2);
+            this.groupBox2.Controls.Add(this.BackgroundGradient1);
             this.groupBox2.Controls.Add(this.swagYCB);
             this.groupBox2.Controls.Add(this.drawUvCB);
             this.groupBox2.Controls.Add(this.areaLightBoundingBoxCB);
@@ -881,7 +891,7 @@
             // swagYCB
             // 
             this.swagYCB.AutoSize = true;
-            this.swagYCB.Location = new System.Drawing.Point(134, 112);
+            this.swagYCB.Location = new System.Drawing.Point(127, 154);
             this.swagYCB.Name = "swagYCB";
             this.swagYCB.Size = new System.Drawing.Size(104, 17);
             this.swagYCB.TabIndex = 29;
@@ -892,7 +902,7 @@
             // drawUvCB
             // 
             this.drawUvCB.AutoSize = true;
-            this.drawUvCB.Location = new System.Drawing.Point(16, 415);
+            this.drawUvCB.Location = new System.Drawing.Point(9, 457);
             this.drawUvCB.Name = "drawUvCB";
             this.drawUvCB.Size = new System.Drawing.Size(143, 17);
             this.drawUvCB.TabIndex = 28;
@@ -905,7 +915,7 @@
             this.areaLightBoundingBoxCB.AutoSize = true;
             this.areaLightBoundingBoxCB.Checked = true;
             this.areaLightBoundingBoxCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.areaLightBoundingBoxCB.Location = new System.Drawing.Point(16, 392);
+            this.areaLightBoundingBoxCB.Location = new System.Drawing.Point(9, 434);
             this.areaLightBoundingBoxCB.Name = "areaLightBoundingBoxCB";
             this.areaLightBoundingBoxCB.Size = new System.Drawing.Size(192, 17);
             this.areaLightBoundingBoxCB.TabIndex = 27;
@@ -916,7 +926,7 @@
             // renderGeneralShapesCB
             // 
             this.renderGeneralShapesCB.AutoSize = true;
-            this.renderGeneralShapesCB.Location = new System.Drawing.Point(48, 370);
+            this.renderGeneralShapesCB.Location = new System.Drawing.Point(41, 412);
             this.renderGeneralShapesCB.Name = "renderGeneralShapesCB";
             this.renderGeneralShapesCB.Size = new System.Drawing.Size(193, 17);
             this.renderGeneralShapesCB.TabIndex = 26;
@@ -927,7 +937,7 @@
             // renderModelCB
             // 
             this.renderModelCB.AutoSize = true;
-            this.renderModelCB.Location = new System.Drawing.Point(16, 22);
+            this.renderModelCB.Location = new System.Drawing.Point(9, 64);
             this.renderModelCB.Name = "renderModelCB";
             this.renderModelCB.Size = new System.Drawing.Size(93, 17);
             this.renderModelCB.TabIndex = 0;
@@ -938,7 +948,7 @@
             // renderCollisionsCB
             // 
             this.renderCollisionsCB.AutoSize = true;
-            this.renderCollisionsCB.Location = new System.Drawing.Point(48, 254);
+            this.renderCollisionsCB.Location = new System.Drawing.Point(41, 296);
             this.renderCollisionsCB.Name = "renderCollisionsCB";
             this.renderCollisionsCB.Size = new System.Drawing.Size(107, 17);
             this.renderCollisionsCB.TabIndex = 6;
@@ -949,7 +959,7 @@
             // renderLvdCB
             // 
             this.renderLvdCB.AutoSize = true;
-            this.renderLvdCB.Location = new System.Drawing.Point(15, 227);
+            this.renderLvdCB.Location = new System.Drawing.Point(8, 269);
             this.renderLvdCB.Name = "renderLvdCB";
             this.renderLvdCB.Size = new System.Drawing.Size(85, 17);
             this.renderLvdCB.TabIndex = 5;
@@ -960,7 +970,7 @@
             // wireframeCB
             // 
             this.wireframeCB.AutoSize = true;
-            this.wireframeCB.Location = new System.Drawing.Point(48, 68);
+            this.wireframeCB.Location = new System.Drawing.Point(41, 110);
             this.wireframeCB.Name = "wireframeCB";
             this.wireframeCB.Size = new System.Drawing.Size(104, 17);
             this.wireframeCB.TabIndex = 22;
@@ -971,7 +981,7 @@
             // renderSpawnsCB
             // 
             this.renderSpawnsCB.AutoSize = true;
-            this.renderSpawnsCB.Location = new System.Drawing.Point(48, 300);
+            this.renderSpawnsCB.Location = new System.Drawing.Point(41, 342);
             this.renderSpawnsCB.Name = "renderSpawnsCB";
             this.renderSpawnsCB.Size = new System.Drawing.Size(102, 17);
             this.renderSpawnsCB.TabIndex = 7;
@@ -982,7 +992,7 @@
             // modelSelectCB
             // 
             this.modelSelectCB.AutoSize = true;
-            this.modelSelectCB.Location = new System.Drawing.Point(48, 44);
+            this.modelSelectCB.Location = new System.Drawing.Point(41, 86);
             this.modelSelectCB.Name = "modelSelectCB";
             this.modelSelectCB.Size = new System.Drawing.Size(132, 17);
             this.modelSelectCB.TabIndex = 21;
@@ -993,7 +1003,7 @@
             // renderFloorCB
             // 
             this.renderFloorCB.AutoSize = true;
-            this.renderFloorCB.Location = new System.Drawing.Point(16, 181);
+            this.renderFloorCB.Location = new System.Drawing.Point(9, 223);
             this.renderFloorCB.Name = "renderFloorCB";
             this.renderFloorCB.Size = new System.Drawing.Size(87, 17);
             this.renderFloorCB.TabIndex = 4;
@@ -1004,7 +1014,7 @@
             // boundingCB
             // 
             this.boundingCB.AutoSize = true;
-            this.boundingCB.Location = new System.Drawing.Point(16, 135);
+            this.boundingCB.Location = new System.Drawing.Point(9, 177);
             this.boundingCB.Name = "boundingCB";
             this.boundingCB.Size = new System.Drawing.Size(141, 17);
             this.boundingCB.TabIndex = 20;
@@ -1015,7 +1025,7 @@
             // showSwagDataCB
             // 
             this.showSwagDataCB.AutoSize = true;
-            this.showSwagDataCB.Location = new System.Drawing.Point(16, 112);
+            this.showSwagDataCB.Location = new System.Drawing.Point(9, 154);
             this.showSwagDataCB.Name = "showSwagDataCB";
             this.showSwagDataCB.Size = new System.Drawing.Size(104, 17);
             this.showSwagDataCB.TabIndex = 18;
@@ -1026,7 +1036,7 @@
             // renderBackgroundCB
             // 
             this.renderBackgroundCB.AutoSize = true;
-            this.renderBackgroundCB.Location = new System.Drawing.Point(15, 204);
+            this.renderBackgroundCB.Location = new System.Drawing.Point(8, 246);
             this.renderBackgroundCB.Name = "renderBackgroundCB";
             this.renderBackgroundCB.Size = new System.Drawing.Size(122, 17);
             this.renderBackgroundCB.TabIndex = 19;
@@ -1037,7 +1047,7 @@
             // renderRespawnsCB
             // 
             this.renderRespawnsCB.AutoSize = true;
-            this.renderRespawnsCB.Location = new System.Drawing.Point(48, 323);
+            this.renderRespawnsCB.Location = new System.Drawing.Point(41, 365);
             this.renderRespawnsCB.Name = "renderRespawnsCB";
             this.renderRespawnsCB.Size = new System.Drawing.Size(114, 17);
             this.renderRespawnsCB.TabIndex = 8;
@@ -1048,7 +1058,7 @@
             // renderPassthroughCB
             // 
             this.renderPassthroughCB.AutoSize = true;
-            this.renderPassthroughCB.Location = new System.Drawing.Point(77, 277);
+            this.renderPassthroughCB.Location = new System.Drawing.Point(70, 319);
             this.renderPassthroughCB.Name = "renderPassthroughCB";
             this.renderPassthroughCB.Size = new System.Drawing.Size(158, 17);
             this.renderPassthroughCB.TabIndex = 11;
@@ -1059,7 +1069,7 @@
             // renderItemSpawnersCB
             // 
             this.renderItemSpawnersCB.AutoSize = true;
-            this.renderItemSpawnersCB.Location = new System.Drawing.Point(48, 346);
+            this.renderItemSpawnersCB.Location = new System.Drawing.Point(41, 388);
             this.renderItemSpawnersCB.Name = "renderItemSpawnersCB";
             this.renderItemSpawnersCB.Size = new System.Drawing.Size(134, 17);
             this.renderItemSpawnersCB.TabIndex = 9;
@@ -1070,7 +1080,7 @@
             // renderBonesCB
             // 
             this.renderBonesCB.AutoSize = true;
-            this.renderBonesCB.Location = new System.Drawing.Point(16, 91);
+            this.renderBonesCB.Location = new System.Drawing.Point(9, 133);
             this.renderBonesCB.Name = "renderBonesCB";
             this.renderBonesCB.Size = new System.Drawing.Size(94, 17);
             this.renderBonesCB.TabIndex = 1;
@@ -1081,7 +1091,7 @@
             // renderCameraPathCB
             // 
             this.renderCameraPathCB.AutoSize = true;
-            this.renderCameraPathCB.Location = new System.Drawing.Point(16, 158);
+            this.renderCameraPathCB.Location = new System.Drawing.Point(9, 200);
             this.renderCameraPathCB.Name = "renderCameraPathCB";
             this.renderCameraPathCB.Size = new System.Drawing.Size(125, 17);
             this.renderCameraPathCB.TabIndex = 2;
@@ -1571,6 +1581,47 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Discord Rich Presence";
             // 
+            // timeElapsedCheckbox
+            // 
+            this.timeElapsedCheckbox.AutoSize = true;
+            this.timeElapsedCheckbox.Location = new System.Drawing.Point(14, 182);
+            this.timeElapsedCheckbox.Name = "timeElapsedCheckbox";
+            this.timeElapsedCheckbox.Size = new System.Drawing.Size(154, 17);
+            this.timeElapsedCheckbox.TabIndex = 4;
+            this.timeElapsedCheckbox.Text = "Show Time Spent Modding";
+            this.timeElapsedCheckbox.UseVisualStyleBackColor = true;
+            this.timeElapsedCheckbox.CheckedChanged += new System.EventHandler(this.discordCheckChanged);
+            // 
+            // showActiveWindowCheckbox
+            // 
+            this.showActiveWindowCheckbox.AutoSize = true;
+            this.showActiveWindowCheckbox.Location = new System.Drawing.Point(14, 156);
+            this.showActiveWindowCheckbox.Name = "showActiveWindowCheckbox";
+            this.showActiveWindowCheckbox.Size = new System.Drawing.Size(128, 17);
+            this.showActiveWindowCheckbox.TabIndex = 3;
+            this.showActiveWindowCheckbox.Text = "Show Active Window";
+            this.showActiveWindowCheckbox.UseVisualStyleBackColor = true;
+            this.showActiveWindowCheckbox.CheckedChanged += new System.EventHandler(this.discordCheckChanged);
+            // 
+            // modNameTextBox
+            // 
+            this.modNameTextBox.Location = new System.Drawing.Point(131, 125);
+            this.modNameTextBox.Name = "modNameTextBox";
+            this.modNameTextBox.Size = new System.Drawing.Size(113, 20);
+            this.modNameTextBox.TabIndex = 2;
+            this.modNameTextBox.TextChanged += new System.EventHandler(this.modNameTextBox_TextChanged);
+            // 
+            // userModCheckbox
+            // 
+            this.userModCheckbox.AutoSize = true;
+            this.userModCheckbox.Location = new System.Drawing.Point(14, 128);
+            this.userModCheckbox.Name = "userModCheckbox";
+            this.userModCheckbox.Size = new System.Drawing.Size(121, 17);
+            this.userModCheckbox.TabIndex = 1;
+            this.userModCheckbox.Text = "Display Working on ";
+            this.userModCheckbox.UseVisualStyleBackColor = true;
+            this.userModCheckbox.CheckedChanged += new System.EventHandler(this.userModCheckbox_CheckedChanged);
+            // 
             // groupBox7
             // 
             this.groupBox7.Controls.Add(this.customComboBox);
@@ -1583,41 +1634,6 @@
             this.groupBox7.TabIndex = 0;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Image Mode";
-            // 
-            // defaultRadioButton
-            // 
-            this.defaultRadioButton.AutoSize = true;
-            this.defaultRadioButton.Checked = true;
-            this.defaultRadioButton.Location = new System.Drawing.Point(6, 19);
-            this.defaultRadioButton.Name = "defaultRadioButton";
-            this.defaultRadioButton.Size = new System.Drawing.Size(59, 17);
-            this.defaultRadioButton.TabIndex = 0;
-            this.defaultRadioButton.TabStop = true;
-            this.defaultRadioButton.Text = "Default";
-            this.defaultRadioButton.UseVisualStyleBackColor = true;
-            this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
-            // 
-            // customRadioButton
-            // 
-            this.customRadioButton.AutoSize = true;
-            this.customRadioButton.Location = new System.Drawing.Point(6, 42);
-            this.customRadioButton.Name = "customRadioButton";
-            this.customRadioButton.Size = new System.Drawing.Size(60, 17);
-            this.customRadioButton.TabIndex = 1;
-            this.customRadioButton.Text = "Custom";
-            this.customRadioButton.UseVisualStyleBackColor = true;
-            this.customRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
-            // 
-            // filenameRadioButton
-            // 
-            this.filenameRadioButton.AutoSize = true;
-            this.filenameRadioButton.Location = new System.Drawing.Point(6, 65);
-            this.filenameRadioButton.Name = "filenameRadioButton";
-            this.filenameRadioButton.Size = new System.Drawing.Size(82, 17);
-            this.filenameRadioButton.TabIndex = 2;
-            this.filenameRadioButton.Text = "By Filename";
-            this.filenameRadioButton.UseVisualStyleBackColor = true;
-            this.filenameRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
             // customComboBox
             // 
@@ -1641,46 +1657,76 @@
             this.customComboBox.TabIndex = 3;
             this.customComboBox.SelectedIndexChanged += new System.EventHandler(this.customImageKeyChange);
             // 
-            // userModCheckbox
+            // filenameRadioButton
             // 
-            this.userModCheckbox.AutoSize = true;
-            this.userModCheckbox.Location = new System.Drawing.Point(14, 128);
-            this.userModCheckbox.Name = "userModCheckbox";
-            this.userModCheckbox.Size = new System.Drawing.Size(121, 17);
-            this.userModCheckbox.TabIndex = 1;
-            this.userModCheckbox.Text = "Display Working on ";
-            this.userModCheckbox.UseVisualStyleBackColor = true;
-            this.userModCheckbox.CheckedChanged += new System.EventHandler(this.userModCheckbox_CheckedChanged);
+            this.filenameRadioButton.AutoSize = true;
+            this.filenameRadioButton.Location = new System.Drawing.Point(6, 65);
+            this.filenameRadioButton.Name = "filenameRadioButton";
+            this.filenameRadioButton.Size = new System.Drawing.Size(82, 17);
+            this.filenameRadioButton.TabIndex = 2;
+            this.filenameRadioButton.Text = "By Filename";
+            this.filenameRadioButton.UseVisualStyleBackColor = true;
+            this.filenameRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
-            // modNameTextBox
+            // customRadioButton
             // 
-            this.modNameTextBox.Location = new System.Drawing.Point(131, 125);
-            this.modNameTextBox.Name = "modNameTextBox";
-            this.modNameTextBox.Size = new System.Drawing.Size(113, 20);
-            this.modNameTextBox.TabIndex = 2;
-            this.modNameTextBox.TextChanged += new System.EventHandler(this.modNameTextBox_TextChanged);
+            this.customRadioButton.AutoSize = true;
+            this.customRadioButton.Location = new System.Drawing.Point(6, 42);
+            this.customRadioButton.Name = "customRadioButton";
+            this.customRadioButton.Size = new System.Drawing.Size(60, 17);
+            this.customRadioButton.TabIndex = 1;
+            this.customRadioButton.Text = "Custom";
+            this.customRadioButton.UseVisualStyleBackColor = true;
+            this.customRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
-            // showActiveWindowCheckbox
+            // defaultRadioButton
             // 
-            this.showActiveWindowCheckbox.AutoSize = true;
-            this.showActiveWindowCheckbox.Location = new System.Drawing.Point(14, 156);
-            this.showActiveWindowCheckbox.Name = "showActiveWindowCheckbox";
-            this.showActiveWindowCheckbox.Size = new System.Drawing.Size(128, 17);
-            this.showActiveWindowCheckbox.TabIndex = 3;
-            this.showActiveWindowCheckbox.Text = "Show Active Window";
-            this.showActiveWindowCheckbox.UseVisualStyleBackColor = true;
-            this.showActiveWindowCheckbox.CheckedChanged += new System.EventHandler(this.discordCheckChanged);
+            this.defaultRadioButton.AutoSize = true;
+            this.defaultRadioButton.Checked = true;
+            this.defaultRadioButton.Location = new System.Drawing.Point(6, 19);
+            this.defaultRadioButton.Name = "defaultRadioButton";
+            this.defaultRadioButton.Size = new System.Drawing.Size(59, 17);
+            this.defaultRadioButton.TabIndex = 0;
+            this.defaultRadioButton.TabStop = true;
+            this.defaultRadioButton.Text = "Default";
+            this.defaultRadioButton.UseVisualStyleBackColor = true;
+            this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
-            // timeElapsedCheckbox
+            // BackgroundGradient1
             // 
-            this.timeElapsedCheckbox.AutoSize = true;
-            this.timeElapsedCheckbox.Location = new System.Drawing.Point(14, 182);
-            this.timeElapsedCheckbox.Name = "timeElapsedCheckbox";
-            this.timeElapsedCheckbox.Size = new System.Drawing.Size(154, 17);
-            this.timeElapsedCheckbox.TabIndex = 4;
-            this.timeElapsedCheckbox.Text = "Show Time Spent Modding";
-            this.timeElapsedCheckbox.UseVisualStyleBackColor = true;
-            this.timeElapsedCheckbox.CheckedChanged += new System.EventHandler(this.discordCheckChanged);
+            this.BackgroundGradient1.Location = new System.Drawing.Point(8, 19);
+            this.BackgroundGradient1.Name = "BackgroundGradient1";
+            this.BackgroundGradient1.Size = new System.Drawing.Size(16, 16);
+            this.BackgroundGradient1.TabIndex = 30;
+            this.BackgroundGradient1.TabStop = false;
+            this.BackgroundGradient1.Click += new System.EventHandler(this.BackgroundGradient1_Click);
+            // 
+            // BackgroundGradient2
+            // 
+            this.BackgroundGradient2.Location = new System.Drawing.Point(8, 41);
+            this.BackgroundGradient2.Name = "BackgroundGradient2";
+            this.BackgroundGradient2.Size = new System.Drawing.Size(16, 16);
+            this.BackgroundGradient2.TabIndex = 30;
+            this.BackgroundGradient2.TabStop = false;
+            this.BackgroundGradient2.Click += new System.EventHandler(this.BackgroundGradient2_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(30, 42);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(150, 13);
+            this.label2.TabIndex = 31;
+            this.label2.Text = "Background Gradient (Bottom)";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(30, 19);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(136, 13);
+            this.label3.TabIndex = 31;
+            this.label3.Text = "Background Gradient (Top)";
             // 
             // RenderSettings
             // 
@@ -1728,6 +1774,8 @@
             this.tabPage3.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -1864,5 +1912,9 @@
         private System.Windows.Forms.TextBox modNameTextBox;
         private System.Windows.Forms.CheckBox timeElapsedCheckbox;
         private System.Windows.Forms.CheckBox showActiveWindowCheckbox;
+        private System.Windows.Forms.PictureBox BackgroundGradient1;
+        private System.Windows.Forms.PictureBox BackgroundGradient2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
     }
 }
