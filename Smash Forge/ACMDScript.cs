@@ -27,6 +27,17 @@ namespace Smash_Forge
             }
         }
 
+        public MovesetManager Moveset
+        {
+            get
+            {
+                if(MainForm.dockPanel.ActiveContent is ModelViewport)
+                {
+                    return ((ModelViewport)MainForm.dockPanel.ActiveContent).MovesetManager;
+                }
+                return null;
+            }
+        }
         public int scriptId { get; set; }
         public ACMDScript script { get; set; }
         public List<ACMDScript> subscripts { get; set; }  // For subscript processing, shares currentFrame between all scripts
@@ -379,9 +390,11 @@ namespace Smash_Forge
                 case 0xFA1BC28A: // Subroutine1: call another script
                     // Try and load the other script. If we can't, then just keep going as per normal
                     uint crc = (uint)int.Parse(cmd.Parameters[0] + "");
-                    if (Runtime.Moveset.Game.Scripts.ContainsKey(crc)) //TODO:
+
+                    if (Moveset == null) break;
+                    if (Moveset.Game.Scripts.ContainsKey(crc)) //TODO:
                     {
-                        subscripts.Add((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+                        subscripts.Add((ACMDScript)Moveset.Game.Scripts[crc]);
 
                         // Store the return scriptCommandIndex
                         scriptStates.Push(new ScriptState(
@@ -874,9 +887,10 @@ namespace Smash_Forge
                 case 0xFA1BC28A: // Subroutine1: call another script
                     // Try and load the other script. If we can't, then just keep going as per normal
                     uint crc = (uint)int.Parse(cmd.Parameters[0] + "");
-                    if (Runtime.Moveset.Game.Scripts.ContainsKey(crc) && crc != this.script.AnimationCRC)
+                    if (Moveset == null) break;
+                    if (Moveset.Game.Scripts.ContainsKey(crc) && crc != this.script.AnimationCRC)
                     {
-                        subscripts.Add((ACMDScript)Runtime.Moveset.Game.Scripts[crc]);
+                        subscripts.Add((ACMDScript)Moveset.Game.Scripts[crc]);
 
                         // Store the return scriptCommandIndex
                         scriptStates.Push(new ScriptState(
