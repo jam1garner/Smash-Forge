@@ -886,7 +886,10 @@ namespace Smash_Forge
                 LoadNewModelForRender(fileName, node);           
                 SetupNextRender();
                 string renderName = FormatRenderName(fileName, path);
-                CaptureScreen(true).Save(outputPath + "\\" + renderName + "_" + totalRenderCount + ".png");
+                // Manually dispose the bitmap to avoid memory leaks. 
+                Bitmap screenCapture = CaptureScreen(true);
+                screenCapture.Save(outputPath + "\\" + renderName + "_" + totalRenderCount + ".png");
+                screenCapture.Dispose();
             }
         }
 
@@ -902,28 +905,21 @@ namespace Smash_Forge
         {
             // Loads the new model. Assumes everything is called model.nud, model.nut, model.vbn.
             ModelContainer modelContainer = (ModelContainer)node;
+            LoadNextNut(fileName, modelContainer);
+            LoadNextNud(fileName, modelContainer);
+            LoadNextPacs(fileName, modelContainer);
+            LoadNextVbn(fileName, modelContainer);
+        }
 
-            Runtime.TextureContainers.Clear();
-            try
-            {
-                NUT newNut = new NUT(fileName.Replace("nud", "nut"));
-                Runtime.TextureContainers.Add(newNut);
+        private static void LoadNextVbn(string fileName, ModelContainer modelContainer)
+        {
+            // Not all models have a vbn.
+            if (File.Exists(fileName.Replace("nud", "vbn")))
+                modelContainer.VBN = new VBN(fileName.Replace("nud", "vbn"));
+        }
 
-                // Free memory used by OpenTK.
-                modelContainer.NUT.Destroy(); 
-
-                modelContainer.NUT = newNut;
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-            }
-
-            // Free memory used by OpenTK.
-            modelContainer.Destroy();
-
-            modelContainer.NUD = new NUD(fileName);
-
+        private static void LoadNextPacs(string fileName, ModelContainer modelContainer)
+        {
             // Read pacs to hide meshes.
             string[] pacs = Directory.GetFiles(fileName.Replace("model.nud", ""), "*.pac");
             foreach (string s in pacs)
@@ -944,10 +940,33 @@ namespace Smash_Forge
                     modelContainer.NUD.applyMTA(m, 0);
                 }
             }
+        }
 
-            // Not all models have a vbn.
-            if (File.Exists(fileName.Replace("nud", "vbn")))
-                modelContainer.VBN = new VBN(fileName.Replace("nud", "vbn"));
+        private static void LoadNextNud(string fileName, ModelContainer modelContainer)
+        {
+            // Free memory used by OpenTK.
+            modelContainer.Destroy();
+            modelContainer.NUD = new NUD(fileName);
+        }
+
+        private static void LoadNextNut(string fileName, ModelContainer modelContainer)
+        {
+            Runtime.TextureContainers.Clear();
+            try
+            {
+                NUT newNut = new NUT(fileName.Replace("nud", "nut"));
+                Runtime.TextureContainers.Add(newNut);
+
+                // Free memory used by OpenTK.
+                modelContainer.NUT.Destroy();
+
+                modelContainer.NUT = newNut;
+            }
+            catch (Exception e)
+            {
+                // A few nuts still don't open properly, so just skip them.
+                Debug.WriteLine(e.Message);
+            }
         }
 
         private static string FormatRenderName(string fileName, string path)
