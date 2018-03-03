@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -92,6 +92,10 @@
             this.RendererLabel = new System.Windows.Forms.Label();
             this.OpenGLVersionLabel = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.BackgroundGradient2 = new System.Windows.Forms.PictureBox();
+            this.BackgroundGradient1 = new System.Windows.Forms.PictureBox();
             this.swagYCB = new System.Windows.Forms.CheckBox();
             this.drawUvCB = new System.Windows.Forms.CheckBox();
             this.areaLightBoundingBoxCB = new System.Windows.Forms.CheckBox();
@@ -160,10 +164,6 @@
             this.filenameRadioButton = new System.Windows.Forms.RadioButton();
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.defaultRadioButton = new System.Windows.Forms.RadioButton();
-            this.BackgroundGradient1 = new System.Windows.Forms.PictureBox();
-            this.BackgroundGradient2 = new System.Windows.Forms.PictureBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -184,6 +184,8 @@
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -191,8 +193,6 @@
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient2)).BeginInit();
             this.SuspendLayout();
             // 
             // tabPage2
@@ -680,8 +680,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem7,
-            listViewItem8});
+            listViewItem3,
+            listViewItem4});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -887,6 +887,42 @@
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Display Settings";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(30, 19);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(136, 13);
+            this.label3.TabIndex = 31;
+            this.label3.Text = "Background Gradient (Top)";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(30, 42);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(150, 13);
+            this.label2.TabIndex = 31;
+            this.label2.Text = "Background Gradient (Bottom)";
+            // 
+            // BackgroundGradient2
+            // 
+            this.BackgroundGradient2.Location = new System.Drawing.Point(8, 41);
+            this.BackgroundGradient2.Name = "BackgroundGradient2";
+            this.BackgroundGradient2.Size = new System.Drawing.Size(16, 16);
+            this.BackgroundGradient2.TabIndex = 30;
+            this.BackgroundGradient2.TabStop = false;
+            this.BackgroundGradient2.Click += new System.EventHandler(this.BackgroundGradient2_Click);
+            // 
+            // BackgroundGradient1
+            // 
+            this.BackgroundGradient1.Location = new System.Drawing.Point(8, 19);
+            this.BackgroundGradient1.Name = "BackgroundGradient1";
+            this.BackgroundGradient1.Size = new System.Drawing.Size(16, 16);
+            this.BackgroundGradient1.TabIndex = 30;
+            this.BackgroundGradient1.TabStop = false;
+            this.BackgroundGradient1.Click += new System.EventHandler(this.BackgroundGradient1_Click);
             // 
             // swagYCB
             // 
@@ -1692,42 +1728,6 @@
             this.defaultRadioButton.UseVisualStyleBackColor = true;
             this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
-            // BackgroundGradient1
-            // 
-            this.BackgroundGradient1.Location = new System.Drawing.Point(8, 19);
-            this.BackgroundGradient1.Name = "BackgroundGradient1";
-            this.BackgroundGradient1.Size = new System.Drawing.Size(16, 16);
-            this.BackgroundGradient1.TabIndex = 30;
-            this.BackgroundGradient1.TabStop = false;
-            this.BackgroundGradient1.Click += new System.EventHandler(this.BackgroundGradient1_Click);
-            // 
-            // BackgroundGradient2
-            // 
-            this.BackgroundGradient2.Location = new System.Drawing.Point(8, 41);
-            this.BackgroundGradient2.Name = "BackgroundGradient2";
-            this.BackgroundGradient2.Size = new System.Drawing.Size(16, 16);
-            this.BackgroundGradient2.TabIndex = 30;
-            this.BackgroundGradient2.TabStop = false;
-            this.BackgroundGradient2.Click += new System.EventHandler(this.BackgroundGradient2_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(30, 42);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(150, 13);
-            this.label2.TabIndex = 31;
-            this.label2.Text = "Background Gradient (Bottom)";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(30, 19);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(136, 13);
-            this.label3.TabIndex = 31;
-            this.label3.Text = "Background Gradient (Top)";
-            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1762,6 +1762,8 @@
             this.groupBox3.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
@@ -1774,8 +1776,6 @@
             this.tabPage3.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient2)).EndInit();
             this.ResumeLayout(false);
 
         }
