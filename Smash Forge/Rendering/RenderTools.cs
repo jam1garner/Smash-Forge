@@ -30,27 +30,27 @@ namespace Smash_Forge.Rendering
         public static void Setup()
         {
             if(defaultTex == -1)
-            {
-                // Dummy textures. 
-                cubeMapHigh = LoadCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
-                cubeMapLow = LoadCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
-                dummyRamp = NUT.loadImage(Properties.Resources._10080000);
-                pokemonStadiumDummyTex = NUT.loadImage(Properties.Resources._10040001);
-                punchOutDummyTex = NUT.loadImage(Properties.Resources._10040000);
-                shadowMapDummyTex = NUT.loadImage(Properties.Resources._10100000);
-
-                // Helpful textures. 
-                uvTestPattern = NUT.loadImage(Properties.Resources.UVPattern);
-                boneWeightGradient = NUT.loadImage(Properties.Resources.boneWeightGradient);
-                boneWeightGradient2 = NUT.loadImage(Properties.Resources.boneWeightGradient2);
-
-                defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
-
-                GL.GenBuffers(1, out cubeVAO);
-                GL.GenBuffers(1, out cubeVBO);
-            }
+                LoadTextures();
 
             GetOpenGLSystemInfo();
+        }
+
+        private static void LoadTextures()
+        {
+            // Dummy textures. 
+            cubeMapHigh = LoadCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
+            cubeMapLow = LoadCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
+            dummyRamp = NUT.loadImage(Properties.Resources._10080000);
+            pokemonStadiumDummyTex = NUT.loadImage(Properties.Resources._10040001);
+            punchOutDummyTex = NUT.loadImage(Properties.Resources._10040000);
+            shadowMapDummyTex = NUT.loadImage(Properties.Resources._10100000);
+
+            // Helpful textures. 
+            uvTestPattern = NUT.loadImage(Properties.Resources.UVPattern);
+            boneWeightGradient = NUT.loadImage(Properties.Resources.boneWeightGradient);
+            boneWeightGradient2 = NUT.loadImage(Properties.Resources.boneWeightGradient2);
+
+            defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
         }
 
         public static object GetValueFromParamFile(ParamFile file, int groupIndex, int entryIndex, int valueIndex)
@@ -1480,63 +1480,9 @@ namespace Smash_Forge.Rendering
                                 sz = 0;
                             bone.rot = VBN.FromEulerAngles(bone.rotation[2], bone.rotation[1], bone.rotation[0]) *
                                 VBN.FromEulerAngles(sz, sy, 0);
-
-                            /*Matrix4 RotTran = bone.transform *
-                                Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(((sb.rz2 + sb.rz1) / 2) * ToRad, , 0))
-                                * Matrix4.CreateTranslation(0, 0, 0);
-
-                            Vector3 pos_c = Vector3.TransformPosition(Vector3.Zero, bone.transform);
-                            Vector3 pos_e = Vector3.TransformPosition(Vector3.Zero, RotTran);
-
-                            GL.PushMatrix();
-                            GL.MultMatrix(ref RotTran);
-                            RenderTools.drawCircle(Vector3.Zero, 5, 10);
-                            GL.PopMatrix();
-
-                            GL.Color3(Color.ForestGreen);
-
-                            GL.Begin(PrimitiveType.LineLoop);
-                            GL.Vertex3(pos_c);
-                            GL.Vertex3(pos_e);
-                            GL.End();*/
                         }
 
                     }
-                    // if swing bones then draw swing radius
-                    /*if (vbn.swingBones.bones.Count > 0 && Runtime.renderSwag)
-                    {
-                        SB.SBEntry sb = null;
-                        vbn.swingBones.TryGetEntry(bone.boneId, out sb);
-                        if (sb != null)
-                        {
-                            // draw
-                            if (bone.ParentBone != null)
-                            {
-                                int i = bone.parentIndex;
-                                float degtorad = (float)(Math.PI / 180);
-                                Vector3 pos_sb = Vector3.Transform(Vector3.Zero,
-                                    Matrix4.CreateTranslation(new Vector3(3, 3, 3))
-                                    * Matrix4.CreateScale(bone.sca)
-                                    * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(sb.rx1 * degtorad, sb.ry1 * degtorad, sb.rz1 * degtorad))
-                                    * Matrix4.CreateTranslation(bone.pos)
-                                    * vbn.bones[i].transform);
-
-                                Vector3 pos_sb2 = Vector3.Transform(Vector3.Zero,
-                                    Matrix4.CreateTranslation(new Vector3(3, 3, 3))
-                                    * Matrix4.CreateScale(bone.sca)
-                                    * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(sb.rx2 * degtorad, sb.ry2 * degtorad, sb.rz2 * degtorad))
-                                    * Matrix4.CreateTranslation(bone.pos)
-                                    * vbn.bones[i].transform);
-
-                                GL.Color3(Color.ForestGreen);
-                                GL.Begin(PrimitiveType.LineLoop);
-                                GL.Vertex3(pos_c);
-                                GL.Vertex3(pos_sb);
-                                GL.Vertex3(pos_sb2);
-                                GL.End();
-                            }
-                        }
-                    }*/
                 }
 
                 if (selectedBone != null)

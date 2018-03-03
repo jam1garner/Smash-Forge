@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,10 +18,17 @@ namespace Smash_Forge.Rendering
                 modelContainer.VBN = new VBN(fileName.Replace("nud", "vbn"));
         }
 
-        public static void LoadNextPacs(string fileName, ModelContainer modelContainer)
+        public static void LoadNextXmb(string fileName, ModelContainer modelContainer)
+        {
+            // Not all models have a vbn.
+            if (File.Exists(fileName.Replace("nud", "xmb")))
+                modelContainer.XMB = new SALT.Graphics.XMBFile(fileName.Replace("nud", "xmb"));
+        }
+
+        public static void LoadNextPacs(string nudFileName, ModelContainer modelContainer)
         {
             // Read pacs to hide meshes.
-            string[] pacs = Directory.GetFiles(fileName.Replace("model.nud", ""), "*.pac");
+            string[] pacs = Directory.GetFiles(nudFileName.Replace("model.nud", ""), "*.pac");
             foreach (string s in pacs)
             {
                 PAC p = new PAC();
@@ -41,19 +49,18 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        public static void LoadNextNud(string fileName, ModelContainer modelContainer)
+        public static void LoadNextNud(string nudFileName, ModelContainer modelContainer)
         {
             // Free memory used by OpenTK.
             modelContainer.Destroy();
-            modelContainer.NUD = new NUD(fileName);
+            modelContainer.NUD = new NUD(nudFileName);
         }
 
-        public static void LoadNextNut(string fileName, ModelContainer modelContainer)
+        public static void LoadNextNut(string nudFileName, ModelContainer modelContainer)
         {
-            Runtime.TextureContainers.Clear();
             try
             {
-                NUT newNut = new NUT(fileName.Replace("nud", "nut"));
+                NUT newNut = new NUT(nudFileName.Replace("nud", "nut"));
                 Runtime.TextureContainers.Add(newNut);
 
                 // Free memory used by OpenTK.
@@ -66,6 +73,16 @@ namespace Smash_Forge.Rendering
                 // A few nuts still don't open properly, so just skip them.
                 Debug.WriteLine(e.Message);
             }
+        }
+
+        public static void LoadNewModelForRender(string fileName, TreeNode node)
+        {
+            // Loads the new model. Assumes everything is called model.nud, model.nut, model.vbn.
+            ModelContainer modelContainer = (ModelContainer)node;
+            LoadNextNut(fileName, modelContainer);
+            LoadNextNud(fileName, modelContainer);
+            LoadNextPacs(fileName, modelContainer);
+            LoadNextVbn(fileName, modelContainer);
         }
     }
 }

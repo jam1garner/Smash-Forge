@@ -1706,7 +1706,7 @@ namespace Smash_Forge
                     ModelViewport mv;
                     if (CheckCurrentViewport(out mv))
                     {
-                        foreach(ModelContainer mc in mv.MeshList.treeView1.Nodes)
+                        foreach(ModelContainer mc in mv.MeshList.filesTreeView.Nodes)
                         {
                             if(mc.DAT_MELEE != null)
                             {
@@ -1772,12 +1772,12 @@ namespace Smash_Forge
 
                 if (CheckCurrentViewport(out mvp))
                 {
-                    mvp.MeshList.treeView1.Nodes.Add(con);
+                    mvp.MeshList.filesTreeView.Nodes.Add(con);
                 }
                 else
                 {
                     mvp.Text = fileName;
-                    mvp.MeshList.treeView1.Nodes.Add(con);
+                    mvp.MeshList.filesTreeView.Nodes.Add(con);
                 }
             }
 
@@ -1793,12 +1793,12 @@ namespace Smash_Forge
 
                 if (CheckCurrentViewport(out mvp))
                 {
-                    mvp.MeshList.treeView1.Nodes.Add(m);
+                    mvp.MeshList.filesTreeView.Nodes.Add(m);
                 }
                 else
                 {
                     mvp.Text = fileName;
-                    mvp.MeshList.treeView1.Nodes.Add(m);
+                    mvp.MeshList.filesTreeView.Nodes.Add(m);
                 }
             }
 
@@ -1822,13 +1822,13 @@ namespace Smash_Forge
 
                     if (CheckCurrentViewport(out mvp))
                     {
-                        mvp.MeshList.treeView1.Nodes.Add(con);
+                        mvp.MeshList.filesTreeView.Nodes.Add(con);
                     }
                     else
                     {
                         con.Text = fileName;
                         mvp.Text = fileName;
-                        mvp.MeshList.treeView1.Nodes.Add(con);
+                        mvp.MeshList.filesTreeView.Nodes.Add(con);
                     }
                 }
             }

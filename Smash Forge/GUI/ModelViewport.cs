@@ -238,7 +238,7 @@ namespace Smash_Forge
 
             ViewComboBox.SelectedIndex = 0;
 
-            draw = MeshList.treeView1.Nodes;
+            draw = MeshList.filesTreeView.Nodes;
 
             RenderTools.Setup();
         }
@@ -402,7 +402,7 @@ namespace Smash_Forge
                         SortedList<double, NUD.Mesh> selected = con.GetMeshSelection(ray);
                         selectedSize = selected.Count;
                         if (selected.Count > dbdistance)
-                            MeshList.treeView1.SelectedNode = selected.Values.ElementAt(dbdistance);
+                            MeshList.filesTreeView.SelectedNode = selected.Values.ElementAt(dbdistance);
                     }
                 }
                 
@@ -460,7 +460,7 @@ namespace Smash_Forge
 
             if (MaterialAnimation != null)
             {
-                foreach (TreeNode node in MeshList.treeView1.Nodes)
+                foreach (TreeNode node in MeshList.filesTreeView.Nodes)
                 {
                     if (!(node is ModelContainer)) continue;
                     ModelContainer m = (ModelContainer)node;
@@ -478,7 +478,7 @@ namespace Smash_Forge
             if (ACMDScript != null && Runtime.useFrameDuration)
                 animFrameNum = ACMDScript.animationFrame;// - 1;
             
-            foreach (TreeNode node in MeshList.treeView1.Nodes)
+            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer)) continue;
                 ModelContainer m = (ModelContainer)node;
@@ -510,7 +510,7 @@ namespace Smash_Forge
 
         public void ResetModels()
         {
-            foreach (TreeNode node in MeshList.treeView1.Nodes)
+            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer)) continue;
                 ModelContainer m = (ModelContainer)node;
@@ -566,19 +566,19 @@ namespace Smash_Forge
 
         public void FrameSelection()
         {
-            if (MeshList.treeView1.SelectedNode is NUD.Mesh)
+            if (MeshList.filesTreeView.SelectedNode is NUD.Mesh)
             {
                 FrameSelectedMesh();
             }
-            else if (MeshList.treeView1.SelectedNode is NUD)
+            else if (MeshList.filesTreeView.SelectedNode is NUD)
             {
                 FrameSelectedNud();
             }
-            else if (MeshList.treeView1.SelectedNode is NUD.Polygon)
+            else if (MeshList.filesTreeView.SelectedNode is NUD.Polygon)
             {
                 FrameSelectedPolygon();
             }
-            else if (MeshList.treeView1.SelectedNode is ModelContainer)
+            else if (MeshList.filesTreeView.SelectedNode is ModelContainer)
             {
                 FrameSelectedModelContainer();
             }
@@ -590,7 +590,7 @@ namespace Smash_Forge
 
         private void FrameSelectedModelContainer()
         {
-            ModelContainer modelContainer = (ModelContainer)MeshList.treeView1.SelectedNode;
+            ModelContainer modelContainer = (ModelContainer)MeshList.filesTreeView.SelectedNode;
             float[] boundingBox = new float[] { 0, 0, 0, 0 };
 
             // Use the main bounding box for the NUD.
@@ -620,7 +620,7 @@ namespace Smash_Forge
 
         private void FrameSelectedMesh()
         {
-            NUD.Mesh mesh = (NUD.Mesh)MeshList.treeView1.SelectedNode;
+            NUD.Mesh mesh = (NUD.Mesh)MeshList.filesTreeView.SelectedNode;
             float[] boundingBox = mesh.boundingBox;
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
@@ -628,7 +628,7 @@ namespace Smash_Forge
 
         private void FrameSelectedNud()
         {
-            NUD nud = (NUD)MeshList.treeView1.SelectedNode;
+            NUD nud = (NUD)MeshList.filesTreeView.SelectedNode;
             float[] boundingBox = nud.boundingBox;
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
@@ -636,7 +636,7 @@ namespace Smash_Forge
 
         private void FrameSelectedPolygon()
         {
-            NUD.Mesh mesh = (NUD.Mesh)MeshList.treeView1.SelectedNode.Parent;
+            NUD.Mesh mesh = (NUD.Mesh)MeshList.filesTreeView.SelectedNode.Parent;
             float[] boundingBox = mesh.boundingBox;
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
@@ -647,7 +647,7 @@ namespace Smash_Forge
             float maxBoundingRadius = 5000;
             // Find the max NUD bounding box for all models. 
             float[] boundingBox = new float[] { 0, 0, 0, 0 };
-            foreach (TreeNode node in MeshList.treeView1.Nodes)
+            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
             {
                 if (node is ModelContainer)
                 {
@@ -881,7 +881,8 @@ namespace Smash_Forge
                 if (!(node is ModelContainer))
                     continue;
 
-                LoadNewModelForRender(fileName, node);           
+                BatchRenderTools.LoadNewModelForRender(fileName, node);
+                Runtime.TextureContainers.Clear();
                 SetupNextRender();
                 string renderName = FormatFileName(fileName, sourcePath);
                 // Manually dispose the bitmap to avoid memory leaks. 
@@ -897,16 +898,6 @@ namespace Smash_Forge
             FrameAllModelContainers();
             Render(null, null);
             glViewport.SwapBuffers();
-        }
-
-        private static void LoadNewModelForRender(string fileName, TreeNode node)
-        {
-            // Loads the new model. Assumes everything is called model.nud, model.nut, model.vbn.
-            ModelContainer modelContainer = (ModelContainer)node;
-            BatchRenderTools.LoadNextNut(fileName, modelContainer);
-            BatchRenderTools.LoadNextNud(fileName, modelContainer);
-            BatchRenderTools.LoadNextPacs(fileName, modelContainer);
-            BatchRenderTools.LoadNextVbn(fileName, modelContainer);
         }
 
         private static string FormatFileName(string fileName, string path)
@@ -1014,7 +1005,7 @@ namespace Smash_Forge
 
         private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
         {
-            foreach (TreeNode n in MeshList.treeView1.Nodes)
+            foreach (TreeNode n in MeshList.filesTreeView.Nodes)
             {
                 if (n is ModelContainer)
                 {
@@ -1075,7 +1066,7 @@ namespace Smash_Forge
 
         private void ModelViewport_FormClosing(object sender, FormClosingEventArgs e)
         {
-            foreach(TreeNode n in MeshList.treeView1.Nodes)
+            foreach(TreeNode n in MeshList.filesTreeView.Nodes)
             {
                 if(n is ModelContainer)
                 {
@@ -1254,14 +1245,14 @@ namespace Smash_Forge
             GL.UseProgram(0);
 
             // Return early to avoid rendering other stuff. 
-            if (MeshList.treeView1.SelectedNode != null)
+            if (MeshList.filesTreeView.SelectedNode != null)
             {
-                if (MeshList.treeView1.SelectedNode is BCH_Texture)
+                if (MeshList.filesTreeView.SelectedNode is BCH_Texture)
                 {
                     DrawBchTex();
                     return;
                 }
-                if (MeshList.treeView1.SelectedNode is NUT_Texture)
+                if (MeshList.filesTreeView.SelectedNode is NUT_Texture)
                 {
                     DrawNutTexAndUvs();
                     return;
@@ -1332,7 +1323,7 @@ namespace Smash_Forge
                         ((ModelContainer)m).RenderPoints(camera);
 
             // use fixed function pipeline again for area lights, lvd, bones, hitboxes, etc
-            SetupFixedFunctionRendering();
+            RenderTools.SetupFixedFunctionRendering();
 
             // area light bounding boxes should intersect stage geometry and not render on top
             if (Runtime.drawAreaLightBoundingBoxes)
@@ -1486,13 +1477,13 @@ namespace Smash_Forge
         private void ModelViewport_KeyDown(object sender, KeyEventArgs e)
         {
             // Super secret commands. I'm probably going to be the only one that uses them anyway...
-            if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.G))
+            if (Keyboard.GetState().IsKeyDown(Key.C) && Keyboard.GetState().IsKeyDown(Key.H) && Keyboard.GetState().IsKeyDown(Key.M))
                 BatchRenderModels();
 
             if (Keyboard.GetState().IsKeyDown(Key.X) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.L))
                 BatchExportMaterialXml();
 
-            if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T) && Keyboard.GetState().IsKeyDown(Key.G))
+            if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T) && Keyboard.GetState().IsKeyDown(Key.M))
                 BatchRenderStages();
         }
 
@@ -1509,14 +1500,40 @@ namespace Smash_Forge
                         {
                             foreach (string stageFolder in Directory.GetDirectories(sourceFolderSelect.SelectedPath))
                             {
-                                // Open all the nuds, nuts, xmb files
-                                string[] nudFileNames = Directory.GetFiles(stageFolder, "*.nud", SearchOption.AllDirectories);
-
+                                RenderStage(stageFolder, outputFolderSelect.SelectedPath, sourceFolderSelect.SelectedPath);
                             }
                         }
                     }
                 }
             }
+        }
+
+        private void RenderStage(string stageFolder, string outputPath, string sourcePath)
+        {
+            // Open all the nuds, nuts, xmb files
+            string modelPath = stageFolder + "//model";
+            if (Directory.Exists(modelPath))
+            {
+                // We can assume one NUD per folder. 
+                string[] nudFileNames = Directory.GetFiles(modelPath, "*.nud", SearchOption.AllDirectories);
+                foreach (string nudFile in nudFileNames)
+                {
+                    ModelContainer modelContainer = new ModelContainer();
+                    BatchRenderTools.LoadNextNud(nudFile, modelContainer);
+                    BatchRenderTools.LoadNextNut(nudFile, modelContainer);
+                    BatchRenderTools.LoadNextVbn(nudFile, modelContainer);
+                    BatchRenderTools.LoadNextXmb(nudFile, modelContainer);
+                    MeshList.filesTreeView.Nodes.Add(modelContainer);
+                }
+            }
+
+            // Setup and render the stage.
+            SetupNextRender();
+            string stageName = FormatFileName(stageFolder, sourcePath);
+            SaveScreenRender(outputPath + "\\" + stageName + ".png");
+
+            // Clear all the models and nodes. 
+            MeshList.filesTreeView.Nodes.Clear();
         }
 
         private void SaveScreenRender(string outputPath)
@@ -1557,7 +1574,7 @@ namespace Smash_Forge
         private void DrawNutTexAndUvs()
         {
             GL.PopAttrib();
-            NUT_Texture tex = ((NUT_Texture)MeshList.treeView1.SelectedNode);
+            NUT_Texture tex = ((NUT_Texture)MeshList.filesTreeView.SelectedNode);
             RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height);
 
             if (Runtime.drawUv)
@@ -1569,7 +1586,7 @@ namespace Smash_Forge
         private void DrawBchTex()
         {
             GL.PopAttrib();
-            BCH_Texture tex = ((BCH_Texture)MeshList.treeView1.SelectedNode);
+            BCH_Texture tex = ((BCH_Texture)MeshList.filesTreeView.SelectedNode);
             RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
             glViewport.SwapBuffers();
         }
@@ -1606,7 +1623,7 @@ namespace Smash_Forge
 
         private void DrawUvsForSelectedTexture(NUT_Texture tex)
         {
-            foreach (TreeNode node in MeshList.treeView1.Nodes)
+            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer))
                     continue;
@@ -1618,33 +1635,6 @@ namespace Smash_Forge
                 RenderTools.DrawUv(camera, m.NUD, textureHash, 4, Color.Red, 1, Color.White);
             }
         }
-
-        private static void SetupFixedFunctionRendering()
-        {
-            GL.UseProgram(0);
-
-            GL.Enable(EnableCap.LineSmooth); // This is Optional 
-            GL.Enable(EnableCap.Normalize);  // This is critical to have
-            GL.Enable(EnableCap.RescaleNormal);
-
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Lequal);
-
-            GL.Enable(EnableCap.AlphaTest);
-            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Front);
-
-            GL.Enable(EnableCap.LineSmooth);
-
-            GL.Enable(EnableCap.StencilTest);
-            GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
-        }
-
         #endregion
 
     }

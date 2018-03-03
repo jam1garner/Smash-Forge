@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.filesTreeView = new System.Windows.Forms.TreeView();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
@@ -120,20 +120,20 @@
             // 
             // treeView1
             // 
-            this.treeView1.CheckBoxes = true;
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.HideSelection = false;
-            this.treeView1.LabelEdit = true;
-            this.treeView1.Location = new System.Drawing.Point(3, 16);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(187, 257);
-            this.treeView1.TabIndex = 0;
-            this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
-            this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
-            this.treeView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
-            this.treeView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.treeView1_KeyPress);
-            this.treeView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseDown);
+            this.filesTreeView.CheckBoxes = true;
+            this.filesTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.filesTreeView.HideSelection = false;
+            this.filesTreeView.LabelEdit = true;
+            this.filesTreeView.Location = new System.Drawing.Point(3, 16);
+            this.filesTreeView.Name = "treeView1";
+            this.filesTreeView.Size = new System.Drawing.Size(187, 257);
+            this.filesTreeView.TabIndex = 0;
+            this.filesTreeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
+            this.filesTreeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
+            this.filesTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.filesTreeView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyDown);
+            this.filesTreeView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.treeView1_KeyPress);
+            this.filesTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseDown);
             // 
             // numericUpDown1
             // 
@@ -764,7 +764,7 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.treeView1);
+            this.groupBox1.Controls.Add(this.filesTreeView);
             this.groupBox1.Location = new System.Drawing.Point(3, 1);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(193, 276);
@@ -797,7 +797,7 @@
 
         #endregion
 
-        public System.Windows.Forms.TreeView treeView1;
+        public System.Windows.Forms.TreeView filesTreeView;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button button1;

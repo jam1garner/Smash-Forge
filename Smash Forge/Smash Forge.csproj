@@ -457,6 +457,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Rendering\AreaLight.cs" />
+    <Compile Include="Rendering\BatchRenderTools.cs" />
     <Compile Include="Rendering\Camera.cs" />
     <Compile Include="Rendering\ColorTools.cs" />
     <Compile Include="Rendering\DirectionalLight.cs" />
