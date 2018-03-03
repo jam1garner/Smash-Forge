@@ -52,7 +52,7 @@ namespace Smash_Forge.Rendering
         public static void LoadNextNud(string nudFileName, ModelContainer modelContainer)
         {
             // Free memory used by OpenTK.
-            modelContainer.Destroy();
+            modelContainer.NUD.Destroy();
             modelContainer.NUD = new NUD(nudFileName);
         }
 

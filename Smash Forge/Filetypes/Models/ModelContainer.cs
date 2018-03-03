@@ -202,8 +202,10 @@ namespace Smash_Forge
          * */
         public void Destroy()
         {
-            if(NUD != null)
+            if (NUD != null)
                 NUD.Destroy();
+            if (NUT != null)
+                NUT.Destroy();
         }
 
         public VBN GetVBN()

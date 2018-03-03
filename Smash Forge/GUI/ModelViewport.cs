@@ -644,7 +644,7 @@ namespace Smash_Forge
 
         private void FrameAllModelContainers()
         {
-            float maxBoundingRadius = 5000;
+            float maxBoundingRadius = 400;
             // Find the max NUD bounding box for all models. 
             float[] boundingBox = new float[] { 0, 0, 0, 0 };
             foreach (TreeNode node in MeshList.filesTreeView.Nodes)
@@ -654,7 +654,7 @@ namespace Smash_Forge
                     ModelContainer modelContainer = (ModelContainer)node;
 
                     // Use the main bounding box for the NUD.
-                    if (modelContainer.NUD.boundingBox[3] > boundingBox[3] && modelContainer.NUD.boundingBox[3] < maxBoundingRadius)
+                    if ((modelContainer.NUD.boundingBox[3] > boundingBox[3]) && (modelContainer.NUD.boundingBox[3] < maxBoundingRadius))
                     {
                         boundingBox[0] = modelContainer.NUD.boundingBox[0];
                         boundingBox[1] = modelContainer.NUD.boundingBox[1];
@@ -676,8 +676,6 @@ namespace Smash_Forge
                 }
 
             }
-
-            Debug.WriteLine("Bounding box: " + boundingBox[3]);
 
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
@@ -1527,12 +1525,28 @@ namespace Smash_Forge
                 }
             }
 
+            string renderPath = stageFolder + "//render";
+            if (Directory.Exists(renderPath))
+            {
+                if (File.Exists(renderPath + "//light_set_param.bin"))
+                {
+                    Runtime.lightSetParam = new SALT.PARAMS.ParamFile(renderPath + "//light_set_param.bin");
+                    LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                }
+            }
+
             // Setup and render the stage.
             SetupNextRender();
             string stageName = FormatFileName(stageFolder, sourcePath);
             SaveScreenRender(outputPath + "\\" + stageName + ".png");
 
             // Clear all the models and nodes. 
+            foreach (NUT nut in Runtime.TextureContainers)
+                nut.Destroy();
+            Runtime.TextureContainers.Clear();
+
+            foreach (ModelContainer modelContainer in MeshList.filesTreeView.Nodes)
+                modelContainer.Destroy();
             MeshList.filesTreeView.Nodes.Clear();
         }
 
@@ -1562,7 +1576,6 @@ namespace Smash_Forge
                                 string xmlName = FormatFileName(files[i], folderSelect.SelectedPath);
                                 NUD nud = new NUD(files[i]);
                                 string outputFileName = outputFolderSelect.SelectedPath + "\\" + xmlName + ".xml";
-                                Debug.WriteLine(outputFileName);
                                 MaterialXML.ExportMaterialAsXml(nud, outputFileName);
                             }
                         }
