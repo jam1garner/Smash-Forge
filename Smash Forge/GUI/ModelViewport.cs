@@ -174,8 +174,6 @@ namespace Smash_Forge
         public bool isPlaying;
 
         // Contents
-        //public List<ModelContainer> draw = new List<ModelContainer>();
-
         public MeshList MeshList = new MeshList();
         public AnimListPanel AnimList = new AnimListPanel();
         public TreeNodeCollection draw;
@@ -905,68 +903,10 @@ namespace Smash_Forge
         {
             // Loads the new model. Assumes everything is called model.nud, model.nut, model.vbn.
             ModelContainer modelContainer = (ModelContainer)node;
-            LoadNextNut(fileName, modelContainer);
-            LoadNextNud(fileName, modelContainer);
-            LoadNextPacs(fileName, modelContainer);
-            LoadNextVbn(fileName, modelContainer);
-        }
-
-        private static void LoadNextVbn(string fileName, ModelContainer modelContainer)
-        {
-            // Not all models have a vbn.
-            if (File.Exists(fileName.Replace("nud", "vbn")))
-                modelContainer.VBN = new VBN(fileName.Replace("nud", "vbn"));
-        }
-
-        private static void LoadNextPacs(string fileName, ModelContainer modelContainer)
-        {
-            // Read pacs to hide meshes.
-            string[] pacs = Directory.GetFiles(fileName.Replace("model.nud", ""), "*.pac");
-            foreach (string s in pacs)
-            {
-                PAC p = new PAC();
-                p.Read(s);
-                byte[] data;
-                if (p.Files.TryGetValue("display", out data))
-                {
-                    MTA m = new MTA();
-                    m.read(new FileData(data));
-                    modelContainer.NUD.applyMTA(m, 0);
-                }
-                if (p.Files.TryGetValue("default.mta", out data))
-                {
-                    MTA m = new MTA();
-                    m.read(new FileData(data));
-                    modelContainer.NUD.applyMTA(m, 0);
-                }
-            }
-        }
-
-        private static void LoadNextNud(string fileName, ModelContainer modelContainer)
-        {
-            // Free memory used by OpenTK.
-            modelContainer.Destroy();
-            modelContainer.NUD = new NUD(fileName);
-        }
-
-        private static void LoadNextNut(string fileName, ModelContainer modelContainer)
-        {
-            Runtime.TextureContainers.Clear();
-            try
-            {
-                NUT newNut = new NUT(fileName.Replace("nud", "nut"));
-                Runtime.TextureContainers.Add(newNut);
-
-                // Free memory used by OpenTK.
-                modelContainer.NUT.Destroy();
-
-                modelContainer.NUT = newNut;
-            }
-            catch (Exception e)
-            {
-                // A few nuts still don't open properly, so just skip them.
-                Debug.WriteLine(e.Message);
-            }
+            BatchRenderTools.LoadNextNut(fileName, modelContainer);
+            BatchRenderTools.LoadNextNud(fileName, modelContainer);
+            BatchRenderTools.LoadNextPacs(fileName, modelContainer);
+            BatchRenderTools.LoadNextVbn(fileName, modelContainer);
         }
 
         private static string FormatFileName(string fileName, string path)
@@ -1348,8 +1288,6 @@ namespace Smash_Forge
              && !TransformTool.hit)
             {
                 camera.Update();
-                //if (cameraPosForm != null && !cameraPosForm.IsDisposed)
-                //    cameraPosForm.updatePosition();
             }
             try
             {
@@ -1553,6 +1491,40 @@ namespace Smash_Forge
 
             if (Keyboard.GetState().IsKeyDown(Key.X) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.L))
                 BatchExportMaterialXml();
+
+            if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T) && Keyboard.GetState().IsKeyDown(Key.G))
+                BatchRenderStages();
+        }
+
+        private void BatchRenderStages()
+        {
+            // Get the source model folder and then the output folder. 
+            using (var sourceFolderSelect = new FolderSelectDialog())
+            {
+                if (sourceFolderSelect.ShowDialog() == DialogResult.OK)
+                {
+                    using (var outputFolderSelect = new FolderSelectDialog())
+                    {
+                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
+                        {
+                            foreach (string stageFolder in Directory.GetDirectories(sourceFolderSelect.SelectedPath))
+                            {
+                                // Open all the nuds, nuts, xmb files
+                                string[] nudFileNames = Directory.GetFiles(stageFolder, "*.nud", SearchOption.AllDirectories);
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void SaveScreenRender(string outputPath)
+        {
+            // Manually dispose the bitmap to avoid memory leaks. 
+            Bitmap screenCapture = CaptureScreen(true);
+            screenCapture.Save(outputPath);
+            screenCapture.Dispose();
         }
 
         private void BatchExportMaterialXml()
