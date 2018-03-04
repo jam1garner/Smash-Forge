@@ -1042,9 +1042,6 @@ namespace Smash_Forge.Rendering
             GL.Disable(EnableCap.CullFace);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            if (v1.uv[0].Y < 0)
-                Debug.WriteLine(v1.uv[0].Y);
-
 
             GL.Color3(uvColor);
 

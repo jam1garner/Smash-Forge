@@ -316,7 +316,6 @@ namespace Smash_Forge.GUI.Editors
             float value = GuiTools.TryParseTBFloat(charColor1XTB);
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
-                Debug.WriteLine("render char");
                 LightTools.fresnelLight.setSkyHue(value);
                 RenderCharacterLightColor(new Vector3(LightTools.fresnelLight.skyR, LightTools.fresnelLight.skyG, LightTools.fresnelLight.skyB),
                     new Vector3(LightTools.fresnelLight.groundR, LightTools.fresnelLight.groundG, LightTools.fresnelLight.groundB));

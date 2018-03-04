@@ -642,9 +642,8 @@ namespace Smash_Forge
             camera.Update();
         }
 
-        private void FrameAllModelContainers()
+        private void FrameAllModelContainers(float maxBoundingRadius = 400)
         {
-            float maxBoundingRadius = 400;
             // Find the max NUD bounding box for all models. 
             float[] boundingBox = new float[] { 0, 0, 0, 0 };
             foreach (TreeNode node in MeshList.filesTreeView.Nodes)
@@ -864,7 +863,7 @@ namespace Smash_Forge
                         {
                             for (int i = 0; i < files.Length; i++)
                             {
-                                OpenAndRenderModel(files[i], i, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+                                OpenAndRenderModel(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath, true);
                             }
                         }
                     }
@@ -872,28 +871,50 @@ namespace Smash_Forge
             }
         }
 
-        private void OpenAndRenderModel(string fileName, int totalRenderCount, string sourcePath, string outputPath)
+        private void BatchRenderStages()
+        {
+            // Get the source model folder and then the output folder. 
+            using (var sourceFolderSelect = new FolderSelectDialog())
+            {
+                if (sourceFolderSelect.ShowDialog() == DialogResult.OK)
+                {
+                    using (var outputFolderSelect = new FolderSelectDialog())
+                    {
+                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
+                        {
+                            foreach (string stageFolder in Directory.GetDirectories(sourceFolderSelect.SelectedPath))
+                            {
+                                RenderStageModels(stageFolder, outputFolderSelect.SelectedPath, sourceFolderSelect.SelectedPath);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OpenAndRenderModel(string fileName, string sourcePath, string outputPath, bool loadPacs = false)
         {
             foreach (TreeNode node in draw)
             {
                 if (!(node is ModelContainer))
                     continue;
 
-                BatchRenderTools.LoadNewModelForRender(fileName, node);
-                Runtime.TextureContainers.Clear();
+                BatchRenderTools.LoadNewModelForRender(fileName, node, loadPacs);
                 SetupNextRender();
                 string renderName = FormatFileName(fileName, sourcePath);
                 // Manually dispose the bitmap to avoid memory leaks. 
                 Bitmap screenCapture = CaptureScreen(true);
-                screenCapture.Save(outputPath + "\\" + renderName + "_" + totalRenderCount + ".png");
+                screenCapture.Save(outputPath + "\\" + renderName + ".png");
                 screenCapture.Dispose();
+
+                Runtime.TextureContainers.Clear();
             }
         }
 
         private void SetupNextRender()
         {
-            // Setup before rendering the model. 
-            FrameAllModelContainers();
+            // Setup before rendering the model. Use a large max radius to show skybox models.
+            FrameAllModelContainers(5000);
             Render(null, null);
             glViewport.SwapBuffers();
         }
@@ -904,6 +925,7 @@ namespace Smash_Forge
             string renderName = fileName.Replace(path, "");
             renderName = renderName.Substring(1);
             renderName = renderName.Replace("\\", "_");
+            renderName = renderName.Replace("//", "_");
             renderName = renderName.Replace(".nud", "");
             return renderName;
         }
@@ -1485,58 +1507,48 @@ namespace Smash_Forge
                 BatchRenderStages();
         }
 
-        private void BatchRenderStages()
+        private void RenderStageModels(string stageFolder, string outputPath, string sourcePath)
         {
-            // Get the source model folder and then the output folder. 
-            using (var sourceFolderSelect = new FolderSelectDialog())
+            string renderPath = stageFolder + "//render";
+            if (Directory.Exists(renderPath))
             {
-                if (sourceFolderSelect.ShowDialog() == DialogResult.OK)
+                if (File.Exists(renderPath + "//light_set_param.bin"))
                 {
-                    using (var outputFolderSelect = new FolderSelectDialog())
+                    try
                     {
-                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
-                        {
-                            foreach (string stageFolder in Directory.GetDirectories(sourceFolderSelect.SelectedPath))
-                            {
-                                RenderStage(stageFolder, outputFolderSelect.SelectedPath, sourceFolderSelect.SelectedPath);
-                            }
-                        }
+                        Runtime.lightSetParam = new SALT.PARAMS.ParamFile(renderPath + "//light_set_param.bin");
+                        LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
                     }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e.Message);
+                    }
+
                 }
             }
-        }
 
-        private void RenderStage(string stageFolder, string outputPath, string sourcePath)
-        {
-            // Open all the nuds, nuts, xmb files
-            string modelPath = stageFolder + "//model";
+            string modelPath = stageFolder + "//model//";
             if (Directory.Exists(modelPath))
             {
                 // We can assume one NUD per folder. 
                 string[] nudFileNames = Directory.GetFiles(modelPath, "*.nud", SearchOption.AllDirectories);
                 foreach (string nudFile in nudFileNames)
                 {
-                    ModelContainer modelContainer = new ModelContainer();
+                    Debug.WriteLine(nudFile);
+                    /*ModelContainer modelContainer = new ModelContainer();
                     BatchRenderTools.LoadNextNud(nudFile, modelContainer);
                     BatchRenderTools.LoadNextNut(nudFile, modelContainer);
                     BatchRenderTools.LoadNextVbn(nudFile, modelContainer);
                     BatchRenderTools.LoadNextXmb(nudFile, modelContainer);
-                    MeshList.filesTreeView.Nodes.Add(modelContainer);
+                    MeshList.filesTreeView.Nodes.Add(modelContainer);*/
+
+                    OpenAndRenderModel(nudFile, sourcePath, outputPath);
                 }
             }
 
-            string renderPath = stageFolder + "//render";
-            if (Directory.Exists(renderPath))
-            {
-                if (File.Exists(renderPath + "//light_set_param.bin"))
-                {
-                    Runtime.lightSetParam = new SALT.PARAMS.ParamFile(renderPath + "//light_set_param.bin");
-                    LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
-                }
-            }
 
             // Setup and render the stage.
-            SetupNextRender();
+            /*SetupNextRender();
             string stageName = FormatFileName(stageFolder, sourcePath);
             SaveScreenRender(outputPath + "\\" + stageName + ".png");
 
@@ -1547,7 +1559,7 @@ namespace Smash_Forge
 
             foreach (ModelContainer modelContainer in MeshList.filesTreeView.Nodes)
                 modelContainer.Destroy();
-            MeshList.filesTreeView.Nodes.Clear();
+            MeshList.filesTreeView.Nodes.Clear();*/
         }
 
         private void SaveScreenRender(string outputPath)
