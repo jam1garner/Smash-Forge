@@ -512,7 +512,7 @@ namespace Smash_Forge
             }
 
             // Reset the camera. 
-            mvp.FrameSelection();
+            mvp.FrameSelectionAndSort();
 
             return mvp;
         }

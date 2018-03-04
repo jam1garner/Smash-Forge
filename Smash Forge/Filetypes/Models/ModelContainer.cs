@@ -474,9 +474,14 @@ namespace Smash_Forge
             }
         }
 
+        public void DepthSortModels(Vector3 cameraPosition)
+        {
+            if (NUD != null)
+                NUD.DepthSortMeshes(cameraPosition);
+        }
 
         #region Editing Tools
-        
+
         public class DuplicateKeyComparer<TKey> : IComparer<TKey> where TKey : IComparable
         {
             public int Compare(TKey x, TKey y)

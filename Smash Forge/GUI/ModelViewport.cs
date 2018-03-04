@@ -561,10 +561,10 @@ namespace Smash_Forge
         private void ResetCamera_Click(object sender, EventArgs e)
         {
             // Frame the selected NUD or mesh based on the bounding spheres. Frame the NUD if nothing is selected. 
-            FrameSelection();
+            FrameSelectionAndSort();
         }
 
-        public void FrameSelection()
+        public void FrameSelectionAndSort()
         {
             if (MeshList.filesTreeView.SelectedNode is NUD.Mesh)
             {
@@ -585,6 +585,16 @@ namespace Smash_Forge
             else
             {
                 FrameAllModelContainers();
+            }
+
+            // Depth sorting. 
+            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            {
+                if (node is ModelContainer)
+                {
+                    ModelContainer modelContainer = (ModelContainer)node;
+                    modelContainer.DepthSortModels(camera.position);
+                }
             }
         }
 
@@ -1483,7 +1493,7 @@ namespace Smash_Forge
         {
             // toggle channel rendering
             if (e.KeyChar == 'f')
-                FrameSelection();
+                FrameSelectionAndSort();
             if (e.KeyChar == 'r')
                 Runtime.renderR = !Runtime.renderR;
             if (e.KeyChar == 'g')

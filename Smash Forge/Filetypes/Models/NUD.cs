@@ -44,7 +44,7 @@ namespace Smash_Forge
         public NUD(string fname) : this()
         {
             Read(fname);
-            UpdateVertexDataAndSort();
+            UpdateVertexData();
         }
 
         int vbo_position;
@@ -130,8 +130,7 @@ namespace Smash_Forge
             Zero = 0xA
         }
 
-
-        private void DepthSortMeshes()
+        public void DepthSortMeshes(Vector3 cameraPosition)
         {
             foreach (Mesh m in Nodes)
             {
@@ -156,14 +155,21 @@ namespace Smash_Forge
             foreach(Mesh m in Nodes)
             {
                 meshes.Add(m);
-                m.sortingDistance = m.boundingBox[3] + m.boundingBox[2] + m.sortBias;
+
+                Vector3 distanceVector = new Vector3(cameraPosition.X - m.boundingBox[0], cameraPosition.Y - m.boundingBox[1],
+                    cameraPosition.Z - m.boundingBox[2]);
+                m.sortingDistance = distanceVector.Length + m.boundingBox[3] - m.sortBias;
+
                 if (m.useNsc)
                 {
                     // Use the bone position as the bounding box center. 
-                    ModelContainer modelContainer = (ModelContainer)this.Parent;
+                    /*ModelContainer modelContainer = (ModelContainer)this.Parent;
                     int index = m.singlebind;
-                    float centerZ = modelContainer.VBN.bones[index].pos.Z;
-                    m.sortingDistance = m.boundingBox[3] + centerZ + m.sortBias;
+                    if (index != -1)
+                    {
+                        Vector3 nscDistanceVector = cameraPosition - modelContainer.VBN.bones[index].pos;
+                        m.sortingDistance = nscDistanceVector.Length + m.boundingBox[3] + m.sortBias;
+                    }*/
                 }
             }
 
@@ -182,9 +188,12 @@ namespace Smash_Forge
                     depthSortedMeshes.Insert(i, mesh);
                 }
             }
+
+            foreach (Mesh m in depthSortedMeshes)
+                Debug.WriteLine(m.Text + " depth: " + m.sortingDistance);
         }
 
-        public void UpdateVertexDataAndSort()
+        public void UpdateVertexData()
         {
             DisplayVertex[] Vertices;
             int[] Faces;
@@ -216,16 +225,12 @@ namespace Smash_Forge
             Vertices = Vs.ToArray();
             Faces = Ds.ToArray();
 
-            //Console.WriteLine(Vertices.Length + " " + Faces.Length);
-
             // Bind only once!
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
             GL.BufferData<DisplayVertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
             GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
-
-            DepthSortMeshes();
         }
 
         public void Render(VBN vbn, Camera camera)
