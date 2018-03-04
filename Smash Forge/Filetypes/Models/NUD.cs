@@ -147,13 +147,41 @@ namespace Smash_Forge
                 }
                 else if (m.Text.Contains("NSC"))
                 {
-                    m.nsc = true;
+                    m.useNsc = true;
                 }
             }
+            // TODO: Do this more efficiently. 
+            // Meshes can be rendered in the order they appear in the NUD, by bounding spheres, and offsets. 
             List<Mesh> meshes = new List<Mesh>();
             foreach(Mesh m in Nodes)
+            {
                 meshes.Add(m);
-            depthSortedMeshes = meshes.OrderBy(o => (o.boundingBox[2] - o.boundingBox[3] + o.sortBias)).ToList();
+                m.sortingDistance = m.boundingBox[3] + m.boundingBox[2] + m.sortBias;
+                if (m.useNsc)
+                {
+                    // Use the bone position as the bounding box center. 
+                    ModelContainer modelContainer = (ModelContainer)this.Parent;
+                    int index = m.singlebind;
+                    float centerZ = modelContainer.VBN.bones[index].pos.Z;
+                    m.sortingDistance = m.boundingBox[3] + centerZ + m.sortBias;
+                }
+            }
+
+            // Order by the distance from the camera to the closest point on the bounding sphere. 
+            // Camera position neglected for now. Render more distant objects first. 
+            depthSortedMeshes = meshes.OrderByDescending(o => (o.sortingDistance)).ToList();
+
+            // Check for meshes that shouldn't be sorted. 
+            for (int i = 0; i < Nodes.Count; i++)
+            {
+                Mesh mesh = (Mesh)Nodes[i];
+                if (mesh.Text.Contains("HIR"))
+                {
+                    // Just use the mesh list order.
+                    depthSortedMeshes.Remove(mesh);
+                    depthSortedMeshes.Insert(i, mesh);
+                }
+            }
         }
 
         public void UpdateVertexDataAndSort()
@@ -592,7 +620,7 @@ namespace Smash_Forge
                 int index = ((Mesh)p.Parent).singlebind;
                 if (index != -1)
                 {
-                    // hacky as f
+                    // Very hacky
                     nscMatrix = ((ModelContainer)p.Parent.Parent.Parent).VBN.bones[index].transform;
                 }
             }
@@ -2869,9 +2897,10 @@ namespace Smash_Forge
             public int sortBias = 0;
             public bool billboardY = false;
             public bool billboard = false;
-            public bool nsc = false;
+            public bool useNsc = false;
 
             public float[] boundingBox = new float[8];
+            public float sortingDistance = 0;
 
             public Mesh()
             {

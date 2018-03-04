@@ -364,7 +364,7 @@ vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixInt
 
     // TODO: Stage cubemaps currently just use the miiverse cubemap.
     if (hasStage == 1)
-       reflectionPass += reflectionColor.rgb * stageCubeColor * tintColor;
+       reflectionPass += reflectionColor.rgb * stageCubeColor.rgb * tintColor;
 
 	reflectionPass += SphereMapColor(normal.xyz) * reflectionColor.xyz * tintColor;
 
@@ -419,18 +419,17 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoMap, float aoMixInten
 
     // TODO: Not sure how this works. Specular works differently for eye mats.
     if ((flags & 0x00E10000u) == 0x00E10000u)
-        specColorTotal *= 0;
+        specColorTotal *= diffuseMap.rgb;
 
     // It sort of conserves energy for low values.
     specularPass += max(specColorTotal - vec3(0.5 * Luminance(diffuseMap.rgb)), vec3(0));
-
-    specularPass *= mix(aoMap, 1, aoMixIntensity);
+    specularPass *= mix(pow(aoMap, 1 / gamma), 1, aoMixIntensity);
 
     specularPass *= tintColor;
     specularPass *= specLightColor;
     specularPass *= specularIntensity;
 
-    specularPass = pow(specularPass, vec3(gamma));
+    specularPass = pow(specularPass, vec3(1));
     return specularPass;
 }
 
@@ -502,11 +501,32 @@ vec3 AOBlend(float aoMap)
 {
     // Calculate the effect of NU_aoMinGain on the ambient occlusion map.
     // This is only used for diffuse shading.
-    float maxAOBlendValue = 1.25;
+    // TODO: Max should be 1 but doesn't look correct.
+    float maxAOBlendValue = 1.00;
     vec3 aoBlend = vec3(aoMap);
     // TODO: Fix aoBlend saturation.
     return min((aoBlend + aoMinGain.rgb), vec3(maxAOBlendValue));
 }
+
+vec3 ColorOffsetGain(vec3 diffuseMap)
+{
+    float diffuseLuminance = Luminance(diffuseMap);
+    vec3 resultingColor = vec3(diffuseLuminance);
+
+    // Offset the shadows first before adjusting the gain.
+    resultingColor += colorOffset.rgb;
+    resultingColor *= colorGain.rgb;
+
+    if (hasBayoHair == 1)
+    {
+        // Bayo hair diffuse has three different textures for R, G, and B.
+        resultingColor = colorOffset.rgb + (diffuseMap.rrr * colorGain.rgb);
+        resultingColor *= alphaBlendParams.w; // #justbayothings
+    }
+
+    return resultingColor;
+}
+
 
 vec3 DiffusePass(vec3 N, vec4 diffuseMap, float aoMap)
 {
@@ -522,25 +542,12 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, float aoMap)
     vec3 diffuseColorFinal = vec3(0); // result of diffuse map, aoBlend, and some NU_values
     float diffuseLuminance = Luminance(diffuseMap.rgb); // used for colorGain and colorOffset
 
-    // Ambient occlusion calculations. TODO: Separate ao for diffuse from other render passes.
-    if (hasNrm == 1)
-        aoMap = texture(normalMap, texCoord).a;
-    else
-        aoMap = 1;
     vec3 aoBlend = AOBlend(aoMap);
     float aoMixIntensity = aoMinGain.a;
 
     if (hasColorGainOffset == 1) // probably a more elegant solution...
     {
-        diffuseColorFinal = colorOffset.rgb + (Luminance(diffuseMap.rgb) * (colorGain.rgb));
-
-        if (hasBayoHair == 1)
-        {
-            // Bayo hair diffuse has three different textures for R, G, and B.
-            diffuseColorFinal = colorOffset.rgb + (diffuseMap.rrr * colorGain.rgb);
-            diffuseColorFinal *= alphaBlendParams.w; // #justbayothings
-            aoMap = 1; // TODO: Bayo hair AO blending.
-        }
+        diffuseColorFinal = ColorOffsetGain(diffuseMap.rgb);
     }
     else
     {
@@ -552,9 +559,8 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, float aoMap)
     vec3 lighting = Lighting(N, halfLambert);
 
     // Dummy ramp calculations.
-    float rampIntensity = 0.75;
-    vec3 rampTotal = (0.2 * RampColor(halfLambert)) + (0.75 * DummyRampColor(halfLambert));
-    vec3 rampAdd = mix(vec3(0), rampTotal, halfLambert);
+    vec3 rampTotal = (0.2 * RampColor(halfLambert)) + (0.5 * DummyRampColor(halfLambert));
+    vec3 rampAdd = pow(rampTotal, vec3(gamma));
 
     diffusePass = diffuseColorFinal * lighting;
     // TODO: Fix ramp shading. Disabled for now.
@@ -571,7 +577,7 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, float aoMap)
     if (softLightBrighten == 1)
         diffusePass *= 1.5;
 
-    diffusePass = pow(diffusePass, vec3(gamma));
+    diffusePass = pow(diffusePass, vec3(1));
     return diffusePass;
 }
 
@@ -617,32 +623,49 @@ vec4 TotalDiffuseMap()
         }
     }
 
-    return diffuseMapTotal;
+    // TODO: Create uniform for flags comparison.
+    if (hasAo == 1)
+    {
+        vec3 difAO = texture(ao, texCoord2).rgb;
+        float normalBlend = normal.y * 0.5 + 0.5;
+
+        if ((flags & 0x00410000u) == 0x00410000u)
+            diffuseMapTotal.rgb = mix(difAO, diffuseMapTotal.rgb, normalBlend);
+        else
+            diffuseMapTotal.rgb *= difAO.rgb;
+    }
+
+    return pow(diffuseMapTotal, vec4(gamma, gamma, gamma, 1));
 }
 
-vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N, vec3 I)
+float AmbientOcclusion(vec4 diffuseMap)
 {
-    float aoMixIntensity = aoMinGain.w;
-
-	// Calculate the color tints
-	vec3 specTintColor = TintColor(diffuseMap.rgb, specularColor.a);
-	vec3 fresTintColor = TintColor(diffuseMap.rgb, fresnelColor.a);
-	vec3 reflTintColor = TintColor(diffuseMap.rgb, reflectionColor.a);
-
+    float aoMap = texture(normalMap, texCoord).a;
     // Not all materials have an ambient occlusion map.
     if (hasNrm != 1)
         aoMap = 1;
 
     // The diffuse map for colorGain/Offset materials does a lot of things.
-    if (hasColorGainOffset == 1)
-        aoMap = Luminance(diffuseMap.rgb);
+    // TODO: Should diffuse blend use color? The party ball item is not saturated enough.
+    if (hasColorGainOffset == 1 || useDiffuseBlend == 1)
+        return Luminance(diffuseMap.rgb);
 
+    return pow(aoMap, gamma);
+}
+
+vec3 SmashShader(vec4 diffuseMap, float aoMap, vec3 N, vec3 I)
+{
+    float aoMixIntensity = aoMinGain.w;
     if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
-    {
-        // TODO: Should this use color? The party ball item is not saturated enough.
-        aoMap = Luminance(diffuseMap.rgb);
         aoMixIntensity = 0;
-    }
+
+    // Ambient occlusion map. NU_aoMinGain calculated in diffuse pass.
+    aoMap = AmbientOcclusion(diffuseMap);
+
+    // Calculate the color tints
+    vec3 specTintColor = TintColor(diffuseMap.rgb, specularColor.a);
+    vec3 fresTintColor = TintColor(diffuseMap.rgb, fresnelColor.a);
+    vec3 reflTintColor = TintColor(diffuseMap.rgb, reflectionColor.a);
 
     // Separate render pass calculations.
     vec3 diffusePass = DiffusePass(N, diffuseMap, aoMap);
@@ -694,19 +717,6 @@ void main()
 
     // TODO: Research how mii colors work.
     diffuseMapTotal *= characterColor.rgba;
-
-    // TODO: Create uniform for flags comparison.
-    if (hasAo == 1)
-    {
-        vec3 difAO = texture(ao, texCoord2).rgb;
-        float normalBlend = normal.y * 0.5 + 0.5;
-
-        if ((flags & 0x00410000u) == 0x00410000u)
-            diffuseMapTotal.rgb = mix(difAO, diffuseMapTotal.rgb, normalBlend);
-        else
-            diffuseMapTotal.rgb *= difAO.rgb;
-    }
-
     // Material lighting done in SmashShader
     fragColor.rgb = SmashShader(diffuseMapTotal, texture(normalMap, texCoord).a, N, I);
 
