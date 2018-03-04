@@ -902,16 +902,16 @@ namespace Smash_Forge
             }
         }
 
-        private void OpenAndRenderModel(string fileName, string sourcePath, string outputPath, bool loadPacs = false)
+        private void OpenAndRenderModel(string nudFileName, string sourcePath, string outputPath, bool loadPacs = false)
         {
             foreach (TreeNode node in draw)
             {
                 if (!(node is ModelContainer))
                     continue;
 
-                BatchRenderTools.LoadNewModelForRender(fileName, node, loadPacs);
+                BatchRenderTools.LoadNewModelForRender(nudFileName, node, loadPacs);
                 SetupNextRender();
-                string renderName = FormatFileName(fileName, sourcePath);
+                string renderName = FormatFileName(nudFileName, sourcePath);
                 // Manually dispose the bitmap to avoid memory leaks. 
                 Bitmap screenCapture = CaptureScreen(true);
                 screenCapture.Save(outputPath + "\\" + renderName + ".png");
@@ -924,7 +924,7 @@ namespace Smash_Forge
         private void SetupNextRender()
         {
             // Setup before rendering the model. Use a large max radius to show skybox models.
-            FrameAllModelContainers(5000);
+            FrameSelectionAndSort();
             Render(null, null);
             glViewport.SwapBuffers();
         }
