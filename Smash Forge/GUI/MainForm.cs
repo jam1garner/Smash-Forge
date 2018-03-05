@@ -59,6 +59,7 @@ namespace Smash_Forge
             if (Smash_Forge.Update.Downloaded)
                 Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
             DiscordSettings.Update();
+            Thread.Sleep(1000);
         }
 
         ~MainForm()
