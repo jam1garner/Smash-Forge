@@ -134,20 +134,7 @@ namespace Smash_Forge
         {
             foreach (Mesh m in Nodes)
             {
-                m.calculateSortBias();
-
-                if (m.Text.Contains("BILLBOARDYAXIS"))
-                {
-                    m.billboardY = true;
-                }
-                else if (m.Text.Contains("BILLBOARD"))
-                {
-                    m.billboard = true;
-                }
-                else if (m.Text.Contains("NSC"))
-                {
-                    m.useNsc = true;
-                }
+                m.SetMeshAttributesFromName();
             }
             // TODO: Do this more efficiently. 
             // Meshes can be rendered in the order they appear in the NUD, by bounding spheres, and offsets. 
@@ -181,7 +168,7 @@ namespace Smash_Forge
             for (int i = 0; i < Nodes.Count; i++)
             {
                 Mesh mesh = (Mesh)Nodes[i];
-                if (mesh.Text.Contains("HIR"))
+                if (mesh.sortByObjHeirarchy)
                 {
                     // Just use the mesh list order.
                     depthSortedMeshes.Remove(mesh);
@@ -2903,6 +2890,7 @@ namespace Smash_Forge
             public bool billboardY = false;
             public bool billboard = false;
             public bool useNsc = false;
+            public bool sortByObjHeirarchy = true;
 
             public float[] boundingBox = new float[8];
             public float sortingDistance = 0;
@@ -3008,26 +2996,47 @@ namespace Smash_Forge
                 boundingBox[7] = 0;
             }
 
-            public void calculateSortBias()
+            private int CalculateSortBias()
             {
                 if (!(Text.Contains("SORTBIAS")))
-                    return;
+                    return 0;
 
                 // Isolate the integer value from the mesh name.
+                string sortBiasKeyWord = "SORTBIAS";
+                string sortBiasText = GetSortBiasNumbers(sortBiasKeyWord);
+
+                int sortBiasValue = 0;
+                int.TryParse(sortBiasText, out sortBiasValue);
+
+                // TODO: What does "m" do? Ex: SORTBIASm50_
+                int firstSortBiasCharIndex = Text.IndexOf(sortBiasKeyWord) + sortBiasKeyWord.Length;
+                if (Text[firstSortBiasCharIndex] == 'm')
+                    sortBiasValue *= -1;
+
+                return sortBiasValue;
+            }
+
+            private string GetSortBiasNumbers(string sortBiasKeyWord)
+            {
                 string sortBiasText = "";
-                for (int i = Text.IndexOf("SORTBIAS") + 8; i < Text.Length; i++)
+                for (int i = Text.IndexOf(sortBiasKeyWord) + sortBiasKeyWord.Length; i < Text.Length; i++)
                 {
                     if (Text[i] != '_')
-                    {
                         sortBiasText += Text[i];
-                    }
                     else
                         break;
                 }
 
-                int sortBiasValue = 0;
-                int.TryParse(sortBiasText, out sortBiasValue);
-                sortBias = sortBiasValue;              
+                return sortBiasText;
+            }
+
+            public void SetMeshAttributesFromName()
+            {
+                sortBias = CalculateSortBias();
+                billboard = Text.Contains("BILLBOARD");
+                billboardY = Text.Contains("BILLBOARDYAXIS");
+                useNsc = Text.Contains("NSC");
+                sortByObjHeirarchy = Text.Contains("HIR");
             }
         }
 
