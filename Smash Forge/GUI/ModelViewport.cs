@@ -174,8 +174,6 @@ namespace Smash_Forge
         public bool isPlaying;
 
         // Contents
-        //public List<ModelContainer> draw = new List<ModelContainer>();
-
         public MeshList MeshList = new MeshList();
         public AnimListPanel AnimList = new AnimListPanel();
         public TreeNodeCollection draw;
@@ -240,7 +238,7 @@ namespace Smash_Forge
 
             ViewComboBox.SelectedIndex = 0;
 
-            draw = MeshList.treeView1.Nodes;
+            draw = MeshList.filesTreeView.Nodes;
 
             RenderTools.Setup();
         }
@@ -404,7 +402,7 @@ namespace Smash_Forge
                         SortedList<double, NUD.Mesh> selected = con.GetMeshSelection(ray);
                         selectedSize = selected.Count;
                         if (selected.Count > dbdistance)
-                            MeshList.treeView1.SelectedNode = selected.Values.ElementAt(dbdistance);
+                            MeshList.filesTreeView.SelectedNode = selected.Values.ElementAt(dbdistance);
                     }
                 }
                 
@@ -462,7 +460,7 @@ namespace Smash_Forge
 
             if (MaterialAnimation != null)
             {
-                foreach (TreeNode node in MeshList.treeView1.Nodes)
+                foreach (TreeNode node in MeshList.filesTreeView.Nodes)
                 {
                     if (!(node is ModelContainer)) continue;
                     ModelContainer m = (ModelContainer)node;
@@ -480,7 +478,7 @@ namespace Smash_Forge
             if (ACMDScript != null && Runtime.useFrameDuration)
                 animFrameNum = ACMDScript.animationFrame;// - 1;
             
-            foreach (TreeNode node in MeshList.treeView1.Nodes)
+            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer)) continue;
                 ModelContainer m = (ModelContainer)node;
@@ -512,7 +510,7 @@ namespace Smash_Forge
 
         public void ResetModels()
         {
-            foreach (TreeNode node in MeshList.treeView1.Nodes)
+            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer)) continue;
                 ModelContainer m = (ModelContainer)node;
@@ -563,24 +561,24 @@ namespace Smash_Forge
         private void ResetCamera_Click(object sender, EventArgs e)
         {
             // Frame the selected NUD or mesh based on the bounding spheres. Frame the NUD if nothing is selected. 
-            FrameSelection();
+            FrameSelectionAndSort();
         }
 
-        public void FrameSelection()
+        public void FrameSelectionAndSort()
         {
-            if (MeshList.treeView1.SelectedNode is NUD.Mesh)
+            if (MeshList.filesTreeView.SelectedNode is NUD.Mesh)
             {
                 FrameSelectedMesh();
             }
-            else if (MeshList.treeView1.SelectedNode is NUD)
+            else if (MeshList.filesTreeView.SelectedNode is NUD)
             {
                 FrameSelectedNud();
             }
-            else if (MeshList.treeView1.SelectedNode is NUD.Polygon)
+            else if (MeshList.filesTreeView.SelectedNode is NUD.Polygon)
             {
                 FrameSelectedPolygon();
             }
-            else if (MeshList.treeView1.SelectedNode is ModelContainer)
+            else if (MeshList.filesTreeView.SelectedNode is ModelContainer)
             {
                 FrameSelectedModelContainer();
             }
@@ -588,11 +586,21 @@ namespace Smash_Forge
             {
                 FrameAllModelContainers();
             }
+
+            // Depth sorting. 
+            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            {
+                if (node is ModelContainer)
+                {
+                    ModelContainer modelContainer = (ModelContainer)node;
+                    modelContainer.DepthSortModels(camera.position);
+                }
+            }
         }
 
         private void FrameSelectedModelContainer()
         {
-            ModelContainer modelContainer = (ModelContainer)MeshList.treeView1.SelectedNode;
+            ModelContainer modelContainer = (ModelContainer)MeshList.filesTreeView.SelectedNode;
             float[] boundingBox = new float[] { 0, 0, 0, 0 };
 
             // Use the main bounding box for the NUD.
@@ -622,7 +630,7 @@ namespace Smash_Forge
 
         private void FrameSelectedMesh()
         {
-            NUD.Mesh mesh = (NUD.Mesh)MeshList.treeView1.SelectedNode;
+            NUD.Mesh mesh = (NUD.Mesh)MeshList.filesTreeView.SelectedNode;
             float[] boundingBox = mesh.boundingBox;
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
@@ -630,7 +638,7 @@ namespace Smash_Forge
 
         private void FrameSelectedNud()
         {
-            NUD nud = (NUD)MeshList.treeView1.SelectedNode;
+            NUD nud = (NUD)MeshList.filesTreeView.SelectedNode;
             float[] boundingBox = nud.boundingBox;
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
@@ -638,25 +646,24 @@ namespace Smash_Forge
 
         private void FrameSelectedPolygon()
         {
-            NUD.Mesh mesh = (NUD.Mesh)MeshList.treeView1.SelectedNode.Parent;
+            NUD.Mesh mesh = (NUD.Mesh)MeshList.filesTreeView.SelectedNode.Parent;
             float[] boundingBox = mesh.boundingBox;
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
         }
 
-        private void FrameAllModelContainers()
+        private void FrameAllModelContainers(float maxBoundingRadius = 400)
         {
-            float maxBoundingRadius = 5000;
             // Find the max NUD bounding box for all models. 
             float[] boundingBox = new float[] { 0, 0, 0, 0 };
-            foreach (TreeNode node in MeshList.treeView1.Nodes)
+            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
             {
                 if (node is ModelContainer)
                 {
                     ModelContainer modelContainer = (ModelContainer)node;
 
                     // Use the main bounding box for the NUD.
-                    if (modelContainer.NUD.boundingBox[3] > boundingBox[3] && modelContainer.NUD.boundingBox[3] < maxBoundingRadius)
+                    if ((modelContainer.NUD.boundingBox[3] > boundingBox[3]) && (modelContainer.NUD.boundingBox[3] < maxBoundingRadius))
                     {
                         boundingBox[0] = modelContainer.NUD.boundingBox[0];
                         boundingBox[1] = modelContainer.NUD.boundingBox[1];
@@ -678,8 +685,6 @@ namespace Smash_Forge
                 }
 
             }
-
-            Debug.WriteLine("Bounding box: " + boundingBox[3]);
 
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
@@ -868,7 +873,7 @@ namespace Smash_Forge
                         {
                             for (int i = 0; i < files.Length; i++)
                             {
-                                OpenAndRenderModel(files[i], i, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+                                OpenAndRenderModel(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath, true);
                             }
                         }
                     }
@@ -876,97 +881,52 @@ namespace Smash_Forge
             }
         }
 
-        private void OpenAndRenderModel(string fileName, int totalRenderCount, string sourcePath, string outputPath)
+        private void BatchRenderStages()
+        {
+            // Get the source model folder and then the output folder. 
+            using (var sourceFolderSelect = new FolderSelectDialog())
+            {
+                if (sourceFolderSelect.ShowDialog() == DialogResult.OK)
+                {
+                    using (var outputFolderSelect = new FolderSelectDialog())
+                    {
+                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
+                        {
+                            foreach (string stageFolder in Directory.GetDirectories(sourceFolderSelect.SelectedPath))
+                            {
+                                RenderStageModels(stageFolder, outputFolderSelect.SelectedPath, sourceFolderSelect.SelectedPath);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OpenAndRenderModel(string nudFileName, string sourcePath, string outputPath, bool loadPacs = false)
         {
             foreach (TreeNode node in draw)
             {
                 if (!(node is ModelContainer))
                     continue;
 
-                LoadNewModelForRender(fileName, node);           
+                BatchRenderTools.LoadNewModelForRender(nudFileName, node, loadPacs);
                 SetupNextRender();
-                string renderName = FormatFileName(fileName, sourcePath);
+                string renderName = FormatFileName(nudFileName, sourcePath);
                 // Manually dispose the bitmap to avoid memory leaks. 
                 Bitmap screenCapture = CaptureScreen(true);
-                screenCapture.Save(outputPath + "\\" + renderName + "_" + totalRenderCount + ".png");
+                screenCapture.Save(outputPath + "\\" + renderName + ".png");
                 screenCapture.Dispose();
+
+                Runtime.TextureContainers.Clear();
             }
         }
 
         private void SetupNextRender()
         {
-            // Setup before rendering the model. 
-            FrameAllModelContainers();
+            // Setup before rendering the model. Use a large max radius to show skybox models.
+            FrameSelectionAndSort();
             Render(null, null);
             glViewport.SwapBuffers();
-        }
-
-        private static void LoadNewModelForRender(string fileName, TreeNode node)
-        {
-            // Loads the new model. Assumes everything is called model.nud, model.nut, model.vbn.
-            ModelContainer modelContainer = (ModelContainer)node;
-            LoadNextNut(fileName, modelContainer);
-            LoadNextNud(fileName, modelContainer);
-            LoadNextPacs(fileName, modelContainer);
-            LoadNextVbn(fileName, modelContainer);
-        }
-
-        private static void LoadNextVbn(string fileName, ModelContainer modelContainer)
-        {
-            // Not all models have a vbn.
-            if (File.Exists(fileName.Replace("nud", "vbn")))
-                modelContainer.VBN = new VBN(fileName.Replace("nud", "vbn"));
-        }
-
-        private static void LoadNextPacs(string fileName, ModelContainer modelContainer)
-        {
-            // Read pacs to hide meshes.
-            string[] pacs = Directory.GetFiles(fileName.Replace("model.nud", ""), "*.pac");
-            foreach (string s in pacs)
-            {
-                PAC p = new PAC();
-                p.Read(s);
-                byte[] data;
-                if (p.Files.TryGetValue("display", out data))
-                {
-                    MTA m = new MTA();
-                    m.read(new FileData(data));
-                    modelContainer.NUD.applyMTA(m, 0);
-                }
-                if (p.Files.TryGetValue("default.mta", out data))
-                {
-                    MTA m = new MTA();
-                    m.read(new FileData(data));
-                    modelContainer.NUD.applyMTA(m, 0);
-                }
-            }
-        }
-
-        private static void LoadNextNud(string fileName, ModelContainer modelContainer)
-        {
-            // Free memory used by OpenTK.
-            modelContainer.Destroy();
-            modelContainer.NUD = new NUD(fileName);
-        }
-
-        private static void LoadNextNut(string fileName, ModelContainer modelContainer)
-        {
-            Runtime.TextureContainers.Clear();
-            try
-            {
-                NUT newNut = new NUT(fileName.Replace("nud", "nut"));
-                Runtime.TextureContainers.Add(newNut);
-
-                // Free memory used by OpenTK.
-                modelContainer.NUT.Destroy();
-
-                modelContainer.NUT = newNut;
-            }
-            catch (Exception e)
-            {
-                // A few nuts still don't open properly, so just skip them.
-                Debug.WriteLine(e.Message);
-            }
         }
 
         private static string FormatFileName(string fileName, string path)
@@ -975,6 +935,7 @@ namespace Smash_Forge
             string renderName = fileName.Replace(path, "");
             renderName = renderName.Substring(1);
             renderName = renderName.Replace("\\", "_");
+            renderName = renderName.Replace("//", "_");
             renderName = renderName.Replace(".nud", "");
             return renderName;
         }
@@ -1074,7 +1035,7 @@ namespace Smash_Forge
 
         private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
         {
-            foreach (TreeNode n in MeshList.treeView1.Nodes)
+            foreach (TreeNode n in MeshList.filesTreeView.Nodes)
             {
                 if (n is ModelContainer)
                 {
@@ -1135,7 +1096,7 @@ namespace Smash_Forge
 
         private void ModelViewport_FormClosing(object sender, FormClosingEventArgs e)
         {
-            foreach(TreeNode n in MeshList.treeView1.Nodes)
+            foreach(TreeNode n in MeshList.filesTreeView.Nodes)
             {
                 if(n is ModelContainer)
                 {
@@ -1314,14 +1275,14 @@ namespace Smash_Forge
             GL.UseProgram(0);
 
             // Return early to avoid rendering other stuff. 
-            if (MeshList.treeView1.SelectedNode != null)
+            if (MeshList.filesTreeView.SelectedNode != null)
             {
-                if (MeshList.treeView1.SelectedNode is BCH_Texture)
+                if (MeshList.filesTreeView.SelectedNode is BCH_Texture)
                 {
                     DrawBchTex();
                     return;
                 }
-                if (MeshList.treeView1.SelectedNode is NUT_Texture)
+                if (MeshList.filesTreeView.SelectedNode is NUT_Texture)
                 {
                     DrawNutTexAndUvs();
                     return;
@@ -1348,8 +1309,6 @@ namespace Smash_Forge
              && !TransformTool.hit)
             {
                 camera.Update();
-                //if (cameraPosForm != null && !cameraPosForm.IsDisposed)
-                //    cameraPosForm.updatePosition();
             }
             try
             {
@@ -1394,7 +1353,7 @@ namespace Smash_Forge
                         ((ModelContainer)m).RenderPoints(camera);
 
             // use fixed function pipeline again for area lights, lvd, bones, hitboxes, etc
-            SetupFixedFunctionRendering();
+            RenderTools.SetupFixedFunctionRendering();
 
             // area light bounding boxes should intersect stage geometry and not render on top
             if (Runtime.drawAreaLightBoundingBoxes)
@@ -1534,7 +1493,7 @@ namespace Smash_Forge
         {
             // toggle channel rendering
             if (e.KeyChar == 'f')
-                FrameSelection();
+                FrameSelectionAndSort();
             if (e.KeyChar == 'r')
                 Runtime.renderR = !Runtime.renderR;
             if (e.KeyChar == 'g')
@@ -1548,11 +1507,77 @@ namespace Smash_Forge
         private void ModelViewport_KeyDown(object sender, KeyEventArgs e)
         {
             // Super secret commands. I'm probably going to be the only one that uses them anyway...
-            if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.G))
+            if (Keyboard.GetState().IsKeyDown(Key.C) && Keyboard.GetState().IsKeyDown(Key.H) && Keyboard.GetState().IsKeyDown(Key.M))
                 BatchRenderModels();
 
             if (Keyboard.GetState().IsKeyDown(Key.X) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.L))
                 BatchExportMaterialXml();
+
+            if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T) && Keyboard.GetState().IsKeyDown(Key.M))
+                BatchRenderStages();
+        }
+
+        private void RenderStageModels(string stageFolder, string outputPath, string sourcePath)
+        {
+            string renderPath = stageFolder + "//render";
+            if (Directory.Exists(renderPath))
+            {
+                if (File.Exists(renderPath + "//light_set_param.bin"))
+                {
+                    try
+                    {
+                        Runtime.lightSetParam = new SALT.PARAMS.ParamFile(renderPath + "//light_set_param.bin");
+                        LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e.Message);
+                    }
+
+                }
+            }
+
+            string modelPath = stageFolder + "//model//";
+            if (Directory.Exists(modelPath))
+            {
+                // We can assume one NUD per folder. 
+                string[] nudFileNames = Directory.GetFiles(modelPath, "*.nud", SearchOption.AllDirectories);
+                foreach (string nudFile in nudFileNames)
+                {
+                    Debug.WriteLine(nudFile);
+                    /*ModelContainer modelContainer = new ModelContainer();
+                    BatchRenderTools.LoadNextNud(nudFile, modelContainer);
+                    BatchRenderTools.LoadNextNut(nudFile, modelContainer);
+                    BatchRenderTools.LoadNextVbn(nudFile, modelContainer);
+                    BatchRenderTools.LoadNextXmb(nudFile, modelContainer);
+                    MeshList.filesTreeView.Nodes.Add(modelContainer);*/
+
+                    OpenAndRenderModel(nudFile, sourcePath, outputPath);
+                }
+            }
+
+
+            // Setup and render the stage.
+            /*SetupNextRender();
+            string stageName = FormatFileName(stageFolder, sourcePath);
+            SaveScreenRender(outputPath + "\\" + stageName + ".png");
+
+            // Clear all the models and nodes. 
+            foreach (NUT nut in Runtime.TextureContainers)
+                nut.Destroy();
+            Runtime.TextureContainers.Clear();
+
+            foreach (ModelContainer modelContainer in MeshList.filesTreeView.Nodes)
+                modelContainer.Destroy();
+            MeshList.filesTreeView.Nodes.Clear();*/
+        }
+
+        private void SaveScreenRender(string outputPath)
+        {
+            // Manually dispose the bitmap to avoid memory leaks. 
+            Bitmap screenCapture = CaptureScreen(true);
+            screenCapture.Save(outputPath);
+            screenCapture.Dispose();
         }
 
         private void BatchExportMaterialXml()
@@ -1573,7 +1598,6 @@ namespace Smash_Forge
                                 string xmlName = FormatFileName(files[i], folderSelect.SelectedPath);
                                 NUD nud = new NUD(files[i]);
                                 string outputFileName = outputFolderSelect.SelectedPath + "\\" + xmlName + ".xml";
-                                Debug.WriteLine(outputFileName);
                                 MaterialXML.ExportMaterialAsXml(nud, outputFileName);
                             }
                         }
@@ -1585,7 +1609,7 @@ namespace Smash_Forge
         private void DrawNutTexAndUvs()
         {
             GL.PopAttrib();
-            NUT_Texture tex = ((NUT_Texture)MeshList.treeView1.SelectedNode);
+            NUT_Texture tex = ((NUT_Texture)MeshList.filesTreeView.SelectedNode);
             RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height);
 
             if (Runtime.drawUv)
@@ -1597,7 +1621,7 @@ namespace Smash_Forge
         private void DrawBchTex()
         {
             GL.PopAttrib();
-            BCH_Texture tex = ((BCH_Texture)MeshList.treeView1.SelectedNode);
+            BCH_Texture tex = ((BCH_Texture)MeshList.filesTreeView.SelectedNode);
             RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
             glViewport.SwapBuffers();
         }
@@ -1634,7 +1658,7 @@ namespace Smash_Forge
 
         private void DrawUvsForSelectedTexture(NUT_Texture tex)
         {
-            foreach (TreeNode node in MeshList.treeView1.Nodes)
+            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer))
                     continue;
@@ -1646,33 +1670,6 @@ namespace Smash_Forge
                 RenderTools.DrawUv(camera, m.NUD, textureHash, 4, Color.Red, 1, Color.White);
             }
         }
-
-        private static void SetupFixedFunctionRendering()
-        {
-            GL.UseProgram(0);
-
-            GL.Enable(EnableCap.LineSmooth); // This is Optional 
-            GL.Enable(EnableCap.Normalize);  // This is critical to have
-            GL.Enable(EnableCap.RescaleNormal);
-
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
-
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Lequal);
-
-            GL.Enable(EnableCap.AlphaTest);
-            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Front);
-
-            GL.Enable(EnableCap.LineSmooth);
-
-            GL.Enable(EnableCap.StencilTest);
-            GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
-        }
-
         #endregion
 
     }

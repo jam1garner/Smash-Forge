@@ -389,7 +389,7 @@ namespace Smash_Forge
 
             for (int i = 0; i < count; i++)
             {
-                Debug.WriteLine(d.pos().ToString("x"));
+                //Debug.WriteLine(d.pos().ToString("x"));
                 NUT_Texture tex = new NUT_Texture();
                 tex.type = PixelInternalFormat.Rgba32ui;
 
@@ -400,7 +400,7 @@ namespace Smash_Forge
                 int headerSize = d.readShort();
                 d.skip(3);
                 int numMips = d.readByte();
-                Debug.WriteLine(numMips);
+                //Debug.WriteLine(numMips);
                 d.skip(1);
                 tex.setPixelFormatFromNutFormat(d.readByte());
                 tex.Width = d.readShort();
@@ -432,7 +432,7 @@ namespace Smash_Forge
                 for (int miplevel = 0; miplevel < numMips; miplevel++)
                 {
                     byte[] texArray = d.getSection(dataOffset, mipSizes[miplevel]);
-                    Debug.WriteLine(texArray.Length.ToString("x"));
+                    //Debug.WriteLine(texArray.Length.ToString("x"));
                     tex.mipmaps.Add(texArray);
                     dataOffset += mipSizes[miplevel];
                 }
@@ -804,7 +804,7 @@ namespace Smash_Forge
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
                 }
 
-                Debug.WriteLine(GL.GetError());
+                //Debug.WriteLine(GL.GetError());
             }
             else
             {

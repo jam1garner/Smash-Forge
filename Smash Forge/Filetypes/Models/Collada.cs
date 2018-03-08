@@ -240,7 +240,7 @@ namespace Smash_Forge
 
             // RIP 22mb NUD files. This step is slow though...
             n.OptimizeFileSize();
-            n.UpdateVertexDataAndSort();
+            n.UpdateVertexData();
         }
 
         private static void AddMaterialsForEachUvChannel(NUD.Polygon npoly)
