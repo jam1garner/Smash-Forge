@@ -56,7 +56,7 @@ namespace Smash_Forge
 
         private void AppIdle(object sender, EventArgs e)
         {
-            if (Smash_Forge.Update.Downloaded)
+            if (Smash_Forge.Update.Downloaded && Instance.pictureBox1.Image == null)
                 Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
             DiscordSettings.Update();
         }

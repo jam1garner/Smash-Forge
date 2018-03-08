@@ -23,7 +23,6 @@ namespace Forge_Updater
             {
                 executableDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
                 forgeDir = Path.GetDirectoryName(executableDir);
-                bool restartForge = false;
                 if (args.Length == 0)
                 {
                     Console.WriteLine("Usage:\n\nForgeUpdater.exe [options]\n\nOptions:\n* Download latest release     -d\n* Download latest nightly     -dn\n* Install downloaded release  -i\n* Latest release info       -info\n* Restart Forge              -r");
@@ -134,9 +133,16 @@ namespace Forge_Updater
                     }
                 }
 
+                
+
                 foreach (string arg in args)
+                {
                     if (arg.Equals("-r"))
+                    {
+                        Thread.Sleep(3000);
                         System.Diagnostics.Process.Start(Path.Combine(forgeDir, "Smash Forge.exe"));
+                    }
+                }
 
                 return 0;
             }

@@ -39,9 +39,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="Octokit, Version=0.23.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Octokit, Version=0.29.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Octokit.dll</HintPath>
+      <HintPath>..\Forge Updater\Octokit.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -960,6 +960,9 @@
     <Content Include="lib\libvorbis.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="lib\Octokit.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\RG_ETC1.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -977,7 +980,6 @@
     <None Include="Resources\strip_camsettings.png" />
     <None Include="Resources\strip_camreset.png" />
     <None Include="Resources\UVPattern.png" />
-    <None Include="Resources\1.dds.png" />
     <None Include="Resources\10102000.png" />
     <None Include="Resources\10101000.png" />
     <None Include="lib\Shader\Texture_fs.txt">
@@ -1126,9 +1128,6 @@
     <Content Include="lib\FITD.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="lib\Octokit.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="lib\OpenTK.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1149,7 +1148,6 @@
     <None Include="Resources\node_file.png" />
     <None Include="Resources\node_nut.png" />
     <None Include="Resources\node_vbn.png" />
-    <None Include="Resources\Forge.png" />
     <None Include="Resources\ForgeBack.png" />
     <None Include="Resources\icon_info.png" />
     <None Include="Resources\icon_number.png" />

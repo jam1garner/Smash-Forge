@@ -876,7 +876,7 @@ namespace Smash_Forge
             }
         }
 
-        private void OpenAndRenderModel(string fileName, int totalRenderCount, string path, string outputPath)
+        private void OpenAndRenderModel(string fileName, int totalRenderCount, string sourcePath, string outputPath)
         {
             foreach (TreeNode node in draw)
             {
@@ -885,7 +885,7 @@ namespace Smash_Forge
 
                 LoadNewModelForRender(fileName, node);           
                 SetupNextRender();
-                string renderName = FormatRenderName(fileName, path);
+                string renderName = FormatFileName(fileName, sourcePath);
                 // Manually dispose the bitmap to avoid memory leaks. 
                 Bitmap screenCapture = CaptureScreen(true);
                 screenCapture.Save(outputPath + "\\" + renderName + "_" + totalRenderCount + ".png");
@@ -969,13 +969,13 @@ namespace Smash_Forge
             }
         }
 
-        private static string FormatRenderName(string fileName, string path)
+        private static string FormatFileName(string fileName, string path)
         {
             // Save the render using the folder structure as the name.
             string renderName = fileName.Replace(path, "");
             renderName = renderName.Substring(1);
             renderName = renderName.Replace("\\", "_");
-            renderName = renderName.Replace("model.nud", "");
+            renderName = renderName.Replace(".nud", "");
             return renderName;
         }
 
@@ -1547,8 +1547,39 @@ namespace Smash_Forge
 
         private void ModelViewport_KeyDown(object sender, KeyEventArgs e)
         {
+            // Super secret commands. I'm probably going to be the only one that uses them anyway...
             if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.G))
                 BatchRenderModels();
+
+            if (Keyboard.GetState().IsKeyDown(Key.X) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.L))
+                BatchExportMaterialXml();
+        }
+
+        private void BatchExportMaterialXml()
+        {
+            // Get the source model folder and then the output folder. 
+            using (var folderSelect = new FolderSelectDialog())
+            {
+                if (folderSelect.ShowDialog() == DialogResult.OK)
+                {
+                    string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*.nud", SearchOption.AllDirectories);
+
+                    using (var outputFolderSelect = new FolderSelectDialog())
+                    {
+                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
+                        {
+                            for (int i = 0; i < files.Length; i++)
+                            {
+                                string xmlName = FormatFileName(files[i], folderSelect.SelectedPath);
+                                NUD nud = new NUD(files[i]);
+                                string outputFileName = outputFolderSelect.SelectedPath + "\\" + xmlName + ".xml";
+                                Debug.WriteLine(outputFileName);
+                                MaterialXML.ExportMaterialAsXml(nud, outputFileName);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void DrawNutTexAndUvs()

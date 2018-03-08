@@ -101,6 +101,11 @@ uniform int renderLighting;
 uniform int renderVertColor;
 uniform int renderNormal;
 uniform int useNormalMap;
+
+// Channel Toggles
+uniform int renderR;
+uniform int renderG;
+uniform int renderB;
 uniform int renderAlpha;
 
 uniform float diffuseIntensity;
@@ -722,6 +727,15 @@ void main()
     fragColor.a *= effColorGain.a;
     fragColor.a *= AngleFade(N, I);
     fragColor.a += alphaBlendParams.x; // TODO: Ryu works differently.
+
+    // Toggles rendering of individual color channels for all render modes.
+    fragColor.rgb *= vec3(renderR, renderG, renderB);
+    if (renderR == 1 && renderG == 0 && renderB == 0)
+        fragColor.rgb = fragColor.rrr;
+    else if (renderG == 1 && renderR == 0 && renderB == 0)
+        fragColor.rgb = fragColor.ggg;
+    else if (renderB == 1 && renderR == 0 && renderG == 0)
+        fragColor.rgb = fragColor.bbb;
 
     // Alpha override for render settings. Fixes alpha for renders.
     if (renderAlpha != 1 || isTransparent != 1)

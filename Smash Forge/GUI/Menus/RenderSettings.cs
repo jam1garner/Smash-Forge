@@ -225,7 +225,12 @@ namespace Smash_Forge.GUI
 
         private void UpdateDebugButtonsFromRenderType()
         {
-            ShowHideDebugButtonsFromRenderType();
+            ShowHideDebugButtonsIfUsingDebugMode();
+            DisplayDebugButtonsFromDebugMode();
+        }
+
+        private void DisplayDebugButtonsFromDebugMode()
+        {
 
             // Reuse the same buttons to control different settings for each render mode.
             switch (Runtime.renderType)
@@ -316,12 +321,12 @@ namespace Smash_Forge.GUI
             }
         }
 
-        private void ShowHideDebugButtonsFromRenderType()
+        private void ShowHideDebugButtonsIfUsingDebugMode()
         {
-            renderChannelR.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            renderChannelG.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            renderChannelB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            renderChannelA.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderChannelR.Enabled = true;
+            renderChannelG.Enabled = true;
+            renderChannelB.Enabled = true;
+            renderChannelA.Enabled = true;
             debug1CB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
             debug2CB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
             radioButton1.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
@@ -732,28 +737,6 @@ namespace Smash_Forge.GUI
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.uvChannel = Runtime.UVChannel.Channel3;
-        }
-
-        private void debugShadingCB_CheckedChanged(object sender, EventArgs e)
-        {
-            Runtime.useDebugShading = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            if (Runtime.renderType == Runtime.RenderTypes.Shaded)
-            {
-                Runtime.renderType = Runtime.RenderTypes.Normals;
-                renderModeComboBox.SelectedIndex = (int)Runtime.RenderTypes.Normals;
-            }
-
-            debugModeLabel.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            renderChannelR.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            renderChannelG.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            renderChannelB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            renderChannelA.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            renderModeComboBox.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            debug1CB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            debug2CB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            radioButton1.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            radioButton2.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            radioButton3.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
         }
 
         private void debug1CB_CheckedChanged(object sender, EventArgs e)
