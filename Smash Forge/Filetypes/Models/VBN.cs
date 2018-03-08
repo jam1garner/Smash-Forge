@@ -631,12 +631,58 @@ namespace Smash_Forge
                 List<Bone> Unk = new List<Bone>();
                 List<Bone> Helper = new List<Bone>();
                 List<Bone> Swing = new List<Bone>();
+
+                string[] SpecialBones = new string[] { "TransN",
+"RotN",
+"HipN",
+"LLegJ",
+"LKneeJ",
+"LFootJ",
+"LToeN",
+"RLegJ",
+"RKneeJ",
+"RFootJ",
+"RToeN",
+"WaistN",
+"BustN",
+"LShoulderN",
+"LShoulderJ",
+"LArmJ",
+"LHandN",
+"RShoulderN",
+"RShoulderJ",
+"RArmJ",
+"RHandN",
+"NeckN",
+"HeadN",
+"RHaveN",
+"LHaveN",
+"ThrowN"};
+                Bone[] Special = new Bone[SpecialBones.Length];
+                int specialCount = 0;
+                // OrderPass
+                foreach (Bone b in bones)
+                {
+                    for(int i = 0; i < SpecialBones.Length; i++)
+                    {
+                        if (b.Text.Equals(SpecialBones[i]) || (SpecialBones[i].Equals("RotN") && b.Text.Equals("XRotN")))
+                        {
+                            specialCount++;
+                            Special[i] = b;
+                            break;
+                        }
+                    }
+                }
+                Console.WriteLine(SpecialBones.Length + " " + specialCount);
+                if(specialCount == SpecialBones.Length)
+                    Normal.AddRange(Special);
+
                 //Gather Each Bone Type
-                foreach(Bone b in bones)
+                foreach (Bone b in bones)
                 {
                     switch (b.boneType)
                     {
-                        case 0: Normal.Add(b); break;
+                        case 0: if(!Normal.Contains(b))Normal.Add(b);break;
                         case 2: Helper.Add(b); break;
                         case 3: Swing.Add(b); break;
                         default: Unk.Add(b); break;

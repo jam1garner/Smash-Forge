@@ -31,7 +31,8 @@ namespace Smash_Forge
 			int animDataCount =d.readShort();
 			d.skip(8);
 
-			Animation anim = new Animation("CHR0 Import");
+			Animation anim = new Animation(d.readString(nameoff, -1));
+            anim.FrameCount = fCount;
             
 			//anim.setModel(m);
 
@@ -39,7 +40,7 @@ namespace Smash_Forge
 			int sectionOffset = d.readInt() + offset;
 			int size = d.readInt(); // size again 
 
-			for(int i = 0; i < size ; i++){
+            for (int i = 0; i < size ; i++){
 				//			System.out.print(d.readShort()); // id
 				d.skip(4); // id and unknown
 				d.readShort(); //left
@@ -219,31 +220,34 @@ namespace Smash_Forge
 				}
 			}
 
-            a.FrameCount = max;
+            //a.FrameCount = max;
 
             float degrad = (float)(Math.PI / 180f);
             if (frame != null)
             {
-                for(int i = 0; i < frame.Length; i++)
+                for(int i = 0; i < fCount; i++)
                 {
                     Animation.KeyFrame f = new Animation.KeyFrame();
                     f.InterType = Animation.InterpolationType.HERMITE;
                     f.Value = step[i];
-                    f.Frame = frame[i]-1;
+                    f.Frame = frame[i];
                     f.In = tan[i];
                     switch (part)
                     {
                         case "RX":
                             f.Value = step[i] * degrad;
                             node.XROT.Keys.Add(f);
+                            f.Degrees = true;
                             break;
                         case "RY":
                             f.Value = step[i] * degrad;
                             node.YROT.Keys.Add(f);
+                            f.Degrees = true;
                             break;
                         case "RZ":
                             f.Value = step[i] * degrad;
                             node.ZROT.Keys.Add(f);
+                            f.Degrees = true;
                             break;
                         case "X":
                             node.XPOS.Keys.Add(f);
@@ -267,10 +271,11 @@ namespace Smash_Forge
                 }
             }
 
-			if(type == 0x4){
-				float stepb = d.readFloat();
+			if(type == 0x4)
+            {
+                float stepb = d.readFloat();
 				float base2 = d.readFloat();
-				for(int i = 0; i < a.FrameCount ; i++){
+				for(int i = 0; i < a.FrameCount; i++){
 
 					float v = base2 + stepb * (d.readByte());
 
@@ -282,15 +287,15 @@ namespace Smash_Forge
                     switch (part)
                     {
                         case "RX":
-                            f.Value = step[i] * degrad;
+                            f.Value = v * degrad;
                             node.XROT.Keys.Add(f);
                             break;
                         case "RY":
-                            f.Value = step[i] * degrad;
+                            f.Value = v * degrad;
                             node.YROT.Keys.Add(f);
                             break;
                         case "RZ":
-                            f.Value = step[i] * degrad;
+                            f.Value = v * degrad;
                             node.ZROT.Keys.Add(f);
                             break;
                         case "X":
@@ -316,7 +321,7 @@ namespace Smash_Forge
 			}
 
 			if(type == 0x6){
-				for(int i = 0; i < a.FrameCount ; i++){
+				for(int i = 0; i < a.FrameCount; i++){
 
 					float v = d.readFloat();
 
@@ -327,15 +332,15 @@ namespace Smash_Forge
                     switch (part)
                     {
                         case "RX":
-                            f.Value = step[i] * degrad;
+                            f.Value = v * degrad;
                             node.XROT.Keys.Add(f);
                             break;
                         case "RY":
-                            f.Value = step[i] * degrad;
+                            f.Value = v * degrad;
                             node.YROT.Keys.Add(f);
                             break;
                         case "RZ":
-                            f.Value = step[i] * degrad;
+                            f.Value = v * degrad;
                             node.ZROT.Keys.Add(f);
                             break;
                         case "X":

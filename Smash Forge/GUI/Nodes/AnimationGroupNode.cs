@@ -67,18 +67,7 @@ namespace Smash_Forge
                         string key = f.Substring(0, f.IndexOf("-"));
                         //Console.WriteLine(key);
 
-                        foreach(Animation a in Nodes)
-                        {
-                            if (a.Text.Contains(key))
-                            {
-                                Console.WriteLine("Matched " + key);
-                                Animation an = new Animation("");
-                                SMD.read(s, an, null);
-                                
-                                a.ReplaceMe(an);
-                                break;
-                            }
-                        }
+                        
                     }
 
                 }

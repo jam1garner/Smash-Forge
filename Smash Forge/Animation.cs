@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 using System.Windows.Forms;
+using System.IO;
 
 namespace Smash_Forge
 {
@@ -136,7 +137,8 @@ namespace Smash_Forge
                             o.save(sfd.FileName);
                         }
                         else
-                            OMOOld.CreateOMOFromAnimation(this, Runtime.TargetVBN);
+                            File.WriteAllBytes(sfd.FileName, OMOOld.CreateOMOFromAnimation(this, Runtime.TargetVBN));
+                            
                     }
 
 
@@ -195,6 +197,7 @@ namespace Smash_Forge
             public KeyNode(String bname)
             {
                 Text = bname;
+                if (bname!=null && bname.Equals("")) Text = Hash.ToString("x");
                 ImageKey = "bone";
                 SelectedImageKey = "bone";
             }
@@ -301,7 +304,7 @@ namespace Smash_Forge
                     LastFound = 0;
                 for (i = LastFound; i < Keys.Count; i++)
                 {
-                    LastFound = i % (Keys.Count-1);
+                    LastFound = i % (Keys.Count);
                     KeyFrame k = Keys[LastFound];
                     if (k.Frame < frame)
                     {
@@ -325,9 +328,18 @@ namespace Smash_Forge
                 if (k1.InterType == InterpolationType.STEP)
                     return k1.Value;
                 if (k1.InterType == InterpolationType.LINEAR)
+                {
                     return Lerp(k1.Value, k2.Value, k1.Frame, k2.Frame, frame);
+                }
                 if (k1.InterType == InterpolationType.HERMITE)
-                    return Hermite(frame, k1.Frame, k2.Frame, k1.Weighted ? k1.In : 0, (k2.Weighted ? k2.In : 0), k1.Value, k2.Value);//k1.Out != -1 ? k1.Out :  
+                {
+                    float val = Hermite(frame, k1.Frame, k2.Frame, k1.In, k1.Out != -1 ? k1.Out : k2.In, k1.Value, k2.Value) * (k1.Degrees ? (float)Math.PI / 180 : 1);
+                    if (Parent != null && Text.Equals("XROT"))
+                        Console.WriteLine(Text + " " + k1.Value + " " + k2.Value + " " + k1.Frame + " " + k2.Frame + " " + (val * 180 / (float)Math.PI));
+                    if (float.IsNaN(val)) val = k1._value;
+
+                    return val;//k1.Out != -1 ? k1.Out : 
+                }
 
                 return k1.Value;
             }
@@ -366,7 +378,7 @@ namespace Smash_Forge
         {
             public float Value
             {
-                get { return _value; }
+                get { if (Degrees) return _value * 180 / (float)Math.PI; else return _value; }
                 set { _value = value; }//Text = _frame + " : " + _value; }
             }
             public float _value;
@@ -377,8 +389,9 @@ namespace Smash_Forge
             }
             public String Text;
             public float _frame;
-            public float In, Out = -1;
+            public float In = 0, Out = -1;
             public bool Weighted = false;
+            public bool Degrees = false; // Use Degrees
             public InterpolationType InterType = InterpolationType.LINEAR;
 
             public KeyFrame(float value, float frame)
@@ -395,7 +408,7 @@ namespace Smash_Forge
             public TreeNode GetNode()
             {
                 TreeNode t = new TreeNode();
-                t.Text = Frame + " : " + Value;
+                t.Text = Frame + " : " + Value + (In != 0 ? " " + In.ToString() : "");
                 t.Tag = this;
                 return t;
             }
@@ -538,6 +551,33 @@ namespace Smash_Forge
 
         public static float Hermite(float frame, float frame1, float frame2, float outslope, float inslope, float val1, float val2)
         {
+            /*float offset = frame - frame1;
+            float span = frame2 - frame1;
+            if (offset == 0) return val1;
+            if (offset == span) return val2;
+
+            float diff = val2 - val1;
+
+            float time = offset / span;
+            
+            //bool prevDouble = prevframe1 >= 0 && prevframe1 == frame1 - 1;
+            //bool nextDouble = next._next._index >= 0 && next._next._index == next._index + 1;
+            bool oneApart = frame2 == frame1 + 1;
+            
+            float tan = outslope, nextTan = inslope;
+            if (oneApart)
+                tan = (val2 - val1) / (frame2 - frame1);
+            //if (oneApart)
+                nextTan = (val2 - val1) / (frame2 - frame1);
+
+            float inv = time - 1.0f; //-1 to 0
+            return val1
+                + (offset * inv * ((inv * tan) + (time * nextTan)))
+                + ((time * time) * (3.0f - 2.0f * time) * diff);*/
+
+            if (frame == frame1) return val1;
+            if (frame == frame2) return val2;
+
             float distance = frame - frame1;
             float invDuration = 1f / (frame2 - frame1);
             float t = distance * invDuration;
@@ -548,6 +588,10 @@ namespace Smash_Forge
         public static float Lerp(float av, float bv, float v0, float v1, float t)
         {
             if (v0 == v1) return av;
+
+            if (t == v0) return av;
+            if (t == v1) return bv;
+
 
             float mu = (t - v0) / (v1 - v0);
             return ((av * (1 - mu)) + (bv * mu));
