@@ -132,38 +132,23 @@ namespace Smash_Forge
 
         public void DepthSortMeshes(Vector3 cameraPosition)
         {
+            // Meshes can be rendered in the order they appear in the NUD, by bounding spheres, and offsets. 
+            List<Mesh> unsortedMeshes = new List<Mesh>();
             foreach (Mesh m in Nodes)
             {
                 m.SetMeshAttributesFromName();
-            }
-            // TODO: Do this more efficiently. 
-            // Meshes can be rendered in the order they appear in the NUD, by bounding spheres, and offsets. 
-            List<Mesh> meshes = new List<Mesh>();
-            foreach(Mesh m in Nodes)
-            {
-                meshes.Add(m);
-
-
-                Vector3 meshCenter = new Vector3(m.boundingBox[0], m.boundingBox[1], m.boundingBox[2]);
-                if (m.useNsc && m.singlebind != -1)
-                {
-                    // Use the bone position as the bounding box center
-                    ModelContainer modelContainer = (ModelContainer)Parent;
-                    meshCenter = modelContainer.VBN.bones[m.singlebind].pos;
-                }
-
-                Vector3 distanceVector = new Vector3(cameraPosition - meshCenter);
-                m.sortingDistance = distanceVector.Length + m.boundingBox[3] + m.sortBias;
-
-                Debug.WriteLine(m.Text + " centerZ: " + meshCenter.Z);
+                m.sortingDistance = m.CalculateSortingDistance(cameraPosition);
+                unsortedMeshes.Add(m);
             }
 
             // Order by the distance from the camera to the closest point on the bounding sphere. 
-            // Camera position neglected for now. Render more distant objects first. 
-            depthSortedMeshes = meshes.OrderBy(o => (o.sortingDistance)).ToList();
+            // Positive values are usually closer to camera. Negative values are usually farther away. 
+            depthSortedMeshes = unsortedMeshes.OrderBy(o => (o.sortingDistance)).ToList();
+        }
 
-            // Check for meshes that shouldn't be sorted. 
-            /*for (int i = 0; i < Nodes.Count; i++)
+        private void SortMeshesByObjHeirarchy()
+        {
+            for (int i = 0; i < Nodes.Count; i++)
             {
                 Mesh mesh = (Mesh)Nodes[i];
                 if (mesh.sortByObjHeirarchy)
@@ -172,8 +157,7 @@ namespace Smash_Forge
                     depthSortedMeshes.Remove(mesh);
                     depthSortedMeshes.Insert(i, mesh);
                 }
-            }*/
-
+            }
         }
 
         public void UpdateVertexData()
@@ -725,7 +709,7 @@ namespace Smash_Forge
             MatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", 1, 1, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_normalSamplerBUV", 1, 1, 0, 0);
 
-            // color properties
+            // Diffuse Color
             MatPropertyShaderUniform(shader, mat, "NU_aoMinGain",       0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_colorGain",       1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_finalColorGain",  1, 1, 1, 1);
@@ -735,30 +719,35 @@ namespace Smash_Forge
             MatPropertyShaderUniform(shader, mat, "NU_diffuseColor",    1, 1, 1, 0.5f);
             MatPropertyShaderUniform(shader, mat, "NU_characterColor",  1, 1, 1, 1);
 
+            // Specular
             MatPropertyShaderUniform(shader, mat, "NU_specularColor",     0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_specularColorGain", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_specularParams",    0, 0, 0, 0);
 
+            // Fresnel
             MatPropertyShaderUniform(shader, mat, "NU_fresnelColor",  0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_fresnelParams", 0, 0, 0, 0);
 
+            // Reflections
             MatPropertyShaderUniform(shader, mat, "NU_reflectionColor",  0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_reflectionParams", 0, 0, 0, 0);
 
+            // Fog
             MatPropertyShaderUniform(shader, mat, "NU_fogColor",  0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_fogParams", 0, 1, 0, 0);
 
+            // Soft Lighting
             MatPropertyShaderUniform(shader, mat, "NU_softLightingParams",    0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", 0, 0, 0, 0);
 
-            // misc properties
+            // Misc Properties
             MatPropertyShaderUniform(shader, mat, "NU_normalParams",           1, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_zOffset",                0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_angleFadeParams",        0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_alphaBlendParams",       0, 0, 0, 0);
 
-            // effect materials
+            // Effect Materials
             MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor0", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor1", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_effColorGain",      1, 1, 1, 1);
@@ -831,7 +820,7 @@ namespace Smash_Forge
                 texid++;
             }
 
-            // The order of the textures is critical. 
+            // The order of the textures here is critical. 
             TextureUniform(shader, mat, mat.hasSphereMap, "spheremap", ref texid, ref mat.sphereMapID);
             TextureUniform(shader, mat, mat.hasDiffuse2,  "dif2",      ref texid, ref mat.diffuse2ID);
             TextureUniform(shader, mat, mat.hasDiffuse3,  "dif3",      ref texid, ref mat.diffuse3ID);
@@ -856,15 +845,10 @@ namespace Smash_Forge
                 values = new float[] { default1, default2, default3, default4 };
             string uniformName = propertyName.Substring(3); // remove the NU_ from name
 
-            try
-            {
+            if (values.Length == 4)
                 GL.Uniform4(shader.getAttribute(uniformName), values[0], values[1], values[2], values[3]);
-            }
-            catch (System.IndexOutOfRangeException)
-            {
-                // something went wrong reading mat data somewhere...
-                // some other part of the code will probably also fail
-            }
+            else
+                Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
 
         private static void TextureUniform(Shader shader, Material mat, bool hasTex, string name, ref int texid, ref int matTexId)
@@ -1640,11 +1624,6 @@ namespace Smash_Forge
             d.writeShort(Nodes.Count); // polysets
 
             boneCount = ((ModelContainer)Parent).VBN.bones.Count;
-            /*foreach (ModelContainer con in Runtime.ModelContainers)
-            {
-                if (con.NUD == this && con.VBN!=null)
-                    boneCount = con.VBN.bones.Count;   
-            }*/
 
             d.writeShort(boneCount == 0 ? 0 : 2); // type
             d.writeShort(boneCount == 0 ? boneCount : boneCount - 1); // Number of bones
@@ -2034,7 +2013,6 @@ namespace Smash_Forge
 
         #endregion
         
-        #region Functions
         public void MergePoly()
         {
             Dictionary<string, Mesh> nmesh = new Dictionary<string, Mesh>();
@@ -2107,8 +2085,6 @@ namespace Smash_Forge
 
             return 0;
         }
-
-        #endregion
 
         #region ClassStructure
 
@@ -3007,6 +2983,21 @@ namespace Smash_Forge
                 }
                 boundingBox[3] = (float)radius;
                 boundingBox[7] = 0;
+            }
+
+            public float CalculateSortingDistance(Vector3 cameraPosition)
+            {
+
+                Vector3 meshCenter = new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]);
+                if (useNsc && singlebind != -1)
+                {
+                    // Use the bone position as the bounding box center
+                    ModelContainer modelContainer = (ModelContainer)Parent.Parent;
+                    meshCenter = modelContainer.VBN.bones[singlebind].pos;
+                }
+
+                Vector3 distanceVector = new Vector3(cameraPosition - meshCenter);
+                return distanceVector.Length + boundingBox[3] + sortBias;
             }
 
             private int CalculateSortBias()
