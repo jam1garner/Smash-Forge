@@ -143,29 +143,27 @@ namespace Smash_Forge
             {
                 meshes.Add(m);
 
-                Vector3 distanceVector = new Vector3(cameraPosition.X - m.boundingBox[0], cameraPosition.Y - m.boundingBox[1],
-                    cameraPosition.Z - m.boundingBox[2]);
-                m.sortingDistance = distanceVector.Length + m.boundingBox[3] - m.sortBias;
 
-                if (m.useNsc)
+                Vector3 meshCenter = new Vector3(m.boundingBox[0], m.boundingBox[1], m.boundingBox[2]);
+                if (m.useNsc && m.singlebind != -1)
                 {
-                    // Use the bone position as the bounding box center. 
-                    /*ModelContainer modelContainer = (ModelContainer)this.Parent;
-                    int index = m.singlebind;
-                    if (index != -1)
-                    {
-                        Vector3 nscDistanceVector = cameraPosition - modelContainer.VBN.bones[index].pos;
-                        m.sortingDistance = nscDistanceVector.Length + m.boundingBox[3] + m.sortBias;
-                    }*/
+                    // Use the bone position as the bounding box center
+                    ModelContainer modelContainer = (ModelContainer)Parent;
+                    meshCenter = modelContainer.VBN.bones[m.singlebind].pos;
                 }
+
+                Vector3 distanceVector = new Vector3(cameraPosition - meshCenter);
+                m.sortingDistance = distanceVector.Length + m.boundingBox[3] + m.sortBias;
+
+                Debug.WriteLine(m.Text + " centerZ: " + meshCenter.Z);
             }
 
             // Order by the distance from the camera to the closest point on the bounding sphere. 
             // Camera position neglected for now. Render more distant objects first. 
-            depthSortedMeshes = meshes.OrderByDescending(o => (o.sortingDistance)).ToList();
+            depthSortedMeshes = meshes.OrderBy(o => (o.sortingDistance)).ToList();
 
             // Check for meshes that shouldn't be sorted. 
-            for (int i = 0; i < Nodes.Count; i++)
+            /*for (int i = 0; i < Nodes.Count; i++)
             {
                 Mesh mesh = (Mesh)Nodes[i];
                 if (mesh.sortByObjHeirarchy)
@@ -174,10 +172,8 @@ namespace Smash_Forge
                     depthSortedMeshes.Remove(mesh);
                     depthSortedMeshes.Insert(i, mesh);
                 }
-            }
+            }*/
 
-            foreach (Mesh m in depthSortedMeshes)
-                Debug.WriteLine(m.Text + " depth: " + m.sortingDistance);
         }
 
         public void UpdateVertexData()
@@ -268,14 +264,31 @@ namespace Smash_Forge
         {
             GL.UseProgram(0);
 
+            // Draw NUD bounding box. 
             GL.Color4(Color.GhostWhite);
             RenderTools.DrawCube(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3], true);
 
-            GL.Color4(Color.OrangeRed);
-            foreach (NUD.Mesh mesh in Nodes)
+            // Draw all the mesh bounding boxes. Selected: White. Deselected: Orange.
+            foreach (Mesh mesh in Nodes)
             {
+                if (mesh.IsSelected)
+                    GL.Color4(Color.GhostWhite);
+                else
+                    GL.Color4(Color.OrangeRed);
+
                 if (mesh.Checked)
-                    RenderTools.DrawCube(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3], true);
+                {
+                    if (mesh.useNsc && mesh.singlebind != -1)
+                    {
+                        // Use the center of the bone as the bounding box center for NSC meshes. 
+                        Vector3 center = ((ModelContainer)Parent).VBN.bones[mesh.singlebind].pos;
+                        RenderTools.DrawCube(center, mesh.boundingBox[3], true);
+                    }
+                    else
+                    {
+                        RenderTools.DrawCube(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3], true);
+                    }
+                }
             }
         }
 

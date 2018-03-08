@@ -232,43 +232,23 @@ vec3 BumpMapNormal(vec3 inputNormal)
     return normalize(newNormal);
 }
 
-vec3 ScreenBlend(vec3 base, vec3 top)
-{
-    return vec3(1) - (vec3(1) - base) * (vec3(1) - top);
-}
-
 vec3 RampColor(float rampCoord){
     // TODO: Vertical component is always 0?
-	if(hasRamp == 1)
-	{
-		rampCoord = clamp(rampCoord, 0.01, 0.99);
-		return texture(ramp, vec2(1 - rampCoord, 0.0)).rgb;
-	}
-	else
-		return vec3(0);
+	rampCoord = clamp(rampCoord, 0.01, 0.99);
+	return texture(ramp, vec2(1 - rampCoord, 0.0)).rgb * hasRamp;
 }
 
 vec3 DummyRampColor(float rampCoord){
     // TODO: Vertical component is always 0?
-	if(hasDummyRamp == 1)
-	{
-		rampCoord = clamp(rampCoord, 0.01, 0.99);
-		return texture(dummyRamp, vec2(1 - rampCoord, 0.0)).rgb;
-	}
-	else
-		return vec3(0);
+	rampCoord = clamp(rampCoord, 0.01, 0.99);
+	return texture(dummyRamp, vec2(1 - rampCoord, 0.0)).rgb * hasDummyRamp;
 }
 
 vec3 SphereMapColor(vec3 N)
 {
-    if (hasSphereMap == 1)
-    {
-        // Calculate UVs based on view space normals.
-        vec2 sphereTexcoord = vec2(viewNormal.x, (1 - viewNormal.y));
-        return texture(spheremap, sphereTexcoord).xyz;
-    }
-    else
-        return vec3(0);
+    // Calculate UVs based on view space normals.
+    vec2 sphereTexcoord = vec2(viewNormal.x, (1 - viewNormal.y));
+    return texture(spheremap, sphereTexcoord).xyz * hasSphereMap;
 }
 
 vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed
@@ -490,8 +470,7 @@ vec3 Lighting(vec3 N, float halfLambert)
     else
     {
         // Character lighting.
-        lighting = vec3(0);
-        lighting += mix(ambLightColor * ambientIntensity, difLightColor * diffuseIntensity, halfLambert);
+        lighting = mix(ambLightColor * ambientIntensity, difLightColor * diffuseIntensity, halfLambert);
     }
 
     return lighting;
@@ -506,8 +485,26 @@ vec3 DiffuseAOBlend()
     if (hasNrm == 1)
         aoMap = pow(texture(normalMap, texCoord).a, gamma);
     vec3 aoBlend = vec3(aoMap);
-    // TODO: Fix aoBlend saturation.
     return min((aoBlend + aoMinGain.rgb), vec3(maxAOBlendValue));
+}
+
+float AmbientOcclusionBlend(vec4 diffuseMap)
+{
+    // Ambient occlusion uses sRGB gamma.
+    // Not all materials have an ambient occlusion map.
+    float aoMap = pow(texture(normalMap, texCoord).a, gamma);
+    if (hasNrm != 1)
+        aoMap = 1;
+
+    // The diffuse map for colorGain/Offset materials does a lot of things.
+    if (hasColorGainOffset == 1 || useDiffuseBlend == 1)
+        aoMap = Luminance(diffuseMap.rgb);
+
+    float aoMixIntensity = aoMinGain.w;
+    if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
+        aoMixIntensity = 0;
+
+    return mix(aoMap, 1, aoMixIntensity);
 }
 
 vec3 ColorOffsetGain(vec3 diffuseMap)
@@ -543,17 +540,10 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap)
     float halfLambert3 = dot(difLight3Direction, N) * 0.5 + 0.5;
     vec3 diffuseColorFinal = vec3(0); // result of diffuse map, aoBlend, and some NU_values
 
-    vec3 aoBlend = DiffuseAOBlend();
-
     if (hasColorGainOffset == 1) // probably a more elegant solution...
-    {
         diffuseColorFinal = ColorOffsetGain(diffuseMap.rgb);
-    }
     else
-    {
-        // Regular characters.
-        diffuseColorFinal = diffuseMap.rgb * aoBlend * diffuseColor.rgb;
-    }
+        diffuseColorFinal = diffuseMap.rgb * DiffuseAOBlend() * diffuseColor.rgb;
 
     // Stage lighting
     vec3 lighting = Lighting(N, halfLambert);
@@ -638,25 +628,6 @@ vec4 DiffuseMapTotal()
     return pow(diffuseMapTotal, vec4(gamma, gamma, gamma, 1));
 }
 
-float AmbientOcclusionBlend(vec4 diffuseMap)
-{
-    // Ambient occlusion uses sRGB gamma.
-    // Not all materials have an ambient occlusion map.
-    float aoMap = pow(texture(normalMap, texCoord).a, 1);
-    if (hasNrm != 1)
-        aoMap = 1;
-
-    // The diffuse map for colorGain/Offset materials does a lot of things.
-    if (hasColorGainOffset == 1 || useDiffuseBlend == 1)
-        aoMap = Luminance(diffuseMap.rgb);
-
-    float aoMixIntensity = aoMinGain.w;
-    if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)
-        aoMixIntensity = 0;
-
-    return mix(aoMap, 1, aoMixIntensity);
-}
-
 vec3 SmashShader(vec4 diffuseMap, vec3 N, vec3 I)
 {
     // Ambient occlusion map. NU_aoMinGain calculated in diffuse pass.
@@ -704,7 +675,6 @@ void main()
         return;
     }
 
-    // Global vectors.
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
     vec3 N = BumpMapNormal(normal);
 
