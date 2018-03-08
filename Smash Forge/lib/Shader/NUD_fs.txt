@@ -194,7 +194,7 @@ vec3 TintColor(vec3 diffuseColor, float tintAmount)
 {
     // Approximates an overlay blend mode. Cheaper than converting to HSV/HSL.
     // Normalize the color to avoid color tint making the model darker.
-    if (Luminance(diffuseColor) < 0.0001)
+    if (Luminance(diffuseColor) < 0.01)
         return vec3(1);
     vec3 colorTint = mix(vec3(1), (normalize(diffuseColor) * 2), min(tintAmount * 0.5, 1));
     return colorTint;
@@ -498,7 +498,7 @@ float AmbientOcclusionBlend(vec4 diffuseMap)
 
     // The diffuse map for colorGain/Offset materials does a lot of things.
     if (hasColorGainOffset == 1 || useDiffuseBlend == 1)
-        aoMap = Luminance(diffuseMap.rgb);
+        aoMap = Luminance(pow(diffuseMap.rgb, vec3(1 / gamma)));
 
     float aoMixIntensity = aoMinGain.w;
     if (useDiffuseBlend == 1) // aomingain but no ao map (mainly for trophies)

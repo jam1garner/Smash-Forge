@@ -1347,28 +1347,19 @@ namespace Smash_Forge
                     string name = d.readString(nameOffset + nameStart, -1);
 
                     int pos = d.pos();
-                    int c = d.readInt();
+                    int valueCount = d.readInt();
                     d.skip(4);
-                    float[] values = new float[c];
-                    for (int i = 0; i < c; i++)
-                    {
-                        values[i] = d.readFloat();
-                    }
 
-                    // material properties should always have 4 values
-                    if (values.Length < 4)
+                    // Material properties should always have 4 values. Sse 0 for remaining values.
+                    float[] values = new float[4];
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        float[] newValues = { 0, 0, 0, 0 };
-                        for (int i = 0; i < values.Length; i++)
-                        {
-                            // fill in existing values and use 0 for remaining values
-                            newValues[i] = values[i];
-                        }
-
-                        m.entries.Add(name, newValues);
+                        if (i < valueCount)
+                            values[i] = d.readFloat();
+                        else
+                            values[i] = 0;
                     }
-                    else
-                        m.entries.Add(name, values);
+                    m.entries.Add(name, values);
 
                     d.seek(pos);
 
