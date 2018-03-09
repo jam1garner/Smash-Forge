@@ -54,7 +54,7 @@
             this.label69 = new System.Windows.Forms.Label();
             this.pbHurtboxColorSelected = new System.Windows.Forms.PictureBox();
             this.label18 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.setParamDirButton = new System.Windows.Forms.Button();
             this.textParamDir = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
             this.pbHurtboxColorLw = new System.Windows.Forms.PictureBox();
@@ -221,7 +221,7 @@
             this.tabPage2.Controls.Add(this.label69);
             this.tabPage2.Controls.Add(this.pbHurtboxColorSelected);
             this.tabPage2.Controls.Add(this.label18);
-            this.tabPage2.Controls.Add(this.button1);
+            this.tabPage2.Controls.Add(this.setParamDirButton);
             this.tabPage2.Controls.Add(this.textParamDir);
             this.tabPage2.Controls.Add(this.label17);
             this.tabPage2.Controls.Add(this.pbHurtboxColorLw);
@@ -473,15 +473,15 @@
             this.label18.TabIndex = 51;
             this.label18.Text = "Hurtbox color (selected)";
             // 
-            // button1
+            // setParamDirButton
             // 
-            this.button1.Location = new System.Drawing.Point(497, 637);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(50, 23);
-            this.button1.TabIndex = 50;
-            this.button1.Text = "Set";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.setParamDirButton.Location = new System.Drawing.Point(497, 637);
+            this.setParamDirButton.Name = "setParamDirButton";
+            this.setParamDirButton.Size = new System.Drawing.Size(50, 23);
+            this.setParamDirButton.TabIndex = 50;
+            this.setParamDirButton.Text = "Set";
+            this.setParamDirButton.UseVisualStyleBackColor = true;
+            this.setParamDirButton.Click += new System.EventHandler(this.setParamDirButton_Click);
             // 
             // textParamDir
             // 
@@ -625,7 +625,7 @@
             this.btnRemoveColor.Text = "–";
             this.btnRemoveColor.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnRemoveColor.UseVisualStyleBackColor = true;
-            this.btnRemoveColor.Click += new System.EventHandler(this.button4_Click);
+            this.btnRemoveColor.Click += new System.EventHandler(this.buttonRemoveColor_Click);
             // 
             // btnAddColor
             // 
@@ -636,7 +636,7 @@
             this.btnAddColor.TabIndex = 34;
             this.btnAddColor.Text = "+";
             this.btnAddColor.UseVisualStyleBackColor = true;
-            this.btnAddColor.Click += new System.EventHandler(this.button3_Click);
+            this.btnAddColor.Click += new System.EventHandler(this.buttonAddColor_Click);
             // 
             // btnColorDown
             // 
@@ -1001,7 +1001,7 @@
             this.renderLvdCB.TabIndex = 5;
             this.renderLvdCB.Text = "Render LVD";
             this.renderLvdCB.UseVisualStyleBackColor = true;
-            this.renderLvdCB.CheckedChanged += new System.EventHandler(this.checkBox6_CheckedChanged);
+            this.renderLvdCB.CheckedChanged += new System.EventHandler(this.renderLvdCB_CheckedChanged);
             // 
             // wireframeCB
             // 
@@ -1734,6 +1734,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 718);
             this.Controls.Add(this.tabControl1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = global::Smash_Forge.Resources.Resources.forge2;
             this.Name = "RenderSettings";
             this.Text = "Render Settings";
@@ -1803,7 +1804,7 @@
         private System.Windows.Forms.Label label69;
         private System.Windows.Forms.PictureBox pbHurtboxColorSelected;
         private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button setParamDirButton;
         private System.Windows.Forms.TextBox textParamDir;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.PictureBox pbHurtboxColorLw;

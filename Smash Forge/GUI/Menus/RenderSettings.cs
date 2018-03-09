@@ -95,9 +95,10 @@ namespace Smash_Forge.GUI
             showActiveWindowCheckbox.Checked = DiscordSettings.showCurrentWindow;
             userModCheckbox.Checked = DiscordSettings.useUserModName;
 
-
             // LVD Settings
             renderLvdCB.Checked = Runtime.renderLVD;
+            checkChanged();
+
             renderCollisionsCB.Checked = Runtime.renderCollisions;
             renderSpawnsCB.Checked = Runtime.renderSpawns;
             renderRespawnsCB.Checked = Runtime.renderRespawns;
@@ -108,12 +109,14 @@ namespace Smash_Forge.GUI
             // Material Lighting Settings
             materialLightingCB.Checked = Runtime.renderMaterialLighting;
             useNormCB.Checked = Runtime.renderNormalMap;
-            renderFogCB.Checked = Runtime.renderFog;
             cameraLightCB.Checked = Runtime.cameraLight;
             diffuseCB.Checked = Runtime.renderDiffuse;
             specularCB.Checked = Runtime.renderSpecular;
             fresnelCB.Checked = Runtime.renderFresnel;
             reflectionCB.Checked = Runtime.renderReflection;
+            renderFogCB.Checked = Runtime.renderFog;
+            stageLightingCB.Checked = Runtime.renderStageLighting;
+
             ambTB.Text = Runtime.ambItensity + "";
             difTB.Text = Runtime.difIntensity + "";
             spcTB.Text = Runtime.spcIntentensity + "";
@@ -129,16 +132,9 @@ namespace Smash_Forge.GUI
             disableRuntimeUpdates = false;
         }
 
-        private void checkBox6_CheckedChanged(object sender, EventArgs e)
+        private void renderLvdCB_CheckedChanged(object sender, EventArgs e)
         {
-            //Disable all the checkboxes for LVD
             checkChanged();
-            renderCollisionsCB.Enabled = renderLvdCB.Checked;
-            renderSpawnsCB.Enabled = renderLvdCB.Checked;
-            renderRespawnsCB.Enabled = renderLvdCB.Checked;
-            renderItemSpawnersCB.Enabled = renderLvdCB.Checked;
-            renderGeneralShapesCB.Enabled = renderLvdCB.Checked;
-            renderPassthroughCB.Enabled = renderLvdCB.Checked && renderCollisionsCB.Checked;
         }
 
         private void checkChanged()
@@ -171,6 +167,14 @@ namespace Smash_Forge.GUI
             renderPassthroughCB.Enabled = renderLvdCB.Checked && renderCollisionsCB.Checked;
             wireframeCB.Enabled = renderModelCB.Checked;
             modelSelectCB.Enabled = renderModelCB.Checked;
+
+            //Disable all the checkboxes for LVD
+            renderCollisionsCB.Enabled = renderLvdCB.Checked;
+            renderSpawnsCB.Enabled = renderLvdCB.Checked;
+            renderRespawnsCB.Enabled = renderLvdCB.Checked;
+            renderItemSpawnersCB.Enabled = renderLvdCB.Checked;
+            renderGeneralShapesCB.Enabled = renderLvdCB.Checked;
+            renderPassthroughCB.Enabled = renderLvdCB.Checked && renderCollisionsCB.Checked;
         }
 
         private void checkChanged(object sender, EventArgs e)
@@ -452,7 +456,7 @@ namespace Smash_Forge.GUI
             populateColorsFromRuntime();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void buttonAddColor_Click(object sender, EventArgs e)
         {
             ColorDialog hitboxColorDialog = new ColorDialog();
             if (hitboxColorDialog.ShowDialog() == DialogResult.OK)
@@ -462,9 +466,9 @@ namespace Smash_Forge.GUI
             }
         }
 
-        private void button4_Click(object sender, EventArgs e)
+        private void buttonRemoveColor_Click(object sender, EventArgs e)
         {
-            if (listViewKbColors.Items.Count <= 1)
+            if (listViewKbColors.Items.Count <= 1 || listViewKbColors.SelectedIndices.Count == 0)
                 return;  // don't allow no colours for hitboxes
             int index = listViewKbColors.SelectedIndices[0];
             hitboxColors.RemoveAt(index);
@@ -475,6 +479,9 @@ namespace Smash_Forge.GUI
 
         private void btnColorUp_Click(object sender, EventArgs e)
         {
+            if (listViewKbColors.SelectedIndices.Count == 0)
+                return;
+
             int index = listViewKbColors.SelectedIndices[0];
             if (index < 1)
                 return;
@@ -487,6 +494,9 @@ namespace Smash_Forge.GUI
 
         private void btnColorDown_Click(object sender, EventArgs e)
         {
+            if (listViewKbColors.SelectedIndices.Count == 0)
+                return;
+
             int index = listViewKbColors.SelectedIndices[0];
             if (index >= listViewKbColors.Items.Count - 1)
                 return;
@@ -553,7 +563,7 @@ namespace Smash_Forge.GUI
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void setParamDirButton_Click(object sender, EventArgs e)
         {
             Runtime.paramDir = textParamDir.Text;
         }
@@ -656,7 +666,6 @@ namespace Smash_Forge.GUI
         private void stageLightingCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderStageLighting = stageLightingCB.Checked;
-
             renderFogCB.Enabled = stageLightingCB.Checked;
         }
 
