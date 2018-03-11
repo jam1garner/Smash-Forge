@@ -42,6 +42,7 @@ namespace Smash_Forge
                         d.Endian = Endianness.Little;
                         size1 = d.readShort();
                     }
+                    if (d.size() < 4) return;
                     var size2 = d.readShort();
                     List<short> Table1 = new List<short>();
                     for (int i = 0; i < size1; i++)

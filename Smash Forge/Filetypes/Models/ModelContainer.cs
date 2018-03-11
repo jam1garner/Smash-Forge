@@ -214,9 +214,9 @@ namespace Smash_Forge
                     ((BCH_Model)BCH.Models.Nodes[0]).skeleton.JointTable = JTB;
                     return ((BCH_Model)BCH.Models.Nodes[0]).skeleton;
                 }
-            if (VBN != null)
+            if (vbn != null)
             {
-                return VBN;
+                return vbn;
             }
             return null;
         }

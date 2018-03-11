@@ -431,6 +431,8 @@ namespace Smash_Forge
 
         public void NextFrame(VBN skeleton, bool isChild = false)
         {
+            if (Frame >= FrameCount) return;
+
             if (Frame == 0 && !isChild)
                 skeleton.reset();
 

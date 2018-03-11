@@ -15,6 +15,11 @@ namespace Smash_Forge.GUI.Menus
     {
         public Camera Camera;
 
+        public string VBNFile;
+        public string OMOFile;
+        public VBN VBN;
+        public Animation Anim;
+
         public CameraSettings(Camera c)
         {
             InitializeComponent();
@@ -154,6 +159,60 @@ namespace Smash_Forge.GUI.Menus
             newSliderValue = Math.Max(newSliderValue, 0);
             fovSlider.Value = newSliderValue;
             //buttonApply_Click(null, null);
+        }
+
+        private void btnLoadAnim_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Camera Animation (.omo)|*.omo";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    OMOFile = ofd.FileName;
+                    Anim = OMOOld.read(new FileData(OMOFile));
+                    lbAnimation.Text = OMOFile;
+                }
+                else
+                {
+                    OMOFile = "";
+                    Anim = null;
+                    lbAnimation.Text = OMOFile;
+                }
+            }
+        }
+
+        private void btnLoadVBN_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Namco Bones (.vbn)|*.vbn";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    VBNFile = ofd.FileName;
+                    VBN = new VBN(VBNFile);
+                    lbVBN.Text = VBNFile;
+                }else
+                {
+                    VBNFile = "";
+                    VBN = null;
+                    lbVBN.Text = VBNFile;
+                }
+            }
+        }
+
+        public void ApplyCameraAnimation(Camera Cam, int frame)
+        {
+            if (useCameraAnimation.Checked)
+            {
+                if(VBN != null && Anim != null)
+                {
+                    Anim.SetFrame(frame);
+                    Anim.NextFrame(VBN);
+
+                    if(VBN.bones.Count > 0)
+                        Cam.SetFromBone(VBN.bones[0]);
+                }
+            }
         }
     }
 }

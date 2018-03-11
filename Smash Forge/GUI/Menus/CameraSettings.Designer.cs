@@ -52,6 +52,12 @@
             this.renderDepthTB = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.fovTB = new System.Windows.Forms.TextBox();
+            this.btnLoadVBN = new System.Windows.Forms.Button();
+            this.btnLoadAnim = new System.Windows.Forms.Button();
+            this.lbVBN = new System.Windows.Forms.Label();
+            this.lbAnimation = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.useCameraAnimation = new System.Windows.Forms.CheckBox();
             this.groupHorizontalRotation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericHorizontalRadians)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericHorizontalDegrees)).BeginInit();
@@ -66,6 +72,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.depthSlider)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupHorizontalRotation
@@ -244,7 +251,7 @@
             // 
             // buttonApply
             // 
-            this.buttonApply.Location = new System.Drawing.Point(114, 357);
+            this.buttonApply.Location = new System.Drawing.Point(116, 469);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(100, 40);
             this.buttonApply.TabIndex = 4;
@@ -315,12 +322,75 @@
             this.fovTB.TabIndex = 37;
             this.fovTB.TextChanged += new System.EventHandler(this.fovTB_TextChanged);
             // 
+            // btnLoadVBN
+            // 
+            this.btnLoadVBN.Location = new System.Drawing.Point(9, 42);
+            this.btnLoadVBN.Name = "btnLoadVBN";
+            this.btnLoadVBN.Size = new System.Drawing.Size(104, 23);
+            this.btnLoadVBN.TabIndex = 40;
+            this.btnLoadVBN.Text = "Load VBN";
+            this.btnLoadVBN.UseVisualStyleBackColor = true;
+            this.btnLoadVBN.Click += new System.EventHandler(this.btnLoadVBN_Click);
+            // 
+            // btnLoadAnim
+            // 
+            this.btnLoadAnim.Location = new System.Drawing.Point(9, 71);
+            this.btnLoadAnim.Name = "btnLoadAnim";
+            this.btnLoadAnim.Size = new System.Drawing.Size(104, 23);
+            this.btnLoadAnim.TabIndex = 41;
+            this.btnLoadAnim.Text = "Load Animation";
+            this.btnLoadAnim.UseVisualStyleBackColor = true;
+            this.btnLoadAnim.Click += new System.EventHandler(this.btnLoadAnim_Click);
+            // 
+            // lbVBN
+            // 
+            this.lbVBN.AutoSize = true;
+            this.lbVBN.Location = new System.Drawing.Point(114, 47);
+            this.lbVBN.Name = "lbVBN";
+            this.lbVBN.Size = new System.Drawing.Size(31, 13);
+            this.lbVBN.TabIndex = 42;
+            this.lbVBN.Text = "none";
+            // 
+            // lbAnimation
+            // 
+            this.lbAnimation.AutoSize = true;
+            this.lbAnimation.Location = new System.Drawing.Point(114, 76);
+            this.lbAnimation.Name = "lbAnimation";
+            this.lbAnimation.Size = new System.Drawing.Size(31, 13);
+            this.lbAnimation.TabIndex = 43;
+            this.lbAnimation.Text = "none";
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.useCameraAnimation);
+            this.groupBox3.Controls.Add(this.btnLoadVBN);
+            this.groupBox3.Controls.Add(this.lbAnimation);
+            this.groupBox3.Controls.Add(this.btnLoadAnim);
+            this.groupBox3.Controls.Add(this.lbVBN);
+            this.groupBox3.Location = new System.Drawing.Point(12, 356);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(297, 107);
+            this.groupBox3.TabIndex = 44;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Camera Animation";
+            // 
+            // useCameraAnimation
+            // 
+            this.useCameraAnimation.AutoSize = true;
+            this.useCameraAnimation.Location = new System.Drawing.Point(9, 19);
+            this.useCameraAnimation.Name = "useCameraAnimation";
+            this.useCameraAnimation.Size = new System.Drawing.Size(94, 17);
+            this.useCameraAnimation.TabIndex = 45;
+            this.useCameraAnimation.Text = "Use Animation";
+            this.useCameraAnimation.UseVisualStyleBackColor = true;
+            // 
             // CameraSettings
             // 
             this.AcceptButton = this.buttonApply;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(318, 409);
+            this.ClientSize = new System.Drawing.Size(318, 519);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.buttonApply);
@@ -351,6 +421,8 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -381,5 +453,11 @@
         private System.Windows.Forms.TextBox renderDepthTB;
         private System.Windows.Forms.TextBox fovTB;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Button btnLoadVBN;
+        private System.Windows.Forms.Button btnLoadAnim;
+        private System.Windows.Forms.Label lbVBN;
+        private System.Windows.Forms.Label lbAnimation;
+        private System.Windows.Forms.GroupBox groupBox3;
+        public System.Windows.Forms.CheckBox useCameraAnimation;
     }
 }
