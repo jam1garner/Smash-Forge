@@ -14,9 +14,8 @@ namespace Smash_Forge.Rendering
         public Vector3 position = new Vector3(0, 10, -80);
         public float rotX = 0;
         public float rotY = 0;
-        public float farClipPlane = 10000;
         public float fovRadians = 0.524f;
-        public float renderDepth = 5000;
+        public float renderDepth = 100000;
 
         public int renderWidth = 1;
         public int renderHeight = 1;
@@ -153,6 +152,7 @@ namespace Smash_Forge.Rendering
             // Calculate a right triangle using the bounding box radius as the height and the fov as the angle.
             // The distance is the base of the triangle. 
             float distance = radius / (float)Math.Tan(fovRadians / 2.0f);
+
             float offset = 10 / fovRadians;
             rotX = 0;
             rotY = 0;

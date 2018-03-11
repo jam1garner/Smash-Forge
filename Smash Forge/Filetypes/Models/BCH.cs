@@ -208,9 +208,9 @@ namespace Smash_Forge
                 int boneTableEntries = f.readInt();
                 int metaDataPointerOffset = f.readInt();
 
-                Debug.WriteLine("Animation Name: " + skeletalAnimationName);
-                Debug.WriteLine("BonetableOffset: " + boneTableOffset.ToString("X"));
-                Debug.WriteLine("BonetableEntry: " + boneTableEntries.ToString("X"));
+                //Debug.WriteLine("Animation Name: " + skeletalAnimationName);
+                //Debug.WriteLine("BonetableOffset: " + boneTableOffset.ToString("X"));
+                //Debug.WriteLine("BonetableEntry: " + boneTableEntries.ToString("X"));
 
                 for (int i = 0; i < boneTableEntries; i++)
                 {

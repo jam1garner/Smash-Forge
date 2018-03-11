@@ -153,7 +153,7 @@ namespace Smash_Forge
                 }
             }
 
-            nud.UpdateVertexDataAndSort();
+            nud.UpdateVertexData();
 
         }
 

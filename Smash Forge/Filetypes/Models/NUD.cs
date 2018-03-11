@@ -44,7 +44,7 @@ namespace Smash_Forge
         public NUD(string fname) : this()
         {
             Read(fname);
-            UpdateVertexDataAndSort();
+            UpdateVertexData();
         }
 
         int vbo_position;
@@ -130,33 +130,37 @@ namespace Smash_Forge
             Zero = 0xA
         }
 
-
-        private void DepthSortMeshes()
+        public void DepthSortMeshes(Vector3 cameraPosition)
         {
+            // Meshes can be rendered in the order they appear in the NUD, by bounding spheres, and offsets. 
+            List<Mesh> unsortedMeshes = new List<Mesh>();
             foreach (Mesh m in Nodes)
             {
-                m.calculateSortBias();
-
-                if (m.Text.Contains("BILLBOARDYAXIS"))
-                {
-                    m.billboardY = true;
-                }
-                else if (m.Text.Contains("BILLBOARD"))
-                {
-                    m.billboard = true;
-                }
-                else if (m.Text.Contains("NSC"))
-                {
-                    m.nsc = true;
-                }
+                m.SetMeshAttributesFromName();
+                m.sortingDistance = m.CalculateSortingDistance(cameraPosition);
+                unsortedMeshes.Add(m);
             }
-            List<Mesh> meshes = new List<Mesh>();
-            foreach(Mesh m in Nodes)
-                meshes.Add(m);
-            depthSortedMeshes = meshes.OrderBy(o => (o.boundingBox[2] - o.boundingBox[3] + o.sortBias)).ToList();
+
+            // Order by the distance from the camera to the closest point on the bounding sphere. 
+            // Positive values are usually closer to camera. Negative values are usually farther away. 
+            depthSortedMeshes = unsortedMeshes.OrderBy(o => (o.sortingDistance)).ToList();
         }
 
-        public void UpdateVertexDataAndSort()
+        private void SortMeshesByObjHeirarchy()
+        {
+            for (int i = 0; i < Nodes.Count; i++)
+            {
+                Mesh mesh = (Mesh)Nodes[i];
+                if (mesh.sortByObjHeirarchy)
+                {
+                    // Just use the mesh list order.
+                    depthSortedMeshes.Remove(mesh);
+                    depthSortedMeshes.Insert(i, mesh);
+                }
+            }
+        }
+
+        public void UpdateVertexData()
         {
             DisplayVertex[] Vertices;
             int[] Faces;
@@ -188,16 +192,12 @@ namespace Smash_Forge
             Vertices = Vs.ToArray();
             Faces = Ds.ToArray();
 
-            //Console.WriteLine(Vertices.Length + " " + Faces.Length);
-
             // Bind only once!
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
             GL.BufferData<DisplayVertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
             GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
-
-            DepthSortMeshes();
         }
 
         public void Render(VBN vbn, Camera camera)
@@ -248,14 +248,31 @@ namespace Smash_Forge
         {
             GL.UseProgram(0);
 
+            // Draw NUD bounding box. 
             GL.Color4(Color.GhostWhite);
             RenderTools.DrawCube(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3], true);
 
-            GL.Color4(Color.OrangeRed);
-            foreach (NUD.Mesh mesh in Nodes)
+            // Draw all the mesh bounding boxes. Selected: White. Deselected: Orange.
+            foreach (Mesh mesh in Nodes)
             {
+                if (mesh.IsSelected)
+                    GL.Color4(Color.GhostWhite);
+                else
+                    GL.Color4(Color.OrangeRed);
+
                 if (mesh.Checked)
-                    RenderTools.DrawCube(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3], true);
+                {
+                    if (mesh.useNsc && mesh.singlebind != -1)
+                    {
+                        // Use the center of the bone as the bounding box center for NSC meshes. 
+                        Vector3 center = ((ModelContainer)Parent).VBN.bones[mesh.singlebind].pos;
+                        RenderTools.DrawCube(center, mesh.boundingBox[3], true);
+                    }
+                    else
+                    {
+                        RenderTools.DrawCube(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3], true);
+                    }
+                }
             }
         }
 
@@ -592,7 +609,7 @@ namespace Smash_Forge
                 int index = ((Mesh)p.Parent).singlebind;
                 if (index != -1)
                 {
-                    // hacky as f
+                    // Very hacky
                     nscMatrix = ((ModelContainer)p.Parent.Parent.Parent).VBN.bones[index].transform;
                 }
             }
@@ -692,7 +709,7 @@ namespace Smash_Forge
             MatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", 1, 1, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_normalSamplerBUV", 1, 1, 0, 0);
 
-            // color properties
+            // Diffuse Color
             MatPropertyShaderUniform(shader, mat, "NU_aoMinGain",       0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_colorGain",       1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_finalColorGain",  1, 1, 1, 1);
@@ -702,30 +719,35 @@ namespace Smash_Forge
             MatPropertyShaderUniform(shader, mat, "NU_diffuseColor",    1, 1, 1, 0.5f);
             MatPropertyShaderUniform(shader, mat, "NU_characterColor",  1, 1, 1, 1);
 
+            // Specular
             MatPropertyShaderUniform(shader, mat, "NU_specularColor",     0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_specularColorGain", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_specularParams",    0, 0, 0, 0);
 
+            // Fresnel
             MatPropertyShaderUniform(shader, mat, "NU_fresnelColor",  0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_fresnelParams", 0, 0, 0, 0);
 
+            // Reflections
             MatPropertyShaderUniform(shader, mat, "NU_reflectionColor",  0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_reflectionParams", 0, 0, 0, 0);
 
+            // Fog
             MatPropertyShaderUniform(shader, mat, "NU_fogColor",  0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_fogParams", 0, 1, 0, 0);
 
+            // Soft Lighting
             MatPropertyShaderUniform(shader, mat, "NU_softLightingParams",    0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", 0, 0, 0, 0);
 
-            // misc properties
+            // Misc Properties
             MatPropertyShaderUniform(shader, mat, "NU_normalParams",           1, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_zOffset",                0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_angleFadeParams",        0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", 0, 0, 0, 0);
             MatPropertyShaderUniform(shader, mat, "NU_alphaBlendParams",       0, 0, 0, 0);
 
-            // effect materials
+            // Effect Materials
             MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor0", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor1", 1, 1, 1, 1);
             MatPropertyShaderUniform(shader, mat, "NU_effColorGain",      1, 1, 1, 1);
@@ -798,7 +820,7 @@ namespace Smash_Forge
                 texid++;
             }
 
-            // The order of the textures is critical. 
+            // The order of the textures here is critical. 
             TextureUniform(shader, mat, mat.hasSphereMap, "spheremap", ref texid, ref mat.sphereMapID);
             TextureUniform(shader, mat, mat.hasDiffuse2,  "dif2",      ref texid, ref mat.diffuse2ID);
             TextureUniform(shader, mat, mat.hasDiffuse3,  "dif3",      ref texid, ref mat.diffuse3ID);
@@ -823,15 +845,10 @@ namespace Smash_Forge
                 values = new float[] { default1, default2, default3, default4 };
             string uniformName = propertyName.Substring(3); // remove the NU_ from name
 
-            try
-            {
+            if (values.Length == 4)
                 GL.Uniform4(shader.getAttribute(uniformName), values[0], values[1], values[2], values[3]);
-            }
-            catch (System.IndexOutOfRangeException)
-            {
-                // something went wrong reading mat data somewhere...
-                // some other part of the code will probably also fail
-            }
+            else
+                Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
 
         private static void TextureUniform(Shader shader, Material mat, bool hasTex, string name, ref int texid, ref int matTexId)
@@ -1330,28 +1347,19 @@ namespace Smash_Forge
                     string name = d.readString(nameOffset + nameStart, -1);
 
                     int pos = d.pos();
-                    int c = d.readInt();
+                    int valueCount = d.readInt();
                     d.skip(4);
-                    float[] values = new float[c];
-                    for (int i = 0; i < c; i++)
-                    {
-                        values[i] = d.readFloat();
-                    }
 
-                    // material properties should always have 4 values
-                    if (values.Length < 4)
+                    // Material properties should always have 4 values. Sse 0 for remaining values.
+                    float[] values = new float[4];
+                    for (int i = 0; i < values.Length; i++)
                     {
-                        float[] newValues = { 0, 0, 0, 0 };
-                        for (int i = 0; i < values.Length; i++)
-                        {
-                            // fill in existing values and use 0 for remaining values
-                            newValues[i] = values[i];
-                        }
-
-                        m.entries.Add(name, newValues);
+                        if (i < valueCount)
+                            values[i] = d.readFloat();
+                        else
+                            values[i] = 0;
                     }
-                    else
-                        m.entries.Add(name, values);
+                    m.entries.Add(name, values);
 
                     d.seek(pos);
 
@@ -1607,11 +1615,6 @@ namespace Smash_Forge
             d.writeShort(Nodes.Count); // polysets
 
             boneCount = ((ModelContainer)Parent).VBN.bones.Count;
-            /*foreach (ModelContainer con in Runtime.ModelContainers)
-            {
-                if (con.NUD == this && con.VBN!=null)
-                    boneCount = con.VBN.bones.Count;   
-            }*/
 
             d.writeShort(boneCount == 0 ? 0 : 2); // type
             d.writeShort(boneCount == 0 ? boneCount : boneCount - 1); // Number of bones
@@ -2001,7 +2004,6 @@ namespace Smash_Forge
 
         #endregion
         
-        #region Functions
         public void MergePoly()
         {
             Dictionary<string, Mesh> nmesh = new Dictionary<string, Mesh>();
@@ -2074,8 +2076,6 @@ namespace Smash_Forge
 
             return 0;
         }
-
-        #endregion
 
         #region ClassStructure
 
@@ -2869,9 +2869,11 @@ namespace Smash_Forge
             public int sortBias = 0;
             public bool billboardY = false;
             public bool billboard = false;
-            public bool nsc = false;
+            public bool useNsc = false;
+            public bool sortByObjHeirarchy = true;
 
             public float[] boundingBox = new float[8];
+            public float sortingDistance = 0;
 
             public Mesh()
             {
@@ -2974,26 +2976,62 @@ namespace Smash_Forge
                 boundingBox[7] = 0;
             }
 
-            public void calculateSortBias()
+            public float CalculateSortingDistance(Vector3 cameraPosition)
+            {
+
+                Vector3 meshCenter = new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]);
+                if (useNsc && singlebind != -1)
+                {
+                    // Use the bone position as the bounding box center
+                    ModelContainer modelContainer = (ModelContainer)Parent.Parent;
+                    meshCenter = modelContainer.VBN.bones[singlebind].pos;
+                }
+
+                Vector3 distanceVector = new Vector3(cameraPosition - meshCenter);
+                return distanceVector.Length + boundingBox[3] + sortBias;
+            }
+
+            private int CalculateSortBias()
             {
                 if (!(Text.Contains("SORTBIAS")))
-                    return;
+                    return 0;
 
                 // Isolate the integer value from the mesh name.
+                string sortBiasKeyWord = "SORTBIAS";
+                string sortBiasText = GetSortBiasNumbers(sortBiasKeyWord);
+
+                int sortBiasValue = 0;
+                int.TryParse(sortBiasText, out sortBiasValue);
+
+                // TODO: What does "m" do? Ex: SORTBIASm50_
+                int firstSortBiasCharIndex = Text.IndexOf(sortBiasKeyWord) + sortBiasKeyWord.Length;
+                if (Text[firstSortBiasCharIndex] == 'm')
+                    sortBiasValue *= -1;
+
+                return sortBiasValue;
+            }
+
+            private string GetSortBiasNumbers(string sortBiasKeyWord)
+            {
                 string sortBiasText = "";
-                for (int i = Text.IndexOf("SORTBIAS") + 8; i < Text.Length; i++)
+                for (int i = Text.IndexOf(sortBiasKeyWord) + sortBiasKeyWord.Length; i < Text.Length; i++)
                 {
                     if (Text[i] != '_')
-                    {
                         sortBiasText += Text[i];
-                    }
                     else
                         break;
                 }
 
-                int sortBiasValue = 0;
-                int.TryParse(sortBiasText, out sortBiasValue);
-                sortBias = sortBiasValue;              
+                return sortBiasText;
+            }
+
+            public void SetMeshAttributesFromName()
+            {
+                sortBias = CalculateSortBias();
+                billboard = Text.Contains("BILLBOARD");
+                billboardY = Text.Contains("BILLBOARDYAXIS");
+                useNsc = Text.Contains("NSC");
+                sortByObjHeirarchy = Text.Contains("HIR");
             }
         }
 

@@ -1464,7 +1464,7 @@ namespace Smash_Forge
                     //Flag2 == rigged collision
                     ModelContainer riggedModel = null;
                     Bone riggedBone = null;
-                    foreach (ModelContainer m in MeshList.treeView1.Nodes)
+                    foreach (ModelContainer m in MeshList.filesTreeView.Nodes)
                     {
                         if (m.Text.Equals(c.subname))
                         {
