@@ -210,5 +210,10 @@ namespace Smash_Forge
         {
 
         }
+
+        private void toolTip1_Popup(object sender, PopupEventArgs e)
+        {
+
+        }
     }
 }

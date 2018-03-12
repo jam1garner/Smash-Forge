@@ -108,6 +108,7 @@
             this.numericUpDown17 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown18 = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown19 = new System.Windows.Forms.NumericUpDown();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -687,6 +688,7 @@
             this.numericUpDown6.Name = "numericUpDown6";
             this.numericUpDown6.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown6.TabIndex = 14;
+            this.toolTip1.SetToolTip(this.numericUpDown6, "1 = Movement Physic; 2 = Movement and Wind Physics");
             this.numericUpDown6.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
             // numericUpDown5
@@ -726,6 +728,7 @@
             this.numericUpDown4.Name = "numericUpDown4";
             this.numericUpDown4.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown4.TabIndex = 12;
+            this.toolTip1.SetToolTip(this.numericUpDown4, "Movement Percentage for bone.");
             this.numericUpDown4.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
             // numericUpDown3
@@ -784,6 +787,7 @@
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown1.TabIndex = 9;
+            this.toolTip1.SetToolTip(this.numericUpDown1, "Higher the value, less movement it has.");
             this.numericUpDown1.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
             // weightBox
@@ -804,6 +808,7 @@
             this.weightBox.Name = "weightBox";
             this.weightBox.Size = new System.Drawing.Size(136, 20);
             this.weightBox.TabIndex = 1;
+            this.toolTip1.SetToolTip(this.weightBox, "Higher the value, the more gravity it has.");
             this.weightBox.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
             // label11
@@ -851,11 +856,11 @@
             // 
             this.label14.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(9, 173);
+            this.label14.Location = new System.Drawing.Point(14, 173);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(68, 13);
+            this.label14.Size = new System.Drawing.Size(57, 13);
             this.label14.TabIndex = 5;
-            this.label14.Text = "Movement %";
+            this.label14.Text = "Movement";
             // 
             // label15
             // 
@@ -985,6 +990,7 @@
             this.numericUpDown15.Name = "numericUpDown15";
             this.numericUpDown15.Size = new System.Drawing.Size(136, 20);
             this.numericUpDown15.TabIndex = 16;
+            this.toolTip1.SetToolTip(this.numericUpDown15, "Should always be 100");
             this.numericUpDown15.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
             // label25
@@ -1303,6 +1309,10 @@
             this.numericUpDown19.TabIndex = 24;
             this.numericUpDown19.ValueChanged += new System.EventHandler(this.valueChanged);
             // 
+            // toolTip1
+            // 
+            this.toolTip1.Popup += new System.Windows.Forms.PopupEventHandler(this.toolTip1_Popup);
+            // 
             // SwagEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1446,5 +1456,6 @@
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem addEntryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem removeEntryToolStripMenuItem;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
