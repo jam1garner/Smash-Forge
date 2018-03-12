@@ -195,5 +195,20 @@ namespace Smash_Forge
             else
                 removeEntryToolStripMenuItem.Visible = true;
         }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tableLayoutPanel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label16_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

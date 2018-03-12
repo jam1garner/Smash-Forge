@@ -610,7 +610,7 @@
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage2.Size = new System.Drawing.Size(273, 329);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Other";
+            this.tabPage2.Text = "Table 1";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel2
@@ -648,6 +648,7 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 12.5F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(267, 323);
             this.tableLayoutPanel2.TabIndex = 2;
+            this.tableLayoutPanel2.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel2_Paint);
             // 
             // numericUpDown7
             // 
@@ -814,16 +815,17 @@
             this.label11.Size = new System.Drawing.Size(41, 13);
             this.label11.TabIndex = 0;
             this.label11.Text = "Weight";
+            this.label11.Click += new System.EventHandler(this.label11_Click);
             // 
             // unk1
             // 
             this.unk1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.unk1.AutoSize = true;
-            this.unk1.Location = new System.Drawing.Point(13, 53);
+            this.unk1.Location = new System.Drawing.Point(17, 53);
             this.unk1.Name = "unk1";
-            this.unk1.Size = new System.Drawing.Size(59, 13);
+            this.unk1.Size = new System.Drawing.Size(52, 13);
             this.unk1.TabIndex = 2;
-            this.unk1.Text = "Momentum";
+            this.unk1.Text = "Immobility";
             // 
             // label12
             // 
@@ -849,11 +851,11 @@
             // 
             this.label14.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(14, 173);
+            this.label14.Location = new System.Drawing.Point(9, 173);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(57, 13);
+            this.label14.Size = new System.Drawing.Size(68, 13);
             this.label14.TabIndex = 5;
-            this.label14.Text = "Movement";
+            this.label14.Text = "Movement %";
             // 
             // label15
             // 
@@ -869,11 +871,12 @@
             // 
             this.label16.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(27, 253);
+            this.label16.Location = new System.Drawing.Point(8, 253);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(31, 13);
+            this.label16.Size = new System.Drawing.Size(69, 13);
             this.label16.TabIndex = 7;
-            this.label16.Text = "unk4";
+            this.label16.Text = "Physics Style";
+            this.label16.Click += new System.EventHandler(this.label16_Click);
             // 
             // label17
             // 
@@ -883,7 +886,7 @@
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(31, 13);
             this.label17.TabIndex = 8;
-            this.label17.Text = "unk5";
+            this.label17.Text = "unk4";
             // 
             // other2
             // 
@@ -892,7 +895,7 @@
             this.other2.Name = "other2";
             this.other2.Size = new System.Drawing.Size(273, 329);
             this.other2.TabIndex = 3;
-            this.other2.Text = "Other 2";
+            this.other2.Text = "Table 2";
             this.other2.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel3
@@ -952,7 +955,7 @@
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(37, 13);
             this.label28.TabIndex = 23;
-            this.label28.Text = "unk17";
+            this.label28.Text = "unk16";
             // 
             // label27
             // 
@@ -962,7 +965,7 @@
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(37, 13);
             this.label27.TabIndex = 20;
-            this.label27.Text = "unk16";
+            this.label27.Text = "unk15";
             // 
             // numericUpDown15
             // 
@@ -992,7 +995,7 @@
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(37, 13);
             this.label25.TabIndex = 15;
-            this.label25.Text = "unk13";
+            this.label25.Text = "unk12";
             // 
             // numericUpDown14
             // 
@@ -1022,7 +1025,7 @@
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(37, 13);
             this.label24.TabIndex = 13;
-            this.label24.Text = "unk12";
+            this.label24.Text = "unk11";
             // 
             // numericUpDown13
             // 
@@ -1052,7 +1055,7 @@
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(37, 13);
             this.label23.TabIndex = 11;
-            this.label23.Text = "unk11";
+            this.label23.Text = "unk10";
             // 
             // numericUpDown12
             // 
@@ -1078,11 +1081,11 @@
             // 
             this.label22.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(27, 115);
+            this.label22.Location = new System.Drawing.Point(30, 115);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(37, 13);
+            this.label22.Size = new System.Drawing.Size(31, 13);
             this.label22.TabIndex = 9;
-            this.label22.Text = "unk10";
+            this.label22.Text = "unk9";
             // 
             // numericUpDown11
             // 
@@ -1112,7 +1115,7 @@
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(31, 13);
             this.label21.TabIndex = 7;
-            this.label21.Text = "unk9";
+            this.label21.Text = "unk8";
             // 
             // numericUpDown10
             // 
@@ -1142,7 +1145,7 @@
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(31, 13);
             this.label20.TabIndex = 5;
-            this.label20.Text = "unk8";
+            this.label20.Text = "unk7";
             // 
             // numericUpDown9
             // 
@@ -1172,7 +1175,7 @@
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(31, 13);
             this.label19.TabIndex = 3;
-            this.label19.Text = "unk7";
+            this.label19.Text = "unk6";
             // 
             // numericUpDown8
             // 
@@ -1202,7 +1205,7 @@
             this.unk8.Name = "unk8";
             this.unk8.Size = new System.Drawing.Size(31, 13);
             this.unk8.TabIndex = 0;
-            this.unk8.Text = "unk6";
+            this.unk8.Text = "unk5";
             // 
             // label18
             // 
@@ -1212,7 +1215,7 @@
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(37, 13);
             this.label18.TabIndex = 17;
-            this.label18.Text = "unk14";
+            this.label18.Text = "unk13";
             // 
             // numericUpDown16
             // 
@@ -1241,7 +1244,7 @@
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(37, 13);
             this.label26.TabIndex = 19;
-            this.label26.Text = "unk15";
+            this.label26.Text = "unk14";
             // 
             // numericUpDown17
             // 
