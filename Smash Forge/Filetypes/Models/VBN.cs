@@ -25,8 +25,8 @@ namespace Smash_Forge
         public UInt32 boneId;
         public float[] position = new float[] { 0, 0, 0 };
         public float[] rotation = new float[] { 0, 0, 0 };
-        public float[] scale = new float[] { 1,1,1};
-        
+        public float[] scale = new float[] { 1, 1, 1 };
+
         public Vector3 pos = Vector3.Zero, sca = new Vector3(1f, 1f, 1f);
         public Quaternion rot = Quaternion.FromMatrix(Matrix3.Zero);
         public Matrix4 transform, invert;
@@ -38,7 +38,7 @@ namespace Smash_Forge
             set
             {
                 if (Parent != null) Parent.Nodes.Remove(this);
-                if(value > -1 && value < vbnParent.bones.Count)
+                if (value > -1 && value < vbnParent.bones.Count)
                 {
                     vbnParent.bones[value].Nodes.Add(this);
                 }
@@ -63,7 +63,7 @@ namespace Smash_Forge
         {
             List<Bone> l = new List<Bone>();
             foreach (Bone b in vbnParent.bones)
-                if(b.Parent == this)
+                if (b.Parent == this)
                     l.Add(b);
             return l;
         }
@@ -73,7 +73,7 @@ namespace Smash_Forge
             return Text;
         }
 
-        public static float rot90 = (float)(90*(Math.PI / 180));
+        public static float rot90 = (float)(90 * (Math.PI / 180));
 
         public int CheckControl(Rendering.Ray r)
         {
@@ -81,7 +81,7 @@ namespace Smash_Forge
             Vector3 pos_c = Vector3.Transform(Vector3.Zero, transform);
             if (RenderTools.intersectCircle(pos_c, 2f, 30, r.p1, r.p2))
                 return 1;
-            
+           
             */
             return -1;
         }
@@ -105,7 +105,7 @@ namespace Smash_Forge
 
             Rendering.RenderTools.DrawCube(pos_c, .1f);
 
-            // now draw line between parent 
+            // now draw line between parent
             GL.Color3(Color.LightBlue);
             GL.LineWidth(2f);
 
@@ -158,7 +158,7 @@ namespace Smash_Forge
                 int secLength = f.readInt();
                 int someCount = f.readInt(); // usually 2?
 
-                for(int sec = 0; sec < 5; sec++)
+                for (int sec = 0; sec < 5; sec++)
                 {
                     int size = f.readInt();
                     int id = f.readInt();
@@ -166,11 +166,11 @@ namespace Smash_Forge
                     for (int j = 0; j < ((size - 1) / 4) - 1; j++)
                     {
 
-                        if(id == 4)
+                        if (id == 4)
                         {
                             int b1 = (short)f.readShort();
                             int b2 = (short)f.readShort();
-                            Console.Write("\t" + (b1==-1?b1 + "" : bonename[b1]) + " " + b2 + "\t");
+                            Console.Write("\t" + (b1 == -1 ? b1 + "" : bonename[b1]) + " " + b2 + "\t");
                         }
                         else
                         if (id == 5)
@@ -180,7 +180,7 @@ namespace Smash_Forge
                             Console.Write("\t" + (b1 == -1 ? b1 + "" : bonename[b1]) + " " + (b2 == -1 ? b2 + "" : bonename[b2]) + "\t");
                         }
                         else
-                            Console.Write("\t" + (f.readShort() / (id==7?(float)0xffff:1)) + " " + (f.readShort() / (id == 7 ? (float)0xffff : 1)) + "\t");
+                            Console.Write("\t" + (f.readShort() / (id == 7 ? (float)0xffff : 1)) + " " + (f.readShort() / (id == 7 ? (float)0xffff : 1)) + "\t");
                     }
                     Console.WriteLine();
                 }
@@ -194,7 +194,7 @@ namespace Smash_Forge
             int unk = f.readInt();
 
 
-            
+
         }
     }
 
@@ -246,9 +246,10 @@ namespace Smash_Forge
         public UInt32 totalBoneCount;
         public UInt32[] boneCountPerType = new UInt32[4];
         public List<Bone> bones = new List<Bone>();
-        
-        public SB SwingBones {
-            get 
+
+        public SB SwingBones
+        {
+            get
             {
                 if (_swingBones == null)
                     _swingBones = new SB();
@@ -302,7 +303,7 @@ namespace Smash_Forge
         public void ResetNodes()
         {
             Nodes.Clear();
-            
+
             Nodes.Add(RootNode);
             Nodes.Add(SwingBones);
         }
@@ -312,15 +313,15 @@ namespace Smash_Forge
         {
 
             float ToRad = (float)Math.PI / 180;
-            if(_swingBones != null)
+            if (_swingBones != null)
             {
                 foreach (SB.SBEntry sb in _swingBones.bones)
                 {
-                    foreach(Bone b in bones)
+                    foreach (Bone b in bones)
                     {
-                        if(b.boneId == sb.hash)
+                        if (b.boneId == sb.hash)
                         {
-                            b.rot = FromEulerAngles(b.rotation[2], b.rotation[1], b.rotation[0]) * 
+                            b.rot = FromEulerAngles(b.rotation[2], b.rotation[1], b.rotation[0]) *
                                 FromEulerAngles(sb.rz2 * ToRad, sb.ry2 * ToRad, 0);
                             break;
                         }
@@ -360,7 +361,7 @@ namespace Smash_Forge
                         if (b.boneId == sb.hash)
                         {
                             b.rot = FromEulerAngles(b.rotation[2], b.rotation[1], b.rotation[0]) *
-                                FromEulerAngles((sb.rz1+sb.rz2)/2 * ToRad, (sb.ry1 + sb.ry2) / 2 * ToRad, 0);
+                                FromEulerAngles((sb.rz1 + sb.rz2) / 2 * ToRad, (sb.ry1 + sb.ry2) / 2 * ToRad, 0);
                         }
                     }
                 }
@@ -533,13 +534,16 @@ namespace Smash_Forge
             update(true);
             for (int i = 0; i < bones.Count; i++)
             {
-                try{
+                try
+                {
                     bones[i].invert = Matrix4.Invert(bones[i].transform);
-                } catch (InvalidOperationException){
+                }
+                catch (InvalidOperationException)
+                {
                     bones[i].invert = Matrix4.Zero;
                 }
             }
-            if(Runtime.model_scale != 1f) update();
+            if (Runtime.model_scale != 1f) update();
         }
 
         public override void Read(string filename)
@@ -609,20 +613,22 @@ namespace Smash_Forge
             FileOutput file = new FileOutput();
             if (file != null)
             {
-                if (Endian == Endianness.Little) {
+                if (Endian == Endianness.Little)
+                {
                     file.Endian = Endianness.Little;
                     file.writeString(" NBV");
                     file.writeShort(0x02);
                     file.writeShort(0x01);
                 }
-                else if (Endian == Endianness.Big) {
+                else if (Endian == Endianness.Big)
+                {
                     file.Endian = Endianness.Big;
                     file.writeString("VBN ");
                     file.writeShort(0x01);
                     file.writeShort(0x02);
                 }
 
-                
+
                 file.writeInt(bones.Count);
                 if (boneCountPerType[0] == 0)
                     boneCountPerType[0] = (uint)bones.Count;
@@ -663,7 +669,7 @@ namespace Smash_Forge
                 // OrderPass
                 foreach (Bone b in bones)
                 {
-                    for(int i = 0; i < SpecialBones.Length; i++)
+                    for (int i = 0; i < SpecialBones.Length; i++)
                     {
                         if (b.Text.Equals(SpecialBones[i]) || (SpecialBones[i].Equals("RotN") && b.Text.Equals("XRotN")))
                         {
@@ -674,7 +680,7 @@ namespace Smash_Forge
                     }
                 }
                 Console.WriteLine(SpecialBones.Length + " " + specialCount);
-                if(specialCount == SpecialBones.Length)
+                if (specialCount == SpecialBones.Length)
                     Normal.AddRange(Special);
 
                 //Gather Each Bone Type
@@ -682,7 +688,7 @@ namespace Smash_Forge
                 {
                     switch (b.boneType)
                     {
-                        case 0: if(!Normal.Contains(b))Normal.Add(b);break;
+                        case 0: if (!Normal.Contains(b)) Normal.Add(b); break;
                         case 2: Helper.Add(b); break;
                         case 3: Swing.Add(b); break;
                         default: Unk.Add(b); break;
@@ -693,7 +699,7 @@ namespace Smash_Forge
                 file.writeInt(Unk.Count);
                 file.writeInt(Helper.Count);
                 file.writeInt(Swing.Count);
-                
+
                 List<Bone> NewBoneOrder = new List<Bone>();
                 NewBoneOrder.AddRange(Normal);
                 NewBoneOrder.AddRange(Unk);
@@ -708,7 +714,7 @@ namespace Smash_Forge
                     for (int j = 0; j < 64 - bones[i].Text.Length; j++)
                         file.writeByte(0);
                     file.writeInt((int)bones[i].boneType);
-                    if(bones[i].parentIndex == -1)
+                    if (bones[i].parentIndex == -1)
                         file.writeInt(0x0FFFFFFF);
                     else
                         file.writeInt(bones[i].parentIndex);
@@ -735,29 +741,29 @@ namespace Smash_Forge
         {
             FileData d = new FileData(fname);
             d.Endian = Endianness.Big;
-
+ 
             int tableSize = 2;
-
+ 
             int table1 = d.readShort();
-
+ 
             if (table1 * 2 + 2 >= d.size())
                 tableSize = 1;
-
+ 
             int table2 = -1;
             if (tableSize != 1)
                 table2 = d.readShort();
-
+ 
             //if (table2 == 0)
             //    d.seek(d.pos() - 2);
-
+ 
             List<int> t1 = new List<int>();
-
+ 
             for (int i = 0; i < table1; i++)
                 t1.Add(d.readShort());
-
+ 
             jointTable.Clear();
             jointTable.Add(t1);
-
+ 
             if (tableSize != 1)
             {
                 List<int> t2 = new List<int>();
@@ -797,13 +803,13 @@ namespace Smash_Forge
         {
             int index = -1;
             int vbnIndex = boneIndex(name);
-            if(JointTable != null)
+            if (JointTable != null)
             {
-                for(int i = 0; i < JointTable.Tables.Count; i++)
+                for (int i = 0; i < JointTable.Tables.Count; i++)
                 {
-                    for(int j = 0; j < JointTable.Tables[i].Count; j++)
+                    for (int j = 0; j < JointTable.Tables[i].Count; j++)
                     {
-                        if(JointTable.Tables[i][j] == vbnIndex)
+                        if (JointTable.Tables[i][j] == vbnIndex)
                         {
                             // Note that some bones appear twice in the joint tables
                             // and this function will only find the first occurrence.
@@ -882,7 +888,7 @@ namespace Smash_Forge
 
         public Bone GetBone(uint boneHash)
         {
-            if(boneHash == 3449071621)
+            if (boneHash == 3449071621)
                 return null;
             foreach (Bone b in bones)
                 if (b.boneId == boneHash)
@@ -919,13 +925,13 @@ namespace Smash_Forge
         public class SBEntry
         {
             public uint hash = 3449071621;
-            public float param1_1, param2_1;
-            public int param1_2, param1_3, param2_2, param2_3;
+            public float param1_1, param2_1, param2_2;
+            public int param1_2, param1_3, param2_3;
             public float rx1, rx2, ry1, ry2, rz1, rz2;
             public uint[] boneHashes = new uint[8] { 3449071621, 3449071621, 3449071621, 3449071621, 3449071621, 3449071621, 3449071621, 3449071621 };
-            public float[] unks1 = new float[4], unks2 = new float[5];
+            public float[] unks1 = new float[4], unks2 = new float[6];
             public float factor;
-            public int[] ints = new int[4];
+            public int[] ints = new int[3];
 
             public override string ToString()
             {
@@ -951,7 +957,7 @@ namespace Smash_Forge
         public void TryGetEntry(uint hash, out SBEntry entry)
         {
             entry = null;
-            foreach(SBEntry sb in bones)
+            foreach (SBEntry sb in bones)
                 if (sb.hash == hash)
                     entry = sb;
         }
@@ -972,7 +978,7 @@ namespace Smash_Forge
             d.seek(8); // skip magic and version?
             int count = d.readInt(); // entry count
 
-            for(int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 SBEntry sb = new SBEntry()
                 {
@@ -981,7 +987,7 @@ namespace Smash_Forge
                     param1_2 = d.readInt(),
                     param1_3 = d.readInt(),
                     param2_1 = d.readFloat(),
-                    param2_2 = d.readInt(),
+                    param2_2 = d.readFloat(),
                     param2_3 = d.readInt(),
                     rx1 = d.readFloat(),
                     rx2 = d.readFloat(),
@@ -997,12 +1003,12 @@ namespace Smash_Forge
                 for (int j = 0; j < 4; j++)
                     sb.unks1[j] = d.readFloat();
 
-                for (int j = 0; j < 5; j++)
+                for (int j = 0; j < 6; j++)
                     sb.unks2[j] = d.readFloat();
 
                 sb.factor = d.readFloat();
 
-                for (int j = 0; j < 4; j++)
+                for (int j = 0; j < 3; j++)
                     sb.ints[j] = d.readInt();
 
                 bones.Add(sb);
@@ -1010,17 +1016,17 @@ namespace Smash_Forge
                 /*Console.WriteLine(sb.hash.ToString("x"));
                 Console.WriteLine(d.readFloat() + " " + d.readInt() + " " + d.readInt());
                 Console.WriteLine(d.readFloat() + " " + d.readInt() + " " + d.readInt());
-
+ 
                 //28 floats?
                 Console.WriteLine(d.readFloat() + " " + d.readFloat());
                 Console.WriteLine(d.readFloat() + " " + d.readFloat());
                 Console.WriteLine(d.readFloat() + " " + d.readFloat());
                 Console.WriteLine(d.readFloat() + " " + d.readFloat() + " " + d.readFloat() + " " + d.readFloat());
                 Console.WriteLine(d.readFloat() + " " + d.readFloat() + " " + d.readFloat() + " " + d.readFloat());
-
+ 
                 Console.WriteLine(d.readFloat() + " " + d.readFloat() + " " + d.readFloat() + " " + d.readFloat());
                 Console.WriteLine(d.readFloat() + " " + d.readFloat() + " " + d.readFloat() + " " + d.readFloat());
-
+ 
                 Console.WriteLine(d.readFloat() + " " + d.readFloat());
                 Console.WriteLine(d.readInt() +  " " + d.readInt());
                 Console.WriteLine(d.readInt() + " " + d.readInt());
@@ -1038,14 +1044,14 @@ namespace Smash_Forge
             o.writeShort(0x01);
             o.writeInt(bones.Count);
 
-            foreach(SBEntry s in bones)
+            foreach (SBEntry s in bones)
             {
                 o.writeInt((int)s.hash);
                 o.writeFloat(s.param1_1);
                 o.writeInt(s.param1_2);
                 o.writeInt(s.param1_3);
                 o.writeFloat(s.param2_1);
-                o.writeInt(s.param2_2);
+                o.writeFloat(s.param2_2);
                 o.writeInt(s.param2_3);
                 o.writeFloat(s.rx1);
                 o.writeFloat(s.rx2);
@@ -1060,12 +1066,12 @@ namespace Smash_Forge
                 for (int j = 0; j < 4; j++)
                     o.writeFloat(s.unks1[j]);
 
-                for (int j = 0; j < 5; j++)
+                for (int j = 0; j < 6; j++)
                     o.writeFloat(s.unks2[j]);
 
                 o.writeFloat(s.factor);
 
-                for (int j = 0; j < 4; j++)
+                for (int j = 0; j < 3; j++)
                     o.writeInt(s.ints[j]);
             }
 

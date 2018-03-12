@@ -69,7 +69,7 @@ namespace Smash_Forge
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             dontChange = true;
-            SB.SBEntry sbEntry = (SB.SBEntry) listBox1.SelectedItem;
+            SB.SBEntry sbEntry = (SB.SBEntry)listBox1.SelectedItem;
             if (sbEntry == null)
                 return;
             boneButton1.vbn = vbn;
@@ -86,14 +86,14 @@ namespace Smash_Forge
             yMax.Value = (Decimal)sbEntry.ry2;
             zMin.Value = (Decimal)sbEntry.rz1;
             zMax.Value = (Decimal)sbEntry.rz2;
-            weightBox.Value = (Decimal) sbEntry.factor;
-            numericUpDown1.Value = (Decimal) sbEntry.param1_1;
+            weightBox.Value = (Decimal)sbEntry.factor;
+            numericUpDown1.Value = (Decimal)sbEntry.param1_1;
             numericUpDown2.Value = (Decimal)sbEntry.param1_2;
             numericUpDown3.Value = (Decimal)sbEntry.param1_3;
             numericUpDown4.Value = (Decimal)sbEntry.param2_1;
             numericUpDown5.Value = (Decimal)sbEntry.param2_2;
             numericUpDown6.Value = (Decimal)sbEntry.param2_3;
-            numericUpDown7.Value = (Decimal) sbEntry.unks1[0];
+            numericUpDown7.Value = (Decimal)sbEntry.unks1[0];
             numericUpDown8.Value = (Decimal)sbEntry.unks1[1];
             numericUpDown9.Value = (Decimal)sbEntry.unks1[2];
             numericUpDown10.Value = (Decimal)sbEntry.unks1[3];
@@ -102,10 +102,10 @@ namespace Smash_Forge
             numericUpDown13.Value = (Decimal)sbEntry.unks2[2];
             numericUpDown14.Value = (Decimal)sbEntry.unks2[3];
             numericUpDown15.Value = (Decimal)sbEntry.unks2[4];
-            numericUpDown16.Value = (Decimal)sbEntry.ints[0];
-            numericUpDown17.Value = (Decimal)sbEntry.ints[1];
-            numericUpDown18.Value = (Decimal)sbEntry.ints[2];
-            numericUpDown19.Value = (Decimal)sbEntry.ints[3];
+            numericUpDown16.Value = (Decimal)sbEntry.unks2[5];
+            numericUpDown17.Value = (Decimal)sbEntry.ints[0];
+            numericUpDown18.Value = (Decimal)sbEntry.ints[1];
+            numericUpDown19.Value = (Decimal)sbEntry.ints[2];
             dontChange = false;
         }
 
@@ -145,13 +145,13 @@ namespace Smash_Forge
                 SB.SBEntry sbEntry = (SB.SBEntry)listBox1.SelectedItem;
                 if (sbEntry == null)
                     return;
-                sbEntry.rx1 = (float) xMin.Value;
-                sbEntry.rx2 = (float) xMax.Value;
-                sbEntry.ry1 = (float) yMin.Value;
-                sbEntry.ry2 = (float) yMax.Value;
-                sbEntry.rz1 = (float) zMin.Value;
-                sbEntry.rz2 = (float) zMax.Value;
-                sbEntry.factor = (float) weightBox.Value;
+                sbEntry.rx1 = (float)xMin.Value;
+                sbEntry.rx2 = (float)xMax.Value;
+                sbEntry.ry1 = (float)yMin.Value;
+                sbEntry.ry2 = (float)yMax.Value;
+                sbEntry.rz1 = (float)zMin.Value;
+                sbEntry.rz2 = (float)zMax.Value;
+                sbEntry.factor = (float)weightBox.Value;
                 sbEntry.param1_1 = (float)numericUpDown1.Value;
                 sbEntry.param1_2 = (int)numericUpDown2.Value;
                 sbEntry.param1_3 = (int)numericUpDown3.Value;
@@ -167,10 +167,10 @@ namespace Smash_Forge
                 sbEntry.unks2[2] = (float)numericUpDown13.Value;
                 sbEntry.unks2[3] = (float)numericUpDown14.Value;
                 sbEntry.unks2[4] = (float)numericUpDown15.Value;
-                sbEntry.ints[0] = (int) numericUpDown16.Value;
-                sbEntry.ints[1] = (int)numericUpDown17.Value;
-                sbEntry.ints[2] = (int)numericUpDown18.Value;
-                sbEntry.ints[3] = (int)numericUpDown19.Value;
+                sbEntry.unks2[5] = (float)numericUpDown16.Value;
+                sbEntry.ints[0] = (int)numericUpDown17.Value;
+                sbEntry.ints[1] = (int)numericUpDown18.Value;
+                sbEntry.ints[2] = (int)numericUpDown19.Value;
             }
         }
 
