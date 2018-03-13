@@ -792,7 +792,8 @@ namespace Smash_Forge
 
         private void CameraSettings_Click(object sender, EventArgs e)
         {
-            cameraPosForm = new GUI.Menus.CameraSettings(camera);
+            if(cameraPosForm == null)
+                cameraPosForm = new GUI.Menus.CameraSettings(camera);
             cameraPosForm.ShowDialog();
         }
 
@@ -1319,6 +1320,9 @@ namespace Smash_Forge
 
             }
 
+            if(cameraPosForm != null)
+                cameraPosForm.ApplyCameraAnimation(camera, animationTrackBar.Value);
+            
             Matrix4 matrix = camera.mvpMatrix;
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref matrix);

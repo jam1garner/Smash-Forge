@@ -54,6 +54,19 @@ namespace Smash_Forge.Rendering
             this.rotY = rotY;
         }
 
+        public void SetFromBone(Bone b)
+        {
+            Matrix4 Mat = b.transform.Inverted();
+            translation = Matrix4.CreateTranslation(Mat.ExtractTranslation());
+            rotationMatrix = Matrix4.CreateFromQuaternion(Mat.ExtractRotation());
+            perspFov = Matrix4.CreatePerspectiveFieldOfView(fovRadians, renderWidth / (float)renderHeight, 1.0f, renderDepth);
+
+            modelViewMatrix = Mat;
+            mvpMatrix = modelViewMatrix * perspFov;
+            billboardMatrix = translation * perspFov;
+            billboardYMatrix = Matrix4.CreateRotationX(rotX) * translation * perspFov;
+        }
+
         public void Update()
         {
             try
