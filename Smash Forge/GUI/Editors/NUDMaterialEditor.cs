@@ -251,16 +251,41 @@ namespace Smash_Forge
 
             texturesListView.Items.Clear();
 
-            if (mat.hasDiffuse) texturesListView.Items.Add("Diffuse");
-            if (mat.hasSphereMap) texturesListView.Items.Add("SphereMap");
-            if (mat.hasDiffuse2) texturesListView.Items.Add("Diffuse2");
-            if (mat.hasDiffuse3) texturesListView.Items.Add("Diffuse3");
-            if (mat.hasStageMap) texturesListView.Items.Add("StageMap");
-            if (mat.hasCubeMap) texturesListView.Items.Add("Cubemap");
-            if (mat.hasAoMap) texturesListView.Items.Add("AO Map");
-            if (mat.hasNormalMap) texturesListView.Items.Add("NormalMap");
-            if (mat.hasRamp) texturesListView.Items.Add("Ramp");
-            if (mat.hasDummyRamp) texturesListView.Items.Add("Dummy Ramp");
+
+            // Jigglypuff has weird eyes.
+            if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
+            {
+                if (mat.hasDiffuse)
+                    texturesListView.Items.Add("Diffuse");
+                if (mat.hasDiffuse2)
+                    texturesListView.Items.Add("Diffuse2");
+                if (mat.hasNormalMap)
+                    texturesListView.Items.Add("NormalMap");
+            } 
+            else
+            {
+                // The order of the textures is critical.
+                if (mat.hasDiffuse)
+                    texturesListView.Items.Add("Diffuse");
+                if (mat.hasSphereMap)
+                    texturesListView.Items.Add("SphereMap");
+                if (mat.hasDiffuse2)
+                    texturesListView.Items.Add("Diffuse2");
+                if (mat.hasDiffuse3)
+                    texturesListView.Items.Add("Diffuse3");
+                if (mat.hasStageMap)
+                    texturesListView.Items.Add("StageMap");
+                if (mat.hasCubeMap)
+                    texturesListView.Items.Add("Cubemap");
+                if (mat.hasAoMap)
+                    texturesListView.Items.Add("AO Map");
+                if (mat.hasNormalMap)
+                    texturesListView.Items.Add("NormalMap");
+                if (mat.hasRamp)
+                    texturesListView.Items.Add("Ramp");
+                if (mat.hasDummyRamp)
+                    texturesListView.Items.Add("Dummy Ramp");
+            }
 
             propertiesListView.Items.Clear();
             propertiesListView.View = View.List;

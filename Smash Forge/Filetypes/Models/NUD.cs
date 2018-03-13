@@ -820,16 +820,25 @@ namespace Smash_Forge
                 texid++;
             }
 
-            // The order of the textures here is critical. 
-            TextureUniform(shader, mat, mat.hasSphereMap, "spheremap", ref texid, ref mat.sphereMapID);
-            TextureUniform(shader, mat, mat.hasDiffuse2,  "dif2",      ref texid, ref mat.diffuse2ID);
-            TextureUniform(shader, mat, mat.hasDiffuse3,  "dif3",      ref texid, ref mat.diffuse3ID);
-            TextureUniform(shader, mat, mat.hasStageMap,  "stagecube", ref texid, ref mat.stageMapID);
-            TextureUniform(shader, mat, mat.hasCubeMap,   "cube",      ref texid, ref mat.cubeMapID);
-            TextureUniform(shader, mat, mat.hasAoMap,     "ao",        ref texid, ref mat.aoMapID);
-            TextureUniform(shader, mat, mat.hasNormalMap, "normalMap", ref texid, ref mat.normalID);
-            TextureUniform(shader, mat, mat.hasRamp,      "ramp",      ref texid, ref mat.rampID);
-            TextureUniform(shader, mat, mat.hasDummyRamp, "dummyRamp", ref texid, ref mat.dummyRampID);
+            // Jigglypuff has weird eyes.
+            if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
+            {
+                TextureUniform(shader, mat, mat.hasDiffuse2, "dif2", ref texid, ref mat.diffuse2ID);
+                TextureUniform(shader, mat, mat.hasNormalMap, "normalMap", ref texid, ref mat.normalID);
+            }
+            else
+            {
+                // The order of the textures here is critical. 
+                TextureUniform(shader, mat, mat.hasSphereMap, "spheremap", ref texid, ref mat.sphereMapID);
+                TextureUniform(shader, mat, mat.hasDiffuse2, "dif2", ref texid, ref mat.diffuse2ID);
+                TextureUniform(shader, mat, mat.hasDiffuse3, "dif3", ref texid, ref mat.diffuse3ID);
+                TextureUniform(shader, mat, mat.hasStageMap, "stagecube", ref texid, ref mat.stageMapID);
+                TextureUniform(shader, mat, mat.hasCubeMap, "cube", ref texid, ref mat.cubeMapID);
+                TextureUniform(shader, mat, mat.hasAoMap, "ao", ref texid, ref mat.aoMapID);
+                TextureUniform(shader, mat, mat.hasNormalMap, "normalMap", ref texid, ref mat.normalID);
+                TextureUniform(shader, mat, mat.hasRamp, "ramp", ref texid, ref mat.rampID);
+                TextureUniform(shader, mat, mat.hasDummyRamp, "dummyRamp", ref texid, ref mat.dummyRampID);
+            }
         }
 
         private static void MatPropertyShaderUniform(Shader shader, Material mat, string propertyName, float default1,
@@ -2506,6 +2515,7 @@ namespace Smash_Forge
 
             private void CheckTextures(uint matFlags)
             {
+                // Why figure out how these values work when you can just hardcode all the important ones?
                 // Effect materials use 4th byte 00 but often still have a diffuse texture.
                 hasDummyRamp = (matFlags & (int)TextureFlags.DummyRamp) > 0;
 
@@ -2514,8 +2524,8 @@ namespace Smash_Forge
                 byte byte3 = (byte)((matFlags & 0x0000FF00) >> 8);
                 hasDiffuse3 = (byte3 & 0x91) == 0x91 || (byte3 & 0x96) == 0x96 || (byte3 & 0x99) == 0x99;
 
-                hasDiffuse2 = (matFlags & (int)TextureFlags.RampCubeMap) > 0 && (matFlags & (int)TextureFlags.NormalMap) == 0
-                    && hasDummyRamp || hasDiffuse3;
+                hasDiffuse2 = ((matFlags & (int)TextureFlags.RampCubeMap) > 0) && ((matFlags & (int)TextureFlags.NormalMap) == 0)
+                    && (hasDummyRamp || hasDiffuse3) || ((matFlags & 0xFFFFFFFF) == 0x9AE11163);
 
                 hasNormalMap = (matFlags & (int)TextureFlags.NormalMap) > 0;
                 hasSphereMap = (matFlags & (int)TextureFlags.SphereMap) > 0;

@@ -50,7 +50,7 @@ namespace Smash_Forge
             newMC.Click += delegate (object sender, EventArgs e)
             {
                 Console.WriteLine("Adding");
-                filesTreeView.Nodes.Add(new ModelContainer() { Text = "Model_"+filesTreeView.Nodes.Count });
+                filesTreeView.Nodes.Add(new ModelContainer() { Text = "Model_" + filesTreeView.Nodes.Count });
                 refresh();
             };
             MainContextMenu.MenuItems.Add(newMC);

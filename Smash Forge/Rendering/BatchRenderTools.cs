@@ -38,7 +38,7 @@ namespace Smash_Forge.Rendering
         {
             // Read pacs to hide meshes.
             string pacDirectory = nudFileName.Replace("model.nud", "");
-            if (!File.Exists(pacDirectory))
+            if (!Directory.Exists(pacDirectory))
                 return;
 
             string[] pacs = Directory.GetFiles(pacDirectory, "*.pac");
@@ -93,7 +93,7 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        public static void LoadNewModelForRender(string nudFileName, TreeNode node, bool loadPacs = false)
+        public static void LoadNewModelForRender(string nudFileName, TreeNode node, bool loadPacs)
         {
             // Loads the new model. Assumes everything is called model.nud, model.nut, model.vbn, etc.
             ModelContainer modelContainer = (ModelContainer)node;

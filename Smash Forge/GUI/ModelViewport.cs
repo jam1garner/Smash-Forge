@@ -902,7 +902,7 @@ namespace Smash_Forge
             }
         }
 
-        private void OpenAndRenderModel(string nudFileName, string sourcePath, string outputPath, bool loadPacs = false)
+        private void OpenAndRenderModel(string nudFileName, string sourcePath, string outputPath, bool loadPacs)
         {
             foreach (TreeNode node in draw)
             {
@@ -1552,7 +1552,7 @@ namespace Smash_Forge
                     BatchRenderTools.LoadNextXmb(nudFile, modelContainer);
                     MeshList.filesTreeView.Nodes.Add(modelContainer);*/
 
-                    OpenAndRenderModel(nudFile, sourcePath, outputPath);
+                    OpenAndRenderModel(nudFile, sourcePath, outputPath, false);
                 }
             }
 
