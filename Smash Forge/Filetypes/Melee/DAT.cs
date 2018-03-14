@@ -533,10 +533,10 @@ namespace Smash_Forge
             return (range[0] <= val && range[1] >= val);
         }
 
-        private static bool vertExists(Collision c, Vector2D v)
+        private static bool vertExists(Collision c, Vector2 v)
         {
-            foreach (Vector2D v2 in c.verts)
-                if (v2.x == v.x && v2.y == v.y)
+            foreach (Vector2 v2 in c.verts)
+                if (v2.X == v.X && v2.Y == v.Y)
                     return true;
             return false;
         }
@@ -549,15 +549,15 @@ namespace Smash_Forge
             if (!vertExists(c, collisions.vertices[l2]))
                 c.verts.Add(collisions.vertices[l2]);
 
-            Vector2D currentNormal = new Vector2D();
+            Vector2 currentNormal = new Vector2();
             if ((link.collisionAngle & 1) != 0)
-                currentNormal.y = 1;
+                currentNormal.Y = 1;
             if ((link.collisionAngle & 2) != 0)
-                currentNormal.y = -1;
+                currentNormal.Y = -1;
             if ((link.collisionAngle & 4) != 0)
-                currentNormal.x = 1;
+                currentNormal.X = 1;
             if ((link.collisionAngle & 8) != 0)
-                currentNormal.x = -1;
+                currentNormal.X = -1;
             c.normals.Add(currentNormal);
 
             if ((link.flags & 1) != 0)
@@ -582,10 +582,9 @@ namespace Smash_Forge
 
         public LVD toLVD(bool safemode)
         {
-            foreach (Vector2D v in collisions.vertices)
+            for (int i = 0; i < collisions.vertices.Count; i++)
             {
-                v.x *= stageScale;
-                v.y *= stageScale;
+                collisions.vertices[i] *= stageScale;
             }
             LVD lvd = new LVD();
             int j = 0;
@@ -633,8 +632,8 @@ namespace Smash_Forge
             {
                 ItemSpawner item = new ItemSpawner() { name = $"Item_{j}", subname = $"{j++}" };
                 item.sections.Add(new Section());
-                Vector2D[] f = { new Vector2D() { x = p.X, y = p.Y }, new Vector2D() { x = p.X, y = p.Y } };
-                item.sections[0].points = new List<Vector2D>(f);
+                Vector2[] f = { new Vector2() { x = p.X, y = p.Y }, new Vector2() { x = p.X, y = p.Y } };
+                item.sections[0].points = new List<Vector2>(f);
                 lvd.items.Add(item);
             }
             */
@@ -820,8 +819,8 @@ namespace Smash_Forge
                 public ushort nbLinks;
             }
 
-            public List<Vector2D> vertices = new List<Vector2D>();
-            public List<List<Vector2D>> polys = new List<List<Vector2D>>();
+            public List<Vector2> vertices = new List<Vector2>();
+            public List<List<Vector2>> polys = new List<List<Vector2>>();
             public List<AreaTableEntry> areaTable = new List<AreaTableEntry>();
             public List<Link> links = new List<Link>();
             public List<int[]> polyRanges = new List<int[]>();
@@ -852,9 +851,9 @@ namespace Smash_Forge
                 f.seek(vertOff);
                 for (int i = 0; i < vertCount; i++)
                 {
-                    Vector2D point = new Vector2D();
-                    point.x = f.readFloat();
-                    point.y = f.readFloat();
+                    Vector2 point = new Vector2();
+                    point.X = f.readFloat();
+                    point.Y = f.readFloat();
                     vertices.Add(point);
                 }
                 f.seek(polyOff);
@@ -894,11 +893,11 @@ namespace Smash_Forge
                     link.material = (byte)f.readByte();
                     links.Add(link);
                 }
-                /*foreach (List<Vector2D> poly in polys)
+                /*foreach (List<Vector2> poly in polys)
                 {
                     inc++;
                     Console.WriteLine("\nPoly" + inc);
-                    foreach (Vector2D point in poly)
+                    foreach (Vector2 point in poly)
                         Console.WriteLine("(" + point.x + ", " + point.y + ")");
                 }*/
             }
