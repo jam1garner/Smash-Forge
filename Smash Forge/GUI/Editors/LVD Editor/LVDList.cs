@@ -43,6 +43,16 @@ namespace Smash_Forge
                 };
                 collisionNode.ContextMenu.MenuItems.Add(AddCollision);
 
+                MenuItem GenPassthru = new MenuItem("Regenerate Passthrough Angles");
+                GenPassthru.Click += delegate
+                {
+                    foreach (Collision c in TargetLVD.collisions)
+                    {
+                        LVD.GeneratePassthroughs(c);
+                    }
+                };
+                collisionNode.ContextMenu.MenuItems.Add(GenPassthru);
+
                 MenuItem GenCliffs = new MenuItem("Regenerate Cliffs");
                 GenCliffs.Click += delegate
                 {

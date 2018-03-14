@@ -311,6 +311,11 @@ namespace Smash_Forge
                 f.writeBytes(m.material);
             }
         }
+
+        public decimal GetNormalAngle(int i)
+        {
+            return (decimal)(Math.Atan2(normals[i].y, normals[i].x) * 180.0 / Math.PI);
+        }
     }
 
     public class Spawn : LVDEntry
@@ -1047,8 +1052,28 @@ namespace Smash_Forge
             return f.getBytes();
         }
 
+        //Function to automatically generate passthrough angles for every line in a given colliion
+        //Which direction a line is supposed to face is based on the current angle set for it
+        //This may not work completely for collisions that are constructed counter-clockwise
+        public static void GeneratePassthroughs(Collision col)
+        {
+            for (int i = 0; i < col.verts.Count - 1; i++)
+            {
+                decimal currentAngle = (decimal)(Math.Atan2(col.normals[i].y, col.normals[i].x) * 180.0 / Math.PI);
+                decimal newAngle = (decimal)(Math.Atan2(col.verts[i].x-col.verts[i+1].x, col.verts[i].y-col.verts[i+1].y) * 180/Math.PI);
+                double theta = (double)(newAngle);
+                if ((newAngle > 0) && (currentAngle < 0))
+                    theta = (double)(0 - newAngle);
+                else if ((newAngle < 0) && (currentAngle > 0))
+                    theta = (double)(0 - newAngle);
+                col.normals[i].x = (float)Math.Cos(theta * Math.PI / 180.0f);
+                col.normals[i].y = (float)Math.Sin(theta * Math.PI / 180.0f);
+            }
+        }
+
         //Function to automatically add a cliff to every grabbable ledge in a given collision
         //Works mostly to vanilla standards, though vanilla standards are inconsistent on handling bone name/start pos
+        //This will use the wrong vertex's positions for collisions that are constructed counter-clockwise
         public static void GenerateCliffs(Collision col)
         {
             int[] counts = new int[2];
@@ -1079,11 +1104,16 @@ namespace Smash_Forge
                     temp.name = cliffName;
                     temp.subname = cliffName.Substring(6, cliffName.Length - 6);
                     temp.boneName = col.boneName;
-                    temp.startPos = new Vector3(col.verts[i].x, col.verts[i].y, 0);
+                    temp.useStartPos = col.useStartPos;
+                    int ind = i;
+                    /*if ((i == col.materials.Count-1) || (col.GetNormalAngle(i+1) <= 45)) //Counter-clockwise
+                        ind = i + 1;
+                    else                                                                 //Clockwise
+                        ind = i;*/
+                    temp.pos = new Vector2D(col.verts[ind].x, col.verts[ind].y);
+                    temp.startPos = new Vector3(col.verts[ind].x, col.verts[ind].y, 0);
                     if (col.useStartPos)
                         temp.startPos = Vector3.Add(temp.startPos, col.startPos);
-                    temp.useStartPos = col.useStartPos;
-                    temp.pos = new Vector2D(col.verts[i].x, col.verts[i].y);
                     temp.angle = -1.0f;
                     temp.lineIndex = i;
                     col.cliffs.Add(temp);
@@ -1095,11 +1125,16 @@ namespace Smash_Forge
                     temp.name = cliffName;
                     temp.subname = cliffName.Substring(6, cliffName.Length - 6);
                     temp.boneName = col.boneName;
-                    temp.startPos = new Vector3(col.verts[i+1].x, col.verts[i+1].y, 0);
+                    temp.useStartPos = col.useStartPos;
+                    int ind = i + 1;
+                    /*if ((i == 0) || (col.GetNormalAngle(i-1) <= 45)) //Counter-clockwise
+                        ind = i;
+                    else                                             //Clockwise
+                        ind = i + 1;*/
+                    temp.pos = new Vector2D(col.verts[ind].x, col.verts[ind].y);
+                    temp.startPos = new Vector3(col.verts[ind].x, col.verts[ind].y, 0);
                     if (col.useStartPos)
                         temp.startPos = Vector3.Add(temp.startPos, col.startPos);
-                    temp.useStartPos = col.useStartPos;
-                    temp.pos = new Vector2D(col.verts[i+1].x, col.verts[i+1].y);
                     temp.angle = 1.0f;
                     temp.lineIndex = i;
                     col.cliffs.Add(temp);
