@@ -604,12 +604,13 @@ namespace Smash_Forge
             Collision c = (Collision)currentEntry;
             for (int i = 0; i < c.verts.Count - 1; i++)
             {
-                decimal lineAngle = (decimal)(Math.Atan2(c.verts[i].x-c.verts[i+1].x, c.verts[i].y-c.verts[i+1].y) * 180/Math.PI);
-                double theta = (double)(lineAngle+90);
+                decimal currentAngle = (decimal)(Math.Atan2(c.normals[i].y, c.normals[i].x) * 180.0 / Math.PI);
+                decimal newAngle = (decimal)(Math.Atan2(c.verts[i].x-c.verts[i+1].x, c.verts[i].y-c.verts[i+1].y) * 180/Math.PI);
+                double theta = (double)(newAngle);
                 c.normals[i].x = (float)Math.Cos(theta * Math.PI / 180.0f);
                 c.normals[i].y = (float)Math.Sin(theta * Math.PI / 180.0f);
             }
-            
+
             // //Original code
             /*
             Collision c = (Collision)currentEntry;
