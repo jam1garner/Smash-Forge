@@ -46,7 +46,6 @@ namespace Smash_Forge
         public MainForm()
         {
             InitializeComponent();
-
         }
 
         public void UpdateProgress(object sender, ProgressChangedEventArgs e)
@@ -79,13 +78,8 @@ namespace Smash_Forge
             Thread thread = new Thread(t);
             thread.Start();
             Runtime.renderDepth = 100000.0f;
-            //foreach (var vp in viewports)
-            //    AddDockedControl(vp);
 
             System.Windows.Forms.Application.Idle += AppIdle;
-
-            //animationsWindowToolStripMenuItem.Checked =
-            //    boneTreeToolStripMenuItem.Checked = true;
 
             allViewsPreset(new Object(), new EventArgs());
 
@@ -167,8 +161,6 @@ namespace Smash_Forge
                 else if (file.Equals("--preview"))
                 {
                     Text = "Meteor Preview";
-                    //superCleanPreset(new object(), new EventArgs());
-                    //meshList.Show();
                     NUT chr_00_nut = null, chr_11_nut = null, chr_13_nut = null, stock_90_nut = null;
                     string chr_00_loc = null, chr_11_loc = null, chr_13_loc = null, stock_90_loc = null;
                     String nud = null, nut, vbn;
@@ -242,17 +234,6 @@ namespace Smash_Forge
                 Runtime.TargetNUD.Destroy();
 
             DiscordRpc.Shutdown();
-
-            /* Throwback code
-             * 
-            foreach (ModelContainer n in Runtime.ModelContainers)
-            {
-                n.Destroy();
-            }
-            foreach (NUT n in Runtime.TextureContainers)
-            {
-                n.Destroy();
-            }*/
         }
 
         public void AddDockedControl(DockContent content)
@@ -283,11 +264,6 @@ namespace Smash_Forge
             {
                 animList = new AnimListPanel();
             }
-            /*if (boneTreePanel.IsDisposed)
-            {
-                boneTreePanel = new BoneTreePanel();
-                boneTreePanel.treeRefresh();
-            }*/
             if (project.IsDisposed)
             {
                 project = new ProjectTree();
@@ -328,10 +304,7 @@ namespace Smash_Forge
             }
         }
 
-        #region Members
-
         public AnimListPanel animList = new AnimListPanel() { ShowHint = DockState.DockRight };
-        //public BoneTreePanel boneTreePanel = new BoneTreePanel() { ShowHint = DockState.DockLeft };
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
         public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
         public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockLeft };
@@ -345,10 +318,6 @@ namespace Smash_Forge
         public NUS3BANKEditor nusEditor = null;
         public _3DSTexEditor texEditor = null;
         public CameraSettings cameraForm = null;
-
-        #endregion
-
-        #region ToolStripMenu
 
         private void openNUDToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -427,38 +396,36 @@ namespace Smash_Forge
                     pathXMB = file;
             }
 
-
-            ModelContainer model = new ModelContainer();
+            ModelContainer modelContainer = new ModelContainer();
             if (mvp == null)
             {
                 mvp = new ModelViewport();
                 AddDockedControl(mvp);
             }
-            mvp.draw.Add(model);
-            model.Text = name;
+            mvp.draw.Add(modelContainer);
+            modelContainer.Text = name;
             mvp.Text = name;
 
             if (!pathVBN.Equals(""))
             {
-                model.VBN = new VBN(pathVBN);
-                //Runtime.TargetVBN = model.VBN;
+                modelContainer.VBN = new VBN(pathVBN);
                 if (!pathJTB.Equals(""))
-                    model.JTB = new JTB(pathJTB);
+                    modelContainer.JTB = new JTB(pathJTB);
                 if (!pathSB.Equals(""))
-                    model.VBN.SwingBones.Read(pathSB);
+                    modelContainer.VBN.SwingBones.Read(pathSB);
             }
 
             NUT nut = null;
             if (!pathNUT.Equals(""))
             {
                 nut = new NUT(pathNUT);
-                model.NUT = nut;
+                modelContainer.NUT = nut;
                 Runtime.TextureContainers.Add(nut);
             }
 
             if (!pathNUD.Equals(""))
             {
-                model.NUD = new NUD(pathNUD);
+                modelContainer.NUD = new NUD(pathNUD);
 
                 foreach (string s in pacs)
                 {
@@ -469,46 +436,43 @@ namespace Smash_Forge
                     {
                         MTA m = new MTA();
                         m.read(new FileData(data));
-                        model.NUD.applyMTA(m, 0);
+                        modelContainer.NUD.applyMTA(m, 0);
                     }
                     if (p.Files.TryGetValue("default.mta", out data))
                     {
                         MTA m = new MTA();
                         m.read(new FileData(data));
-                        model.NUD.applyMTA(m, 0);
+                        modelContainer.NUD.applyMTA(m, 0);
                     }
                 }
             }
 
             if (!pathXMB.Equals(""))
             {
-                model.XMB = new XMBFile(pathXMB);
+                modelContainer.XMB = new XMBFile(pathXMB);
             }
 
             if (!pathMTA.Equals(""))
             {
                 try
                 {
-                    model.MTA = new MTA();
-                    model.MTA.Read(pathMTA);
-                    //string mtaName = Path.Combine(Path.GetFileName(Path.GetDirectoryName(pathMTA)), Path.GetFileName(pathMTA));
-                    //Console.WriteLine($"MTA Name - {mtaName}");
-                    //addMaterialAnimation(mtaName, model.MTA);
+                    modelContainer.MTA = new MTA();
+                    modelContainer.MTA.Read(pathMTA);
                 }
                 catch (EndOfStreamException)
                 {
-                    model.MTA = null;
+                    modelContainer.MTA = null;
                 }
             }
 
             if (!pathMOI.Equals(""))
             {
-                model.MOI = new MOI(pathMOI);
+                modelContainer.MOI = new MOI(pathMOI);
             }
 
-            if (model.NUD != null)
+            if (modelContainer.NUD != null)
             {
-                model.NUD.MergePoly();
+                modelContainer.NUD.MergePoly();
             }
 
             // Reset the camera. 
@@ -548,134 +512,14 @@ namespace Smash_Forge
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-            /*if (Runtime.TargetVBN == null)
-            {
-                return;
-            }*/
-
-            /*using (var sfd = new SaveFileDialog())
-            {
-                sfd.Filter = "Supported Files (.omo, .anim, .pac, .mta .smd)|*.omo;*.anim;*.pac;*.mta;*.smd|" +
-                             "Maya Anim (.anim)|*.anim|" +
-                             "Material Animation (.mta)|*.mta|" +
-                             "Object Motion (.omo)|*.omo|" +
-                             "OMO Pack (.pac)|*.pac|" +
-                             "Source Animation (.smd)|*.smd|" +
-                             "All Files (*.*)|*.*";
-
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    sfd.FileName = sfd.FileName;
-
-                    if (sfd.FileName.EndsWith(".anim") & Runtime.TargetAnim != null)
-                    {
-                        if (Runtime.TargetAnim.Tag is AnimTrack)
-                            ((AnimTrack)Runtime.TargetAnim.Tag).createANIM(sfd.FileName, Runtime.TargetVBN);
-                        else
-                            if (sfd.FileName.Contains("ALL.anim"))
-                                foreach (string animName in Runtime.Animations.Keys)
-                                {
-                                    ANIM.CreateANIM(sfd.FileName.Replace("ALL.anim",animName + ".anim"), Runtime.Animations[animName], Runtime.TargetVBN);
-                                }
-                            else
-                                ANIM.CreateANIM(sfd.FileName, Runtime.TargetAnim, Runtime.TargetVBN);
-                        
-                    }
-
-                    if (sfd.FileName.EndsWith(".omo"))
-                    {
-                        if (Runtime.TargetAnim.Tag is FileData)
-                        {
-                            FileOutput o = new FileOutput();
-                            o.writeBytes(((FileData)Runtime.TargetAnim.Tag).getSection(0,
-                                ((FileData)Runtime.TargetAnim.Tag).size()));
-                            o.save(sfd.FileName);
-                        }
-                        else
-                            OMOOld.createOMO(Runtime.TargetAnim, Runtime.TargetVBN, sfd.FileName);
-                    }
-
-
-                    if (sfd.FileName.EndsWith(".smd"))
-                    {
-                        SMD.Save(Runtime.TargetAnim, Runtime.TargetVBN, sfd.FileName);
-                    }
-
-                    if (sfd.FileName.EndsWith(".pac"))
-                    {
-                        var pac = new PAC();
-                        foreach (var anim in Runtime.Animations)
-                        {
-                            var bytes = OMOOld.CreateOMOFromAnimation(anim.Value, Runtime.TargetVBN);
-                            if (Runtime.TargetAnim.Tag is FileData)
-                                bytes = ((FileData)Runtime.TargetAnim.Tag).getSection(0,
-                                    ((FileData)Runtime.TargetAnim.Tag).size());
-
-                            pac.Files.Add(anim.Key, bytes);
-                        }
-                        pac.Save(sfd.FileName);
-                    }
-
-                    if (sfd.FileName.EndsWith(".mta"))
-                    {
-                        FileOutput f = new FileOutput();
-                        f.writeBytes(Runtime.TargetMTA[0].Rebuild());
-                        f.save(sfd.FileName);
-                    }
-                }
-            }*/
         }
 
         private void hashMatchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            HashMatch();
-            //boneTreePanel.treeRefresh();
         }
 
         public static void HashMatch()
         {
-            /*foreach (ModelContainer m in Runtime.ModelContainers)
-            {
-                if (m.VBN != null)
-                {
-                    foreach (Bone bone in m.VBN.bones)
-                    {
-                        uint bi = 0;
-                        Hashes.names.TryGetValue(bone.Text, out bi);
-                        bone.boneId = bi;
-                        if (bone.boneId == 0)
-                            bone.boneId = Crc32.Compute(bone.Text);
-                    }
-                }
-
-                if (m.dat_melee != null)
-                {
-                    foreach (Bone bone in m.dat_melee.bones.bones)
-                    {
-                        uint bi = 0;
-                        Hashes.names.TryGetValue(bone.Text, out bi);
-                        bone.boneId = bi;
-                        if (bone.boneId == 0)
-                            bone.boneId = Crc32.Compute(bone.Text);
-                    }
-                }
-                if (m.bch != null)
-                {
-                    foreach (BCH_Model mod in m.bch.Models.Nodes)
-                    {
-                        foreach (Bone bone in mod.skeleton.bones)
-                        {
-                            for (int i = 0; i < Hashes.names.Count; i++)
-                            {
-                                uint bi = 0;
-                                Hashes.names.TryGetValue(bone.Text, out bi);
-                                bone.boneId = bi;
-                            }
-                        }
-                    }
-                }
-            }*/
         }
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -716,33 +560,15 @@ namespace Smash_Forge
 
         private void viewportWindowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            /*if (viewportWindowToolStripMenuItem.Checked == false)
-            {
-                var vp = new VBNViewport();
-                viewports.Add(vp);
-                AddDockedControl(vp);
-                viewportWindowToolStripMenuItem.Checked = true;
-            }*/
-
         }
 
         private void animationsWindowToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            /*if (animationsWindowToolStripMenuItem.Checked)
-                animList.Show(dockPanel1);
-            else
-                animList.Hide();*/
         }
 
         private void boneTreeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            /*if (boneTreeToolStripMenuItem.Checked)
-                boneTreePanel.Show(dockPanel1);
-            else
-                boneTreePanel.Hide();*/
         }
-
-        #endregion
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
@@ -810,8 +636,6 @@ namespace Smash_Forge
                 ofd.Title = "Character Folder";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    //project.openACMD($"{ofd.SelectedPath}\\script\\animcmd\\body\\motion.mtable",
-                    //    $"{ofd.SelectedPath}\\motion");
                     MainForm.Instance.Progress = new ProgessAlert();
                     MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
                     MainForm.Instance.Progress.ProgressValue = 0;
@@ -871,16 +695,12 @@ namespace Smash_Forge
                             MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Scripts");
                             if (File.Exists(s + "\\animcmd\\body\\motion.mtable"))
                             {
-                                //openFile(s + "\\animcmd\\body\\motion.mtable");
                                 mvp.MovesetManager = new MovesetManager(s + "\\animcmd\\body\\motion.mtable");
-                                //Runtime.acmdEditor.updateCrcList();
                             }
                         }
                     }
 
                     mvp.Text = fighterName;
-
-                    //resyncTargetVBN();
 
                     MainForm.Instance.Progress.ProgressValue = 99;
                     MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Params");
@@ -890,19 +710,17 @@ namespace Smash_Forge
                         try
                         {
                             string fighterparam = Runtime.paramDir + "\\fighter\\fighter_param_vl_"+fighterName+".bin";
-                            //mvp.draw.Add(new TreeNode() { Text = fighterparam });
 
                             mvp.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin", fighterName);
                             mvp.HurtboxList.refresh();
                             mvp.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
                             mvp.ParamMoveNameIdMapping = mvp.ParamManagerHelper.getMoveNameIdMapping();
-                            //Runtime.ModelContainers[0].Text = fighterName;
 
                             // Model render size
                             ParamFile param = new ParamFile(Runtime.paramDir + "\\fighter\\fighter_param.bin");
                             ParamEntry[] characterParams = ((ParamGroup)param.Groups[0])[CharacterParamManager.FIGHTER_ID[fighterName]];
-                            // index 44 is model_scale
-                            Runtime.model_scale = Convert.ToSingle(characterParams[44].Value);
+                            int modelScaleIndex = 44;
+                            Runtime.model_scale = Convert.ToSingle(characterParams[modelScaleIndex].Value);
                         }
                         catch { }
                     }
@@ -913,48 +731,6 @@ namespace Smash_Forge
             }
 
 
-        }
-
-        private void saveNUDToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            /*if (Runtime.ModelContainers.Count > 0)
-            {
-                string filename = "";
-                SaveFileDialog save = new SaveFileDialog();
-                save.Filter = "Namco Universal Data|*.nud|All files(*.*)|*.*";
-                DialogResult result = save.ShowDialog();
-
-                if (result == DialogResult.OK)
-                {
-                    filename = save.FileName;
-                    if (filename.EndsWith(".nud"))
-                        if (Runtime.ModelContainers[0].dat_melee != null)
-                        {
-                            ModelContainer m = Runtime.ModelContainers[0].dat_melee.wrapToNUD();
-                            m.NUD.Save(filename);
-                            m.VBN.Save(filename.Replace(".nud", ".vbn"));
-                        }
-                        else 
-                        if(Runtime.ModelContainers[0].bch != null)
-                        {
-                            nud m = Runtime.ModelContainers[0].bch.mbn.toNUD();
-                            VBN v = Runtime.ModelContainers[0].bch.models[0].skeleton;
-                            m.Save(filename);
-                            v.Save(filename.Replace(".nud", ".vbn"));
-                        }
-                        else
-                        {
-                            foreach (ModelContainer c in Runtime.ModelContainers)
-                            {
-                                if (c.NUD != null)
-                                {
-                                    Runtime.ModelContainers[0].NUD.Save(filename);
-                                    break;
-                                }
-                            }
-                        }
-                }
-            }*/
         }
 
         private void collisionToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1042,7 +818,6 @@ namespace Smash_Forge
             {
                 nutEditor = new NUTEditor();
                 nutEditor.Show();
-                //AddDockedControl(nutEditor);
             }
             else
             {
@@ -1166,7 +941,6 @@ namespace Smash_Forge
                             {
                                 if (f.EndsWith(".omo"))
                                 {
-                                    //Runtime.Animations.Add(f, );
                                     Animation a = OMOOld.read(new FileData(f));
                                     a.Text = f;
                                     mvp.AnimList.treeView1.Nodes.Add(a);
@@ -1210,8 +984,6 @@ namespace Smash_Forge
                 if (Runtime.TargetVBN == null)
                     Runtime.TargetVBN = new VBN();
                 SMD.read(filename, anim, Runtime.TargetVBN);
-                //boneTreePanel.treeRefresh();
-                //Runtime.Animations.Add(filename, anim);
                 TreeNode mvp = new TreeNode();
                 return(anim);
             }
@@ -1228,13 +1000,12 @@ namespace Smash_Forge
                         Console.WriteLine("Adding " + pair.Key);
                         var anim = OMOOld.read(new FileData(pair.Value));
                         animGroup.Nodes.Add(anim);
-                        string AnimName = pair.Key; //Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
+                        string AnimName = pair.Key; 
                         if (!string.IsNullOrEmpty(AnimName))
                         {
                             anim.Text = AnimName;
                             AddAnimName(AnimName.Substring(3).Replace(".omo",""));
                         }
-                        //Runtime.acmdEditor.updateCrcList();
                     }
                     else if (pair.Key.EndsWith(".mta"))
                     {
@@ -1251,38 +1022,23 @@ namespace Smash_Forge
             {
                 if (!filename.EndsWith("AJ.dat"))
                     MessageBox.Show("Not a DAT animation");
-                else
-                {
-                    /*if (Runtime.ModelContainers[0].dat_melee == null)
-                        MessageBox.Show("Load a DAT model first");
-                    else
-                        DAT_Animation.LoadAJ(filename, Runtime.ModelContainers[0].dat_melee.bones);*/
-                }
-
             }
-            //if (Runtime.TargetVBN.bones.Count > 0)
-            //{
             if (filename.EndsWith(".omo"))
             {
-                //Runtime.Animations.Add(filename, );
                 Animation a = OMOOld.read(new FileData(filename));
                 a.Text = filename;
                 return a;
             }
             if (filename.EndsWith(".chr0"))
             {
-                //Runtime.Animations.Add(filename, CHR0.read(new FileData(filename), Runtime.TargetVBN));
                 return(CHR0.read(new FileData(filename), Runtime.TargetVBN));
             }
             if (filename.EndsWith(".anim"))
             {
-                //Runtime.Animations.Add(filename, ANIM.read(filename, Runtime.TargetVBN));
                 return(ANIM.read(filename, Runtime.TargetVBN));
             }
             if (filename.EndsWith(".bch"))
             {
-                //Runtime.Animations.Add(filename, );
-                //animNode.Nodes.Add();
                 BCHan.Read(filename);
                 BCH bch = new Smash_Forge.BCH();
                 bch.Read(filename);
@@ -1320,247 +1076,6 @@ namespace Smash_Forge
 
             if (filename.EndsWith(".lvd") && Runtime.TargetLVD != null)
                 File.WriteAllBytes(filename, Runtime.TargetLVD.Rebuild());
-            else if (filename.EndsWith(".lvd"))
-            {
-                /*DAT d = null;
-                foreach (ModelContainer c in Runtime.ModelContainers)
-                    if (c.dat_melee != null)
-                        d = c.dat_melee;
-                if (d != null)
-                {
-                    DialogResult r =
-                        MessageBox.Show(
-                            "Would you like to save in safe mode?\n(This is not suggested, only use when needed)",
-                            "DAT -> LVD safe mode", MessageBoxButtons.YesNo);
-                    if (r == DialogResult.Yes)
-                    {
-                        File.WriteAllBytes(filename, d.toLVD(true).Rebuild());
-                    }
-                    else if (r == DialogResult.No)
-                    {
-                        File.WriteAllBytes(filename, d.toLVD(false).Rebuild());
-                    }
-                }*/
-
-            }
-
-            if (filename.EndsWith(".dae"))
-            {
-                /*if (Runtime.ModelContainers.Count > 0)
-                {
-                    Collada.Save(filename, Runtime.ModelContainers[0]);
-                }*/
-            }
-
-            /*if (filename.EndsWith(".dat"))
-            {
-                foreach(ModelContainer mc in Runtime.ModelContainers)
-                {
-                    if(mc.dat_melee != null)
-                    {
-                        FileOutput f = new FileOutput();
-                        f.writeBytes(File.ReadAllBytes(mc.dat_melee.filename));
-
-                        foreach (TreeNode node in mc.dat_melee.tree)
-                            writeDatJobjPositions(node, f);
-
-                        if (mc.dat_melee.spawns != null)
-                        {
-                            for (int i = 0; i < mc.dat_melee.spawns.Count; i++)
-                            {
-                                f.writeFloatAt(mc.dat_melee.spawns[i].x / mc.dat_melee.stageScale, mc.dat_melee.spawnOffs[i]);
-                                f.writeFloatAt(mc.dat_melee.spawns[i].y / mc.dat_melee.stageScale, mc.dat_melee.spawnOffs[i] + 4);
-                                f.writeFloatAt(0, mc.dat_melee.spawnOffs[i] + 8);
-                            }
-                        }
-
-                        if (mc.dat_melee.respawns != null)
-                        {
-                            for(int i = 0; i < mc.dat_melee.respawns.Count; i++)
-                            {
-                                f.writeFloatAt(mc.dat_melee.respawns[i].x / mc.dat_melee.stageScale, mc.dat_melee.respawnOffs[i]);
-                                f.writeFloatAt(mc.dat_melee.respawns[i].y / mc.dat_melee.stageScale, mc.dat_melee.respawnOffs[i] + 4);
-                                f.writeFloatAt(0, mc.dat_melee.respawnOffs[i] + 8);
-                            }
-                        }
-
-                        if (mc.dat_melee.itemSpawns != null)
-                        {
-                            for (int i = 0; i < mc.dat_melee.itemSpawns.Count; i++)
-                            {
-                                f.writeFloatAt(mc.dat_melee.itemSpawns[i].x / mc.dat_melee.stageScale, mc.dat_melee.itemSpawnOffs[i]);
-                                f.writeFloatAt(mc.dat_melee.itemSpawns[i].y / mc.dat_melee.stageScale, mc.dat_melee.itemSpawnOffs[i] + 4);
-                                f.writeFloatAt(0, mc.dat_melee.itemSpawnOffs[i] + 8);
-                            }
-                        }
-
-                        if (mc.dat_melee.targets != null)
-                        {
-                            for (int i = 0; i < mc.dat_melee.targets.Count; i++)
-                            {
-                                f.writeFloatAt(mc.dat_melee.targets[i].x / mc.dat_melee.stageScale, mc.dat_melee.targetOffs[i]);
-                                f.writeFloatAt(mc.dat_melee.targets[i].y / mc.dat_melee.stageScale, mc.dat_melee.targetOffs[i] + 4);
-                                f.writeFloatAt(0, mc.dat_melee.targetOffs[i] + 8);
-                            }
-                        }
-
-                        if (mc.dat_melee.blastzones != null)
-                        {
-                            f.writeFloatAt(mc.dat_melee.blastzones.left / mc.dat_melee.stageScale, mc.dat_melee.blastzoneOffs[0]);
-                            f.writeFloatAt(mc.dat_melee.blastzones.top / mc.dat_melee.stageScale, mc.dat_melee.blastzoneOffs[0] + 4);
-                            f.writeFloatAt(0, mc.dat_melee.blastzoneOffs[0] + 8);
-
-                            f.writeFloatAt(mc.dat_melee.blastzones.right / mc.dat_melee.stageScale, mc.dat_melee.blastzoneOffs[1]);
-                            f.writeFloatAt(mc.dat_melee.blastzones.bottom / mc.dat_melee.stageScale, mc.dat_melee.blastzoneOffs[1] + 4);
-                            f.writeFloatAt(0, mc.dat_melee.blastzoneOffs[1] + 8);
-                        }
-
-                        if (mc.dat_melee.cameraBounds != null)
-                        {
-                            f.writeFloatAt(mc.dat_melee.cameraBounds.left / mc.dat_melee.stageScale, mc.dat_melee.cameraBoundOffs[0]);
-                            f.writeFloatAt(mc.dat_melee.cameraBounds.top / mc.dat_melee.stageScale, mc.dat_melee.cameraBoundOffs[0] + 4);
-                            f.writeFloatAt(0, mc.dat_melee.cameraBoundOffs[0] + 8);
-
-                            f.writeFloatAt(mc.dat_melee.cameraBounds.right / mc.dat_melee.stageScale, mc.dat_melee.cameraBoundOffs[1]);
-                            f.writeFloatAt(mc.dat_melee.cameraBounds.bottom / mc.dat_melee.stageScale, mc.dat_melee.cameraBoundOffs[1] + 4);
-                            f.writeFloatAt(0, mc.dat_melee.cameraBoundOffs[1] + 8);
-                        }
-                        
-                        if (MessageBox.Show("Overwrite collisions?","DAT Saving", MessageBoxButtons.YesNo) == DialogResult.Yes && mc.dat_melee.collisions != null)
-                        {
-                            while(f.pos() % 0x10 != 0)//get it back to being 0x10 alligned if it isn't already
-                                f.writeByte(0);
-                            
-                            f.writeIntAt(f.pos() - 0x20, mc.dat_melee.collisions.vertOffOff);
-                            f.writeIntAt(mc.dat_melee.collisions.vertices.Count, mc.dat_melee.collisions.vertOffOff + 4);
-                            foreach(Vector2D vert in mc.dat_melee.collisions.vertices)
-                            {
-                                f.writeFloat(vert.x);
-                                f.writeFloat(vert.y);
-                            }
-                            f.writeIntAt(f.pos() - 0x20, mc.dat_melee.collisions.linkOffOff);
-                            f.writeIntAt(mc.dat_melee.collisions.links.Count, mc.dat_melee.collisions.linkOffOff + 4);
-                            foreach(DAT.COLL_DATA.Link link in mc.dat_melee.collisions.links)
-                            {
-                                f.writeShort(link.vertexIndices[0]);
-                                f.writeShort(link.vertexIndices[1]);
-                                f.writeShort(link.connectors[0]);
-                                f.writeShort(link.connectors[1]);
-                                f.writeShort(link.idxVertFromLink);
-                                f.writeShort(link.idxVertToLink);
-                                f.writeShort(link.collisionAngle);
-                                f.writeByte(link.flags);
-                                f.writeByte(link.material);
-                            }
-                            f.writeIntAt(f.pos() - 0x20, mc.dat_melee.collisions.polyOffOff);
-                            f.writeIntAt(mc.dat_melee.collisions.areaTable.Count, mc.dat_melee.collisions.polyOffOff + 4);
-                            //Recalculate "area table" and write it to file
-                            foreach (DAT.COLL_DATA.AreaTableEntry ate in mc.dat_melee.collisions.areaTable)
-                            {
-                                int ceilingCount = 0, floorCount = 0, leftWallCount = 0, rightWallCount = 0;
-                                int firstCeiling = -1, firstFloor = -1, firstLeftWall = -1, firstRightWall = -1;
-                                float lowX = float.MaxValue, highX = float.MinValue, lowY = float.MaxValue, highY = float.MinValue;
-                                for (int i = ate.idxLowestSpot; i < ate.idxLowestSpot + ate.nbLinks && i < mc.dat_melee.collisions.links.Count; i++)
-                                {
-                                    DAT.COLL_DATA.Link link = mc.dat_melee.collisions.links[i];
-                                    
-                                    if ((link.collisionAngle & 4) != 0)//left wall
-                                    {
-                                        leftWallCount++;
-                                        if (firstLeftWall == -1)
-                                            firstLeftWall = i;
-                                    }
-                                    if ((link.collisionAngle & 8) != 0)//right wall
-                                    {
-                                        rightWallCount++;
-                                        if (firstRightWall == -1)
-                                            firstRightWall = i;
-                                    }
-                                    if ((link.collisionAngle & 1) != 0)//floor
-                                    {
-                                        floorCount++;
-                                        if (firstFloor == -1)
-                                            firstFloor = i;
-                                    }
-                                    if ((link.collisionAngle & 2) != 0)//ceiling
-                                    {
-                                        ceilingCount++;
-                                        if (firstCeiling == -1)
-                                            firstCeiling = i;
-                                    }
-
-                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[0]].x < lowX)
-                                        lowX = mc.dat_melee.collisions.vertices[link.vertexIndices[0]].x;
-                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[0]].x > highX)
-                                        highX = mc.dat_melee.collisions.vertices[link.vertexIndices[0]].x;
-                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[0]].y < lowY)
-                                        lowY = mc.dat_melee.collisions.vertices[link.vertexIndices[0]].y;
-                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[0]].y > highY)
-                                        highY = mc.dat_melee.collisions.vertices[link.vertexIndices[0]].y;
-                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[1]].x < lowX)
-                                        lowX = mc.dat_melee.collisions.vertices[link.vertexIndices[1]].x;
-                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[1]].x > highX)
-                                        highX = mc.dat_melee.collisions.vertices[link.vertexIndices[1]].x;
-                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[1]].y < lowY)
-                                        lowY = mc.dat_melee.collisions.vertices[link.vertexIndices[1]].y;
-                                    if (mc.dat_melee.collisions.vertices[link.vertexIndices[1]].y > highY)
-                                        highY = mc.dat_melee.collisions.vertices[link.vertexIndices[1]].y;
-                                }
-
-                                if (firstCeiling == -1)
-                                    firstCeiling = 0;
-                                if (firstFloor == -1)
-                                    firstFloor = 0;
-                                if (firstLeftWall == -1)
-                                    firstLeftWall = 0;
-                                if (firstRightWall == -1)
-                                    firstRightWall = 0;
-
-                                f.writeShort(firstFloor);
-                                f.writeShort(floorCount);
-                                f.writeShort(firstCeiling);
-                                f.writeShort(ceilingCount);
-                                f.writeShort(firstLeftWall);
-                                f.writeShort(leftWallCount);
-                                f.writeShort(firstRightWall);
-                                f.writeShort(rightWallCount);
-                                f.writeInt(0);
-                                f.writeFloat(lowX - 10);
-                                f.writeFloat(lowY - 10);
-                                f.writeFloat(highX + 10);
-                                f.writeFloat(highY + 10);
-                                f.writeShort(ate.idxLowestSpot);
-                                f.writeShort(ate.nbLinks);
-                            }
-                        }
-                        f.writeIntAt(f.pos(), 0);
-                        f.save(filename);
-                    }
-                }
-            }
-
-            if (filename.EndsWith(".nud"))
-            {
-                if (Runtime.ModelContainers[0].dat_melee != null)
-                {
-                    ModelContainer m = Runtime.ModelContainers[0].dat_melee.wrapToNUD();
-                    m.NUD.Save(filename);
-                    m.VBN.Save(filename.Replace(".nud", ".vbn"));
-                }
-                if (Runtime.ModelContainers[0].bch != null)
-                {
-                    //Runtime.ModelContainers[0].bch.mbn.toNUD().Save(filename);
-                    //Runtime.ModelContainers[0].bch.models[0].skeleton.Save(filename.Replace(".nud", ".vbn"));
-                }
-            }
-            if (filename.EndsWith(".mbn"))
-            {
-                if (Runtime.ModelContainers[0].NUD != null)
-                {
-                    MBN m = Runtime.ModelContainers[0].NUD.toMBN();
-                    m.Save(filename);
-                }
-            }*/
         }
 
         ///<summary>
@@ -1620,21 +1135,18 @@ namespace Smash_Forge
             if (fileName.EndsWith(".bch"))
             {
                 mvp = new ModelViewport();
-                //if (bch.Animations.Nodes.Count > 0)
+                // Load as Animation
+                if(dockPanel1.ActiveContent is ModelViewport)
                 {
-                    // Load as Animation
-                    if(dockPanel1.ActiveContent is ModelViewport)
+                    DialogResult dialogResult = MessageBox.Show("Import Animation Data into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
                     {
-                        DialogResult dialogResult = MessageBox.Show("Import Animation Data into active viewport?", "", MessageBoxButtons.YesNo);
-                        if (dialogResult == DialogResult.Yes)
-                        {
-                            mvp = (ModelViewport)dockPanel1.ActiveContent;
-                            mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(fileName));
-                            return;
-                        }else
-                        {
-                            mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(fileName));
-                        }
+                        mvp = (ModelViewport)dockPanel1.ActiveContent;
+                        mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(fileName));
+                        return;
+                    }else
+                    {
+                        mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(fileName));
                     }
                 }
 
@@ -1833,9 +1345,6 @@ namespace Smash_Forge
                 }
             }
 
-            //---------------------------------------------------------
-
-
             if (fileName.EndsWith(".nus3bank"))
             {
                 NUS3BANK nus = new NUS3BANK();
@@ -1886,7 +1395,7 @@ namespace Smash_Forge
             }
             else if (fileName.EndsWith("light.bin"))
             {
-                Runtime.TargetLigh = new LighBin(fileName);
+                Runtime.TargetLigh = new LIGH.LighBin(fileName);
             }
             else if (fileName.EndsWith(".bin"))
             {
@@ -1918,7 +1427,7 @@ namespace Smash_Forge
                 }
                 else if (f.readString(0,4) == "LIGH")
                 {
-                    Runtime.TargetLigh = new LighBin(fileName);
+                    Runtime.TargetLigh = new LIGH.LighBin(fileName);
                 }
                 else if (f.readString(6,4) == "LVD1")
                 {
@@ -2033,41 +1542,6 @@ namespace Smash_Forge
         private ModelContainer resyncTargetVBN()
         {
             ModelContainer modelContainer = null;
-            /*if (Runtime.TargetVBN != null)
-            {
-                // Make sure the TargetVBN is in use *somewhere* in our models
-                bool found = false;
-                foreach (ModelContainer m in Runtime.ModelContainers)
-                {
-                    if (m.VBN != null)
-                    if (m.VBN.essentialComparison(Runtime.TargetVBN))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    modelContainer = new ModelContainer();
-                    modelContainer.VBN = Runtime.TargetVBN;
-                    Runtime.ModelContainers.Add(modelContainer);
-                }
-            }
-            else
-            {
-                // Fetch the TargetVBN from the first model we come across
-                foreach (ModelContainer m in Runtime.ModelContainers)
-                {
-                    if (m.VBN != null)
-                    {
-                        // Use the first VBN we find
-                        Runtime.TargetVBN = Runtime.ModelContainers[0].VBN;
-                        modelContainer = m;
-                        break;
-                    }
-                }
-            }
-            //boneTreePanel.treeRefresh();*/
             return modelContainer;
         }
 
@@ -2096,7 +1570,6 @@ namespace Smash_Forge
 
 
                 ofd.Multiselect = true;
-                // "Namco Universal Data Folder (.nud)|*.nud|" +
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                     foreach (string filename in ofd.FileNames)
@@ -2207,10 +1680,6 @@ namespace Smash_Forge
         {
         }
 
-        private void editVerticesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-        }
-
         private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
             foreach (string key in Runtime.shaders.Keys)
@@ -2253,9 +1722,6 @@ namespace Smash_Forge
         private void openDATTextureEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DAT datToOpen = null;
-            /*foreach (ModelContainer mc in Runtime.ModelContainers)
-                if (mc.dat_melee != null)
-                    datToOpen = mc.dat_melee;*/
             if(datToOpen != null)
                 AddDockedControl(new DatTexEditor(datToOpen));
         }
@@ -2303,7 +1769,8 @@ namespace Smash_Forge
                     try
                     {
                         Runtime.ParamManager.param.Export(sfd.FileName);
-                    }catch
+                    }
+                    catch
                     {
                         
                     }
@@ -2365,13 +1832,6 @@ namespace Smash_Forge
                 ofd.Title = "Character Folder";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    /*MainForm.Instance.Progress = new ProgessAlert();
-                    MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
-                    MainForm.Instance.Progress.ProgressValue = 0;
-                    MainForm.Instance.Progress.ControlBox = false;
-                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Character");
-                    MainForm.Instance.Progress.Show();*/
-
                     string fighterName = new DirectoryInfo(ofd.SelectedPath).Name;
 
                     ModelViewport mvp = new ModelViewport();
@@ -2449,8 +1909,6 @@ namespace Smash_Forge
             {
                 MessageBox.Show("Error: Get TexConv2.exe and put it in Forge's Directory");
             }
-
-            
         }
 
         private void HackyWiiUtoPS3NUT(FileData data)
@@ -2469,7 +1927,6 @@ namespace Smash_Forge
             {
                 if(i > 0)
                     padfix += headerSize;
-                //				String name = fname;
                 data.skip(4); //int fullsize = d.readInt();
                 data.skip(4);
                 int size = data.readInt();
@@ -2522,8 +1979,6 @@ namespace Smash_Forge
                         FileOutput o = new FileOutput();
                         String mem = "4766783200000020000000070000000100000002000000000000000000000000424C4B7B0000002000000001000000000000000B0000009C0000000000000000";
                         o.writeHex(mem);
-                        
-
 
                         int t = data.pos();
                         data.seek(offheader);
@@ -2540,7 +1995,6 @@ namespace Smash_Forge
                         mem = "00000001000102031FF87F21C40003FF068880000000000A80000010424C4B7B0000002000000001000000000000000C000800000000000000000000";
                         o.writeHex(mem);
 
-                        //System.out.println("TextureStash\\char_" + fileNum + ".gtx");
                         Console.WriteLine(fileNum.ToString("x"));
                         o.writeBytes(data.getSection(offset1 + padfix, DDSSize));
 
@@ -2559,7 +2013,6 @@ namespace Smash_Forge
                         cmdsi.WorkingDirectory = @"TexConv\";
                         cmdsi.FileName = @"TexConv2.exe";
                         cmdsi.Arguments = command;
-                        //cmdsi.CreateNoWindow = true;
                         Process cmd = Process.Start(cmdsi);
                         cmd.WaitForExit();
 

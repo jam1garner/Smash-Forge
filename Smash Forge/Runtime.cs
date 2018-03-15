@@ -37,12 +37,10 @@ namespace Smash_Forge
         public static NUD TargetNUD { get; set; }
         public static LVD TargetLVD { get; set; }
         public static PathBin TargetPath { get; set; }
-        public static LighBin TargetLigh { get; set; }
+        public static LIGH.LighBin TargetLigh { get; set; }
         public static CMR0 TargetCMR0 { get; set; }
         public static List<MTA> TargetMTA = new List<MTA>();
         public static Object LVDSelection { get; set; }
-        //public static Animation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
-        //private static Animation _targetAnim;
         public static HitboxList hitboxList { get; set; }
         public static VariableList variableViewer { get; set; }
 
