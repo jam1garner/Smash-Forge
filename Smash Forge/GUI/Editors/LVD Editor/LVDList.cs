@@ -17,6 +17,7 @@ namespace Smash_Forge
         public LVDEditor lvdEditor;
 
         ContextMenu ElementCM;
+        ContextMenu CollisionCM;
         public LVDList()
         {
             InitializeComponent();
@@ -198,6 +199,29 @@ namespace Smash_Forge
             };
             ElementCM.MenuItems.Add(Delete);
 
+            CollisionCM = new ContextMenu();
+            CollisionCM.MenuItems.Add(Delete);
+            MenuItem GenPassthru = new MenuItem("Regenerate Passthrough Angles");
+            GenPassthru.Click += delegate
+            {
+                if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag is Collision)
+                {
+                    LVD.GeneratePassthroughs((Collision)treeView1.SelectedNode.Tag, true);
+                }
+            };
+            CollisionCM.MenuItems.Add(GenPassthru);
+
+            MenuItem FlipNormals = new MenuItem("Flip Passthrough Angles");
+            FlipNormals.Click += delegate
+            {
+                if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag is Collision)
+                {
+                    LVD.FlipPassthroughs((Collision)treeView1.SelectedNode.Tag);
+                }
+            };
+            CollisionCM.MenuItems.Add(FlipNormals);
+
+            treeView1.NodeMouseClick += (sender, args) => treeView1.SelectedNode = args.Node;
         }
 
         public TreeNode collisionNode = new TreeNode("Collisions");
@@ -228,7 +252,7 @@ namespace Smash_Forge
             {
                 foreach (Collision c in TargetLVD.collisions)
                 {
-                    TreeNode newNode = new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM };
+                    TreeNode newNode = new TreeNode(c.name) { Tag = c, ContextMenu = CollisionCM };
                     foreach (CollisionCliff d in c.cliffs)
                     {
                         newNode.Nodes.Add(new TreeNode(d.name) { Tag = d, ContextMenu = ElementCM });

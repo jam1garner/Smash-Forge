@@ -203,6 +203,15 @@ namespace Smash_Forge
         //Flags: ???, rig collision, ???, drop-through
         public bool flag1 = false, flag2 = false, flag3 = false, flag4 = false;
 
+        public bool IsPolygon
+        {
+            get
+            {
+                if (verts.Count < 2) return false;
+                return verts[0].Equals(verts[verts.Count - 1]);
+            }
+        }
+
         public Collision() {}
 
         public void read(FileData f)
@@ -1034,6 +1043,74 @@ namespace Smash_Forge
             return f.getBytes();
         }
 
+        public static void GeneratePassthroughs(Collision c, bool PolyCheck = false)
+        {
+            // Generate Normals Assuming Clockwise
+            for (int i = 0; i < c.verts.Count - 1; i++)
+            {
+                Vector2 v1 = c.verts[i];
+                Vector2 v2 = c.verts[i + 1];
+
+                float yn = (v2.X - v1.X);
+                float xn = -(v2.Y - v1.Y);
+                float mag = (float)Math.Sqrt((xn * xn) + (yn * yn));
+                xn /= mag;
+                yn /= mag;
+                c.normals[i] = new Vector2(xn, yn);
+            }
+
+            // If this forms a polygon we can get assume we want the angles to points outside the polygon
+            // Not the fastest but lvd won't typically have a massive number of lines
+            if (c.IsPolygon && PolyCheck)
+            {
+                for (int i = 0; i < c.verts.Count - 1; i++)
+                {
+                    Vector2 pos = (c.verts[i] + c.verts[i + 1]) / 2;
+                    Vector2 N1 = c.normals[i];
+
+                    // Check collision
+                    // done by counting the number of intersection using the normal as a ray
+                    // odd hits = inside even hits = outside
+                    // https://rootllama.wordpress.com/2014/06/20/ray-line-segment-intersection-test-in-2d/
+                    int count = 0;
+                    for (int j = 0; j < c.verts.Count - 1; j++)
+                    {
+                        if (j == i) continue;
+
+                        Vector2 v1 = c.verts[j];
+                        Vector2 v2 = c.verts[j + 1];
+
+                        Vector2 p1 = pos - v1;
+                        Vector2 p2 = v2-v1;
+                        Vector2 p3 = new Vector2(-N1.Y, N1.X);
+
+                        float dot = Vector2.Dot(p2, p3);
+                        if (Math.Abs(dot) < 0.00001f)
+                            continue;
+                        
+                        float f1 = (p2.X * p1.Y - p2.Y * p1.X) / dot;
+                        float f2 = Vector2.Dot(p1, p3) / dot;
+
+                        //Found intersection
+                        if (f1 >= 0.0f && (f2 >= 0.0f && f2 <= 1.0f))
+                            count++;
+                    }
+
+                    if (count % 2 == 1)
+                        //odd so flip
+                        c.normals[i] = c.normals[i]*-1;
+                }
+            }
+        }
+
+        public static void FlipPassthroughs(Collision c)
+        {
+            for (int i = 0; i < c.normals.Count; i++)
+            {
+                c.normals[i] = c.normals[i]*-1;
+            }
+        }
+
         //Function to automatically add a cliff to every grabbable ledge in a given collision
         //Works mostly to vanilla standards, though vanilla standards are inconsistent on handling bone name/start pos
         public static void GenerateCliffs(Collision col)
@@ -1066,11 +1143,12 @@ namespace Smash_Forge
                     temp.name = cliffName;
                     temp.subname = cliffName.Substring(6, cliffName.Length - 6);
                     temp.boneName = col.boneName;
-                    temp.startPos = new Vector3(col.verts[i].X, col.verts[i].Y, 0);
+                    temp.useStartPos = col.useStartPos;
+                    int ind = i;
+                    temp.pos = new Vector2(col.verts[ind].X, col.verts[ind].Y);
+                    temp.startPos = new Vector3(col.verts[ind].X, col.verts[ind].Y, 0);
                     if (col.useStartPos)
                         temp.startPos = Vector3.Add(temp.startPos, col.startPos);
-                    temp.useStartPos = col.useStartPos;
-                    temp.pos = new Vector2(col.verts[i].X, col.verts[i].Y);
                     temp.angle = -1.0f;
                     temp.lineIndex = i;
                     col.cliffs.Add(temp);
@@ -1082,11 +1160,12 @@ namespace Smash_Forge
                     temp.name = cliffName;
                     temp.subname = cliffName.Substring(6, cliffName.Length - 6);
                     temp.boneName = col.boneName;
-                    temp.startPos = new Vector3(col.verts[i+1].X, col.verts[i+1].Y, 0);
+                    temp.useStartPos = col.useStartPos;
+                    int ind = i + 1;
+                    temp.pos = new Vector2(col.verts[ind].X, col.verts[ind].Y);
+                    temp.startPos = new Vector3(col.verts[ind].X, col.verts[ind].Y, 0);
                     if (col.useStartPos)
                         temp.startPos = Vector3.Add(temp.startPos, col.startPos);
-                    temp.useStartPos = col.useStartPos;
-                    temp.pos = new Vector2(col.verts[i+1].X, col.verts[i+1].Y);
                     temp.angle = 1.0f;
                     temp.lineIndex = i;
                     col.cliffs.Add(temp);
