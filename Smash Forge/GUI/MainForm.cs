@@ -73,8 +73,8 @@ namespace Smash_Forge
 
         private void AppIdle(object sender, EventArgs e)
         {
-            if (Smash_Forge.Update.Downloaded && Instance.pictureBox1.Image == null)
-                Instance.pictureBox1.Image = Resources.Resources.sexy_green_down_arrow;
+            if (Smash_Forge.Update.Downloaded && Instance.greenArrowPictureBox.Image == null)
+                Instance.greenArrowPictureBox.Image = Resources.Resources.sexy_green_down_arrow;
             DiscordSettings.Update();
         }
 
@@ -672,8 +672,6 @@ namespace Smash_Forge
                         // If they set the wrong dir, oh well
                         try
                         {
-                            string fighterparam = Runtime.paramDir + "\\fighter\\fighter_param_vl_"+fighterName+".bin";
-
                             mvp.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin", fighterName);
                             mvp.HurtboxList.refresh();
                             mvp.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
@@ -692,85 +690,6 @@ namespace Smash_Forge
                 }
 
             }
-        }
-
-        private void collisionToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Runtime.TargetLVD == null)
-                Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.collisions.Add(new Collision() { name = "COL_00_NewCollision", subname = "00_NewCollision" });
-            lvdList.fillList();
-        }
-
-        private void spawnToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Runtime.TargetLVD == null)
-                Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.spawns.Add(new Spawn() { name = "START_00_NEW", subname = "00_NEW" });
-            lvdList.fillList();
-
-        }
-
-        private void respawnToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Runtime.TargetLVD == null)
-                Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.respawns.Add(new Spawn() { name = "RESTART_00_NEW", subname = "00_NEW" });
-            lvdList.fillList();
-        }
-
-        private void cameraBoundsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Runtime.TargetLVD == null)
-                Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.cameraBounds.Add(new Bounds() { name = "CAMERA_00_NEW", subname = "00_NEW" });
-            lvdList.fillList();
-
-        }
-
-        private void blastzonesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Runtime.TargetLVD == null)
-                Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.blastzones.Add(new Bounds() { name = "DEATH_00_NEW", subname = "00_NEW" });
-            lvdList.fillList();
-        }
-
-        private void itemSpawnerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Runtime.TargetLVD == null)
-                Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.itemSpawns.Add(new ItemSpawner() { name = "ITEM_00_NEW", subname = "00_NEW" });
-            lvdList.fillList();
-        }
-
-        private void generalPointToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Runtime.TargetLVD == null)
-                Runtime.TargetLVD = new LVD();
-            Runtime.TargetLVD.generalPoints.Add(new GeneralPoint() { name = "POINT_00_NEW", subname = "00_NEW" });
-            lvdList.fillList();
-        }
-
-        private void pointToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GeneralShape g = new GeneralShape() { name = "POINT_00_NEW", subname = "00_NEW", type = 1 };
-            Runtime.TargetLVD.generalShapes.Add(g);
-            lvdList.fillList();
-        }
-
-        private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GeneralShape g = new GeneralShape() { name = "RECT_00_NEW", subname = "00_NEW", type = 3 };
-            Runtime.TargetLVD.generalShapes.Add(g);
-            lvdList.fillList();
-        }
-
-        private void pathToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            GeneralShape g = new GeneralShape() { name = "PATH_00_NEW", subname = "00_NEW", type = 4 };
-            Runtime.TargetLVD.generalShapes.Add(g);
-            lvdList.fillList();
         }
 
         private void openNUTEditorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -827,7 +746,6 @@ namespace Smash_Forge
                     string paramPath = stagePath + "\\param\\";
                     string animationPath = stagePath + "\\animation\\";
                     string renderPath = stagePath + "\\render\\";
-                    List<string> nuds = new List<string>();
 
                     ModelViewport mvp = new ModelViewport();
                     mvp.Text = Path.GetFileName(ofd.SelectedPath);
@@ -945,7 +863,6 @@ namespace Smash_Forge
                 if (Runtime.TargetVBN == null)
                     Runtime.TargetVBN = new VBN();
                 SMD.read(filename, anim, Runtime.TargetVBN);
-                TreeNode mvp = new TreeNode();
                 return(anim);
             }
             else if (filename.EndsWith(".pac"))
@@ -1562,7 +1479,7 @@ namespace Smash_Forge
             }
         }
 
-        private void pictureBox1_Click(object sender, EventArgs e)
+        private void greenArrowPictureBox_Click(object sender, EventArgs e)
         {
             if (Smash_Forge.Update.Downloaded &&
                 MessageBox.Show(
@@ -1583,12 +1500,6 @@ namespace Smash_Forge
         private void mergeModelsMeshListToolStripMenuItem_Click(object sender, EventArgs e)
         {
             meshList.mergeModel();
-        }
-
-        private void mergeBonesBoneListToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //stub
-            //low key probably not going to make this feature
         }
 
         private void allViewsPreset(object sender, EventArgs e)
@@ -1626,10 +1537,6 @@ namespace Smash_Forge
             {
                 texEditor.BringToFront();
             }
-        }
-
-        private void MainForm_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
-        {
         }
 
         private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1898,7 +1805,6 @@ namespace Smash_Forge
                 {
                     offheader = offset3;
                 }
-
                 if (headerSize == 0x90)
                 {
                     DDSSize = data.readInt();

@@ -84,9 +84,9 @@
             this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.greenArrowPictureBox = new System.Windows.Forms.PictureBox();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.greenArrowPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -138,21 +138,21 @@
             // modelToolStripMenuItem
             // 
             this.modelToolStripMenuItem.Name = "modelToolStripMenuItem";
-            this.modelToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.modelToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.modelToolStripMenuItem.Text = "Model";
             this.modelToolStripMenuItem.Click += new System.EventHandler(this.modelToolStripMenuItem_Click);
             // 
             // nUTToolStripMenuItem
             // 
             this.nUTToolStripMenuItem.Name = "nUTToolStripMenuItem";
-            this.nUTToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.nUTToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.nUTToolStripMenuItem.Text = "NUT";
             this.nUTToolStripMenuItem.Click += new System.EventHandler(this.nUTToolStripMenuItem_Click);
             // 
             // dSTexToolStripMenuItem
             // 
             this.dSTexToolStripMenuItem.Name = "dSTexToolStripMenuItem";
-            this.dSTexToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.dSTexToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.dSTexToolStripMenuItem.Text = "3DS Tex";
             this.dSTexToolStripMenuItem.Click += new System.EventHandler(this.dSTexToolStripMenuItem_Click);
             // 
@@ -544,17 +544,17 @@
             this.backgroundWorker1.WorkerSupportsCancellation = true;
             this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.UpdateProgress);
             // 
-            // pictureBox1
+            // greenArrowPictureBox
             // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.Control;
-            this.pictureBox1.Location = new System.Drawing.Point(1187, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(24, 24);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 25;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            this.greenArrowPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.greenArrowPictureBox.BackColor = System.Drawing.SystemColors.Control;
+            this.greenArrowPictureBox.Location = new System.Drawing.Point(1187, 0);
+            this.greenArrowPictureBox.Name = "greenArrowPictureBox";
+            this.greenArrowPictureBox.Size = new System.Drawing.Size(24, 24);
+            this.greenArrowPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.greenArrowPictureBox.TabIndex = 25;
+            this.greenArrowPictureBox.TabStop = false;
+            this.greenArrowPictureBox.Click += new System.EventHandler(this.greenArrowPictureBox_Click);
             // 
             // MainForm
             // 
@@ -562,7 +562,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1217, 765);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.greenArrowPictureBox);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.glControl1);
             this.Controls.Add(this.dockPanel1);
@@ -582,7 +582,7 @@
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.MainForm_DragEnter);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.greenArrowPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -618,7 +618,7 @@
         private System.Windows.Forms.ToolStripMenuItem openStageToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem openCharacterToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        public System.Windows.Forms.PictureBox pictureBox1;
+        public System.Windows.Forms.PictureBox greenArrowPictureBox;
         private System.Windows.Forms.ToolStripMenuItem open3DSTEXEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem masterpiecesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem nESROMInjectorToolStripMenuItem;
