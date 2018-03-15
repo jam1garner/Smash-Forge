@@ -95,70 +95,19 @@ namespace Smash_Forge
             ThreadStart t = new ThreadStart(Smash_Forge.Update.CheckLatest);
             Thread thread = new Thread(t);
             thread.Start();
-            Runtime.renderDepth = 100000.0f;
 
             System.Windows.Forms.Application.Idle += AppIdle;
 
             allViewsPreset(new Object(), new EventArgs());
 
             Hashes = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
-            Runtime.renderBones = true;
-            Runtime.renderLVD = true;
-            Runtime.renderFloor = true;
-            Runtime.renderBackGround = true;
-            Runtime.renderHitboxes = true;
-            Runtime.renderInterpolatedHitboxes = true;
-            Runtime.renderHitboxAngles = true;
-            Runtime.renderSpecialBubbles = true;
-            Runtime.hitboxRenderMode = Hitbox.RENDER_KNOCKBACK;
-            Runtime.hitboxAlpha = 130;
-            Runtime.hurtboxAlpha = 80;
-            Runtime.hitboxAnglesColor = System.Drawing.Color.White;
-            Runtime.hurtboxColor = System.Drawing.Color.FromArgb(0x00, 0x53, 0x8A);     //Strong blue
-            Runtime.hurtboxColorHi = System.Drawing.Color.FromArgb(0xFF, 0x8E, 0x00);  //Vivid Orange Yellow
-            Runtime.hurtboxColorMed = System.Drawing.Color.FromArgb(0xF6, 0x76, 0x8E);  //Strong Purplish Pink
-            Runtime.hurtboxColorLow = System.Drawing.Color.FromArgb(0x00, 0x53, 0x8A);  //Strong blue
-            Runtime.hurtboxColorSelected = System.Drawing.Color.FromArgb(0xFF, 0xFF, 0xFF); //White
-            Runtime.windboxColor = System.Drawing.Color.Blue;
-            Runtime.grabboxColor = System.Drawing.Color.Purple;
-            Runtime.searchboxColor = System.Drawing.Color.DarkOrange;
-            Runtime.counterBubbleColor = System.Drawing.Color.FromArgb(0x89, 0x89, 0x89);
-            Runtime.reflectBubbleColor = System.Drawing.Color.Cyan;
-            Runtime.shieldBubbleColor = System.Drawing.Color.Red;
-            Runtime.absorbBubbleColor = System.Drawing.Color.SteelBlue;
-            Runtime.wtSlowdownBubbleColor = System.Drawing.Color.FromArgb(0x9a, 0x47, 0x9a);
-
-            Runtime.useFrameDuration = false;
-            Runtime.hitboxKnockbackColors = new List<System.Drawing.Color>();
-            Runtime.hitboxIdColors = new List<System.Drawing.Color>();
-            Runtime.renderModel = true;
-            Runtime.renderPath = true;
-            Runtime.renderCollisions = true;
-            Runtime.renderCollisionNormals = false;
-            Runtime.renderGeneralPoints = true;
-            Runtime.renderItemSpawners = true;
-            Runtime.renderSpawns = true;
-            Runtime.renderRespawns = true;
-            Runtime.renderOtherLVDEntries = true;
-            Runtime.renderAlpha = true;
-            Runtime.renderVertColor = true;
-            Runtime.renderSwagZ = false;
-            Runtime.renderSwagY = false;
-            Runtime.renderHurtboxes = true;
-            Runtime.renderHurtboxesZone = true;
-            Runtime.renderECB = false;
-            Runtime.renderIndicators = false;
-            Runtime.renderLedgeGrabboxes = false;
-            Runtime.renderTetherLedgeGrabboxes = false;
-            Runtime.renderReverseLedgeGrabboxes = false;
-            Runtime.paramDir = "";
-
-            openFiles();
 
             Runtime.StartupFromConfig(MainForm.executableDir + "\\config.xml");
             DiscordSettings.Update();
 
             ShaderTools.SetupShaders();
+
+            openFiles();
         }
 
         public void openFiles()
