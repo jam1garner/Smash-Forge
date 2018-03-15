@@ -874,7 +874,8 @@ namespace Smash_Forge
                         {
                             for (int i = 0; i < files.Length; i++)
                             {
-                                OpenAndRenderModel(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath, true);
+                                MainForm.Instance.OpenNud(files[i], "", this);
+                                RenderModel(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath, true);
                             }
                         }
                     }
@@ -903,14 +904,13 @@ namespace Smash_Forge
             }
         }
 
-        private void OpenAndRenderModel(string nudFileName, string sourcePath, string outputPath, bool loadPacs)
+        private void RenderModel(string nudFileName, string sourcePath, string outputPath, bool loadPacs)
         {
             foreach (TreeNode node in draw)
             {
                 if (!(node is ModelContainer))
                     continue;
 
-                BatchRenderTools.LoadNewModelForRender(nudFileName, node, loadPacs);
                 SetupNextRender();
                 string renderName = FormatFileName(nudFileName, sourcePath);
                 // Manually dispose the bitmap to avoid memory leaks. 
@@ -918,7 +918,9 @@ namespace Smash_Forge
                 screenCapture.Save(outputPath + "\\" + renderName + ".png");
                 screenCapture.Dispose();
 
+                // Cleanup the models and nodes.
                 Runtime.TextureContainers.Clear();
+                draw.Clear();
             }
         }
 
@@ -1556,7 +1558,7 @@ namespace Smash_Forge
                     BatchRenderTools.LoadNextXmb(nudFile, modelContainer);
                     MeshList.filesTreeView.Nodes.Add(modelContainer);*/
 
-                    OpenAndRenderModel(nudFile, sourcePath, outputPath, false);
+                    RenderModel(nudFile, sourcePath, outputPath, false);
                 }
             }
 

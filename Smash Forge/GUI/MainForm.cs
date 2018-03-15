@@ -314,7 +314,7 @@ namespace Smash_Forge
             }
         }
 
-        private ModelViewport OpenNud(string pathNud, string name = "", ModelViewport mvp = null)
+        public ModelViewport OpenNud(string pathNud, string name = "", ModelViewport mvp = null)
         {
             // All the model files will be in the same directory as the model.nud file.
             string[] files = Directory.GetFiles(Path.GetDirectoryName(pathNud));
@@ -449,6 +449,15 @@ namespace Smash_Forge
             NUT nut = new NUT(fileName);
             modelContainer.NUT = nut;
             Runtime.TextureContainers.Add(nut);
+        }
+
+        private static void OpenStprmBin(ModelViewport modelViewport, string fileName)
+        {
+            if (fileName.EndsWith("stprm.bin"))
+            {
+                Runtime.stprmParam = new ParamFile(fileName);
+                modelViewport.GetCamera().SetValuesFromStprm(Runtime.stprmParam);
+            }
         }
 
         private void addMaterialAnimation(string name, MTA m)
@@ -604,7 +613,6 @@ namespace Smash_Forge
                     MainForm.Instance.Progress.ControlBox = false;
                     MainForm.Instance.Progress.Message = ("Please Wait... Opening Character");
                     MainForm.Instance.Progress.Show();
-
 
                     string fighterName = new DirectoryInfo(ofd.SelectedPath).Name;
                     string[] dirs = Directory.GetDirectories(ofd.SelectedPath);
@@ -776,12 +784,7 @@ namespace Smash_Forge
                                 lvdList.fillList();
                             }
 
-                            if (fileName.EndsWith("stprm.bin"))
-                            {
-                                // should this always replace existing settings?
-                                Runtime.stprmParam = new ParamFile(fileName);
-                                mvp.GetCamera().SetValuesFromStprm(Runtime.stprmParam);
-                            }
+                            OpenStprmBin(mvp, fileName);
                         }
                     }
 
