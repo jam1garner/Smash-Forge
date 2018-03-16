@@ -864,18 +864,20 @@ namespace Smash_Forge
             // Get the source model folder and then the output folder. 
             using (var folderSelect = new FolderSelectDialog())
             {
+                folderSelect.Title = "Models Directory";
                 if (folderSelect.ShowDialog() == DialogResult.OK)
                 {
                     string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*model.nud", SearchOption.AllDirectories);
 
                     using (var outputFolderSelect = new FolderSelectDialog())
                     {
+                        outputFolderSelect.Title = "Output Renders Directory";
                         if (outputFolderSelect.ShowDialog() == DialogResult.OK)
                         {
                             for (int i = 0; i < files.Length; i++)
                             {
                                 MainForm.Instance.OpenNud(files[i], "", this);
-                                RenderModel(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath, true);
+                                RenderModel(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
                             }
                         }
                     }
@@ -888,15 +890,20 @@ namespace Smash_Forge
             // Get the source model folder and then the output folder. 
             using (var sourceFolderSelect = new FolderSelectDialog())
             {
+                sourceFolderSelect.Title = "Stages Directory";
                 if (sourceFolderSelect.ShowDialog() == DialogResult.OK)
                 {
                     using (var outputFolderSelect = new FolderSelectDialog())
                     {
+                        outputFolderSelect.Title = "Output Renders Directory";
                         if (outputFolderSelect.ShowDialog() == DialogResult.OK)
                         {
                             foreach (string stageFolder in Directory.GetDirectories(sourceFolderSelect.SelectedPath))
                             {
+                                MainForm.Instance.OpenStageFolder(stageFolder, this);
                                 RenderStageModels(stageFolder, outputFolderSelect.SelectedPath, sourceFolderSelect.SelectedPath);
+                                RenderModel(stageFolder, sourceFolderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+                                MainForm.Instance.ClearWorkSpace(false);
                             }
                         }
                     }
@@ -904,30 +911,24 @@ namespace Smash_Forge
             }
         }
 
-        private void RenderModel(string nudFileName, string sourcePath, string outputPath, bool loadPacs)
+        private void RenderModel(string nudFileName, string sourcePath, string outputPath)
         {
-            foreach (TreeNode node in draw)
-            {
-                if (!(node is ModelContainer))
-                    continue;
+            SetupNextRender();
+            string renderName = FormatFileName(nudFileName, sourcePath);
+            // Manually dispose the bitmap to avoid memory leaks. 
+            Bitmap screenCapture = CaptureScreen(true);
+            screenCapture.Save(outputPath + "\\" + renderName + ".png");
+            screenCapture.Dispose();
 
-                SetupNextRender();
-                string renderName = FormatFileName(nudFileName, sourcePath);
-                // Manually dispose the bitmap to avoid memory leaks. 
-                Bitmap screenCapture = CaptureScreen(true);
-                screenCapture.Save(outputPath + "\\" + renderName + ".png");
-                screenCapture.Dispose();
-
-                // Cleanup the models and nodes.
-                Runtime.TextureContainers.Clear();
-                draw.Clear();
-            }
+            // Cleanup the models and nodes.
+            Runtime.TextureContainers.Clear();
+            draw.Clear();
         }
 
         private void SetupNextRender()
         {
             // Setup before rendering the model. Use a large max radius to show skybox models.
-            FrameSelectionAndSort();
+            FrameAllModelContainers();
             Render(null, null);
             glViewport.SwapBuffers();
         }
@@ -1558,7 +1559,7 @@ namespace Smash_Forge
                     BatchRenderTools.LoadNextXmb(nudFile, modelContainer);
                     MeshList.filesTreeView.Nodes.Add(modelContainer);*/
 
-                    RenderModel(nudFile, sourcePath, outputPath, false);
+                    RenderModel(nudFile, sourcePath, outputPath);
                 }
             }
 

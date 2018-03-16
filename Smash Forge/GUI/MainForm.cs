@@ -562,6 +562,11 @@ namespace Smash_Forge
 
         private void clearWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            ClearWorkSpace();
+        }
+
+        public void ClearWorkSpace(bool closeEditors = true)
+        {
             Runtime.killWorkspace = true;
             Runtime.ParamManager.Reset();
             hurtboxList.refresh();
@@ -575,8 +580,8 @@ namespace Smash_Forge
             List<DockContent> openContent = new List<DockContent>();
             foreach (DockContent c in dockPanel1.Contents)
                 openContent.Add(c);
-            foreach(DockContent c in openContent)
-                if (c is EditorBase)
+            foreach (DockContent c in openContent)
+                if (c is EditorBase && closeEditors)
                     c.Close();
         }
 
@@ -742,104 +747,111 @@ namespace Smash_Forge
                 ofd.Title = "Stage Folder";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    MainForm.Instance.Progress = new ProgessAlert();
-                    MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
-                    MainForm.Instance.Progress.ProgressValue = 0;
-                    MainForm.Instance.Progress.ControlBox = false;
-                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Models");
-                    MainForm.Instance.Progress.Show();
-
-                    string stagePath = ofd.SelectedPath;
-                    string modelPath = stagePath + "\\model\\";
-                    string paramPath = stagePath + "\\param\\";
-                    string animationPath = stagePath + "\\animation\\";
-                    string renderPath = stagePath + "\\render\\";
-
-                    ModelViewport mvp = new ModelViewport();
-                    mvp.Text = Path.GetFileName(ofd.SelectedPath);
-
-                    if (Directory.Exists(modelPath))
-                    {
-                        foreach (string d in Directory.GetDirectories(modelPath))
-                        {
-                            foreach (string f in Directory.GetFiles(d))
-                            {
-                                if (f.EndsWith(".nud"))
-                                {
-                                    OpenNud(f, Path.GetFileName(d), mvp);
-                                }
-                            }
-                        }
-                    }
-
-                    MainForm.Instance.Progress.ProgressValue = 50;
-                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Parameters");
-                    if (Directory.Exists(paramPath))
-                    {
-                        foreach (string fileName in Directory.GetFiles(paramPath))
-                        {
-                            if (Path.GetExtension(fileName).Equals(".lvd") && Runtime.TargetLVD == null)
-                            {
-                                mvp.LVD = new LVD(fileName);
-                                lvdList.fillList();
-                            }
-
-                            OpenStprmBin(mvp, fileName);
-                        }
-                    }
-
-                    MainForm.Instance.Progress.ProgressValue = 75;
-                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Path");
-                    if (Directory.Exists(renderPath))
-                    {
-                        foreach (string fileName in Directory.GetFiles(renderPath))
-                        {
-                            if (fileName.EndsWith("light_set_param.bin"))
-                            {
-                                // should this always replace existing settings?
-                                Runtime.lightSetParam = new ParamFile(fileName);
-                                LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
-                            }
-
-                            if (fileName.EndsWith("area_light.xmb"))
-                            {
-                                LightTools.CreateAreaLightsFromXMB(new XMBFile(fileName));
-                            }
-
-                            if (fileName.EndsWith("lightmap.xmb"))
-                            {
-                                LightTools.CreateLightMapsFromXMB(new XMBFile(fileName));
-                            }
-                        }
-                    }
-
-                    MainForm.Instance.Progress.ProgressValue = 80;
-                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Animation");
-                    if (Directory.Exists(animationPath))
-                    {
-                        foreach (string d in Directory.GetDirectories(animationPath))
-                        {
-                            foreach (string f in Directory.GetFiles(d))
-                            {
-                                if (f.EndsWith(".omo"))
-                                {
-                                    Animation a = OMOOld.read(new FileData(f));
-                                    a.Text = f;
-                                    mvp.AnimList.treeView1.Nodes.Add(a);
-                                }
-                                else if (f.EndsWith("path.bin"))
-                                {
-                                    mvp.PathBin = new PathBin();
-                                    mvp.PathBin.Read(f);
-                                }
-                            }
-                        }
-                    }
-                    MainForm.Instance.Progress.ProgressValue = 100;
-                    AddDockedControl(mvp);
+                    OpenStageFolder(ofd.SelectedPath);
                 }
             }
 
+        }
+
+        public void OpenStageFolder(string stagePath, ModelViewport mvp = null)
+        {
+            MainForm.Instance.Progress = new ProgessAlert();
+            MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
+            MainForm.Instance.Progress.ProgressValue = 0;
+            MainForm.Instance.Progress.ControlBox = false;
+            MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Models");
+            MainForm.Instance.Progress.Show();
+
+            string modelPath = stagePath + "\\model\\";
+            string paramPath = stagePath + "\\param\\";
+            string animationPath = stagePath + "\\animation\\";
+            string renderPath = stagePath + "\\render\\";
+
+            if (mvp == null)
+            {
+                mvp = new ModelViewport();
+                mvp.Text = Path.GetFileName(stagePath);
+            }
+
+            if (Directory.Exists(modelPath))
+            {
+                foreach (string d in Directory.GetDirectories(modelPath))
+                {
+                    foreach (string f in Directory.GetFiles(d))
+                    {
+                        if (f.EndsWith(".nud"))
+                        {
+                            OpenNud(f, Path.GetFileName(d), mvp);
+                        }
+                    }
+                }
+            }
+
+            MainForm.Instance.Progress.ProgressValue = 50;
+            MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Parameters");
+            if (Directory.Exists(paramPath))
+            {
+                foreach (string fileName in Directory.GetFiles(paramPath))
+                {
+                    if (Path.GetExtension(fileName).Equals(".lvd") && Runtime.TargetLVD == null)
+                    {
+                        mvp.LVD = new LVD(fileName);
+                        lvdList.fillList();
+                    }
+
+                    OpenStprmBin(mvp, fileName);
+                }
+            }
+
+            MainForm.Instance.Progress.ProgressValue = 75;
+            MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Path");
+            if (Directory.Exists(renderPath))
+            {
+                foreach (string fileName in Directory.GetFiles(renderPath))
+                {
+                    if (fileName.EndsWith("light_set_param.bin"))
+                    {
+                        // should this always replace existing settings?
+                        Runtime.lightSetParam = new ParamFile(fileName);
+                        LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                    }
+
+                    if (fileName.EndsWith("area_light.xmb"))
+                    {
+                        LightTools.CreateAreaLightsFromXMB(new XMBFile(fileName));
+                    }
+
+                    if (fileName.EndsWith("lightmap.xmb"))
+                    {
+                        LightTools.CreateLightMapsFromXMB(new XMBFile(fileName));
+                    }
+                }
+            }
+
+            MainForm.Instance.Progress.ProgressValue = 80;
+            MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Animation");
+            if (Directory.Exists(animationPath))
+            {
+                foreach (string d in Directory.GetDirectories(animationPath))
+                {
+                    foreach (string f in Directory.GetFiles(d))
+                    {
+                        if (f.EndsWith(".omo"))
+                        {
+                            Animation a = OMOOld.read(new FileData(f));
+                            a.Text = f;
+                            mvp.AnimList.treeView1.Nodes.Add(a);
+                        }
+                        else if (f.EndsWith("path.bin"))
+                        {
+                            mvp.PathBin = new PathBin();
+                            mvp.PathBin.Read(f);
+                        }
+                    }
+                }
+            }
+            MainForm.Instance.Progress.ProgressValue = 100;
+            AddDockedControl(mvp);
         }
 
         //<summary>
