@@ -178,7 +178,7 @@ namespace Smash_Forge
                     p.Offset = poffset * 4;
                     List<DisplayVertex> pv = p.CreateDisplayVertices();
                     Vs.AddRange(pv);
-                    //Console.WriteLine(p.displayFaceSize + " " + p.Offset/4);
+
                     for (int i = 0; i < p.displayFaceSize; i++)
                     {
                         Ds.Add(p.display[i] + voffset);

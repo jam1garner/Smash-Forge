@@ -1228,12 +1228,16 @@ namespace Smash_Forge
                     if (CheckCurrentViewport(out mvp))
                     {
                         mvp.MeshList.filesTreeView.Nodes.Add(modelContainer);
+                        // Makes sure the vertex data is updated properly and the model will be visible. 
+                        mvp.FrameSelectionAndSort();
                     }
                     else
                     {
                         modelContainer.Text = fileName;
                         mvp.Text = fileName;
                         mvp.MeshList.filesTreeView.Nodes.Add(modelContainer);
+                        // Makes sure the vertex data is updated properly and the model will be visible. 
+                        mvp.FrameSelectionAndSort();
                     }
                 }
             }
