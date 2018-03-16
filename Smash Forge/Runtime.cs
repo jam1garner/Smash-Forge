@@ -115,50 +115,25 @@ namespace Smash_Forge
         public static Color absorbBubbleColor = Color.SteelBlue;
         public static Color wtSlowdownBubbleColor = Color.FromArgb(0x9a, 0x47, 0x9a);
 
-        // See https://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
-        // for a really good overview of how to use distinct colors.
-        //UIntToColor(0xFFFFB300), //Vivid Yellow
-        //UIntToColor(0xFF803E75), //Strong Purple
-        //UIntToColor(0xFFFF6800), //Vivid Orange
-        //UIntToColor(0xFFA6BDD7), //Very Light Blue
-        //UIntToColor(0xFFC10020), //Vivid Red
-        //UIntToColor(0xFFCEA262), //Grayish Yellow
-        //UIntToColor(0xFF817066), //Medium Gray
-
-        ////The following will not be good for people with defective color vision
-        //UIntToColor(0xFF007D34), //Vivid Green
-        //UIntToColor(0xFFF6768E), //Strong Purplish Pink
-        //UIntToColor(0xFF00538A), //Strong Blue
-        //UIntToColor(0xFFFF7A5C), //Strong Yellowish Pink
-        //UIntToColor(0xFF53377A), //Strong Violet
-        //UIntToColor(0xFFFF8E00), //Vivid Orange Yellow
-        //UIntToColor(0xFFB32851), //Strong Purplish Red
-        //UIntToColor(0xFFF4C800), //Vivid Greenish Yellow
-        //UIntToColor(0xFF7F180D), //Strong Reddish Brown
-        //UIntToColor(0xFF93AA00), //Vivid Yellowish Green
-        //UIntToColor(0xFF593315), //Deep Yellowish Brown
-        //UIntToColor(0xFFF13A13), //Vivid Reddish Orange
-        //UIntToColor(0xFF232C16), //Dark Olive Green
-
         public static List<Color> hitboxKnockbackColors = new List<Color>();
         public static readonly List<Color> defaultHitboxKnockbackColors = new List<Color>()
         {
-            Color.FromArgb(0xFF, 0x00, 0x7D, 0x34), // Vivid green
-            Color.FromArgb(0xFF, 0xFF, 0xB3, 0x0),    // Vivid yellow
-            Color.FromArgb(0xFF, 0xFF, 0x68, 0x00),   // Vivid orange
-            Color.FromArgb(0xFF, 0xC1, 0x0, 0x20),    // Vivid red
+            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.VividGreen),
+            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.VividYellow),
+            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.VividOrange),
+            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.VividRed)     
         };
 
         public static List<Color> hitboxIdColors = new List<Color>();
         public static readonly List<Color> defaultHitboxIdColors = new List<Color>()
         {
-            Color.FromArgb(0xFF, 0xFF, 0xB3, 0x00), // Vivid yellow
-            Color.FromArgb(0xFF, 0x80, 0x3E, 0x75), // Strong purple
-            Color.FromArgb(0xFF, 0xC1, 0x00, 0x20), // Vivid red
-            Color.FromArgb(0xFF, 0xCE, 0xA2, 0x62), // Grayish yellow
-            Color.FromArgb(0xFF, 0x81, 0x70, 0x66), // Medium gray
-            Color.FromArgb(0xFF, 0x00, 0x53, 0x8A), // Strong blue
-            Color.FromArgb(0xFF, 0x59, 0x33, 0x15), // Deep yellowish brown
+            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.VividYellow), 
+            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.StrongPurple), 
+            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.VividRed),
+            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.GrayishYellow), 
+            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.MediumGray), 
+            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.StrongBlue), 
+            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.DeepYellowishBrown)
         };
 
         public static string FloorURL = "";
@@ -168,9 +143,9 @@ namespace Smash_Forge
         public static FloorStyle floorStyle = FloorStyle.Normal;
         public static bool renderFloorLines = true;
 
-        public static Color back1 = Color.FromArgb((255 << 24) | (26 << 16) | (26 << 8) | (26));
-        public static Color back2 = Color.FromArgb((255 << 24) | (77 << 16) | (77 << 8) | (77));
-        public static float fov = 0.524f; // default angle in radians from stage param files
+        public static Color backgroundGradientTop = Color.FromArgb(255, 26, 26, 26);
+        public static Color backgroundGradientBottom = Color.FromArgb(255, 77, 77, 77);
+        public static float fov = 0.524f; // default 30 degrees from stage param files
         public static float zoomspeed = 1.0f;
         public static float zoomModifierScale = 2.0f;
         public static bool cameraLight = false;
@@ -304,8 +279,7 @@ namespace Smash_Forge
 
         public static bool killWorkspace { get; set; }
 
-        // Make sure subscribers unsubscribe or this
-        // will prevent garbage collection!
+        // Make sure subscribers unsubscribe or this will prevent garbage collection!
         public static event EventHandler AnimationChanged;
         private static void OnAnimationChanged()
         {
