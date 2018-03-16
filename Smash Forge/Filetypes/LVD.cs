@@ -1050,13 +1050,9 @@ namespace Smash_Forge
             {
                 Vector2 v1 = c.verts[i];
                 Vector2 v2 = c.verts[i + 1];
-
-                float yn = (v2.X - v1.X);
-                float xn = -(v2.Y - v1.Y);
-                float mag = (float)Math.Sqrt((xn * xn) + (yn * yn));
-                xn /= mag;
-                yn /= mag;
-                c.normals[i] = new Vector2(xn, yn);
+                Vector2 normal = new Vector2(v2.Y - v1.Y, v2.X - v1.X).Normalized();
+                normal.X *= -1;
+                c.normals[i] = normal;
             }
 
             // If this forms a polygon we can get assume we want the angles to points outside the polygon

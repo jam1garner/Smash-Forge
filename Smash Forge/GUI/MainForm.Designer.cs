@@ -45,7 +45,6 @@
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadShadersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportErrorLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.saveConfigToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearWorkspaceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,9 +84,9 @@
             this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.greenArrowPictureBox = new System.Windows.Forms.PictureBox();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.greenArrowPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -119,7 +118,6 @@
             this.saveAsToolStripMenuItem,
             this.reloadShadersToolStripMenuItem,
             this.exportErrorLogToolStripMenuItem,
-            this.exportModelToolStripMenuItem,
             this.toolStripSeparator4,
             this.saveConfigToolStripMenuItem,
             this.clearWorkspaceToolStripMenuItem});
@@ -140,21 +138,21 @@
             // modelToolStripMenuItem
             // 
             this.modelToolStripMenuItem.Name = "modelToolStripMenuItem";
-            this.modelToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.modelToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.modelToolStripMenuItem.Text = "Model";
             this.modelToolStripMenuItem.Click += new System.EventHandler(this.modelToolStripMenuItem_Click);
             // 
             // nUTToolStripMenuItem
             // 
             this.nUTToolStripMenuItem.Name = "nUTToolStripMenuItem";
-            this.nUTToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.nUTToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.nUTToolStripMenuItem.Text = "NUT";
             this.nUTToolStripMenuItem.Click += new System.EventHandler(this.nUTToolStripMenuItem_Click);
             // 
             // dSTexToolStripMenuItem
             // 
             this.dSTexToolStripMenuItem.Name = "dSTexToolStripMenuItem";
-            this.dSTexToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
+            this.dSTexToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.dSTexToolStripMenuItem.Text = "3DS Tex";
             this.dSTexToolStripMenuItem.Click += new System.EventHandler(this.dSTexToolStripMenuItem_Click);
             // 
@@ -211,7 +209,7 @@
             this.openNUDToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.openNUDToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.openNUDToolStripMenuItem.Text = "Save";
-            this.openNUDToolStripMenuItem.Click += new System.EventHandler(this.openNUDToolStripMenuItem_Click);
+            this.openNUDToolStripMenuItem.Click += new System.EventHandler(this.saveFileToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
@@ -233,15 +231,6 @@
             this.exportErrorLogToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.exportErrorLogToolStripMenuItem.Text = "Export Shader Error Logs";
             this.exportErrorLogToolStripMenuItem.Click += new System.EventHandler(this.exportErrorLogToolStripMenuItem_Click);
-            // 
-            // exportModelToolStripMenuItem
-            // 
-            this.exportModelToolStripMenuItem.Enabled = false;
-            this.exportModelToolStripMenuItem.Name = "exportModelToolStripMenuItem";
-            this.exportModelToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
-            this.exportModelToolStripMenuItem.Text = "Export Model";
-            this.exportModelToolStripMenuItem.Visible = false;
-            this.exportModelToolStripMenuItem.Click += new System.EventHandler(this.saveAsDAEToolStripMenuItem_Click);
             // 
             // toolStripSeparator4
             // 
@@ -287,7 +276,6 @@
             this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
             this.exportToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.exportToolStripMenuItem.Text = "Export";
-            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -386,21 +374,21 @@
             this.openDATTextureEditorToolStripMenuItem});
             this.texturesToolStripMenuItem.Enabled = false;
             this.texturesToolStripMenuItem.Name = "texturesToolStripMenuItem";
-            this.texturesToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
+            this.texturesToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
             this.texturesToolStripMenuItem.Text = "Textures";
             this.texturesToolStripMenuItem.Visible = false;
             // 
             // open3DSTEXEditorToolStripMenuItem
             // 
             this.open3DSTEXEditorToolStripMenuItem.Name = "open3DSTEXEditorToolStripMenuItem";
-            this.open3DSTEXEditorToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
+            this.open3DSTEXEditorToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
             this.open3DSTEXEditorToolStripMenuItem.Text = "Open 3DS TEX Editor";
             this.open3DSTEXEditorToolStripMenuItem.Click += new System.EventHandler(this.open3DSTEXEditorToolStripMenuItem_Click);
             // 
             // openDATTextureEditorToolStripMenuItem
             // 
             this.openDATTextureEditorToolStripMenuItem.Name = "openDATTextureEditorToolStripMenuItem";
-            this.openDATTextureEditorToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
+            this.openDATTextureEditorToolStripMenuItem.Size = new System.Drawing.Size(203, 22);
             this.openDATTextureEditorToolStripMenuItem.Text = "Open DAT Texture Editor";
             this.openDATTextureEditorToolStripMenuItem.Click += new System.EventHandler(this.openDATTextureEditorToolStripMenuItem_Click);
             // 
@@ -453,7 +441,7 @@
             this.importWiiUNUTAsPS3NUTToolStripMenuItem});
             this.toolsToolStripMenuItem.Enabled = false;
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             this.toolsToolStripMenuItem.Visible = false;
             // 
@@ -556,17 +544,17 @@
             this.backgroundWorker1.WorkerSupportsCancellation = true;
             this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.UpdateProgress);
             // 
-            // pictureBox1
+            // greenArrowPictureBox
             // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.Control;
-            this.pictureBox1.Location = new System.Drawing.Point(1187, 0);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(24, 24);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBox1.TabIndex = 25;
-            this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            this.greenArrowPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.greenArrowPictureBox.BackColor = System.Drawing.SystemColors.Control;
+            this.greenArrowPictureBox.Location = new System.Drawing.Point(1187, 0);
+            this.greenArrowPictureBox.Name = "greenArrowPictureBox";
+            this.greenArrowPictureBox.Size = new System.Drawing.Size(24, 24);
+            this.greenArrowPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.greenArrowPictureBox.TabIndex = 25;
+            this.greenArrowPictureBox.TabStop = false;
+            this.greenArrowPictureBox.Click += new System.EventHandler(this.greenArrowPictureBox_Click);
             // 
             // MainForm
             // 
@@ -574,7 +562,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1217, 765);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.greenArrowPictureBox);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.glControl1);
             this.Controls.Add(this.dockPanel1);
@@ -592,10 +580,9 @@
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.MainForm_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.MainForm_DragEnter);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.greenArrowPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -631,8 +618,7 @@
         private System.Windows.Forms.ToolStripMenuItem openStageToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem openCharacterToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        public System.Windows.Forms.PictureBox pictureBox1;
-        public System.Windows.Forms.ToolStripMenuItem exportModelToolStripMenuItem;
+        public System.Windows.Forms.PictureBox greenArrowPictureBox;
         private System.Windows.Forms.ToolStripMenuItem open3DSTEXEditorToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem masterpiecesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem nESROMInjectorToolStripMenuItem;

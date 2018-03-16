@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 
-namespace Smash_Forge
+namespace Smash_Forge.LIGH
 {
     public class LighBin : FileBase
     {

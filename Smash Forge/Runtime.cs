@@ -37,12 +37,10 @@ namespace Smash_Forge
         public static NUD TargetNUD { get; set; }
         public static LVD TargetLVD { get; set; }
         public static PathBin TargetPath { get; set; }
-        public static LighBin TargetLigh { get; set; }
+        public static LIGH.LighBin TargetLigh { get; set; }
         public static CMR0 TargetCMR0 { get; set; }
         public static List<MTA> TargetMTA = new List<MTA>();
         public static Object LVDSelection { get; set; }
-        //public static Animation TargetAnim { get { return _targetAnim; } set { _targetAnim = value; OnAnimationChanged(); } }
-        //private static Animation _targetAnim;
         public static HitboxList hitboxList { get; set; }
         public static VariableList variableViewer { get; set; }
 
@@ -65,57 +63,57 @@ namespace Smash_Forge
         public static ViewportModes ViewportMode = ViewportModes.EDITVERT;
 
         public static float RenderLineSize = 2;
-        public static bool renderLVD;
-        public static bool renderModel;
+        public static bool renderLVD = true;
+        public static bool renderModel = true;
         public static bool renderModelSelection = true;
         public static bool renderModelWireframe;
-        public static bool renderBones;
-        public static bool renderCollisions;
-        public static bool renderCollisionNormals;
-        public static bool renderHitboxes;
-        public static bool renderInterpolatedHitboxes;
+        public static bool renderBones = true;
+        public static bool renderCollisions = true;
+        public static bool renderCollisionNormals = false;
+        public static bool renderHitboxes = true;
+        public static bool renderInterpolatedHitboxes = true;
         public static bool renderHitboxesColorByKb;
-        public static bool renderHitboxAngles;
-        public static bool renderFloor;
-        public static bool renderBackGround;
-        public static bool renderPath;
-        public static bool renderRespawns;
-        public static bool renderSpawns;
-        public static bool renderItemSpawners;
-        public static bool renderGeneralPoints;
-        public static bool renderOtherLVDEntries;
-        public static bool renderSwagZ;
-        public static bool renderSwagY;
+        public static bool renderHitboxAngles = true;
+        public static bool renderFloor = true;
+        public static bool renderBackGround = true;
+        public static bool renderPath = true;
+        public static bool renderRespawns = true;
+        public static bool renderSpawns = true;
+        public static bool renderItemSpawners = true;
+        public static bool renderGeneralPoints = true;
+        public static bool renderOtherLVDEntries = true;
+        public static bool renderSwagZ = false;
+        public static bool renderSwagY = false;
         public static bool renderBoundingBox;
-        public static bool renderHurtboxes;
-        public static bool renderHurtboxesZone;
-        public static bool renderECB;
-        public static bool renderIndicators;
-        public static bool renderSpecialBubbles;
-        public static bool renderLedgeGrabboxes;
-        public static bool renderReverseLedgeGrabboxes;
-        public static bool renderTetherLedgeGrabboxes;
-        public static int hitboxRenderMode;
-        public static int hitboxAlpha;
-        public static int hurtboxAlpha;
-        public static Color hitboxAnglesColor;
-        public static Color hurtboxColor;
-        public static Color hurtboxColorHi;
-        public static Color hurtboxColorMed;
-        public static Color hurtboxColorLow;
-        public static Color hurtboxColorSelected;
-        public static Color windboxColor;
-        public static Color grabboxColor;
-        public static Color searchboxColor;
+        public static bool renderHurtboxes = true;
+        public static bool renderHurtboxesZone = true;
+        public static bool renderECB = false;
+        public static bool renderIndicators = false;
+        public static bool renderSpecialBubbles = true;
+        public static bool renderLedgeGrabboxes = false;
+        public static bool renderReverseLedgeGrabboxes = false;
+        public static bool renderTetherLedgeGrabboxes = false;
+        public static int hitboxRenderMode = Hitbox.RENDER_KNOCKBACK;
+        public static int hitboxAlpha = 130;
+        public static int hurtboxAlpha = 80;
+        public static Color hitboxAnglesColor = Color.White;
+        public static Color hurtboxColor = Color.FromArgb(0x00, 0x53, 0x8A); //Strong blue;
+        public static Color hurtboxColorHi = Color.FromArgb(0xFF, 0x8E, 0x00); //Vivid Orange Yellow;
+        public static Color hurtboxColorMed = Color.FromArgb(0xF6, 0x76, 0x8E); //Strong Purplish Pink;
+        public static Color hurtboxColorLow = Color.FromArgb(0x00, 0x53, 0x8A); //Strong blue;
+        public static Color hurtboxColorSelected = Color.FromArgb(0xFF, 0xFF, 0xFF); //White;
+        public static Color windboxColor = Color.Blue;
+        public static Color grabboxColor = Color.Purple;
+        public static Color searchboxColor = Color.DarkOrange;
         public static bool renderHitboxesNoOverlap;
         public static bool useFrameDuration = true;
         public static bool useFAFasAnimationLength = false;
 
-        public static Color counterBubbleColor;
-        public static Color reflectBubbleColor;
-        public static Color shieldBubbleColor;
-        public static Color absorbBubbleColor;
-        public static Color wtSlowdownBubbleColor;
+        public static Color counterBubbleColor = Color.FromArgb(0x89, 0x89, 0x89);
+        public static Color reflectBubbleColor = Color.Cyan;
+        public static Color shieldBubbleColor = Color.Red;
+        public static Color absorbBubbleColor = Color.SteelBlue;
+        public static Color wtSlowdownBubbleColor = Color.FromArgb(0x9a, 0x47, 0x9a);
 
         // See https://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
         // for a really good overview of how to use distinct colors.
@@ -141,7 +139,8 @@ namespace Smash_Forge
         //UIntToColor(0xFF593315), //Deep Yellowish Brown
         //UIntToColor(0xFFF13A13), //Vivid Reddish Orange
         //UIntToColor(0xFF232C16), //Dark Olive Green
-        public static List<Color> hitboxKnockbackColors;
+
+        public static List<Color> hitboxKnockbackColors = new List<Color>();
         public static readonly List<Color> defaultHitboxKnockbackColors = new List<Color>()
         {
             Color.FromArgb(0xFF, 0x00, 0x7D, 0x34), // Vivid green
@@ -149,7 +148,8 @@ namespace Smash_Forge
             Color.FromArgb(0xFF, 0xFF, 0x68, 0x00),   // Vivid orange
             Color.FromArgb(0xFF, 0xC1, 0x0, 0x20),    // Vivid red
         };
-        public static List<Color> hitboxIdColors;
+
+        public static List<Color> hitboxIdColors = new List<Color>();
         public static readonly List<Color> defaultHitboxIdColors = new List<Color>()
         {
             Color.FromArgb(0xFF, 0xFF, 0xB3, 0x00), // Vivid yellow
@@ -236,7 +236,7 @@ namespace Smash_Forge
 
         // ETC
         public static string fighterDir = "";
-        public static string paramDir;
+        public static string paramDir = "";
 
         // OpenGL System Information
         public static string renderer = "";
