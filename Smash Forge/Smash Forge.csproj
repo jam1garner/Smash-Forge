@@ -75,6 +75,7 @@
     <Compile Include="ACMDScript.cs" />
     <Compile Include="Animation.cs" />
     <Compile Include="CharacterParamManager.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="DiscordSettings.cs" />
     <Compile Include="Filetypes\Animation\BCHan.cs" />
     <Compile Include="Filetypes\Animation\OMO.cs" />

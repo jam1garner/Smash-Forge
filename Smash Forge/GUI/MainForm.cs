@@ -102,7 +102,7 @@ namespace Smash_Forge
 
             Hashes = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
 
-            Runtime.StartupFromConfig(MainForm.executableDir + "\\config.xml");
+            Config.StartupFromFile(MainForm.executableDir + "\\config.xml");
             DiscordSettings.Update();
 
             ShaderTools.SetupShaders();
@@ -1602,7 +1602,7 @@ namespace Smash_Forge
 
         private void saveConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Runtime.SaveConfig();
+            Config.Save();
         }
 
         private void cameraToolStripMenuItem_Click(object sender, EventArgs e)
