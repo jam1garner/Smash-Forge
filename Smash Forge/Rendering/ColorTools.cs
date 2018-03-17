@@ -5,6 +5,43 @@ namespace Smash_Forge
 {
     class ColorTools
     {
+        // See https://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
+        // for a really good overview of how to use distinct colors.
+        public enum DistinctColors : uint
+        {
+            VividYellow = 0xFFFFB300,
+            StrongPurple = 0xFF803E75,
+            VividOrange = 0xFFFF6800,
+            VeryLightBlue = 0xFFA6BDD7,
+            VividRed = 0xFFC10020,
+            GrayishYellow = 0xFFCEA262,
+            MediumGray = 0xFF817066,
+
+            // The following will not be good for people with defective color vision.
+            VividGreen = 0xFF007D34,
+            StrongPurplishPink = 0xFFF6768E,
+            StrongBlue = 0xFF00538A,
+            StrongYellowishPink = 0xFFFF7A5C,
+            StrongViolet = 0xFF53377A,
+            VividOrangeYellow = 0xFFFF8E00,
+            StrongPurplishRed = 0xFFB32851,
+            VividGreenishYellow = 0xFFF4C800,
+            StrongReddishBrown = 0xFF7F180D,
+            VividYellowishGreen = 0xFF93AA00,
+            DeepYellowishBrown = 0xFF593315,
+            VividReddishOrange = 0xFFF13A13,
+            DarkOliveGreen = 0xFF232C16
+        }
+
+        public static Color ColorFromUint(uint hexColor)
+        {
+            byte alpha = (byte)(hexColor >> 24);
+            byte red = (byte)(hexColor >> 16);
+            byte green = (byte)(hexColor >> 8);
+            byte blue = (byte)(hexColor >> 0);
+            return Color.FromArgb(alpha, red, green, blue);
+        }
+
         public static void HSV2RGB(float h, float s, float v, out float R, out float G, out float B)
         {
 

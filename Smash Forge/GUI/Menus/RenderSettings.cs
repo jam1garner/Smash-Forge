@@ -30,8 +30,8 @@ namespace Smash_Forge.GUI
             textParamDir.Text = Runtime.paramDir;
             RendererLabel.Text = "Renderer: " + Runtime.renderer;
             OpenGLVersionLabel.Text = "OpenGL Version: " + Runtime.GLSLVersion;
-            BackgroundGradient1.BackColor = Runtime.back1;
-            BackgroundGradient2.BackColor = Runtime.back2;
+            BackgroundGradient1.BackColor = Runtime.backgroundGradientTop;
+            BackgroundGradient2.BackColor = Runtime.backgroundGradientBottom;
 
             // Bone settings
             renderBonesCB.Checked = Runtime.renderBones;
@@ -820,8 +820,8 @@ namespace Smash_Forge.GUI
             ColorDialog colorDialog = new ColorDialog();
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                Runtime.back1 = Color.FromArgb(0xFF, colorDialog.Color);
-                BackgroundGradient1.BackColor = Runtime.back1;
+                Runtime.backgroundGradientTop = Color.FromArgb(0xFF, colorDialog.Color);
+                BackgroundGradient1.BackColor = Runtime.backgroundGradientTop;
             }
         }
 
@@ -830,8 +830,8 @@ namespace Smash_Forge.GUI
             ColorDialog colorDialog = new ColorDialog();
             if (colorDialog.ShowDialog() == DialogResult.OK)
             {
-                Runtime.back2 = Color.FromArgb(0xFF, colorDialog.Color);
-                BackgroundGradient2.BackColor = Runtime.back2;
+                Runtime.backgroundGradientBottom = Color.FromArgb(0xFF, colorDialog.Color);
+                BackgroundGradient2.BackColor = Runtime.backgroundGradientBottom;
             }
         }
     }

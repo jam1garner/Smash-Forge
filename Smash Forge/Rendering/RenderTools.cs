@@ -1105,14 +1105,14 @@ namespace Smash_Forge.Rendering
             }
     
             GL.Begin(PrimitiveType.Quads);
-            GL.Color3(Runtime.back1);
+            GL.Color3(Runtime.backgroundGradientTop);
             GL.TexCoord2(2, 2);
             GL.Vertex2(1.0, 1.0);
 
             GL.TexCoord2(0, 2);
             GL.Vertex2(-1.0, 1.0);
 
-            GL.Color3(Runtime.back2);
+            GL.Color3(Runtime.backgroundGradientBottom);
 
             GL.TexCoord2(0, 0);
             GL.Vertex2(-1.0, -1.0);
