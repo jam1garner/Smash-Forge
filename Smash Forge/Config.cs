@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.Xml;
-using OpenTK.Graphics.OpenGL;
-using SALT.PARAMS;
 
 namespace Smash_Forge
 {
@@ -100,24 +95,10 @@ namespace Smash_Forge
                         float.TryParse(node.InnerText, out Runtime.fov);
                         break;
                     case "back_gradient_top":
-                        try
-                        {
-                            Runtime.backgroundGradientTop = ColorTranslator.FromHtml(node.InnerText);
-                        }
-                        catch (Exception)
-                        {
-
-                        }
+                        TryParseHexColor(node, ref Runtime.backgroundGradientTop);
                         break;
                     case "back_gradient_bottom":
-                        try
-                        {
-                            Runtime.backgroundGradientBottom = ColorTranslator.FromHtml(node.InnerText);
-                        }
-                        catch (Exception)
-                        {
-
-                        }
+                        TryParseHexColor(node, ref Runtime.backgroundGradientBottom);
                         break;
                     case "type":
                         if (node.ParentNode != null && node.ParentNode.Name.Equals("RENDERSETTINGS"))
@@ -244,28 +225,47 @@ namespace Smash_Forge
                         int.TryParse(node.InnerText, out Runtime.hurtboxAlpha);
                         break;
                     case "hitbox_angles_color":
-                        try
-                        {
-                            Runtime.hitboxAnglesColor = ColorTranslator.FromHtml(node.InnerText);
-                        }
-                        catch (Exception)
-                        {
-
-                        }
+                        TryParseHexColor(node, ref Runtime.hitboxAnglesColor);
                         break;
-                    case "hurtbox_color": try { Runtime.hurtboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
-                    case "hurtbox_color_hi": try { Runtime.hurtboxColorHi = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
-                    case "hurtbox_color_med": try { Runtime.hurtboxColorMed = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
-                    case "hurtbox_color_low": try { Runtime.hurtboxColorLow = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
-                    case "hurtbox_color_selected": try { Runtime.hurtboxColorSelected = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
-                    case "windbox_color": try { Runtime.windboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
-                    case "grabbox_color": try { Runtime.grabboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
-                    case "searchbox_color": try { Runtime.searchboxColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
-                    case "counterBubble_color": try { Runtime.counterBubbleColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
-                    case "reflectBubble_color": try { Runtime.reflectBubbleColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
-                    case "shieldBubble_color": try { Runtime.shieldBubbleColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
-                    case "absorbBubble_color": try { Runtime.absorbBubbleColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
-                    case "wtSlowdownBubble_color": try { Runtime.wtSlowdownBubbleColor = ColorTranslator.FromHtml(node.InnerText); } catch (Exception) { } break;
+                    case "hurtbox_color":
+                        TryParseHexColor(node, ref Runtime.hurtboxColor);
+                        break;
+                    case "hurtbox_color_hi":
+                        TryParseHexColor(node, ref Runtime.hurtboxColorHi);
+                        break;
+                    case "hurtbox_color_med":
+                        TryParseHexColor(node, ref Runtime.hurtboxColorMed);
+                        break;
+                    case "hurtbox_color_low":
+                        TryParseHexColor(node, ref Runtime.hurtboxColorLow);
+                        break;
+                    case "hurtbox_color_selected":
+                        TryParseHexColor(node, ref Runtime.hurtboxColorSelected);
+                        break;
+                    case "windbox_color":
+                        TryParseHexColor(node, ref Runtime.windboxColor);
+                        break;
+                    case "grabbox_color":
+                        TryParseHexColor(node, ref Runtime.grabboxColor);
+                        break;
+                    case "searchbox_color":
+                        TryParseHexColor(node, ref Runtime.searchboxColor);
+                        break;
+                    case "counterBubble_color":
+                        TryParseHexColor(node, ref Runtime.counterBubbleColor);
+                        break;
+                    case "reflectBubble_color":
+                        TryParseHexColor(node, ref Runtime.reflectBubbleColor);
+                        break;
+                    case "shieldBubble_color":
+                        TryParseHexColor(node, ref Runtime.shieldBubbleColor);
+                        break;
+                    case "absorbBubble_color":
+                        TryParseHexColor(node, ref Runtime.absorbBubbleColor);
+                        break;
+                    case "wtSlowdownBubble_color":
+                        TryParseHexColor(node, ref Runtime.wtSlowdownBubbleColor);
+                        break;
 
                     //Discord Stuff
                     case "image_key_mode":
@@ -328,6 +328,20 @@ namespace Smash_Forge
             }
         }
 
+        private static bool TryParseHexColor(XmlNode node, ref Color color)
+        {
+            try
+            {
+                color = ColorTranslator.FromHtml(node.InnerText);
+                return true;
+            }
+            catch (Exception)
+            {
+                // Invalid hex format.
+                return false;
+            }
+        }
+
         public static void Save()
         {
             EnsureHitboxColors();
@@ -343,24 +357,33 @@ namespace Smash_Forge
             doc.AppendChild(mainNode);
 
             string comment = @"
-                Config ENUMS
+            Config ENUMS
 
-                floor style
-                -Normal
-                -Solid
-                -Textured
+            Floor Style:
+            -Normal
+            -Solid
+            -Textured
 
-                for setting floor texture 
-                <texture>(texture location)</texture>
+            Setting the Floor Texture (must be .png):
+            <texture>(texture location)</texture>
 
-                render type
-                -Texture
-                -Normals
-                -NormalsBnW
-                -VertColor
-
-                for changing default texure
-                <default_texture>(texture location)</default_texture>";
+            Render Type:
+            -Shaded
+            -Normals
+            -Lighting
+            -Diffuse Maps
+            -Normal Maps
+            -Vertex Color
+            -Ambient Occlusion
+            -UV Coords
+            -UV Test Pattern
+            -Tangents
+            -Bitangents
+            -Light Set
+            -Bone Weights
+                
+            Changing the Default Texture:
+            <default_texture>(texture location)</default_texture>";
 
             XmlComment enumComment = doc.CreateComment(comment);
             mainNode.AppendChild(enumComment);
@@ -374,104 +397,9 @@ namespace Smash_Forge
             viewportNode.AppendChild(createNode(doc, "zoom_modifier_multiplier", Runtime.zoomModifierScale.ToString()));
             viewportNode.AppendChild(createNode(doc, "fov", Runtime.fov.ToString()));
             viewportNode.AppendChild(createNode(doc, "render_depth", Runtime.renderDepth.ToString()));
-            viewportNode.AppendChild(createNode(doc, "render_background", Runtime.renderBackGround.ToString()));
-            viewportNode.AppendChild(createNode(doc, "back_gradient_top", ColorTranslator.ToHtml(Runtime.backgroundGradientTop)));
-            viewportNode.AppendChild(createNode(doc, "back_gradient_bottom", ColorTranslator.ToHtml(Runtime.backgroundGradientBottom)));
+            AppendBackgroundSettings(doc, viewportNode);
 
-            XmlNode renderSettingsNode = doc.CreateElement("RENDERSETTINGS");
-            mainNode.AppendChild(renderSettingsNode);
-            renderSettingsNode.AppendChild(createNode(doc, "type", Runtime.renderType.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_vertex_color", Runtime.renderVertColor.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_alpha", Runtime.renderAlpha.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "camera_light", Runtime.cameraLight.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "OpenGL_2.10", Runtime.useLegacyShaders.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "use_normal_map", Runtime.renderNormalMap.ToString()));
-
-            XmlNode lightingNode = doc.CreateElement("lighting");
-            renderSettingsNode.AppendChild(lightingNode);
-            lightingNode.AppendChild(createNode(doc, "enabled", Runtime.renderMaterialLighting.ToString()));
-            lightingNode.AppendChild(createNode(doc, "render_diffuse", Runtime.renderDiffuse.ToString()));
-            lightingNode.AppendChild(createNode(doc, "render_specular", Runtime.renderSpecular.ToString()));
-            lightingNode.AppendChild(createNode(doc, "render_fresnel", Runtime.renderFresnel.ToString()));
-            lightingNode.AppendChild(createNode(doc, "render_reflection", Runtime.renderReflection.ToString()));
-
-            XmlNode diffuseNode = doc.CreateElement("diffuse");
-            renderSettingsNode.AppendChild(diffuseNode);
-            diffuseNode.AppendChild(createNode(doc, "enabled", Runtime.renderDiffuse.ToString()));
-            diffuseNode.AppendChild(createNode(doc, "intensity", Runtime.difIntensity.ToString()));
-
-            XmlNode specularNode = doc.CreateElement("specular");
-            renderSettingsNode.AppendChild(specularNode);
-            specularNode.AppendChild(createNode(doc, "enabled", Runtime.renderSpecular.ToString()));
-            specularNode.AppendChild(createNode(doc, "intensity", Runtime.spcIntentensity.ToString()));
-
-            XmlNode fresnelNode = doc.CreateElement("fresnel");
-            renderSettingsNode.AppendChild(fresnelNode);
-            fresnelNode.AppendChild(createNode(doc, "enabled", Runtime.renderFresnel.ToString()));
-            fresnelNode.AppendChild(createNode(doc, "intensity", Runtime.frsIntensity.ToString()));
-
-            XmlNode reflectionNode = doc.CreateElement("reflection");
-            renderSettingsNode.AppendChild(reflectionNode);
-            reflectionNode.AppendChild(createNode(doc, "enabled", Runtime.renderReflection.ToString()));
-            reflectionNode.AppendChild(createNode(doc, "intensity", Runtime.refIntensity.ToString()));
-
-            XmlNode ambientNode = doc.CreateElement("ambient");
-            renderSettingsNode.AppendChild(ambientNode);
-            ambientNode.AppendChild(createNode(doc, "intensity", Runtime.ambItensity.ToString()));
-
-            XmlNode renderModelNode = doc.CreateElement("render_model");
-            renderSettingsNode.AppendChild(renderModelNode);
-            renderModelNode.AppendChild(createNode(doc, "enabled", Runtime.renderModel.ToString()));
-            renderModelNode.AppendChild(createNode(doc, "render_selection", Runtime.renderModelSelection.ToString()));
-            renderModelNode.AppendChild(createNode(doc, "render_wireframe", Runtime.renderModelWireframe.ToString()));
-            renderModelNode.AppendChild(createNode(doc, "render_bones", Runtime.renderBones.ToString()));
-            renderModelNode.AppendChild(createNode(doc, "render_bounding_boxes", Runtime.renderBoundingBox.ToString()));
-
-            renderSettingsNode.AppendChild(createNode(doc, "render_ECB", Runtime.renderECB.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_hurtboxes", Runtime.renderHurtboxes.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_hurtboxes_zone", Runtime.renderHurtboxesZone.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_hitboxes", Runtime.renderHitboxes.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_interpolated_hitboxes", Runtime.renderInterpolatedHitboxes.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_hitboxes_no_overlap", Runtime.renderHitboxesNoOverlap.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_hitboxes_mode", Runtime.hitboxRenderMode.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_hitbox_angles", Runtime.renderHitboxAngles.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_special_bubbles", Runtime.renderSpecialBubbles.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_ledge_grabboxes", Runtime.renderLedgeGrabboxes.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_reverse_ledge_grabboxes", Runtime.renderReverseLedgeGrabboxes.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_tether_ledge_grabboxes", Runtime.renderTetherLedgeGrabboxes.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "hitbox_alpha", Runtime.hitboxAlpha.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "hurtbox_alpha", Runtime.hurtboxAlpha.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "hurtbox_color", ColorTranslator.ToHtml(Runtime.hurtboxColor)));
-            renderSettingsNode.AppendChild(createNode(doc, "hurtbox_color_hi", ColorTranslator.ToHtml(Runtime.hurtboxColorHi)));
-            renderSettingsNode.AppendChild(createNode(doc, "hurtbox_color_med", ColorTranslator.ToHtml(Runtime.hurtboxColorMed)));
-            renderSettingsNode.AppendChild(createNode(doc, "hurtbox_color_low", ColorTranslator.ToHtml(Runtime.hurtboxColorLow)));
-            renderSettingsNode.AppendChild(createNode(doc, "hurtbox_color_selected", ColorTranslator.ToHtml(Runtime.hurtboxColorSelected)));
-            renderSettingsNode.AppendChild(createNode(doc, "hitbox_angles_color", ColorTranslator.ToHtml(Runtime.hitboxAnglesColor)));
-            renderSettingsNode.AppendChild(createNode(doc, "windbox_color", ColorTranslator.ToHtml(Runtime.windboxColor)));
-            renderSettingsNode.AppendChild(createNode(doc, "grabbox_color", ColorTranslator.ToHtml(Runtime.grabboxColor)));
-            renderSettingsNode.AppendChild(createNode(doc, "searchbox_color", ColorTranslator.ToHtml(Runtime.searchboxColor)));
-            renderSettingsNode.AppendChild(createNode(doc, "counterBubble_color", ColorTranslator.ToHtml(Runtime.counterBubbleColor)));
-            renderSettingsNode.AppendChild(createNode(doc, "reflectBubble_color", ColorTranslator.ToHtml(Runtime.reflectBubbleColor)));
-            renderSettingsNode.AppendChild(createNode(doc, "shieldBubble_color", ColorTranslator.ToHtml(Runtime.shieldBubbleColor)));
-            renderSettingsNode.AppendChild(createNode(doc, "absorbBubble_color", ColorTranslator.ToHtml(Runtime.absorbBubbleColor)));
-            renderSettingsNode.AppendChild(createNode(doc, "wtSlowdownBubble_color", ColorTranslator.ToHtml(Runtime.wtSlowdownBubbleColor)));
-            {
-                XmlNode node = doc.CreateElement("hitbox_kb_colors");
-                renderSettingsNode.AppendChild(node);
-                foreach (Color c in Runtime.hitboxKnockbackColors)
-                    node.AppendChild(createNode(doc, "color", ColorTranslator.ToHtml(c)));
-            }
-            {
-                XmlNode node = doc.CreateElement("hitbox_id_colors");
-                renderSettingsNode.AppendChild(node);
-                foreach (Color c in Runtime.hitboxIdColors)
-                    node.AppendChild(createNode(doc, "color", ColorTranslator.ToHtml(c)));
-            }
-
-            renderSettingsNode.AppendChild(createNode(doc, "render_path", Runtime.renderPath.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "render_indicators", Runtime.renderIndicators.ToString()));
-
-            AppendLvdRenderSettings(doc, renderSettingsNode);
+            AppendRenderSettings(doc, mainNode);
 
             XmlNode paramDirNode = doc.CreateElement("ETC");
             mainNode.AppendChild(paramDirNode);
@@ -481,10 +409,125 @@ namespace Smash_Forge
             return doc;
         }
 
-        private static void AppendFloorSettings(XmlDocument doc, XmlNode viewportNode)
+        private static void AppendBackgroundSettings(XmlDocument doc, XmlNode parentNode)
+        {
+            parentNode.AppendChild(createNode(doc, "render_background", Runtime.renderBackGround.ToString()));
+            parentNode.AppendChild(createNode(doc, "back_gradient_top", ColorTranslator.ToHtml(Runtime.backgroundGradientTop)));
+            parentNode.AppendChild(createNode(doc, "back_gradient_bottom", ColorTranslator.ToHtml(Runtime.backgroundGradientBottom)));
+        }
+
+        private static void AppendRenderSettings(XmlDocument doc, XmlNode parentNode)
+        {
+            XmlNode renderSettingsNode = doc.CreateElement("RENDERSETTINGS");
+            parentNode.AppendChild(renderSettingsNode);
+            renderSettingsNode.AppendChild(createNode(doc, "type", Runtime.renderType.ToString()));
+            renderSettingsNode.AppendChild(createNode(doc, "render_vertex_color", Runtime.renderVertColor.ToString()));
+            renderSettingsNode.AppendChild(createNode(doc, "render_alpha", Runtime.renderAlpha.ToString()));
+            renderSettingsNode.AppendChild(createNode(doc, "camera_light", Runtime.cameraLight.ToString()));
+            renderSettingsNode.AppendChild(createNode(doc, "use_normal_map", Runtime.renderNormalMap.ToString()));
+            renderSettingsNode.AppendChild(createNode(doc, "OpenGL_2.10", Runtime.useLegacyShaders.ToString()));
+
+            AppendMaterialLightingSettings(doc, renderSettingsNode);
+            AppendModelRenderSettings(doc, renderSettingsNode);
+            AppendHitBoxHurtBoxRenderSettings(doc, renderSettingsNode);
+            AppendLvdRenderSettings(doc, renderSettingsNode);
+
+            renderSettingsNode.AppendChild(createNode(doc, "render_path", Runtime.renderPath.ToString()));
+            renderSettingsNode.AppendChild(createNode(doc, "render_indicators", Runtime.renderIndicators.ToString()));
+        }
+
+        private static void AppendModelRenderSettings(XmlDocument doc, XmlNode parentNode)
+        {
+            XmlNode renderModelNode = doc.CreateElement("render_model");
+            parentNode.AppendChild(renderModelNode);
+            renderModelNode.AppendChild(createNode(doc, "enabled", Runtime.renderModel.ToString()));
+            renderModelNode.AppendChild(createNode(doc, "render_selection", Runtime.renderModelSelection.ToString()));
+            renderModelNode.AppendChild(createNode(doc, "render_wireframe", Runtime.renderModelWireframe.ToString()));
+            renderModelNode.AppendChild(createNode(doc, "render_bones", Runtime.renderBones.ToString()));
+            renderModelNode.AppendChild(createNode(doc, "render_bounding_boxes", Runtime.renderBoundingBox.ToString()));
+        }
+
+        private static void AppendMaterialLightingSettings(XmlDocument doc, XmlNode parentNode)
+        {
+            XmlNode lightingNode = doc.CreateElement("lighting");
+            parentNode.AppendChild(lightingNode);
+            lightingNode.AppendChild(createNode(doc, "enabled", Runtime.renderMaterialLighting.ToString()));
+            lightingNode.AppendChild(createNode(doc, "render_diffuse", Runtime.renderDiffuse.ToString()));
+            lightingNode.AppendChild(createNode(doc, "render_specular", Runtime.renderSpecular.ToString()));
+            lightingNode.AppendChild(createNode(doc, "render_fresnel", Runtime.renderFresnel.ToString()));
+            lightingNode.AppendChild(createNode(doc, "render_reflection", Runtime.renderReflection.ToString()));
+
+            XmlNode diffuseNode = doc.CreateElement("diffuse");
+            parentNode.AppendChild(diffuseNode);
+            diffuseNode.AppendChild(createNode(doc, "enabled", Runtime.renderDiffuse.ToString()));
+            diffuseNode.AppendChild(createNode(doc, "intensity", Runtime.difIntensity.ToString()));
+
+            XmlNode specularNode = doc.CreateElement("specular");
+            parentNode.AppendChild(specularNode);
+            specularNode.AppendChild(createNode(doc, "enabled", Runtime.renderSpecular.ToString()));
+            specularNode.AppendChild(createNode(doc, "intensity", Runtime.spcIntentensity.ToString()));
+
+            XmlNode fresnelNode = doc.CreateElement("fresnel");
+            parentNode.AppendChild(fresnelNode);
+            fresnelNode.AppendChild(createNode(doc, "enabled", Runtime.renderFresnel.ToString()));
+            fresnelNode.AppendChild(createNode(doc, "intensity", Runtime.frsIntensity.ToString()));
+
+            XmlNode reflectionNode = doc.CreateElement("reflection");
+            parentNode.AppendChild(reflectionNode);
+            reflectionNode.AppendChild(createNode(doc, "enabled", Runtime.renderReflection.ToString()));
+            reflectionNode.AppendChild(createNode(doc, "intensity", Runtime.refIntensity.ToString()));
+
+            XmlNode ambientNode = doc.CreateElement("ambient");
+            parentNode.AppendChild(ambientNode);
+            ambientNode.AppendChild(createNode(doc, "intensity", Runtime.ambItensity.ToString()));
+        }
+
+        private static void AppendHitBoxHurtBoxRenderSettings(XmlDocument doc, XmlNode parentNode)
+        {
+            parentNode.AppendChild(createNode(doc, "render_ECB", Runtime.renderECB.ToString()));
+            parentNode.AppendChild(createNode(doc, "render_hurtboxes", Runtime.renderHurtboxes.ToString()));
+            parentNode.AppendChild(createNode(doc, "render_hurtboxes_zone", Runtime.renderHurtboxesZone.ToString()));
+            parentNode.AppendChild(createNode(doc, "render_hitboxes", Runtime.renderHitboxes.ToString()));
+            parentNode.AppendChild(createNode(doc, "render_interpolated_hitboxes", Runtime.renderInterpolatedHitboxes.ToString()));
+            parentNode.AppendChild(createNode(doc, "render_hitboxes_no_overlap", Runtime.renderHitboxesNoOverlap.ToString()));
+            parentNode.AppendChild(createNode(doc, "render_hitboxes_mode", Runtime.hitboxRenderMode.ToString()));
+            parentNode.AppendChild(createNode(doc, "render_hitbox_angles", Runtime.renderHitboxAngles.ToString()));
+            parentNode.AppendChild(createNode(doc, "render_special_bubbles", Runtime.renderSpecialBubbles.ToString()));
+            parentNode.AppendChild(createNode(doc, "render_ledge_grabboxes", Runtime.renderLedgeGrabboxes.ToString()));
+            parentNode.AppendChild(createNode(doc, "render_reverse_ledge_grabboxes", Runtime.renderReverseLedgeGrabboxes.ToString()));
+            parentNode.AppendChild(createNode(doc, "render_tether_ledge_grabboxes", Runtime.renderTetherLedgeGrabboxes.ToString()));
+            parentNode.AppendChild(createNode(doc, "hitbox_alpha", Runtime.hitboxAlpha.ToString()));
+            parentNode.AppendChild(createNode(doc, "hurtbox_alpha", Runtime.hurtboxAlpha.ToString()));
+            parentNode.AppendChild(createNode(doc, "hurtbox_color", ColorTranslator.ToHtml(Runtime.hurtboxColor)));
+            parentNode.AppendChild(createNode(doc, "hurtbox_color_hi", ColorTranslator.ToHtml(Runtime.hurtboxColorHi)));
+            parentNode.AppendChild(createNode(doc, "hurtbox_color_med", ColorTranslator.ToHtml(Runtime.hurtboxColorMed)));
+            parentNode.AppendChild(createNode(doc, "hurtbox_color_low", ColorTranslator.ToHtml(Runtime.hurtboxColorLow)));
+            parentNode.AppendChild(createNode(doc, "hurtbox_color_selected", ColorTranslator.ToHtml(Runtime.hurtboxColorSelected)));
+            parentNode.AppendChild(createNode(doc, "hitbox_angles_color", ColorTranslator.ToHtml(Runtime.hitboxAnglesColor)));
+            parentNode.AppendChild(createNode(doc, "windbox_color", ColorTranslator.ToHtml(Runtime.windboxColor)));
+            parentNode.AppendChild(createNode(doc, "grabbox_color", ColorTranslator.ToHtml(Runtime.grabboxColor)));
+            parentNode.AppendChild(createNode(doc, "searchbox_color", ColorTranslator.ToHtml(Runtime.searchboxColor)));
+            parentNode.AppendChild(createNode(doc, "counterBubble_color", ColorTranslator.ToHtml(Runtime.counterBubbleColor)));
+            parentNode.AppendChild(createNode(doc, "reflectBubble_color", ColorTranslator.ToHtml(Runtime.reflectBubbleColor)));
+            parentNode.AppendChild(createNode(doc, "shieldBubble_color", ColorTranslator.ToHtml(Runtime.shieldBubbleColor)));
+            parentNode.AppendChild(createNode(doc, "absorbBubble_color", ColorTranslator.ToHtml(Runtime.absorbBubbleColor)));
+            parentNode.AppendChild(createNode(doc, "wtSlowdownBubble_color", ColorTranslator.ToHtml(Runtime.wtSlowdownBubbleColor)));
+
+            XmlNode hitboxKbColorNode = doc.CreateElement("hitbox_kb_colors");
+            parentNode.AppendChild(hitboxKbColorNode);
+            foreach (Color color in Runtime.hitboxKnockbackColors)
+                hitboxKbColorNode.AppendChild(createNode(doc, "color", ColorTranslator.ToHtml(color)));
+
+            XmlNode hitboxIdColorNode = doc.CreateElement("hitbox_id_colors");
+            parentNode.AppendChild(hitboxIdColorNode);
+            foreach (Color color in Runtime.hitboxIdColors)
+                hitboxIdColorNode.AppendChild(createNode(doc, "color", ColorTranslator.ToHtml(color)));
+        }
+
+        private static void AppendFloorSettings(XmlDocument doc, XmlNode parentNode)
         {
             XmlNode floorNode = doc.CreateElement("floor");
-            viewportNode.AppendChild(floorNode);
+            parentNode.AppendChild(floorNode);
             floorNode.AppendChild(createNode(doc, "enabled", Runtime.renderFloor.ToString()));
             floorNode.AppendChild(createNode(doc, "style", Runtime.floorStyle.ToString()));
             floorNode.AppendChild(createNode(doc, "color", ColorTranslator.ToHtml(Runtime.floorColor)));
@@ -493,10 +536,10 @@ namespace Smash_Forge
                 floorNode.AppendChild(createNode(doc, "texture", Runtime.FloorURL));
         }
 
-        private static void AppendLvdRenderSettings(XmlDocument doc, XmlNode renderSettingsNode)
+        private static void AppendLvdRenderSettings(XmlDocument doc, XmlNode parentNode)
         {
             XmlNode lvdRenderSettingsNode = doc.CreateElement("render_LVD");
-            renderSettingsNode.AppendChild(lvdRenderSettingsNode);
+            parentNode.AppendChild(lvdRenderSettingsNode);
             lvdRenderSettingsNode.AppendChild(createNode(doc, "enabled", Runtime.renderLVD.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_collisions", Runtime.renderCollisions.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_collision_normals", Runtime.renderCollisionNormals.ToString()));
@@ -509,7 +552,7 @@ namespace Smash_Forge
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_swagZ", Runtime.renderSwagZ.ToString()));
         }
 
-        private static void AppendDiscordSettings(XmlDocument doc, XmlNode mainNode)
+        private static void AppendDiscordSettings(XmlDocument doc, XmlNode parentNode)
         {
             XmlNode discordNode = doc.CreateElement("DISCORDSETTINGS");
             discordNode.AppendChild(createNode(doc, "image_key_mode", ((int)DiscordSettings.imageKeyMode).ToString()));
@@ -518,7 +561,7 @@ namespace Smash_Forge
             discordNode.AppendChild(createNode(doc, "user_mod_name", DiscordSettings.userNamedMod));
             discordNode.AppendChild(createNode(doc, "show_current_window", DiscordSettings.showCurrentWindow.ToString()));
             discordNode.AppendChild(createNode(doc, "show_time_elapsed", DiscordSettings.showTimeElapsed.ToString()));
-            mainNode.AppendChild(discordNode);
+            parentNode.AppendChild(discordNode);
         }
 
         public static XmlNode createNode(XmlDocument doc, string el, string v)
