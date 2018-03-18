@@ -1025,27 +1025,28 @@ namespace Smash_Forge
             GL.LineWidth(5f);
             GL.Begin(PrimitiveType.Lines);
             GL.Color4(Runtime.hitboxAnglesColor);
-            if (h.Angle <= 360)
-            {
-                //draws a straight line segment of the hitbox angle for angles <= 360
-                GL.Vertex3(h.va);
-                GL.Vertex3(h.va + Vector3.Transform(new Vector3(0, 0, h.Size), Matrix3.CreateRotationX((float)(90 * (1 - direction) - direction * h.Angle) * ((float)Math.PI / 180f))));
-            }
-            else if (h.Angle == 361)
+            if (h.Angle == 361)
             {
                 //draws a "+" sign for 361 angles (Sakurai angles)
                 GL.Vertex3(h.va - new Vector3(0, 0, h.Size / 2));
                 GL.Vertex3(h.va + new Vector3(0, 0, h.Size / 2));
                 GL.Vertex3(h.va - new Vector3(0, h.Size / 2, 0));
                 GL.Vertex3(h.va + new Vector3(0, h.Size / 2, 0));
+                
             }
-            else
+            else if (h.Angle == 363 || (h.Angle >= 365 && h.Angle <= 367))
             {
-                //draws a "x" sign for >361 angles (autolink angles)
+                //draws a "x" sign for Autolink angles and the 363 angle (usage unknown)
                 GL.Vertex3(h.va - Vector3.Transform(new Vector3(0, 0, h.Size / 2), Matrix3.CreateRotationX(45f * (float)Math.PI / 180f)));
                 GL.Vertex3(h.va + Vector3.Transform(new Vector3(0, 0, h.Size / 2), Matrix3.CreateRotationX(45f * (float)Math.PI / 180f)));
                 GL.Vertex3(h.va - Vector3.Transform(new Vector3(0, 0, h.Size / 2), Matrix3.CreateRotationX(-45f * (float)Math.PI / 180f)));
                 GL.Vertex3(h.va + Vector3.Transform(new Vector3(0, 0, h.Size / 2), Matrix3.CreateRotationX(-45f * (float)Math.PI / 180f)));
+            }
+            else
+            {
+                //draws a straight line segment of the hitbox angle for non-special angles
+                GL.Vertex3(h.va);
+                GL.Vertex3(h.va + Vector3.Transform(new Vector3(0, 0, h.Size), Matrix3.CreateRotationX((float)(90 * (1 - direction) - direction * h.Angle) * ((float)Math.PI / 180f))));
             }
             GL.End();
         }
