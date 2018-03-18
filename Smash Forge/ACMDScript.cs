@@ -1034,9 +1034,9 @@ namespace Smash_Forge
                 GL.Vertex3(h.va + new Vector3(0, h.Size / 2, 0));
                 
             }
-            else if (h.Angle == 363 || (h.Angle >= 365 && h.Angle <= 367))
+            else if (h.Angle == 362 || h.Angle == 363 || (h.Angle >= 365 && h.Angle <= 367))
             {
-                //draws a "x" sign for Autolink angles and the 363 angle (usage unknown)
+                //draws a "x" sign for other special angles
                 GL.Vertex3(h.va - Vector3.Transform(new Vector3(0, 0, h.Size / 2), Matrix3.CreateRotationX(45f * (float)Math.PI / 180f)));
                 GL.Vertex3(h.va + Vector3.Transform(new Vector3(0, 0, h.Size / 2), Matrix3.CreateRotationX(45f * (float)Math.PI / 180f)));
                 GL.Vertex3(h.va - Vector3.Transform(new Vector3(0, 0, h.Size / 2), Matrix3.CreateRotationX(-45f * (float)Math.PI / 180f)));
