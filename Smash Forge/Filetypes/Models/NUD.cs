@@ -899,39 +899,6 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute(uniformName), hasParam);
         }
 
-        
-        public void RenderShadow(Matrix4 lightMatrix, Matrix4 view, Matrix4 modelMatrix)
-        {
-            // simple passthrough vertex render for shadow mapping
-            Shader shader = Runtime.shaders["Shadow"];
-
-            GL.UseProgram(shader.programID);
-
-            GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
-            GL.UniformMatrix4(shader.getAttribute("eyeview"), false, ref view);
-            GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
-
-            shader.enableAttrib();
-            foreach(Mesh m in Nodes)
-            {
-                foreach(Polygon p in m.Nodes)
-                {
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-                    //GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
-                    GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
-
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
-                    //GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-
-                    GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
-                }
-            }
-            shader.disableAttrib();
-
-            GL.UseProgram(0);
-        }
-
         public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)
         {
             Shader shader = Runtime.shaders["Point"];

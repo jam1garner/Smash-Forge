@@ -36,7 +36,7 @@ namespace Smash_Forge
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
         // Shadow map
-        int sfb, sw = 512, sh = 512, depthmap, hdrFBO;
+        int depthMapFBO, depthMapWidth = 512, depthMapHeight = 512, depthMapTex, hdrFBO;
 
         // Functions of Viewer
         public enum Mode
@@ -241,6 +241,17 @@ namespace Smash_Forge
             draw = MeshList.filesTreeView.Nodes;
 
             RenderTools.Setup();
+
+            // Setup Depth Map
+            GL.GenFramebuffers(1, out depthMapFBO);
+            GL.GenTextures(1, out depthMapTex);
+            GL.BindTexture(TextureTarget.Texture2D, depthMapTex);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, depthMapWidth, depthMapHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, depthMapFBO);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthMapTex, 0);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
         public ModelViewport(string filename) : this()
@@ -1259,24 +1270,15 @@ namespace Smash_Forge
             //vertexTool.Show();
         }
 
-        #region Rendering
-
         private void Render(object sender, PaintEventArgs e)
         {
             if (!ReadyToRender)
                 return;
 
-            // Setup viewport. 
-            glViewport.MakeCurrent();
-            GL.LoadIdentity();
-            GL.Viewport(glViewport.ClientRectangle);
-
+            SetupViewport();
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-            
-            // Use fixed function pipeline for drawing background and floor grid
-            GL.UseProgram(0);
 
             // Return early to avoid rendering other stuff. 
             if (MeshList.filesTreeView.SelectedNode != null)
@@ -1295,20 +1297,16 @@ namespace Smash_Forge
 
             if (Runtime.renderBackGround)
             {
-                // Background uses different matrices
-                GL.MatrixMode(MatrixMode.Modelview);
-                GL.LoadIdentity();
-                GL.MatrixMode(MatrixMode.Projection);
-                GL.LoadIdentity();
-
-                RenderTools.RenderBackground();
+                Vector3 topColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
+                Vector3 bottomColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
+                RenderTools.DrawQuadGradient(topColor, bottomColor);
             }
 
             // Camera Update
             // -------------------------------------------------------------
             GL.MatrixMode(MatrixMode.Projection);
             if (glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
-             && glViewport.Focused 
+             && glViewport.Focused
              && (CurrentMode == Mode.Normal || (CurrentMode == Mode.Photoshoot && !freezeCamera))
              && !TransformTool.hit)
             {
@@ -1318,55 +1316,67 @@ namespace Smash_Forge
             {
                 if (OpenTK.Input.Mouse.GetState() != null)
                     camera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
-            } catch
+            }
+            catch
             {
 
             }
 
-            if(cameraPosForm != null)
+            if (cameraPosForm != null)
                 cameraPosForm.ApplyCameraAnimation(camera, animationTrackBar.Value);
-            
-            Matrix4 matrix = camera.mvpMatrix;
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref matrix);
 
             if (Runtime.renderFloor)
-                RenderTools.drawFloor();
+                RenderTools.DrawFloor(camera.mvpMatrix);
 
-            if (Runtime.drawModelShadow)           
-                DrawModelShadow(matrix);
-            
             // Allow disabling depth testing for experimental 2D rendering. 
             if (Runtime.useDepthTest)
             {
                 GL.Enable(EnableCap.DepthTest);
                 GL.DepthFunc(DepthFunction.Lequal);
             }
-
             else
                 GL.Disable(EnableCap.DepthTest);
 
             GL.Enable(EnableCap.DepthTest);
 
             // Models
+            DrawModels();
+
+            RenderTools.SetupFixedFunctionRendering();
+
+            // Bounding boxes should not render on top.
+            if (Runtime.drawAreaLightBoundingBoxes)
+                DrawAreaLightBoundingBoxes();
+
+            DrawOverlays();
+
+            GL.PopAttrib();
+            glViewport.SwapBuffers();
+        }
+
+        private void SetupViewport()
+        {
+            glViewport.MakeCurrent();
+            GL.LoadIdentity();
+            GL.Viewport(glViewport.ClientRectangle);
+        }
+
+        private void DrawModels()
+        {
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
-                    if(m is ModelContainer)
+                    if (m is ModelContainer)
                         ((ModelContainer)m).Render(camera, 0, Matrix4.Zero, camera.mvpMatrix);
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)
                     if (m is ModelContainer)
                         ((ModelContainer)m).RenderPoints(camera);
+        }
 
-            // use fixed function pipeline again for area lights, lvd, bones, hitboxes, etc
-            RenderTools.SetupFixedFunctionRendering();
-
-            // area light bounding boxes should intersect stage geometry and not render on top
-            if (Runtime.drawAreaLightBoundingBoxes)
-                DrawAreaLightBoundingBoxes();
-
-            // clear depth buffer so stuff will render on top of the models
+        private void DrawOverlays()
+        {
+            // Clearing the depth buffer allows stuff to render on top of the models.
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             if (Runtime.renderLVD)
@@ -1383,100 +1393,17 @@ namespace Smash_Forge
                 ParamManager.RenderHurtboxes(Frame, scriptId, ACMDScript, ((ModelContainer)draw[0]).GetVBN());
             }
 
-            if (ACMDScript!=null && draw.Count > 0 && (draw[0] is ModelContainer))
+            if (ACMDScript != null && draw.Count > 0 && (draw[0] is ModelContainer))
                 ACMDScript.Render(((ModelContainer)draw[0]).GetVBN());
 
-            // Bone Transform Tool
             if (ViewComboBox.SelectedIndex == 2)
             {
-                if (modeBone.Checked)
-                {
-                    TransformTool.Render(camera, new Ray(camera, glViewport));
-                    if (TransformTool.state == 1)
-                        CurrentMode = Mode.Selection;
-                    else
-                        CurrentMode = Mode.Normal;
-                }
-
-                if (TransformTool.HasChanged())
-                {
-                    if(Animation != null && TransformTool.b != null)
-                    {
-                        // get the node group for the current bone in animation
-                        Animation.KeyNode ThisNode = null;
-                        foreach (Animation.KeyNode node in Animation.Bones)
-                        {
-                            if (node.Text.Equals(TransformTool.b.Text))
-                            {
-                                // found
-                                ThisNode = node;
-                                break;
-                            }
-                        }
-                        if(ThisNode == null)
-                        {
-                            ThisNode = new Animation.KeyNode(TransformTool.b.Text);
-                            Animation.Bones.Add(ThisNode);
-                        }
-
-                        // update or add the key frame
-                        ThisNode.SetKeyFromBone((float)currentFrame.Value, TransformTool.b);
-                    }
-                }
+                DrawBoneTransformTool();
             }
-                
 
-            // Mouse selection
-            // -------------------------------------------------------------
             if (ViewComboBox.SelectedIndex == 1)
             {
-                try
-                {
-                    if (CurrentMode == Mode.Normal && OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
-                    {
-                        CurrentMode = Mode.Selection;
-                        Vector2 m = GetMouseOnViewport();
-                        sx1 = m.X;
-                        sy1 = m.Y;
-                    }
-                }
-                catch
-                {
-
-                }
-                if (CurrentMode == Mode.Selection)
-                {
-                    if (!OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
-                    {
-                        checkSelect();
-                        CurrentMode = Mode.Normal;
-                    }
-
-                    GL.MatrixMode(MatrixMode.Modelview);
-                    GL.PushMatrix();
-                    GL.LoadIdentity();
-
-                    Vector2 m = GetMouseOnViewport();
-                    GL.Color3(Color.Black);
-                    GL.LineWidth(2f);
-                    GL.Begin(PrimitiveType.LineLoop);
-                    GL.Vertex2(sx1, sy1);
-                    GL.Vertex2(m.X, sy1);
-                    GL.Vertex2(m.X, m.Y);
-                    GL.Vertex2(sx1, m.Y);
-                    GL.End();
-
-                    GL.Color3(Color.White);
-                    GL.LineWidth(1f);
-                    GL.Begin(PrimitiveType.LineLoop);
-                    GL.Vertex2(sx1, sy1);
-                    GL.Vertex2(m.X, sy1);
-                    GL.Vertex2(m.X, m.Y);
-                    GL.Vertex2(sx1, m.Y);
-                    GL.End();
-                    GL.PopMatrix();
-                }
-
+                MouseSelectionStuff();
             }
 
             if (CurrentMode == Mode.Photoshoot)
@@ -1488,12 +1415,96 @@ namespace Smash_Forge
                     ShootY = glViewport.PointToClient(Cursor.Position).Y;
                     freezeCamera = true;
                 }
-                // Hold on to your pants, boys
                 RenderTools.DrawPhotoshoot(glViewport, ShootX, ShootY, ShootWidth, ShootHeight);
             }
+        }
 
-            GL.PopAttrib();
-            glViewport.SwapBuffers();
+        private void MouseSelectionStuff()
+        {
+            try
+            {
+                if (CurrentMode == Mode.Normal && OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
+                {
+                    CurrentMode = Mode.Selection;
+                    Vector2 m = GetMouseOnViewport();
+                    sx1 = m.X;
+                    sy1 = m.Y;
+                }
+            }
+            catch
+            {
+
+            }
+            if (CurrentMode == Mode.Selection)
+            {
+                if (!OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
+                {
+                    checkSelect();
+                    CurrentMode = Mode.Normal;
+                }
+
+                GL.MatrixMode(MatrixMode.Modelview);
+                GL.PushMatrix();
+                GL.LoadIdentity();
+
+                Vector2 m = GetMouseOnViewport();
+                GL.Color3(Color.Black);
+                GL.LineWidth(2f);
+                GL.Begin(PrimitiveType.LineLoop);
+                GL.Vertex2(sx1, sy1);
+                GL.Vertex2(m.X, sy1);
+                GL.Vertex2(m.X, m.Y);
+                GL.Vertex2(sx1, m.Y);
+                GL.End();
+
+                GL.Color3(Color.White);
+                GL.LineWidth(1f);
+                GL.Begin(PrimitiveType.LineLoop);
+                GL.Vertex2(sx1, sy1);
+                GL.Vertex2(m.X, sy1);
+                GL.Vertex2(m.X, m.Y);
+                GL.Vertex2(sx1, m.Y);
+                GL.End();
+                GL.PopMatrix();
+            }
+        }
+
+        private void DrawBoneTransformTool()
+        {
+            if (modeBone.Checked)
+            {
+                TransformTool.Render(camera, new Ray(camera, glViewport));
+                if (TransformTool.state == 1)
+                    CurrentMode = Mode.Selection;
+                else
+                    CurrentMode = Mode.Normal;
+            }
+
+            if (TransformTool.HasChanged())
+            {
+                if (Animation != null && TransformTool.b != null)
+                {
+                    // get the node group for the current bone in animation
+                    Animation.KeyNode ThisNode = null;
+                    foreach (Animation.KeyNode node in Animation.Bones)
+                    {
+                        if (node.Text.Equals(TransformTool.b.Text))
+                        {
+                            // found
+                            ThisNode = node;
+                            break;
+                        }
+                    }
+                    if (ThisNode == null)
+                    {
+                        ThisNode = new Animation.KeyNode(TransformTool.b.Text);
+                        Animation.Bones.Add(ThisNode);
+                    }
+
+                    // update or add the key frame
+                    ThisNode.SetKeyFromBone((float)currentFrame.Value, TransformTool.b);
+                }
+            }
         }
 
         private void glViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
@@ -1551,32 +1562,9 @@ namespace Smash_Forge
                 string[] nudFileNames = Directory.GetFiles(modelPath, "*.nud", SearchOption.AllDirectories);
                 foreach (string nudFile in nudFileNames)
                 {
-                    Debug.WriteLine(nudFile);
-                    /*ModelContainer modelContainer = new ModelContainer();
-                    BatchRenderTools.LoadNextNud(nudFile, modelContainer);
-                    BatchRenderTools.LoadNextNut(nudFile, modelContainer);
-                    BatchRenderTools.LoadNextVbn(nudFile, modelContainer);
-                    BatchRenderTools.LoadNextXmb(nudFile, modelContainer);
-                    MeshList.filesTreeView.Nodes.Add(modelContainer);*/
-
                     RenderModel(nudFile, sourcePath, outputPath);
                 }
             }
-
-
-            // Setup and render the stage.
-            /*SetupNextRender();
-            string stageName = FormatFileName(stageFolder, sourcePath);
-            SaveScreenRender(outputPath + "\\" + stageName + ".png");
-
-            // Clear all the models and nodes. 
-            foreach (NUT nut in Runtime.TextureContainers)
-                nut.Destroy();
-            Runtime.TextureContainers.Clear();
-
-            foreach (ModelContainer modelContainer in MeshList.filesTreeView.Nodes)
-                modelContainer.Destroy();
-            MeshList.filesTreeView.Nodes.Clear();*/
         }
 
         private void SaveScreenRender(string outputPath)
@@ -1644,25 +1632,6 @@ namespace Smash_Forge
             }
         }
 
-        private void DrawModelShadow(Matrix4 matrix)
-        {
-            CalculateLightSource();
-            // update light matrix and setup shadowmap rendering
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadMatrix(ref lightMatrix);
-            GL.Enable(EnableCap.DepthTest);
-            GL.Viewport(0, 0, sw, sh);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, sfb);
-
-            foreach (ModelContainer m in draw)
-                m.RenderShadow(camera, 0, Matrix4.Zero, camera.mvpMatrix);
-
-            // reset matrices and viewport for model rendering again
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.LoadMatrix(ref matrix);
-            GL.Viewport(glViewport.ClientRectangle);
-        }
-
         private void DrawUvsForSelectedTexture(NUT_Texture tex)
         {
             foreach (TreeNode node in MeshList.filesTreeView.Nodes)
@@ -1677,7 +1646,5 @@ namespace Smash_Forge
                 RenderTools.DrawUv(camera, m.NUD, textureHash, 4, Color.Red, 1, Color.White);
             }
         }
-        #endregion
-
     }
 }

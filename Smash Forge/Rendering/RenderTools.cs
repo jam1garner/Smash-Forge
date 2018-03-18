@@ -875,12 +875,13 @@ namespace Smash_Forge.Rendering
             GL.PopMatrix();
         }
 
-        public static void drawFloor()
+        public static void DrawFloor(Matrix4 mvpMatrix)
         {
-            bool solid = Runtime.floorStyle == Runtime.FloorStyle.Solid;
             float s = Runtime.floorSize;
 
             GL.UseProgram(0);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref mvpMatrix);
 
             // objects shouldn't show through opaque parts of floor
             GL.Enable(EnableCap.DepthTest);
@@ -917,7 +918,7 @@ namespace Smash_Forge.Rendering
                 GL.Disable(EnableCap.Texture2D);
             }
             else
-            if (solid)
+            if (Runtime.floorStyle == Runtime.FloorStyle.Solid)
             {
                 GL.Begin(PrimitiveType.Quads);
                 GL.Vertex3(-s, 0f, -s);
@@ -1088,22 +1089,7 @@ namespace Smash_Forge.Rendering
 
 
         public static void RenderBackground()
-        {
-            if (Runtime.floorStyle == Runtime.FloorStyle.Textured || Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
-            {
-                GL.Enable(EnableCap.Texture2D);
-                GL.ActiveTexture(TextureUnit.Texture0);
-                if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
-                    GL.BindTexture(TextureTarget.Texture2D, floorTexture);
-                else
-                    GL.BindTexture(TextureTarget.Texture2D, defaultTex);
-
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)Runtime.floorWrap);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)Runtime.floorWrap);
-
-                GL.Disable(EnableCap.Texture2D);
-            }
-    
+        {    
             GL.Begin(PrimitiveType.Quads);
             GL.Color3(Runtime.backgroundGradientTop);
             GL.TexCoord2(2, 2);

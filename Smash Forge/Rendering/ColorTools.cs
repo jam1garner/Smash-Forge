@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using OpenTK;
 
 namespace Smash_Forge
 {
@@ -40,6 +41,11 @@ namespace Smash_Forge
             byte green = (byte)(hexColor >> 8);
             byte blue = (byte)(hexColor >> 0);
             return Color.FromArgb(alpha, red, green, blue);
+        }
+
+        public static Vector4 Vector4FromColor(Color color)
+        {
+            return new Vector4(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
         }
 
         public static void HSV2RGB(float h, float s, float v, out float R, out float G, out float B)

@@ -225,7 +225,8 @@ namespace Smash_Forge
 
         public void Render(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix, bool specialWireFrame = false)
         {
-            if (!Checked) return;
+            if (!Checked)
+                return;
             Shader shader;
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NUD_Debug"];
@@ -352,13 +353,7 @@ namespace Smash_Forge
 
         public void RenderShadow(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix)
         {
-            // critical to clear depth buffer
-            GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            if (NUD != null)
-            {
-                NUD.RenderShadow(lightMatrix, camera.mvpMatrix, modelMatrix);
-            }
         }
 
         public void RenderBones()
