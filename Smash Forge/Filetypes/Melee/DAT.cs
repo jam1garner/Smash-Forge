@@ -77,7 +77,7 @@ namespace Smash_Forge
                 ShaderTools.CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
             }
 
-            Runtime.shaders["DAT"].displayCompilationWarning("DAT");
+            Runtime.shaders["DAT"].DisplayCompilationWarning("DAT");
         }
 
         ~DAT()
@@ -357,7 +357,7 @@ namespace Smash_Forge
 
             facedata = face.ToArray();
 
-            if (Runtime.shaders["DAT"].shadersCompiledSuccessfully())
+            if (Runtime.shaders["DAT"].CompiledSuccessfully())
                 SetupShader();
         }
 

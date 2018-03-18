@@ -28,8 +28,8 @@ namespace Smash_Forge
                 ShaderTools.CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
             }
 
-            Runtime.shaders["NUD"].displayCompilationWarning("NUD");
-            Runtime.shaders["NUD_Debug"].displayCompilationWarning("NUD_Debug");
+            Runtime.shaders["NUD"].DisplayCompilationWarning("NUD");
+            Runtime.shaders["NUD_Debug"].DisplayCompilationWarning("NUD_Debug");
 
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out ibo_elements);

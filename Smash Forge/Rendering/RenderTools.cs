@@ -121,7 +121,6 @@ namespace Smash_Forge.Rendering
             GL.End();
         }
 
-
         #region Taken from Brawllib render TKContext.cs
         public static void drawSphere(Vector3 center, float radius, uint precision)
         {
@@ -1503,6 +1502,24 @@ namespace Smash_Forge.Rendering
             DrawScreenTriangle(shader);
         }
 
+        public static void DrawScreenQuad(int texture)
+        {
+            // Draws RGB and alpha channels of texture to screen quad.
+            Shader shader = Runtime.shaders["Screen_Quad"];
+            GL.UseProgram(shader.programID);
+
+            // Single texture uniform.
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            GL.Uniform1(shader.getAttribute("image"), 0);
+
+            // Draw full screen "quad" (big triangle)
+            DrawScreenTriangle(shader);
+        }
+
+
         public static void Setup2DRendering()
         {
             // Setup OpenGL settings for basic 2D rendering.
@@ -1540,7 +1557,6 @@ namespace Smash_Forge.Rendering
             GL.VertexAttribPointer(shader.getAttribute("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
             GL.EnableVertexAttribArray(0);
 
-            GL.Disable(EnableCap.DepthTest);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
         }
 

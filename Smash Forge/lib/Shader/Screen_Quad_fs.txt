@@ -1,0 +1,13 @@
+﻿#version 330
+in vec2 texCoord;
+
+uniform sampler2D image;
+
+out vec4 fragColor;
+
+void main()
+{   fragColor = vec4(0,0,0,1);
+    vec4 textureColor = texture(image, vec2(texCoord.x, texCoord.y)).rgba;
+
+    fragColor.rgb = textureColor.rgb;
+}

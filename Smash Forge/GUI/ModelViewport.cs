@@ -36,7 +36,7 @@ namespace Smash_Forge
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
         // Shadow map
-        int depthMapFBO, depthMapWidth = 512, depthMapHeight = 512, depthMapTex, hdrFBO;
+        int colorHdrFbo, depthMapWidth = 647, depthMapHeight = 715, colorHdrTex, hdrFBO;
 
         // Functions of Viewer
         public enum Mode
@@ -242,15 +242,22 @@ namespace Smash_Forge
 
             RenderTools.Setup();
 
-            // Setup Depth Map
-            GL.GenFramebuffers(1, out depthMapFBO);
-            GL.GenTextures(1, out depthMapTex);
-            GL.BindTexture(TextureTarget.Texture2D, depthMapTex);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, depthMapWidth, depthMapHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, depthMapFBO);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthMapTex, 0);
+            // Setup HDR Texture
+            GL.GenFramebuffers(1, out colorHdrFbo);
+            GL.GenTextures(1, out colorHdrTex);
+            GL.BindTexture(TextureTarget.Texture2D, colorHdrTex);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16, depthMapWidth, depthMapHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+
+            int depthRbo;
+            GL.GenRenderbuffers(1, out depthRbo);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthRbo);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, depthMapWidth, depthMapHeight);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, colorHdrTex, 0);
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, depthRbo);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
@@ -323,13 +330,16 @@ namespace Smash_Forge
         private void ModelViewport_Load(object sender, EventArgs e)
         {
             ReadyToRender = true;
-            //vertexTool.vp = this;
-            //Application.Idle += Application_Idle;
             var timer = new Timer();
             timer.Interval = 1000 / 120;
             timer.Tick += new EventHandler(Application_Idle);
             timer.Start();
 
+            InitializeLights();
+        }
+
+        private static void InitializeLights()
+        {
             for (int i = 0; i < LightTools.stageDiffuseLightSet.Length; i++)
             {
                 // should properly initialize these eventually
@@ -361,8 +371,6 @@ namespace Smash_Forge
                 glViewport.Invalidate();
             }
         }
-
-        #region Picking
 
         public Vector2 GetMouseOnViewport()
         {
@@ -422,8 +430,6 @@ namespace Smash_Forge
                 _LastPoint = e.Location;
             }
         }
-
-        #endregion
 
         public void CalculateLightSource()
         {
@@ -567,8 +573,6 @@ namespace Smash_Forge
 
         #endregion
 
-        #region Camera Bar Functions
-
         private void ResetCamera_Click(object sender, EventArgs e)
         {
             // Frame the selected NUD or mesh based on the bounding spheres. Frame the NUD if nothing is selected. 
@@ -701,8 +705,6 @@ namespace Smash_Forge
             camera.Update();
         }
 
-        #endregion
-
         #region Moveset
 
         public void HandleACMD(string animname)
@@ -783,7 +785,6 @@ namespace Smash_Forge
                 }
             }
 
-            //Console.WriteLine("Handling " + animname);
             ACMDScript acmdScript = (ACMDScript)MovesetManager.Game.Scripts[crc];
             // Only update the script if it changed
             if (acmdScript != null)
@@ -986,13 +987,13 @@ namespace Smash_Forge
             return bmp;
         }
 
-        List<Bitmap> images = new List<Bitmap>();
-        float ScaleFactor = 1f;
         private void GIFButton_Click(object sender, EventArgs e)
         {
             if (Animation == null)
                 return;
 
+            List<Bitmap> images = new List<Bitmap>();
+            float ScaleFactor = 1f;
             isPlaying = false;
             playButton.Text = "Play";
 
@@ -1330,7 +1331,18 @@ namespace Smash_Forge
             if (!Runtime.useDepthTest)
                 GL.Disable(EnableCap.DepthTest);
 
+            // Render models into an HDR buffer. 
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, colorHdrTex);
             DrawModels();
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            // Draw the color texture to the screen.
+            RenderTools.DrawScreenQuad(colorHdrTex);
+
             FixedFunctionRendering();
 
             GL.PopAttrib();

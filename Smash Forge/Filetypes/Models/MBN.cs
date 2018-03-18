@@ -71,7 +71,7 @@ namespace Smash_Forge
                 ShaderTools.CreateShader("MBN", "/lib/Shader/Legacy/", "/lib/Shader/");
             }
 
-            Runtime.shaders["MBN"].displayCompilationWarning("MBN");
+            Runtime.shaders["MBN"].DisplayCompilationWarning("MBN");
         }
 
         public void Destroy()
