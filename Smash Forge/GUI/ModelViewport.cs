@@ -1323,6 +1323,10 @@ namespace Smash_Forge
                 }
             }
 
+            // Render models and background into an HDR buffer. 
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
             if (Runtime.renderBackGround)
             {
                 DrawViewportBackground();
@@ -1357,10 +1361,7 @@ namespace Smash_Forge
             if (!Runtime.useDepthTest)
                 GL.Disable(EnableCap.DepthTest);
 
-            // Render models into an HDR buffer. 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.ActiveTexture(TextureUnit.Texture0);
+
             DrawModels();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
