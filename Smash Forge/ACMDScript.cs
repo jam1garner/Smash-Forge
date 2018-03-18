@@ -918,7 +918,8 @@ namespace Smash_Forge
 
         public void Render(VBN Skeleton)
         {
-            if (!Runtime.renderHitboxes || Skeleton == null) return;
+            if (!Runtime.renderHitboxes || Skeleton == null)
+                return;
 
             if (Hitboxes.Count <= 0)
                 return;
@@ -947,7 +948,7 @@ namespace Smash_Forge
                 {
                     h.va2 = new Vector3(h.X2, h.Y2, h.Z2);
                     if (h.Bone != -1) h.va2 = Vector3.TransformPosition(h.va2, b.transform.ClearScale());
-                    Rendering.RenderTools.drawCylinder(h.va, h.va2, h.Size);
+                    Rendering.RenderTools.DrawCylinder(h.va, h.va2, h.Size);
                 }
                 else
                 {
@@ -975,7 +976,7 @@ namespace Smash_Forge
                             {
                                 var va2 = new Vector3(h2.X2, h2.Y2, h2.Z2);
                                 if (h2.Bone != -1) va2 = Vector3.TransformPosition(va2, b2.transform.ClearScale());
-                                Rendering.RenderTools.drawCylinder(va, va2, h2.Size);
+                                Rendering.RenderTools.DrawCylinder(va, va2, h2.Size);
                             }
                             else
                             {
@@ -990,7 +991,7 @@ namespace Smash_Forge
                     GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorSelected));
                     if (!h.IsSphere())
                     {
-                        Rendering.RenderTools.drawWireframeCylinder(h.va, h.va2, h.Size);
+                        Rendering.RenderTools.DrawWireframeCylinder(h.va, h.va2, h.Size);
                     }
                     else
                     {
@@ -1071,47 +1072,44 @@ namespace Smash_Forge
 
             if (bone != -1)
             {
-                //foreach (ModelContainer m in ModelContainers)
+                // ModelContainers should store Hitbox data or have them linked since it will use last
+                // modelcontainer bone for hitbox display (which might not be the character model).
+                // This is especially important for the future when importing weapons for some moves.
+                if (VBN != null)
                 {
-                    // ModelContainers should store Hitbox data or have them linked since it will use last
-                    // modelcontainer bone for hitbox display (which might not be the character model).
-                    // This is especially important for the future when importing weapons for some moves.
-                    if (VBN != null)
+                    try //Try used to avoid bone not found issue that crashes the application
                     {
-                        try //Try used to avoid bone not found issue that crashes the application
+                        if (VBN.JointTable.Tables.Count < 1)
+                            b = VBN.bones[bid];
+                        else
                         {
-                            if (VBN.JointTable.Tables.Count < 1)
-                                b = VBN.bones[bid];
+                            if (jtbIndex == 0)
+                            {
+                                // Special rule for table 0, index 0 is *always* TransN, and index 1 counts as index 0
+                                if (bid <= 0)
+                                {
+                                    b = VBN.bones.Find(item => item.Name == "TransN");
+                                    if (b == null)
+                                        b = VBN.bones[0];
+                                }
+                                else  // Index 2 counts as index 1, etc
+                                    b = VBN.bones[VBN.JointTable.Tables[jtbIndex][bid - 1]];
+                            }
+                            else if (jtbIndex < VBN.JointTable.Tables.Count)
+                            {
+                                // Extra joint tables don't have the TransN rule
+                                b = VBN.bones[VBN.JointTable.Tables[jtbIndex][bid]];
+                            }
                             else
                             {
-                                if (jtbIndex == 0)
-                                {
-                                    // Special rule for table 0, index 0 is *always* TransN, and index 1 counts as index 0
-                                    if (bid <= 0)
-                                    {
-                                        b = VBN.bones.Find(item => item.Name == "TransN");
-                                        if (b == null)
-                                            b = VBN.bones[0];
-                                    }
-                                    else  // Index 2 counts as index 1, etc
-                                        b = VBN.bones[VBN.JointTable.Tables[jtbIndex][bid - 1]];
-                                }
-                                else if (jtbIndex < VBN.JointTable.Tables.Count)
-                                {
-                                    // Extra joint tables don't have the TransN rule
-                                    b = VBN.bones[VBN.JointTable.Tables[jtbIndex][bid]];
-                                }
-                                else
-                                {
-                                    //If there is no jointTable but bone is >1000 then don't look into a another joint table
-                                    //This makes some weapons like Luma have hitboxes visualized
-                                    //b = m.vbn.bones[bid];
-                                    b = VBN.bones[VBN.JointTable.Tables[VBN.JointTable.Tables.Count - 1][bid]];
-                                }
+                                //If there is no jointTable but bone is >1000 then don't look into a another joint table
+                                //This makes some weapons like Luma have hitboxes visualized
+                                //b = m.vbn.bones[bid];
+                                b = VBN.bones[VBN.JointTable.Tables[VBN.JointTable.Tables.Count - 1][bid]];
                             }
                         }
-                        catch { }
                     }
+                    catch { }
                 }
             }
             return b;

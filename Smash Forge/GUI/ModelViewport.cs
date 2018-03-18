@@ -1187,7 +1187,7 @@ namespace Smash_Forge
                 {
                     // single vertex
                     // Selects the closest vertex
-                    Ray r = RenderTools.createRay(camera.mvpMatrix, GetMouseOnViewport());
+                    Ray r = RenderTools.CreateRay(camera.mvpMatrix, GetMouseOnViewport());
                     Vector3 close = Vector3.Zero;
                     foreach (TreeNode node in draw)
                     {
@@ -1276,6 +1276,7 @@ namespace Smash_Forge
                 return;
 
             SetupViewport();
+
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
@@ -1297,14 +1298,9 @@ namespace Smash_Forge
 
             if (Runtime.renderBackGround)
             {
-                Vector3 topColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
-                Vector3 bottomColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
-                RenderTools.DrawQuadGradient(topColor, bottomColor);
+                DrawViewportBackground();
             }
 
-            // Camera Update
-            // -------------------------------------------------------------
-            GL.MatrixMode(MatrixMode.Projection);
             if (glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
              && glViewport.Focused
              && (CurrentMode == Mode.Normal || (CurrentMode == Mode.Photoshoot && !freezeCamera))
@@ -1328,30 +1324,35 @@ namespace Smash_Forge
             if (Runtime.renderFloor)
                 RenderTools.DrawFloor(camera.mvpMatrix);
 
-            // Allow disabling depth testing for experimental 2D rendering. 
-            if (Runtime.useDepthTest)
-            {
-                GL.Enable(EnableCap.DepthTest);
-                GL.DepthFunc(DepthFunction.Lequal);
-            }
-            else
+            // Allow disabling depth testing for experimental "flat" rendering. 
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+            if (!Runtime.useDepthTest)
                 GL.Disable(EnableCap.DepthTest);
 
-            GL.Enable(EnableCap.DepthTest);
-
-            // Models
             DrawModels();
+            FixedFunctionRendering();
 
-            RenderTools.SetupFixedFunctionRendering();
+            GL.PopAttrib();
+            glViewport.SwapBuffers();
+        }
+
+        private void FixedFunctionRendering()
+        {
+            RenderTools.Setup3DFixedFunctionRendering(camera.mvpMatrix);
 
             // Bounding boxes should not render on top.
             if (Runtime.drawAreaLightBoundingBoxes)
                 DrawAreaLightBoundingBoxes();
 
             DrawOverlays();
+        }
 
-            GL.PopAttrib();
-            glViewport.SwapBuffers();
+        private static void DrawViewportBackground()
+        {
+            Vector3 topColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
+            Vector3 bottomColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
+            RenderTools.DrawQuadGradient(topColor, bottomColor);
         }
 
         private void SetupViewport()
@@ -1386,10 +1387,10 @@ namespace Smash_Forge
                 foreach (ModelContainer m in draw)
                     m.RenderBones();
 
-
             // ACMD
             if (ParamManager != null && Runtime.renderHurtboxes && draw.Count > 0 && (draw[0] is ModelContainer))
             {
+                // Doesn't do anything. ParamManager is always null.
                 ParamManager.RenderHurtboxes(Frame, scriptId, ACMDScript, ((ModelContainer)draw[0]).GetVBN());
             }
 
