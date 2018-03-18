@@ -936,7 +936,7 @@ namespace Smash_Forge
                 h.va = Vector3.TransformPosition(new Vector3(h.X, h.Y, h.Z), b.transform.ClearScale());
 
                 // Draw angle marker
-                if (Runtime.renderHitboxAngles)
+                if (Runtime.renderHitboxAngles && (h.Type == Hitbox.HITBOX || h.Type == Hitbox.WINDBOX))
                     RenderHitboxAngles(h, Skeleton);
 
                 GL.Color4(h.GetDisplayColor());
