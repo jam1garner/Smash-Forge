@@ -1502,18 +1502,23 @@ namespace Smash_Forge.Rendering
             DrawScreenTriangle(shader);
         }
 
-        public static void DrawScreenQuad(int texture)
+        public static void DrawScreenQuad(int texture0, int texture1)
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = Runtime.shaders["Screen_Quad"];
             GL.UseProgram(shader.programID);
 
-            // Single texture uniform.
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.BindTexture(TextureTarget.Texture2D, texture0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.getAttribute("image"), 0);
+            GL.Uniform1(shader.getAttribute("image0"), 0);
+
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, texture1);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            GL.Uniform1(shader.getAttribute("image1"), 1);
 
             // Draw full screen "quad" (big triangle)
             DrawScreenTriangle(shader);

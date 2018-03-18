@@ -37,14 +37,12 @@ namespace Smash_Forge
 
         // Rendering Stuff
         int colorHdrFbo;
+        // TODO: Handle resizing.
         int depthMapWidth = 647;
         int depthMapHeight = 715;
         int colorHdrTex0;
         int colorHdrTex1;
         int hdrDepthRbo;
-
-        int screenFinalFbo;
-        int screenFinalColorTex;
 
         // Functions of Viewer
         public enum Mode
@@ -255,28 +253,37 @@ namespace Smash_Forge
 
         private void SetupBuffersAndTextures()
         {
-            CreateHdrRenderToTexture(out colorHdrFbo, out colorHdrTex0);
+            CreateHdrRenderToTexture(out colorHdrFbo, out colorHdrTex0, out colorHdrTex1);
         }
 
-        private void CreateHdrRenderToTexture(out int fbo, out int texture)
+        private void CreateHdrRenderToTexture(out int fbo, out int texture0, out int texture1)
         {
             GL.GenFramebuffers(1, out fbo);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
 
+            GL.GenTextures(1, out texture0);
+            GL.BindTexture(TextureTarget.Texture2D, texture0);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, depthMapWidth, depthMapHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture0, 0);
+
+            GL.GenTextures(1, out texture1);
+            GL.BindTexture(TextureTarget.Texture2D, texture1);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, depthMapWidth, depthMapHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, texture1, 0);
 
             GL.GenRenderbuffers(1, out hdrDepthRbo);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, hdrDepthRbo);
             GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, depthMapWidth, depthMapHeight);
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
-
-            GL.GenTextures(1, out texture);
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, depthMapWidth, depthMapHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture, 0);
-
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, hdrDepthRbo);
+
+            DrawBuffersEnum[] buffers = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1 };
+
+            GL.DrawBuffers(2, buffers);
+
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
@@ -1354,12 +1361,11 @@ namespace Smash_Forge
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, colorHdrTex0);
             DrawModels();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
             // Draw the color texture to the screen.
-            RenderTools.DrawScreenQuad(colorHdrTex0);
+            RenderTools.DrawScreenQuad(colorHdrTex0, colorHdrTex1);
 
             FixedFunctionRendering();
 
