@@ -722,8 +722,9 @@ void main()
     if (renderAlpha != 1 || isTransparent != 1)
         fragColor.a = 1;
 
-    float bloomThreshold = 1;
+    float bloomThreshold = 1.01;
     brightColor = vec4(0,0,0,1);
+    brightColor.a = fragColor.a;
     if (Luminance(fragColor.rgb) > bloomThreshold)
         brightColor.rgb = fragColor.rgb;
 }

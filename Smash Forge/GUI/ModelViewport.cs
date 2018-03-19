@@ -37,9 +37,6 @@ namespace Smash_Forge
 
         // Rendering Stuff
         int colorHdrFbo;
-        // TODO: Handle resizing.
-        int depthMapWidth = 647;
-        int depthMapHeight = 715;
         int colorHdrTex0;
         int colorHdrTex1;
         int hdrDepthRbo;
@@ -261,27 +258,32 @@ namespace Smash_Forge
             GL.GenFramebuffers(1, out fbo);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
 
+            int textureWidth = glViewport.Width;
+            int textureHeight = glViewport.Height;
+
+            // Normal texture.
             GL.GenTextures(1, out texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture0);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, depthMapWidth, depthMapHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture0, 0);
 
+            // Texture for bright portions of the image that will be blurred later. TODO: Smaller than the viewport for extra blurring.
             GL.GenTextures(1, out texture1);
             GL.BindTexture(TextureTarget.Texture2D, texture1);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, depthMapWidth, depthMapHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, texture1, 0);
 
             GL.GenRenderbuffers(1, out hdrDepthRbo);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, hdrDepthRbo);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, depthMapWidth, depthMapHeight);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, textureWidth, textureHeight);
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, hdrDepthRbo);
 
+            // Draw to both textures
             DrawBuffersEnum[] buffers = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1 };
-
             GL.DrawBuffers(2, buffers);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -485,6 +487,9 @@ namespace Smash_Forge
                 camera.renderWidth = (glViewport.Width);
                 camera.renderHeight = (glViewport.Height);
                 camera.Update();
+
+                // Remake the textures and buffers everytime the dimensions change.
+                CreateHdrRenderToTexture(out colorHdrFbo, out colorHdrTex0, out colorHdrTex1);
             }
         }
 
@@ -1307,6 +1312,7 @@ namespace Smash_Forge
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+            GL.ClearColor(0, 0, 0, 0);
 
             // Return early to avoid rendering other stuff. 
             if (MeshList.filesTreeView.SelectedNode != null)
@@ -1360,7 +1366,6 @@ namespace Smash_Forge
             GL.DepthFunc(DepthFunction.Lequal);
             if (!Runtime.useDepthTest)
                 GL.Disable(EnableCap.DepthTest);
-
 
             DrawModels();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
