@@ -1329,9 +1329,12 @@ namespace Smash_Forge
                 }
             }
 
-            // Render models and background into an HDR buffer. 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            if (Runtime.drawHdrScreenQuad)
+            {
+                // Render models and background into an HDR buffer. 
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
+                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            }
 
             if (Runtime.renderBackGround)
             {
@@ -1370,8 +1373,8 @@ namespace Smash_Forge
             DrawModels();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-            // Draw the color texture to the screen.
-            RenderTools.DrawScreenQuad(colorHdrTex0, colorHdrTex1);
+            if (Runtime.drawHdrScreenQuad) 
+                RenderTools.DrawScreenQuad(colorHdrTex0, colorHdrTex1);
 
             FixedFunctionRendering();
 
