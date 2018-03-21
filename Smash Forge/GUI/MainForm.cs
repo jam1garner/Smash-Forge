@@ -19,8 +19,6 @@ using SALT.PARAMS;
 using SALT.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.ComponentModel;
-using OpenTK;
-using OpenTK.Graphics;
 using Smash_Forge.Rendering.Lights;
 
 namespace Smash_Forge

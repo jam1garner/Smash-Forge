@@ -150,10 +150,12 @@ namespace Smash_Forge
         public static float zoomModifierScale = 2.0f;
         public static bool cameraLight = false;
 
-        public static bool drawQuadBlur = false;
-        public static bool drawQuadFinalOutput = false;
-        public static bool drawModelShadow = false;
+        // Post Processing
+        public static bool renderBloom = false;
+        public static bool drawHdrScreenQuad = false;
+        public static bool drawModelShadow = true;
 
+        // Material Lighting
         public static bool renderDiffuse = true;
         public static bool renderFresnel = true;
         public static bool renderSpecular = true;
@@ -164,6 +166,8 @@ namespace Smash_Forge
         public static float frsIntensity = 1.00f;
         public static float refIntensity = 1.00f;
         public static float ambItensity = 1.00f;
+
+
         public static float model_scale = 1f;
         public static float zScale = 1.0f;
 
@@ -196,15 +200,14 @@ namespace Smash_Forge
         public static bool useDepthTest = true;
         public static bool drawAreaLightBoundingBoxes = true;
         public static bool renderStageLighting = true;
-        public static RenderTypes renderType;
 
+        // Debug Shading
+        public static RenderTypes renderType;
         public static bool renderR = true;
         public static bool renderG = true;
         public static bool renderB = true;
         public static bool renderAlpha = true;
-
         public static UVChannel uvChannel = UVChannel.Channel1;
-
         public static bool useDebugShading = false;
         public static bool debug1 = false;
         public static bool debug2 = false;

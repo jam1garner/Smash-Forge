@@ -1353,7 +1353,7 @@ namespace Smash_Forge
             if (s.type == 2)
                 Rendering.RenderTools.drawSphere(sPos+pos, s.radius, 24);
             if (s.type == 3)
-                Rendering.RenderTools.drawCylinder(sPos+pos, sPos+pos+posd, s.radius);
+                Rendering.RenderTools.DrawCylinder(sPos+pos, sPos+pos+posd, s.radius);
         }
 
         public static void DrawEnemyGenerator(EnemyGenerator e)

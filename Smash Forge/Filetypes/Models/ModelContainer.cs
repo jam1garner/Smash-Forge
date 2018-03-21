@@ -225,7 +225,8 @@ namespace Smash_Forge
 
         public void Render(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix, bool specialWireFrame = false)
         {
-            if (!Checked) return;
+            if (!Checked)
+                return;
             Shader shader;
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NUD_Debug"];
@@ -249,9 +250,6 @@ namespace Smash_Forge
             Matrix4 rotationMatrix = camera.rotationMatrix;
             GL.UniformMatrix4(shader.getAttribute("rotationMatrix"), false, ref rotationMatrix);
 
-
-            #region MBN Uniforms
-
             shader = Runtime.shaders["MBN"];
             GL.UseProgram(shader.programID);
 
@@ -264,81 +262,78 @@ namespace Smash_Forge
                 GL.Uniform3(shader.getAttribute("difLightDirection"), LightTools.diffuseLight.direction);
             }
 
-            #endregion
-
-            #region DAT uniforms
             shader = Runtime.shaders["DAT"];
             GL.UseProgram(shader.programID);
 
             GL.Uniform3(shader.getAttribute("difLightColor"), LightTools.diffuseLight.difR, LightTools.diffuseLight.difG, LightTools.diffuseLight.difB);
             GL.Uniform3(shader.getAttribute("ambLightColor"), LightTools.diffuseLight.ambR, LightTools.diffuseLight.ambG, LightTools.diffuseLight.ambB);
             
-            #endregion
-
+            
+            if (BCH != null)
             {
-                if (BCH != null)
+                foreach (BCH_Model mo in BCH.Models.Nodes)
                 {
-                    foreach (BCH_Model mo in BCH.Models.Nodes)
-                    {
-                        mo.Render(camera.mvpMatrix);
-                    }
-                }
-
-                if (DAT_MELEE != null && Runtime.shaders["DAT"].shadersCompiledSuccessfully())
-                {
-                    DAT_MELEE.Render(camera.mvpMatrix);
-                }
-
-                if (NUD != null && Runtime.shaders["NUD"].shadersCompiledSuccessfully() && Runtime.shaders["NUD_Debug"].shadersCompiledSuccessfully())
-                {
-                    if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                        shader = Runtime.shaders["NUD_Debug"];
-                    else
-                        shader = Runtime.shaders["NUD"];
-
-                    GL.UseProgram(shader.programID);
-
-                    SetRenderSettingsUniforms(shader);
-                    SetLightingUniforms(shader, camera);
-
-                    GL.ActiveTexture(TextureUnit.Texture2);
-                    GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
-                    GL.Uniform1(shader.getAttribute("cmap"), 2);
-
-                    GL.ActiveTexture(TextureUnit.Texture11);
-                    GL.BindTexture(TextureTarget.Texture2D, depthmap);
-                    GL.Uniform1(shader.getAttribute("shadowMap"), 11);
-
-                    GL.Uniform1(shader.getAttribute("renderType"), renderType);
-                    GL.Uniform1(shader.getAttribute("debugOption"), (int)Runtime.uvChannel);
-
-                    float elapsedSeconds = 0;
-                    if (NUD.useDirectUVTime)
-                    {
-                        elapsedSeconds = ModelViewport.directUVTimeStopWatch.ElapsedMilliseconds / 1000.0f;
-                        // Should be based on XMB eventualy.
-                        if (elapsedSeconds >= 100)
-                        {
-                            ModelViewport.directUVTimeStopWatch.Restart();
-                        }
-                    }
-                    else
-                        ModelViewport.directUVTimeStopWatch.Stop();
-
-                    GL.Uniform1(shader.getAttribute("elapsedTime"), elapsedSeconds);
-
-                    GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
-                    GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
-
-                    if (specialWireFrame)
-                    {
-                        Runtime.renderModelWireframe = true;
-                        Runtime.renderModel = false;
-                    }
-
-                    NUD.Render(VBN, camera);
+                    mo.Render(camera.mvpMatrix);
                 }
             }
+
+            if (DAT_MELEE != null && Runtime.shaders["DAT"].CompiledSuccessfully())
+            {
+                DAT_MELEE.Render(camera.mvpMatrix);
+            }
+
+            if (NUD != null && Runtime.shaders["NUD"].CompiledSuccessfully() && Runtime.shaders["NUD_Debug"].CompiledSuccessfully())
+            {
+                if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+                    shader = Runtime.shaders["NUD_Debug"];
+                else
+                    shader = Runtime.shaders["NUD"];
+
+                GL.UseProgram(shader.programID);
+
+                SetRenderSettingsUniforms(shader);
+                SetLightingUniforms(shader, camera);
+
+                GL.ActiveTexture(TextureUnit.Texture2);
+                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
+                GL.Uniform1(shader.getAttribute("cmap"), 2);
+
+                GL.ActiveTexture(TextureUnit.Texture11);
+                GL.BindTexture(TextureTarget.Texture2D, depthmap);
+                GL.Uniform1(shader.getAttribute("shadowMap"), 11);
+
+                GL.Uniform1(shader.getAttribute("renderType"), renderType);
+                GL.Uniform1(shader.getAttribute("debugOption"), (int)Runtime.uvChannel);
+
+                SetElapsedDirectUvTime(shader);
+
+                GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
+                GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
+
+                if (specialWireFrame)
+                {
+                    Runtime.renderModelWireframe = true;
+                    Runtime.renderModel = false;
+                }
+
+                NUD.Render(VBN, camera);
+            }
+        }
+
+        private void SetElapsedDirectUvTime(Shader shader)
+        {
+            float elapsedSeconds = 0;
+            if (NUD.useDirectUVTime)
+            {
+                elapsedSeconds = ModelViewport.directUVTimeStopWatch.ElapsedMilliseconds / 1000.0f;
+                // Should be based on XMB eventualy.
+                if (elapsedSeconds >= 100)
+                    ModelViewport.directUVTimeStopWatch.Restart();
+            }
+            else
+                ModelViewport.directUVTimeStopWatch.Stop();
+
+            GL.Uniform1(shader.getAttribute("elapsedTime"), elapsedSeconds);
         }
 
         public void RenderPoints(Camera camera)
@@ -352,13 +347,7 @@ namespace Smash_Forge
 
         public void RenderShadow(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix)
         {
-            // critical to clear depth buffer
-            GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            if (NUD != null)
-            {
-                NUD.RenderShadow(lightMatrix, camera.mvpMatrix, modelMatrix);
-            }
         }
 
         public void RenderBones()

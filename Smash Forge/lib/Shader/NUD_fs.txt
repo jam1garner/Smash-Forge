@@ -12,7 +12,8 @@ in vec3 viewNormal;
 in vec3 tangent;
 in vec3 bitangent;
 
-out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 brightColor;
 
 // Textures
 uniform sampler2D dif;
@@ -720,4 +721,10 @@ void main()
     // Alpha override for render settings. Fixes alpha for renders.
     if (renderAlpha != 1 || isTransparent != 1)
         fragColor.a = 1;
+
+    float bloomThreshold = 1.01;
+    brightColor = vec4(0,0,0,1);
+    brightColor.a = fragColor.a;
+    if (Luminance(fragColor.rgb) > bloomThreshold)
+        brightColor.rgb = fragColor.rgb;
 }

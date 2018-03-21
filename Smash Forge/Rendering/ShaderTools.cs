@@ -16,6 +16,7 @@ namespace Smash_Forge
             // Reset the shaders first so that shaders can be replaced.
             Runtime.shaders = new Dictionary<string, Shader>();
             CreateShader("Texture", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("Screen_Quad", "/lib/Shader/", "/lib/Shader/");
             CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
             CreateShader("MBN", "/lib/Shader/Legacy/", "/lib/Shader/");
             CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
