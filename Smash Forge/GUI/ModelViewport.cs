@@ -954,6 +954,96 @@ namespace Smash_Forge
             }
         }
 
+        private void BatchExportLightSetValues()
+        {
+            // Get the source model folder and then the output folder. 
+            using (var sourceFolderSelect = new FolderSelectDialog())
+            {
+                sourceFolderSelect.Title = "Stages Directory";
+                if (sourceFolderSelect.ShowDialog() == DialogResult.OK)
+                {
+                    using (var outputFolderSelect = new FolderSelectDialog())
+                    {
+                        outputFolderSelect.Title = "Output Directory";
+                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
+                        {
+                            StringBuilder miscCsv = new StringBuilder();
+                            StringBuilder lightSetCsv = new StringBuilder();
+                            StringBuilder fogCsv = new StringBuilder();
+                            StringBuilder unkCsv = new StringBuilder();
+
+                            foreach (string stageFolder in Directory.GetDirectories(sourceFolderSelect.SelectedPath))
+                            {
+                                // Only 1 file so remove the foreach.
+                                string[] files = Directory.GetFiles(stageFolder, "*light_set_param.bin", SearchOption.AllDirectories);
+                                foreach (string file in files)
+                                {
+                                    // TODO: Make this work for .bin files of different sizes. 
+                                    // Hardcoding this because all lightsets are structured the same way.
+                                    // Use basic csv formatting to open in excel, sheets, etc. 
+
+                                    string stageName = stageFolder.Replace(sourceFolderSelect.SelectedPath + "\\", "");
+                                    SALT.PARAMS.ParamFile lightSet = new SALT.PARAMS.ParamFile(file);
+
+                                    // Misc Group
+                                    StringBuilder miscValues = new StringBuilder(stageName + ",");
+                                    for (int i = 0; i < 74; i++)
+                                    {
+                                        var value = RenderTools.GetValueFromParamFile(lightSet, 0, 0, i);
+                                        miscValues.Append(value + ",");
+                                    }
+                                    miscCsv.AppendLine(miscValues.ToString());
+
+                                    // Light Sets
+                                    StringBuilder lightSetValues = new StringBuilder(stageName + ",");
+                                    for (int i = 0; i < 64; i++)
+                                    {
+                                        for (int j = 0; j < 8; j++)
+                                        {
+                                            var value = RenderTools.GetValueFromParamFile(lightSet, 1, i, j);
+                                            lightSetValues.Append(value + ",");
+                                        }
+                                    }
+                                    lightSetCsv.AppendLine(lightSetValues.ToString());
+
+                                    // Fog Sets
+                                    StringBuilder fogValues = new StringBuilder(stageName + ",");
+                                    for (int i = 0; i < 16; i++)
+                                    {
+                                        for (int j = 0; j < 3; j++)
+                                        {
+                                            var value = RenderTools.GetValueFromParamFile(lightSet, 2, i, j);
+                                            fogValues.Append(value + ",");
+                                        }
+                                    }
+                                    fogCsv.AppendLine(miscValues.ToString());
+
+                                    // ???
+                                    StringBuilder unkValues = new StringBuilder(stageName + ",");
+                                    for (int i = 0; i < 4; i++)
+                                    {
+                                        for (int j = 0; j < 2; j++)
+                                        {
+                                            var value = RenderTools.GetValueFromParamFile(lightSet, 3, i, j);
+                                            unkValues.Append(value + ",");
+                                        }
+                                    }
+                                    unkCsv.AppendLine(unkValues.ToString());
+                                }
+                            }
+
+                            string fileName = outputFolderSelect.SelectedPath;
+                            File.WriteAllText(fileName + "\\misc values.csv", miscCsv.ToString());
+                            File.WriteAllText(fileName + "\\light_set values.csv", lightSetCsv.ToString());
+                            File.WriteAllText(fileName + "\\fog_set values.csv", fogCsv.ToString());
+                            File.WriteAllText(fileName + "\\unk values.csv", unkCsv.ToString());
+                        }
+                    }
+                }
+            }
+        }
+
+
         private void RenderModel(string nudFileName, string sourcePath, string outputPath)
         {
             SetupNextRender();
@@ -1579,6 +1669,9 @@ namespace Smash_Forge
 
             if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T) && Keyboard.GetState().IsKeyDown(Key.M))
                 BatchRenderStages();
+
+            if (Keyboard.GetState().IsKeyDown(Key.L) && Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T))
+                BatchExportLightSetValues();
         }
 
         private void RenderStageModels(string stageFolder, string outputPath, string sourcePath)
