@@ -12,7 +12,7 @@ namespace Smash_Forge.Params
 {
     class ParamTools
     {
-        public static object GetValueFromParamFile(ParamFile file, int groupIndex, int entryIndex, int valueIndex)
+        public static object GetParamValue(ParamFile file, int groupIndex, int entryIndex, int valueIndex)
         {
             if (groupIndex > file.Groups.Count)
                 return null;
@@ -108,7 +108,7 @@ namespace Smash_Forge.Params
             {
                 for (int j = 0; j < 2; j++)
                 {
-                    var value = GetValueFromParamFile(lightSet, 3, i, j);
+                    var value = GetParamValue(lightSet, 3, i, j);
                     unkValues.Append(value + ",");
                 }
             }
@@ -122,7 +122,7 @@ namespace Smash_Forge.Params
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    var value = GetValueFromParamFile(lightSet, 2, i, j);
+                    var value = GetParamValue(lightSet, 2, i, j);
                     fogValues.Append(value + ",");
                 }
             }
@@ -136,7 +136,7 @@ namespace Smash_Forge.Params
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    var value = GetValueFromParamFile(lightSet, 1, i, j);
+                    var value = GetParamValue(lightSet, 1, i, j);
                     lightSetValues.Append(value + ",");
                 }
             }
@@ -148,7 +148,7 @@ namespace Smash_Forge.Params
             StringBuilder miscValues = new StringBuilder(stageName + ",");
             for (int i = 0; i < 74; i++)
             {
-                var value = GetValueFromParamFile(lightSet, 0, 0, i);
+                var value = GetParamValue(lightSet, 0, 0, i);
                 miscValues.Append(value + ",");
             }
             miscCsv.AppendLine(miscValues.ToString());

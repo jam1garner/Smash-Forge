@@ -38,15 +38,15 @@ namespace Smash_Forge.Rendering.Lights
         public string id = "";
         public bool enabled = true;
 
-        public DirectionalLight(float difH, float difS, float difV, float ambH, float ambS, float ambV, float rotX, float rotY, float rotZ, string name)
+        public DirectionalLight(Vector3 diffuseHsv, Vector3 ambientHsv, float rotX, float rotY, float rotZ, string name)
         {
             // calculate light color
-            difHue = difH;
-            difSaturation = difS;
-            difIntensity = difV;
-            ambHue = ambH;
-            ambSaturation = ambS;
-            ambIntensity = ambV;
+            difHue = diffuseHsv.X;
+            difSaturation = diffuseHsv.Y;
+            difIntensity = diffuseHsv.Z;
+            ambHue = ambientHsv.X;
+            ambSaturation = ambientHsv.Y;
+            ambIntensity = ambientHsv.Z;
             ColorTools.HSV2RGB(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
             ColorTools.HSV2RGB(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
 

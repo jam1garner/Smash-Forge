@@ -40,20 +40,18 @@ namespace Smash_Forge.Rendering.Lights
 
         }
 
-        public HemisphereFresnel(float groundH, float groundS, float groundV, float skyH, float skyS, float skyV,
-            float skyAngle, float groundAngle, string name)
+        public HemisphereFresnel(Vector3 groundHsv, Vector3 skyHsv, float skyAngle, float groundAngle, string name)
         {
-            this.groundHue = groundH;
-            this.groundSaturation = groundS;
-            this.groundIntensity = groundV;
-            this.skyHue = skyH;
-            this.skySaturation = skyS;
-            this.skyIntensity = skyV;
+            groundHue = groundHsv.X;
+            groundSaturation = groundHsv.Y;
+            groundIntensity = groundHsv.Z;
+            skyHue = skyHsv.X;
+            skySaturation = skyHsv.Y;
+            skyIntensity = skyHsv.Z;
             ColorTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
 
             this.skyAngle = skyAngle;
             this.groundAngle = groundAngle;
-
             this.name = name;
         }
 

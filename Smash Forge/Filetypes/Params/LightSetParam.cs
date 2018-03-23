@@ -51,43 +51,46 @@ namespace Smash_Forge.Params
 
         public static HemisphereFresnel CreateFresnelLightFromLightSet(ParamFile lightSet)
         {
-            float hueSky = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 8);
-            float satSky = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 9);
-            float intensitySky = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 10);
+            Vector3 hsvGround = new Vector3(0);
+            hsvGround.X = (float)ParamTools.GetParamValue(lightSet, 0, 0, 8);
+            hsvGround.Y = (float)ParamTools.GetParamValue(lightSet, 0, 0, 9);
+            hsvGround.Z = (float)ParamTools.GetParamValue(lightSet, 0, 0, 10);
 
-            float hueGround = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 11);
-            float satGround = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 12);
-            float intensityGround = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 13);
+            Vector3 hsvSky = new Vector3(0);
+            hsvSky.X = (float)ParamTools.GetParamValue(lightSet, 0, 0, 11);
+            hsvSky.Y = (float)ParamTools.GetParamValue(lightSet, 0, 0, 12);
+            hsvSky.Z = (float)ParamTools.GetParamValue(lightSet, 0, 0, 13);
 
-            float skyAngle = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 14);
-            float groundAngle = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 15);
+            float skyAngle = (float)ParamTools.GetParamValue(lightSet, 0, 0, 14);
+            float groundAngle = (float)ParamTools.GetParamValue(lightSet, 0, 0, 15);
 
-            return new HemisphereFresnel(hueGround, satGround, intensityGround, hueSky, satSky, intensitySky,
-                skyAngle, groundAngle, "Fresnel");
+            return new HemisphereFresnel(hsvGround, hsvSky, skyAngle, groundAngle, "Fresnel");
         }
 
         public static DirectionalLight CreateCharDiffuseLightFromLightSet(ParamFile lightSet)
         {
-            float difHue = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 29);
-            float difSaturation = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 30);
-            float difIntensity = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 31);
+            Vector3 diffuseHsv = new Vector3(0);
+            diffuseHsv.X = (float)ParamTools.GetParamValue(lightSet, 0, 0, 29);
+            diffuseHsv.Y = (float)ParamTools.GetParamValue(lightSet, 0, 0, 30);
+            diffuseHsv.Z = (float)ParamTools.GetParamValue(lightSet, 0, 0, 31);
 
-            float ambHue = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 33);
-            float ambSaturation = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 34);
-            float ambIntensity = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 35);
+            Vector3 ambientHsv = new Vector3(0);
+            ambientHsv.X = (float)ParamTools.GetParamValue(lightSet, 0, 0, 33);
+            ambientHsv.Y = (float)ParamTools.GetParamValue(lightSet, 0, 0, 34);
+            ambientHsv.Z = (float)ParamTools.GetParamValue(lightSet, 0, 0, 35);
 
-            float rotX = (float)ParamTools.GetValueFromParamFile(lightSet, 1, 4, 5);
-            float rotY = (float)ParamTools.GetValueFromParamFile(lightSet, 1, 4, 6);
-            float rotZ = (float)ParamTools.GetValueFromParamFile(lightSet, 1, 4, 7);
+            float rotX = (float)ParamTools.GetParamValue(lightSet, 1, 4, 5);
+            float rotY = (float)ParamTools.GetParamValue(lightSet, 1, 4, 6);
+            float rotZ = (float)ParamTools.GetParamValue(lightSet, 1, 4, 7);
 
-            return new DirectionalLight(difHue, difSaturation, difIntensity, ambHue, ambSaturation, ambIntensity, 0, 0, 0, "Diffuse");
+            return new DirectionalLight(diffuseHsv, ambientHsv, 0, 0, 0, "Diffuse");
         }
 
         public static Vector3 CreateFogColorFromFogSet(ParamFile lightSet, int i)
         {
-            float hue = (float)ParamTools.GetValueFromParamFile(lightSet, 2, 1 + i, 0);
-            float saturation = (float)ParamTools.GetValueFromParamFile(lightSet, 2, 1 + i, 1);
-            float value = (float)ParamTools.GetValueFromParamFile(lightSet, 2, 1 + i, 2);
+            float hue = (float)ParamTools.GetParamValue(lightSet, 2, 1 + i, 0);
+            float saturation = (float)ParamTools.GetParamValue(lightSet, 2, 1 + i, 1);
+            float value = (float)ParamTools.GetParamValue(lightSet, 2, 1 + i, 2);
             float fogR = 0.0f, fogB = 0.0f, fogG = 0.0f;
             ColorTools.HSV2RGB(hue, saturation, value, out fogR, out fogG, out fogB);
             Vector3 color = new Vector3(fogR, fogG, fogB);
@@ -96,19 +99,19 @@ namespace Smash_Forge.Params
 
         public static DirectionalLight CreateDirectionalLightFromLightSet(ParamFile lightSet, int lightNumber, string name)
         {
-            bool enabled = (uint)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 1) == 1;
-            float hue = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 2);
-            float saturation = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 3);
-            float value = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 4);
+            bool enabled = (uint)ParamTools.GetParamValue(lightSet, 1, lightNumber, 1) == 1;
+            Vector3 hsv = new Vector3(0);
+            hsv.X = (float)ParamTools.GetParamValue(lightSet, 1, lightNumber, 2);
+            hsv.Y = (float)ParamTools.GetParamValue(lightSet, 1, lightNumber, 3);
+            hsv.Z = (float)ParamTools.GetParamValue(lightSet, 1, lightNumber, 4);
 
-            float rotX = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 5);
-            float rotY = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 6);
-            float rotZ = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 7);
+            float rotX = (float)ParamTools.GetParamValue(lightSet, 1, lightNumber, 5);
+            float rotY = (float)ParamTools.GetParamValue(lightSet, 1, lightNumber, 6);
+            float rotZ = (float)ParamTools.GetParamValue(lightSet, 1, lightNumber, 7);
 
-            DirectionalLight newLight = new DirectionalLight(hue, saturation, value, 0, 0, 0, rotX, rotY, rotZ, name);
+            DirectionalLight newLight = new DirectionalLight(hsv, new Vector3(0), rotX, rotY, rotZ, name);
             newLight.enabled = enabled; // doesn't render properly for some stages
             return newLight;
         }
-
     }
 }
