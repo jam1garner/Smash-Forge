@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 using SALT.PARAMS;
+using Smash_Forge.Params;
 
 namespace Smash_Forge.Rendering
 {
@@ -134,10 +135,9 @@ namespace Smash_Forge.Rendering
         {
             if (stprm == null)
                 return;
-            
-            float newFov = (float)RenderTools.GetValueFromParamFile(stprm, 0, 0, 6);
+            float newFov = (float)ParamTools.GetValueFromParamFile(stprm, 0, 0, 6);
             fovRadians = newFov * ((float)Math.PI / 180.0f); 
-            renderDepth = (float)RenderTools.GetValueFromParamFile(stprm, 0, 0, 77);           
+            renderDepth = (float)ParamTools.GetValueFromParamFile(stprm, 0, 0, 77);           
         }
 
         public void ResetPositionRotation()

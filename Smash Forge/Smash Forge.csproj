@@ -103,6 +103,8 @@
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
     <Compile Include="Filetypes\Animation\LIGH.cs" />
+    <Compile Include="Filetypes\Params\LightSetParam.cs" />
+    <Compile Include="Filetypes\Params\ParamTools.cs" />
     <Compile Include="Filetypes\Sounds\NUS3BANK.cs" />
     <Compile Include="Filetypes\Sounds\VGMStreamNative.cs" />
     <Compile Include="Filetypes\Sounds\WAVE.cs" />

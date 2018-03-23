@@ -8,6 +8,7 @@ using SALT.PARAMS;
 using SALT.Graphics;
 using System.Diagnostics;
 using System.Globalization;
+using Smash_Forge.Params;
 
 
 namespace Smash_Forge.Rendering.Lights
@@ -59,17 +60,17 @@ namespace Smash_Forge.Rendering.Lights
 
                 // character diffuse
                 {
-                    float difHue = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 29);
-                    float difSaturation = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 30);
-                    float difIntensity = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 31);
+                    float difHue = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 29);
+                    float difSaturation = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 30);
+                    float difIntensity = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 31);
 
-                    float ambHue = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 33);
-                    float ambSaturation = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 34);
-                    float ambIntensity = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 35);
+                    float ambHue = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 33);
+                    float ambSaturation = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 34);
+                    float ambIntensity = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 35);
 
-                    float rotX = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4, 5);
-                    float rotY = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4, 6);
-                    float rotZ = (float)RenderTools.GetValueFromParamFile(lightSet, 1, 4, 7);
+                    float rotX = (float)ParamTools.GetValueFromParamFile(lightSet, 1, 4, 5);
+                    float rotY = (float)ParamTools.GetValueFromParamFile(lightSet, 1, 4, 6);
+                    float rotZ = (float)ParamTools.GetValueFromParamFile(lightSet, 1, 4, 7);
 
                     diffuseLight = new DirectionalLight(difHue, difSaturation, difIntensity, ambHue, ambSaturation, ambIntensity, 0, 0, 0, "Diffuse");
                 }
@@ -86,16 +87,16 @@ namespace Smash_Forge.Rendering.Lights
 
                 // fresnel lighting
                 {
-                    float hueSky = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 8);
-                    float satSky = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 9);
-                    float intensitySky = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 10);
+                    float hueSky = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 8);
+                    float satSky = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 9);
+                    float intensitySky = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 10);
 
-                    float hueGround = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 11);
-                    float satGround = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 12);
-                    float intensityGround = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 13);
+                    float hueGround = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 11);
+                    float satGround = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 12);
+                    float intensityGround = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 13);
 
-                    float skyAngle = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 14);
-                    float groundAngle = (float)RenderTools.GetValueFromParamFile(lightSet, 0, 0, 15);
+                    float skyAngle = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 14);
+                    float groundAngle = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 15);
 
                     fresnelLight = new HemisphereFresnel(hueGround, satGround, intensityGround, hueSky, satSky, intensitySky, 
                         skyAngle, groundAngle, "Fresnel");
@@ -105,9 +106,9 @@ namespace Smash_Forge.Rendering.Lights
 
         private static Vector3 CreateFogColorFromFogSet(ParamFile lightSet, int i)
         {
-            float hue = (float)RenderTools.GetValueFromParamFile(lightSet, 2, 1 + i, 0);
-            float saturation = (float)RenderTools.GetValueFromParamFile(lightSet, 2, 1 + i, 1);
-            float value = (float)RenderTools.GetValueFromParamFile(lightSet, 2, 1 + i, 2);
+            float hue = (float)ParamTools.GetValueFromParamFile(lightSet, 2, 1 + i, 0);
+            float saturation = (float)ParamTools.GetValueFromParamFile(lightSet, 2, 1 + i, 1);
+            float value = (float)ParamTools.GetValueFromParamFile(lightSet, 2, 1 + i, 2);
             float fogR = 0.0f, fogB = 0.0f, fogG = 0.0f;
             ColorTools.HSV2RGB(hue, saturation, value, out fogR, out fogG, out fogB);
             Vector3 color = new Vector3(fogR, fogG, fogB);
@@ -116,14 +117,14 @@ namespace Smash_Forge.Rendering.Lights
 
         private static DirectionalLight CreateDirectionalLightFromLightSet(ParamFile lightSet, int lightNumber, string name)
         {
-            bool enabled = (uint)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 1) == 1;
-            float hue = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 2);
-            float saturation = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 3);
-            float value = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 4);
+            bool enabled = (uint)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 1) == 1;
+            float hue = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 2);
+            float saturation = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 3);
+            float value = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 4);
 
-            float rotX = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 5);
-            float rotY = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 6);
-            float rotZ = (float)RenderTools.GetValueFromParamFile(lightSet, 1, lightNumber, 7);
+            float rotX = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 5);
+            float rotY = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 6);
+            float rotZ = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 7);
 
             DirectionalLight newLight = new DirectionalLight(hue, saturation, value, 0, 0, 0, rotX, rotY, rotZ, name);
             newLight.enabled = enabled; // doesn't render properly for some stages
