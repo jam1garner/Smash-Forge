@@ -25,7 +25,6 @@ namespace Smash_Forge
 {
     public partial class MainForm : FormBase
     {
-
         public static MainForm Instance
         {
             get { return _instance != null ? _instance : (_instance = new MainForm()); }
@@ -809,9 +808,7 @@ namespace Smash_Forge
                 {
                     if (fileName.EndsWith("light_set_param.bin"))
                     {
-                        // should this always replace existing settings?
-                        Runtime.lightSetParam = new ParamFile(fileName);
-                        LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                        Runtime.lightSetParam = new Params.LightSetParam(fileName);
                     }
 
                     if (fileName.EndsWith("area_light.xmb"))
@@ -1304,8 +1301,7 @@ namespace Smash_Forge
 
                     if (fileName.EndsWith("light_set_param.bin"))
                     {
-                        Runtime.lightSetParam = new ParamFile(fileName);
-                        LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                        Runtime.lightSetParam = new Params.LightSetParam(fileName);
                     }
 
                     if (fileName.EndsWith("stprm.bin"))

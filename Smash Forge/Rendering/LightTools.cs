@@ -15,121 +15,14 @@ namespace Smash_Forge.Rendering.Lights
 {
     class LightTools
     {
-        // character diffuse from light_set_param.bin
-        public static DirectionalLight diffuseLight = new DirectionalLight(0, 0, 1, 0, 0, 0.75f, 0, 0, 0, "Diffuse");
-        public static DirectionalLight diffuseLight2 = new DirectionalLight(0, 0, 1, 0, 0, 0.75f, 0, 0, 0, "Diffuse2");
-        public static DirectionalLight diffuseLight3 = new DirectionalLight(0, 0, 1, 0, 0, 0.75f, 0, 0, 0, "Diffuse3");
-
         // still not sure what controls this yet
         public static DirectionalLight specularLight = new DirectionalLight(0, 0, 0.0f, 0, 0, 0, 0, 0, 0, "Specular");
-
-        // hemisphere fresnel from light_set_param.bin
-        public static HemisphereFresnel fresnelLight = new HemisphereFresnel(0, 0, 0, 0, 0, 1, 0, 0, "Fresnel");
-
-        // used for rendering
-        public static DirectionalLight stageLight1 = new DirectionalLight();
-        public static DirectionalLight stageLight2 = new DirectionalLight();
-        public static DirectionalLight stageLight3 = new DirectionalLight();
-        public static DirectionalLight stageLight4 = new DirectionalLight();
-
-        // stage diffuse from light_set_param.bin
-        public static DirectionalLight[] stageDiffuseLightSet = new DirectionalLight[64];
-        public static Vector3[] stageFogSet = new Vector3[16];
 
         // area_light.xmb
         public static List<AreaLight> areaLights = new List<AreaLight>();
 
         // light_map.xmb
         public static List<LightMap> lightMaps = new List<LightMap>();
-
-        public static void SetLightsFromLightSetParam(ParamFile lightSet)
-        {
-            if (lightSet != null)
-            {
-                // stage diffuse
-                for (int i = 0; i < stageDiffuseLightSet.Length; i++)
-                {
-                    stageDiffuseLightSet[i] = CreateDirectionalLightFromLightSet(lightSet, 4 + i, "Stage " + i);
-                }
-
-                // stage fog
-                for (int i = 0; i < stageFogSet.Length; i++)
-                {
-                    stageFogSet[i] = CreateFogColorFromFogSet(lightSet, i);
-                }
-
-                // character diffuse
-                {
-                    float difHue = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 29);
-                    float difSaturation = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 30);
-                    float difIntensity = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 31);
-
-                    float ambHue = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 33);
-                    float ambSaturation = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 34);
-                    float ambIntensity = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 35);
-
-                    float rotX = (float)ParamTools.GetValueFromParamFile(lightSet, 1, 4, 5);
-                    float rotY = (float)ParamTools.GetValueFromParamFile(lightSet, 1, 4, 6);
-                    float rotZ = (float)ParamTools.GetValueFromParamFile(lightSet, 1, 4, 7);
-
-                    diffuseLight = new DirectionalLight(difHue, difSaturation, difIntensity, ambHue, ambSaturation, ambIntensity, 0, 0, 0, "Diffuse");
-                }
-
-                // character diffuse 2
-                {
-                    diffuseLight2 = CreateDirectionalLightFromLightSet(lightSet, 0, "Diffuse2");
-                }
-
-                // character diffuse 3
-                {
-                    diffuseLight3 = CreateDirectionalLightFromLightSet(lightSet, 1, "Diffuse3");
-                }
-
-                // fresnel lighting
-                {
-                    float hueSky = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 8);
-                    float satSky = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 9);
-                    float intensitySky = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 10);
-
-                    float hueGround = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 11);
-                    float satGround = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 12);
-                    float intensityGround = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 13);
-
-                    float skyAngle = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 14);
-                    float groundAngle = (float)ParamTools.GetValueFromParamFile(lightSet, 0, 0, 15);
-
-                    fresnelLight = new HemisphereFresnel(hueGround, satGround, intensityGround, hueSky, satSky, intensitySky, 
-                        skyAngle, groundAngle, "Fresnel");
-                }
-            }
-        }
-
-        private static Vector3 CreateFogColorFromFogSet(ParamFile lightSet, int i)
-        {
-            float hue = (float)ParamTools.GetValueFromParamFile(lightSet, 2, 1 + i, 0);
-            float saturation = (float)ParamTools.GetValueFromParamFile(lightSet, 2, 1 + i, 1);
-            float value = (float)ParamTools.GetValueFromParamFile(lightSet, 2, 1 + i, 2);
-            float fogR = 0.0f, fogB = 0.0f, fogG = 0.0f;
-            ColorTools.HSV2RGB(hue, saturation, value, out fogR, out fogG, out fogB);
-            Vector3 color = new Vector3(fogR, fogG, fogB);
-            return color;
-        }
-
-        private static DirectionalLight CreateDirectionalLightFromLightSet(ParamFile lightSet, int lightNumber, string name)
-        {
-            bool enabled = (uint)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 1) == 1;
-            float hue = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 2);
-            float saturation = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 3);
-            float value = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 4);
-
-            float rotX = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 5);
-            float rotY = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 6);
-            float rotZ = (float)ParamTools.GetValueFromParamFile(lightSet, 1, lightNumber, 7);
-
-            DirectionalLight newLight = new DirectionalLight(hue, saturation, value, 0, 0, 0, rotX, rotY, rotZ, name);
-            newLight.enabled = enabled; // doesn't render properly for some stages
-            return newLight;
-        }
 
         public static void CreateAreaLightsFromXMB(XMBFile xmb)
         {

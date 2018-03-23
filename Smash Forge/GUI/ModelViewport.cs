@@ -369,18 +369,7 @@ namespace Smash_Forge
 
         private static void InitializeLights()
         {
-            for (int i = 0; i < LightTools.stageDiffuseLightSet.Length; i++)
-            {
-                // should properly initialize these eventually
-                LightTools.stageDiffuseLightSet[i] = new DirectionalLight();
-                LightTools.stageDiffuseLightSet[i].id = "Stage " + i;
-            }
-
-            for (int i = 0; i < LightTools.stageFogSet.Length; i++)
-            {
-                // should properly initialize these eventually
-                LightTools.stageFogSet[i] = new Vector3(0);
-            }
+            // TODO: Initialize Lights
         }
 
         private void Application_Idle(object sender, EventArgs e)
@@ -1594,8 +1583,7 @@ namespace Smash_Forge
                 {
                     try
                     {
-                        Runtime.lightSetParam = new SALT.PARAMS.ParamFile(renderPath + "//light_set_param.bin");
-                        LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                        Runtime.lightSetParam = new LightSetParam(renderPath + "//light_set_param.bin");
                     }
                     catch (Exception e)
                     {
