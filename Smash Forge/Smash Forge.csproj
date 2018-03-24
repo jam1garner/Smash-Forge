@@ -302,11 +302,11 @@
     <Compile Include="GUI\Editors\ProjectTree.Designer.cs">
       <DependentUpon>ProjectTree.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\StageLighting.cs">
+    <Compile Include="GUI\Editors\LightSetEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\StageLighting.Designer.cs">
-      <DependentUpon>StageLighting.cs</DependentUpon>
+    <Compile Include="GUI\Editors\LightSetEditor.Designer.cs">
+      <DependentUpon>LightSetEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\SwagEditor.cs">
       <SubType>Form</SubType>
@@ -563,8 +563,8 @@
     <EmbeddedResource Include="GUI\Editors\ProjectTree.resx">
       <DependentUpon>ProjectTree.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\StageLighting.resx">
-      <DependentUpon>StageLighting.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Editors\LightSetEditor.resx">
+      <DependentUpon>LightSetEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\SwagEditor.resx">
       <DependentUpon>SwagEditor.cs</DependentUpon>

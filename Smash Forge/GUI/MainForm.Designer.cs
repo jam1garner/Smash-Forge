@@ -147,7 +147,7 @@
             this.nUTToolStripMenuItem.Name = "nUTToolStripMenuItem";
             this.nUTToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.nUTToolStripMenuItem.Text = "NUT";
-            this.nUTToolStripMenuItem.Click += new System.EventHandler(this.nUTToolStripMenuItem_Click);
+            this.nUTToolStripMenuItem.Click += new System.EventHandler(this.nutToolStripMenuItem_Click);
             // 
             // dSTexToolStripMenuItem
             // 

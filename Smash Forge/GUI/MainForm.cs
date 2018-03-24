@@ -1652,8 +1652,30 @@ namespace Smash_Forge
 
         private void stageLightingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            StageLighting stageLightForm = new StageLighting();
-            stageLightForm.Show();
+
+            if (Runtime.lightSetParam == null)
+            {
+                // There isn't a way to create a new light_set_param.bin currently, so the user has to open an existing one.
+                var lightSetWarning = MessageBox.Show("No light_set_param.bin detected. Please open an existing light_set_param.bin file.",
+                    "No light_set detected.", MessageBoxButtons.OKCancel);
+                if (lightSetWarning == DialogResult.Cancel)
+                {
+                    return;
+                }
+                else
+                {
+                    if (LightSetEditor.OpenLightSet())
+                    {
+                        LightSetEditor stageLightForm = new LightSetEditor();
+                        stageLightForm.Show();
+                    }
+                }
+            }
+            else
+            {
+                LightSetEditor stageLightForm = new LightSetEditor();
+                stageLightForm.Show();
+            }
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1664,7 +1686,7 @@ namespace Smash_Forge
             }
         }
 
-        private void nUTToolStripMenuItem_Click(object sender, EventArgs e)
+        private void nutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NUT nut = new NUT();
             NUTEditor editor = new NUTEditor(nut);

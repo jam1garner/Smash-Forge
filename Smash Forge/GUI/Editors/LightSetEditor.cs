@@ -17,13 +17,13 @@ using Smash_Forge.Rendering;
 
 namespace Smash_Forge.GUI.Editors
 {
-    public partial class StageLighting : Form
+    public partial class LightSetEditor : Form
     {
         private DirectionalLight selectedStageLight = new DirectionalLight();
         private DirectionalLight selectedCharDiffuseLight = new DirectionalLight();
         private AreaLight selectedAreaLight = new AreaLight("");
 
-        public StageLighting()
+        public LightSetEditor()
         {
             InitializeComponent();
 
@@ -97,22 +97,6 @@ namespace Smash_Forge.GUI.Editors
             charLightsListBox.Items.Add(Runtime.lightSetParam.characterDiffuse2);
             charLightsListBox.Items.Add(Runtime.lightSetParam.characterDiffuse3);
             charLightsListBox.Items.Add(Runtime.lightSetParam.fresnelLight);
-        }
-
-        private void openLightSetButton_Click(object sender, EventArgs e)
-        {
-            using (var ofd = new OpenFileDialog())
-            {
-                ofd.Filter = "Param Files (.bin)|*.bin|" +
-                             "All files(*.*)|*.*";
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    if (ofd.FileName.EndsWith("light_set_param.bin"))
-                    {
-                        Runtime.lightSetParam = new Params.LightSetParam(ofd.FileName);
-                    }
-                }
-            }
         }
 
         private void charLightsListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -510,33 +494,33 @@ namespace Smash_Forge.GUI.Editors
 
         private void areaCeilRedTrackBar_Scroll(object sender, EventArgs e)
         {
-            areaCeilRedTB.Text = (float)(2 * (areaCeilRedTrackBar.Value / (float)areaCeilRedTrackBar.Maximum)) + "";
+            areaCeilRedTB.Text = (2 * (areaCeilRedTrackBar.Value / (float)areaCeilRedTrackBar.Maximum)) + "";
         }
 
         private void areaCeilGreenTrackBar_Scroll(object sender, EventArgs e)
         {
-            areaCeilGreenTB.Text = (float)(2 * (areaCeilGreenTrackBar.Value / (float)areaCeilGreenTrackBar.Maximum)) + "";
+            areaCeilGreenTB.Text = (2 * (areaCeilGreenTrackBar.Value / (float)areaCeilGreenTrackBar.Maximum)) + "";
 
         }
 
         private void areaCeilBlueTrackBar_Scroll(object sender, EventArgs e)
         {
-            areaCeilBlueTB.Text = (float)(2 * (areaCeilBlueTrackBar.Value / (float)areaCeilBlueTrackBar.Maximum)) + "";
+            areaCeilBlueTB.Text = (2 * (areaCeilBlueTrackBar.Value / (float)areaCeilBlueTrackBar.Maximum)) + "";
         }
 
         private void areaGroundRedTrackBar_Scroll(object sender, EventArgs e)
         {
-            areaGroundRedTB.Text = (float)(2 * (areaGroundRedTrackBar.Value / (float)areaGroundRedTrackBar.Maximum)) + "";
+            areaGroundRedTB.Text = (2 * (areaGroundRedTrackBar.Value / (float)areaGroundRedTrackBar.Maximum)) + "";
         }
 
         private void areaGroundGreenTrackBar_Scroll(object sender, EventArgs e)
         {
-            areaGroundGreenTB.Text = (float)(2 * (areaGroundGreenTrackBar.Value / (float)areaGroundGreenTrackBar.Maximum)) + "";
+            areaGroundGreenTB.Text = (2 * (areaGroundGreenTrackBar.Value / (float)areaGroundGreenTrackBar.Maximum)) + "";
         }
 
         private void areaGroundBlueTrackBar_Scroll(object sender, EventArgs e)
         {
-            areaGroundBlueTB.Text = (float)(2 * (areaGroundBlueTrackBar.Value / (float)areaGroundBlueTrackBar.Maximum)) + "";
+            areaGroundBlueTB.Text = (2 * (areaGroundBlueTrackBar.Value / (float)areaGroundBlueTrackBar.Maximum)) + "";
         }
 
         private void areaPosXTB_TextChanged(object sender, EventArgs e)
@@ -659,6 +643,35 @@ namespace Smash_Forge.GUI.Editors
                     node.Checked = stageLightSetTreeView.SelectedNode.Checked;
                 }
             }*/
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenLightSet();
+        }
+
+        public static bool OpenLightSet()
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Param Files (.bin)|*.bin|" +
+                             "All files(*.*)|*.*";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    if (ofd.FileName.EndsWith("light_set_param.bin"))
+                    {
+                        Runtime.lightSetParam = new Params.LightSetParam(ofd.FileName);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
