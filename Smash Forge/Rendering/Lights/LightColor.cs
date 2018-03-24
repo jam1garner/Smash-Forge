@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Smash_Forge.Rendering
+namespace Smash_Forge.Rendering.Lights
 {
     public class LightColor
     {
