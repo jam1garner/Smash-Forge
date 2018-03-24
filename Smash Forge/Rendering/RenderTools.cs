@@ -51,34 +51,6 @@ namespace Smash_Forge.Rendering
             defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
         }
 
-        public static object GetValueFromParamFile(ParamFile file, int groupIndex, int entryIndex, int valueIndex)
-        {
-            if (groupIndex > file.Groups.Count)
-                return null;
-
-            if ((file.Groups[groupIndex] is ParamGroup))
-            {
-                int entrySize = ((ParamGroup)file.Groups[groupIndex]).EntrySize;
-                for (int i = 0; i < entrySize; i++)
-                {
-                    if (i == valueIndex)
-                        return file.Groups[groupIndex].Values[entrySize * entryIndex + i].Value;
-                }
-            }
-            else if ((file.Groups[groupIndex] is ParamList))
-            {
-                for (int i = 0; i < file.Groups[groupIndex].Values.Count; i++)
-                {
-                    if (i == valueIndex)
-                    {
-                        return file.Groups[groupIndex].Values[i].Value;
-                    }
-                }
-            }
-
-            return null;
-        }
-
         private static void GetOpenGLSystemInfo()
         {
             Runtime.renderer = GL.GetString(StringName.Renderer);

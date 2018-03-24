@@ -25,7 +25,6 @@ namespace Smash_Forge
 {
     public partial class MainForm : FormBase
     {
-
         public static MainForm Instance
         {
             get { return _instance != null ? _instance : (_instance = new MainForm()); }
@@ -103,7 +102,7 @@ namespace Smash_Forge
             Config.StartupFromFile(MainForm.executableDir + "\\config.xml");
             DiscordSettings.Update();
 
-            ShaderTools.SetupShaders();
+            Rendering.ShaderTools.SetupShaders();
 
             openFiles();
         }
@@ -809,9 +808,7 @@ namespace Smash_Forge
                 {
                     if (fileName.EndsWith("light_set_param.bin"))
                     {
-                        // should this always replace existing settings?
-                        Runtime.lightSetParam = new ParamFile(fileName);
-                        LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                        Runtime.lightSetParam = new Params.LightSetParam(fileName);
                     }
 
                     if (fileName.EndsWith("area_light.xmb"))
@@ -1304,8 +1301,7 @@ namespace Smash_Forge
 
                     if (fileName.EndsWith("light_set_param.bin"))
                     {
-                        Runtime.lightSetParam = new ParamFile(fileName);
-                        LightTools.SetLightsFromLightSetParam(Runtime.lightSetParam);
+                        Runtime.lightSetParam = new Params.LightSetParam(fileName);
                     }
 
                     if (fileName.EndsWith("stprm.bin"))
@@ -1656,8 +1652,27 @@ namespace Smash_Forge
 
         private void stageLightingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            StageLighting stageLightForm = new StageLighting();
-            stageLightForm.Show();
+
+            if (Runtime.lightSetParam == null)
+            {
+                // There isn't a way to create a new light_set_param.bin currently, so the user has to open an existing one.
+                var lightSetWarning = MessageBox.Show("No light_set_param.bin detected. Please open an existing light_set_param.bin file.",
+                    "No light_set detected.", MessageBoxButtons.OKCancel);
+                if (lightSetWarning == DialogResult.Cancel)
+                {
+                    return;
+                }
+                else if (LightSetEditor.OpenLightSet())
+                {
+                    LightSetEditor stageLightForm = new LightSetEditor();
+                    stageLightForm.Show();
+                }             
+            }
+            else
+            {
+                LightSetEditor stageLightForm = new LightSetEditor();
+                stageLightForm.Show();
+            }
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1668,7 +1683,7 @@ namespace Smash_Forge
             }
         }
 
-        private void nUTToolStripMenuItem_Click(object sender, EventArgs e)
+        private void nutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NUT nut = new NUT();
             NUTEditor editor = new NUTEditor(nut);
@@ -1698,7 +1713,7 @@ namespace Smash_Forge
 
         private void reloadShadersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ShaderTools.SetupShaders();
+            Rendering.ShaderTools.SetupShaders();
         }
 
         private void open3DSCharacterToolStripMenuItem_Click(object sender, EventArgs e)

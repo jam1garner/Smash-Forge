@@ -1065,7 +1065,7 @@ namespace Smash_Forge
             
             if (labels != null)
             {
-                param1TB.Text = GuiTools.GetTrackBarValue(param1TrackBar, labels.max1).ToString();
+                param1TB.Text = GuiTools.GetTrackBarValue(param1TrackBar, 0, labels.max1).ToString();
             }
         }
 
@@ -1076,7 +1076,7 @@ namespace Smash_Forge
 
             if (labels != null)
             {
-                param2TB.Text = GuiTools.GetTrackBarValue(param2TrackBar, labels.max2).ToString();
+                param2TB.Text = GuiTools.GetTrackBarValue(param2TrackBar, 0, labels.max2).ToString();
             }
         }
 
@@ -1087,7 +1087,7 @@ namespace Smash_Forge
 
             if (labels != null)
             {
-                param3TB.Text = GuiTools.GetTrackBarValue(param3TrackBar, labels.max3).ToString();
+                param3TB.Text = GuiTools.GetTrackBarValue(param3TrackBar, 0, labels.max3).ToString();
             }
         }
 
@@ -1098,7 +1098,7 @@ namespace Smash_Forge
 
             if (labels != null)
             {
-                param4TB.Text = GuiTools.GetTrackBarValue(param4TrackBar, labels.max4).ToString();
+                param4TB.Text = GuiTools.GetTrackBarValue(param4TrackBar, 0, labels.max4).ToString();
             }
         }
 

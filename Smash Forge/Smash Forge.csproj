@@ -103,6 +103,8 @@
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
     <Compile Include="Filetypes\Animation\LIGH.cs" />
+    <Compile Include="Filetypes\Params\LightSetParam.cs" />
+    <Compile Include="Filetypes\Params\ParamTools.cs" />
     <Compile Include="Filetypes\Sounds\NUS3BANK.cs" />
     <Compile Include="Filetypes\Sounds\VGMStreamNative.cs" />
     <Compile Include="Filetypes\Sounds\WAVE.cs" />
@@ -300,11 +302,11 @@
     <Compile Include="GUI\Editors\ProjectTree.Designer.cs">
       <DependentUpon>ProjectTree.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\StageLighting.cs">
+    <Compile Include="GUI\Editors\LightSetEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\StageLighting.Designer.cs">
-      <DependentUpon>StageLighting.cs</DependentUpon>
+    <Compile Include="GUI\Editors\LightSetEditor.Designer.cs">
+      <DependentUpon>LightSetEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\SwagEditor.cs">
       <SubType>Form</SubType>
@@ -457,15 +459,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\AreaLight.cs" />
+    <Compile Include="Rendering\Lights\AreaLight.cs" />
     <Compile Include="Rendering\BatchRenderTools.cs" />
     <Compile Include="Rendering\Camera.cs" />
     <Compile Include="Rendering\ColorTools.cs" />
-    <Compile Include="Rendering\DirectionalLight.cs" />
+    <Compile Include="Rendering\Lights\DirectionalLight.cs" />
     <Compile Include="Rendering\FrameTimer.cs" />
-    <Compile Include="Rendering\HemisphereFresnel.cs" />
-    <Compile Include="Rendering\LightMap.cs" />
-    <Compile Include="Rendering\LightTools.cs" />
+    <Compile Include="Rendering\Lights\HemisphereFresnel.cs" />
+    <Compile Include="Rendering\Lights\LightColor.cs" />
+    <Compile Include="Rendering\Lights\LightMap.cs" />
+    <Compile Include="Rendering\Lights\LightTools.cs" />
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\ShaderTools.cs" />
     <Compile Include="Updates.cs" />
@@ -560,8 +563,8 @@
     <EmbeddedResource Include="GUI\Editors\ProjectTree.resx">
       <DependentUpon>ProjectTree.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\StageLighting.resx">
-      <DependentUpon>StageLighting.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Editors\LightSetEditor.resx">
+      <DependentUpon>LightSetEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\SwagEditor.resx">
       <DependentUpon>SwagEditor.cs</DependentUpon>

@@ -480,7 +480,7 @@ namespace Smash_Forge
             SetMaterialPropertyUniforms(shader, material);
             SetLightingUniforms(shader);
             SetXMBUniforms(shader, p);
-            SetNSCUniform(p, shader);
+            SetNscUniform(p, shader);
 
             // Used for NU_universe material projection coords. 
             GL.Uniform3(shader.getAttribute("cameraPosition"), camera.position);
@@ -567,39 +567,30 @@ namespace Smash_Forge
 
         private void SetLightingUniforms(Shader shader)
         {
-            // stage light 1
-            int index1 = 0 + (4 * lightSetNumber);
-            LightTools.stageLight1 = LightTools.stageDiffuseLightSet[index1];
-            int v = 0;
-            if (LightTools.stageDiffuseLightSet[index1].enabled) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("renderStageLight1"), v);
-            GL.Uniform3(shader.getAttribute("stageLight1Color"), LightTools.stageLight1.difR, LightTools.stageLight1.difG, LightTools.stageLight1.difB);
+            for (int i = 0; i < 4; i++)
+            {
+                SetStageLightUniform(shader, i);
+            }
 
-            // stage light 2
-            int index2 = 1 + (4 * lightSetNumber);
-            LightTools.stageLight2 = LightTools.stageDiffuseLightSet[index2];
-            if (LightTools.stageDiffuseLightSet[index2].enabled) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("renderStageLight2"), v);
-            GL.Uniform3(shader.getAttribute("stageLight2Color"), LightTools.stageLight2.difR, LightTools.stageLight2.difG, LightTools.stageLight2.difB);
-
-            // stage light 3
-            int index3 = 2 + (4 * lightSetNumber);
-            LightTools.stageLight3 = LightTools.stageDiffuseLightSet[index3];
-            if (LightTools.stageDiffuseLightSet[index3].enabled) v = 1; else v = 0;
-            GL.Uniform1(shader.getAttribute("renderStageLight3"), v);
-            GL.Uniform3(shader.getAttribute("stageLight3Color"), LightTools.stageLight3.difR, LightTools.stageLight3.difG, LightTools.stageLight3.difB);
-
-            // stage light 4
-            int index4 = 3 + (4 * lightSetNumber);
-            LightTools.stageLight4 = LightTools.stageDiffuseLightSet[index4];
-            ShaderTools.BoolToIntShaderUniform(shader, LightTools.stageDiffuseLightSet[index4].enabled, "renderStageLight4");
-
-            GL.Uniform3(shader.getAttribute("stageLight4Color"), LightTools.stageLight4.difR, LightTools.stageLight4.difG, LightTools.stageLight4.difB);
-
-            GL.Uniform3(shader.getAttribute("stageFogColor"), LightTools.stageFogSet[lightSetNumber]);
+            ShaderTools.LightColorVector3Uniform(shader, Runtime.lightSetParam.stageFogSet[lightSetNumber], "stageFogColor");
         }
 
-        private static void SetNSCUniform(Polygon p, Shader shader)
+        private void SetStageLightUniform(Shader shader, int lightIndex)
+        {
+            int index = lightIndex + (4 * lightSetNumber);
+            DirectionalLight stageLight = Runtime.lightSetParam.stageDiffuseLights[index];
+
+            string uniformBoolName = "renderStageLight" + (lightIndex + 1);
+            ShaderTools.BoolToIntShaderUniform(shader, Runtime.lightSetParam.stageDiffuseLights[index].enabled, uniformBoolName);
+
+            string uniformColorName = "stageLight" + (lightIndex + 1) + "Color";
+            ShaderTools.LightColorVector3Uniform(shader, stageLight.diffuseColor, uniformBoolName);
+
+            string uniformDirectionName = "stageLight" + (lightIndex + 1) + "Direction";
+            GL.Uniform3(shader.getAttribute(uniformDirectionName), stageLight.direction);
+        }
+
+        private static void SetNscUniform(Polygon p, Shader shader)
         {
             Matrix4 nscMatrix = Matrix4.Identity;
 
@@ -635,7 +626,6 @@ namespace Smash_Forge
         private void SetVertexAttributes(Polygon p, Shader shader)
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-            //GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
             GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
             GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
             GL.VertexAttribPointer(shader.getAttribute("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
@@ -646,10 +636,7 @@ namespace Smash_Forge
             GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
             GL.VertexAttribPointer(shader.getAttribute("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
             GL.VertexAttribPointer(shader.getAttribute("vUV3"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
-
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
-            //GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
         private static void DrawModelWireframe(Polygon p, Shader shader)
@@ -923,7 +910,6 @@ namespace Smash_Forge
                 foreach (Polygon p in m.Nodes)
                 {
                     GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-                    //GL.BufferData<dVertex>(BufferTarget.ArrayBuffer, (IntPtr)(p.vertdata.Length * dVertex.Size), p.vertdata, BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
                     GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 72);
                     GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
@@ -934,7 +920,6 @@ namespace Smash_Forge
                     GL.VertexAttribPointer(shader.getAttribute("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
                     GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
-                    //GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(p.display.Length * sizeof(int)), p.display, BufferUsageHint.StaticDraw);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                     
                     GL.PointSize(6f);

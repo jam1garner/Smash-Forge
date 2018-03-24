@@ -48,19 +48,40 @@ namespace Smash_Forge
             return new Vector4(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
         }
 
-        public static void HSV2RGB(float h, float s, float v, out float R, out float G, out float B)
+        public static void HsvToRgb(float h, float s, float v, out float r, out float g, out float b)
         {
+            r = 1.0f;
+            g = 1.0f;
+            b = 1.0f;
 
-            R = 1.0f;
-            G = 1.0f;
-            B = 1.0f;
+            CalculateRgbFromHsv(h, s, v, ref r, ref g, ref b);
+        }
 
-            // values have to be 0-360 to work properly
-            while (h > 360) { h -= 360; }
-            while (h < 0) { h += 360; }
+        public static void HsvToRgb(Vector3 hsv, out Vector3 rgb)
+        {
+            float r = 1.0f;
+            float g = 1.0f;
+            float b = 1.0f;
+            float h = hsv.X;
+            float s = hsv.Y;
+            float v = hsv.Z;
 
-            if (s > 1.0f)
-                s = 1.0f;
+            CalculateRgbFromHsv(h, s, v, ref r, ref g, ref b);
+            rgb = new Vector3(r, g, b);
+        }
+
+        private static void CalculateRgbFromHsv(float h, float s, float v, ref float r, ref float g, ref float b)
+        {
+            // Hue has to be 0 to 360.
+            while (h > 360)
+                h -= 360;
+            while (h < 0)
+                h += 360;
+            // Saturation has to be 0 to 1.
+            if (s > 1)
+                s = 1;
+            if (s < 0)
+                s = 0;
 
             float hf = h / 60.0f;
             int i = (int)Math.Floor(hf);
@@ -72,65 +93,73 @@ namespace Smash_Forge
             switch (i)
             {
                 // Red is the dominant color
-
                 case 0:
-                    R = v;
-                    G = tv;
-                    B = pv;
+                    r = v;
+                    g = tv;
+                    b = pv;
                     break;
-
                 // Green is the dominant color
-
                 case 1:
-                    R = qv;
-                    G = v;
-                    B = pv;
+                    r = qv;
+                    g = v;
+                    b = pv;
                     break;
                 case 2:
-                    R = pv;
-                    G = v;
-                    B = tv;
+                    r = pv;
+                    g = v;
+                    b = tv;
                     break;
-
                 // Blue is the dominant color
-
                 case 3:
-                    R = pv;
-                    G = qv;
-                    B = v;
+                    r = pv;
+                    g = qv;
+                    b = v;
                     break;
                 case 4:
-                    R = tv;
-                    G = pv;
-                    B = v;
+                    r = tv;
+                    g = pv;
+                    b = v;
                     break;
-
                 // Red is the dominant color
-
                 case 5:
-                    R = v;
-                    G = pv;
-                    B = qv;
+                    r = v;
+                    g = pv;
+                    b = qv;
                     break;
-
                 case 6:
-                    R = v;
-                    G = tv;
-                    B = pv;
+                    r = v;
+                    g = tv;
+                    b = pv;
                     break;
-
             }
-
         }
 
-        public static void RGB2HSV(float R, float G, float B, out float h, out float s, out float v)
+        public static void RgbToHsv(float r, float g, float b, out float h, out float s, out float v)
         {
             h = 360.0f;
             s = 1.0f;
             v = 1.0f;
 
-            float cMax = Math.Max(Math.Max(R, G), B);
-            float cMin = Math.Min(Math.Min(R, G), B);
+            CalculateHsvFromRgb(r, g, b, ref h, ref s, ref v);
+        }
+
+        public static void RgbToHsv(Vector3 rgb, out Vector3 hsv)
+        {
+            float h = 360.0f;
+            float s = 1.0f;
+            float v = 1.0f;
+            float r = rgb.X;
+            float g = rgb.Y;
+            float b = rgb.Z;
+
+            CalculateHsvFromRgb(r, g, b, ref h, ref s, ref v);
+            hsv = new Vector3(h, s, v);
+        }
+
+        private static void CalculateHsvFromRgb(float r, float g, float b, ref float h, ref float s, ref float v)
+        {
+            float cMax = Math.Max(Math.Max(r, g), b);
+            float cMin = Math.Min(Math.Min(r, g), b);
             float delta = cMax - cMin;
 
             v = cMax;
@@ -143,23 +172,22 @@ namespace Smash_Forge
             else
                 s = delta / v;
 
-            if (R == cMax)
-                h = 60.0f * (((G - B) / delta));
+            if (r == cMax)
+                h = 60.0f * (((g - b) / delta));
 
-            else if (G == cMax)
-                h = 60.0f * (((B - R) / delta) + 2);
+            else if (g == cMax)
+                h = 60.0f * (((b - r) / delta) + 2);
 
-            else if (B == cMax)
-                h = 60.0f * (((R - G) / delta) + 4);
+            else if (b == cMax)
+                h = 60.0f * (((r - g) / delta) + 4);
 
             while (h < 0.0f)
                 h += 360.0f;
-
         }
 
         public static void ColorTemp2RGB(float temp, out float R, out float G, out float B)
         {
-            // adapted from a cool algorithm by Tanner Helland
+            // Adapted from an approximation of the black body curve by Tanner Helland.
             // http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/ 
 
             R = 1.0f;
@@ -232,42 +260,42 @@ namespace Smash_Forge
         }
 
 
-        public static int ClampInt(int i) // Restricts RGB values to 0 to 255
+        public static int ClampInt(int i) 
         {
+            // Restricts RGB values to 0 to 255
             if (i > 255)
                 return 255;
-            if (i < 0)
+            else if (i < 0)
                 return 0;
             else
                 return i;
         }
 
-        public static float ClampFloat(float f) // Restricts RGB values to 0.0 to 1.0
+        public static float ClampFloat(float f) 
         {
+            // Restricts RGB values to 0.0 to 1.0
             if (f > 1.0f)
                 return 1.0f;
-            if (f < 0.0f)
+            else if (f < 0.0f)
                 return 0.0f;
             else
                 return f;
         }
 
-        public static Color invertColor(Color color)
+        public static Color InvertColor(Color color)
         {
             return Color.FromArgb(color.A, 255 - color.R, 255 - color.G, 255 - color.B);
         }
 
         public static int FloatToIntClamp(float f)
         {
-            // Converts input color to int and restricts values to 0 to 255.
-            // Useful for setting colors of GUI stuff.
-            f *= 255;
-            f = (int)f;
-            if (f > 255)
+            // Clamp 0 to 255. Useful for setting colors of GUI stuff.
+            int i = (int)(f * 255);
+            if (i > 255)
                 return 255;
-            if (f < 0)
+            else if (i < 0)
                 return 0;
-            return (int)f;
+            return i;
         }
     }
 }
