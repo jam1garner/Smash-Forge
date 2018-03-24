@@ -92,7 +92,7 @@ namespace Smash_Forge.Params
             float saturation = (float)ParamTools.GetParamValue(lightSet, 2, 1 + i, 1);
             float value = (float)ParamTools.GetParamValue(lightSet, 2, 1 + i, 2);
             float fogR = 0.0f, fogB = 0.0f, fogG = 0.0f;
-            ColorTools.HSV2RGB(hue, saturation, value, out fogR, out fogG, out fogB);
+            ColorTools.HsvToRgb(hue, saturation, value, out fogR, out fogG, out fogB);
             Vector3 color = new Vector3(fogR, fogG, fogB);
             return color;
         }

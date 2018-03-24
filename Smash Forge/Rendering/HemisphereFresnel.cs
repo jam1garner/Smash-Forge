@@ -48,7 +48,7 @@ namespace Smash_Forge.Rendering.Lights
             skyHue = skyHsv.X;
             skySaturation = skyHsv.Y;
             skyIntensity = skyHsv.Z;
-            ColorTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+            ColorTools.HsvToRgb(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
 
             this.skyAngle = skyAngle;
             this.groundAngle = groundAngle;
@@ -58,37 +58,37 @@ namespace Smash_Forge.Rendering.Lights
         public void setSkyHue(float skyHue)
         {
             this.skyHue = skyHue;
-            ColorTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+            ColorTools.HsvToRgb(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
         }
 
         public void setSkySaturation(float skySaturation)
         {
             this.skySaturation = skySaturation;
-            ColorTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+            ColorTools.HsvToRgb(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
         }
 
         public void setSkyIntensity(float skyIntensity)
         {
             this.skyIntensity = skyIntensity;
-            ColorTools.HSV2RGB(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+            ColorTools.HsvToRgb(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
         }
 
         public void setGroundHue(float groundHue)
         {
             this.groundHue = groundHue;
-            ColorTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
+            ColorTools.HsvToRgb(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
         }
 
         public void setGroundSaturation(float groundSaturation)
         {
             this.groundSaturation = groundSaturation;
-            ColorTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
+            ColorTools.HsvToRgb(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
         }
 
         public void setGroundIntensity(float groundIntensity)
         {
             this.groundIntensity = groundIntensity;
-            ColorTools.HSV2RGB(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
+            ColorTools.HsvToRgb(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
         }
 
         public Vector3 getSkyDirection()

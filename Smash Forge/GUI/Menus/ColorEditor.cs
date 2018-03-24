@@ -38,7 +38,7 @@ namespace Smash_Forge.GUI.Menus
             R = color.X;
             G = color.Y;
             B = color.Z;
-            ColorTools.RGB2HSV(R, G, B, out hue, out saturation, out value);
+            ColorTools.RgbToHsv(R, G, B, out hue, out saturation, out value);
             modeComboBox.SelectedIndex = 0;
             colorXTB.Text = R.ToString(numFormat);
             colorYTB.Text = G.ToString(numFormat);
@@ -137,14 +137,14 @@ namespace Smash_Forge.GUI.Menus
 
         private void UpdateValuesFromRgb()
         {
-            ColorTools.RGB2HSV(R, G, B, out hue, out saturation, out value);
+            ColorTools.RgbToHsv(R, G, B, out hue, out saturation, out value);
             UpdateColorTrackBars();
             UpdateButtonColor();
         }
 
         private void UpdateValuesFromHsv()
         {
-            ColorTools.HSV2RGB(hue, saturation, value, out R, out G, out B);
+            ColorTools.HsvToRgb(hue, saturation, value, out R, out G, out B);
             UpdateColorTrackBars();
             UpdateButtonColor();
         }
