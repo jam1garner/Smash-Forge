@@ -8,7 +8,7 @@ namespace Smash_Forge.Rendering
 {
     public class LightColor
     {
-        private float h;
+        private float h = 0;
         public float H
         {
             get { return h; }
@@ -19,7 +19,7 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        private float s;
+        private float s = 0;
         public float S
         {
             get { return s; }
@@ -30,7 +30,7 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        private float v;
+        private float v = 0;
         public float V
         {
             get { return v; }
@@ -41,7 +41,7 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        private float r;
+        private float r = 0;
         public float R
         {
             get { return r; }
@@ -52,7 +52,7 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        private float g;
+        private float g = 0;
         public float G
         {
             get { return g; }
@@ -63,7 +63,7 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        private float b;
+        private float b = 0;
         public float B
         {
             get { return b; }

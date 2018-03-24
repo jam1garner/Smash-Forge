@@ -413,8 +413,8 @@ namespace Smash_Forge
         private static void SetLightingUniforms(Shader shader, Camera camera)
         {
             // fresnel sky/ground color for characters & stages
-            GL.Uniform3(shader.getAttribute("fresGroundColor"), Runtime.lightSetParam.fresnelLight.groundR, Runtime.lightSetParam.fresnelLight.groundG, Runtime.lightSetParam.fresnelLight.groundB);
-            GL.Uniform3(shader.getAttribute("fresSkyColor"), Runtime.lightSetParam.fresnelLight.skyR, Runtime.lightSetParam.fresnelLight.skyG, Runtime.lightSetParam.fresnelLight.skyB);
+            ShaderTools.LightColorVector3Uniform(shader, Runtime.lightSetParam.fresnelLight.groundColor, "fresGroundColor");
+            ShaderTools.LightColorVector3Uniform(shader, Runtime.lightSetParam.fresnelLight.skyColor, "fresSkyColor");
             GL.Uniform3(shader.getAttribute("fresSkyDirection"), Runtime.lightSetParam.fresnelLight.getSkyDirection());
             GL.Uniform3(shader.getAttribute("fresGroundDirection"), Runtime.lightSetParam.fresnelLight.getGroundDirection());
 

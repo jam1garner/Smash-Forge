@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.IO;
+using Smash_Forge.Rendering.Lights;
 
-namespace Smash_Forge
+namespace Smash_Forge.Rendering
 {
     class ShaderTools
     {
@@ -54,6 +55,11 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute(name), 1);
             else
                 GL.Uniform1(shader.getAttribute(name), 0);
+        }
+
+        public static void LightColorVector3Uniform(Shader shader, LightColor color, string name)
+        {
+            GL.Uniform3(shader.getAttribute(name), color.R, color.G, color.B);
         }
     }
 }

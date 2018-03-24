@@ -584,7 +584,7 @@ namespace Smash_Forge
             ShaderTools.BoolToIntShaderUniform(shader, Runtime.lightSetParam.stageDiffuseLights[index].enabled, uniformBoolName);
 
             string uniformColorName = "stageLight" + (lightIndex + 1) + "Color";
-            GL.Uniform3(shader.getAttribute(uniformColorName), stageLight.diffuseColor.R, stageLight.diffuseColor.G, stageLight.diffuseColor.B);
+            ShaderTools.LightColorVector3Uniform(shader, stageLight.diffuseColor, uniformBoolName);
 
             string uniformDirectionName = "stageLight" + (lightIndex + 1) + "Direction";
             GL.Uniform3(shader.getAttribute(uniformDirectionName), stageLight.direction);

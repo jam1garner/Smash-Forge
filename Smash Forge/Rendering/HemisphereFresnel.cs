@@ -13,82 +13,32 @@ namespace Smash_Forge.Rendering.Lights
 {
     public class HemisphereFresnel
     {
-        // ground color
-        public float groundR = 1.0f;
-        public float groundG = 1.0f;
-        public float groundB = 1.0f;
-        public float groundHue = 0.0f;
-        public float groundSaturation = 0.0f;
-        public float groundIntensity = 1.0f;
+        public LightColor groundColor = new LightColor();
+        public LightColor skyColor = new LightColor();
 
-        // sky color
-        public float skyR = 1.0f;
-        public float skyG = 1.0f;
-        public float skyB = 1.0f;
-        public float skyHue = 0.0f;
-        public float skySaturation = 0.0f;
-        public float skyIntensity = 1.0f;
-
-        // direction
+        // There are two lights with different x-axis rotations.
         public float skyAngle = 0;
         public float groundAngle = 0;
 
-        public string name = "";
+        public string id = "";
 
         public HemisphereFresnel()
         {
 
         }
 
-        public HemisphereFresnel(Vector3 groundHsv, Vector3 skyHsv, float skyAngle, float groundAngle, string name)
+        public HemisphereFresnel(Vector3 groundHsv, Vector3 skyHsv, float skyAngle, float groundAngle, string id)
         {
-            groundHue = groundHsv.X;
-            groundSaturation = groundHsv.Y;
-            groundIntensity = groundHsv.Z;
-            skyHue = skyHsv.X;
-            skySaturation = skyHsv.Y;
-            skyIntensity = skyHsv.Z;
-            ColorTools.HsvToRgb(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
+            groundColor.H = groundHsv.X;
+            groundColor.S = groundHsv.Y;
+            groundColor.V = groundHsv.Z;
+            skyColor.H = skyHsv.X;
+            skyColor.S = skyHsv.Y;
+            skyColor.V = skyHsv.Z;
 
             this.skyAngle = skyAngle;
             this.groundAngle = groundAngle;
-            this.name = name;
-        }
-
-        public void setSkyHue(float skyHue)
-        {
-            this.skyHue = skyHue;
-            ColorTools.HsvToRgb(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
-        }
-
-        public void setSkySaturation(float skySaturation)
-        {
-            this.skySaturation = skySaturation;
-            ColorTools.HsvToRgb(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
-        }
-
-        public void setSkyIntensity(float skyIntensity)
-        {
-            this.skyIntensity = skyIntensity;
-            ColorTools.HsvToRgb(skyHue, skySaturation, skyIntensity, out skyR, out skyG, out skyB);
-        }
-
-        public void setGroundHue(float groundHue)
-        {
-            this.groundHue = groundHue;
-            ColorTools.HsvToRgb(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
-        }
-
-        public void setGroundSaturation(float groundSaturation)
-        {
-            this.groundSaturation = groundSaturation;
-            ColorTools.HsvToRgb(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
-        }
-
-        public void setGroundIntensity(float groundIntensity)
-        {
-            this.groundIntensity = groundIntensity;
-            ColorTools.HsvToRgb(groundHue, groundSaturation, groundIntensity, out groundR, out groundG, out groundB);
+            this.id = id;
         }
 
         public Vector3 getSkyDirection()
@@ -107,7 +57,7 @@ namespace Smash_Forge.Rendering.Lights
 
         public override string ToString()
         {
-            return name;
+            return id;
         }
     }
 }

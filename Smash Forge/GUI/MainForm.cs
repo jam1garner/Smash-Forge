@@ -102,7 +102,7 @@ namespace Smash_Forge
             Config.StartupFromFile(MainForm.executableDir + "\\config.xml");
             DiscordSettings.Update();
 
-            ShaderTools.SetupShaders();
+            Rendering.ShaderTools.SetupShaders();
 
             openFiles();
         }
@@ -1694,7 +1694,7 @@ namespace Smash_Forge
 
         private void reloadShadersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ShaderTools.SetupShaders();
+            Rendering.ShaderTools.SetupShaders();
         }
 
         private void open3DSCharacterToolStripMenuItem_Click(object sender, EventArgs e)
