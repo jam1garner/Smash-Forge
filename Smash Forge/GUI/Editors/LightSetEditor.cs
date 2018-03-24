@@ -654,8 +654,7 @@ namespace Smash_Forge.GUI.Editors
         {
             using (var ofd = new OpenFileDialog())
             {
-                ofd.Filter = "Param Files (.bin)|*.bin|" +
-                             "All files(*.*)|*.*";
+                ofd.Filter = "Param Files (.bin)|*.bin|All files(*.*)|*.*";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     if (ofd.FileName.EndsWith("light_set_param.bin"))
@@ -671,7 +670,15 @@ namespace Smash_Forge.GUI.Editors
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string fileName = "";
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Param Files (.bin)|*.bin|All files(*.*)|*.*";
 
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                fileName = saveFileDialog.FileName;
+                Runtime.lightSetParam.Save(fileName);
+            }
         }
     }
 }

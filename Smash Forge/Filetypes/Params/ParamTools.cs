@@ -19,15 +19,18 @@ namespace Smash_Forge.Params
 
             if ((file.Groups[groupIndex] is ParamGroup))
             {
+                // The selected group has multiple entries. Each entry contains EntrySize values. 
                 int entrySize = ((ParamGroup)file.Groups[groupIndex]).EntrySize;
                 for (int i = 0; i < entrySize; i++)
                 {
                     if (i == valueIndex)
-                        return file.Groups[groupIndex].Values[entrySize * entryIndex + i].Value;
+                        return file.Groups[groupIndex].Values[(entrySize * entryIndex) + i].Value;
                 }
             }
+
             else if ((file.Groups[groupIndex] is ParamList))
             {
+                // The selected group doesn't have any entries, so the entryIndex can be ignored. 
                 for (int i = 0; i < file.Groups[groupIndex].Values.Count; i++)
                 {
                     if (i == valueIndex)
@@ -38,6 +41,35 @@ namespace Smash_Forge.Params
             }
 
             return null;
+        }
+
+        public static void ModifyParamValue(ParamFile file, int groupIndex, int entryIndex, int valueIndex, object newValue)
+        {
+            if (groupIndex > file.Groups.Count)
+                return;
+
+            if ((file.Groups[groupIndex] is ParamGroup))
+            {
+                // The selected group has multiple entries. Each entry contains EntrySize values. 
+                int entrySize = ((ParamGroup)file.Groups[groupIndex]).EntrySize;
+                for (int i = 0; i < entrySize; i++)
+                {
+                    if (i == valueIndex)
+                        file.Groups[groupIndex].Values[(entrySize * entryIndex) + i].Value = newValue;
+                }
+            }
+
+            else if ((file.Groups[groupIndex] is ParamList))
+            {
+                // The selected group doesn't have any entries, so the entryIndex can be ignored. 
+                for (int i = 0; i < file.Groups[groupIndex].Values.Count; i++)
+                {
+                    if (i == valueIndex)
+                    {
+                        file.Groups[groupIndex].Values[i].Value = newValue;
+                    }
+                }
+            }
         }
 
         public static void BatchExportLightSetValues()
@@ -64,10 +96,10 @@ namespace Smash_Forge.Params
                                 if (!(file.Contains("light_set")))
                                     continue;
 
-                                SALT.PARAMS.ParamFile lightSet;
+                                ParamFile lightSet;
                                 try
                                 {
-                                    lightSet = new SALT.PARAMS.ParamFile(file);
+                                    lightSet = new ParamFile(file);
                                 }
                                 catch (NotImplementedException)
                                 {

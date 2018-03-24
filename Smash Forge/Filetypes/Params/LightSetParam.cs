@@ -46,6 +46,7 @@ namespace Smash_Forge.Params
         public void Save(string fileName)
         {
             // TODO: Update all the param values.
+            SaveFresnelLight();
             paramFile.Export(fileName);
         }
 
@@ -65,6 +66,18 @@ namespace Smash_Forge.Params
             float groundAngle = (float)ParamTools.GetParamValue(lightSet, 0, 0, 15);
 
             return new HemisphereFresnel(hsvGround, hsvSky, skyAngle, groundAngle, "Fresnel");
+        }
+
+        private void SaveFresnelLight()
+        {
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 8, fresnelLight.groundColor.H);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 9, fresnelLight.groundColor.S);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 10, fresnelLight.groundColor.V);
+
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 11, fresnelLight.skyColor.H);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 12, fresnelLight.skyColor.S);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 13, fresnelLight.skyColor.V);
+
         }
 
         public static DirectionalLight CreateCharDiffuseLightFromLightSet(ParamFile lightSet)

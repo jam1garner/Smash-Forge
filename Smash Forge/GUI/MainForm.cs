@@ -1662,14 +1662,11 @@ namespace Smash_Forge
                 {
                     return;
                 }
-                else
+                else if (LightSetEditor.OpenLightSet())
                 {
-                    if (LightSetEditor.OpenLightSet())
-                    {
-                        LightSetEditor stageLightForm = new LightSetEditor();
-                        stageLightForm.Show();
-                    }
-                }
+                    LightSetEditor stageLightForm = new LightSetEditor();
+                    stageLightForm.Show();
+                }             
             }
             else
             {
