@@ -17,21 +17,21 @@ namespace Smash_Forge.Params
         public DirectionalLight characterDiffuse2;
         public DirectionalLight characterDiffuse3;
 
-        public DirectionalLight[] stageDiffuseLights = new DirectionalLight[64];
+        // The first 4 lights are character lights.
+        public DirectionalLight[] stageDiffuseLights = new DirectionalLight[68];
+
         public Vector3[] stageFogSet = new Vector3[16];
+
         public HemisphereFresnel fresnelLight;
 
         public LightSetParam(string fileName)
         {
             paramFile = new ParamFile(fileName);
-            // TODO: Update all the lights using the param values. 
-            // stage diffuse
             for (int i = 0; i < stageDiffuseLights.Length; i++)
             {
-                stageDiffuseLights[i] = CreateDirectionalLightFromLightSet(paramFile, 4 + i, "Stage " + i);
+                stageDiffuseLights[i] = CreateDirectionalLightFromLightSet(paramFile, i, "Stage " + (i + 1));
             }
 
-            // stage fog
             for (int i = 0; i < stageFogSet.Length; i++)
             {
                 stageFogSet[i] = CreateFogColorFromFogSet(paramFile, i);
@@ -45,8 +45,19 @@ namespace Smash_Forge.Params
 
         public void Save(string fileName)
         {
-            // TODO: Update all the param values.
+            // TODO: Update all the light values.
             SaveFresnelLight();
+            SaveCharDiffuseLights();
+            for (int i = 0; i < 16; i++)
+            {
+                SaveFogColor(i);
+            }
+            // The first 4 lights are character lights.
+            for (int i = 4; i < stageDiffuseLights.Length; i++)
+            {
+                SaveDirectionalLight(i);
+            }
+
             paramFile.Export(fileName);
         }
 
@@ -99,32 +110,71 @@ namespace Smash_Forge.Params
             return new DirectionalLight(diffuseHsv, ambientHsv, 0, 0, 0, "Diffuse");
         }
 
-        public static Vector3 CreateFogColorFromFogSet(ParamFile lightSet, int i)
+        private void SaveCharDiffuseLights()
         {
-            float hue = (float)ParamTools.GetParamValue(lightSet, 2, 1 + i, 0);
-            float saturation = (float)ParamTools.GetParamValue(lightSet, 2, 1 + i, 1);
-            float value = (float)ParamTools.GetParamValue(lightSet, 2, 1 + i, 2);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 29, characterDiffuse.diffuseColor.H);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 30, characterDiffuse.diffuseColor.S);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 31, characterDiffuse.diffuseColor.V);
+
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 33, characterDiffuse.ambientColor.H);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 34, characterDiffuse.ambientColor.S);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 35, characterDiffuse.ambientColor.V);
+            
+            // TODO: Save light rotations.
+
+            for (int i = 0; i < 4; i++)
+            {
+                SaveDirectionalLight(i);
+            }
+        }
+
+        public static Vector3 CreateFogColorFromFogSet(ParamFile lightSet, int fogIndex)
+        {
+            // First fog is probably for characters.
+            float hue = (float)ParamTools.GetParamValue(lightSet, 2, 1 + fogIndex, 0);
+            float saturation = (float)ParamTools.GetParamValue(lightSet, 2, 1 + fogIndex, 1);
+            float value = (float)ParamTools.GetParamValue(lightSet, 2, 1 + fogIndex, 2);
             float fogR = 0.0f, fogB = 0.0f, fogG = 0.0f;
             ColorTools.HsvToRgb(hue, saturation, value, out fogR, out fogG, out fogB);
             Vector3 color = new Vector3(fogR, fogG, fogB);
             return color;
         }
 
-        public static DirectionalLight CreateDirectionalLightFromLightSet(ParamFile lightSet, int lightNumber, string name)
+        private void SaveFogColor(int fogIndex)
         {
-            bool enabled = (uint)ParamTools.GetParamValue(lightSet, 1, lightNumber, 1) == 1;
-            Vector3 hsv = new Vector3(0);
-            hsv.X = (float)ParamTools.GetParamValue(lightSet, 1, lightNumber, 2);
-            hsv.Y = (float)ParamTools.GetParamValue(lightSet, 1, lightNumber, 3);
-            hsv.Z = (float)ParamTools.GetParamValue(lightSet, 1, lightNumber, 4);
+            // First fog is probably for characters.
+            ParamTools.ModifyParamValue(paramFile, 2, 1 + fogIndex, 0, stageFogSet[fogIndex].X);
+            ParamTools.ModifyParamValue(paramFile, 2, 1 + fogIndex, 1, stageFogSet[fogIndex].Y);
+            ParamTools.ModifyParamValue(paramFile, 2, 1 + fogIndex, 2, stageFogSet[fogIndex].Z);
+        }
 
-            float rotX = (float)ParamTools.GetParamValue(lightSet, 1, lightNumber, 5);
-            float rotY = (float)ParamTools.GetParamValue(lightSet, 1, lightNumber, 6);
-            float rotZ = (float)ParamTools.GetParamValue(lightSet, 1, lightNumber, 7);
+        public static DirectionalLight CreateDirectionalLightFromLightSet(ParamFile lightSet, int lightIndex, string name)
+        {
+            bool enabled = (uint)ParamTools.GetParamValue(lightSet, 1, lightIndex, 1) == 1;
+            Vector3 hsv = new Vector3(0);
+            hsv.X = (float)ParamTools.GetParamValue(lightSet, 1, lightIndex, 2);
+            hsv.Y = (float)ParamTools.GetParamValue(lightSet, 1, lightIndex, 3);
+            hsv.Z = (float)ParamTools.GetParamValue(lightSet, 1, lightIndex, 4);
+
+            float rotX = (float)ParamTools.GetParamValue(lightSet, 1, lightIndex, 5);
+            float rotY = (float)ParamTools.GetParamValue(lightSet, 1, lightIndex, 6);
+            float rotZ = (float)ParamTools.GetParamValue(lightSet, 1, lightIndex, 7);
 
             DirectionalLight newLight = new DirectionalLight(hsv, new Vector3(0), rotX, rotY, rotZ, name);
             newLight.enabled = enabled; // doesn't render properly for some stages
             return newLight;
+        }
+
+        private void SaveDirectionalLight(int lightIndex)
+        {
+            // TODO: Enabled/disabled for light.
+            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 2, stageDiffuseLights[lightIndex].diffuseColor.H);
+            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 3, stageDiffuseLights[lightIndex].diffuseColor.S);
+            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 4, stageDiffuseLights[lightIndex].diffuseColor.V);
+
+            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 5, stageDiffuseLights[lightIndex].rotX);
+            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 6, stageDiffuseLights[lightIndex].rotY);
+            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 7, stageDiffuseLights[lightIndex].rotZ);
         }
     }
 }

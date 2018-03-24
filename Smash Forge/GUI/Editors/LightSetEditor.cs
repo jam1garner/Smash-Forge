@@ -31,9 +31,9 @@ namespace Smash_Forge.GUI.Editors
             InitAreaLightListBox();
             InitLightMapListBox();
 
-            for (int groupIndex = 0; groupIndex < 16; groupIndex++)
+            for (int groupIndex = 1; groupIndex < 17; groupIndex++)
             {
-                string name = groupIndex.ToString();
+                string name = (groupIndex - 1) + "";
                 switch (groupIndex)
                 {
                     case 0:
@@ -62,9 +62,8 @@ namespace Smash_Forge.GUI.Editors
                 TreeNode[] children = new TreeNode[4];
                 for (int lightIndex = 0; lightIndex < 4; lightIndex++)
                 {
-                    DirectionalLight currentLight = Runtime.lightSetParam.stageDiffuseLights[(groupIndex * 4) + lightIndex];
-                    string number = lightIndex.ToString();
-                    children[lightIndex] = new TreeNode(number) { Tag = currentLight };
+                    DirectionalLight currentLight = Runtime.lightSetParam.stageDiffuseLights[((groupIndex) * 4) + lightIndex];
+                    children[lightIndex] = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
                     children[lightIndex].Checked = currentLight.enabled;
                 }
                 TreeNode parent = new TreeNode(name, children);
