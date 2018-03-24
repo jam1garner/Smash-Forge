@@ -17,7 +17,7 @@ namespace Smash_Forge.Params
         public DirectionalLight characterDiffuse2;
         public DirectionalLight characterDiffuse3;
 
-        public DirectionalLight[] stageDiffuseLights = new DirectionalLight[16];
+        public DirectionalLight[] stageDiffuseLights = new DirectionalLight[64];
         public Vector3[] stageFogSet = new Vector3[16];
         public HemisphereFresnel fresnelLight;
 

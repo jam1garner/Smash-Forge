@@ -227,6 +227,7 @@ namespace Smash_Forge
         {
             if (!Checked)
                 return;
+
             Shader shader;
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NUD_Debug"];
@@ -265,8 +266,10 @@ namespace Smash_Forge
             shader = Runtime.shaders["DAT"];
             GL.UseProgram(shader.programID);
 
-            //GL.Uniform3(shader.getAttribute("difLightColor"), Runtime.lightSetParam.characterDiffuse.difR, Runtime.lightSetParam.characterDiffuse.difG, Runtime.lightSetParam.characterDiffuse.difB);
-            //GL.Uniform3(shader.getAttribute("ambLightColor"), Runtime.lightSetParam.characterDiffuse.ambR, Runtime.lightSetParam.characterDiffuse.ambG, Runtime.lightSetParam.characterDiffuse.ambB);
+            LightColor diffuseColor = Runtime.lightSetParam.characterDiffuse.diffuseColor;
+            LightColor ambientColor = Runtime.lightSetParam.characterDiffuse.ambientColor;
+            GL.Uniform3(shader.getAttribute("difLightColor"), diffuseColor.R, diffuseColor.G, diffuseColor.B);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), ambientColor.R, ambientColor.G, ambientColor.B);
             
             
             if (BCH != null)
@@ -419,33 +422,25 @@ namespace Smash_Forge
             float refR, refG, refB = 1.0f;
             ColorTools.HsvToRgb(Runtime.reflectionHue, Runtime.reflectionSaturation, Runtime.reflectionIntensity, out refR, out refG, out refB);
             GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
-            /*
+            
             // character diffuse lights
-            GL.Uniform3(shader.getAttribute("difLightColor"), Runtime.lightSetParam.characterDiffuse.difR, Runtime.lightSetParam.characterDiffuse.difG, Runtime.lightSetParam.characterDiffuse.difB);
-            GL.Uniform3(shader.getAttribute("ambLightColor"), Runtime.lightSetParam.characterDiffuse.ambR, Runtime.lightSetParam.characterDiffuse.ambG, Runtime.lightSetParam.characterDiffuse.ambB);
+            GL.Uniform3(shader.getAttribute("difLightColor"), Runtime.lightSetParam.characterDiffuse.diffuseColor.R, Runtime.lightSetParam.characterDiffuse.diffuseColor.G, Runtime.lightSetParam.characterDiffuse.diffuseColor.B);
+            GL.Uniform3(shader.getAttribute("ambLightColor"), Runtime.lightSetParam.characterDiffuse.ambientColor.R, Runtime.lightSetParam.characterDiffuse.ambientColor.G, Runtime.lightSetParam.characterDiffuse.ambientColor.B);
 
-            GL.Uniform3(shader.getAttribute("difLightColor2"), Runtime.lightSetParam.characterDiffuse2.difR, Runtime.lightSetParam.characterDiffuse2.difG, Runtime.lightSetParam.characterDiffuse2.difB);
-            GL.Uniform3(shader.getAttribute("ambLightColor2"), Runtime.lightSetParam.characterDiffuse2.ambR, Runtime.lightSetParam.characterDiffuse2.ambG, Runtime.lightSetParam.characterDiffuse2.ambB);
+            GL.Uniform3(shader.getAttribute("difLightColor2"), Runtime.lightSetParam.characterDiffuse2.diffuseColor.R, Runtime.lightSetParam.characterDiffuse2.diffuseColor.G, Runtime.lightSetParam.characterDiffuse2.diffuseColor.B);
+            GL.Uniform3(shader.getAttribute("ambLightColor2"), Runtime.lightSetParam.characterDiffuse2.ambientColor.R, Runtime.lightSetParam.characterDiffuse2.ambientColor.G, Runtime.lightSetParam.characterDiffuse2.ambientColor.B);
 
-            GL.Uniform3(shader.getAttribute("difLightColor3"), Runtime.lightSetParam.characterDiffuse3.difR, Runtime.lightSetParam.characterDiffuse3.difG, Runtime.lightSetParam.characterDiffuse3.difB);
-            GL.Uniform3(shader.getAttribute("ambLightColor3"), Runtime.lightSetParam.characterDiffuse3.ambR, Runtime.lightSetParam.characterDiffuse3.ambG, Runtime.lightSetParam.characterDiffuse3.ambB);
-            */
+            GL.Uniform3(shader.getAttribute("difLightColor3"), Runtime.lightSetParam.characterDiffuse3.diffuseColor.R, Runtime.lightSetParam.characterDiffuse3.diffuseColor.G, Runtime.lightSetParam.characterDiffuse3.diffuseColor.B);
+            GL.Uniform3(shader.getAttribute("ambLightColor3"), Runtime.lightSetParam.characterDiffuse3.ambientColor.R, Runtime.lightSetParam.characterDiffuse3.ambientColor.G, Runtime.lightSetParam.characterDiffuse3.ambientColor.B);
+            
             // character specular light
-            //LightTools.specularLight.SetDiffuseColorFromHSV(Runtime.specularHue, Runtime.specularSaturation, Runtime.specularIntensity);
-            //LightTools.specularLight.setDirectionFromXYZAngles(Runtime.specularRotX, Runtime.specularRotY, Runtime.specularRotZ);
-            //GL.Uniform3(shader.getAttribute("specLightColor"), LightTools.specularLight.difR, LightTools.specularLight.difG, LightTools.specularLight.difB);
+            GL.Uniform3(shader.getAttribute("specLightColor"), LightTools.specularLight.diffuseColor.R, LightTools.specularLight.diffuseColor.G, LightTools.specularLight.diffuseColor.B);
             
             // stage fog
             GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
 
             GL.Uniform3(shader.getAttribute("difLight2Direction"), Runtime.lightSetParam.characterDiffuse2.direction);
             GL.Uniform3(shader.getAttribute("difLight3Direction"), Runtime.lightSetParam.characterDiffuse2.direction);
-
-            //GL.Uniform3(shader.getAttribute("stageLight1Direction"), Runtime.lightSetParam.stageLight1.direction);
-            //GL.Uniform3(shader.getAttribute("stageLight2Direction"), LightTools.stageLight2.direction);
-            //GL.Uniform3(shader.getAttribute("stageLight3Direction"), LightTools.stageLight3.direction);
-            //GL.Uniform3(shader.getAttribute("stageLight4Direction"), LightTools.stageLight4.direction);
-
 
             if (Runtime.cameraLight) 
             {
