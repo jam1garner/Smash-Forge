@@ -583,7 +583,7 @@ namespace Smash_Forge
             string uniformColorName = "stageLight" + (lightIndex + 1) + "Color";
             string uniformBoolName = "renderStageLight" + (lightIndex + 1);
             ShaderTools.BoolToIntShaderUniform(shader, Runtime.lightSetParam.stageDiffuseLights[index].enabled, uniformBoolName);
-            GL.Uniform3(shader.getAttribute(uniformColorName), stageLight.difR, stageLight.difG, stageLight.difB);
+            //GL.Uniform3(shader.getAttribute(uniformColorName), stageLight.difR, stageLight.difG, stageLight.difB);
         }
 
         private static void SetNscUniform(Polygon p, Shader shader)

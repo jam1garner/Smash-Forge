@@ -14,19 +14,8 @@ namespace Smash_Forge.Rendering.Lights
 
     public class DirectionalLight
     {
-        public float difR = 1.0f;
-        public float difG = 1.0f;
-        public float difB = 1.0f;
-        public float difHue = 0.0f;
-        public float difSaturation = 0.0f;
-        public float difIntensity = 1.0f;
-
-        public float ambR = 0.0f;
-        public float ambG = 0.0f;
-        public float ambB = 0.0f;
-        public float ambHue = 0.0f;
-        public float ambSaturation = 0.0f;
-        public float ambIntensity = 1.0f;
+        public LightColor diffuseColor = new LightColor();
+        public LightColor ambientColor = new LightColor();
 
         // in degrees (converted to radians for calcultions)
         public float rotX = 0.0f;
@@ -38,38 +27,34 @@ namespace Smash_Forge.Rendering.Lights
         public string id = "";
         public bool enabled = true;
 
-        public DirectionalLight(Vector3 diffuseHsv, Vector3 ambientHsv, float rotX, float rotY, float rotZ, string name)
+        public DirectionalLight(Vector3 diffuseHsv, Vector3 ambientHsv, float rotX, float rotY, float rotZ, string id)
         {
             // calculate light color
-            difHue = diffuseHsv.X;
-            difSaturation = diffuseHsv.Y;
-            difIntensity = diffuseHsv.Z;
-            ambHue = ambientHsv.X;
-            ambSaturation = ambientHsv.Y;
-            ambIntensity = ambientHsv.Z;
-            ColorTools.HsvToRgb(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
-            ColorTools.HsvToRgb(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
+            diffuseColor.H = diffuseHsv.X;
+            diffuseColor.S = diffuseHsv.Y;
+            diffuseColor.V = diffuseHsv.Z;
+            ambientColor.H = ambientHsv.X;
+            ambientColor.S = ambientHsv.Y;
+            ambientColor.V = ambientHsv.Z;
 
             // calculate light vector
             this.rotX = rotX;
             this.rotY = rotY;
             this.rotZ = rotZ;
-            UpdateDirection(rotX, rotY, rotZ);
+            UpdateDirection();
 
-            this.id = name;
+            this.id = id;
         }
 
-        public DirectionalLight(float H, float S, float V, Vector3 lightDirection, string name)
+        public DirectionalLight(Vector3 diffuseHsv, Vector3 lightDirection, string id)
         {
-            // calculate light color
-            difHue = H;
-            difSaturation = S;
-            difIntensity = V;
-            ColorTools.HsvToRgb(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
+            diffuseColor.H = diffuseHsv.X;
+            diffuseColor.S = diffuseHsv.Y;
+            diffuseColor.V = diffuseHsv.Z;
 
             direction = lightDirection;
 
-            this.id = name;
+            this.id = id;
         }
 
         public DirectionalLight()
@@ -77,66 +62,7 @@ namespace Smash_Forge.Rendering.Lights
 
         }
 
-        public void SetDifHue(float hue)
-        {
-            this.difHue = hue;
-            ColorTools.HsvToRgb(hue, difSaturation, difIntensity, out difR, out difG, out difB);
-        }
-
-        public void SetDifSaturation(float saturation)
-        {
-            this.difSaturation = saturation;
-            ColorTools.HsvToRgb(difHue, saturation, difIntensity, out difR, out difG, out difB);
-        }
-
-        public void SetDifIntensity(float intensity)
-        {
-            this.difIntensity = intensity;
-            ColorTools.HsvToRgb(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
-        }
-
-        public void setAmbHue(float hue)
-        {
-            this.ambHue = hue;
-            ColorTools.HsvToRgb(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
-        }
-
-        public void setAmbSaturation(float saturation)
-        {
-            this.ambSaturation = saturation;
-            ColorTools.HsvToRgb(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
-        }
-
-        public void setAmbIntensity(float intensity)
-        {
-            this.ambIntensity = intensity;
-            ColorTools.HsvToRgb(ambHue, ambSaturation, ambIntensity, out ambR, out ambG, out ambB);
-        }
-
-        public void SetRotX(float rotX)
-        {
-            this.rotX = rotX;
-            UpdateDirection(rotX, rotY, rotZ);
-        }
-
-        public void setRotY(float rotY)
-        {
-            this.rotY = rotY;
-            UpdateDirection(rotX, rotY, rotZ);
-        }
-
-        public void setRotZ(float rotZ)
-        {
-            this.rotZ = rotZ;
-            UpdateDirection(rotX, rotY, rotZ);
-        }
-
-        public void setDirectionFromXYZAngles(float rotX, float rotY, float rotZ)
-        {
-            UpdateDirection(rotX, rotY, rotZ);
-        }
-
-        private void UpdateDirection(float rotX, float rotY, float rotZ)
+        private void UpdateDirection()
         {
             // calculate light vector from 3 rotation angles
             Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, rotX * ((float)Math.PI / 180f))
@@ -144,15 +70,6 @@ namespace Smash_Forge.Rendering.Lights
              * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, rotZ * ((float)Math.PI / 180f));
 
             direction = Vector3.TransformVector(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
-        }
-
-        public void SetColorFromHSV(float H, float S, float V)
-        {
-            // calculate light color
-            difHue = H;
-            difSaturation = S;
-            difIntensity = V;
-            ColorTools.HsvToRgb(difHue, difSaturation, difIntensity, out difR, out difG, out difB);
         }
 
         public override string ToString()

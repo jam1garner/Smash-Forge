@@ -175,22 +175,22 @@ namespace Smash_Forge.GUI.Editors
 
         private void UpdateCharDiffuseValues()
         {
-            charColor1XTB.Text = selectedCharDiffuseLight.difHue + "";
+            /*charColor1XTB.Text = selectedCharDiffuseLight.difHue + "";
             charColor1YTB.Text = selectedCharDiffuseLight.difSaturation + "";
             charColor1ZTB.Text = selectedCharDiffuseLight.difIntensity + "";
             charColor2XTB.Text = selectedCharDiffuseLight.ambHue + "";
             charColor2YTB.Text = selectedCharDiffuseLight.ambSaturation + "";
-            charColor2ZTB.Text = selectedCharDiffuseLight.ambIntensity + "";
+            charColor2ZTB.Text = selectedCharDiffuseLight.ambIntensity + "";*/
         }
 
         private void UpdateCurrentStageLightValues()
         {
-            stageDifHueTB.Text = selectedStageLight.difHue + "";
+            /*stageDifHueTB.Text = selectedStageLight.difHue + "";
             stageDifSatTB.Text = selectedStageLight.difSaturation + "";
             stageDifIntensityTB.Text = selectedStageLight.difIntensity + "";
             stageDifRotXTB.Text = selectedStageLight.rotX + "";
             stageDifRotYTB.Text = selectedStageLight.rotY + "";
-            stageDifRotZTB.Text = selectedStageLight.rotZ + "";
+            stageDifRotZTB.Text = selectedStageLight.rotZ + "";*/
         }
 
         private void lightSetLightListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -201,11 +201,11 @@ namespace Smash_Forge.GUI.Editors
 
         private void UpdateStageButtonColor()
         {
-            int red = ColorTools.ClampInt((int)(selectedStageLight.difR * 255));
+            /*int red = ColorTools.ClampInt((int)(selectedStageLight.difR * 255));
             int green = ColorTools.ClampInt((int)(selectedStageLight.difG * 255));
             int blue = ColorTools.ClampInt((int)(selectedStageLight.difB * 255));
             Color stageColor = Color.FromArgb(255, red, green, blue);
-            stageDifColorButton.BackColor = stageColor;
+            stageDifColorButton.BackColor = stageColor;*/
         }
 
         private void RenderCharacterLightColor(Vector3 topColor, Vector3 bottomColor)
@@ -237,26 +237,26 @@ namespace Smash_Forge.GUI.Editors
 
         private void stageDifHueTB_TextChanged(object sender, EventArgs e)
         {
-            float value = GuiTools.TryParseTBFloat(stageDifHueTB);
-            selectedStageLight.SetDifHue(value);
+            /*float value = GuiTools.TryParseTBFloat(stageDifHueTB);
+            selectedStageLight.difHue = value;
             UpdateSliderFromValue(value, stageDifHueTrackBar, 360.0f);
-            UpdateStageButtonColor();
+            UpdateStageButtonColor();*/
         }
 
         private void stageDifSatTB_TextChanged(object sender, EventArgs e)
         {
-            float value = GuiTools.TryParseTBFloat(stageDifSatTB);
-            selectedStageLight.SetDifSaturation(value);
+            /*float value = GuiTools.TryParseTBFloat(stageDifSatTB);
+            selectedStageLight.difSaturation = value;
             GuiTools.UpdateTrackBarFromValue(value, stageDifSatTrackBar, 0, 1);
-            UpdateStageButtonColor();
+            UpdateStageButtonColor();*/
         }
 
         private void stageDifIntensityTB_TextChanged(object sender, EventArgs e)
         {
-            float value = GuiTools.TryParseTBFloat(stageDifIntensityTB);
-            selectedStageLight.SetDifIntensity(value);
+            /*float value = GuiTools.TryParseTBFloat(stageDifIntensityTB);
+            selectedStageLight.difIntensity = value;
             UpdateSliderFromValue(value, stageDifIntensityTrackBar, 1);
-            UpdateStageButtonColor();
+            UpdateStageButtonColor();*/
         }
 
         private void stageDifHueTrackBar_Scroll(object sender, EventArgs e)
@@ -277,21 +277,21 @@ namespace Smash_Forge.GUI.Editors
         private void stageDifRotXTB_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(stageDifRotXTB);
-            selectedStageLight.SetRotX(value);
+            selectedStageLight.rotX = value;
             stageRotXTrackBar.Value = (int)(value + 180.0f);
         }
 
         private void stageDifRotYTB_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(stageDifRotYTB);
-            selectedStageLight.setRotY(value);
+            selectedStageLight.rotY = value;
             stageRotYTrackBar.Value = (int)(value + 180.0f);
         }
 
         private void stageDifRotZTB_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(stageDifRotZTB);
-            selectedStageLight.setRotZ(value);
+            selectedStageLight.rotZ = value;
             stageRotZTrackBar.Value = (int)(value + 180.0f);
         }
 
