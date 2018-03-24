@@ -572,7 +572,7 @@ namespace Smash_Forge
                 SetStageLightUniform(shader, i);
             }
 
-            GL.Uniform3(shader.getAttribute("stageFogColor"), Runtime.lightSetParam.stageFogSet[lightSetNumber]);
+            ShaderTools.LightColorVector3Uniform(shader, Runtime.lightSetParam.stageFogSet[lightSetNumber], "stageFogColor");
         }
 
         private void SetStageLightUniform(Shader shader, int lightIndex)

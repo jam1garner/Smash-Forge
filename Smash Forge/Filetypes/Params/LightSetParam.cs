@@ -20,7 +20,7 @@ namespace Smash_Forge.Params
         // The first 4 lights are character lights.
         public DirectionalLight[] stageDiffuseLights = new DirectionalLight[68];
 
-        public Vector3[] stageFogSet = new Vector3[16];
+        public LightColor[] stageFogSet = new LightColor[16];
 
         public HemisphereFresnel fresnelLight;
 
@@ -128,24 +128,25 @@ namespace Smash_Forge.Params
             }
         }
 
-        public static Vector3 CreateFogColorFromFogSet(ParamFile lightSet, int fogIndex)
+        public static LightColor CreateFogColorFromFogSet(ParamFile lightSet, int fogIndex)
         {
             // First fog is probably for characters.
             float hue = (float)ParamTools.GetParamValue(lightSet, 2, 1 + fogIndex, 0);
             float saturation = (float)ParamTools.GetParamValue(lightSet, 2, 1 + fogIndex, 1);
             float value = (float)ParamTools.GetParamValue(lightSet, 2, 1 + fogIndex, 2);
-            float fogR = 0.0f, fogB = 0.0f, fogG = 0.0f;
-            ColorTools.HsvToRgb(hue, saturation, value, out fogR, out fogG, out fogB);
-            Vector3 color = new Vector3(fogR, fogG, fogB);
+            LightColor color = new LightColor();
+            color.H = hue;
+            color.S = saturation;
+            color.V = value;
             return color;
         }
 
         private void SaveFogColor(int fogIndex)
         {
             // First fog is probably for characters.
-            ParamTools.ModifyParamValue(paramFile, 2, 1 + fogIndex, 0, stageFogSet[fogIndex].X);
-            ParamTools.ModifyParamValue(paramFile, 2, 1 + fogIndex, 1, stageFogSet[fogIndex].Y);
-            ParamTools.ModifyParamValue(paramFile, 2, 1 + fogIndex, 2, stageFogSet[fogIndex].Z);
+            ParamTools.ModifyParamValue(paramFile, 2, 1 + fogIndex, 0, stageFogSet[fogIndex].H);
+            ParamTools.ModifyParamValue(paramFile, 2, 1 + fogIndex, 1, stageFogSet[fogIndex].S);
+            ParamTools.ModifyParamValue(paramFile, 2, 1 + fogIndex, 2, stageFogSet[fogIndex].V);
         }
 
         public static DirectionalLight CreateDirectionalLightFromLightSet(ParamFile lightSet, int lightIndex, string name)

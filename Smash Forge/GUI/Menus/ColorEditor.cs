@@ -127,7 +127,7 @@ namespace Smash_Forge.GUI.Menus
 
         private void redTrackBar_Scroll(object sender, EventArgs e)
         {
-            colorWTB.Text = GuiTools.GetTrackBarValue(colorTrackBarW, maxRgb).ToString(numFormat);
+            colorWTB.Text = GuiTools.GetTrackBarValue(colorTrackBarW, 0, maxRgb).ToString(numFormat);
         }
 
         private void colorTrackBar_Scroll(object sender, EventArgs e)
@@ -188,10 +188,10 @@ namespace Smash_Forge.GUI.Menus
                 default:
                     break;
                 case "RGB":
-                    colorXTB.Text = GuiTools.GetTrackBarValue(colorTrackBarX, maxRgb).ToString(numFormat);
+                    colorXTB.Text = GuiTools.GetTrackBarValue(colorTrackBarX, 0, maxRgb).ToString(numFormat);
                     break;
                 case "HSV":
-                    colorXTB.Text = GuiTools.GetTrackBarValue(colorTrackBarX, maxHue).ToString(numFormat); 
+                    colorXTB.Text = GuiTools.GetTrackBarValue(colorTrackBarX, 0, maxHue).ToString(numFormat); 
                     break;
             }
         }
@@ -203,10 +203,10 @@ namespace Smash_Forge.GUI.Menus
                 default:
                     break;
                 case "RGB":
-                    colorYTB.Text = GuiTools.GetTrackBarValue(colorTrackBarY, maxRgb).ToString(numFormat);
+                    colorYTB.Text = GuiTools.GetTrackBarValue(colorTrackBarY, 0, maxRgb).ToString(numFormat);
                     break;
                 case "HSV":
-                    colorYTB.Text = GuiTools.GetTrackBarValue(colorTrackBarY, maxSat).ToString(numFormat);
+                    colorYTB.Text = GuiTools.GetTrackBarValue(colorTrackBarY, 0, maxSat).ToString(numFormat);
                     break;
             }
         }
@@ -218,10 +218,10 @@ namespace Smash_Forge.GUI.Menus
                 default:
                     break;
                 case "RGB":
-                    colorZTB.Text = GuiTools.GetTrackBarValue(colorTrackBarZ, maxRgb).ToString(numFormat);
+                    colorZTB.Text = GuiTools.GetTrackBarValue(colorTrackBarZ, 0, maxRgb).ToString(numFormat);
                     break;
                 case "HSV":
-                    colorZTB.Text = GuiTools.GetTrackBarValue(colorTrackBarZ, maxValue).ToString(numFormat);
+                    colorZTB.Text = GuiTools.GetTrackBarValue(colorTrackBarZ, 0, maxValue).ToString(numFormat);
                     break;
             }
         }
