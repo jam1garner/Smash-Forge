@@ -85,7 +85,7 @@
             this.textBox13 = new System.Windows.Forms.TextBox();
             this.textBox14 = new System.Windows.Forms.TextBox();
             this.textBox15 = new System.Windows.Forms.TextBox();
-            this.glControl1 = new OpenTK.GLControl();
+            this.lightMapGLControl = new OpenTK.GLControl();
             this.lightmapListBox = new System.Windows.Forms.ListBox();
             this.areaTab = new System.Windows.Forms.TabPage();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
@@ -325,7 +325,7 @@
             this.lightMapTab.Controls.Add(this.groupBox10);
             this.lightMapTab.Controls.Add(this.groupBox11);
             this.lightMapTab.Controls.Add(this.groupBox12);
-            this.lightMapTab.Controls.Add(this.glControl1);
+            this.lightMapTab.Controls.Add(this.lightMapGLControl);
             this.lightMapTab.Controls.Add(this.lightmapListBox);
             this.lightMapTab.Location = new System.Drawing.Point(4, 22);
             this.lightMapTab.Name = "lightMapTab";
@@ -918,15 +918,15 @@
             this.textBox15.Size = new System.Drawing.Size(47, 20);
             this.textBox15.TabIndex = 8;
             // 
-            // glControl1
+            // lightMapGLControl
             // 
-            this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(132, 12);
-            this.glControl1.Margin = new System.Windows.Forms.Padding(6);
-            this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(126, 134);
-            this.glControl1.TabIndex = 33;
-            this.glControl1.VSync = false;
+            this.lightMapGLControl.BackColor = System.Drawing.Color.Black;
+            this.lightMapGLControl.Location = new System.Drawing.Point(132, 12);
+            this.lightMapGLControl.Margin = new System.Windows.Forms.Padding(6);
+            this.lightMapGLControl.Name = "lightMapGLControl";
+            this.lightMapGLControl.Size = new System.Drawing.Size(126, 134);
+            this.lightMapGLControl.TabIndex = 33;
+            this.lightMapGLControl.VSync = false;
             // 
             // lightmapListBox
             // 
@@ -2673,7 +2673,7 @@
         private System.Windows.Forms.TextBox textBox13;
         private System.Windows.Forms.TextBox textBox14;
         private System.Windows.Forms.TextBox textBox15;
-        private OpenTK.GLControl glControl1;
+        private OpenTK.GLControl lightMapGLControl;
         private System.Windows.Forms.ListBox lightmapListBox;
         private System.Windows.Forms.TabPage areaTab;
         private System.Windows.Forms.GroupBox groupBox7;

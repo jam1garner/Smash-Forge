@@ -230,6 +230,18 @@ namespace Smash_Forge.GUI.Editors
             areaColorGLControl.SwapBuffers();
         }
 
+        private void RenderLightMapColor()
+        {
+            lightMapGLControl.MakeCurrent();
+            GL.Viewport(lightMapGLControl.ClientRectangle);
+
+            Vector3 topColor = new Vector3(1);
+            Vector3 bottomColor = new Vector3(1);
+            RenderTools.DrawQuadGradient(topColor, bottomColor);
+
+            lightMapGLControl.SwapBuffers();
+        }
+
         private void stageDifHueTB_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(stageDifHueTB);
@@ -650,8 +662,19 @@ namespace Smash_Forge.GUI.Editors
 
         private void stageLightingTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // render solid black to avoid displaying the stage light text
-            RenderCharacterLightGradient(new LightColor(), new LightColor());
+            // Render solid black to avoid displaying the stage light text from the other tabs.
+            switch (stageLightingTabControl.SelectedIndex)
+            {
+                case 0:
+                    RenderCharacterLightGradient(new LightColor(0, 0, 1), new LightColor(0, 0, 1));                    
+                    break;
+                case 3:
+                    RenderAreaLightColor();
+                    break;
+                case 4:
+                    RenderLightMapColor();
+                    break;
+            }
         }
 
         private void lightmapListBox_SelectedIndexChanged(object sender, EventArgs e)

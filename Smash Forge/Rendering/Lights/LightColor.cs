@@ -8,6 +8,18 @@ namespace Smash_Forge.Rendering.Lights
 {
     public class LightColor
     {
+        public LightColor()
+        {
+
+        }
+
+        public LightColor(float h, float s, float v)
+        {
+            H = h;
+            S = s;
+            V = v;
+        }
+
         private float h = 0;
         public float H
         {
