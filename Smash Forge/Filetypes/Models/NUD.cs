@@ -2490,15 +2490,33 @@ namespace Smash_Forge
 
         public class Polygon : TreeNode
         {
+            // Bone types and vertex types control two bytes of the vertsize.
+            public enum BoneTypes
+            {
+                NoBones =  0x00,
+                BoneWeightFloat = 0x10,
+                BoneWeightHalfFloat = 0x20,
+                BoneWeightByte = 0x40
+            }
+
+            public enum VertexTypes
+            {
+                NoNormals = 0x0,
+                NormalsFloat = 0x1,
+                NormalsTanBiTanFloat = 0x3,
+                NormalsHalfFloat = 0x6,
+                NormalsTanBiTanHalfFloat = 0x7
+            }
+
             public List<Vertex> vertices = new List<Vertex>();
             public List<int> faces = new List<int>();
             public int displayFaceSize = 0;
 
-            // Material
             public List<Material> materials = new List<Material>();
 
-            // for nud stuff
-            public int vertSize = 0x46; // defaults to a basic bone weighted vertex format
+            // defaults to a basic bone weighted vertex format
+            public int vertSize = (int)BoneTypes.BoneWeightByte | (int)VertexTypes.NormalsHalfFloat; 
+
             public int UVSize = 0x12;
             public int strip = 0x40;
             public int polflag = 0x04;
@@ -2555,14 +2573,16 @@ namespace Smash_Forge
                         uv = v.uv.Count > 0 ? v.uv[0] : new Vector2(0, 0),
                         uv2 = v.uv.Count > 1 ? v.uv[1] : new Vector2(0, 0),
                         uv3 = v.uv.Count > 2 ? v.uv[2] : new Vector2(0, 0),
-                        node = new Vector4(v.node.Count > 0 ? v.node[0] : -1,
-                        v.node.Count > 1 ? v.node[1] : -1,
-                        v.node.Count > 2 ? v.node[2] : -1,
-                        v.node.Count > 3 ? v.node[3] : -1),
-                        weight = new Vector4(v.weight.Count > 0 ? v.weight[0] : 0,
-                        v.weight.Count > 1 ? v.weight[1] : 0,
-                        v.weight.Count > 2 ? v.weight[2] : 0,
-                        v.weight.Count > 3 ? v.weight[3] : 0),
+                        node = new Vector4(
+                            v.node.Count > 0 ? v.node[0] : -1,
+                            v.node.Count > 1 ? v.node[1] : -1,
+                            v.node.Count > 2 ? v.node[2] : -1,
+                            v.node.Count > 3 ? v.node[3] : -1),
+                        weight = new Vector4(
+                            v.weight.Count > 0 ? v.weight[0] : 0,
+                            v.weight.Count > 1 ? v.weight[1] : 0,
+                            v.weight.Count > 2 ? v.weight[2] : 0,
+                            v.weight.Count > 3 ? v.weight[3] : 0),
                     };
 
                     displayVertList.Add(displayVert);
@@ -2832,8 +2852,8 @@ namespace Smash_Forge
             public bool billboardY = false;
             public bool billboard = false;
             public bool useNsc = false;
-            public bool sortByObjHeirarchy = true;
 
+            public bool sortByObjHeirarchy = true;
             public float[] boundingBox = new float[8];
             public float sortingDistance = 0;
 
@@ -2940,7 +2960,6 @@ namespace Smash_Forge
 
             public float CalculateSortingDistance(Vector3 cameraPosition)
             {
-
                 Vector3 meshCenter = new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]);
                 if (useNsc && singlebind != -1)
                 {

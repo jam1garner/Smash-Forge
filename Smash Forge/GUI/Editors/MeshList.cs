@@ -26,7 +26,7 @@ namespace Smash_Forge
         public MeshList()
         {
             InitializeComponent();
-            refresh();
+            RefreshNodes();
 
             iconList.ImageSize = new Size(24, 24);
             iconList.Images.Add("group", Properties.Resources.icon_group);
@@ -51,14 +51,14 @@ namespace Smash_Forge
             {
                 Console.WriteLine("Adding");
                 filesTreeView.Nodes.Add(new ModelContainer() { Text = "Model_" + filesTreeView.Nodes.Count });
-                refresh();
+                RefreshNodes();
             };
             MainContextMenu.MenuItems.Add(newMC);
         }
 
         bool changingValue = false;
 
-        public void refresh()
+        public void RefreshNodes()
         {
             Queue<TreeNode> nodes = new Queue<TreeNode>();
             foreach (TreeNode n in filesTreeView.Nodes)
@@ -243,7 +243,7 @@ namespace Smash_Forge
                         }
                     }
 
-                    refresh();
+                    RefreshNodes();
                 }
             }
         }
@@ -306,7 +306,7 @@ namespace Smash_Forge
                         foreach (NUD.Mesh mesh in nud.Nodes)
                             ((NUD)filesTreeView.SelectedNode).Nodes.Add((mesh));
                         ((NUD)filesTreeView.SelectedNode).UpdateVertexData();
-                        refresh();
+                        RefreshNodes();
                     }
                 }
             }
@@ -404,9 +404,9 @@ namespace Smash_Forge
             if (!brs.Cancelled)
             {
                 if (brs.SelectedNone)
-                    mesh.boneflag = 0;
+                    mesh.boneflag = (int)NUD.Mesh.BoneFlags.NotRigged;
                 else
-                    mesh.boneflag = 8;
+                    mesh.boneflag = (int)NUD.Mesh.BoneFlags.SingleBind;
                 mesh.singlebind = brs.boneIndex;
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
@@ -439,6 +439,8 @@ namespace Smash_Forge
 
         private void makeMetalToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!(filesTreeView.SelectedNode is NUD))
+                return;
             MakeMetal makeMetal = new MakeMetal(((NUD)filesTreeView.SelectedNode));
             makeMetal.Show();
         }
@@ -469,7 +471,7 @@ namespace Smash_Forge
             filesTreeView.Nodes.Remove(filesTreeView.SelectedNode);
             filesTreeView.SelectedNode = n;
 
-            refresh();
+            RefreshNodes();
         }
 
         private void belowToolStripMenuItem_Click(object sender, EventArgs e)
@@ -579,7 +581,7 @@ namespace Smash_Forge
 
                 if (parent.Nodes.Count == 0) ((NUD)parent.Parent).Nodes.Remove(parent);
 
-                refresh();
+                RefreshNodes();
             }
         }
 
@@ -587,30 +589,10 @@ namespace Smash_Forge
         {
             if (filesTreeView.SelectedNode is NUD.Mesh)
             {
-                NUD.Mesh m = ((NUD.Mesh)filesTreeView.SelectedNode);
-
-                NUD nud = (NUD)(m.Parent);
-
-                int index = nud.Nodes.IndexOf(m);
-
-                if(index > 0)
-                {
-                    nud.Nodes.Remove(m);
-
-                    NUD.Mesh merge = (NUD.Mesh)nud.Nodes[index-1];
-
-                    List<TreeNode> polygons = new List<TreeNode>();
-                    foreach(NUD.Polygon p in m.Nodes)
-                        polygons.Add(p);
-
-                    foreach(NUD.Polygon p in polygons)
-                    {
-                        m.Nodes.Remove(p);
-                        merge.Nodes.Add(p);
-                    }
-
-                    refresh();
-                }
+                NUD.Mesh sourceMesh = (NUD.Mesh)filesTreeView.SelectedNode;
+                NUD nud = (NUD)(sourceMesh.Parent);
+                int index = nud.Nodes.IndexOf(sourceMesh) - 1;
+                MergeMeshes(sourceMesh, index);
             }
         }
 
@@ -618,30 +600,42 @@ namespace Smash_Forge
         {
             if (filesTreeView.SelectedNode is NUD.Mesh)
             {
-                NUD.Mesh m = ((NUD.Mesh)filesTreeView.SelectedNode);
+                NUD.Mesh sourceMesh = (NUD.Mesh)filesTreeView.SelectedNode;
+                NUD nud = (NUD)(sourceMesh.Parent);
+                int index = nud.Nodes.IndexOf(sourceMesh) + 1;
+                MergeMeshes(sourceMesh, index);
+            }
+        }
 
-                NUD nud = (NUD)(m.Parent);
+        private void MergeMeshes(NUD.Mesh sourceMesh, int targetMeshIndex)
+        {
+            NUD nud = (NUD)(sourceMesh.Parent);
+            if (targetMeshIndex >= nud.Nodes.Count || targetMeshIndex < 0)
+                return;
 
-                int index = nud.Nodes.IndexOf(m);
+            // Merge the selected mesh onto the next mesh. 
+            NUD.Mesh targetMesh = (NUD.Mesh)nud.Nodes[targetMeshIndex];
+            nud.Nodes.Remove(sourceMesh);
+            TransferMeshPolygons(sourceMesh, targetMesh);
+            RefreshNodes();
+        }
 
-                if (index+1 < nud.Nodes.Count)
-                {
-                    nud.Nodes.Remove(m);
+        private static void TransferMeshPolygons(NUD.Mesh sourceMesh, NUD.Mesh targetMesh)
+        {
+            List<TreeNode> sourcePolygons = new List<TreeNode>();
+            foreach (NUD.Polygon p in sourceMesh.Nodes)
+                sourcePolygons.Add(p);
 
-                    NUD.Mesh merge = (NUD.Mesh)nud.Nodes[index];
+            foreach (NUD.Polygon p in sourcePolygons)
+            {
+                sourceMesh.Nodes.Remove(p);
+                targetMesh.Nodes.Add(p);
+            }
 
-                    List<TreeNode> polygons = new List<TreeNode>();
-                    foreach (NUD.Polygon p in m.Nodes)
-                        polygons.Add(p);
-
-                    foreach (NUD.Polygon p in polygons)
-                    {
-                        m.Nodes.Remove(p);
-                        merge.Nodes.Add(p);
-                    }
-
-                    refresh();
-                }
+            // Check single bind.
+            if (sourceMesh.singlebind != targetMesh.singlebind)
+            {
+                // Change bone flag and generate weights. 
             }
         }
 
@@ -744,7 +738,7 @@ namespace Smash_Forge
 
                 nud.Nodes.Add(m);
 
-                refresh();
+                RefreshNodes();
             }
         }
 

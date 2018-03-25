@@ -245,7 +245,7 @@ namespace Smash_Forge
             if (meshList.IsDisposed)
             {
                 meshList = new MeshList();
-                meshList.refresh();
+                meshList.RefreshNodes();
             }
             if (hurtboxList.IsDisposed)
             {
@@ -590,7 +590,7 @@ namespace Smash_Forge
 
         private void meshListToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            meshList.refresh();
+            meshList.RefreshNodes();
             AddDockedControl(meshList);
         }
 
