@@ -809,6 +809,7 @@ namespace Smash_Forge
                     if (fileName.EndsWith("light_set_param.bin"))
                     {
                         Runtime.lightSetParam = new Params.LightSetParam(fileName);
+                        Runtime.lightSetDirectory = fileName;
                     }
 
                     if (fileName.EndsWith("area_light.xmb"))
@@ -1302,6 +1303,7 @@ namespace Smash_Forge
                     if (fileName.EndsWith("light_set_param.bin"))
                     {
                         Runtime.lightSetParam = new Params.LightSetParam(fileName);
+                        Runtime.lightSetDirectory = fileName;
                     }
 
                     if (fileName.EndsWith("stprm.bin"))
@@ -1653,7 +1655,7 @@ namespace Smash_Forge
         private void stageLightingToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
-            if (Runtime.lightSetParam == null)
+            if (Runtime.lightSetDirectory == "")
             {
                 // There isn't a way to create a new light_set_param.bin currently, so the user has to open an existing one.
                 var lightSetWarning = MessageBox.Show("No light_set_param.bin detected. Please open an existing light_set_param.bin file.",

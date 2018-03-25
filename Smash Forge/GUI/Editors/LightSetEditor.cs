@@ -719,6 +719,7 @@ namespace Smash_Forge.GUI.Editors
                     if (ofd.FileName.EndsWith("light_set_param.bin"))
                     {
                         Runtime.lightSetParam = new Params.LightSetParam(ofd.FileName);
+                        Runtime.lightSetDirectory = ofd.FileName;
                         return true;
                     }
                 }

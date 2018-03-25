@@ -24,6 +24,25 @@ namespace Smash_Forge.Params
 
         public HemisphereFresnel fresnelLight;
 
+
+        public LightSetParam()
+        {
+            characterDiffuse = new DirectionalLight(new Vector3(0, 0, 1), new Vector3(0, 0, 0.85f), 0, 0, 0, "Diffuse");
+            characterDiffuse2 = new DirectionalLight(new Vector3(0, 0, 0.2f), new Vector3(0), 0, 0, 0, "Diffuse");
+            characterDiffuse3 = new DirectionalLight(new Vector3(0, 0, 0.2f), new Vector3(0), 0, 0, 0, "Diffuse");
+
+            for (int i = 0; i < stageDiffuseLights.Length; i++)
+            {
+                stageDiffuseLights[i] = new DirectionalLight();
+            }
+            for (int i = 0; i < stageFogSet.Length; i++)
+            {
+                stageFogSet[i] = new LightColor();
+            }
+
+            fresnelLight = new HemisphereFresnel(new Vector3(0), new Vector3(0, 0, 1), 0, 0, "Fresnel");
+        }
+
         public LightSetParam(string fileName)
         {
             paramFile = new ParamFile(fileName);

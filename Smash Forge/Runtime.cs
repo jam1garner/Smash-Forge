@@ -44,7 +44,7 @@ namespace Smash_Forge
         public static HitboxList hitboxList { get; set; }
         public static VariableList variableViewer { get; set; }
 
-        public static Params.LightSetParam lightSetParam = null;
+        public static Params.LightSetParam lightSetParam = new Params.LightSetParam();
         public static string lightSetDirectory = "";
 
         public static ParamFile stprmParam = null;

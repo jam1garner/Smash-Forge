@@ -16,7 +16,7 @@ namespace Smash_Forge.Rendering.Lights
     class LightTools
     {
         // still not sure what controls this yet
-        public static DirectionalLight specularLight = new DirectionalLight(new Vector3(0), new Vector3(0), 0, 0, 0, "Specular");
+        public static DirectionalLight specularLight = new DirectionalLight(new Vector3(0, 0, 0.65f), new Vector3(0), 0, 0, 0, "Specular");
 
         // area_light.xmb
         public static List<AreaLight> areaLights = new List<AreaLight>();
