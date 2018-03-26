@@ -833,7 +833,7 @@ namespace Smash_Forge
                 return;
 
             // Get the selected NUT texture.
-            NUT_Texture nutTexture = null;
+            NutTexture nutTexture = null;
             int displayTexture = 0;
             if (materials[currentMatIndex].entries.ContainsKey("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
             {

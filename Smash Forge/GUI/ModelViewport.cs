@@ -1312,7 +1312,7 @@ namespace Smash_Forge
                     DrawBchTex();
                     return;
                 }
-                if (MeshList.filesTreeView.SelectedNode is NUT_Texture)
+                if (MeshList.filesTreeView.SelectedNode is NutTexture)
                 {
                     DrawNutTexAndUvs();
                     return;
@@ -1642,7 +1642,7 @@ namespace Smash_Forge
         private void DrawNutTexAndUvs()
         {
             GL.PopAttrib();
-            NUT_Texture tex = ((NUT_Texture)MeshList.filesTreeView.SelectedNode);
+            NutTexture tex = ((NutTexture)MeshList.filesTreeView.SelectedNode);
             RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height);
 
             if (Runtime.drawUv)
@@ -1670,7 +1670,7 @@ namespace Smash_Forge
             }
         }
 
-        private void DrawUvsForSelectedTexture(NUT_Texture tex)
+        private void DrawUvsForSelectedTexture(NutTexture tex)
         {
             foreach (TreeNode node in MeshList.filesTreeView.Nodes)
             {

@@ -119,7 +119,7 @@ namespace Smash_Forge
             f.save(fname);
         }
 
-        public void fromNUT_Texture(NUT_Texture tex)
+        public void fromNUT_Texture(NutTexture tex)
         {
             header = new Header();
             header.width = tex.Width;
@@ -172,9 +172,9 @@ namespace Smash_Forge
             data = d.ToArray();
         }
 
-        public NUT_Texture toNUT_Texture()
+        public NutTexture toNUT_Texture()
         {
-            NUT_Texture tex = new NUT_Texture();
+            NutTexture tex = new NutTexture();
             tex.HASHID = 0x48415348;
             tex.Height = header.height;
             tex.Width = header.width;

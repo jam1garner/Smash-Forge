@@ -655,7 +655,7 @@ namespace Smash_Forge
             int texid = 0;
             foreach(int key in texturesLinker.Keys)
             {
-                NUT_Texture tex = new NUT_Texture();
+                NutTexture tex = new NutTexture();
                 tex.Width = texturesLinker[key].Width;
                 tex.Height = texturesLinker[key].Height;
                 tex.HASHID = 0x401B1000 + texid;
