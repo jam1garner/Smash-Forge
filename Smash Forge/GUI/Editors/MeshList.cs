@@ -1400,7 +1400,7 @@ namespace Smash_Forge
             using (var texIdSelector = new TexIdSelector())
             {
                 // Match the texture IDs. Assume the NUT is the correct one to initialize the gui.
-                texIdSelector.Set(((NUT_Texture)modelContainer.NUT.Nodes[0]).HASHID);
+                texIdSelector.Set(((NutTexture)modelContainer.NUT.Nodes[0]).HASHID);
                 texIdSelector.ShowDialog();
                 if (texIdSelector.exitStatus == TexIdSelector.ExitStatus.Opened)
                 {

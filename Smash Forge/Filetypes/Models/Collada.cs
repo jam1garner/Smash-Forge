@@ -50,7 +50,7 @@ namespace Smash_Forge
                 if (!materials.ContainsKey(mat.id))
                     materials.Add(mat.id, mat);
 
-            Dictionary<string, NUT_Texture> existingTextures = new Dictionary<string, NUT_Texture>();
+            Dictionary<string, NutTexture> existingTextures = new Dictionary<string, NutTexture>();
 
             // controllers
             Dictionary<string, List<NUD.Vertex>> vertices = new Dictionary<string, List<NUD.Vertex>>();
@@ -73,7 +73,7 @@ namespace Smash_Forge
             }
 
 
-            Dictionary<string, NUT_Texture> texturemap = new Dictionary<string, NUT_Texture>();
+            Dictionary<string, NutTexture> texturemap = new Dictionary<string, NutTexture>();
             Dictionary<string, NUD.Mesh> geometries = new Dictionary<string, NUD.Mesh>();
             foreach (ColladaGeometry geom in dae.library_geometries)
             {
@@ -114,7 +114,7 @@ namespace Smash_Forge
                     {
                         if (colladaPoly.type == ColladaPrimitiveType.triangles)
                         {
-                            NUT_Texture tempTex = null;
+                            NutTexture tempTex = null;
                             ColladaMaterials mat = null;
                             ColladaEffects eff = null;
                             ColladaImages img = null;
@@ -138,7 +138,7 @@ namespace Smash_Forge
                             else
                             if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))))
                             {
-                                NUT_Texture tex = null;
+                                NutTexture tex = null;
                                 if (img.initref.ToLower().EndsWith(".dds"))
                                 {
                                     DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))));

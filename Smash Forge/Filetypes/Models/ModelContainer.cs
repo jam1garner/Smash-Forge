@@ -28,6 +28,7 @@ namespace Smash_Forge
             }
         }
         private NUD nud;
+
         public NUT NUT
         {
             get
@@ -38,9 +39,12 @@ namespace Smash_Forge
             {
                 nut = value;
                 Refresh();
+
+                nud.CheckTexIdErrors(nut);
             }
         }
         private NUT nut;
+
         public VBN VBN
         {
             get
@@ -84,6 +88,7 @@ namespace Smash_Forge
             }
         }
         private MOI moi;
+
         public JTB JTB
         {
             get
@@ -99,6 +104,7 @@ namespace Smash_Forge
             }
         }
         private JTB jtb;
+
         public XMBFile XMB
         {
             get
@@ -129,6 +135,7 @@ namespace Smash_Forge
                 Refresh();
             }
         }
+
         public DAT DAT_MELEE
         {
             get
@@ -142,7 +149,6 @@ namespace Smash_Forge
                 Refresh();
             }
         }
-
         private DAT dat_melee;
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }

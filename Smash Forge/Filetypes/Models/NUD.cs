@@ -9,6 +9,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using System.Windows.Forms;
 using SALT.Graphics;
+using System.Text;
 using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
 
@@ -45,6 +46,58 @@ namespace Smash_Forge
         {
             Read(fname);
             UpdateVertexData();
+        }
+
+        public void CheckTexIdErrors(NUT nut)
+        {
+            string incorrectTextureIds = GetTextureIdsWithoutNutOrDummyTex(nut);
+            if (incorrectTextureIds.Length > 0)
+            {
+                MessageBox.Show("The following texture IDs do not match a texture in the NUT or a valid dummy texture:\n" + incorrectTextureIds, "Incorrect Texture IDs");
+            }
+        }
+
+        private string GetTextureIdsWithoutNutOrDummyTex(NUT nut)
+        {
+            StringBuilder incorrectTextureIds = new StringBuilder();
+            foreach (Mesh m in Nodes)
+            {
+                foreach (Polygon p in m.Nodes)
+                {
+                    foreach (Material mat in p.materials)
+                    {
+                        foreach (MatTexture matTex in mat.textures)
+                        {
+                            bool validTextureId = false;
+
+                            // Checks to see if the texture is in the nut. 
+                            foreach (NutTexture nutTex in nut.Nodes)
+                            {
+                                if (matTex.hash == nutTex.HASHID)
+                                {
+                                    validTextureId = true;
+                                    break;
+                                }
+                            }
+
+                            // Checks to see if the texture ID is a valid dummy texture.
+                            foreach (DummyTextures dummyTex in Enum.GetValues(typeof(DummyTextures)))
+                            {
+                                if (matTex.hash == (int)dummyTex)
+                                {
+                                    validTextureId = true;
+                                    break;
+                                }
+                            }
+
+                            if (!validTextureId)
+                                incorrectTextureIds.AppendLine(m.Text + " [" + p.Index + "] ID: " + matTex.hash.ToString("X"));
+                        }
+                    }
+                }
+            }
+
+            return incorrectTextureIds.ToString();
         }
 
         int vbo_position;

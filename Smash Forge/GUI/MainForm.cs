@@ -1907,7 +1907,7 @@ namespace Smash_Forge
                         Process cmd = Process.Start(cmdsi);
                         cmd.WaitForExit();
 
-                        NUT_Texture tex = new DDS(new FileData("TexConv/temp.dds")).toNUT_Texture();
+                        NutTexture tex = new DDS(new FileData("TexConv/temp.dds")).toNUT_Texture();
                         tex.HASHID = fileNum;
                         n.draw.Add(fileNum, NUT.loadImage(tex, true));
                         n.Nodes.Add(tex);
