@@ -840,14 +840,8 @@ namespace Smash_Forge
                 int hash = materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash;
 
                 // Display dummy textures from resources. 
-                if (hash == (int)NUD.DummyTextures.DummyRamp)
-                    displayTexture = RenderTools.dummyRamp;
-                else if (hash == (int)NUD.DummyTextures.PunchOut)
-                    displayTexture = RenderTools.punchOutDummyTex;
-                else if (hash == (int)NUD.DummyTextures.PokemonStadium)
-                    displayTexture = RenderTools.pokemonStadiumDummyTex;
-                else if (hash == (int)NUD.DummyTextures.ShadowMap)
-                    displayTexture = RenderTools.shadowMapDummyTex;
+                if (Enum.IsDefined(typeof(NUD.DummyTextures), hash))
+                    displayTexture = RenderTools.dummyTextures[(NUD.DummyTextures)hash];
                 else
                 {
                     foreach (NUT n in Runtime.TextureContainers)

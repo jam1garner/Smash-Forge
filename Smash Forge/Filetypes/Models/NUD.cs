@@ -1020,44 +1020,13 @@ namespace Smash_Forge
 
         public static int BindTexture(MatTexture tex, int hash, int loc)
         {
-            if (hash == (int)DummyTextures.StageMapLow)
+            if (Enum.IsDefined(typeof(DummyTextures), hash))
+                return BindDummyTexture(loc, RenderTools.dummyTextures[(DummyTextures)hash]);
+            else
             {
-                GL.ActiveTexture(TextureUnit.Texture20 + loc);
-                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapLow);
-                return 20 + loc;
+                GL.ActiveTexture(TextureUnit.Texture3 + loc);
+                GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
             }
-            if (hash == (int)DummyTextures.StageMapHigh)
-            {
-                GL.ActiveTexture(TextureUnit.Texture20 + loc);
-                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
-                return 20 + loc;
-            }
-            if (hash == (int)DummyTextures.DummyRamp)
-            {
-                GL.ActiveTexture(TextureUnit.Texture20 + loc);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.dummyRamp);
-                return 20 + loc;
-            }
-            if (hash == (int)DummyTextures.PokemonStadium)
-            {
-                GL.ActiveTexture(TextureUnit.Texture20 + loc);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.pokemonStadiumDummyTex);
-                return 20 + loc;
-            }
-            if (hash == (int)DummyTextures.PunchOut)
-            {
-                GL.ActiveTexture(TextureUnit.Texture20 + loc);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.punchOutDummyTex);
-                return 20 + loc;
-            }
-            if (hash == (int)DummyTextures.ShadowMap)
-            {
-                GL.ActiveTexture(TextureUnit.Texture20 + loc);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.shadowMapDummyTex);
-                return 20 + loc;
-            }
-            GL.ActiveTexture(TextureUnit.Texture3 + loc);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
 
             foreach (NUT nut in Runtime.TextureContainers)
             {
@@ -1070,6 +1039,13 @@ namespace Smash_Forge
             }
 
             return 3 + loc;
+        }
+
+        private static int BindDummyTexture(int loc, int texture)
+        {
+            GL.ActiveTexture(TextureUnit.Texture20 + loc);
+            GL.BindTexture(TextureTarget.TextureCubeMap, texture);
+            return 20 + loc;
         }
 
         private static void BindNutTexture(MatTexture tex, int texid)
