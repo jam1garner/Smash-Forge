@@ -733,7 +733,7 @@ namespace Smash_Forge
         {
             if (materials[currentMatIndex].textures.Count < 4)
             {
-                materials[currentMatIndex].textures.Add(NUD.MatTexture.getDefault());
+                materials[currentMatIndex].textures.Add(NUD.MatTexture.GetDefault());
                 FillForm();
             }
         }
@@ -767,7 +767,7 @@ namespace Smash_Forge
                         FileOutput m = new FileOutput();
                         FileOutput s = new FileOutput();
 
-                        int[] c = NUD.writeMaterial(m, materials, s);
+                        int[] c = NUD.WriteMaterial(m, materials, s);
 
                         FileOutput fin = new FileOutput();
                         

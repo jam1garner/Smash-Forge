@@ -29,9 +29,9 @@ namespace Smash_Forge
         public Dictionary<string, int> BoneTypes = new Dictionary<string, int>()
         {
             { "No Bones", (int)NUD.Polygon.BoneTypes.NoBones},
-            { "Bone Weight (Float)", (int)NUD.Polygon.BoneTypes.BoneWeightFloat},
-            { "Bone Weight (Half Float)", (int)NUD.Polygon.BoneTypes.BoneWeightHalfFloat},
-            { "Bone Weight (Byte)", (int)NUD.Polygon.BoneTypes.BoneWeightByte}
+            { "Bone Weight (Float)", (int)NUD.Polygon.BoneTypes.Float},
+            { "Bone Weight (Half Float)", (int)NUD.Polygon.BoneTypes.HalfFloat},
+            { "Bone Weight (Byte)", (int)NUD.Polygon.BoneTypes.Byte}
         };
 
         public Dictionary<string, int> VertexTypes = new Dictionary<string, int>()
@@ -109,7 +109,7 @@ namespace Smash_Forge
 
                     poly.CalculateTangentBitangent();          
 
-                    int vertSizeShadowWarning = (int)NUD.Polygon.BoneTypes.BoneWeightHalfFloat | (int)NUD.Polygon.VertexTypes.NormalsTanBiTanHalfFloat;
+                    int vertSizeShadowWarning = (int)NUD.Polygon.BoneTypes.HalfFloat | (int)NUD.Polygon.VertexTypes.NormalsTanBiTanHalfFloat;
                     if (!hasShownShadowWarning && poly.vertSize == vertSizeShadowWarning)
                     {
                         MessageBox.Show("Using \"" + (string)boneTypeComboBox.SelectedItem + "\" and \"" + (string)vertTypeComboBox.SelectedItem + "\" can make shadows not appear in-game.",
@@ -159,7 +159,6 @@ namespace Smash_Forge
             }
 
             nud.UpdateVertexData();
-
         }
 
         public VBN getVBN()
