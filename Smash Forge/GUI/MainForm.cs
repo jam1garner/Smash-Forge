@@ -383,13 +383,13 @@ namespace Smash_Forge
                 {
                     MTA mta = new MTA();
                     mta.read(new FileData(data));
-                    modelContainer.NUD.applyMTA(mta, 0);
+                    modelContainer.NUD.ApplyMta(mta, 0);
                 }
                 if (p.Files.TryGetValue("default.mta", out data))
                 {
                     MTA mta = new MTA();
                     mta.read(new FileData(data));
-                    modelContainer.NUD.applyMTA(mta, 0);
+                    modelContainer.NUD.ApplyMta(mta, 0);
                 }
             }
         }

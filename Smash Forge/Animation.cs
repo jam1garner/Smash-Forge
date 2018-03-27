@@ -449,7 +449,7 @@ namespace Smash_Forge
                     {
                         if (((ModelContainer)skeleton.Parent).NUD != null)
                         {
-                            ((ModelContainer)skeleton.Parent).NUD.applyMTA(((MTA)child), (int)Frame);
+                            ((ModelContainer)skeleton.Parent).NUD.ApplyMta(((MTA)child), (int)Frame);
                         }
                     }
                 }

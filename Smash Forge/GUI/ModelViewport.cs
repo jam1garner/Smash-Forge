@@ -502,7 +502,7 @@ namespace Smash_Forge
                 {
                     if (!(node is ModelContainer)) continue;
                     ModelContainer m = (ModelContainer)node;
-                    m.NUD.applyMTA(MaterialAnimation, frameNum);
+                    m.NUD.ApplyMta(MaterialAnimation, frameNum);
                 }
             }
             
@@ -552,7 +552,7 @@ namespace Smash_Forge
             {
                 if (!(node is ModelContainer)) continue;
                 ModelContainer m = (ModelContainer)node;
-                m.NUD.clearMTA();
+                m.NUD.ClearMta();
                 if (m.VBN != null)
                     m.VBN.reset();
 
