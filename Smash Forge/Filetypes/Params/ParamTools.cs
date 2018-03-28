@@ -124,11 +124,11 @@ namespace Smash_Forge.Params
             }
         }
 
-        public static void BatchExportRenderParamValues()
+        public static void BatchExportParamValuesAsCsv(string paramName)
         {
             using (var sourceFolderSelect = new FolderSelectDialog())
             {
-                sourceFolderSelect.Title = "Stages Directory";
+                sourceFolderSelect.Title = "Source Directory";
                 if (sourceFolderSelect.ShowDialog() == DialogResult.OK)
                 {
                     using (var outputFolderSelect = new FolderSelectDialog())
@@ -139,34 +139,32 @@ namespace Smash_Forge.Params
                             string[] files = Directory.GetFiles(outputFolderSelect.SelectedPath, "*.bin", SearchOption.AllDirectories);
                             foreach (string file in files)
                             {
-                                if (!(file.Contains("render_param")))
+                                if (!(file.Contains(paramName)))
                                     continue;
 
-                                ParamFile renderParam;
+                                ParamFile paramFile;
                                 try
                                 {
-                                    renderParam = new ParamFile(file);
+                                    paramFile = new ParamFile(file);
                                 }
                                 catch (NotImplementedException)
                                 {
                                     continue;
                                 }
 
-                                string[] directories = file.Split('\\');
-                                string stageName = directories[directories.Length - 3]; // get stage folder name
+                                string fileDisplayName = file.Replace(sourceFolderSelect.SelectedPath, "");
 
-                                for (int i = 0; i < renderParam.Groups.Count; i++)
+                                for (int i = 0; i < paramFile.Groups.Count; i++)
                                 {
-                                    StringBuilder groupValues = new StringBuilder(stageName + ",");
-                                    foreach (var entry in renderParam.Groups[i].Values)
+                                    StringBuilder groupValues = new StringBuilder(fileDisplayName + ",");
+                                    foreach (var entry in paramFile.Groups[i].Values)
                                     {
                                         groupValues.Append(entry.Value + ",");
                                     }
 
                                     string fileName = outputFolderSelect.SelectedPath;
-                                    File.AppendAllText(fileName + "\\Group" + i + " Values.csv", groupValues.ToString() + "\n");
+                                    File.AppendAllText(fileName + "\\" + paramName + " Group" + i + " Values.csv", groupValues.ToString() + "\n");
                                 }
-
                             }
                         }
                     }

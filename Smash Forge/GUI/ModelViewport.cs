@@ -1545,9 +1545,10 @@ namespace Smash_Forge
 
         private void glViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
-            // toggle channel rendering
             if (e.KeyChar == 'f')
                 FrameSelectionAndSort();
+
+            // Toggles color channel rendering.
             if (e.KeyChar == 'r')
                 Runtime.renderR = !Runtime.renderR;
             if (e.KeyChar == 'g')
@@ -1571,10 +1572,10 @@ namespace Smash_Forge
                 BatchRenderStages();
 
             if (Keyboard.GetState().IsKeyDown(Key.L) && Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T))
-                ParamTools.BatchExportLightSetValues();
+                ParamTools.BatchExportParamValuesAsCsv("light_set");
 
             if (Keyboard.GetState().IsKeyDown(Key.R) && Keyboard.GetState().IsKeyDown(Key.N) && Keyboard.GetState().IsKeyDown(Key.D))
-                ParamTools.BatchExportRenderParamValues();
+                ParamTools.BatchExportParamValuesAsCsv("stprm");
         }
 
         private void RenderStageModels(string stageFolder, string outputPath, string sourcePath)
