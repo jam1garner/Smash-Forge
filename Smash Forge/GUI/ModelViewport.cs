@@ -1572,6 +1572,9 @@ namespace Smash_Forge
 
             if (Keyboard.GetState().IsKeyDown(Key.L) && Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T))
                 ParamTools.BatchExportLightSetValues();
+
+            if (Keyboard.GetState().IsKeyDown(Key.R) && Keyboard.GetState().IsKeyDown(Key.N) && Keyboard.GetState().IsKeyDown(Key.D))
+                ParamTools.BatchExportRenderParamValues();
         }
 
         private void RenderStageModels(string stageFolder, string outputPath, string sourcePath)

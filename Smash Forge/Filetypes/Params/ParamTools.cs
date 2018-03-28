@@ -124,6 +124,57 @@ namespace Smash_Forge.Params
             }
         }
 
+        public static void BatchExportRenderParamValues()
+        {
+            using (var sourceFolderSelect = new FolderSelectDialog())
+            {
+                sourceFolderSelect.Title = "Stages Directory";
+                if (sourceFolderSelect.ShowDialog() == DialogResult.OK)
+                {
+                    using (var outputFolderSelect = new FolderSelectDialog())
+                    {
+                        outputFolderSelect.Title = "Output Directory";
+                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
+                        {
+                            string[] files = Directory.GetFiles(outputFolderSelect.SelectedPath, "*.bin", SearchOption.AllDirectories);
+                            foreach (string file in files)
+                            {
+                                if (!(file.Contains("render_param")))
+                                    continue;
+
+                                ParamFile renderParam;
+                                try
+                                {
+                                    renderParam = new ParamFile(file);
+                                }
+                                catch (NotImplementedException)
+                                {
+                                    continue;
+                                }
+
+                                string[] directories = file.Split('\\');
+                                string stageName = directories[directories.Length - 3]; // get stage folder name
+
+                                for (int i = 0; i < renderParam.Groups.Count; i++)
+                                {
+                                    StringBuilder groupValues = new StringBuilder(stageName + ",");
+                                    foreach (var entry in renderParam.Groups[i].Values)
+                                    {
+                                        groupValues.Append(entry.Value + ",");
+                                    }
+
+                                    string fileName = outputFolderSelect.SelectedPath;
+                                    File.AppendAllText(fileName + "\\Group" + i + " Values.csv", groupValues.ToString() + "\n");
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
         private static void SaveLightSetValues(FolderSelectDialog outputFolderSelect, StringBuilder miscCsv, StringBuilder lightSetCsv, StringBuilder fogCsv, StringBuilder unkCsv)
         {
             string fileName = outputFolderSelect.SelectedPath;
@@ -161,7 +212,7 @@ namespace Smash_Forge.Params
             fogCsv.AppendLine(fogValues.ToString());
         }
 
-        private static void AppendLightSetValues(StringBuilder lightSetCsv, string stageName, SALT.PARAMS.ParamFile lightSet)
+        private static void AppendLightSetValues(StringBuilder lightSetCsv, string stageName, ParamFile lightSet)
         {
             StringBuilder lightSetValues = new StringBuilder(stageName + ",");
             for (int i = 0; i < 64; i++)
@@ -175,7 +226,7 @@ namespace Smash_Forge.Params
             lightSetCsv.AppendLine(lightSetValues.ToString());
         }
 
-        private static void AppendMiscValues(StringBuilder miscCsv, string stageName, SALT.PARAMS.ParamFile lightSet)
+        private static void AppendMiscValues(StringBuilder miscCsv, string stageName, ParamFile lightSet)
         {
             StringBuilder miscValues = new StringBuilder(stageName + ",");
             for (int i = 0; i < 74; i++)
