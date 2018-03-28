@@ -733,7 +733,7 @@ namespace Smash_Forge
         {
             if (materials[currentMatIndex].textures.Count < 4)
             {
-                materials[currentMatIndex].textures.Add(NUD.MatTexture.getDefault());
+                materials[currentMatIndex].textures.Add(NUD.MatTexture.GetDefault());
                 FillForm();
             }
         }
@@ -767,7 +767,7 @@ namespace Smash_Forge
                         FileOutput m = new FileOutput();
                         FileOutput s = new FileOutput();
 
-                        int[] c = NUD.writeMaterial(m, materials, s);
+                        int[] c = NUD.WriteMaterial(m, materials, s);
 
                         FileOutput fin = new FileOutput();
                         
@@ -840,14 +840,8 @@ namespace Smash_Forge
                 int hash = materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash;
 
                 // Display dummy textures from resources. 
-                if (hash == (int)NUD.DummyTextures.DummyRamp)
-                    displayTexture = RenderTools.dummyRamp;
-                else if (hash == (int)NUD.DummyTextures.PunchOut)
-                    displayTexture = RenderTools.punchOutDummyTex;
-                else if (hash == (int)NUD.DummyTextures.PokemonStadium)
-                    displayTexture = RenderTools.pokemonStadiumDummyTex;
-                else if (hash == (int)NUD.DummyTextures.ShadowMap)
-                    displayTexture = RenderTools.shadowMapDummyTex;
+                if (Enum.IsDefined(typeof(NUD.DummyTextures), hash))
+                    displayTexture = RenderTools.dummyTextures[(NUD.DummyTextures)hash];
                 else
                 {
                     foreach (NUT n in Runtime.TextureContainers)

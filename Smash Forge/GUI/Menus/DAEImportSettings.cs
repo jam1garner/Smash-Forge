@@ -28,19 +28,19 @@ namespace Smash_Forge
 
         public Dictionary<string, int> BoneTypes = new Dictionary<string, int>()
         {
-            { "No Bones", 0x00},
-            { "Bone Weight (Float)", 0x10},
-            { "Bone Weight (Half Float)", 0x20},
-            { "Bone Weight (Byte)", 0x40}
+            { "No Bones", (int)NUD.Polygon.BoneTypes.NoBones},
+            { "Bone Weight (Float)", (int)NUD.Polygon.BoneTypes.Float},
+            { "Bone Weight (Half Float)", (int)NUD.Polygon.BoneTypes.HalfFloat},
+            { "Bone Weight (Byte)", (int)NUD.Polygon.BoneTypes.Byte}
         };
 
-        public Dictionary<string, int> VertTypes = new Dictionary<string, int>()
+        public Dictionary<string, int> VertexTypes = new Dictionary<string, int>()
         {
-            { "No Normals", 0x0},
-            { "Normals (Float)", 0x1},
-            { "Normals, Tan, Bi-Tan (Float)", 0x3},
-            { "Normals (Half Float)", 0x6},
-            { "Normals, Tan, Bi-Tan (Half Float)", 0x7}
+            { "No Normals", (int)NUD.Polygon.VertexTypes.NoNormals},
+            { "Normals (Float)", (int)NUD.Polygon.VertexTypes.NormalsFloat},
+            { "Normals, Tan, Bi-Tan (Float)", (int)NUD.Polygon.VertexTypes.NormalsTanBiTanFloat},
+            { "Normals (Half Float)", (int)NUD.Polygon.VertexTypes.NormalsHalfFloat},
+            { "Normals, Tan, Bi-Tan (Half Float)", (int)NUD.Polygon.VertexTypes.NormalsTanBiTanHalfFloat}
         };
 
         public DAEImportSettings()
@@ -51,7 +51,7 @@ namespace Smash_Forge
         
         public void Populate()
         {
-            foreach (string key in VertTypes.Keys)
+            foreach (string key in VertexTypes.Keys)
                 vertTypeComboBox.Items.Add(key);
 
             foreach (string key in BoneTypes.Keys)
@@ -71,7 +71,7 @@ namespace Smash_Forge
             bool checkedMeshName = false;
             bool fixMeshName = false;
 
-            bool warning = false;
+            bool hasShownShadowWarning = false;
 
             foreach (NUD.Mesh mesh in nud.Nodes)
             {
@@ -102,14 +102,19 @@ namespace Smash_Forge
                         poly.SmoothNormals();
 
                     // Set the vertex size before tangent/bitangent calculations.
-                    poly.vertSize = ((poly.vertSize == 0x6 ? 0 : BoneTypes[(string)boneTypeComboBox.SelectedItem])) | (VertTypes[(string)vertTypeComboBox.SelectedItem]);
+                    if (poly.vertSize == (int)NUD.Polygon.VertexTypes.NormalsHalfFloat) // what is this supposed to mean?
+                        poly.vertSize = 0;
+                    else
+                        poly.vertSize = BoneTypes[(string)boneTypeComboBox.SelectedItem] | VertexTypes[(string)vertTypeComboBox.SelectedItem];
+
                     poly.CalculateTangentBitangent();          
 
-                    if (!warning && poly.vertSize == 0x27)
+                    int vertSizeShadowWarning = (int)NUD.Polygon.BoneTypes.HalfFloat | (int)NUD.Polygon.VertexTypes.NormalsTanBiTanHalfFloat;
+                    if (!hasShownShadowWarning && poly.vertSize == vertSizeShadowWarning)
                     {
                         MessageBox.Show("Using \"" + (string)boneTypeComboBox.SelectedItem + "\" and \"" + (string)vertTypeComboBox.SelectedItem + "\" can make shadows not appear in-game.",
                             "Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        warning = true;
+                        hasShownShadowWarning = true;
                     }
 
                     if (stageMatCB.Checked)
@@ -154,7 +159,6 @@ namespace Smash_Forge
             }
 
             nud.UpdateVertexData();
-
         }
 
         public VBN getVBN()

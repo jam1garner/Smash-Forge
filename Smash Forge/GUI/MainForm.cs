@@ -245,7 +245,7 @@ namespace Smash_Forge
             if (meshList.IsDisposed)
             {
                 meshList = new MeshList();
-                meshList.refresh();
+                meshList.RefreshNodes();
             }
             if (hurtboxList.IsDisposed)
             {
@@ -383,13 +383,13 @@ namespace Smash_Forge
                 {
                     MTA mta = new MTA();
                     mta.read(new FileData(data));
-                    modelContainer.NUD.applyMTA(mta, 0);
+                    modelContainer.NUD.ApplyMta(mta, 0);
                 }
                 if (p.Files.TryGetValue("default.mta", out data))
                 {
                     MTA mta = new MTA();
                     mta.read(new FileData(data));
-                    modelContainer.NUD.applyMTA(mta, 0);
+                    modelContainer.NUD.ApplyMta(mta, 0);
                 }
             }
         }
@@ -590,7 +590,7 @@ namespace Smash_Forge
 
         private void meshListToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            meshList.refresh();
+            meshList.RefreshNodes();
             AddDockedControl(meshList);
         }
 

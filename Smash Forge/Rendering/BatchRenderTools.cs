@@ -51,13 +51,13 @@ namespace Smash_Forge.Rendering
                 {
                     MTA m = new MTA();
                     m.read(new FileData(data));
-                    modelContainer.NUD.applyMTA(m, 0);
+                    modelContainer.NUD.ApplyMta(m, 0);
                 }
                 if (p.Files.TryGetValue("default.mta", out data))
                 {
                     MTA m = new MTA();
                     m.read(new FileData(data));
-                    modelContainer.NUD.applyMTA(m, 0);
+                    modelContainer.NUD.ApplyMta(m, 0);
                 }
             }
         }

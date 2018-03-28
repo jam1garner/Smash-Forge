@@ -16,14 +16,19 @@ namespace Smash_Forge.Rendering
     public class RenderTools
     {
         public static int defaultTex = -1, floorTexture;
-        public static int cubeMapHigh, cubeMapLow;
-        public static int dummyRamp;
+
+        public static Dictionary<NUD.DummyTextures, int> dummyTextures = new Dictionary<NUD.DummyTextures, int>(); 
+
+        private static int stageMapHigh;
+        private static int stageMapLow;
+        private static int dummyRamp;
+        private static int pokemonStadiumDummyTex;
+        private static int punchOutDummyTex;
+        private static int shadowMapDummyTex;
+
         public static int uvTestPattern;
         public static int boneWeightGradient;
         public static int boneWeightGradient2;
-        public static int pokemonStadiumDummyTex;
-        public static int punchOutDummyTex;
-        public static int shadowMapDummyTex;
 
         public static void Setup()
         {
@@ -36,12 +41,23 @@ namespace Smash_Forge.Rendering
         private static void LoadTextures()
         {
             // Dummy textures. 
-            cubeMapHigh = LoadCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
-            cubeMapLow = LoadCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
+            stageMapHigh = LoadCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
+            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
+
+            stageMapLow = LoadCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
+            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
+
             dummyRamp = NUT.loadImage(Properties.Resources._10080000);
+            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp);
+
             pokemonStadiumDummyTex = NUT.loadImage(Properties.Resources._10040001);
+            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex);
+
             punchOutDummyTex = NUT.loadImage(Properties.Resources._10040000);
+            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex);
+
             shadowMapDummyTex = NUT.loadImage(Properties.Resources._10100000);
+            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
 
             // Helpful textures. 
             uvTestPattern = NUT.loadImage(Properties.Resources.UVPattern);

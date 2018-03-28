@@ -304,7 +304,7 @@ namespace Smash_Forge
                 SetLightingUniforms(shader, camera);
 
                 GL.ActiveTexture(TextureUnit.Texture2);
-                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
+                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh]);
                 GL.Uniform1(shader.getAttribute("cmap"), 2);
 
                 GL.ActiveTexture(TextureUnit.Texture11);

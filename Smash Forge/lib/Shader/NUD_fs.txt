@@ -173,6 +173,7 @@ uniform mat4 modelViewMatrix;
 uniform mat4 sphereMapMatrix;
 uniform mat4 rotationMatrix;
 
+uniform float zBufferOffset;
 
 uniform sampler2D shadowMap;
 
@@ -681,7 +682,7 @@ void main()
 
     // zOffset correction
     // TODO: Divide by far plane?
-    gl_FragDepth = gl_FragCoord.z - (zOffset.x / 1500);
+    gl_FragDepth = gl_FragCoord.z - (zOffset.x / 1500) - zBufferOffset;
 
     // Calculate diffuse map blending.
     vec4 diffuseMapTotal = DiffuseMapTotal();
