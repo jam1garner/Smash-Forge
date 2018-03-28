@@ -537,6 +537,8 @@ namespace Smash_Forge
 
             // Used for NU_universe material projection coords. 
             GL.Uniform3(shader.getAttribute("cameraPosition"), camera.position);
+
+            GL.Uniform1(shader.getAttribute("zBufferOffset"), material.zBufferOffset);
          
             p.isTransparent = false;
             if (material.srcFactor > 0 || material.dstFactor > 0 || material.AlphaFunc > 0 || material.AlphaTest > 0)
@@ -1357,12 +1359,10 @@ namespace Smash_Forge
 
                 if (propoff == p.texprop1)
                     propoff = p.texprop2;
-                else
-                    if (propoff == p.texprop2)
+                else if (propoff == p.texprop2)
                         propoff = p.texprop3;
-                    else
-                        if (propoff == p.texprop3)
-                            propoff = p.texprop4;
+                else if (propoff == p.texprop3)
+                    propoff = p.texprop4;
             }
 
             return mats;
