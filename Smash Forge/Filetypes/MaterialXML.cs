@@ -78,8 +78,8 @@ namespace Smash_Forge
             AddUintAttribute(doc, "flags", mat.Flags, matNode, true);
             AddIntAttribute(doc, "srcFactor", mat.srcFactor, matNode, false);
             AddIntAttribute(doc, "dstFactor", mat.dstFactor, matNode, false);
-            AddIntAttribute(doc, "AlphaFunc", mat.AlphaFunc, matNode, false);
-            AddIntAttribute(doc, "AlphaTest", mat.AlphaTest, matNode, false);
+            AddIntAttribute(doc, "AlphaFunc", mat.alphaFunction, matNode, false);
+            AddIntAttribute(doc, "AlphaTest", mat.alphaTest, matNode, false);
             AddIntAttribute(doc, "RefAlpha", mat.RefAlpha, matNode, false);
             AddIntAttribute(doc, "cullmode", mat.cullMode, matNode, true);
             AddIntAttribute(doc, "zbuffoff", mat.zBufferOffset, matNode, false);
@@ -272,10 +272,10 @@ namespace Smash_Forge
                         int.TryParse(attribute.Value, out material.dstFactor);
                         break;
                     case "AlphaFunc":
-                        int.TryParse(attribute.Value, out material.AlphaFunc);
+                        int.TryParse(attribute.Value, out material.alphaFunction);
                         break;
                     case "AlphaTest":
-                        int.TryParse(attribute.Value, out material.AlphaTest);
+                        int.TryParse(attribute.Value, out material.alphaTest);
                         break;
                     case "RefAlpha":
                         int.TryParse(attribute.Value, out material.RefAlpha);

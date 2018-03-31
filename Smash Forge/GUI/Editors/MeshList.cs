@@ -414,10 +414,10 @@ namespace Smash_Forge
                     poly.vertSize = poly.vertSize & 0x0F;
                     foreach (NUD.Vertex vi in poly.vertices)
                     {
-                        vi.node.Clear();
-                        vi.node.Add(mesh.singlebind);
-                        vi.weight.Clear();
-                        vi.weight.Add(1);
+                        vi.boneIds.Clear();
+                        vi.boneIds.Add(mesh.singlebind);
+                        vi.boneWeights.Clear();
+                        vi.boneWeights.Add(1);
                     }
                 }
                 ((NUD)filesTreeView.SelectedNode.Parent).UpdateVertexData();
@@ -1058,7 +1058,7 @@ namespace Smash_Forge
             foreach (NUD.Vertex v in p.vertices)
             {
                 OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                v.col = new OpenTK.Vector4(newTan * 127, 255);
+                v.color = new OpenTK.Vector4(newTan * 127, 255);
             }
 
             // Update the data for rendering.
@@ -1075,7 +1075,7 @@ namespace Smash_Forge
             foreach (NUD.Vertex v in p.vertices)
             {
                 OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                v.col = new OpenTK.Vector4(newBitan * 127, 255);
+                v.color = new OpenTK.Vector4(newBitan * 127, 255);
             }
 
             // Update the data for rendering.
@@ -1092,7 +1092,7 @@ namespace Smash_Forge
             foreach (NUD.Vertex v in p.vertices)
             {
                 OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
-                v.col = new OpenTK.Vector4(newNrm * 127, 255);
+                v.color = new OpenTK.Vector4(newNrm * 127, 255);
             }
 
             // Update the data for rendering.
@@ -1108,7 +1108,7 @@ namespace Smash_Forge
             NUD.Polygon p = (NUD.Polygon)filesTreeView.SelectedNode;
             foreach (NUD.Vertex v in p.vertices)
             {
-                v.col = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
+                v.color = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
             }
 
             // Update the data for rendering.
@@ -1166,7 +1166,7 @@ namespace Smash_Forge
                 foreach (NUD.Vertex v in poly.vertices)
                 {
                     OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                    v.col = new OpenTK.Vector4(newTan * 127, 255);
+                    v.color = new OpenTK.Vector4(newTan * 127, 255);
                 }
             }
 
@@ -1186,7 +1186,7 @@ namespace Smash_Forge
                 foreach (NUD.Vertex v in poly.vertices)
                 {
                     OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                    v.col = new OpenTK.Vector4(newBitan * 127, 255);
+                    v.color = new OpenTK.Vector4(newBitan * 127, 255);
                 }
             }
 
@@ -1206,7 +1206,7 @@ namespace Smash_Forge
                 foreach (NUD.Vertex v in poly.vertices)
                 {
                     OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
-                    v.col = new OpenTK.Vector4(newNrm * 127, 255);
+                    v.color = new OpenTK.Vector4(newNrm * 127, 255);
                 }
             }
 
@@ -1225,7 +1225,7 @@ namespace Smash_Forge
             {
                 foreach (NUD.Vertex v in poly.vertices)
                 {
-                    v.col = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
+                    v.color = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
                 }
             }
 
@@ -1248,7 +1248,7 @@ namespace Smash_Forge
                     foreach (NUD.Vertex v in p.vertices)
                     {
                         OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                        v.col = new OpenTK.Vector4(newTan * 127, 255);
+                        v.color = new OpenTK.Vector4(newTan * 127, 255);
                     }
                 }
             }
@@ -1271,7 +1271,7 @@ namespace Smash_Forge
                     foreach (NUD.Vertex v in p.vertices)
                     {
                         OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                        v.col = new OpenTK.Vector4(newBitan * 127, 255);
+                        v.color = new OpenTK.Vector4(newBitan * 127, 255);
                     }
                 }
             }
@@ -1313,7 +1313,7 @@ namespace Smash_Forge
                     foreach (NUD.Vertex v in p.vertices)
                     {
                         OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
-                        v.col = new OpenTK.Vector4(newNrm * 127, 255);
+                        v.color = new OpenTK.Vector4(newNrm * 127, 255);
                     }
                 }
             }
@@ -1334,7 +1334,7 @@ namespace Smash_Forge
                 {
                     foreach (NUD.Vertex v in p.vertices)
                     {
-                        v.col = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
+                        v.color = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
                     }
                 }
             }
