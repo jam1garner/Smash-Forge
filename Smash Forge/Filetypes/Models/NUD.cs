@@ -465,28 +465,20 @@ namespace Smash_Forge
 
         public void Render(Shader shader, Camera camera)
         {
-            // create lists...
-            // first draw opaque
-
+            // For proper alpha blending, draw in reverse order and draw opaque objects first. 
             List<Polygon> opaque = new List<Polygon>();
-            List<Polygon> trans = new List<Polygon>();
-            
+            List<Polygon> transparent = new List<Polygon>();
+
             foreach (Mesh m in depthSortedMeshes)
             {
-                for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
+                for (int i = m.Nodes.Count - 1; i >= 0; i--)
                 {
-                    Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - pol];
+                    Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - i];
 
-                    if (p.materials.Count > 0)
-                    {
-                        if (p.materials[0].srcFactor != 0 || p.materials[0].dstFactor != 0)
-                        {
-                            trans.Add(p);
-                            continue;
-                        }
-                    }
-
-                    opaque.Add(p);
+                    if (p.materials.Count > 0 && p.materials[0].srcFactor != 0 || p.materials[0].dstFactor != 0)
+                        transparent.Add(p);
+                    else
+                        opaque.Add(p);
                 }
             }
 
@@ -494,15 +486,15 @@ namespace Smash_Forge
                 if (p.Parent != null && ((Mesh)p.Parent).Checked)
                     DrawPolygon(p, shader, camera);
 
-            foreach (Polygon p in trans)
+            foreach (Polygon p in transparent)
                 if (((Mesh)p.Parent).Checked)
                     DrawPolygon(p, shader, camera);
 
             foreach (Mesh m in Nodes)
             {
-                for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
+                for (int i = m.Nodes.Count - 1; i >= 0; i--)
                 {
-                    Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - pol];
+                    Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - i];
                     if (((Mesh)p.Parent).Checked)
                     {
                         if (Runtime.renderModelSelection && (((Mesh)p.Parent).IsSelected || p.IsSelected))
@@ -521,80 +513,14 @@ namespace Smash_Forge
 
             Material material = p.materials[0];
 
-            GL.Uniform1(shader.getAttribute("flags"), material.Flags);
-            GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
+            SetShaderUniforms(p, shader, camera, material);
 
-            // shader uniforms
-            ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderVertColor && material.useVertexColor, "renderVertColor");
-            SetTextureUniforms(shader, material);
-            SetMaterialPropertyUniforms(shader, material);
-            SetLightingUniforms(shader);
-            SetXMBUniforms(shader, p);
-            SetNscUniform(p, shader);
-
-            // Used for NU_universe material projection coords. 
-            GL.Uniform3(shader.getAttribute("cameraPosition"), camera.position);
-
-            GL.Uniform1(shader.getAttribute("zBufferOffset"), material.zBufferOffset);
-         
-            p.isTransparent = false;
-            if (material.srcFactor > 0 || material.dstFactor > 0 || material.alphaFunction > 0 || material.alphaTest > 0)
-                p.isTransparent = true;
-
-            ShaderTools.BoolToIntShaderUniform(shader, p.isTransparent, "isTransparent");
-
-            // Vertex shader attributes (UVs, skin weights, etc)
+            // Set OpenTK Render Options
             SetVertexAttributes(p, shader);
+            SetAlphaBlending(material);
+            SetAlphaTesting(material);
+            SetFaceCulling(material);
 
-            // alpha blending
-            GL.Enable(EnableCap.Blend);
-
-            BlendingFactorSrc blendSrc = srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha;
-            BlendingFactorDest blendDst = dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha;
-            GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
-            GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
-            if (material.srcFactor == 0 && material.dstFactor == 0)
-                GL.Disable(EnableCap.Blend);
-
-            // alpha testing
-            GL.Enable(EnableCap.AlphaTest);
-            if (material.alphaTest == 0) GL.Disable(EnableCap.AlphaTest);
-
-            float refAlpha = material.RefAlpha / 255f;
-
-            // gequal used because fragcolor.a of 0 is refalpha of 1
-            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-            switch (material.alphaFunction)
-            {
-                case 0x0:
-                    GL.AlphaFunc(AlphaFunction.Never, refAlpha);
-                    break;
-                case 0x4:
-                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
-                    break;
-                case 0x6:
-                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
-                    break;
-            }
-
-            // face culling
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-            switch (material.cullMode)
-            {
-                case 0x0000:
-                    GL.Disable(EnableCap.CullFace);
-                    break;
-                case 0x0404:
-                    GL.CullFace(CullFaceMode.Front);
-                    break;
-                case 0x0405:
-                    GL.CullFace(CullFaceMode.Back);
-                    break;
-                default:
-                    GL.Disable(EnableCap.CullFace);
-                    break;
-            }
             if (p.Checked)
             {
                 if ((p.IsSelected || p.Parent.IsSelected) && drawSelection)
@@ -614,6 +540,81 @@ namespace Smash_Forge
                         GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
                     }
                 }
+            }
+        }
+
+        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material)
+        {
+            GL.Uniform1(shader.getAttribute("flags"), material.Flags);
+            GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
+
+            // Shader Uniforms
+            ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderVertColor && material.useVertexColor, "renderVertColor");
+            SetTextureUniforms(shader, material);
+            SetMaterialPropertyUniforms(shader, material);
+            SetLightingUniforms(shader);
+            SetXMBUniforms(shader, p);
+            SetNscUniform(p, shader);
+
+            GL.Uniform3(shader.getAttribute("cameraPosition"), camera.position);
+
+            GL.Uniform1(shader.getAttribute("zBufferOffset"), material.zBufferOffset);
+
+            p.isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
+            ShaderTools.BoolToIntShaderUniform(shader, p.isTransparent, "isTransparent");
+        }
+
+        private void SetAlphaBlending(Material material)
+        {
+            GL.Enable(EnableCap.Blend);
+            BlendingFactorSrc blendSrc = srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha;
+            BlendingFactorDest blendDst = dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha;
+            GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
+            GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
+            if (material.srcFactor == 0 && material.dstFactor == 0)
+                GL.Disable(EnableCap.Blend);
+        }
+
+        private static void SetAlphaTesting(Material material)
+        {
+            GL.Enable(EnableCap.AlphaTest);
+            if (material.alphaTest == 0)
+                GL.Disable(EnableCap.AlphaTest);
+
+            float refAlpha = material.RefAlpha / 255f;
+            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
+            switch (material.alphaFunction)
+            {
+                case 0x0:
+                    GL.AlphaFunc(AlphaFunction.Never, refAlpha);
+                    break;
+                case 0x4:
+                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
+                    break;
+                case 0x6:
+                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
+                    break;
+            }
+        }
+
+        private static void SetFaceCulling(Material material)
+        {
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+            switch (material.cullMode)
+            {
+                case 0x0000:
+                    GL.Disable(EnableCap.CullFace);
+                    break;
+                case 0x0404:
+                    GL.CullFace(CullFaceMode.Front);
+                    break;
+                case 0x0405:
+                    GL.CullFace(CullFaceMode.Back);
+                    break;
+                default:
+                    GL.Disable(EnableCap.CullFace);
+                    break;
             }
         }
 
@@ -833,6 +834,16 @@ namespace Smash_Forge
             GL.ActiveTexture(TextureUnit.Texture12);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient2);
             GL.Uniform1(shader.getAttribute("weightRamp2"), 12);
+
+            // This is necessary to prevent some models from disappearing. 
+            GL.Uniform1(shader.getAttribute("dif"), 0);
+            GL.Uniform1(shader.getAttribute("dif2"), 0);
+            GL.Uniform1(shader.getAttribute("normalMap"), 0);
+            GL.Uniform1(shader.getAttribute("cube"), 2);
+            GL.Uniform1(shader.getAttribute("stagecube"), 2);
+            GL.Uniform1(shader.getAttribute("spheremap"), 0);
+            GL.Uniform1(shader.getAttribute("ao"), 0);
+            GL.Uniform1(shader.getAttribute("ramp"), 0);
 
             int texid = 0;
             if (mat.hasDiffuse && texid < mat.textures.Count)
