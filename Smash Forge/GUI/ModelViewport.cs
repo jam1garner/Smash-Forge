@@ -909,7 +909,15 @@ namespace Smash_Forge
                         {
                             for (int i = 0; i < files.Length; i++)
                             {
-                                MainForm.Instance.OpenNud(files[i], "", this);
+                                try
+                                {
+                                    MainForm.Instance.OpenNud(files[i], "", this);
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.WriteLine(e.Message);
+                                    Debug.WriteLine(e.StackTrace);
+                                }
                                 RenderModel(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
                             }
                         }
