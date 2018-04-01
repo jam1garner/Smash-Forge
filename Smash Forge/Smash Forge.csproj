@@ -123,6 +123,12 @@
     <Compile Include="GUI\Controls\VertexTool.Designer.cs">
       <DependentUpon>VertexTool.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\PasswordPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\PasswordPopup.Designer.cs">
+      <DependentUpon>PasswordPopup.cs</DependentUpon>
+    </Compile>
     <Compile Include="lib\DiscordController.cs" />
     <Compile Include="lib\DiscordRpc.cs" />
     <Compile Include="GUI\EditorBase.cs">
@@ -620,6 +626,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\ModelViewport.resx">
       <DependentUpon>ModelViewport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\PasswordPopup.resx">
+      <DependentUpon>PasswordPopup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\ProgressAlert.resx">
       <DependentUpon>ProgressAlert.cs</DependentUpon>

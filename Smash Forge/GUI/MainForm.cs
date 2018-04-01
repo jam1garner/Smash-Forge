@@ -20,6 +20,7 @@ using SALT.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.ComponentModel;
 using Smash_Forge.Rendering.Lights;
+using System.Text;
 
 namespace Smash_Forge
 {
@@ -58,6 +59,8 @@ namespace Smash_Forge
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
         public List<SwagEditor> SwagEditors = new List<SwagEditor>() { };
 
+        public string password = "";
+
         public MainForm()
         {
             InitializeComponent();
@@ -82,6 +85,17 @@ namespace Smash_Forge
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            PasswordPopup passwordPopup;
+            // Top 10 crypto pro
+            byte[] data = Convert.FromBase64String("b24gcGxvYWoncyB0d2l0dGVy");
+            string decodedString = Encoding.UTF8.GetString(data);
+            while (password.ToLower() != decodedString)
+            {
+                passwordPopup = new PasswordPopup();
+                passwordPopup.ShowDialog();
+            }
+            
+
             DiscordSettings.startTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             dockPanel = dockPanel1;
             DiscordSettings.DiscordController = new DiscordController();
