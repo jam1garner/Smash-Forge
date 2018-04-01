@@ -33,7 +33,6 @@ namespace Smash_Forge
 
         // View controls
         public Camera camera = new Camera();
-        public Matrix4 lightMatrix, lightProjection;
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
         // Rendering Stuff
@@ -41,6 +40,11 @@ namespace Smash_Forge
         int colorHdrTex0;
         int colorHdrTex1;
         int hdrDepthRbo;
+
+        int brightTexSmall;
+        int brightHdrSmallFbo;
+        int brightTexWidth;
+        int brightTexHeight;
 
         // Functions of Viewer
         public enum Mode
@@ -196,8 +200,6 @@ namespace Smash_Forge
             FilePath = "";
             Text = "Model Viewport";
 
-            CalculateLightSource();
-
             MeshList.Dock = DockStyle.Right;
             MeshList.MaximumSize = new Size(300, 2000);
             MeshList.Size = new Size(300, 2000);
@@ -238,7 +240,7 @@ namespace Smash_Forge
             VariableViewer = new VariableList();
             VariableViewer.Dock = DockStyle.Right;
 
-            LVD = new Smash_Forge.LVD();
+            LVD = new LVD();
 
             ViewComboBox.SelectedIndex = 0;
 
@@ -252,6 +254,24 @@ namespace Smash_Forge
         private void SetupBuffersAndTextures()
         {
             CreateHdrRenderToTexture(out colorHdrFbo, out colorHdrTex0, out colorHdrTex1);
+            CreateBrightSmallHdrRenderToTexture();
+        }
+
+        private void CreateBrightSmallHdrRenderToTexture()
+        {
+            GL.GenFramebuffers(1, out brightHdrSmallFbo);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, brightHdrSmallFbo);
+
+            brightTexWidth = glViewport.Width / 2;
+            brightTexHeight = glViewport.Height / 2;
+
+            // Regular texture.
+            GL.GenTextures(1, out brightTexSmall);
+            GL.BindTexture(TextureTarget.Texture2D, brightTexSmall);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, brightTexWidth, brightTexHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, brightTexSmall, 0);
         }
 
         private void CreateHdrRenderToTexture(out int fbo, out int texture0, out int texture1)
@@ -262,7 +282,7 @@ namespace Smash_Forge
             int textureWidth = glViewport.Width;
             int textureHeight = glViewport.Height;
 
-            // Normal texture.
+            // Regular texture.
             GL.GenTextures(1, out texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture0);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
@@ -270,7 +290,7 @@ namespace Smash_Forge
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture0, 0);
 
-            // Texture for bright portions of the image that will be blurred later. TODO: Smaller than the viewport for extra blurring.
+            // Texture for bright portions of the image that will be blurred later.
             GL.GenTextures(1, out texture1);
             GL.BindTexture(TextureTarget.Texture2D, texture1);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
@@ -447,15 +467,6 @@ namespace Smash_Forge
                 if (dbdistance >= selectedSize) dbdistance = 0;
                 _LastPoint = e.Location;
             }
-        }
-
-        public void CalculateLightSource()
-        {
-            Matrix4.CreateOrthographicOffCenter(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, Runtime.renderDepth, out lightProjection);
-            Matrix4 lightView = Matrix4.LookAt(Vector3.TransformVector(Vector3.Zero, camera.mvpMatrix).Normalized(),
-                new Vector3(0),
-                new Vector3(0, 1, 0));
-            lightMatrix = lightProjection * lightView;
         }
 
         private Vector3 getScreenPoint(Vector3 pos)
@@ -1371,8 +1382,16 @@ namespace Smash_Forge
             DrawModels();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
+            // Draw the texture to the screen into a smaller FBO.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, brightHdrSmallFbo);
+            GL.Viewport(0, 0, brightTexWidth, brightTexHeight);
+            RenderTools.DrawTexturedQuad(colorHdrTex1, brightTexWidth, brightTexHeight);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.Viewport(glViewport.ClientRectangle);
+
             if (Runtime.drawHdrScreenQuad) 
-                RenderTools.DrawScreenQuad(colorHdrTex0, colorHdrTex1);
+              RenderTools.DrawScreenQuad(colorHdrTex0, brightTexSmall);
 
             FixedFunctionRendering();
 

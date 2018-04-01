@@ -151,8 +151,8 @@ namespace Smash_Forge
         public static bool cameraLight = false;
 
         // Post Processing
-        public static bool renderBloom = false;
-        public static bool drawHdrScreenQuad = false;
+        public static bool renderBloom = true;
+        public static bool drawHdrScreenQuad = true;
         public static bool drawModelShadow = true;
 
         // Material Lighting
