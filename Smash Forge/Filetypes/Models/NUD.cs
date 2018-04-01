@@ -560,6 +560,8 @@ namespace Smash_Forge
 
             GL.Uniform1(shader.getAttribute("zBufferOffset"), material.zBufferOffset);
 
+            GL.Uniform1(shader.getAttribute("bloomThreshold"), Runtime.bloomThreshold);
+
             p.isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
             ShaderTools.BoolToIntShaderUniform(shader, p.isTransparent, "isTransparent");
         }

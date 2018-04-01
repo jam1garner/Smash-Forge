@@ -1,6 +1,9 @@
 ﻿#version 330
 in vec2 texCoord;
 
+uniform int renderBloom;
+uniform float bloomIntensity;
+
 uniform sampler2D image0;
 uniform sampler2D image1;
 
@@ -35,5 +38,5 @@ void main()
         blurResult += texture(image1, texCoord1 - vec2(0, textureOffset.y * i)).rgb * weight[i];
     }
 
-    fragColor.rgb = textureColor0.rgb + blurResult * 0.5;
+    fragColor.rgb = textureColor0.rgb + (blurResult * bloomIntensity * renderBloom);
 }

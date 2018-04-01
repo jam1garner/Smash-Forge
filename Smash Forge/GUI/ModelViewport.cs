@@ -1391,7 +1391,7 @@ namespace Smash_Forge
             GL.Viewport(glViewport.ClientRectangle);
 
             if (Runtime.drawHdrScreenQuad) 
-              RenderTools.DrawScreenQuad(colorHdrTex0, brightTexSmall);
+              RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, brightTexSmall);
 
             FixedFunctionRendering();
 

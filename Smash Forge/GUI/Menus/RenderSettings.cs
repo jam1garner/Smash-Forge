@@ -129,6 +129,13 @@ namespace Smash_Forge.GUI
             renderModeComboBox.SelectedIndex = (int)Runtime.renderType;
             UpdateDebugButtonsFromRenderType();
 
+            // Post Processing Settings
+            postProcessingCB.Checked = Runtime.drawHdrScreenQuad;
+            bloomCB.Checked = Runtime.renderBloom;
+            bloomGroupBox.Enabled = postProcessingCB.Checked;
+            bloomIntensityTB.Text = Runtime.bloomIntensity + "";
+            bloomThresholdTB.Text = Runtime.bloomThreshold + "";
+
             disableRuntimeUpdates = false;
         }
 
@@ -833,6 +840,27 @@ namespace Smash_Forge.GUI
                 Runtime.backgroundGradientBottom = Color.FromArgb(0xFF, colorDialog.Color);
                 BackgroundGradient2.BackColor = Runtime.backgroundGradientBottom;
             }
+        }
+
+        private void postProcessingCB_CheckedChanged(object sender, EventArgs e)
+        {
+            bloomGroupBox.Enabled = postProcessingCB.Checked;
+            Runtime.drawHdrScreenQuad = postProcessingCB.Checked;
+        }
+
+        private void bloomCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderBloom = bloomCB.Checked;
+        }
+
+        private void bloomIntensityTB_TextChanged(object sender, EventArgs e)
+        {
+            Runtime.bloomIntensity = GuiTools.TryParseTBFloat(bloomIntensityTB);
+        }
+
+        private void bloomThresholdTB_TextChanged(object sender, EventArgs e)
+        {
+            Runtime.bloomThreshold = GuiTools.TryParseTBFloat(bloomThresholdTB);
         }
     }
 }
