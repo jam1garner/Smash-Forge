@@ -1338,15 +1338,16 @@ namespace Smash_Forge
                 }
             }
 
-            if (Runtime.drawHdrScreenQuad)
+            if (Runtime.usePostProcessing)
             {
                 // Render models and background into an HDR buffer. 
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             }
 
-            if (Runtime.renderBackGround)
+            if (Runtime.renderBackGround && !Runtime.usePostProcessing)
             {
+                // The screen quad shader draws its own background gradient.
                 DrawViewportBackground();
             }
 
@@ -1380,6 +1381,7 @@ namespace Smash_Forge
                 GL.Disable(EnableCap.DepthTest);
 
             DrawModels();
+
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
             // Draw the texture to the screen into a smaller FBO.
@@ -1390,7 +1392,7 @@ namespace Smash_Forge
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.Viewport(glViewport.ClientRectangle);
 
-            if (Runtime.drawHdrScreenQuad) 
+            if (Runtime.usePostProcessing) 
               RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, brightTexSmall);
 
             FixedFunctionRendering();

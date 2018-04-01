@@ -152,7 +152,7 @@ namespace Smash_Forge
 
         // Post Processing
         public static bool renderBloom = false;
-        public static bool drawHdrScreenQuad = false;
+        public static bool usePostProcessing = false;
         public static bool drawModelShadow = false;
         public static float bloomIntensity = 1;
         public static float bloomThreshold = 1;

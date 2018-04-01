@@ -7,6 +7,9 @@ uniform float bloomIntensity;
 uniform sampler2D image0;
 uniform sampler2D image1;
 
+uniform vec3 backgroundTopColor;
+uniform vec3 backgroundBottomColor;
+
 uniform float weight[5] = float[] (0.1784, 0.210431, 0.222338, 0.210431, 0.1784);
 
 out vec4 fragColor;
@@ -38,5 +41,9 @@ void main()
         blurResult += texture(image1, texCoord1 - vec2(0, textureOffset.y * i)).rgb * weight[i];
     }
 
+    // Background Color
+    vec3 backgroundTotalColor = mix(backgroundBottomColor, backgroundTopColor, texCoord.y);
+
     fragColor.rgb = textureColor0.rgb + (blurResult * bloomIntensity * renderBloom);
+    fragColor.rgb = mix(backgroundTotalColor, fragColor.rgb, textureColor0.a);
 }

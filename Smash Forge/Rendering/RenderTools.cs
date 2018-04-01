@@ -1519,6 +1519,9 @@ namespace Smash_Forge.Rendering
             ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderBloom, "renderBloom");
             GL.Uniform1(shader.getAttribute("bloomIntensity"), Runtime.bloomIntensity);
 
+            GL.Uniform3(shader.getAttribute("backgroundBottomColor"), ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz);
+            GL.Uniform3(shader.getAttribute("backgroundTopColor"), ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz);
+
             // Draw full screen "quad" (big triangle)
             DrawScreenTriangle(shader);
         }

@@ -130,7 +130,7 @@ namespace Smash_Forge.GUI
             UpdateDebugButtonsFromRenderType();
 
             // Post Processing Settings
-            postProcessingCB.Checked = Runtime.drawHdrScreenQuad;
+            postProcessingCB.Checked = Runtime.usePostProcessing;
             bloomCB.Checked = Runtime.renderBloom;
             bloomGroupBox.Enabled = postProcessingCB.Checked;
             bloomIntensityTB.Text = Runtime.bloomIntensity + "";
@@ -845,7 +845,7 @@ namespace Smash_Forge.GUI
         private void postProcessingCB_CheckedChanged(object sender, EventArgs e)
         {
             bloomGroupBox.Enabled = postProcessingCB.Checked;
-            Runtime.drawHdrScreenQuad = postProcessingCB.Checked;
+            Runtime.usePostProcessing = postProcessingCB.Checked;
         }
 
         private void bloomCB_CheckedChanged(object sender, EventArgs e)
