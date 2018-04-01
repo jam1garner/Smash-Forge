@@ -12,8 +12,9 @@ void main()
 {
     fragColor = vec4(0,0,0,1);
     vec4 textureColor0 = texture(image0, texCoord).rgba;
-    vec4 textureColor1 = texture(image1, texCoord).rgba;
 
+    vec2 texCoord1 = vec2(texCoord.x, 1 - texCoord.y);
+    vec4 textureColor1 = texture(image1, texCoord1).rgba;
 
     // Used for pixel offset
     vec2 textureOffset = 1.0 / textureSize(image1, 0);
@@ -24,15 +25,15 @@ void main()
     // Horizontal Blur
     for (int i = 0; i < blurRadius; i++)
     {
-        blurResult += texture(image1, texCoord + vec2(textureOffset.x * i, 0)).rgb * weight[i];
-        blurResult += texture(image1, texCoord - vec2(textureOffset.x * i, 0)).rgb * weight[i];
+        blurResult += texture(image1, texCoord1 + vec2(textureOffset.x * i, 0)).rgb * weight[i];
+        blurResult += texture(image1, texCoord1 - vec2(textureOffset.x * i, 0)).rgb * weight[i];
     }
     // Vertical Blur
     for (int i = 0; i < blurRadius; i++)
     {
-        blurResult += texture(image1, texCoord + vec2(0, textureOffset.y * i)).rgb * weight[i];
-        blurResult += texture(image1, texCoord - vec2(0, textureOffset.y * i)).rgb * weight[i];
+        blurResult += texture(image1, texCoord1 + vec2(0, textureOffset.y * i)).rgb * weight[i];
+        blurResult += texture(image1, texCoord1 - vec2(0, textureOffset.y * i)).rgb * weight[i];
     }
 
-    fragColor.rgb = textureColor0.rgb + blurResult;
+    fragColor.rgb = textureColor0.rgb + blurResult * 0.5;
 }
