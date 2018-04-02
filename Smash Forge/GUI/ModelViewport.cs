@@ -262,8 +262,8 @@ namespace Smash_Forge
             GL.GenFramebuffers(1, out brightHdrSmallFbo);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, brightHdrSmallFbo);
 
-            brightTexWidth = glViewport.Width / 2;
-            brightTexHeight = glViewport.Height / 2;
+            brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
+            brightTexHeight = (int)(glViewport.Height * Runtime.bloomTexScale);
 
             // Regular texture.
             GL.GenTextures(1, out brightTexSmall);
@@ -490,7 +490,7 @@ namespace Smash_Forge
                 camera.Update();
 
                 // Remake the textures and buffers everytime the dimensions change.
-                CreateHdrRenderToTexture(out colorHdrFbo, out colorHdrTex0, out colorHdrTex1);
+                SetupBuffersAndTextures();
             }
         }
 
@@ -1384,16 +1384,19 @@ namespace Smash_Forge
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-            // Draw the texture to the screen into a smaller FBO.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, brightHdrSmallFbo);
-            GL.Viewport(0, 0, brightTexWidth, brightTexHeight);
-            RenderTools.DrawTexturedQuad(colorHdrTex1, brightTexWidth, brightTexHeight);
+            if (Runtime.usePostProcessing)
+            {
+                // Draw the texture to the screen into a smaller FBO.
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, brightHdrSmallFbo);
+                GL.Viewport(0, 0, brightTexWidth, brightTexHeight);
+                RenderTools.DrawTexturedQuad(colorHdrTex1, brightTexWidth, brightTexHeight);
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.Viewport(glViewport.ClientRectangle);
+                // Setup the normal viewport dimensions again.
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                GL.Viewport(glViewport.ClientRectangle);
 
-            if (Runtime.usePostProcessing) 
-              RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, brightTexSmall);
+                RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, brightTexSmall);
+            }
 
             FixedFunctionRendering();
 

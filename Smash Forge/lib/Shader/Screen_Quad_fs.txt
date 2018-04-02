@@ -44,6 +44,8 @@ void main()
     // Background Color
     vec3 backgroundTotalColor = mix(backgroundBottomColor, backgroundTopColor, texCoord.y);
 
-    fragColor.rgb = textureColor0.rgb + (blurResult * bloomIntensity * renderBloom);
-    fragColor.rgb = mix(backgroundTotalColor, fragColor.rgb, textureColor0.a);
+    vec3 bloomColor = blurResult * bloomIntensity * renderBloom;
+
+    fragColor.rgb = textureColor0.rgb + bloomColor;
+    fragColor.rgb = mix(backgroundTotalColor, fragColor.rgb, min(1, textureColor0.a));
 }

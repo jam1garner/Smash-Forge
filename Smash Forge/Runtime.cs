@@ -154,8 +154,9 @@ namespace Smash_Forge
         public static bool renderBloom = false;
         public static bool usePostProcessing = false;
         public static bool drawModelShadow = false;
-        public static float bloomIntensity = 1;
-        public static float bloomThreshold = 1;
+        public static float bloomIntensity = 0.2f;
+        public static float bloomThreshold = 1.01f;
+        public static float bloomTexScale = 0.125f;
 
         // Material Lighting
         public static bool renderDiffuse = true;
