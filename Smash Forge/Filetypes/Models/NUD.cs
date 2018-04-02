@@ -123,9 +123,6 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
-        #region Rendering
-
-
         public void Destroy()
         {
             GL.DeleteBuffer(vbo_position);
@@ -468,28 +465,20 @@ namespace Smash_Forge
 
         public void Render(Shader shader, Camera camera)
         {
-            // create lists...
-            // first draw opaque
-
+            // For proper alpha blending, draw in reverse order and draw opaque objects first. 
             List<Polygon> opaque = new List<Polygon>();
-            List<Polygon> trans = new List<Polygon>();
-            
+            List<Polygon> transparent = new List<Polygon>();
+
             foreach (Mesh m in depthSortedMeshes)
             {
-                for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
+                for (int i = m.Nodes.Count - 1; i >= 0; i--)
                 {
-                    Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - pol];
+                    Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - i];
 
-                    if (p.materials.Count > 0)
-                    {
-                        if (p.materials[0].srcFactor != 0 || p.materials[0].dstFactor != 0)
-                        {
-                            trans.Add(p);
-                            continue;
-                        }
-                    }
-
-                    opaque.Add(p);
+                    if (p.materials.Count > 0 && p.materials[0].srcFactor != 0 || p.materials[0].dstFactor != 0)
+                        transparent.Add(p);
+                    else
+                        opaque.Add(p);
                 }
             }
 
@@ -497,15 +486,15 @@ namespace Smash_Forge
                 if (p.Parent != null && ((Mesh)p.Parent).Checked)
                     DrawPolygon(p, shader, camera);
 
-            foreach (Polygon p in trans)
+            foreach (Polygon p in transparent)
                 if (((Mesh)p.Parent).Checked)
                     DrawPolygon(p, shader, camera);
 
             foreach (Mesh m in Nodes)
             {
-                for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
+                for (int i = m.Nodes.Count - 1; i >= 0; i--)
                 {
-                    Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - pol];
+                    Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - i];
                     if (((Mesh)p.Parent).Checked)
                     {
                         if (Runtime.renderModelSelection && (((Mesh)p.Parent).IsSelected || p.IsSelected))
@@ -524,80 +513,14 @@ namespace Smash_Forge
 
             Material material = p.materials[0];
 
-            GL.Uniform1(shader.getAttribute("flags"), material.Flags);
-            GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
+            SetShaderUniforms(p, shader, camera, material);
 
-            // shader uniforms
-            ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderVertColor && material.useVertexColor, "renderVertColor");
-            SetTextureUniforms(shader, material);
-            SetMaterialPropertyUniforms(shader, material);
-            SetLightingUniforms(shader);
-            SetXMBUniforms(shader, p);
-            SetNscUniform(p, shader);
-
-            // Used for NU_universe material projection coords. 
-            GL.Uniform3(shader.getAttribute("cameraPosition"), camera.position);
-
-            GL.Uniform1(shader.getAttribute("zBufferOffset"), material.zBufferOffset);
-         
-            p.isTransparent = false;
-            if (material.srcFactor > 0 || material.dstFactor > 0 || material.AlphaFunc > 0 || material.AlphaTest > 0)
-                p.isTransparent = true;
-
-            ShaderTools.BoolToIntShaderUniform(shader, p.isTransparent, "isTransparent");
-
-            // Vertex shader attributes (UVs, skin weights, etc)
+            // Set OpenTK Render Options
             SetVertexAttributes(p, shader);
+            SetAlphaBlending(material);
+            SetAlphaTesting(material);
+            SetFaceCulling(material);
 
-            // alpha blending
-            GL.Enable(EnableCap.Blend);
-
-            BlendingFactorSrc blendSrc = srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha;
-            BlendingFactorDest blendDst = dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha;
-            GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
-            GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
-            if (material.srcFactor == 0 && material.dstFactor == 0)
-                GL.Disable(EnableCap.Blend);
-
-            // alpha testing
-            GL.Enable(EnableCap.AlphaTest);
-            if (material.AlphaTest == 0) GL.Disable(EnableCap.AlphaTest);
-
-            float refAlpha = material.RefAlpha / 255f;
-
-            // gequal used because fragcolor.a of 0 is refalpha of 1
-            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-            switch (material.AlphaFunc)
-            {
-                case 0x0:
-                    GL.AlphaFunc(AlphaFunction.Never, refAlpha);
-                    break;
-                case 0x4:
-                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
-                    break;
-                case 0x6:
-                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
-                    break;
-            }
-
-            // face culling
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-            switch (material.cullMode)
-            {
-                case 0x0000:
-                    GL.Disable(EnableCap.CullFace);
-                    break;
-                case 0x0404:
-                    GL.CullFace(CullFaceMode.Front);
-                    break;
-                case 0x0405:
-                    GL.CullFace(CullFaceMode.Back);
-                    break;
-                default:
-                    GL.Disable(EnableCap.CullFace);
-                    break;
-            }
             if (p.Checked)
             {
                 if ((p.IsSelected || p.Parent.IsSelected) && drawSelection)
@@ -617,6 +540,83 @@ namespace Smash_Forge
                         GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
                     }
                 }
+            }
+        }
+
+        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material)
+        {
+            GL.Uniform1(shader.getAttribute("flags"), material.Flags);
+            GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
+
+            // Shader Uniforms
+            ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderVertColor && material.useVertexColor, "renderVertColor");
+            SetTextureUniforms(shader, material);
+            SetMaterialPropertyUniforms(shader, material);
+            SetLightingUniforms(shader);
+            SetXMBUniforms(shader, p);
+            SetNscUniform(p, shader);
+
+            GL.Uniform3(shader.getAttribute("cameraPosition"), camera.position);
+
+            GL.Uniform1(shader.getAttribute("zBufferOffset"), material.zBufferOffset);
+
+            GL.Uniform1(shader.getAttribute("bloomThreshold"), Runtime.bloomThreshold);
+
+            p.isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
+            ShaderTools.BoolToIntShaderUniform(shader, p.isTransparent, "isTransparent");
+        }
+
+        private void SetAlphaBlending(Material material)
+        {
+            GL.Enable(EnableCap.Blend);
+            BlendingFactorSrc blendSrc = srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha;
+            BlendingFactorDest blendDst = dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha;
+            GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
+            GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
+            if (material.srcFactor == 0 && material.dstFactor == 0)
+                GL.Disable(EnableCap.Blend);
+        }
+
+        private static void SetAlphaTesting(Material material)
+        {
+            GL.Enable(EnableCap.AlphaTest);
+            if (material.alphaTest == 0)
+                GL.Disable(EnableCap.AlphaTest);
+
+            float refAlpha = material.RefAlpha / 255f;
+            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
+            switch (material.alphaFunction)
+            {
+                case 0x0:
+                    GL.AlphaFunc(AlphaFunction.Never, refAlpha);
+                    break;
+                case 0x4:
+                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
+                    break;
+                case 0x6:
+                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
+                    break;
+            }
+        }
+
+        private static void SetFaceCulling(Material material)
+        {
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+            switch (material.cullMode)
+            {
+                case 0x0000:
+                    GL.Disable(EnableCap.CullFace);
+                    break;
+                case 0x0404:
+                    GL.CullFace(CullFaceMode.Front);
+                    break;
+                case 0x0405:
+                    GL.CullFace(CullFaceMode.Back);
+                    break;
+                default:
+                    GL.Disable(EnableCap.CullFace);
+                    break;
             }
         }
 
@@ -665,16 +665,11 @@ namespace Smash_Forge
         
         private void SetXMBUniforms(Shader shader, Polygon p)
         {
-            if(modelType.Equals("stage"))
-                GL.Uniform1(shader.getAttribute("isStage"), 1);
-            else
-                GL.Uniform1(shader.getAttribute("isStage"), 0);
-            bool directUVTimeFlags = (p.materials[0].Flags & 0x00001900) == 0x00001900; // should probably move elsewhere
+            ShaderTools.BoolToIntShaderUniform(shader, modelType.Equals("stage"), "isStage");
 
-            if ((useDirectUVTime && directUVTimeFlags))
-                GL.Uniform1(shader.getAttribute("useDirectUVTime"), 1);
-            else
-                GL.Uniform1(shader.getAttribute("useDirectUVTime"), 0);
+            bool directUVTimeFlags = (p.materials[0].Flags & 0x00001900) == 0x00001900; // should probably move elsewhere
+            ShaderTools.BoolToIntShaderUniform(shader, useDirectUVTime && directUVTimeFlags, "useDirectUVTime");
+
             GL.Uniform1(shader.getAttribute("lightSet"), lightSetNumber);
         }
 
@@ -842,6 +837,7 @@ namespace Smash_Forge
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient2);
             GL.Uniform1(shader.getAttribute("weightRamp2"), 12);
 
+            // This is necessary to prevent some models from disappearing. 
             GL.Uniform1(shader.getAttribute("dif"), 0);
             GL.Uniform1(shader.getAttribute("dif2"), 0);
             GL.Uniform1(shader.getAttribute("normalMap"), 0);
@@ -852,7 +848,6 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("ramp"), 0);
 
             int texid = 0;
-
             if (mat.hasDiffuse && texid < mat.textures.Count)
             {
                 int hash = mat.textures[texid].hash;
@@ -872,13 +867,13 @@ namespace Smash_Forge
             {
                 // The order of the textures here is critical. 
                 TextureUniform(shader, mat, mat.hasSphereMap, "spheremap", ref texid, ref mat.sphereMapID);
-                TextureUniform(shader, mat, mat.hasDiffuse2, "dif2", ref texid, ref mat.diffuse2ID);
-                TextureUniform(shader, mat, mat.hasDiffuse3, "dif3", ref texid, ref mat.diffuse3ID);
-                TextureUniform(shader, mat, mat.hasStageMap, "stagecube", ref texid, ref mat.stageMapID);
-                TextureUniform(shader, mat, mat.hasCubeMap, "cube", ref texid, ref mat.cubeMapID);
-                TextureUniform(shader, mat, mat.hasAoMap, "ao", ref texid, ref mat.aoMapID);
+                TextureUniform(shader, mat, mat.hasDiffuse2,  "dif2",      ref texid, ref mat.diffuse2ID);
+                TextureUniform(shader, mat, mat.hasDiffuse3,  "dif3",      ref texid, ref mat.diffuse3ID);
+                TextureUniform(shader, mat, mat.hasStageMap,  "stagecube", ref texid, ref mat.stageMapID);
+                TextureUniform(shader, mat, mat.hasCubeMap,   "cube",      ref texid, ref mat.cubeMapID);
+                TextureUniform(shader, mat, mat.hasAoMap,     "ao",        ref texid, ref mat.aoMapID);
                 TextureUniform(shader, mat, mat.hasNormalMap, "normalMap", ref texid, ref mat.normalID);
-                TextureUniform(shader, mat, mat.hasRamp, "ramp", ref texid, ref mat.rampID);
+                TextureUniform(shader, mat, mat.hasRamp,      "ramp",      ref texid, ref mat.rampID);
                 TextureUniform(shader, mat, mat.hasDummyRamp, "dummyRamp", ref texid, ref mat.dummyRampID);
             }
         }
@@ -1062,9 +1057,6 @@ namespace Smash_Forge
                 GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 4.0f);
         }
 
-        #endregion
-
-        #region MTA
         public void ClearMta()
         {
             foreach (Mesh me in Nodes)
@@ -1143,35 +1135,27 @@ namespace Smash_Forge
                 }
             }
         }
-        #endregion
 
-        #region Reading
-        //------------------------------------------------------------------------------------------------------------------------
-        /*
-         * Reads the contents of the nud file into this class
-         */
-        //------------------------------------------------------------------------------------------------------------------------
-        // HELPERS FOR READING
-        private struct _s_Object
+        // Helpers for reading
+        private struct ObjectData
         {
-            public int id;
             public int singlebind;
-            public int polyamt;
+            public int polyCount;
             public int positionb;
             public string name;
         }
 
-        public struct _s_Poly
+        public struct PolyData
         {
             public int polyStart;
             public int vertStart;
             public int verAddStart;
-            public int vertamt;
+            public int vertCount;
             public int vertSize;
             public int UVSize;
-            public int polyamt;
-            public int polsize;
-            public int polflag;
+            public int polyCount;
+            public int polySize;
+            public int polyFlag;
             public int texprop1;
             public int texprop2;
             public int texprop3;
@@ -1180,108 +1164,106 @@ namespace Smash_Forge
 
         public override void Read(string filename)
         {
-            FileData d = new FileData(filename);
-            d.Endian = Endianness.Big;
-            d.seek(0);
+            FileData fileData = new FileData(filename);
+            fileData.Endian = Endianness.Big;
+            fileData.seek(0);
 
             // read header
-            string magic = d.readString(0, 4);
+            string magic = fileData.readString(0, 4);
 
             if (magic.Equals("NDWD"))
-                d.Endian = Endianness.Little;
+                fileData.Endian = Endianness.Little;
 
-            Endian = d.Endian;
+            Endian = fileData.Endian;
 
-            d.seek(0xA);
-            int polysets = d.readShort();
-            boneCount = d.readShort();
-            d.skip(2);  // somethingsets
-            int polyClumpStart = d.readInt() + 0x30;
-            int polyClumpSize = d.readInt();
+            fileData.seek(0xA);
+            int polysets = fileData.readShort();
+            boneCount = fileData.readShort();
+            fileData.skip(2);  // somethingsets
+            int polyClumpStart = fileData.readInt() + 0x30;
+            int polyClumpSize = fileData.readInt();
             int vertClumpStart = polyClumpStart + polyClumpSize;
-            int vertClumpSize = d.readInt();
+            int vertClumpSize = fileData.readInt();
             int vertaddClumpStart = vertClumpStart + vertClumpSize;
-            int vertaddClumpSize = d.readInt();
+            int vertaddClumpSize = fileData.readInt();
             int nameStart = vertaddClumpStart + vertaddClumpSize;
-            boundingBox[0] = d.readFloat();
-            boundingBox[1] = d.readFloat();
-            boundingBox[2] = d.readFloat();
-            boundingBox[3] = d.readFloat();
+            boundingBox[0] = fileData.readFloat();
+            boundingBox[1] = fileData.readFloat();
+            boundingBox[2] = fileData.readFloat();
+            boundingBox[3] = fileData.readFloat();
 
             // object descriptors
 
-            _s_Object[] obj = new _s_Object[polysets];
-            List<float[]> unknown = new List<float[]>();
+            ObjectData[] obj = new ObjectData[polysets];
+            List<float[]> boundingBoxes = new List<float[]>();
             int[] boneflags = new int[polysets];
             for (int i = 0; i < polysets; i++)
             {
-                float[] un = new float[8];
-                un[0] = d.readFloat();
-                un[1] = d.readFloat();
-                un[2] = d.readFloat();
-                un[3] = d.readFloat();
-                un[4] = d.readFloat();
-                un[5] = d.readFloat();
-                un[6] = d.readFloat();
-                un[7] = d.readFloat();
-                unknown.Add(un);
-                int temp = d.pos() + 4;
-                d.seek(nameStart + d.readInt());
-                obj[i].name = (d.readString());
+                float[] boundingBox = new float[8];
+                boundingBox[0] = fileData.readFloat();
+                boundingBox[1] = fileData.readFloat();
+                boundingBox[2] = fileData.readFloat();
+                boundingBox[3] = fileData.readFloat();
+                boundingBox[4] = fileData.readFloat();
+                boundingBox[5] = fileData.readFloat();
+                boundingBox[6] = fileData.readFloat();
+                boundingBox[7] = fileData.readFloat();
+                boundingBoxes.Add(boundingBox);
+                int temp = fileData.pos() + 4;
+                fileData.seek(nameStart + fileData.readInt());
+                obj[i].name = (fileData.readString());
                 // read name string
-                d.seek(temp);
-                boneflags[i] = d.readInt();
-                obj[i].singlebind = d.readShort();
-                obj[i].polyamt = d.readShort();
-                obj[i].positionb = d.readInt();
+                fileData.seek(temp);
+                boneflags[i] = fileData.readInt();
+                obj[i].singlebind = fileData.readShort();
+                obj[i].polyCount = fileData.readShort();
+                obj[i].positionb = fileData.readInt();
             }
 
             // reading polygon data
-            int mi = 0;
+            int meshIndex = 0;
             foreach (var o in obj)
             {
                 Mesh m = new Mesh();
                 m.Text = o.name;
                 Nodes.Add(m);
-                m.boneflag = boneflags[mi];
+                m.boneflag = boneflags[meshIndex];
                 m.singlebind = (short)o.singlebind;
-                m.boundingBox = unknown[mi++];
+                m.boundingBox = boundingBoxes[meshIndex++];
 
-                for (int i = 0; i < o.polyamt; i++)
+                for (int i = 0; i < o.polyCount; i++)
                 {
-                    _s_Poly p = new _s_Poly();
+                    PolyData polyData = new PolyData();
 
-                    p.polyStart = d.readInt() + polyClumpStart;
-                    p.vertStart = d.readInt() + vertClumpStart;
-                    p.verAddStart = d.readInt() + vertaddClumpStart;
-                    p.vertamt = d.readShort();
-                    p.vertSize = d.readByte();
-                    p.UVSize = d.readByte();
-                    p.texprop1 = d.readInt();
-                    p.texprop2 = d.readInt();
-                    p.texprop3 = d.readInt();
-                    p.texprop4 = d.readInt();
-                    p.polyamt = d.readShort();
-                    p.polsize = d.readByte();
-                    p.polflag = d.readByte();
-                    d.skip(0xC);
+                    polyData.polyStart = fileData.readInt() + polyClumpStart;
+                    polyData.vertStart = fileData.readInt() + vertClumpStart;
+                    polyData.verAddStart = fileData.readInt() + vertaddClumpStart;
+                    polyData.vertCount = fileData.readShort();
+                    polyData.vertSize = fileData.readByte();
+                    polyData.UVSize = fileData.readByte();
+                    polyData.texprop1 = fileData.readInt();
+                    polyData.texprop2 = fileData.readInt();
+                    polyData.texprop3 = fileData.readInt();
+                    polyData.texprop4 = fileData.readInt();
+                    polyData.polyCount = fileData.readShort();
+                    polyData.polySize = fileData.readByte();
+                    polyData.polyFlag = fileData.readByte();
+                    fileData.skip(0xC);
 
-                    int temp = d.pos();
+                    int temp = fileData.pos();
 
                     // read vertex
-                    Polygon pol = ReadVertex(d, p, o);
-                    m.Nodes.Add(pol);
+                    Polygon poly = ReadVertex(fileData, polyData, o);
+                    m.Nodes.Add(poly);
 
-                    pol.materials = readMaterial(d, p, nameStart);
+                    poly.materials = ReadMaterials(fileData, polyData, nameStart);
 
-                    d.seek(temp);
+                    fileData.seek(temp);
                 }
             }
         }
 
-        //VERTEX TYPES----------------------------------------------------------------------------------------
-
-        public static List<Material> readMaterial(FileData d, _s_Poly p, int nameOffset)
+        public static List<Material> ReadMaterials(FileData d, PolyData p, int nameOffset)
         {
             int propoff = p.texprop1;
             List<Material> mats = new List<Material>();
@@ -1298,8 +1280,8 @@ namespace Smash_Forge
                 m.srcFactor = d.readShort();
                 int propCount = d.readShort();
                 m.dstFactor = d.readShort();
-                m.AlphaTest = d.readByte();
-                m.AlphaFunc = d.readByte();
+                m.alphaTest = d.readByte();
+                m.alphaFunction = d.readByte();
 
                 d.skip(1); // unknown
                 m.RefAlpha = d.readByte();
@@ -1368,20 +1350,20 @@ namespace Smash_Forge
             return mats;
         }
 
-        private static Polygon ReadVertex(FileData d, _s_Poly p, _s_Object o)
+        private static Polygon ReadVertex(FileData d, PolyData p, ObjectData o)
         {
             Polygon m = new Polygon();
             m.vertSize = p.vertSize;
             m.UVSize = p.UVSize;
-            m.polflag = p.polflag;
-            m.strip = p.polsize;
+            m.polflag = p.polyFlag;
+            m.strip = p.polySize;
 
             ReadVertex(d, p, o, m);
 
             // faces
             d.seek(p.polyStart);
 
-            for (int x = 0; x < p.polyamt; x++)
+            for (int x = 0; x < p.polyCount; x++)
             {
                 m.faces.Add(d.readShort());
             }
@@ -1389,13 +1371,12 @@ namespace Smash_Forge
             return m;
         }
 
-        //VERTEX TYPES----------------------------------------------------------------------------------------
-        private static void ReadUV(FileData d, _s_Poly p, _s_Object o, Polygon m, Vertex[] v)
+        private static void ReadUV(FileData d, PolyData p, ObjectData o, Polygon m, Vertex[] v)
         {
             int uvCount = (p.UVSize >> 4);
             int uvType = (p.UVSize) & 0xF;
 
-            for (int i = 0; i < p.vertamt; i++)
+            for (int i = 0; i < p.vertCount; i++)
             {
                 v[i] = new Vertex();
                 if (uvType == 0x0)
@@ -1405,13 +1386,13 @@ namespace Smash_Forge
                 }
                 else if (uvType == 0x2)
                 {
-                        v[i].col = new Vector4(d.readByte(), d.readByte(), d.readByte(), d.readByte());
+                        v[i].color = new Vector4(d.readByte(), d.readByte(), d.readByte(), d.readByte());
                         for (int j = 0; j < uvCount; j++)
                             v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                 }
                 else if (uvType == 0x4)
                 {
-                    v[i].col = new Vector4(d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF);
+                    v[i].color = new Vector4(d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF, d.readHalfFloat() * 0xFF);
                     for (int j = 0; j < uvCount; j++)
                         v[i].uv.Add(new Vector2(d.readHalfFloat(), d.readHalfFloat()));
                 }
@@ -1420,12 +1401,12 @@ namespace Smash_Forge
             }
         }
 
-        private static void ReadVertex(FileData d, _s_Poly p, _s_Object o, Polygon m)
+        private static void ReadVertex(FileData d, PolyData p, ObjectData o, Polygon m)
         {
             int boneType = p.vertSize & 0xF0;
             int vertexType = p.vertSize & 0xF;
 
-            Vertex[] vertices = new Vertex[p.vertamt];
+            Vertex[] vertices = new Vertex[p.vertCount];
 
             d.seek(p.vertStart);
 
@@ -1436,7 +1417,7 @@ namespace Smash_Forge
             }
             else
             {
-                for (int i = 0; i < p.vertamt; i++)
+                for (int i = 0; i < p.vertCount; i++)
                 {
                     vertices[i] = new Vertex();
                 }
@@ -1506,17 +1487,18 @@ namespace Smash_Forge
                     v.tan.Y = d.readHalfFloat();
                     v.tan.Z = d.readHalfFloat();
                     v.tan.W = d.readHalfFloat();
-                } else
+                }
+                else
                     d.skip(4);
 
                 if (boneType == (int)Polygon.BoneTypes.NoBones)
                 {
                     if (p.UVSize >= 18)
                     {
-                        v.col.X = d.readByte();
-                        v.col.Y = d.readByte();
-                        v.col.Z = d.readByte();
-                        v.col.W = d.readByte();
+                        v.color.X = d.readByte();
+                        v.color.Y = d.readByte();
+                        v.color.Z = d.readByte();
+                        v.color.W = d.readByte();
                     }
 
                     int uvChannelCount = p.UVSize >> 4;
@@ -1526,50 +1508,48 @@ namespace Smash_Forge
 
                 if (boneType == (int)Polygon.BoneTypes.Float)
                 {
-                    v.node.Add(d.readInt());
-                    v.node.Add(d.readInt());
-                    v.node.Add(d.readInt());
-                    v.node.Add(d.readInt());
-                    v.weight.Add(d.readFloat());
-                    v.weight.Add(d.readFloat());
-                    v.weight.Add(d.readFloat());
-                    v.weight.Add(d.readFloat());
+                    v.boneIds.Add(d.readInt());
+                    v.boneIds.Add(d.readInt());
+                    v.boneIds.Add(d.readInt());
+                    v.boneIds.Add(d.readInt());
+                    v.boneWeights.Add(d.readFloat());
+                    v.boneWeights.Add(d.readFloat());
+                    v.boneWeights.Add(d.readFloat());
+                    v.boneWeights.Add(d.readFloat());
                 }
                 else if (boneType == (int)Polygon.BoneTypes.HalfFloat)
                 {
-                    v.node.Add(d.readShort());
-                    v.node.Add(d.readShort());
-                    v.node.Add(d.readShort());
-                    v.node.Add(d.readShort());
-                    v.weight.Add(d.readHalfFloat());
-                    v.weight.Add(d.readHalfFloat());
-                    v.weight.Add(d.readHalfFloat());
-                    v.weight.Add(d.readHalfFloat());
+                    v.boneIds.Add(d.readShort());
+                    v.boneIds.Add(d.readShort());
+                    v.boneIds.Add(d.readShort());
+                    v.boneIds.Add(d.readShort());
+                    v.boneWeights.Add(d.readHalfFloat());
+                    v.boneWeights.Add(d.readHalfFloat());
+                    v.boneWeights.Add(d.readHalfFloat());
+                    v.boneWeights.Add(d.readHalfFloat());
                 }
                 else if (boneType == (int)Polygon.BoneTypes.Byte)
                 {
-                    v.node.Add(d.readByte());
-                    v.node.Add(d.readByte());
-                    v.node.Add(d.readByte());
-                    v.node.Add(d.readByte());
-                    v.weight.Add((float)d.readByte() / 255);
-                    v.weight.Add((float)d.readByte() / 255);
-                    v.weight.Add((float)d.readByte() / 255);
-                    v.weight.Add((float)d.readByte() / 255);
+                    v.boneIds.Add(d.readByte());
+                    v.boneIds.Add(d.readByte());
+                    v.boneIds.Add(d.readByte());
+                    v.boneIds.Add(d.readByte());
+                    v.boneWeights.Add((float)d.readByte() / 255);
+                    v.boneWeights.Add((float)d.readByte() / 255);
+                    v.boneWeights.Add((float)d.readByte() / 255);
+                    v.boneWeights.Add((float)d.readByte() / 255);
                 }
                 else if (boneType == (int)Polygon.BoneTypes.NoBones)
                 {
-                    v.node.Add((short)o.singlebind);
-                    v.weight.Add(1);
+                    v.boneIds.Add((short)o.singlebind);
+                    v.boneWeights.Add(1);
                 }
             }
 
             foreach (Vertex vi in vertices)
                 m.vertices.Add(vi);
         }
-        #endregion
 
-        #region Building
         public override byte[] Rebuild()
         {
             FileOutput d = new FileOutput(); // data
@@ -1717,7 +1697,7 @@ namespace Smash_Forge
             return d.getBytes();
         }
 
-        private static void writeUV(FileOutput d, Polygon poly)
+        private static void WriteUV(FileOutput d, Polygon poly)
         {
             int uvType = (poly.UVSize) & 0xF;
 
@@ -1731,25 +1711,25 @@ namespace Smash_Forge
                         d.writeHalfFloat(poly.vertices[i].uv[j].X);
                         d.writeHalfFloat(poly.vertices[i].uv[j].Y);
                     }
-                }else
-                if (uvType == 0x2)
+                }
+                else if (uvType == 0x2)
                 {
-                    d.writeByte((int)poly.vertices[i].col.X);
-                    d.writeByte((int)poly.vertices[i].col.Y);
-                    d.writeByte((int)poly.vertices[i].col.Z);
-                    d.writeByte((int)poly.vertices[i].col.W);
+                    d.writeByte((int)poly.vertices[i].color.X);
+                    d.writeByte((int)poly.vertices[i].color.Y);
+                    d.writeByte((int)poly.vertices[i].color.Z);
+                    d.writeByte((int)poly.vertices[i].color.W);
                     for (int j = 0; j < poly.vertices[i].uv.Count; j++)
                     {
                         d.writeHalfFloat(poly.vertices[i].uv[j].X);
                         d.writeHalfFloat(poly.vertices[i].uv[j].Y);
                     }
-                }else
-                if (uvType == 0x4)
+                }
+                else if (uvType == 0x4)
                 {
-                    d.writeHalfFloat(poly.vertices[i].col.X / 0xFF);
-                    d.writeHalfFloat(poly.vertices[i].col.Y / 0xFF);
-                    d.writeHalfFloat(poly.vertices[i].col.Z / 0xFF);
-                    d.writeHalfFloat(poly.vertices[i].col.W / 0xFF);
+                    d.writeHalfFloat(poly.vertices[i].color.X / 0xFF);
+                    d.writeHalfFloat(poly.vertices[i].color.Y / 0xFF);
+                    d.writeHalfFloat(poly.vertices[i].color.Z / 0xFF);
+                    d.writeHalfFloat(poly.vertices[i].color.W / 0xFF);
                     for (int j = 0; j < poly.vertices[i].uv.Count; j++)
                     {
                         d.writeHalfFloat(poly.vertices[i].uv[j].X);
@@ -1768,7 +1748,7 @@ namespace Smash_Forge
             
             if (boneType > 0)
             {
-                writeUV(d, poly);
+                WriteUV(d, poly);
                 d = add;
             }
 
@@ -1852,10 +1832,10 @@ namespace Smash_Forge
                 {
                     if (poly.UVSize >= 18)
                     {
-                        d.writeByte((int)v.col.X);
-                        d.writeByte((int)v.col.Y);
-                        d.writeByte((int)v.col.Z);
-                        d.writeByte((int)v.col.W);
+                        d.writeByte((int)v.color.X);
+                        d.writeByte((int)v.color.Y);
+                        d.writeByte((int)v.color.Z);
+                        d.writeByte((int)v.color.W);
                     }
 
                     for (int j = 0; j < v.uv.Count; j++)
@@ -1867,36 +1847,36 @@ namespace Smash_Forge
 
                 if (boneType == (int)Polygon.BoneTypes.Float)
                 {
-                    d.writeInt(v.node.Count > 0 ? v.node[0] : 0);
-                    d.writeInt(v.node.Count > 1 ? v.node[1] : 0);
-                    d.writeInt(v.node.Count > 2 ? v.node[2] : 0);
-                    d.writeInt(v.node.Count > 3 ? v.node[3] : 0);
-                    d.writeFloat(v.weight.Count > 0 ? v.weight[0] : 0);
-                    d.writeFloat(v.weight.Count > 1 ? v.weight[1] : 0);
-                    d.writeFloat(v.weight.Count > 2 ? v.weight[2] : 0);
-                    d.writeFloat(v.weight.Count > 3 ? v.weight[3] : 0);
+                    d.writeInt(v.boneIds.Count > 0 ? v.boneIds[0] : 0);
+                    d.writeInt(v.boneIds.Count > 1 ? v.boneIds[1] : 0);
+                    d.writeInt(v.boneIds.Count > 2 ? v.boneIds[2] : 0);
+                    d.writeInt(v.boneIds.Count > 3 ? v.boneIds[3] : 0);
+                    d.writeFloat(v.boneWeights.Count > 0 ? v.boneWeights[0] : 0);
+                    d.writeFloat(v.boneWeights.Count > 1 ? v.boneWeights[1] : 0);
+                    d.writeFloat(v.boneWeights.Count > 2 ? v.boneWeights[2] : 0);
+                    d.writeFloat(v.boneWeights.Count > 3 ? v.boneWeights[3] : 0);
                 }
                 else if (boneType == (int)Polygon.BoneTypes.HalfFloat)
                 {
-                    d.writeShort(v.node.Count > 0 ? v.node[0] : 0);
-                    d.writeShort(v.node.Count > 1 ? v.node[1] : 0);
-                    d.writeShort(v.node.Count > 2 ? v.node[2] : 0);
-                    d.writeShort(v.node.Count > 3 ? v.node[3] : 0);
-                    d.writeHalfFloat(v.weight.Count > 0 ? v.weight[0] : 0);
-                    d.writeHalfFloat(v.weight.Count > 1 ? v.weight[1] : 0);
-                    d.writeHalfFloat(v.weight.Count > 2 ? v.weight[2] : 0);
-                    d.writeHalfFloat(v.weight.Count > 3 ? v.weight[3] : 0);
+                    d.writeShort(v.boneIds.Count > 0 ? v.boneIds[0] : 0);
+                    d.writeShort(v.boneIds.Count > 1 ? v.boneIds[1] : 0);
+                    d.writeShort(v.boneIds.Count > 2 ? v.boneIds[2] : 0);
+                    d.writeShort(v.boneIds.Count > 3 ? v.boneIds[3] : 0);
+                    d.writeHalfFloat(v.boneWeights.Count > 0 ? v.boneWeights[0] : 0);
+                    d.writeHalfFloat(v.boneWeights.Count > 1 ? v.boneWeights[1] : 0);
+                    d.writeHalfFloat(v.boneWeights.Count > 2 ? v.boneWeights[2] : 0);
+                    d.writeHalfFloat(v.boneWeights.Count > 3 ? v.boneWeights[3] : 0);
                 }
                 else if (boneType == (int)Polygon.BoneTypes.Byte)
                 {
-                    d.writeByte(v.node.Count > 0 ? v.node[0] : 0);
-                    d.writeByte(v.node.Count > 1 ? v.node[1] : 0);
-                    d.writeByte(v.node.Count > 2 ? v.node[2] : 0);
-                    d.writeByte(v.node.Count > 3 ? v.node[3] : 0);
-                    d.writeByte((int)(v.weight.Count > 0 ? Math.Round(v.weight[0] * 0xFF) : 0));
-                    d.writeByte((int)(v.weight.Count > 1 ? Math.Round(v.weight[1] * 0xFF) : 0));
-                    d.writeByte((int)(v.weight.Count > 2 ? Math.Round(v.weight[2] * 0xFF) : 0));
-                    d.writeByte((int)(v.weight.Count > 3 ? Math.Round(v.weight[3] * 0xFF) : 0));
+                    d.writeByte(v.boneIds.Count > 0 ? v.boneIds[0] : 0);
+                    d.writeByte(v.boneIds.Count > 1 ? v.boneIds[1] : 0);
+                    d.writeByte(v.boneIds.Count > 2 ? v.boneIds[2] : 0);
+                    d.writeByte(v.boneIds.Count > 3 ? v.boneIds[3] : 0);
+                    d.writeByte((int)(v.boneWeights.Count > 0 ? Math.Round(v.boneWeights[0] * 0xFF) : 0));
+                    d.writeByte((int)(v.boneWeights.Count > 1 ? Math.Round(v.boneWeights[1] * 0xFF) : 0));
+                    d.writeByte((int)(v.boneWeights.Count > 2 ? Math.Round(v.boneWeights[2] * 0xFF) : 0));
+                    d.writeByte((int)(v.boneWeights.Count > 3 ? Math.Round(v.boneWeights[3] * 0xFF) : 0));
                 }
             }
         }
@@ -1913,8 +1893,8 @@ namespace Smash_Forge
                 d.writeShort(mat.srcFactor);
                 d.writeShort(mat.textures.Count);
                 d.writeShort(mat.dstFactor);
-                d.writeByte(mat.AlphaTest);
-                d.writeByte(mat.AlphaFunc);
+                d.writeByte(mat.alphaTest);
+                d.writeByte(mat.alphaFunction);
                 d.writeByte(0); // unknown padding?
                 d.writeByte(mat.RefAlpha);
                 d.writeShort(mat.cullMode);
@@ -1957,8 +1937,6 @@ namespace Smash_Forge
             }
             return offs;
         }
-
-        #endregion
         
         public void MergePoly()
         {
@@ -2056,11 +2034,12 @@ namespace Smash_Forge
         public class Vertex
         {
             public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
-            public Vector4 bitan = new Vector4(0, 0, 0, 1), tan = new Vector4(0, 0, 0, 1);
-            public Vector4 col = new Vector4(127, 127, 127, 127);
+            public Vector4 bitan = new Vector4(0, 0, 0, 1);
+            public Vector4 tan = new Vector4(0, 0, 0, 1);
+            public Vector4 color = new Vector4(127, 127, 127, 127);
             public List<Vector2> uv = new List<Vector2>();
-            public List<int> node = new List<int>();
-            public List<float> weight = new List<float>();
+            public List<int> boneIds = new List<int>();
+            public List<float> boneWeights = new List<float>();
 
             public Vertex()
             {
@@ -2073,8 +2052,8 @@ namespace Smash_Forge
 
             public bool Equals(Vertex p)
             {
-                return pos.Equals(p.pos) && nrm.Equals(p.nrm) && new HashSet<Vector2>(uv).SetEquals(p.uv) && col.Equals(p.col)
-                    && new HashSet<int>(node).SetEquals(p.node) && new HashSet<float>(weight).SetEquals(p.weight);
+                return pos.Equals(p.pos) && nrm.Equals(p.nrm) && new HashSet<Vector2>(uv).SetEquals(p.uv) && color.Equals(p.color)
+                    && new HashSet<int>(boneIds).SetEquals(p.boneIds) && new HashSet<float>(boneWeights).SetEquals(p.boneWeights);
             }
 
             public override string ToString()
@@ -2127,6 +2106,13 @@ namespace Smash_Forge
 
         public class Material
         {
+            public enum AlphaFunction
+            {
+                Never = 0x0,
+                GequalRefAlpha1 = 0x4,
+                GequalRefAlpha2 = 0x6
+            }
+
             public Dictionary<string, float[]> entries = new Dictionary<string, float[]>();
             public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
             public List<MatTexture> textures = new List<MatTexture>();
@@ -2148,8 +2134,8 @@ namespace Smash_Forge
             public int blendMode = 0;
             public int dstFactor = 0;
             public int srcFactor = 0;
-            public int AlphaTest = 0;
-            public int AlphaFunc = 0;
+            public int alphaTest = 0;
+            public int alphaFunction = 0;
             public int RefAlpha = 0;
             public int cullMode = 0;
             public int displayTexId = -1;
@@ -2208,8 +2194,8 @@ namespace Smash_Forge
                 m.blendMode = blendMode;
                 m.dstFactor = dstFactor;
                 m.srcFactor = srcFactor;
-                m.AlphaTest = AlphaTest;
-                m.AlphaFunc = AlphaFunc;
+                m.alphaTest = alphaTest;
+                m.alphaFunction = alphaFunction;
                 m.RefAlpha = RefAlpha;
                 m.cullMode = cullMode;
                 m.displayTexId = displayTexId;
@@ -2549,20 +2535,20 @@ namespace Smash_Forge
                         nrm = v.nrm,
                         tan = v.tan.Xyz,
                         bit = v.bitan.Xyz,
-                        col = v.col / 127,
+                        col = v.color / 127,
                         uv = v.uv.Count > 0 ? v.uv[0] : new Vector2(0, 0),
                         uv2 = v.uv.Count > 1 ? v.uv[1] : new Vector2(0, 0),
                         uv3 = v.uv.Count > 2 ? v.uv[2] : new Vector2(0, 0),
                         node = new Vector4(
-                            v.node.Count > 0 ? v.node[0] : -1,
-                            v.node.Count > 1 ? v.node[1] : -1,
-                            v.node.Count > 2 ? v.node[2] : -1,
-                            v.node.Count > 3 ? v.node[3] : -1),
+                            v.boneIds.Count > 0 ? v.boneIds[0] : -1,
+                            v.boneIds.Count > 1 ? v.boneIds[1] : -1,
+                            v.boneIds.Count > 2 ? v.boneIds[2] : -1,
+                            v.boneIds.Count > 3 ? v.boneIds[3] : -1),
                         weight = new Vector4(
-                            v.weight.Count > 0 ? v.weight[0] : 0,
-                            v.weight.Count > 1 ? v.weight[1] : 0,
-                            v.weight.Count > 2 ? v.weight[2] : 0,
-                            v.weight.Count > 3 ? v.weight[3] : 0),
+                            v.boneWeights.Count > 0 ? v.boneWeights[0] : 0,
+                            v.boneWeights.Count > 1 ? v.boneWeights[1] : 0,
+                            v.boneWeights.Count > 2 ? v.boneWeights[2] : 0,
+                            v.boneWeights.Count > 3 ? v.boneWeights[3] : 0),
                     };
 
                     displayVertList.Add(displayVert);
@@ -2592,7 +2578,7 @@ namespace Smash_Forge
                 // (127, 127, 127, 255) is white.
                 foreach (Vertex v in vertices)
                 {
-                    v.col = intColor;
+                    v.color = intColor;
                 }
             }
 
@@ -3027,15 +3013,15 @@ namespace Smash_Forge
                         List<Vector2> uvs = new List<Vector2>();
                         uvs.Add(new Vector2(v.uv[0].X, 1 - v.uv[0].Y));
                         mv.tx = uvs;
-                        mv.col = v.col;
-                        int n1 = v.node[0];
-                        int n2 = v.node.Count > 1 ? v.node[1] : 0;
+                        mv.col = v.color;
+                        int n1 = v.boneIds[0];
+                        int n2 = v.boneIds.Count > 1 ? v.boneIds[1] : 0;
                         if (!nodeList.Contains(n1)) nodeList.Add(n1);
                         if (!nodeList.Contains(n2)) nodeList.Add(n2);
                         mv.node.Add(nodeList.IndexOf(n1));
                         mv.node.Add(nodeList.IndexOf(n2));
-                        mv.weight.Add(v.weight[0]);
-                        mv.weight.Add(v.weight.Count > 1 ? v.weight[1] : 0);
+                        mv.weight.Add(v.boneWeights[0]);
+                        mv.weight.Add(v.boneWeights.Count > 1 ? v.boneWeights[1] : 0);
                         vertBank.Add(mv);
                     }
                     // Node list 
@@ -3133,21 +3119,21 @@ namespace Smash_Forge
                 {
                     foreach (Vertex v in p.vertices)
                     {
-                        if (v.node.Count > 0 && isSingleBound)
+                        if (v.boneIds.Count > 0 && isSingleBound)
                         {
                             // Can't use single bind if some vertices aren't weighted to the same bone. 
                             if (singleBindBone == -1)
                             {
-                                singleBindBone = v.node[0];
+                                singleBindBone = v.boneIds[0];
                             }
-                            else if(singleBindBone != v.node[0])
+                            else if(singleBindBone != v.boneIds[0])
                             {
                                 isSingleBound = false;
                                 break;
                             }
 
                             // Vertices bound to a single bone will have a node.Count of 1.
-                            if (v.node.Count > 1)
+                            if (v.boneIds.Count > 1)
                             {
                                 isSingleBound = false;
                                 break;

@@ -180,14 +180,14 @@ namespace Smash_Forge
                             {
                                 if (vertices.ContainsKey("#" + geom.id))
                                 {
-                                    v.node.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].node);
-                                    v.weight.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].weight);
+                                    v.boneIds.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
+                                    v.boneWeights.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
                                 }
                             }
                             else
                             {
-                                v.node.Add(-1);
-                                v.weight.Add(1);
+                                v.boneIds.Add(-1);
+                                v.boneWeights.Add(1);
                             }
                         }
                         if (input.semantic == SemanticType.VERTEX)
@@ -204,14 +204,14 @@ namespace Smash_Forge
                                     {
                                         if (vertices.ContainsKey("#" + geom.id))
                                         {
-                                            v.node.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].node);
-                                            v.weight.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].weight);
+                                            v.boneIds.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
+                                            v.boneWeights.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
                                         }
                                     }
                                     else
                                     {
-                                        v.node.Add(-1);
-                                        v.weight.Add(1);
+                                        v.boneIds.Add(-1);
+                                        v.boneWeights.Add(1);
                                     }
                                 }
                                 ReadSemantic(vinput, v, colladaPoly.p[maxoffset * i], sources);
@@ -280,11 +280,11 @@ namespace Smash_Forge
                                 if (bname.StartsWith("_"))
                                     bname = bname.Substring(6, bname.Length - 6);
                                 int index = con.VBN.boneIndex(bname);
-                                newVertex.node.Add(index);
+                                newVertex.boneIds.Add(index);
                                 break;
                             case SemanticType.WEIGHT:
                                 float weight = float.Parse(sources[input.source].data[skin.weights.v[v]]);
-                                newVertex.weight.Add(weight);
+                                newVertex.boneWeights.Add(weight);
                                 break;
                         }
                         v++;
@@ -368,11 +368,11 @@ namespace Smash_Forge
                     break;
                 case SemanticType.COLOR:
                     // Vertex colors are stored as integers [0,255]. (127,127,127) is white.
-                    v.col.X = float.Parse(sources[input.source].data[p * sources[input.source].stride + 0]) * 255;
-                    v.col.Y = float.Parse(sources[input.source].data[p * sources[input.source].stride + 1]) * 255;
-                    v.col.Z = float.Parse(sources[input.source].data[p * sources[input.source].stride + 2]) * 255;
+                    v.color.X = float.Parse(sources[input.source].data[p * sources[input.source].stride + 0]) * 255;
+                    v.color.Y = float.Parse(sources[input.source].data[p * sources[input.source].stride + 1]) * 255;
+                    v.color.Z = float.Parse(sources[input.source].data[p * sources[input.source].stride + 2]) * 255;
                     if(sources[input.source].stride > 3)
-                        v.col.W = float.Parse(sources[input.source].data[p * sources[input.source].stride + 3]) * 127;
+                        v.color.W = float.Parse(sources[input.source].data[p * sources[input.source].stride + 3]) * 127;
                     break;
             }
         }
@@ -825,7 +825,7 @@ namespace Smash_Forge
                         List<string> d = new List<string>();
                         foreach (NUD.Vertex v in poly.vertices)
                         {
-                            d.AddRange(new string[] { (v.col.X/128).ToString(), (v.col.Y / 128).ToString(), (v.col.Z / 128).ToString(), (v.col.W / 128).ToString() });
+                            d.AddRange(new string[] { (v.color.X/128).ToString(), (v.color.Y / 128).ToString(), (v.color.Z / 128).ToString(), (v.color.W / 128).ToString() });
                         }
                         src.accessor.Add("R");
                         src.accessor.Add("G");
@@ -929,14 +929,14 @@ namespace Smash_Forge
                         foreach (NUD.Vertex v in poly.vertices)
                         {
                             int vc = 0;
-                            for (int i = 0; i < v.node.Count; i++)
+                            for (int i = 0; i < v.boneIds.Count; i++)
                             {
-                                string w = v.weight[i].ToString();
+                                string w = v.boneWeights[i].ToString();
                                 if (w.Equals("0")) continue;
                                 vc++;
                                 if (!d.Contains(w))
                                     d.Add(w);
-                                vert.Add(v.node[i]);
+                                vert.Add(v.boneIds[i]);
                                 vert.Add(d.IndexOf(w));
                             };
                             vcount.Add(vc);

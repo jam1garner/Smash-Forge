@@ -736,9 +736,9 @@ namespace Smash_Forge
                     nv.pos = vert.pos;
                     nv.uv.Add(new Vector2(vert.tx0.X * data.material.texture.scale_w, (vert.tx0.Y * data.material.texture.scale_h)));
                     nv.nrm = vert.nrm;
-                    nv.col = (vert.clr*0xFF)/2;
-                    nv.node.AddRange(vert.bones);
-                    nv.weight.AddRange(vert.weights);
+                    nv.color = (vert.clr*0xFF)/2;
+                    nv.boneIds.AddRange(vert.bones);
+                    nv.boneWeights.AddRange(vert.weights);
                     polygon.AddVertex(nv);
                 }
 

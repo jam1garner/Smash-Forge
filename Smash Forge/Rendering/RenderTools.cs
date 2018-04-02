@@ -15,7 +15,8 @@ namespace Smash_Forge.Rendering
 {
     public class RenderTools
     {
-        public static int defaultTex = -1, floorTexture;
+        public static int defaultTex = -1;
+        public static int floorTexture;
 
         public static Dictionary<NUD.DummyTextures, int> dummyTextures = new Dictionary<NUD.DummyTextures, int>(); 
 
@@ -248,7 +249,6 @@ namespace Smash_Forge.Rendering
             GL.ColorMask(true, true, true, true);
             GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
             GL.StencilMask(0x00);
-            //GL.Disable(EnableCap.CullFace);
 
             drawSphere(Vector3.Zero, 100, 10);
 
@@ -256,7 +256,6 @@ namespace Smash_Forge.Rendering
             GL.Clear(ClearBufferMask.StencilBufferBit);
             GL.Disable(EnableCap.StencilTest);
             GL.Enable(EnableCap.DepthTest);
-            //GL.Enable(EnableCap.CullFace);
         }
 
         public static void resetStencil()
@@ -272,7 +271,6 @@ namespace Smash_Forge.Rendering
             GL.ColorMask(true, true, true, true);
             GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
             GL.StencilMask(0x00);
-            //GL.Disable(EnableCap.CullFace);
 
             GL.StencilMask(0xFF);
             GL.Clear(ClearBufferMask.StencilBufferBit);
@@ -892,8 +890,7 @@ namespace Smash_Forge.Rendering
                 GL.End();
                 GL.Disable(EnableCap.Texture2D);
             }
-            else
-            if (Runtime.floorStyle == Runtime.FloorStyle.Solid)
+            else if (Runtime.floorStyle == Runtime.FloorStyle.Solid)
             {
                 GL.Begin(PrimitiveType.Quads);
                 GL.Vertex3(-s, 0f, -s);
@@ -1002,6 +999,18 @@ namespace Smash_Forge.Rendering
             float bounds = 1;
             Vector2 scaleUv = new Vector2(1, 1);
 
+            SetupUvRendering(lineWidth);
+
+            DrawUvTriangle(v1, v2, v3, uvColor, scaleUv);
+
+            // Draw Grid
+            GL.Color3(gridColor);
+            DrawHorizontalGrid(divisions, bounds, scaleUv);
+            DrawVerticalGrid(divisions, bounds, scaleUv);
+        }
+
+        private static void SetupUvRendering(float lineWidth)
+        {
             // Go to 2D
             GL.MatrixMode(MatrixMode.Projection);
             GL.PushMatrix();
@@ -1010,17 +1019,17 @@ namespace Smash_Forge.Rendering
             GL.MatrixMode(MatrixMode.Modelview);
             GL.PushMatrix();
             GL.LoadIdentity();
-
             GL.LineWidth(lineWidth);
 
             // Draw over everything
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
             GL.Clear(ClearBufferMask.DepthBufferBit);
+        }
 
-
+        private static void DrawUvTriangle(NUD.Vertex v1, NUD.Vertex v2, NUD.Vertex v3, Color uvColor, Vector2 scaleUv)
+        {
             GL.Color3(uvColor);
-
             GL.Begin(PrimitiveType.Lines);
             GL.Vertex2(v1.uv[0] * scaleUv);
             GL.Vertex2(v2.uv[0] * scaleUv);
@@ -1035,22 +1044,10 @@ namespace Smash_Forge.Rendering
             GL.Vertex2(v3.uv[0] * scaleUv);
             GL.Vertex2(v1.uv[0] * scaleUv);
             GL.End();
+        }
 
-            // Draw Grid
-            GL.Color3(gridColor);
-            // Horizontal
-            GL.Color3(Color.White);
-
-            int horizontalCount = divisions;
-            for (int i = 0; i < horizontalCount * bounds; i++)
-            {
-                GL.Begin(PrimitiveType.Lines);
-                GL.Vertex2(new Vector2(-bounds, (1.0f / horizontalCount) * i) * scaleUv);
-                GL.Vertex2(new Vector2(bounds, (1.0f / horizontalCount) * i) * scaleUv);
-                GL.End();
-            }
-
-            // Vertical
+        private static void DrawVerticalGrid(int divisions, float bounds, Vector2 scaleUv)
+        {
             int verticalCount = divisions;
             for (int i = 0; i < verticalCount * bounds; i++)
             {
@@ -1059,7 +1056,18 @@ namespace Smash_Forge.Rendering
                 GL.Vertex2(new Vector2((1.0f / verticalCount) * i, bounds) * scaleUv);
                 GL.End();
             }
+        }
 
+        private static void DrawHorizontalGrid(int divisions, float bounds, Vector2 scaleUv)
+        {
+            int horizontalCount = divisions;
+            for (int i = 0; i < horizontalCount * bounds; i++)
+            {
+                GL.Begin(PrimitiveType.Lines);
+                GL.Vertex2(new Vector2(-bounds, (1.0f / horizontalCount) * i) * scaleUv);
+                GL.Vertex2(new Vector2(bounds, (1.0f / horizontalCount) * i) * scaleUv);
+                GL.End();
+            }
         }
 
         public static void DrawCircle(float x, float y, float z, float radius, uint precision)
@@ -1490,7 +1498,7 @@ namespace Smash_Forge.Rendering
             DrawScreenTriangle(shader);
         }
 
-        public static void DrawScreenQuad(int texture0, int texture1)
+        public static void DrawScreenQuadPostProcessing(int texture0, int texture1)
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = Runtime.shaders["Screen_Quad"];
@@ -1507,6 +1515,12 @@ namespace Smash_Forge.Rendering
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
             GL.Uniform1(shader.getAttribute("image1"), 1);
+
+            ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderBloom, "renderBloom");
+            GL.Uniform1(shader.getAttribute("bloomIntensity"), Runtime.bloomIntensity);
+
+            GL.Uniform3(shader.getAttribute("backgroundBottomColor"), ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz);
+            GL.Uniform3(shader.getAttribute("backgroundTopColor"), ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz);
 
             // Draw full screen "quad" (big triangle)
             DrawScreenTriangle(shader);

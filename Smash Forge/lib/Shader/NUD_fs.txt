@@ -13,7 +13,7 @@ in vec3 tangent;
 in vec3 bitangent;
 
 layout (location = 0) out vec4 fragColor;
-layout (location = 1) out vec4 brightColor;
+layout (location = 1) out vec4 fragColorBright;
 
 // Textures
 uniform sampler2D dif;
@@ -182,6 +182,8 @@ uniform float elapsedTime;
 
 uniform vec3 cameraPosition;
 
+uniform float bloomThreshold;
+
 // Constants
 #define gamma 2.2
 #define PI 3.14159
@@ -264,31 +266,6 @@ float Fresnel(vec3 I, vec3 N)
     return max(1 - max(dot(I, N), 0), 0);
 }
 
-vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, float xComponent, float yComponent)
-{
-    // TODO: Figure out how this actually works...
-    float shiftTex = diffuseMap.g; // vertical component of ramp?
-    shiftTex = 0;
-
-    vec3 t1 = ShiftTangent(tangent.xyz, normal.xyz, shiftTex);
-    vec3 t2 = ShiftTangent(bitangent.xyz, normal.xyz, shiftTex);
-
-    float specExp1 = reflectionParams.z;
-    float specExp2 = reflectionParams.w;
-
-    vec3 hairSpecular =  vec3(1);
-    float specMask = diffuseMap.b; // what channel should this be?
-
-    vec3 halfAngle = normalize(I + specLightDirection);
-    float test = dot(t2, halfAngle)/reflectionParams.w;
-    test = (test + 1) / 2;
-    float test2 = diffuseMap.g;
-
-    // TODO: Find proper constants.
-    hairSpecular = texture(dummyRamp, vec2(test, test2)).rgb * diffuseMap.b * alphaBlendParams.z * 0.1;
-    return (hairSpecular) * diffuseMap.r * 20;
-}
-
 vec3 SoftLighting(vec3 diffuse, vec4 params, float darkenMultiplier,
     float saturationMultiplier, float halfLambert)
 {
@@ -312,7 +289,6 @@ vec3 SoftLighting(vec3 diffuse, vec4 params, float darkenMultiplier,
 
 vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor)
 {
-    vec3 fresnelPass = vec3(0);
 
     // hemisphere fresnel with fresnelParams exponent
     float hemiBlendSky = dot(N, fresSkyDirection) * 0.5 + 0.5;
@@ -321,14 +297,16 @@ vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor)
     float hemiBlendGround = dot(N, fresGroundDirection) * 0.5 + 0.5;
     vec3 hemiColorGround = mix(vec3(0), fresGroundColor, hemiBlendGround);
 
+    vec3 hemiColorTotal = hemiColorSky + hemiColorGround;
+
     // TODO: Find a more accurate value.
     float exponentOffset = 2.75;
+    float fresnelExponent =  exponentOffset + fresnelParams.x;
 
-    vec3 fresnel = clamp(((hemiColorSky + hemiColorGround) * pow(Fresnel(I, N), exponentOffset + fresnelParams.x)), 0, 1);
-    fresnelPass += fresnelColor.rgb * fresnel * fresnelIntensity * tintColor;
+    float fresnelTerm = clamp(pow(Fresnel(I, N), fresnelExponent), 0, 1);
 
-    fresnelPass *= aoBlend;
-
+    vec3 fresnelPass = hemiColorTotal * fresnelColor.rgb * fresnelTerm;
+    fresnelPass *= aoBlend * fresnelIntensity * tintColor;
     return fresnelPass;
 }
 
@@ -376,6 +354,19 @@ float AnisotropicSpecExponent(vec3 halfAngle, float width, float height)
     return xComponent + yComponent;
 }
 
+vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I)
+{
+    float specMask = diffuseMap.b;
+
+    vec3 halfAngle = normalize(I + specLightDirection);
+    float exponent = AnisotropicSpecExponent(halfAngle, reflectionParams.z, reflectionParams.w);
+    float specularTerm = pow(dot(bitangent.xyz, halfAngle), exponent);
+
+    // TODO: Find proper constants.
+    vec3 specularColorTotal = vec3(1) * specularTerm * specMask;
+    return specularColorTotal;
+}
+
 vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor)
 {
     vec3 specularPass = vec3(0);
@@ -393,9 +384,8 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor
 
     // TODO: Fix bayo hair calculations.
     if (hasBayoHair == 1)
-        specColorTotal = BayoHairSpecular(diffuseMap.rgb, I, reflectionParams.z, reflectionParams.w);
+        specColorTotal = BayoHairSpecular(diffuseMap.rgb, I);
 
-    // TODO: Saturation is incorrect for Shulk's hair.
     if (hasColorGainOffset == 1)
         specColorTotal *= specularColorGain.rgb;
 
@@ -447,35 +437,41 @@ vec3 UniverseColor(float universeParam)
     return pow(texture(dif, vec2(uCoord * universeParam, 1 - vCoord)).rgb, vec3(gamma));
 }
 
+vec3 CharacterDiffuseLighting(float halfLambert)
+{
+    vec3 ambient = ambLightColor * ambientIntensity;
+    vec3 diffuse = difLightColor * diffuseIntensity;
+    return mix(ambient, diffuse, halfLambert);
+}
+
+vec3 StageDiffuseLighting(vec3 N)
+{
+    // TODO: Do stages use half lambert?
+    vec3 stageLight1 = stageLight1Color * max((dot(N, stageLight1Direction)), 0);
+    vec3 stageLight2 = stageLight2Color * max((dot(N, stageLight2Direction)), 0);
+    vec3 stageLight3 = stageLight3Color * max((dot(N, stageLight3Direction)), 0);
+    vec3 stageLight4 = stageLight4Color * max((dot(N, stageLight4Direction)), 0);
+
+    vec3 lighting = vec3(0);
+    lighting += (stageLight1 * renderStageLight1);
+    lighting += (stageLight2 * renderStageLight2);
+    lighting += (stageLight3 * renderStageLight3);
+    lighting += (stageLight4 * renderStageLight4);
+    return lighting;
+}
+
 vec3 Lighting(vec3 N, float halfLambert)
 {
     // Flags for ignoring stage lighting. TODO: Replace bitwise operations.
     if (((flags & 0x0F000000u) < 0x04000000u) || renderStageLighting != 1)
         return vec3(1);
 
-    vec3 lighting = vec3(1);
-
     if (isStage == 1) // stage lighting
-    {
-        // TODO: Do stages use half lambert?
-        vec3 stageLight1 = stageLight1Color * max((dot(N, stageLight1Direction)), 0);
-        vec3 stageLight2 = stageLight2Color * max((dot(N, stageLight2Direction)), 0);
-        vec3 stageLight3 = stageLight3Color * max((dot(N, stageLight3Direction)), 0);
-        vec3 stageLight4 = stageLight4Color * max((dot(N, stageLight4Direction)), 0);
-
-        lighting = vec3(0);
-        lighting += (stageLight1 * renderStageLight1);
-        lighting += (stageLight2 * renderStageLight2);
-        lighting += (stageLight3 * renderStageLight3);
-        lighting += (stageLight4 * renderStageLight4);
-    }
+        return StageDiffuseLighting(N);
     else
-    {
-        // Character lighting.
-        lighting = mix(ambLightColor * ambientIntensity, difLightColor * diffuseIntensity, halfLambert);
-    }
+        return CharacterDiffuseLighting(halfLambert);
 
-    return lighting;
+    return vec3(1);
 }
 
 vec3 DiffuseAOBlend()
@@ -509,22 +505,22 @@ float AmbientOcclusionBlend(vec4 diffuseMap)
     return mix(aoMap, 1, aoMixIntensity);
 }
 
+vec3 BayoHairDiffuse(vec3 diffuseMap)
+{
+    vec3 diffuseColor = (colorOffset.rgb + diffuseMap.rrr) * colorGain.rgb;
+    diffuseColor *= alphaBlendParams.w; // #justbayothings
+    return diffuseColor;
+}
+
 vec3 ColorOffsetGain(vec3 diffuseMap)
 {
-    float diffuseLuminance = Luminance(diffuseMap);
-    vec3 resultingColor = vec3(diffuseLuminance);
+    if (hasBayoHair == 1)
+        return BayoHairDiffuse(diffuseMap);
 
     // Offset the shadows first before adjusting the gain.
+    vec3 resultingColor = vec3(Luminance(diffuseMap));
     resultingColor += colorOffset.rgb;
     resultingColor *= colorGain.rgb;
-
-    if (hasBayoHair == 1)
-    {
-        // Bayo hair diffuse has three different textures for R, G, and B.
-        resultingColor = colorOffset.rgb + (diffuseMap.rrr * colorGain.rgb);
-        resultingColor *= alphaBlendParams.w; // #justbayothings
-    }
-
     return resultingColor;
 }
 
@@ -632,16 +628,16 @@ vec4 DiffuseMapTotal()
 
 vec3 SmashShader(vec4 diffuseMap, vec3 N, vec3 I)
 {
-    // Ambient occlusion map. NU_aoMinGain calculated in diffuse pass.
-    float ambientOcclusionBlend = AmbientOcclusionBlend(diffuseMap);
-
-    // Calculate the color tints
-    vec3 specTintColor = TintColor(diffuseMap.rgb, specularColor.a);
-    vec3 fresTintColor = TintColor(diffuseMap.rgb, fresnelColor.a);
-    vec3 reflTintColor = TintColor(diffuseMap.rgb, reflectionColor.a);
-
     // Separate render pass calculations.
     vec3 diffusePass = DiffusePass(N, diffuseMap);
+
+    // Use total diffuse pass instead of just diffuse map color for tint.
+    vec3 specTintColor = TintColor(diffusePass, specularColor.a);
+    vec3 fresTintColor = TintColor(diffusePass, fresnelColor.a);
+    vec3 reflTintColor = TintColor(diffusePass, reflectionColor.a);
+
+    // The ambient occlusion calculations for diffuse are done separately.
+    float ambientOcclusionBlend = AmbientOcclusionBlend(diffuseMap);
     vec3 specularPass = SpecularPass(N, I, diffuseMap, ambientOcclusionBlend, specTintColor);
     vec3 fresnelPass = FresnelPass(N, I, diffuseMap, ambientOcclusionBlend, fresTintColor);
 	vec3 reflectionPass = ReflectionPass(N, I, diffuseMap, ambientOcclusionBlend, reflTintColor);
@@ -723,9 +719,8 @@ void main()
     if (renderAlpha != 1 || isTransparent != 1)
         fragColor.a = 1;
 
-    float bloomThreshold = 1.01;
-    brightColor = vec4(0,0,0,1);
-    brightColor.a = fragColor.a;
+    // Separate bright and regular color for bloom calculations.
+    fragColorBright = vec4(vec3(0), 1);
     if (Luminance(fragColor.rgb) > bloomThreshold)
-        brightColor.rgb = fragColor.rgb;
+        fragColorBright.rgb = fragColor.rgb;
 }

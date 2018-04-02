@@ -552,21 +552,21 @@ namespace Smash_Forge
                             NUD.Vertex vert = new NUD.Vertex();
                             vert.pos = v.pos;
                             vert.nrm = v.nrm;
-                            vert.col = v.col;
+                            vert.color = v.col;
                             List<Vector2> uvs = new List<Vector2>();
                             uvs.Add(new Vector2(v.tx[0].X, 1 - v.tx[0].Y));
                             vert.uv = uvs;
-                            if (vert.weight.Count < 4) {
+                            if (vert.boneWeights.Count < 4) {
                                 v.weight.Add(0f);
                                 v.weight.Add(0f);
                             }
-                            vert.weight = v.weight;
+                            vert.boneWeights = v.weight;
                             List<int> nodez = new List<int>();
                             nodez.Add(m.nodeList[0][v.node[0]]);
                             nodez.Add(m.nodeList[0][v.node[1]]);
                             nodez.Add(0);
                             nodez.Add(0);
-                            vert.node = nodez;
+                            vert.boneIds = nodez;
                             poly.AddVertex(vert);
                         }
 

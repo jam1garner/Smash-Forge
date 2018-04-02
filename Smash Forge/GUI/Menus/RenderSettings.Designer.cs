@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -164,6 +164,17 @@
             this.filenameRadioButton = new System.Windows.Forms.RadioButton();
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.defaultRadioButton = new System.Windows.Forms.RadioButton();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.postProcessingCB = new System.Windows.Forms.CheckBox();
+            this.bloomCB = new System.Windows.Forms.CheckBox();
+            this.bloomGroupBox = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.bloomIntensityTB = new System.Windows.Forms.TextBox();
+            this.bloomThresholdTB = new System.Windows.Forms.TextBox();
+            this.bloomRadiusTB = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -193,6 +204,9 @@
             this.tabControl1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox7.SuspendLayout();
+            this.tabPage4.SuspendLayout();
+            this.bloomGroupBox.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabPage2
@@ -680,8 +694,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3,
-            listViewItem4});
+            listViewItem5,
+            listViewItem6});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -1595,6 +1609,7 @@
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
@@ -1728,6 +1743,121 @@
             this.defaultRadioButton.UseVisualStyleBackColor = true;
             this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.bloomGroupBox);
+            this.tabPage4.Controls.Add(this.postProcessingCB);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(556, 672);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Post Processing";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // postProcessingCB
+            // 
+            this.postProcessingCB.AutoSize = true;
+            this.postProcessingCB.Location = new System.Drawing.Point(7, 7);
+            this.postProcessingCB.Name = "postProcessingCB";
+            this.postProcessingCB.Size = new System.Drawing.Size(138, 17);
+            this.postProcessingCB.TabIndex = 0;
+            this.postProcessingCB.Text = "Enable Post Processing";
+            this.postProcessingCB.UseVisualStyleBackColor = true;
+            this.postProcessingCB.CheckedChanged += new System.EventHandler(this.postProcessingCB_CheckedChanged);
+            // 
+            // bloomCB
+            // 
+            this.bloomCB.AutoSize = true;
+            this.bloomCB.Location = new System.Drawing.Point(6, 19);
+            this.bloomCB.Name = "bloomCB";
+            this.bloomCB.Size = new System.Drawing.Size(91, 17);
+            this.bloomCB.TabIndex = 1;
+            this.bloomCB.Text = "Enable Bloom";
+            this.bloomCB.UseVisualStyleBackColor = true;
+            this.bloomCB.CheckedChanged += new System.EventHandler(this.bloomCB_CheckedChanged);
+            // 
+            // bloomGroupBox
+            // 
+            this.bloomGroupBox.Controls.Add(this.tableLayoutPanel2);
+            this.bloomGroupBox.Controls.Add(this.bloomCB);
+            this.bloomGroupBox.Location = new System.Drawing.Point(23, 30);
+            this.bloomGroupBox.Name = "bloomGroupBox";
+            this.bloomGroupBox.Size = new System.Drawing.Size(256, 140);
+            this.bloomGroupBox.TabIndex = 2;
+            this.bloomGroupBox.TabStop = false;
+            this.bloomGroupBox.Text = "Bloom";
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.bloomIntensityTB, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.bloomThresholdTB, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.bloomRadiusTB, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.label4, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.label5, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.label8, 0, 0);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 42);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(244, 85);
+            this.tableLayoutPanel2.TabIndex = 32;
+            // 
+            // bloomIntensityTB
+            // 
+            this.bloomIntensityTB.Location = new System.Drawing.Point(135, 3);
+            this.bloomIntensityTB.Name = "bloomIntensityTB";
+            this.bloomIntensityTB.Size = new System.Drawing.Size(100, 20);
+            this.bloomIntensityTB.TabIndex = 30;
+            this.bloomIntensityTB.TextChanged += new System.EventHandler(this.bloomIntensityTB_TextChanged);
+            // 
+            // bloomThresholdTB
+            // 
+            this.bloomThresholdTB.Location = new System.Drawing.Point(135, 29);
+            this.bloomThresholdTB.Name = "bloomThresholdTB";
+            this.bloomThresholdTB.Size = new System.Drawing.Size(100, 20);
+            this.bloomThresholdTB.TabIndex = 31;
+            this.bloomThresholdTB.TextChanged += new System.EventHandler(this.bloomThresholdTB_TextChanged);
+            // 
+            // bloomRadiusTB
+            // 
+            this.bloomRadiusTB.Location = new System.Drawing.Point(135, 55);
+            this.bloomRadiusTB.Name = "bloomRadiusTB";
+            this.bloomRadiusTB.Size = new System.Drawing.Size(100, 20);
+            this.bloomRadiusTB.TabIndex = 32;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 26);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(86, 13);
+            this.label4.TabIndex = 35;
+            this.label4.Text = "Bloom Threshold";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 52);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(83, 13);
+            this.label5.TabIndex = 36;
+            this.label5.Text = "Bloom Radius";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(3, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(78, 13);
+            this.label8.TabIndex = 34;
+            this.label8.Text = "Bloom Intensity";
+            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1777,6 +1907,12 @@
             this.tabPage3.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
+            this.bloomGroupBox.ResumeLayout(false);
+            this.bloomGroupBox.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1917,5 +2053,16 @@
         private System.Windows.Forms.PictureBox BackgroundGradient2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.CheckBox bloomCB;
+        private System.Windows.Forms.CheckBox postProcessingCB;
+        private System.Windows.Forms.GroupBox bloomGroupBox;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.TextBox bloomIntensityTB;
+        private System.Windows.Forms.TextBox bloomThresholdTB;
+        private System.Windows.Forms.TextBox bloomRadiusTB;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label8;
     }
 }
