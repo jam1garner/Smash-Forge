@@ -216,13 +216,12 @@ namespace Smash_Forge
 
         public VBN GetVBN()
         {
-            if (BCH != null)
-                if (BCH.Models.Nodes.Count > 0)
-                {
-                    ((BCH_Model)BCH.Models.Nodes[0]).skeleton.JointTable = JTB;
-                    return ((BCH_Model)BCH.Models.Nodes[0]).skeleton;
-                }
-            if (vbn != null)
+            if (BCH != null && BCH.Models.Nodes.Count > 0)
+            {
+                ((BCH_Model)BCH.Models.Nodes[0]).skeleton.JointTable = JTB;
+                return ((BCH_Model)BCH.Models.Nodes[0]).skeleton;
+            }
+            else if (vbn != null)
             {
                 return vbn;
             }
@@ -307,17 +306,12 @@ namespace Smash_Forge
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh]);
                 GL.Uniform1(shader.getAttribute("cmap"), 2);
 
-                GL.ActiveTexture(TextureUnit.Texture11);
-                GL.BindTexture(TextureTarget.Texture2D, depthmap);
-                GL.Uniform1(shader.getAttribute("shadowMap"), 11);
-
                 GL.Uniform1(shader.getAttribute("renderType"), renderType);
                 GL.Uniform1(shader.getAttribute("debugOption"), (int)Runtime.uvChannel);
 
                 SetElapsedDirectUvTime(shader);
 
                 GL.UniformMatrix4(shader.getAttribute("modelMatrix"), false, ref modelMatrix);
-                GL.UniformMatrix4(shader.getAttribute("lightSpaceMatrix"), false, ref lightMatrix);
 
                 if (specialWireFrame)
                 {
@@ -352,11 +346,6 @@ namespace Smash_Forge
                 NUD.DrawPoints(camera, VBN, PrimitiveType.Triangles);
                 NUD.DrawPoints(camera, VBN, PrimitiveType.Points);
             }
-        }
-
-        public void RenderShadow(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix)
-        {
-
         }
 
         public void RenderBones()

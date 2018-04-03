@@ -138,11 +138,11 @@ namespace Smash_Forge
                         // Halve vertex colors
                         if (vertColorDivCB.Checked)
                             for (int i = 0; i < 3; i++)
-                                v.col[i] = v.col[i] / 2;
+                                v.color[i] = v.color[i] / 2;
 
                         // Set vertex colors to white. 
                         if (vertcolorCB.Checked)
-                            v.col = new Vector4(127, 127, 127, 255);
+                            v.color = new Vector4(127, 127, 127, 255);
 
                         // Rotate 90 degrees.
                         if (rotate90CB.Checked)

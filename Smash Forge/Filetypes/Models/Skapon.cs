@@ -81,8 +81,8 @@ namespace Smash_Forge
         {
             foreach (NUD.Vertex v in poly.vertices)
             {
-                v.node.Clear();
-                v.node.Add(vbn.bones.IndexOf(b));
+                v.boneIds.Clear();
+                v.boneIds.Add(vbn.bones.IndexOf(b));
 
                 Vector3 newpos = Vector3.TransformVector(Vector3.Zero, b.transform);
                 v.pos += newpos;
@@ -110,8 +110,8 @@ namespace Smash_Forge
                         v.pos.X = float.Parse(args[1]);
                         v.pos.Y = float.Parse(args[2]);
                         v.pos.Z = float.Parse(args[3]);
-                        v.node.Add(-1);
-                        v.weight.Add(1);
+                        v.boneIds.Add(-1);
+                        v.boneWeights.Add(1);
                         poly.vertices.Add(v);
                         break;
                     case "vt":
@@ -411,9 +411,9 @@ namespace Smash_Forge
                 {
                     foreach (NUD.Vertex v in poly.vertices)
                     {
-                        for (int k = 0; k < v.node.Count; k++)
+                        for (int k = 0; k < v.boneIds.Count; k++)
                         {
-                            v.node[k] = boneReorder[v.node[k]];
+                            v.boneIds[k] = boneReorder[v.boneIds[k]];
                         }
                     }
                 }

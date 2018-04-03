@@ -225,8 +225,8 @@ namespace Smash_Forge
         {
             NUD.Material mat = materials[currentMatIndex];
 
-            alphaTestComboBox.SelectedItem = AlphaTest[mat.AlphaTest];
-            AlphaFuncComboBox.SelectedItem = AlphaFunc[mat.AlphaFunc];
+            alphaTestComboBox.SelectedItem = AlphaTest[mat.alphaTest];
+            AlphaFuncComboBox.SelectedItem = AlphaFunc[mat.alphaFunction];
 
             flagsTB.Text = mat.Flags.ToString("X");
 
@@ -376,7 +376,7 @@ namespace Smash_Forge
 
         private void alphaTestTB_TextChanged(object sender, EventArgs e)
         {
-            int.TryParse(alphaTestTB.Text, out materials[currentMatIndex].AlphaTest);
+            int.TryParse(alphaTestTB.Text, out materials[currentMatIndex].alphaTest);
         }
         
         private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
@@ -387,14 +387,14 @@ namespace Smash_Forge
                 {
                     Console.WriteLine(AlphaFunc[i] + " " + i);
                     alphaFuncTB.Text = i + "";
-                    materials[currentMatIndex].AlphaFunc = i;
+                    materials[currentMatIndex].alphaFunction = i;
                     break;
                 }
         }
         
         private void alphaFuncTB_TextChanged(object sender, EventArgs e)
         {
-            int.TryParse(alphaFuncTB.Text, out materials[currentMatIndex].AlphaFunc);
+            int.TryParse(alphaFuncTB.Text, out materials[currentMatIndex].alphaFunction);
         }
 
         private void mysteryCB_CheckedChanged(object sender, EventArgs e)
@@ -803,7 +803,7 @@ namespace Smash_Forge
 
                 int soff = matFile.readInt();
 
-                NUD._s_Poly pol = new NUD._s_Poly()
+                NUD.PolyData pol = new NUD.PolyData()
                 {
                     texprop1 = matFile.readInt(),
                     texprop2 = matFile.readInt(),
@@ -814,7 +814,7 @@ namespace Smash_Forge
                 // Store the original material to preserve Tex IDs. 
                 NUD.Material original = poly.materials[0].Clone();
 
-                poly.materials = NUD.readMaterial(matFile, pol, soff);
+                poly.materials = NUD.ReadMaterials(matFile, pol, soff);
 
                 // Copy the old Tex IDs. 
                 poly.materials[0].CopyTextureIds(original);

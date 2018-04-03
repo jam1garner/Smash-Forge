@@ -20,6 +20,7 @@ using SALT.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.ComponentModel;
 using Smash_Forge.Rendering.Lights;
+using System.Text;
 
 namespace Smash_Forge
 {

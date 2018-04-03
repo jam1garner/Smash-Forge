@@ -199,8 +199,8 @@ namespace Smash_Forge
                         int w = 10;
                         for (int i = 0; i < wCount; i++)
                         {
-                            vert.node.Add(int.Parse(args[w++]));
-                            vert.weight.Add(float.Parse(args[w++]));
+                            vert.boneIds.Add(int.Parse(args[w++]));
+                            vert.boneWeights.Add(float.Parse(args[w++]));
                         }
 
                         NUD.Mesh mes = null;
