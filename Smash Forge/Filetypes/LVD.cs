@@ -307,11 +307,6 @@ namespace Smash_Forge
                 f.writeBytes(m.material);
             }
         }
-
-        public decimal GetNormalAngle(int i)
-        {
-            return (decimal)(Math.Atan2(normals[i].y, normals[i].x) * 180.0 / Math.PI);
-        }
     }
 
     public class Spawn : LVDEntry
@@ -1114,7 +1109,6 @@ namespace Smash_Forge
 
         //Function to automatically add a cliff to every grabbable ledge in a given collision
         //Works mostly to vanilla standards, though vanilla standards are inconsistent on handling bone name/start pos
-        //This will use the wrong vertex's positions for collisions that are constructed counter-clockwise
         public static void GenerateCliffs(Collision col)
         {
             int[] counts = new int[2];
