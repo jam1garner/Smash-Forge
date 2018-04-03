@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.IO;
+using Smash_Forge.Rendering.Lights;
 
-namespace Smash_Forge
+namespace Smash_Forge.Rendering
 {
     class ShaderTools
     {
@@ -16,6 +17,7 @@ namespace Smash_Forge
             // Reset the shaders first so that shaders can be replaced.
             Runtime.shaders = new Dictionary<string, Shader>();
             CreateShader("Texture", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("Screen_Quad", "/lib/Shader/", "/lib/Shader/");
             CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
             CreateShader("MBN", "/lib/Shader/Legacy/", "/lib/Shader/");
             CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
@@ -53,6 +55,11 @@ namespace Smash_Forge
                 GL.Uniform1(shader.getAttribute(name), 1);
             else
                 GL.Uniform1(shader.getAttribute(name), 0);
+        }
+
+        public static void LightColorVector3Uniform(Shader shader, LightColor color, string name)
+        {
+            GL.Uniform3(shader.getAttribute(name), color.R, color.G, color.B);
         }
     }
 }

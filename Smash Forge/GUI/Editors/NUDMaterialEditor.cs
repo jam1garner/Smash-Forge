@@ -733,7 +733,7 @@ namespace Smash_Forge
         {
             if (materials[currentMatIndex].textures.Count < 4)
             {
-                materials[currentMatIndex].textures.Add(NUD.MatTexture.getDefault());
+                materials[currentMatIndex].textures.Add(NUD.MatTexture.GetDefault());
                 FillForm();
             }
         }
@@ -767,7 +767,7 @@ namespace Smash_Forge
                         FileOutput m = new FileOutput();
                         FileOutput s = new FileOutput();
 
-                        int[] c = NUD.writeMaterial(m, materials, s);
+                        int[] c = NUD.WriteMaterial(m, materials, s);
 
                         FileOutput fin = new FileOutput();
                         
@@ -833,21 +833,15 @@ namespace Smash_Forge
                 return;
 
             // Get the selected NUT texture.
-            NUT_Texture nutTexture = null;
+            NutTexture nutTexture = null;
             int displayTexture = 0;
             if (materials[currentMatIndex].entries.ContainsKey("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
             {
                 int hash = materials[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash;
 
                 // Display dummy textures from resources. 
-                if (hash == (int)NUD.DummyTextures.DummyRamp)
-                    displayTexture = RenderTools.dummyRamp;
-                else if (hash == (int)NUD.DummyTextures.PunchOut)
-                    displayTexture = RenderTools.punchOutDummyTex;
-                else if (hash == (int)NUD.DummyTextures.PokemonStadium)
-                    displayTexture = RenderTools.pokemonStadiumDummyTex;
-                else if (hash == (int)NUD.DummyTextures.ShadowMap)
-                    displayTexture = RenderTools.shadowMapDummyTex;
+                if (Enum.IsDefined(typeof(NUD.DummyTextures), hash))
+                    displayTexture = RenderTools.dummyTextures[(NUD.DummyTextures)hash];
                 else
                 {
                     foreach (NUT n in Runtime.TextureContainers)
@@ -881,7 +875,7 @@ namespace Smash_Forge
 
             if (!Runtime.shaders["Texture"].hasCheckedCompilation())
             {
-                Runtime.shaders["Texture"].displayCompilationWarning("Texture");
+                Runtime.shaders["Texture"].DisplayCompilationWarning("Texture");
             }
         }
 
@@ -1065,7 +1059,7 @@ namespace Smash_Forge
             
             if (labels != null)
             {
-                param1TB.Text = GuiTools.GetTrackBarValue(param1TrackBar, labels.max1).ToString();
+                param1TB.Text = GuiTools.GetTrackBarValue(param1TrackBar, 0, labels.max1).ToString();
             }
         }
 
@@ -1076,7 +1070,7 @@ namespace Smash_Forge
 
             if (labels != null)
             {
-                param2TB.Text = GuiTools.GetTrackBarValue(param2TrackBar, labels.max2).ToString();
+                param2TB.Text = GuiTools.GetTrackBarValue(param2TrackBar, 0, labels.max2).ToString();
             }
         }
 
@@ -1087,7 +1081,7 @@ namespace Smash_Forge
 
             if (labels != null)
             {
-                param3TB.Text = GuiTools.GetTrackBarValue(param3TrackBar, labels.max3).ToString();
+                param3TB.Text = GuiTools.GetTrackBarValue(param3TrackBar, 0, labels.max3).ToString();
             }
         }
 
@@ -1098,7 +1092,7 @@ namespace Smash_Forge
 
             if (labels != null)
             {
-                param4TB.Text = GuiTools.GetTrackBarValue(param4TrackBar, labels.max4).ToString();
+                param4TB.Text = GuiTools.GetTrackBarValue(param4TrackBar, 0, labels.max4).ToString();
             }
         }
 

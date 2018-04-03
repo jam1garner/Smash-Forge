@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace Smash_Forge
 {
-    public class NUT_Texture : TreeNode
+    public class NutTexture : TreeNode
     {
         public List<byte[]> mipmaps = new List<byte[]>();
         public int HASHID
@@ -33,7 +33,7 @@ namespace Smash_Forge
         public OpenTK.Graphics.OpenGL.PixelFormat utype;
         public PixelType PixelType = PixelType.UnsignedByte;
 
-        public NUT_Texture()
+        public NutTexture()
         {
             ImageKey = "texture";
             SelectedImageKey = "texture";
@@ -147,8 +147,8 @@ namespace Smash_Forge
 
     public class NUT : FileBase
     {
+        // Dictionary<hash ID, OpenTK texture>
         public Dictionary<int, int> draw = new Dictionary<int, int>();
-        //public List<NUD_Texture> Nodes = new List<NUD_Texture>();
 
         public int Version = 0x200;
 
@@ -184,10 +184,10 @@ namespace Smash_Forge
             //Destroy();
         }
 
-        public bool getTextureByID(int hash, out NUT_Texture suc)
+        public bool getTextureByID(int hash, out NutTexture suc)
         {
             suc = null;
-            foreach (NUT_Texture t in Nodes)
+            foreach (NutTexture t in Nodes)
                 if (t.HASHID == hash)
                 {
                     suc = t;
@@ -244,7 +244,7 @@ namespace Smash_Forge
             //calculate total header size
             int headerLength = 0;
 
-            foreach (NUT_Texture texture in Nodes)
+            foreach (NutTexture texture in Nodes)
             {
                 int headerSize = 0x50;
                 
@@ -258,7 +258,7 @@ namespace Smash_Forge
             }
 
             // write headers+data
-            foreach (NUT_Texture texture in Nodes)
+            foreach (NutTexture texture in Nodes)
             {
                 int size = 0;
                 
@@ -390,7 +390,7 @@ namespace Smash_Forge
             for (int i = 0; i < count; i++)
             {
                 //Debug.WriteLine(d.pos().ToString("x"));
-                NUT_Texture tex = new NUT_Texture();
+                NutTexture tex = new NutTexture();
                 tex.type = PixelInternalFormat.Rgba32ui;
 
                 int totalSize = d.readInt();
@@ -489,7 +489,7 @@ namespace Smash_Forge
                 }*/
             }
 
-            foreach (NUT_Texture tex in Nodes)
+            foreach (NutTexture tex in Nodes)
             {
                 if (!draw.ContainsKey(tex.HASHID))
                 {
@@ -509,7 +509,7 @@ namespace Smash_Forge
             int gtxHeaderOffset = 0;
 
             for (int i = 0; i < count; i++) {
-                NUT_Texture tex = new NUT_Texture();
+                NutTexture tex = new NutTexture();
                 tex.type = PixelInternalFormat.Rgba32ui;
 
                 d.seek(headerPtr);
@@ -636,7 +636,7 @@ namespace Smash_Forge
                 Nodes.Add(tex);
             }
 
-            foreach (NUT_Texture tex in Nodes)
+            foreach (NutTexture tex in Nodes)
             {
                 if (!draw.ContainsKey(tex.HASHID))
                 {
@@ -689,7 +689,7 @@ namespace Smash_Forge
         public static bool texIdUsed(int texId)
         {
             foreach (var nut in Runtime.TextureContainers)
-                foreach(NUT_Texture tex in nut.Nodes)
+                foreach(NutTexture tex in nut.Nodes)
                     if (tex.HASHID == texId)
                         return true;
             return false;
@@ -705,7 +705,7 @@ namespace Smash_Forge
                 return;
             }
 
-            foreach (NUT_Texture tex in Nodes)
+            foreach (NutTexture tex in Nodes)
             {
                 int originalTexture = draw[tex.HASHID];
                 draw.Remove(tex.HASHID);
@@ -723,7 +723,7 @@ namespace Smash_Forge
         {
             // Check for duplicates. 
             List<byte> previous4thBytes = new List<byte>();
-            foreach (NUT_Texture tex in Nodes)
+            foreach (NutTexture tex in Nodes)
             {
                 byte fourthByte = (byte) (tex.HASHID & 0xFF);
                 if (!(previous4thBytes.Contains(fourthByte)))
@@ -775,7 +775,7 @@ namespace Smash_Forge
             return texID;
         }
 
-        public static int loadImage(NUT_Texture t, bool DDS = false)
+        public static int loadImage(NutTexture t, bool DDS = false)
         {
             int texID = GL.GenTexture();
 

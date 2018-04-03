@@ -22,8 +22,8 @@ namespace Smash_Forge
         }
 
         public LVDEntry currentEntry;
-        private Vector2D currentVert;
-        private Vector2D currentNormal;
+        private Vector2 currentVert;
+        private Vector2 currentNormal;
         private CollisionMat currentMat;
         private TreeNode currentTreeNode;
         private Spawn currentPoint;
@@ -103,7 +103,7 @@ namespace Smash_Forge
                     flag4.Checked = col.flag4;
                     vertices.Nodes.Clear();
                     for (int i = 0; i < col.verts.Count; i++)
-                        vertices.Nodes.Add(new TreeNode($"Vertex {i + 1} ({col.verts[i].x},{col.verts[i].y})") { Tag = col.verts[i] });
+                        vertices.Nodes.Add(new TreeNode($"Vertex {i + 1} ({col.verts[i].X},{col.verts[i].Y})") { Tag = col.verts[i] });
                     lines.Nodes.Clear();
                     for (int i = 0; i < col.normals.Count; i++)
                     {
@@ -116,8 +116,8 @@ namespace Smash_Forge
                     CollisionCliff cliff = (CollisionCliff)entry;
                     cliffGroup.Visible = true;
 
-                    cliffPosX.Value = (decimal)cliff.pos.x;
-                    cliffPosY.Value = (decimal)cliff.pos.y;
+                    cliffPosX.Value = (decimal)cliff.pos.X;
+                    cliffPosY.Value = (decimal)cliff.pos.Y;
                     cliffAngle.Value = (decimal)cliff.angle;
                     cliffLineIndex.Maximum = ((Collision)currentTreeNode.Parent.Tag).materials.Count;
                     cliffLineIndex.Value = cliff.lineIndex + 1;
@@ -181,8 +181,8 @@ namespace Smash_Forge
                         currentGeneralPath = s;
                         treeViewPath.Nodes.Clear();
                         int j = 0;
-                        foreach (Vector2D v in s.points)
-                            treeViewPath.Nodes.Add(new TreeNode($"Point {++j} ({v.x},{v.y})") { Tag = v });
+                        foreach (Vector2 v in s.points)
+                            treeViewPath.Nodes.Add(new TreeNode($"Point {++j} ({v.X},{v.Y})") { Tag = v });
                     }
                 }
                 else if (entry is DAT.COLL_DATA)
@@ -192,7 +192,7 @@ namespace Smash_Forge
                     meleeLinks.Nodes.Clear();
                     meleePolygons.Nodes.Clear();
                     int i = 0;
-                    foreach (Vector2D vert in ((DAT.COLL_DATA)entry).vertices)
+                    foreach (Vector2 vert in ((DAT.COLL_DATA)entry).vertices)
                         meleeVerts.Nodes.Add(new TreeNode($"Vertex {i++}") { Tag = vert });
                     i = 0;
                     foreach (DAT.COLL_DATA.Link link in ((DAT.COLL_DATA)entry).links)
@@ -214,22 +214,22 @@ namespace Smash_Forge
 
         private void vertices_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            currentVert = (Vector2D)e.Node.Tag;
+            currentVert = (Vector2)e.Node.Tag;
             LVD.LVDSelection = currentVert;
-            xVert.Value = (decimal)currentVert.x;
-            yVert.Value = (decimal)currentVert.y;
+            xVert.Value = (decimal)currentVert.X;
+            yVert.Value = (decimal)currentVert.Y;
         }
 
         private void lines_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            currentNormal = (Vector2D)((object[])e.Node.Tag)[0];
+            currentNormal = (Vector2)((object[])e.Node.Tag)[0];
             LVD.LVDSelection = currentNormal;
             currentMat = (CollisionMat)((object[])e.Node.Tag)[1];
             leftLedge.Checked = currentMat.getFlag(6);
             rightLedge.Checked = currentMat.getFlag(7);
             noWallJump.Checked = currentMat.getFlag(4);
             comboBox1.Text = Enum.GetName(typeof(materialTypes), currentMat.physics);
-            passthroughAngle.Value = (decimal)(Math.Atan2(currentNormal.y, currentNormal.x) * 180.0 / Math.PI);
+            passthroughAngle.Value = (decimal)(Math.Atan2(currentNormal.Y, currentNormal.X) * 180.0 / Math.PI);
         }
 
         private void flagChange(object sender, EventArgs e)
@@ -247,10 +247,10 @@ namespace Smash_Forge
         private void changePos(object sender, EventArgs e)
         {
             if(sender == xVert)
-                currentVert.x = (float)xVert.Value;
+                currentVert.X = (float)xVert.Value;
             if(sender == yVert)
-                currentVert.y = (float)yVert.Value;
-            vertices.SelectedNode.Text = $"Vertex {vertices.SelectedNode.Index + 1} ({currentVert.x},{currentVert.y})";
+                currentVert.Y = (float)yVert.Value;
+            vertices.SelectedNode.Text = $"Vertex {vertices.SelectedNode.Index + 1} ({currentVert.X},{currentVert.Y})";
         }
 
         private void nameChange(object sender, EventArgs e)
@@ -270,8 +270,8 @@ namespace Smash_Forge
         private void passthroughAngle_ValueChanged(object sender, EventArgs e)
         {
             double theta = (double)((NumericUpDown)sender).Value;
-            currentNormal.x = (float)Math.Cos(theta * Math.PI / 180.0f);
-            currentNormal.y = (float)Math.Sin(theta * Math.PI / 180.0f);
+            currentNormal.X = (float)Math.Cos(theta * Math.PI / 180.0f);
+            currentNormal.Y = (float)Math.Sin(theta * Math.PI / 180.0f);
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -314,9 +314,9 @@ namespace Smash_Forge
             CollisionCliff cliff = (CollisionCliff)currentEntry;
 
             if (sender == cliffPosX)
-                cliff.pos.x = (float)cliffPosX.Value;
+                cliff.pos.X = (float)cliffPosX.Value;
             if (sender == cliffPosY)
-                cliff.pos.y = (float)cliffPosY.Value;
+                cliff.pos.Y = (float)cliffPosY.Value;
             if (sender == cliffAngle)
                 cliff.angle = (float)cliffAngle.Value;
             if (sender == cliffLineIndex)
@@ -358,11 +358,11 @@ namespace Smash_Forge
             Collision col = (Collision)currentEntry;
             int index = (vertices.SelectedNode == null) ? col.verts.Count : vertices.SelectedNode.Index + 1;
 
-            Vector2D newVert;
+            Vector2 newVert;
             if (vertices.SelectedNode == null)
-                newVert = new Vector2D();
+                newVert = new Vector2();
             else
-                newVert = new Vector2D(currentVert.x, currentVert.y);
+                newVert = new Vector2(currentVert.X, currentVert.Y);
             col.verts.Insert(index, newVert);
 
             TreeNode newNode = new TreeNode("New Vertex") { Tag = newVert };
@@ -373,8 +373,8 @@ namespace Smash_Forge
             index--;
             if (col.verts.Count > col.normals.Count + 1)
             {
-                object[] temp = { new Vector2D(1, 0), new CollisionMat() };
-                col.normals.Insert(index, (Vector2D)temp[0]);
+                object[] temp = { new Vector2(1, 0), new CollisionMat() };
+                col.normals.Insert(index, (Vector2)temp[0]);
                 col.materials.Insert(index, (CollisionMat)temp[1]);
                 lines.Nodes.Insert(index, new TreeNode("New Line") { Tag = temp });
             }
@@ -421,7 +421,7 @@ namespace Smash_Forge
         private void renumber()
         {
             for(int i = 0; i < vertices.Nodes.Count; i++)
-                vertices.Nodes[i].Text = $"Vertex {i + 1} ({((Collision)currentEntry).verts[i].x},{((Collision)currentEntry).verts[i].y})";
+                vertices.Nodes[i].Text = $"Vertex {i + 1} ({((Collision)currentEntry).verts[i].X},{((Collision)currentEntry).verts[i].Y})";
             for(int i = 0; i < lines.Nodes.Count; i++)
                 lines.Nodes[i].Text = $"Line {i + 1}";
         }
@@ -448,15 +448,15 @@ namespace Smash_Forge
             treeView2.Nodes.Clear();
             currentItemSection = section;
             int i = 1;
-            foreach (Vector2D v in section.points)
-                treeView2.Nodes.Add(new TreeNode($"Point {i++} ({v.x},{v.y})") { Tag = v });
+            foreach (Vector2 v in section.points)
+                treeView2.Nodes.Add(new TreeNode($"Point {i++} ({v.X},{v.Y})") { Tag = v });
         }
 
         private void treeView2_AfterSelect(object sender, TreeViewEventArgs e)
         {
             //selecting something in the vertices tab of the item spawner editor
-            numericUpDown2.Value = (Decimal)((Vector2D)e.Node.Tag).x;
-            numericUpDown1.Value = (Decimal)((Vector2D)e.Node.Tag).y;
+            numericUpDown2.Value = (Decimal)((Vector2)e.Node.Tag).X;
+            numericUpDown1.Value = (Decimal)((Vector2)e.Node.Tag).Y;
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -484,7 +484,7 @@ namespace Smash_Forge
         private void button6_Click(object sender, EventArgs e)
         {
             //Add item spawner vertex
-            Vector2D v = new Vector2D();
+            Vector2 v = new Vector2();
             if(treeView2.SelectedNode == null)
             {
                 treeView2.Nodes.Add(new TreeNode("temp") { Tag = v });
@@ -498,7 +498,7 @@ namespace Smash_Forge
             }
             int i = 1;
             foreach (TreeNode t in treeView2.Nodes)
-                t.Text = $"Point {i++} ({((Vector2D)t.Tag).x},{((Vector2D)t.Tag).y})";
+                t.Text = $"Point {i++} ({((Vector2)t.Tag).X},{((Vector2)t.Tag).Y})";
         }
 
         private void button7_Click(object sender, EventArgs e)
@@ -506,23 +506,24 @@ namespace Smash_Forge
             //Delete item spawner vertex
             if(treeView2.SelectedNode != null)
             {
-                Vector2D v = (Vector2D)treeView2.SelectedNode.Tag;
+                Vector2 v = (Vector2)treeView2.SelectedNode.Tag;
                 currentItemSection.points.Remove(v);
                 treeView2.Nodes.Remove(treeView2.SelectedNode);
                 int i = 1;
                 foreach (TreeNode t in treeView2.Nodes)
-                    t.Text = $"Point {i++} ({((Vector2D)t.Tag).x},{((Vector2D)t.Tag).y})";
+                    t.Text = $"Point {i++} ({((Vector2)t.Tag).X},{((Vector2)t.Tag).Y})";
             }
         }
 
         private void changeItemVertPosition(object sender, EventArgs e)
         {
             //changed either X or Y pos of item spawner vertex
+            Vector2 v = ((Vector2)treeView2.SelectedNode.Tag);
             if (sender == numericUpDown2)
-                ((Vector2D)treeView2.SelectedNode.Tag).x = (float)numericUpDown2.Value;
+                v.X = (float)numericUpDown2.Value;
             if(sender == numericUpDown1)
-                ((Vector2D)treeView2.SelectedNode.Tag).y = (float)numericUpDown1.Value;
-            treeView2.SelectedNode.Text = $"Point {treeView2.SelectedNode.Index + 1} ({((Vector2D)treeView2.SelectedNode.Tag).x},{((Vector2D)treeView2.SelectedNode.Tag).y})";
+                v.Y = (float)numericUpDown1.Value;
+            treeView2.SelectedNode.Text = $"Point {treeView2.SelectedNode.Index + 1} ({((Vector2)treeView2.SelectedNode.Tag).X},{((Vector2)treeView2.SelectedNode.Tag).Y})";
         }
 
         private void pointShape_ValueChanged(object sender, EventArgs e)
@@ -552,18 +553,18 @@ namespace Smash_Forge
         private void treeViewPath_AfterSelect(object sender, TreeViewEventArgs e)
         {
             //select vertex in path
-            Vector2D v = (Vector2D)e.Node.Tag;
-            pathNodeX.Value = (Decimal)v.x;
-            pathNodeY.Value = (Decimal)v.y;
+            Vector2 v = (Vector2)e.Node.Tag;
+            pathNodeX.Value = (Decimal)v.X;
+            pathNodeY.Value = (Decimal)v.Y;
         }
 
         private void pathValueChanged(object sender, EventArgs e)
         {
-            Vector2D v = (Vector2D)treeViewPath.SelectedNode.Tag;
+            Vector2 v = (Vector2)treeViewPath.SelectedNode.Tag;
             if (sender == pathNodeX)
-                v.x = (float)pathNodeX.Value;
+                v.X = (float)pathNodeX.Value;
             if (sender == pathNodeY)
-                v.y = (float)pathNodeY.Value;
+                v.Y = (float)pathNodeY.Value;
             renamePathTreeview();
         }
 
@@ -572,15 +573,15 @@ namespace Smash_Forge
             int i = 0;
             foreach(TreeNode t in treeViewPath.Nodes)
             {
-                Vector2D v = (Vector2D)t.Tag;
-                t.Text = $"Point {++i} ({v.x},{v.y})";
+                Vector2 v = (Vector2)t.Tag;
+                t.Text = $"Point {++i} ({v.X},{v.Y})";
             }
         }
 
         private void button8_Click(object sender, EventArgs e)
         {
             //Add path point
-            Vector2D newPoint = new Vector2D();
+            Vector2 newPoint = new Vector2();
             currentGeneralPath.points.Add(newPoint);
             treeViewPath.Nodes.Add(new TreeNode("") { Tag = newPoint });
             renamePathTreeview();
@@ -591,7 +592,7 @@ namespace Smash_Forge
             //Remove path point
             if (treeViewPath.SelectedNode == null)
                 treeViewPath.SelectedNode = treeViewPath.Nodes[0];
-            Vector2D v = (Vector2D)treeViewPath.SelectedNode.Tag;
+            Vector2 v = (Vector2)treeViewPath.SelectedNode.Tag;
             treeViewPath.Nodes.Remove(treeViewPath.SelectedNode);
             currentGeneralPath.points.Remove(v);
             renamePathTreeview();
@@ -604,18 +605,16 @@ namespace Smash_Forge
             Collision c = (Collision)currentEntry;
             for (int i = 0; i < c.verts.Count - 1; i++)
             {
-                decimal currentAngle = (decimal)(Math.Atan2(c.normals[i].y, c.normals[i].x) * 180.0 / Math.PI);
-                decimal newAngle = (decimal)(Math.Atan2(c.verts[i].x-c.verts[i+1].x, c.verts[i].y-c.verts[i+1].y) * 180/Math.PI);
-                double theta = (double)(newAngle);
-                c.normals[i].x = (float)Math.Cos(theta * Math.PI / 180.0f);
-                c.normals[i].y = (float)Math.Sin(theta * Math.PI / 180.0f);
+                decimal lineAngle = (decimal)(Math.Atan2(c.verts[i].X-c.verts[i+1].X, c.verts[i].Y-c.verts[i+1].Y) * 180/Math.PI);
+                double theta = (double)(lineAngle+90);
+                c.normals[i] = new Vector2((float)Math.Cos(theta * Math.PI / 180.0f), (float)Math.Sin(theta * Math.PI / 180.0f));
             }
 
             // //Original code
             /*
             Collision c = (Collision)currentEntry;
             Bounds collisionBounds = new Bounds() { top = -1000000, bottom = 1000000, left = 1000000, right = -1000000 };
-            foreach (Vector2D v in c.verts)
+            foreach (Vector2 v in c.verts)
             {
                 if (v.y > collisionBounds.top)
                     collisionBounds.top = v.y;
@@ -626,15 +625,15 @@ namespace Smash_Forge
                 if (v.x < collisionBounds.left)
                     collisionBounds.left = v.x;
             }
-            Vector2d centerPoint = new Vector2d();
+            Vector2 centerPoint = new Vector2();
             centerPoint.X = ((collisionBounds.right - collisionBounds.left) / 2) + collisionBounds.left;
             centerPoint.Y = ((collisionBounds.top - collisionBounds.bottom) / 2) + collisionBounds.bottom;
             for (int i = 0; i < c.verts.Count - 1; i++)
             {
-                Vector2d midpoint = new Vector2d();
+                Vector2 midpoint = new Vector2();
                 midpoint.X = ((c.verts[i].x - c.verts[i + 1].x) / 2) + c.verts[i + 1].x;
                 midpoint.Y = ((c.verts[i].y - c.verts[i + 1].y) / 2) + c.verts[i + 1].y;
-                Vector2d normal = Vector2d.Normalize(Vector2d.Subtract(midpoint, centerPoint));
+                Vector2 normal = Vector2.Normalize(Vector2.Subtract(midpoint, centerPoint));
                 if(c.normals.Count > i)
                 {
                     c.normals[i].x = (float)normal.X;
@@ -647,8 +646,8 @@ namespace Smash_Forge
         public void Clear()
         {
             currentEntry = null;
-            currentVert = null;
-            currentNormal = null;
+            currentVert = new Vector2(0);
+            currentNormal = new Vector2(0);
             currentMat = null;
             currentTreeNode = null;
             currentPoint = null;
@@ -673,16 +672,16 @@ namespace Smash_Forge
         #region meleeCollisions
         private DAT.COLL_DATA.AreaTableEntry currentAreaTableEntry;
         private DAT.COLL_DATA.Link currentLink;
-        private Vector2D currentMeleeVert;
+        private Vector2 currentMeleeVert;
 
         private void updateVertexPosition(object sender, EventArgs e)
         {
             if (currentMeleeVert == null)
                 return;
             if (sender == meleeX)
-                currentMeleeVert.x = (float)meleeX.Value;
+                currentMeleeVert.X = (float)meleeX.Value;
             if (sender == meleeY)
-                currentMeleeVert.y = (float)meleeY.Value;
+                currentMeleeVert.Y = (float)meleeY.Value;
         }
 
         private void linkVertUpdate(object sender, EventArgs e)
@@ -745,9 +744,9 @@ namespace Smash_Forge
         {
             if(sender == meleeVerts)
             {
-                currentMeleeVert = (Vector2D)meleeVerts.SelectedNode.Tag;
-                meleeX.Value = (Decimal)currentMeleeVert.x;
-                meleeY.Value = (Decimal)currentMeleeVert.y;
+                currentMeleeVert = (Vector2)meleeVerts.SelectedNode.Tag;
+                meleeX.Value = (Decimal)currentMeleeVert.X;
+                meleeY.Value = (Decimal)currentMeleeVert.Y;
             }
             else if(sender == meleeLinks)
             {
@@ -789,7 +788,7 @@ namespace Smash_Forge
 
         private void meleeAddVert_Click(object sender, EventArgs e)
         {
-            Vector2D vert = new Vector2D() { x = (float)meleeX.Value, y = (float)meleeY.Value };
+            Vector2 vert = new Vector2() { X = (float)meleeX.Value, Y = (float)meleeY.Value };
             DAT.COLL_DATA coll = (DAT.COLL_DATA)currentEntry;
             coll.vertices.Add(vert);
             meleeVerts.Nodes.Add(new TreeNode($"Vertex {meleeVerts.Nodes.Count}") { Tag = vert });
@@ -798,7 +797,7 @@ namespace Smash_Forge
         private void meleeSubtractVert_Click(object sender, EventArgs e)
         {
             DAT.COLL_DATA coll = (DAT.COLL_DATA)currentEntry;
-            Vector2D vert = (Vector2D)meleeVerts.SelectedNode.Tag;
+            Vector2 vert = (Vector2)meleeVerts.SelectedNode.Tag;
             coll.vertices.Remove(vert);
             int index = meleeVerts.SelectedNode.Index;
             meleeVerts.Nodes.Remove(meleeVerts.SelectedNode);

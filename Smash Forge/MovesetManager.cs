@@ -174,7 +174,7 @@ namespace Smash_Forge
         public int ID { get; set; }
 
         public float Damage { get; set; }
-        public float Angle { get; set; }
+        public int Angle { get; set; }
         public float KnockbackGrowth { get; set; }
         public float KnockbackBase { get; set; }
         public float WeightBasedKnockback { get; set; }

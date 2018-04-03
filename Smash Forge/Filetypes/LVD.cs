@@ -111,20 +111,7 @@ namespace Smash_Forge
             f.writeString(_boneName);
         }
     }
-
-    public class Vector2D
-    {
-        public float x;
-        public float y;
-
-        public Vector2D() {}
-        public Vector2D(float x, float y)
-        {
-            this.x = x;
-            this.y = y;
-        }
-    }
-    
+   
     public class Point : LVDEntry
     {
         public override string magic { get { return ""; } }
@@ -178,7 +165,7 @@ namespace Smash_Forge
     {
         public override string magic { get { return "030401017735BB7500000002"; } }
 
-        public Vector2D pos;
+        public Vector2 pos;
         public float angle; //I don't know what this does exactly, but it's -1 for left and 1 for right
         public int lineIndex;
 
@@ -187,9 +174,9 @@ namespace Smash_Forge
             base.read(f);
 
             f.skip(1);
-            pos = new Vector2D();
-            pos.x = f.readFloat();
-            pos.y = f.readFloat();
+            pos = new Vector2();
+            pos.X = f.readFloat();
+            pos.Y = f.readFloat();
             angle = f.readFloat();
             lineIndex = f.readInt();
         }
@@ -198,8 +185,8 @@ namespace Smash_Forge
             base.save(f);
 
             f.writeByte(1);
-            f.writeFloat(pos.x);
-            f.writeFloat(pos.y);
+            f.writeFloat(pos.X);
+            f.writeFloat(pos.Y);
             f.writeFloat(angle);
             f.writeInt(lineIndex);
         }
@@ -209,12 +196,21 @@ namespace Smash_Forge
     {
         public override string magic { get { return "030401017735BB7500000002"; } }
 
-        public List<Vector2D> verts = new List<Vector2D>();
-        public List<Vector2D> normals = new List<Vector2D>();
+        public List<Vector2> verts = new List<Vector2>();
+        public List<Vector2> normals = new List<Vector2>();
         public List<CollisionCliff> cliffs = new List<CollisionCliff>();
         public List<CollisionMat> materials = new List<CollisionMat>();
         //Flags: ???, rig collision, ???, drop-through
         public bool flag1 = false, flag2 = false, flag3 = false, flag4 = false;
+
+        public bool IsPolygon
+        {
+            get
+            {
+                if (verts.Count < 2) return false;
+                return verts[0].Equals(verts[verts.Count - 1]);
+            }
+        }
 
         public Collision() {}
 
@@ -232,9 +228,9 @@ namespace Smash_Forge
             for(int i = 0; i < vertCount; i++)
             {
                 f.skip(1);
-                Vector2D temp = new Vector2D();
-                temp.x = f.readFloat();
-                temp.y = f.readFloat();
+                Vector2 temp = new Vector2();
+                temp.X = f.readFloat();
+                temp.Y = f.readFloat();
                 verts.Add(temp);
             }
 
@@ -243,9 +239,9 @@ namespace Smash_Forge
             for(int i = 0; i < normalCount; i++)
             {
                 f.skip(1);
-                Vector2D temp = new Vector2D();
-                temp.x = f.readFloat();
-                temp.y = f.readFloat();
+                Vector2 temp = new Vector2();
+                temp.X = f.readFloat();
+                temp.Y = f.readFloat();
                 normals.Add(temp);
             }
 
@@ -280,20 +276,20 @@ namespace Smash_Forge
 
             f.writeByte(1);
             f.writeInt(verts.Count);
-            foreach(Vector2D v in verts)
+            foreach(Vector2 v in verts)
             {
                 f.writeByte(1);
-                f.writeFloat(v.x);
-                f.writeFloat(v.y);
+                f.writeFloat(v.X);
+                f.writeFloat(v.Y);
             }
 
             f.writeByte(1);
             f.writeInt(normals.Count);
-            foreach (Vector2D n in normals)
+            foreach (Vector2 n in normals)
             {
                 f.writeByte(1);
-                f.writeFloat(n.x);
-                f.writeFloat(n.y);
+                f.writeFloat(n.X);
+                f.writeFloat(n.Y);
             }
 
             f.writeByte(1);
@@ -387,7 +383,7 @@ namespace Smash_Forge
     {
         public int type;
         public float x1, y1, x2, y2;
-        public List<Vector2D> points = new List<Vector2D>();
+        public List<Vector2> points = new List<Vector2>();
 
         public LVDShape()
         {
@@ -405,8 +401,8 @@ namespace Smash_Forge
         {
             type = s.type;
             x1 = s.x1; y1 = s.y1; x2 = s.x2; y2 = s.y2;
-            foreach (Vector2D point in s.points)
-                points.Add(new Vector2D(point.x, point.y));
+            foreach (Vector2 point in s.points)
+                points.Add(new Vector2(point.X, point.Y));
         }
 
         public void read(FileData f)
@@ -427,7 +423,7 @@ namespace Smash_Forge
             for(int i = 0; i < pointCount; i++)
             {
                 f.skip(1);
-                points.Add(new Vector2D(f.readFloat(), f.readFloat()));
+                points.Add(new Vector2(f.readFloat(), f.readFloat()));
             }
         }
         public void save(FileOutput f)
@@ -443,11 +439,11 @@ namespace Smash_Forge
             f.writeByte(1);
             f.writeByte(1);
             f.writeInt(points.Count);
-            foreach(Vector2D point in points)
+            foreach(Vector2 point in points)
             {
                 f.writeByte(1);
-                f.writeFloat(point.x);
-                f.writeFloat(point.y);
+                f.writeFloat(point.X);
+                f.writeFloat(point.Y);
             }
         }
     }
@@ -603,7 +599,7 @@ namespace Smash_Forge
 
         public int type;
         public float x1, y1, x2, y2;
-        public List<Vector2D> points = new List<Vector2D>();
+        public List<Vector2> points = new List<Vector2>();
 
         public GeneralShape()
         {
@@ -637,7 +633,7 @@ namespace Smash_Forge
             for(int i = 0; i < pointCount; i++)
             {
                 f.skip(1);
-                points.Add(new Vector2D(f.readFloat(), f.readFloat()));
+                points.Add(new Vector2(f.readFloat(), f.readFloat()));
             }
         }
         public void save(FileOutput f)
@@ -658,11 +654,11 @@ namespace Smash_Forge
             f.writeByte(1);
             f.writeByte(1);
             f.writeInt(points.Count);
-            foreach(Vector2D point in points)
+            foreach(Vector2 point in points)
             {
                 f.writeByte(1);
-                f.writeFloat(point.x);
-                f.writeFloat(point.y);
+                f.writeFloat(point.X);
+                f.writeFloat(point.Y);
             }
         }
     }
@@ -1052,22 +1048,67 @@ namespace Smash_Forge
             return f.getBytes();
         }
 
-        //Function to automatically generate passthrough angles for every line in a given colliion
-        //Which direction a line is supposed to face is based on the current angle set for it
-        //This may not work completely for collisions that are constructed counter-clockwise
-        public static void GeneratePassthroughs(Collision col)
+        public static void GeneratePassthroughs(Collision c, bool PolyCheck = false)
         {
-            for (int i = 0; i < col.verts.Count - 1; i++)
+            // Generate Normals Assuming Clockwise
+            for (int i = 0; i < c.verts.Count - 1; i++)
             {
-                decimal currentAngle = (decimal)(Math.Atan2(col.normals[i].y, col.normals[i].x) * 180.0 / Math.PI);
-                decimal newAngle = (decimal)(Math.Atan2(col.verts[i].x-col.verts[i+1].x, col.verts[i].y-col.verts[i+1].y) * 180/Math.PI);
-                double theta = (double)(newAngle);
-                if ((newAngle > 0) && (currentAngle < 0))
-                    theta = (double)(0 - newAngle);
-                else if ((newAngle < 0) && (currentAngle > 0))
-                    theta = (double)(0 - newAngle);
-                col.normals[i].x = (float)Math.Cos(theta * Math.PI / 180.0f);
-                col.normals[i].y = (float)Math.Sin(theta * Math.PI / 180.0f);
+                Vector2 v1 = c.verts[i];
+                Vector2 v2 = c.verts[i + 1];
+                Vector2 normal = new Vector2(v2.Y - v1.Y, v2.X - v1.X).Normalized();
+                normal.X *= -1;
+                c.normals[i] = normal;
+            }
+
+            // If this forms a polygon we can get assume we want the angles to points outside the polygon
+            // Not the fastest but lvd won't typically have a massive number of lines
+            if (c.IsPolygon && PolyCheck)
+            {
+                for (int i = 0; i < c.verts.Count - 1; i++)
+                {
+                    Vector2 pos = (c.verts[i] + c.verts[i + 1]) / 2;
+                    Vector2 N1 = c.normals[i];
+
+                    // Check collision
+                    // done by counting the number of intersection using the normal as a ray
+                    // odd hits = inside even hits = outside
+                    // https://rootllama.wordpress.com/2014/06/20/ray-line-segment-intersection-test-in-2d/
+                    int count = 0;
+                    for (int j = 0; j < c.verts.Count - 1; j++)
+                    {
+                        if (j == i) continue;
+
+                        Vector2 v1 = c.verts[j];
+                        Vector2 v2 = c.verts[j + 1];
+
+                        Vector2 p1 = pos - v1;
+                        Vector2 p2 = v2-v1;
+                        Vector2 p3 = new Vector2(-N1.Y, N1.X);
+
+                        float dot = Vector2.Dot(p2, p3);
+                        if (Math.Abs(dot) < 0.00001f)
+                            continue;
+                        
+                        float f1 = (p2.X * p1.Y - p2.Y * p1.X) / dot;
+                        float f2 = Vector2.Dot(p1, p3) / dot;
+
+                        //Found intersection
+                        if (f1 >= 0.0f && (f2 >= 0.0f && f2 <= 1.0f))
+                            count++;
+                    }
+
+                    if (count % 2 == 1)
+                        //odd so flip
+                        c.normals[i] = c.normals[i]*-1;
+                }
+            }
+        }
+
+        public static void FlipPassthroughs(Collision c)
+        {
+            for (int i = 0; i < c.normals.Count; i++)
+            {
+                c.normals[i] = c.normals[i]*-1;
             }
         }
 
@@ -1106,12 +1147,8 @@ namespace Smash_Forge
                     temp.boneName = col.boneName;
                     temp.useStartPos = col.useStartPos;
                     int ind = i;
-                    /*if ((i == col.materials.Count-1) || (col.GetNormalAngle(i+1) <= 45)) //Counter-clockwise
-                        ind = i + 1;
-                    else                                                                 //Clockwise
-                        ind = i;*/
-                    temp.pos = new Vector2D(col.verts[ind].x, col.verts[ind].y);
-                    temp.startPos = new Vector3(col.verts[ind].x, col.verts[ind].y, 0);
+                    temp.pos = new Vector2(col.verts[ind].X, col.verts[ind].Y);
+                    temp.startPos = new Vector3(col.verts[ind].X, col.verts[ind].Y, 0);
                     if (col.useStartPos)
                         temp.startPos = Vector3.Add(temp.startPos, col.startPos);
                     temp.angle = -1.0f;
@@ -1127,12 +1164,8 @@ namespace Smash_Forge
                     temp.boneName = col.boneName;
                     temp.useStartPos = col.useStartPos;
                     int ind = i + 1;
-                    /*if ((i == 0) || (col.GetNormalAngle(i-1) <= 45)) //Counter-clockwise
-                        ind = i;
-                    else                                             //Clockwise
-                        ind = i + 1;*/
-                    temp.pos = new Vector2D(col.verts[ind].x, col.verts[ind].y);
-                    temp.startPos = new Vector3(col.verts[ind].x, col.verts[ind].y, 0);
+                    temp.pos = new Vector2(col.verts[ind].X, col.verts[ind].Y);
+                    temp.startPos = new Vector3(col.verts[ind].X, col.verts[ind].Y, 0);
                     if (col.useStartPos)
                         temp.startPos = Vector3.Add(temp.startPos, col.startPos);
                     temp.angle = 1.0f;
@@ -1307,8 +1340,8 @@ namespace Smash_Forge
             if(s.type == 4)
             {
                 GL.Begin(PrimitiveType.LineStrip);
-                foreach(Vector2D point in s.points)
-                    GL.Vertex3(point.x + sPos.X, point.y + sPos.Y, sPos.Z);
+                foreach(Vector2 point in s.points)
+                    GL.Vertex3(point.X + sPos.X, point.Y + sPos.Y, sPos.Z);
             }
 
             GL.End();
@@ -1326,7 +1359,7 @@ namespace Smash_Forge
             if (s.type == 2)
                 Rendering.RenderTools.drawSphere(sPos+pos, s.radius, 24);
             if (s.type == 3)
-                Rendering.RenderTools.drawCylinder(sPos+pos, sPos+pos+posd, s.radius);
+                Rendering.RenderTools.DrawCylinder(sPos+pos, sPos+pos+posd, s.radius);
         }
 
         public static void DrawEnemyGenerator(EnemyGenerator e)
@@ -1455,23 +1488,23 @@ namespace Smash_Forge
                     GL.Color3(Color.Black);
 
                     GL.Begin(PrimitiveType.LineStrip);
-                    foreach (Vector2D vi in s.points)
-                        GL.Vertex3(vi.x+sPos[0], vi.y+sPos[1], 5+sPos[2]);
+                    foreach (Vector2 vi in s.points)
+                        GL.Vertex3(vi.X+sPos[0], vi.Y+sPos[1], 5+sPos[2]);
                     GL.End();
 
                     GL.Begin(PrimitiveType.LineStrip);
-                    foreach (Vector2D vi in s.points)
-                        GL.Vertex3(vi.x+sPos[0], vi.y+sPos[1], -5+sPos[2]);
+                    foreach (Vector2 vi in s.points)
+                        GL.Vertex3(vi.X+sPos[0], vi.Y+sPos[1], -5+sPos[2]);
                     GL.End();
 
 
                     // draw vertices
                     GL.Color3(Color.White);
                     GL.Begin(PrimitiveType.Lines);
-                    foreach (Vector2D vi in s.points)
+                    foreach (Vector2 vi in s.points)
                     {
-                        GL.Vertex3(vi.x+sPos[0], vi.y+sPos[1], 5+sPos[2]);
-                        GL.Vertex3(vi.x+sPos[0], vi.y+sPos[1], -5+sPos[2]);
+                        GL.Vertex3(vi.X+sPos[0], vi.Y+sPos[1], 5+sPos[2]);
+                        GL.Vertex3(vi.X+sPos[0], vi.Y+sPos[1], -5+sPos[2]);
                     }
                     GL.End();
                 }
@@ -1529,14 +1562,14 @@ namespace Smash_Forge
 
                 for (int i = 0; i < c.verts.Count - 1; i++)
                 {
-                    Vector3 v1Pos = Vector3.TransformPosition(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ + 5), transform);
-                    Vector3 v1Neg = Vector3.TransformPosition(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ - 5), transform);
-                    Vector3 v1Zero = Vector3.TransformPosition(new Vector3(c.verts[i].x + addX, c.verts[i].y + addY, addZ), transform);
-                    Vector3 v2Pos = Vector3.TransformPosition(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ + 5), transform);
-                    Vector3 v2Neg = Vector3.TransformPosition(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ - 5), transform);
-                    Vector3 v2Zero = Vector3.TransformPosition(new Vector3(c.verts[i + 1].x + addX, c.verts[i + 1].y + addY, addZ), transform);
+                    Vector3 v1Pos = Vector3.TransformPosition(new Vector3(c.verts[i].X + addX, c.verts[i].Y + addY, addZ + 5), transform);
+                    Vector3 v1Neg = Vector3.TransformPosition(new Vector3(c.verts[i].X + addX, c.verts[i].Y + addY, addZ - 5), transform);
+                    Vector3 v1Zero = Vector3.TransformPosition(new Vector3(c.verts[i].X + addX, c.verts[i].Y + addY, addZ), transform);
+                    Vector3 v2Pos = Vector3.TransformPosition(new Vector3(c.verts[i + 1].X + addX, c.verts[i + 1].Y + addY, addZ + 5), transform);
+                    Vector3 v2Neg = Vector3.TransformPosition(new Vector3(c.verts[i + 1].X + addX, c.verts[i + 1].Y + addY, addZ - 5), transform);
+                    Vector3 v2Zero = Vector3.TransformPosition(new Vector3(c.verts[i + 1].X + addX, c.verts[i + 1].Y + addY, addZ), transform);
 
-                    Vector3 normals = Vector3.TransformPosition(new Vector3(c.normals[i].x, c.normals[i].y, 0), transform);
+                    Vector3 normals = Vector3.TransformPosition(new Vector3(c.normals[i].X, c.normals[i].Y, 0), transform);
 
                     GL.Begin(PrimitiveType.Quads);
                     if (c.normals.Count > i)
@@ -1548,7 +1581,7 @@ namespace Smash_Forge
                             GL.Begin(PrimitiveType.Lines);
                             GL.Color3(Color.Blue);
                             GL.Vertex3(v);
-                            GL.Vertex3(v.X + (c.normals[i].x * 5), v.Y + (c.normals[i].y * 5), v.Z);
+                            GL.Vertex3(v.X + (c.normals[i].X * 5), v.Y + (c.normals[i].Y * 5), v.Z);
                             GL.End();
                             GL.Begin(PrimitiveType.Quads);
                         }
@@ -1566,8 +1599,8 @@ namespace Smash_Forge
                         else
                             color = Color.FromArgb(128, Color.Cyan);
 
-                        if ((colSelected || LVDSelection == c.normals[i]) && blink)
-                            color = ColorTools.invertColor(color);
+                        if ((colSelected || (LVDSelection != null && LVDSelection.Equals(c.normals[i]))) && blink)
+                            color = ColorTools.InvertColor(color);
 
                         GL.Color4(color);
                     }
@@ -1589,8 +1622,8 @@ namespace Smash_Forge
                         else
                             color = Color.Orange;
 
-                        if ((colSelected || LVDSelection == c.verts[i]) && blink)
-                            color = ColorTools.invertColor(color);
+                        if ((colSelected || (LVDSelection != null && LVDSelection.Equals(c.verts[i]))) && blink)
+                            color = ColorTools.InvertColor(color);
                         GL.Color4(color);
                     }
                     else
@@ -1609,8 +1642,8 @@ namespace Smash_Forge
                             else
                                 color = Color.Orange;
 
-                            if (LVDSelection == c.verts[i + 1] && blink)
-                                color = ColorTools.invertColor(color);
+                            if (LVDSelection != null && LVDSelection.Equals(c.verts[i + 1]) && blink)
+                                color = ColorTools.InvertColor(color);
                             GL.Color4(color);
                         }
                         else
@@ -1624,7 +1657,7 @@ namespace Smash_Forge
                 }
                 for (int i = 0; i < c.cliffs.Count; i++)
                 {
-                    Vector3 pos = c.cliffs[i].useStartPos ? Vector3.TransformPosition(new Vector3(c.cliffs[i].startPos.X, c.cliffs[i].startPos.Y, c.cliffs[i].startPos.Z), transform) : Vector3.TransformPosition(new Vector3(c.cliffs[i].pos.x,c.cliffs[i].pos.y,0), transform);
+                    Vector3 pos = c.cliffs[i].useStartPos ? Vector3.TransformPosition(new Vector3(c.cliffs[i].startPos.X, c.cliffs[i].startPos.Y, c.cliffs[i].startPos.Z), transform) : Vector3.TransformPosition(new Vector3(c.cliffs[i].pos.X,c.cliffs[i].pos.Y,0), transform);
 
                     GL.Color3(Color.White);
                     GL.Begin(PrimitiveType.Lines);
@@ -1665,12 +1698,12 @@ namespace Smash_Forge
 
                 GL.Begin(PrimitiveType.Quads);
                 GL.Color4(getLinkColor(link));
-                Vector2D vi = m.DAT_MELEE.collisions.vertices[link.vertexIndices[0]];
-                GL.Vertex3(vi.x * scale, vi.y * scale, 5);
-                GL.Vertex3(vi.x * scale, vi.y * scale, -5);
+                Vector2 vi = m.DAT_MELEE.collisions.vertices[link.vertexIndices[0]];
+                GL.Vertex3(vi.X * scale, vi.Y * scale, 5);
+                GL.Vertex3(vi.X * scale, vi.Y * scale, -5);
                 vi = m.DAT_MELEE.collisions.vertices[link.vertexIndices[1]];
-                GL.Vertex3(vi.x * scale, vi.y * scale, -5);
-                GL.Vertex3(vi.x * scale, vi.y * scale, 5);
+                GL.Vertex3(vi.X * scale, vi.Y * scale, -5);
+                GL.Vertex3(vi.X * scale, vi.Y * scale, 5);
                 GL.End();
 
                 if ((link.flags & 2) != 0)
@@ -1683,14 +1716,14 @@ namespace Smash_Forge
             GL.LineWidth(4);
             for (int i = 0; i < m.DAT_MELEE.collisions.vertices.Count; i++)
             {
-                Vector2D vi = m.DAT_MELEE.collisions.vertices[i];
+                Vector2 vi = m.DAT_MELEE.collisions.vertices[i];
                 if (ledges.Contains(i))
                     GL.Color3(Color.Purple);
                 else
                     GL.Color3(Color.Tomato);
                 GL.Begin(PrimitiveType.Lines);
-                GL.Vertex3(vi.x * scale, vi.y * scale, 5);
-                GL.Vertex3(vi.x * scale, vi.y * scale, -5);
+                GL.Vertex3(vi.X * scale, vi.Y * scale, 5);
+                GL.Vertex3(vi.X * scale, vi.Y * scale, -5);
                 GL.End();
             }
         }

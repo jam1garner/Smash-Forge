@@ -68,10 +68,10 @@ namespace Smash_Forge
 
             if (!Runtime.shaders.ContainsKey("MBN"))
             {
-                ShaderTools.CreateShader("MBN", "/lib/Shader/Legacy/", "/lib/Shader/");
+                Rendering.ShaderTools.CreateShader("MBN", "/lib/Shader/Legacy/", "/lib/Shader/");
             }
 
-            Runtime.shaders["MBN"].displayCompilationWarning("MBN");
+            Runtime.shaders["MBN"].DisplayCompilationWarning("MBN");
         }
 
         public void Destroy()

@@ -165,7 +165,7 @@ namespace Smash_Forge
             errorLog.AppendLine(GL.GetShaderInfoLog(address));
         }
 
-        public bool shadersCompiledSuccessfully()
+        public bool CompiledSuccessfully()
         {
             // Make sure the shaders were compiled correctly.
             // Don't try to render if the shaders have errors to avoid crashes.
@@ -180,7 +180,7 @@ namespace Smash_Forge
                 return true;
         }
 
-        public void displayCompilationWarning(string shaderName)
+        public void DisplayCompilationWarning(string shaderName)
         {
             if (checkedCompilation)
                 return;

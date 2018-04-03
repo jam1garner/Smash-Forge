@@ -132,15 +132,15 @@ namespace Smash_Forge
                         ModelContainer con = (ModelContainer)node;
                         if (con.NUD != null)
                         {
-                            con.NUD.clearMTA();
-                            con.NUD.applyMTA(con.MTA, 0);
+                            con.NUD.ClearMta();
+                            con.NUD.ApplyMta(con.MTA, 0);
                             foreach (MTA d in display)
                             {
-                                con.NUD.applyMTA(d, 0);
+                                con.NUD.ApplyMta(d, 0);
                             }
                             foreach (MTA d in def)
                             {
-                                con.NUD.applyMTA(d, 0);
+                                con.NUD.ApplyMta(d, 0);
                             }
 
                             /*foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
@@ -206,9 +206,9 @@ namespace Smash_Forge
                         ModelContainer con = (ModelContainer)node;
                         if (con.NUD != null && con.MTA != null)
                         {
-                            con.NUD.applyMTA(con.MTA, 0);
+                            con.NUD.ApplyMta(con.MTA, 0);
                             foreach (MTA d in display)
-                                con.NUD.applyMTA(d, 0);
+                                con.NUD.ApplyMta(d, 0);
 
                             /*foreach (KeyValuePair<string, MTA> v in Runtime.MaterialAnimations)
                             {

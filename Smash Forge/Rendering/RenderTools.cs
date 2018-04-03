@@ -16,16 +16,19 @@ namespace Smash_Forge.Rendering
     public class RenderTools
     {
         public static int defaultTex = -1, floorTexture;
-        public static int cubeMapHigh, cubeMapLow;
-        public static int dummyRamp;
+
+        public static Dictionary<NUD.DummyTextures, int> dummyTextures = new Dictionary<NUD.DummyTextures, int>(); 
+
+        private static int stageMapHigh;
+        private static int stageMapLow;
+        private static int dummyRamp;
+        private static int pokemonStadiumDummyTex;
+        private static int punchOutDummyTex;
+        private static int shadowMapDummyTex;
+
         public static int uvTestPattern;
         public static int boneWeightGradient;
         public static int boneWeightGradient2;
-        public static int pokemonStadiumDummyTex;
-        public static int punchOutDummyTex;
-        public static int shadowMapDummyTex;
-
-        public static int cubeVAO, cubeVBO;
 
         public static void Setup()
         {
@@ -38,12 +41,23 @@ namespace Smash_Forge.Rendering
         private static void LoadTextures()
         {
             // Dummy textures. 
-            cubeMapHigh = LoadCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
-            cubeMapLow = LoadCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
+            stageMapHigh = LoadCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
+            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
+
+            stageMapLow = LoadCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
+            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
+
             dummyRamp = NUT.loadImage(Properties.Resources._10080000);
+            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp);
+
             pokemonStadiumDummyTex = NUT.loadImage(Properties.Resources._10040001);
+            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex);
+
             punchOutDummyTex = NUT.loadImage(Properties.Resources._10040000);
+            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex);
+
             shadowMapDummyTex = NUT.loadImage(Properties.Resources._10100000);
+            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
 
             // Helpful textures. 
             uvTestPattern = NUT.loadImage(Properties.Resources.UVPattern);
@@ -51,34 +65,6 @@ namespace Smash_Forge.Rendering
             boneWeightGradient2 = NUT.loadImage(Properties.Resources.boneWeightGradient2);
 
             defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
-        }
-
-        public static object GetValueFromParamFile(ParamFile file, int groupIndex, int entryIndex, int valueIndex)
-        {
-            if (groupIndex > file.Groups.Count)
-                return null;
-
-            if ((file.Groups[groupIndex] is ParamGroup))
-            {
-                int entrySize = ((ParamGroup)file.Groups[groupIndex]).EntrySize;
-                for (int i = 0; i < entrySize; i++)
-                {
-                    if (i == valueIndex)
-                        return file.Groups[groupIndex].Values[entrySize * entryIndex + i].Value;
-                }
-            }
-            else if ((file.Groups[groupIndex] is ParamList))
-            {
-                for (int i = 0; i < file.Groups[groupIndex].Values.Count; i++)
-                {
-                    if (i == valueIndex)
-                    {
-                        return file.Groups[groupIndex].Values[i].Value;
-                    }
-                }
-            }
-
-            return null;
         }
 
         private static void GetOpenGLSystemInfo()
@@ -122,7 +108,6 @@ namespace Smash_Forge.Rendering
             GL.Vertex3(center + new Vector3(0, 0, 5));
             GL.End();
         }
-
 
         #region Taken from Brawllib render TKContext.cs
         public static void drawSphere(Vector3 center, float radius, uint precision)
@@ -455,9 +440,7 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        public static Matrix4 def = Matrix4.CreateTranslation(0,0,0);
-
-        public static void drawHitboxCylinder(Vector3 p1, Vector3 p2, float R)
+        public static void DrawHitboxCylinder(Vector3 p1, Vector3 p2, float R)
         {
             Vector3 yAxis = new Vector3(0, 1, 0);
             Vector3 d = p2 - p1;
@@ -534,15 +517,7 @@ namespace Smash_Forge.Rendering
             //  sides
             GL.PushMatrix();
 
-            //GL.Scale(scale.X, scale.Y, scale.Z);
-            /*double[] f = new double[] {
-                transform.M11, transform.M12, transform.M13, transform.M14,
-                transform.M21, transform.M22, transform.M23, transform.M24,
-                transform.M31, transform.M32, transform.M33, transform.M34,
-                transform.M41, transform.M42, transform.M43, transform.M44,
-            };*/
             GL.MultMatrix(ref transform);
-            //Vector3 scale = transform.ExtractScale();
             GL.Translate(mid);
             GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
 
@@ -631,7 +606,7 @@ namespace Smash_Forge.Rendering
             GL.Enable(EnableCap.CullFace);
         }
 
-        public static void drawCylinder(Vector3 p1, Vector3 p2, float R){
+        public static void DrawCylinder(Vector3 p1, Vector3 p2, float R){
             int q = 8, p = 20;
 
             Vector3 yAxis = new Vector3 (0, 1, 0);
@@ -698,7 +673,7 @@ namespace Smash_Forge.Rendering
             GL.PopMatrix ();
         }
 
-        public static void drawWireframeCylinder(Vector3 p1, Vector3 p2, float R)
+        public static void DrawWireframeCylinder(Vector3 p1, Vector3 p2, float R)
         {
             int q = 8, p = 20;
 
@@ -863,7 +838,7 @@ namespace Smash_Forge.Rendering
             // Draw here
             GL.Color4(color);
             uint precision = 30;  // force particular method overload
-            drawCircle(new Vector3(x, y, -1f), radius, precision);
+            DrawCircle(new Vector3(x, y, -1f), radius, precision);
 
             GL.Enable(EnableCap.CullFace);
             GL.Enable(EnableCap.DepthTest);
@@ -875,12 +850,13 @@ namespace Smash_Forge.Rendering
             GL.PopMatrix();
         }
 
-        public static void drawFloor()
+        public static void DrawFloor(Matrix4 mvpMatrix)
         {
-            bool solid = Runtime.floorStyle == Runtime.FloorStyle.Solid;
             float s = Runtime.floorSize;
 
             GL.UseProgram(0);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref mvpMatrix);
 
             // objects shouldn't show through opaque parts of floor
             GL.Enable(EnableCap.DepthTest);
@@ -917,7 +893,7 @@ namespace Smash_Forge.Rendering
                 GL.Disable(EnableCap.Texture2D);
             }
             else
-            if (solid)
+            if (Runtime.floorStyle == Runtime.FloorStyle.Solid)
             {
                 GL.Begin(PrimitiveType.Quads);
                 GL.Vertex3(-s, 0f, -s);
@@ -1086,48 +1062,12 @@ namespace Smash_Forge.Rendering
 
         }
 
-
-        public static void RenderBackground()
+        public static void DrawCircle(float x, float y, float z, float radius, uint precision)
         {
-            if (Runtime.floorStyle == Runtime.FloorStyle.Textured || Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
-            {
-                GL.Enable(EnableCap.Texture2D);
-                GL.ActiveTexture(TextureUnit.Texture0);
-                if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
-                    GL.BindTexture(TextureTarget.Texture2D, floorTexture);
-                else
-                    GL.BindTexture(TextureTarget.Texture2D, defaultTex);
-
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)Runtime.floorWrap);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)Runtime.floorWrap);
-
-                GL.Disable(EnableCap.Texture2D);
-            }
-    
-            GL.Begin(PrimitiveType.Quads);
-            GL.Color3(Runtime.back1);
-            GL.TexCoord2(2, 2);
-            GL.Vertex2(1.0, 1.0);
-
-            GL.TexCoord2(0, 2);
-            GL.Vertex2(-1.0, 1.0);
-
-            GL.Color3(Runtime.back2);
-
-            GL.TexCoord2(0, 0);
-            GL.Vertex2(-1.0, -1.0);
-
-            GL.TexCoord2(2, 0);
-            GL.Vertex2(1.0, -1.0);
-            GL.End();
+            DrawCircle(new Vector3(x, y, z), radius, precision);
         }
 
-        public static void drawCircle(float x, float y, float z, float radius, uint precision)
-        {
-            drawCircle(new Vector3(x, y, z), radius, precision);
-        }
-
-        public static void drawCircle(Vector3 center, float radius, uint precision)
+        public static void DrawCircle(Vector3 center, float radius, uint precision)
         {
             float theta = 2.0f * (float)Math.PI / precision;
             float cosine = (float)Math.Cos(theta);
@@ -1150,7 +1090,7 @@ namespace Smash_Forge.Rendering
         }
 
 
-        public static void drawHitboxCircle(Vector3 pos, float size, uint smooth, Matrix4 view)
+        public static void DrawHitboxCircle(Vector3 pos, float size, uint smooth, Matrix4 view)
         {
             float t = 2 * (float)Math.PI / smooth;
             float tf = (float)Math.Tan(t);
@@ -1372,7 +1312,7 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        public static void drawCircle(Vector3 pos, float r, int smooth)
+        public static void DrawCircle(Vector3 pos, float r, int smooth)
         {
             float t = 2 * (float)Math.PI / smooth;
             float tf = (float)Math.Tan(t);
@@ -1398,9 +1338,14 @@ namespace Smash_Forge.Rendering
             GL.End();
         }
 
-        public static void SetupFixedFunctionRendering()
+        public static void Setup3DFixedFunctionRendering(Matrix4 mvpMatrix)
         {
             GL.UseProgram(0);
+
+            // Manually setup the matrix for immediate mode.
+            Matrix4 matrix = mvpMatrix;
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadMatrix(ref matrix);
 
             GL.Enable(EnableCap.LineSmooth); // This is Optional 
             GL.Enable(EnableCap.Normalize);  // This is critical to have
@@ -1424,8 +1369,6 @@ namespace Smash_Forge.Rendering
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
         }
 
-        #region FileRendering
-
         public static void DrawBones(List<ModelContainer> con)
         {
             if (con.Count > 0)
@@ -1446,10 +1389,11 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        public static float ToRad = (float)Math.PI / 180;
-        public static int swinganim = 0;
         public static void DrawVBN(VBN vbn)
         {
+            float ToRad = (float)Math.PI / 180;
+            int swinganim = 0;
+
             swinganim++;
             if (swinganim > 100) swinganim = 0;
             if (vbn != null)
@@ -1546,7 +1490,30 @@ namespace Smash_Forge.Rendering
             DrawScreenTriangle(shader);
         }
 
-        private static void Setup2DRendering()
+        public static void DrawScreenQuad(int texture0, int texture1)
+        {
+            // Draws RGB and alpha channels of texture to screen quad.
+            Shader shader = Runtime.shaders["Screen_Quad"];
+            GL.UseProgram(shader.programID);
+
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, texture0);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            GL.Uniform1(shader.getAttribute("image0"), 0);
+
+            GL.ActiveTexture(TextureUnit.Texture1);
+            GL.BindTexture(TextureTarget.Texture2D, texture1);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            GL.Uniform1(shader.getAttribute("image1"), 1);
+
+            // Draw full screen "quad" (big triangle)
+            DrawScreenTriangle(shader);
+        }
+
+
+        public static void Setup2DRendering()
         {
             // Setup OpenGL settings for basic 2D rendering.
             GL.ClearColor(Color.White);
@@ -1583,13 +1550,8 @@ namespace Smash_Forge.Rendering
             GL.VertexAttribPointer(shader.getAttribute("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
             GL.EnableVertexAttribArray(0);
 
-            GL.Disable(EnableCap.DepthTest);
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
         }
-
-        #endregion
-
-        #region Other
 
         public static byte[] DXT5ScreenShot(GLControl gc, int x, int y, int width, int height)
         {
@@ -1698,85 +1660,7 @@ namespace Smash_Forge.Rendering
             return id;
         }
 
-        private static float[] cube_vertices = new float[]{
-      -1.0f,  1.0f,  1.0f,
-      -1.0f, -1.0f,  1.0f,
-       1.0f, -1.0f,  1.0f,
-       1.0f,  1.0f,  1.0f,
-      -1.0f,  1.0f, -1.0f,
-      -1.0f, -1.0f, -1.0f,
-       1.0f, -1.0f, -1.0f,
-       1.0f,  1.0f, -1.0f,
-    };
-
-        private static short[] cube_indices = new short[]{
-	  0, 1, 2, 3,
-	  3, 2, 6, 7,
-	  7, 6, 5, 4,
-	  4, 5, 1, 0,
-	  0, 3, 7, 4,
-	  1, 2, 6, 5,
-	};
-
-        public static string cubevs = @"#version 330
-in vec3 position;
-out vec3 uv;
-
-uniform mat3 view;
-
-void main()
-{
-    gl_Position =  vec4(position, 1.0);  
-    uv = position;
-}";
-
-        public static string cubefs = @"#version 330
-in vec3 uv;
-
-uniform samplerCube skycube;
-
-void main()
-{    
-    gl_FragColor = textureCube(skycube, uv);
-}";
-        
-        public static void RenderCubeMap(Matrix4 view)
-        {
-            Shader shader = Runtime.shaders["SkyBox"];
-            //------------------------------------------------------
-            GL.UseProgram(shader.programID);
-            
-            shader.enableAttrib();
-            //------------------------------------------------------
-            Matrix3 v = new Matrix3(view);
-            GL.UniformMatrix3(shader.getAttribute("view"), false, ref v);
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.cubeMapHigh);
-            GL.Uniform1(shader.getAttribute("skycube"), 0);
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, cubeVBO);
-            GL.BufferData<float>(BufferTarget.ArrayBuffer, (IntPtr)(cube_vertices.Length * sizeof(float)), cube_vertices, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
-
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, cubeVAO);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(cube_indices.Length * sizeof(short)), cube_indices, BufferUsageHint.StaticDraw);
-
-            GL.DrawElements(BeginMode.Quads, cube_indices.Length, DrawElementsType.UnsignedShort, 0);
-            //Console.WriteLine(GL.GetError());
-
-            //------------------------------------------------------
-            shader.disableAttrib();
-
-            GL.UseProgram(0);
-            //------------------------------------------------------
-        }
-
-        #endregion
-
-        #region Ray Trace Controls
-
-        public static Ray createRay(Matrix4 v, Vector2 m)
+        public static Ray CreateRay(Matrix4 v, Vector2 m)
         {
             Vector4 va = Vector4.Transform(new Vector4(m.X, m.Y, -1.0f, 1.0f), v.Inverted());
             Vector4 vb = Vector4.Transform(new Vector4(m.X, m.Y, 1.0f, 1.0f), v.Inverted());
@@ -1787,8 +1671,6 @@ void main()
 
             return r;
         }
-
-        #endregion
     }
 }
 

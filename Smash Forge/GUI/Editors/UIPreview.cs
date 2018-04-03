@@ -70,12 +70,12 @@ namespace Smash_Forge
             if (n == null) return;
 
             byte[] data = RenderTools.DXT5ScreenShot(view.glViewport, view.ShootX, view.ShootY, view.ShootWidth, view.ShootHeight);
-            int id = n.Nodes.Count > 0 ? ((NUT_Texture)n.Nodes[0]).HASHID : 0x280052B7;
+            int id = n.Nodes.Count > 0 ? ((NutTexture)n.Nodes[0]).HASHID : 0x280052B7;
             n.Destroy();
             n.Nodes.Clear();
             n.draw.Clear();
 
-            NUT_Texture tex = new NUT_Texture();
+            NutTexture tex = new NutTexture();
             tex.Width = view.ShootWidth;
             tex.Height = view.ShootHeight;
             tex.mipmaps.Add(FlipDXT5(data, tex.Width, tex.Height));
@@ -251,14 +251,14 @@ namespace Smash_Forge
             }
         }
 
-        private NUT ReplaceTexture(NUT_Texture tex, int width, int height, NUT nut)
+        private NUT ReplaceTexture(NutTexture tex, int width, int height, NUT nut)
         {
             if (tex.Width == width && tex.Height == height)
             {
                 tex.HASHID = 0x280052B7;
                 if (nut != null && nut.Nodes.Count > 0)
                 {
-                    tex.HASHID = ((NUT_Texture)nut.Nodes[0]).HASHID;
+                    tex.HASHID = ((NutTexture)nut.Nodes[0]).HASHID;
                     nut.Destroy();
                 }
                 if(nut == null)
@@ -311,7 +311,7 @@ namespace Smash_Forge
             GL.LoadIdentity();
             GL.MatrixMode(MatrixMode.Projection);
 
-            foreach(NUT_Texture tex in nut.Nodes)
+            foreach(NutTexture tex in nut.Nodes)
             {
                 RenderTools.DrawTexturedQuad(nut.draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, true);
             }

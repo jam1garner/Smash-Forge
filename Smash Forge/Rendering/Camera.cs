@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 using SALT.PARAMS;
+using Smash_Forge.Params;
 
 namespace Smash_Forge.Rendering
 {
@@ -73,7 +74,7 @@ namespace Smash_Forge.Rendering
             {
                 OpenTK.Input.Mouse.GetState();
 
-                // left click drag to rotate. right click drag to pan
+                // Left click drag to rotate. Right click drag to pan.
                 if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
                 {
                     position.Y += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
@@ -85,7 +86,9 @@ namespace Smash_Forge.Rendering
                     rotX += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
                 }
 
-                float zoomscale = zoomSpeed;
+                // Increase zoom speed when zooming out. 
+                float zoomDistanceScale = 0.01f;
+                float zoomscale = zoomSpeed * Math.Abs(position.Z) * zoomDistanceScale;
 
                 // Holding shift changes zoom speed.
                 if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
@@ -134,10 +137,9 @@ namespace Smash_Forge.Rendering
         {
             if (stprm == null)
                 return;
-            
-            float newFov = (float)RenderTools.GetValueFromParamFile(stprm, 0, 0, 6);
+            float newFov = (float)ParamTools.GetParamValue(stprm, 0, 0, 6);
             fovRadians = newFov * ((float)Math.PI / 180.0f); 
-            renderDepth = (float)RenderTools.GetValueFromParamFile(stprm, 0, 0, 77);           
+            renderDepth = (float)ParamTools.GetParamValue(stprm, 0, 0, 77);           
         }
 
         public void ResetPositionRotation()
