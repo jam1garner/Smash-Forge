@@ -28,10 +28,10 @@ namespace Smash_Forge
 
         public Dictionary<string, int> BoneTypes = new Dictionary<string, int>()
         {
-            { "No Bones", (int)NUD.Polygon.BoneTypes.NoBones},
-            { "Bone Weight (Float)", (int)NUD.Polygon.BoneTypes.Float},
-            { "Bone Weight (Half Float)", (int)NUD.Polygon.BoneTypes.HalfFloat},
-            { "Bone Weight (Byte)", (int)NUD.Polygon.BoneTypes.Byte}
+            { "None", (int)NUD.Polygon.BoneTypes.NoBones},
+            { "Float", (int)NUD.Polygon.BoneTypes.Float},
+            { "Half Float", (int)NUD.Polygon.BoneTypes.HalfFloat},
+            { "Byte", (int)NUD.Polygon.BoneTypes.Byte}
         };
 
         public Dictionary<string, int> VertexTypes = new Dictionary<string, int>()
@@ -57,8 +57,8 @@ namespace Smash_Forge
             foreach (string key in BoneTypes.Keys)
                 boneTypeComboBox.Items.Add(key);
 
-            vertTypeComboBox.SelectedIndex = 2;
-            boneTypeComboBox.SelectedIndex = 1;
+            vertTypeComboBox.SelectedIndex = 4;
+            boneTypeComboBox.SelectedIndex = 3;
         }
 
         public void Apply(NUD nud)
@@ -75,7 +75,7 @@ namespace Smash_Forge
 
             foreach (NUD.Mesh mesh in nud.Nodes)
             {
-                if (BoneTypes[(string)boneTypeComboBox.SelectedItem] == BoneTypes["No Bones"])
+                if (BoneTypes[(string)boneTypeComboBox.SelectedItem] == BoneTypes["None"])
                     mesh.boneflag = 0;
 
                 if (!checkedMeshName)
@@ -95,7 +95,7 @@ namespace Smash_Forge
 
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
-                    if (BoneTypes[(string)boneTypeComboBox.SelectedItem] == BoneTypes["No Bones"])
+                    if (BoneTypes[(string)boneTypeComboBox.SelectedItem] == BoneTypes["None"])
                         poly.polflag = 0;
 
                     if (smoothNrmCB.Checked)
@@ -142,7 +142,7 @@ namespace Smash_Forge
 
                         // Set vertex colors to white. 
                         if (vertcolorCB.Checked)
-                            v.color = new Vector4(127, 127, 127, 255);
+                            v.color = new Vector4(127, 127, 127, 127);
 
                         // Rotate 90 degrees.
                         if (rotate90CB.Checked)

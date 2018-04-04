@@ -945,7 +945,7 @@
             this.swagYCB.Name = "swagYCB";
             this.swagYCB.Size = new System.Drawing.Size(104, 17);
             this.swagYCB.TabIndex = 29;
-            this.swagYCB.Text = "Animate Swag Y";
+            this.swagYCB.Text = "Animate Swing Y";
             this.swagYCB.UseVisualStyleBackColor = true;
             this.swagYCB.CheckedChanged += new System.EventHandler(this.swagYCB_CheckedChanged);
             // 
@@ -1079,7 +1079,7 @@
             this.showSwagDataCB.Name = "showSwagDataCB";
             this.showSwagDataCB.Size = new System.Drawing.Size(104, 17);
             this.showSwagDataCB.TabIndex = 18;
-            this.showSwagDataCB.Text = "Animate Swag Z";
+            this.showSwagDataCB.Text = "Animate Swing Z";
             this.showSwagDataCB.UseVisualStyleBackColor = true;
             this.showSwagDataCB.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
             // 

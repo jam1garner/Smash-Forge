@@ -110,10 +110,10 @@ void main()
         nrmSampler.zw *= elapsedTime;
     }
 
-    texCoord = vec2((vUV * sampler1.xy) + sampler1.zw);
-    texCoord2 = vec2((vUV2 * sampler2.xy) + sampler2.zw);
-    texCoord3 = vec2((vUV3 * sampler3.xy) + sampler3.zw);
-    normaltexCoord = vec2((vUV * nrmSampler.xy) + nrmSampler.zw);
+    texCoord = vec2(sampler1.xy * (vUV + sampler1.zw));
+    texCoord2 = vec2(sampler2.xy * (vUV2 + sampler2.zw));
+    texCoord3 = vec2(sampler3.xy * (vUV3 + sampler3.zw));
+    normaltexCoord = vec2(nrmSampler.xy * (vUV + nrmSampler.zw));
 
     // Vertex attributes for fragment shader.
     vertexColor = vColor;

@@ -609,7 +609,7 @@ namespace Smash_Forge
                 double theta = (double)(lineAngle+90);
                 c.normals[i] = new Vector2((float)Math.Cos(theta * Math.PI / 180.0f), (float)Math.Sin(theta * Math.PI / 180.0f));
             }
-            
+
             // //Original code
             /*
             Collision c = (Collision)currentEntry;
