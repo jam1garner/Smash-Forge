@@ -1138,7 +1138,10 @@
     <None Include="lib\Shader\Screen_Quad_vs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="lib\Shader\smash_shader.txt">
+    <Content Include="lib\Shader\NU_UNIFORMS.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Shader\SMASH_SHADER.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\10080000.png" />

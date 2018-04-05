@@ -58,87 +58,10 @@ uniform uint flags;
 // Check if src, dst, alpha function are non zero.
 uniform int isTransparent;
 
+// Stage Lighting
 uniform int lightSet;
 uniform int isStage;
 uniform int renderStageLighting;
-
-// NU_ Material Properties
-uniform vec4 colorOffset;
-uniform vec4 aoMinGain;
-uniform vec4 fresnelColor;
-uniform vec4 specularColor;
-uniform vec4 specularColorGain;
-uniform vec4 diffuseColor;
-uniform vec4 characterColor;
-uniform vec4 colorGain;
-uniform vec4 finalColorGain;
-uniform vec4 finalColorGain2;
-uniform vec4 finalColorGain3;
-uniform vec4 reflectionColor;
-uniform vec4 fogColor;
-uniform vec4 effColorGain;
-uniform vec4 zOffset;
-
-// NU_ material params
-uniform vec4 fresnelParams;
-uniform vec4 specularParams;
-uniform vec4 reflectionParams;
-uniform vec4 fogParams;
-uniform vec4 normalParams;
-uniform vec4 angleFadeParams;
-uniform vec4 dualNormalScrollParams;
-uniform vec4 alphaBlendParams;
-uniform vec4 softLightingParams;
-uniform vec4 customSoftLightParams;
-uniform vec4 effUniverseParam;
-
-// Render Settings
-uniform int renderDiffuse;
-uniform int renderSpecular;
-uniform int renderFresnel;
-uniform int renderReflection;
-uniform int renderType;
-uniform int renderLighting;
-uniform int renderVertColor;
-uniform int renderNormal;
-uniform int useNormalMap;
-
-// Channel Toggles
-uniform int renderR;
-uniform int renderG;
-uniform int renderB;
-uniform int renderAlpha;
-
-uniform float diffuseIntensity;
-uniform float ambientIntensity;
-uniform float specularIntensity;
-uniform float fresnelIntensity;
-uniform float reflectionIntensity;
-
-// Character Lighting
-uniform vec3 difLightColor;
-uniform vec3 ambLightColor;
-uniform vec3 difLightDirection;
-
-uniform vec3 difLight2Color;
-uniform vec3 ambLight2Color;
-uniform vec3 difLight2Direction;
-
-uniform vec3 difLight3Color;
-uniform vec3 ambLight3Color;
-uniform vec3 difLight3Direction;
-
-uniform vec3 specLightColor;
-uniform vec3 specLightDirection;
-
-// Shared by characters and stages.
-uniform vec3 fresGroundColor;
-uniform vec3 fresSkyColor;
-uniform vec3 fresSkyDirection;
-uniform vec3 fresGroundDirection;
-
-// Not found in game yet.
-uniform vec3 refLightColor;
 
 // Stage Light 1
 uniform int renderStageLight1;
@@ -164,8 +87,55 @@ uniform vec3 stageLight4Direction;
 uniform int renderFog;
 uniform vec3 stageFogColor;
 
+// Character Lighting
+uniform vec3 difLightColor;
+uniform vec3 ambLightColor;
+uniform vec3 difLightDirection;
+
+uniform vec3 difLight2Color;
+uniform vec3 ambLight2Color;
+uniform vec3 difLight2Direction;
+
+uniform vec3 difLight3Color;
+uniform vec3 ambLight3Color;
+uniform vec3 difLight3Direction;
+
+uniform vec3 specLightColor;
+uniform vec3 specLightDirection;
+
+// Shared by characters and stages.
+uniform vec3 fresGroundColor;
+uniform vec3 fresSkyColor;
+uniform vec3 fresSkyDirection;
+uniform vec3 fresGroundDirection;
+
+#include NU_UNIFORMS
+
+// Render Settings
+uniform int renderDiffuse;
+uniform int renderSpecular;
+uniform int renderFresnel;
+uniform int renderReflection;
+uniform int renderType;
+uniform int renderLighting;
+uniform int renderVertColor;
+uniform int renderNormal;
+uniform int useNormalMap;
 // Wireframe Rendering
 uniform int colorOverride;
+
+// Channel Toggles
+uniform int renderAlpha;
+
+// Render Pass Intensities
+uniform float diffuseIntensity;
+uniform float ambientIntensity;
+uniform float specularIntensity;
+uniform float fresnelIntensity;
+uniform float reflectionIntensity;
+
+// Not found in game yet.
+uniform vec3 refLightColor;
 
 // Matrices
 uniform mat4 mvpMatrix;
@@ -173,16 +143,15 @@ uniform mat4 modelViewMatrix;
 uniform mat4 sphereMapMatrix;
 uniform mat4 rotationMatrix;
 
+// Misc Mesh Attributes
 uniform float zBufferOffset;
-
-uniform sampler2D shadowMap;
-
-uniform vec3 NSC;
-uniform float elapsedTime;
 
 uniform vec3 cameraPosition;
 
 uniform float bloomThreshold;
+
+uniform sampler2D shadowMap;
+
 
 // Constants
 #define gamma 2.2
@@ -208,8 +177,4 @@ void main()
     fragColorBright = vec4(vec3(0), 1);
     if (Luminance(fragColor.rgb) > bloomThreshold)
         fragColorBright.rgb = fragColor.rgb;
-
-    // Alpha override for render settings. Fixes alpha for renders.
-    if (renderAlpha != 1 || isTransparent != 1)
-        fragColor.a = 1;
 }
