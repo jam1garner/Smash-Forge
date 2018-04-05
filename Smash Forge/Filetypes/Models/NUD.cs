@@ -847,34 +847,40 @@ namespace Smash_Forge
             GL.Uniform1(shader.GetAttribute("ao"), 0);
             GL.Uniform1(shader.GetAttribute("ramp"), 0);
 
-            int texid = 0;
-            if (mat.hasDiffuse && texid < mat.textures.Count)
+            // The order of the textures in the following section is critical. 
+            int textureIndex = 0; 
+            if (mat.hasDiffuse && textureIndex < mat.textures.Count)
             {
-                int hash = mat.textures[texid].hash;
+                int hash = mat.textures[textureIndex].hash;
                 if (mat.displayTexId != -1) hash = mat.displayTexId;
-                GL.Uniform1(shader.GetAttribute("dif"), BindTexture(mat.textures[texid], hash, texid));
-                mat.diffuse1ID = mat.textures[texid].hash;
-                texid++;
+                GL.Uniform1(shader.GetAttribute("dif"), BindTexture(mat.textures[textureIndex], hash, textureIndex));
+                mat.diffuse1ID = mat.textures[textureIndex].hash;
+                textureIndex++;
             }
 
             // Jigglypuff has weird eyes.
             if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
             {
-                TextureUniform(shader, mat, mat.hasDiffuse2, "dif2", ref texid, ref mat.diffuse2ID);
-                TextureUniform(shader, mat, mat.hasNormalMap, "normalMap", ref texid, ref mat.normalID);
+                SetTextureUniformAndSetTexId(shader, mat, true, "dif2",      ref textureIndex, ref mat.diffuse2ID);
+                SetTextureUniformAndSetTexId(shader, mat, true, "normalMap", ref textureIndex, ref mat.normalID);
+            }
+            else if ((mat.Flags & 0xFFFFFFFF) == 0x92F01101)
+            {
+                SetTextureUniformAndSetTexId(shader, mat, true, "dif2",      ref textureIndex, ref mat.diffuse2ID);
+                SetTextureUniformAndSetTexId(shader, mat, true, "ramp",      ref textureIndex, ref mat.rampID);
+                SetTextureUniformAndSetTexId(shader, mat, true, "dummyRamp", ref textureIndex, ref mat.dummyRampID);
             }
             else
             {
-                // The order of the textures here is critical. 
-                TextureUniform(shader, mat, mat.hasSphereMap, "spheremap", ref texid, ref mat.sphereMapID);
-                TextureUniform(shader, mat, mat.hasDiffuse2,  "dif2",      ref texid, ref mat.diffuse2ID);
-                TextureUniform(shader, mat, mat.hasDiffuse3,  "dif3",      ref texid, ref mat.diffuse3ID);
-                TextureUniform(shader, mat, mat.hasStageMap,  "stagecube", ref texid, ref mat.stageMapID);
-                TextureUniform(shader, mat, mat.hasCubeMap,   "cube",      ref texid, ref mat.cubeMapID);
-                TextureUniform(shader, mat, mat.hasAoMap,     "ao",        ref texid, ref mat.aoMapID);
-                TextureUniform(shader, mat, mat.hasNormalMap, "normalMap", ref texid, ref mat.normalID);
-                TextureUniform(shader, mat, mat.hasRamp,      "ramp",      ref texid, ref mat.rampID);
-                TextureUniform(shader, mat, mat.hasDummyRamp, "dummyRamp", ref texid, ref mat.dummyRampID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasSphereMap, "spheremap", ref textureIndex, ref mat.sphereMapID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse2,  "dif2",      ref textureIndex, ref mat.diffuse2ID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse3,  "dif3",      ref textureIndex, ref mat.diffuse3ID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasStageMap,  "stagecube", ref textureIndex, ref mat.stageMapID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasCubeMap,   "cube",      ref textureIndex, ref mat.cubeMapID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasAoMap,     "ao",        ref textureIndex, ref mat.aoMapID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasNormalMap, "normalMap", ref textureIndex, ref mat.normalID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasRamp,      "ramp",      ref textureIndex, ref mat.rampID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasDummyRamp, "dummyRamp", ref textureIndex, ref mat.dummyRampID);
             }
         }
 
@@ -897,14 +903,14 @@ namespace Smash_Forge
                 Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
 
-        private static void TextureUniform(Shader shader, Material mat, bool hasTex, string name, ref int texid, ref int matTexId)
+        private static void SetTextureUniformAndSetTexId(Shader shader, Material mat, bool hasTex, string name, ref int textureIndex, ref int matTexId)
         {
             // Bind the texture and create the uniform if the material has the right textures and flags. 
-            if (hasTex && texid < mat.textures.Count)
+            if (hasTex && textureIndex < mat.textures.Count)
             {
-                GL.Uniform1(shader.GetAttribute(name), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
-                matTexId = mat.textures[texid].hash;
-                texid++;
+                GL.Uniform1(shader.GetAttribute(name), BindTexture(mat.textures[textureIndex], mat.textures[textureIndex].hash, textureIndex));
+                matTexId = mat.textures[textureIndex].hash;
+                textureIndex++;
             }
         }
 
@@ -2365,24 +2371,24 @@ namespace Smash_Forge
 
             public uint RebuildFlag4thByte()
             {
-                int new4thByte = 0;
+                byte new4thByte = 0;
                 if (hasDiffuse)
-                    new4thByte |= (int)TextureFlags.DiffuseMap;
+                    new4thByte |= (byte)TextureFlags.DiffuseMap;
                 if (hasNormalMap)
-                    new4thByte |= (int)TextureFlags.NormalMap;
+                    new4thByte |= (byte)TextureFlags.NormalMap;
                 if (hasCubeMap || hasRamp)
-                    new4thByte |= (int)TextureFlags.RampCubeMap;
+                    new4thByte |= (byte)TextureFlags.RampCubeMap;
                 if (hasStageMap || hasAoMap)
-                    new4thByte |= (int)TextureFlags.StageAOMap;
+                    new4thByte |= (byte)TextureFlags.StageAOMap;
                 if (hasSphereMap)
-                    new4thByte |= (int)TextureFlags.SphereMap;
+                    new4thByte |= (byte)TextureFlags.SphereMap;
                 if (glow)
-                    new4thByte |= (int) TextureFlags.Glow;
+                    new4thByte |= (byte) TextureFlags.Glow;
                 if (hasShadow)
-                    new4thByte |= (int) TextureFlags.Shadow;
+                    new4thByte |= (byte) TextureFlags.Shadow;
                 if (hasDummyRamp)
-                    new4thByte |= (int) TextureFlags.DummyRamp; 
-                flag = (uint)(((int)flag & 0xFFFFFF00) | new4thByte);
+                    new4thByte |= (byte) TextureFlags.DummyRamp; 
+                flag = (flag & 0xFFFFFF00) | new4thByte;
 
                 return flag;
             }
@@ -2420,9 +2426,9 @@ namespace Smash_Forge
 
             private bool CheckColorGain(uint matFlags)
             {
-                byte byte1 = (byte)((matFlags & 0xFF000000) >> 24);
-                byte byte2 = (byte)((matFlags & 0x00FF0000) >> 16);
-                byte byte4 = (byte)((matFlags & 0xFF));
+                byte byte1 = (byte)(matFlags >> 24);
+                byte byte2 = (byte)(matFlags >> 16);
+                byte byte4 = (byte)(matFlags & 0xFF);
 
                 bool hasLightingChannel = (byte1 & 0x0C) == 0x0C;
                 bool hasByte2 = (byte2 == 0x61) || (byte2== 0x42) || (byte2 == 0x44);
@@ -2435,22 +2441,32 @@ namespace Smash_Forge
             {
                 // Why figure out how these values work when you can just hardcode all the important ones?
                 // Effect materials use 4th byte 00 but often still have a diffuse texture.
-                hasDummyRamp = (matFlags & (int)TextureFlags.DummyRamp) > 0;
+                byte byte1 = (byte)(matFlags >> 24);
+                byte byte2 = (byte)(matFlags >> 16);
+                byte byte3 = (byte)(matFlags >> 8);
+                byte byte4 = (byte)(matFlags & 0xFF);
 
-                hasDiffuse = (matFlags & (int)TextureFlags.DiffuseMap) > 0 || (matFlags & 0xF0000000) == 0xB0000000;
+                bool isEffectMaterial = (byte1 & 0xF0) == 0xB0;
+                hasDiffuse = (matFlags & (byte)TextureFlags.DiffuseMap) > 0 || isEffectMaterial;
 
-                byte byte3 = (byte)((matFlags & 0x0000FF00) >> 8);
+                hasSphereMap = (byte4 & (byte)TextureFlags.SphereMap) > 0;
+
+                hasNormalMap = (byte4 & (byte)TextureFlags.NormalMap) > 0;
+
+                hasDummyRamp = (byte4 & (byte)TextureFlags.DummyRamp) > 0;
+
+                hasAoMap = (byte4 & (byte)TextureFlags.StageAOMap) > 0 && !hasDummyRamp;
+
+                hasStageMap = (byte4 & (byte)TextureFlags.StageAOMap) > 0 && hasDummyRamp;
+
+                bool hasRampCubeMap = (matFlags & (int)TextureFlags.RampCubeMap) > 0;
+                hasCubeMap = (matFlags & (int)TextureFlags.RampCubeMap) > 0 && (!hasDummyRamp) && (!hasSphereMap);
+                hasRamp = (matFlags & (int)TextureFlags.RampCubeMap) > 0 && hasDummyRamp;
+
                 hasDiffuse3 = (byte3 & 0x91) == 0x91 || (byte3 & 0x96) == 0x96 || (byte3 & 0x99) == 0x99;
 
-                hasDiffuse2 = ((matFlags & (int)TextureFlags.RampCubeMap) > 0) && ((matFlags & (int)TextureFlags.NormalMap) == 0)
-                    && (hasDummyRamp || hasDiffuse3) || ((matFlags & 0xFFFFFFFF) == 0x9AE11163);
-
-                hasNormalMap = (matFlags & (int)TextureFlags.NormalMap) > 0;
-                hasSphereMap = (matFlags & (int)TextureFlags.SphereMap) > 0;
-                hasAoMap = (matFlags & (int)TextureFlags.StageAOMap) > 0 && !hasDummyRamp;
-                hasStageMap = (matFlags & (int)TextureFlags.StageAOMap) > 0 && hasDummyRamp;
-                hasCubeMap = (matFlags & (int)TextureFlags.RampCubeMap) > 0 && (!hasDummyRamp) && (!hasSphereMap);
-                hasRamp = (matFlags & (int) TextureFlags.RampCubeMap) > 0 && hasDummyRamp; 
+                hasDiffuse2 = hasRampCubeMap && ((matFlags & (int)TextureFlags.NormalMap) == 0)
+                    && (hasDummyRamp || hasDiffuse3);
             }
         }
 

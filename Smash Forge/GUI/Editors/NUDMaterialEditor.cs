@@ -251,17 +251,26 @@ namespace Smash_Forge
 
             texturesListView.Items.Clear();
 
-
             // Jigglypuff has weird eyes.
             if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
             {
-                if (mat.hasDiffuse)
-                    texturesListView.Items.Add("Diffuse");
-                if (mat.hasDiffuse2)
-                    texturesListView.Items.Add("Diffuse2");
-                if (mat.hasNormalMap)
-                    texturesListView.Items.Add("NormalMap");
-            } 
+                texturesListView.Items.Add("Diffuse");
+                texturesListView.Items.Add("Diffuse2");
+                texturesListView.Items.Add("NormalMap");
+            }
+            else if ((mat.Flags & 0xFFFFFFFF) == 0x92F01101)
+            {
+                // These flags are even weirder. 
+                texturesListView.Items.Add("Diffuse");
+                texturesListView.Items.Add("Diffuse2");
+                if (currentMatIndex == 0)
+                {
+                    // The second material doesn't have these textures.
+                    // The texture are probably shared with the first material.
+                    texturesListView.Items.Add("Ramp");
+                    texturesListView.Items.Add("DummyRamp");
+                }
+            }
             else
             {
                 // The order of the textures is critical.

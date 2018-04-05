@@ -1325,8 +1325,16 @@ namespace Smash_Forge
             if (MeshList.filesTreeView.SelectedNode != null)
             {
                 // Return early to avoid rendering other stuff. 
-                DrawSelectedTexture();
-                return;
+                if (MeshList.filesTreeView.SelectedNode is BCH_Texture)
+                {
+                    DrawBchTex();
+                    return;
+                }
+                if (MeshList.filesTreeView.SelectedNode is NutTexture)
+                {
+                    DrawNutTexAndUvs();
+                    return;
+                }
             }
 
             if (Runtime.usePostProcessing)
@@ -1399,18 +1407,6 @@ namespace Smash_Forge
             GL.DepthFunc(DepthFunction.Lequal);
             if (!Runtime.useDepthTest)
                 GL.Disable(EnableCap.DepthTest);
-        }
-
-        private void DrawSelectedTexture()
-        {
-            if (MeshList.filesTreeView.SelectedNode is BCH_Texture)
-            {
-                DrawBchTex();
-            }
-            if (MeshList.filesTreeView.SelectedNode is NutTexture)
-            {
-                DrawNutTexAndUvs();
-            }
         }
 
         private void FixedFunctionRendering()

@@ -139,7 +139,7 @@ namespace Smash_Forge
 			address = GL.CreateShader(type);
 
             // Some hard coded #include
-            shaderText = shaderText.Replace("#include SM4SH_SHADER", MainForm.executableDir + "\\lib\\shader\\smash_shader.txt");
+            shaderText = shaderText.Replace("#include SMASH_SHADER", MainForm.executableDir + "\\lib\\shader\\smash_shader.txt");
 
 			GL.ShaderSource(address, shaderText);
 			GL.CompileShader(address);
