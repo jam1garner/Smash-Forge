@@ -23,22 +23,7 @@ namespace Smash_Forge
         public NUD.Polygon poly;
         public List<NUD.Material> materials;
         int currentMatIndex = 0;
-        public static Dictionary<string, MatParam> propList;
-
-        public class MatParam
-        {
-            public string name = "";
-            public string description = "";
-            public string[] paramLabels = new string[4];
-
-            // Users can still manually enter a value higher than max.
-            public float max1 = 10.0f;
-            public float max2 = 10.0f;
-            public float max3 = 10.0f;
-            public float max4 = 10.0f;
-
-            public bool useTrackBar = true;
-        }
+        public static Dictionary<string, Params.MatParam> propList = new Dictionary<string, Params.MatParam>();
 
         public static Dictionary<int, string> dstFactor = new Dictionary<int, string>(){
                     { 0x00, "Nothing"},
@@ -129,41 +114,7 @@ namespace Smash_Forge
 
         public void InitPropList()
         {
-            propList = new Dictionary<string, MatParam>();
-            if (File.Exists("param_labels\\material_params.ini"))
-            {
-                try
-                {
-                    MatParam matParam = new MatParam();
-                    using (StreamReader sr = new StreamReader("param_labels\\material_params.ini"))
-                    {
-                        while (!sr.EndOfStream)
-                        {
-                            string[] args = sr.ReadLine().Split('=');
-                            string line = args[0];
-                            switch (line)
-                            {
-                                case "[Param]": if (!matParam.name.Equals("") && !propList.ContainsKey(matParam.name)) propList.Add(matParam.name, matParam); matParam = new MatParam(); break;
-                                case "name": matParam.name = args[1]; Console.WriteLine(matParam.name); break;
-                                case "description": matParam.description = args[1]; break;
-                                case "param1": matParam.paramLabels[0] = args[1]; break;
-                                case "param2": matParam.paramLabels[1] = args[1]; break;
-                                case "param3": matParam.paramLabels[2] = args[1]; break;
-                                case "param4": matParam.paramLabels[3] = args[1]; break;
-                                case "max1": float.TryParse(args[1], out matParam.max1); break;
-                                case "max2": float.TryParse(args[1], out matParam.max2); break;
-                                case "max3": float.TryParse(args[1], out matParam.max3); break;
-                                case "max4": float.TryParse(args[1], out matParam.max4); break;
-                                case "useTrackBar": bool.TryParse(args[1], out matParam.useTrackBar); break;
-                            }
-                        }
-                    }
-                    if (!matParam.name.Equals("") && !propList.ContainsKey(matParam.name)) propList.Add(matParam.name, matParam);
-                }
-                catch (Exception)
-                {
-                }
-            }
+            propList = Params.MaterialParamTools.GetMatParamsFromFile();
         }
 
         private void OnTimedEvent(Object source, ElapsedEventArgs e)
@@ -179,7 +130,8 @@ namespace Smash_Forge
             tableLayoutPanel2.Enabled = false;
 
             matPropertyComboBox.Items.Clear();
-            if (propList == null) InitPropList();
+            if (propList.Count == 0)
+                InitPropList();
             foreach (string s in propList.Keys)
                 matPropertyComboBox.Items.Add(s);
 
@@ -603,7 +555,7 @@ namespace Smash_Forge
                     materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][0] = f;
 
                     // Update trackbar.
-                    MatParam labels = null;
+                    Params.MatParam labels = null;
                     propList.TryGetValue(matPropertyNameTB.Text, out labels);
                     float max = 1;
                     if (labels != null)
@@ -626,7 +578,7 @@ namespace Smash_Forge
                 materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][1] = f;
 
                 // update trackbar
-                MatParam labels = null;
+                Params.MatParam labels = null;
                 propList.TryGetValue(matPropertyNameTB.Text, out labels);
                 float max = 1;
                 if (labels != null)
@@ -648,7 +600,7 @@ namespace Smash_Forge
                 materials[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][2] = f;
 
                 // update trackbar
-                MatParam labels = null;
+                Params.MatParam labels = null;
                 propList.TryGetValue(matPropertyNameTB.Text, out labels);
                 float max = 1;
                 if (labels != null)
@@ -672,7 +624,7 @@ namespace Smash_Forge
                 materials[currentMatIndex].entries[matPropertyKey][3] = f;
 
                 // Update trackbar
-                MatParam labels = null;
+                Params.MatParam labels = null;
                 propList.TryGetValue(matPropertyNameTB.Text, out labels);
                 float max = 1;
                 if (labels != null)
@@ -688,7 +640,7 @@ namespace Smash_Forge
         // property change
         private void matPropertyTB_TextChanged(object sender, EventArgs e)
         {
-            MatParam matParams = null;
+            Params.MatParam matParams = null;
             propList.TryGetValue(matPropertyNameTB.Text, out matParams);
             descriptionLabel.Text = "Description:\n";
             tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 0));
@@ -1063,7 +1015,7 @@ namespace Smash_Forge
 
         private void param1TrackBar_Scroll(object sender, EventArgs e)
         {
-            MatParam labels = null;
+            Params.MatParam labels = null;
             propList.TryGetValue(matPropertyNameTB.Text, out labels);
             
             if (labels != null)
@@ -1074,7 +1026,7 @@ namespace Smash_Forge
 
         private void param2TrackBar_Scroll(object sender, EventArgs e)
         {
-            MatParam labels = null;
+            Params.MatParam labels = null;
             propList.TryGetValue(matPropertyNameTB.Text, out labels);
 
             if (labels != null)
@@ -1085,7 +1037,7 @@ namespace Smash_Forge
 
         private void param3TrackBar_Scroll(object sender, EventArgs e)
         {
-            MatParam labels = null;
+            Params.MatParam labels = null;
             propList.TryGetValue(matPropertyNameTB.Text, out labels);
 
             if (labels != null)
@@ -1096,7 +1048,7 @@ namespace Smash_Forge
 
         private void param4TrackBar_Scroll(object sender, EventArgs e)
         {
-            MatParam labels = null;
+            Params.MatParam labels = null;
             propList.TryGetValue(matPropertyNameTB.Text, out labels);
 
             if (labels != null)

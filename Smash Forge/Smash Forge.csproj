@@ -450,6 +450,7 @@
     </Compile>
     <Compile Include="IO\FileBase.cs" />
     <Compile Include="lib\NintacoAPI.cs" />
+    <Compile Include="Filetypes\Params\MaterialParamTools.cs" />
     <Compile Include="MovesetManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
