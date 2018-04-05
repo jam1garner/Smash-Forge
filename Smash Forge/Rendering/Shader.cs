@@ -34,7 +34,8 @@ namespace Smash_Forge
             errorLog.AppendLine("GLSL Version: " + GL.GetString(StringName.ShadingLanguageVersion));
         }
 
-		public int GetAttribute(string name){
+		public int GetAttribute(string name)
+        {
 			int value;
 			bool success = attributes.TryGetValue(name, out value);
 
@@ -44,14 +45,16 @@ namespace Smash_Forge
                 return -1;
 		}
 
-		public void EnableVertexAttributes(){
+		public void EnableVertexAttributes()
+        {
 			foreach(KeyValuePair<string, int> entry in attributes)
 			{
 				GL.EnableVertexAttribArray(entry.Value);
 			}
 		}
 
-		public void DisableVertexAttributes(){
+		public void DisableVertexAttributes()
+        {
 			foreach(KeyValuePair<string, int> entry in attributes)
 			{
 				GL.DisableVertexAttribArray(entry.Value);
@@ -64,7 +67,8 @@ namespace Smash_Forge
             File.WriteAllText(shaderName + "_ErrorLog.txt", logExport.Replace("\n", Environment.NewLine));
         }
 
-		private void AddAttribute(string name, bool isUniform){
+		private void AddAttribute(string name, bool isUniform)
+        {
             if (attributes.ContainsKey(name))
                 attributes.Remove(name);
 			int position = -1;
@@ -138,8 +142,8 @@ namespace Smash_Forge
 		{
 			address = GL.CreateShader(type);
 
-            // Some hard coded #include
-            shaderText = shaderText.Replace("#include SMASH_SHADER", MainForm.executableDir + "\\lib\\shader\\smash_shader.txt");
+            // Hard coded #include for reducing redundant shader code. 
+            shaderText = shaderText.Replace("#include SMASH_SHADER", File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\smash_shader.txt"));
 
 			GL.ShaderSource(address, shaderText);
 			GL.CompileShader(address);
