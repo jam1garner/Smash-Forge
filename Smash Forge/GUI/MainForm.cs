@@ -105,6 +105,9 @@ namespace Smash_Forge
 
             Rendering.ShaderTools.SetupShaders();
 
+            // Make sure it stays invisible.
+            glControl1.Size = new System.Drawing.Size(0, 0);
+
             openFiles();
         }
 

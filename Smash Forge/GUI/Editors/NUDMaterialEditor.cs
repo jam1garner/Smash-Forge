@@ -873,7 +873,7 @@ namespace Smash_Forge
                 texRgbGlControl.SwapBuffers();
             }
 
-            if (!Runtime.shaders["Texture"].hasCheckedCompilation())
+            if (!Runtime.shaders["Texture"].HasCheckedCompilation)
             {
                 Runtime.shaders["Texture"].DisplayCompilationWarning("Texture");
             }

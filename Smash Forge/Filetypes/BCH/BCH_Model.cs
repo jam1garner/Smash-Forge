@@ -419,18 +419,18 @@ namespace Smash_Forge
             shader = Runtime.shaders["MBN"];
             GL.UseProgram(shader.programID);
 
-            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
-            GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
+            GL.Uniform1(shader.GetAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+            GL.Uniform1(shader.GetAttribute("renderType"), (int)Runtime.renderType);
+            GL.Uniform1(shader.GetAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
-            GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref view);
+            GL.UniformMatrix4(shader.GetAttribute("modelview"), false, ref view);
 
-            GL.Uniform3(shader.getAttribute("difLightColor"), Runtime.lightSetParam.characterDiffuse.diffuseColor.R, Runtime.lightSetParam.characterDiffuse.diffuseColor.G, Runtime.lightSetParam.characterDiffuse.diffuseColor.B);
-            GL.Uniform3(shader.getAttribute("ambLightColor"), Runtime.lightSetParam.characterDiffuse.ambientColor.R, Runtime.lightSetParam.characterDiffuse.ambientColor.G, Runtime.lightSetParam.characterDiffuse.ambientColor.B);
+            GL.Uniform3(shader.GetAttribute("difLightColor"), Runtime.lightSetParam.characterDiffuse.diffuseColor.R, Runtime.lightSetParam.characterDiffuse.diffuseColor.G, Runtime.lightSetParam.characterDiffuse.diffuseColor.B);
+            GL.Uniform3(shader.GetAttribute("ambLightColor"), Runtime.lightSetParam.characterDiffuse.ambientColor.R, Runtime.lightSetParam.characterDiffuse.ambientColor.G, Runtime.lightSetParam.characterDiffuse.ambientColor.B);
 
             GL.ActiveTexture(TextureUnit.Texture10);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern);
-            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+            GL.Uniform1(shader.GetAttribute("UVTestPattern"), 10);
 
             Matrix4[] f = skeleton.getShaderMatrix();
 
@@ -451,34 +451,34 @@ namespace Smash_Forge
                 GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
             }
 
-            shader.enableAttrib();
+            shader.EnableVertexAttributes();
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_vert);
             GL.BufferData<Vertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertex.Stride * Vertices.Length), Vertices, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("pos"), 3, VertexAttribPointerType.Float, false, Vertex.Stride, 0);
-            GL.VertexAttribPointer(shader.getAttribute("nrm"), 3, VertexAttribPointerType.Float, false, Vertex.Stride, 12);
-            GL.VertexAttribPointer(shader.getAttribute("col"), 4, VertexAttribPointerType.Float, false, Vertex.Stride, 24);
-            GL.VertexAttribPointer(shader.getAttribute("tx0"), 2, VertexAttribPointerType.Float, false, Vertex.Stride, 40);
-            GL.VertexAttribPointer(shader.getAttribute("bone"), 2, VertexAttribPointerType.Float, false, Vertex.Stride, 48);
-            GL.VertexAttribPointer(shader.getAttribute("weight"), 2, VertexAttribPointerType.Float, false, Vertex.Stride, 56);
+            GL.VertexAttribPointer(shader.GetAttribute("pos"), 3, VertexAttribPointerType.Float, false, Vertex.Stride, 0);
+            GL.VertexAttribPointer(shader.GetAttribute("nrm"), 3, VertexAttribPointerType.Float, false, Vertex.Stride, 12);
+            GL.VertexAttribPointer(shader.GetAttribute("col"), 4, VertexAttribPointerType.Float, false, Vertex.Stride, 24);
+            GL.VertexAttribPointer(shader.GetAttribute("tx0"), 2, VertexAttribPointerType.Float, false, Vertex.Stride, 40);
+            GL.VertexAttribPointer(shader.GetAttribute("bone"), 2, VertexAttribPointerType.Float, false, Vertex.Stride, 48);
+            GL.VertexAttribPointer(shader.GetAttribute("weight"), 2, VertexAttribPointerType.Float, false, Vertex.Stride, 56);
 
             GL.PointSize(4f);
             //GL.DrawArrays(PrimitiveType.Points, 0, Vertices.Length);
 
             foreach (BCH_Mesh m in Nodes)
             {
-                GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
+                GL.Uniform4(shader.GetAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
 
                 GL.ActiveTexture(TextureUnit.Texture0);
                 BCH_Material material = (BCH_Material)((BCH)Parent.Parent).Materials.Nodes[m.MaterialIndex];
                 BCH_Texture tex = ((BCH)Parent.Parent).GetTexture(material.Text);
                 GL.BindTexture(TextureTarget.Texture2D, tex == null ? RenderTools.defaultTex : tex.display);
-                GL.Uniform1(shader.getAttribute("tex"), 0);
+                GL.Uniform1(shader.GetAttribute("tex"), 0);
                 if (!m.Checked) continue;
 
                 foreach (BCH_PolyGroup pg in m.Nodes)
                 {
-                    GL.Uniform1(shader.getAttribute("boneList"), pg.BoneList.Length, pg.BoneList);
+                    GL.Uniform1(shader.GetAttribute("boneList"), pg.BoneList.Length, pg.BoneList);
 
                     GL.Disable(EnableCap.CullFace);
                     GL.CullFace(CullFaceMode.Back);
@@ -490,7 +490,7 @@ namespace Smash_Forge
                     GL.DrawElements(PrimitiveType.Triangles, pg.Faces.Length, DrawElementsType.UnsignedInt, 0);
                 }
             }
-            shader.disableAttrib();
+            shader.DisableVertexAttributes();
         }
 
 

@@ -996,7 +996,7 @@ namespace Smash_Forge
             return renderName;
         }
 
-        public Bitmap CaptureScreen(bool saveAlpha)
+        private Bitmap CaptureScreen(bool saveAlpha)
         {
             int width = glViewport.Width;
             int height = glViewport.Height;
@@ -1321,21 +1321,12 @@ namespace Smash_Forge
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-            GL.ClearColor(0, 0, 0, 0);
 
-            // Return early to avoid rendering other stuff. 
             if (MeshList.filesTreeView.SelectedNode != null)
             {
-                if (MeshList.filesTreeView.SelectedNode is BCH_Texture)
-                {
-                    DrawBchTex();
-                    return;
-                }
-                if (MeshList.filesTreeView.SelectedNode is NutTexture)
-                {
-                    DrawNutTexAndUvs();
-                    return;
-                }
+                // Return early to avoid rendering other stuff. 
+                DrawSelectedTexture();
+                return;
             }
 
             if (Runtime.usePostProcessing)
@@ -1348,6 +1339,7 @@ namespace Smash_Forge
             if (Runtime.renderBackGround && !Runtime.usePostProcessing)
             {
                 // The screen quad shader draws its own background gradient.
+                // This prevents the second color attachment from having a white background.
                 DrawViewportBackground();
             }
 
@@ -1374,11 +1366,7 @@ namespace Smash_Forge
             if (Runtime.renderFloor)
                 RenderTools.DrawFloor(camera.mvpMatrix);
 
-            // Allow disabling depth testing for experimental "flat" rendering. 
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Lequal);
-            if (!Runtime.useDepthTest)
-                GL.Disable(EnableCap.DepthTest);
+            SetDepthTesting();
 
             DrawModels();
 
@@ -1402,6 +1390,27 @@ namespace Smash_Forge
 
             GL.PopAttrib();
             glViewport.SwapBuffers();
+        }
+
+        private static void SetDepthTesting()
+        {
+            // Allow disabling depth testing for experimental "flat" rendering. 
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+            if (!Runtime.useDepthTest)
+                GL.Disable(EnableCap.DepthTest);
+        }
+
+        private void DrawSelectedTexture()
+        {
+            if (MeshList.filesTreeView.SelectedNode is BCH_Texture)
+            {
+                DrawBchTex();
+            }
+            if (MeshList.filesTreeView.SelectedNode is NutTexture)
+            {
+                DrawNutTexAndUvs();
+            }
         }
 
         private void FixedFunctionRendering()
@@ -1641,7 +1650,7 @@ namespace Smash_Forge
             }
         }
 
-        private void SaveScreenRender(string outputPath)
+        public void SaveScreenRender(string outputPath)
         {
             // Manually dispose the bitmap to avoid memory leaks. 
             Bitmap screenCapture = CaptureScreen(true);

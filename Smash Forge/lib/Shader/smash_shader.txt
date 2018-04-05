@@ -1,0 +1,4 @@
+vec3 Function
+{
+    return vec3(1);
+}

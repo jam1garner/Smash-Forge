@@ -15,7 +15,7 @@ namespace Smash_Forge.Rendering
         public static void SetupShaders()
         {
             // Reset the shaders first so that shaders can be replaced.
-            Runtime.shaders = new Dictionary<string, Shader>();
+            Runtime.shaders.Clear();
             CreateShader("Texture", "/lib/Shader/Legacy/", "/lib/Shader/");
             CreateShader("Screen_Quad", "/lib/Shader/", "/lib/Shader/");
             CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
@@ -36,13 +36,13 @@ namespace Smash_Forge.Rendering
                 Shader shader = new Shader();
                 if (Runtime.useLegacyShaders)
                 {
-                    shader.vertexShader(MainForm.executableDir + legacyPath + name + "_vs.txt");
-                    shader.fragmentShader(MainForm.executableDir + legacyPath + name + "_fs.txt");
+                    shader.LoadShader(MainForm.executableDir + legacyPath + name + "_vs.txt", ShaderType.VertexShader);
+                    shader.LoadShader(MainForm.executableDir + legacyPath + name + "_fs.txt", ShaderType.FragmentShader);
                 }
                 else
                 {
-                    shader.vertexShader(MainForm.executableDir + normalPath + name + "_vs.txt");
-                    shader.fragmentShader(MainForm.executableDir + normalPath + name + "_fs.txt");
+                    shader.LoadShader(MainForm.executableDir + normalPath + name + "_vs.txt", ShaderType.VertexShader);
+                    shader.LoadShader(MainForm.executableDir + normalPath + name + "_fs.txt", ShaderType.FragmentShader);
                 }
                 Runtime.shaders.Add(name, shader);
             }
@@ -52,14 +52,19 @@ namespace Smash_Forge.Rendering
         {
             // Else if is faster than ternary operator. 
             if (value)
-                GL.Uniform1(shader.getAttribute(name), 1);
+                GL.Uniform1(shader.GetAttribute(name), 1);
             else
-                GL.Uniform1(shader.getAttribute(name), 0);
+                GL.Uniform1(shader.GetAttribute(name), 0);
         }
 
         public static void LightColorVector3Uniform(Shader shader, LightColor color, string name)
         {
-            GL.Uniform3(shader.getAttribute(name), color.R, color.G, color.B);
+            GL.Uniform3(shader.GetAttribute(name), color.R, color.G, color.B);
+        }
+
+        public static void SystemColorVector3Uniform(Shader shader, System.Drawing.Color color, string name)
+        {
+            GL.Uniform3(shader.GetAttribute(name), ColorTools.Vector4FromColor(color).Xyz);
         }
     }
 }
