@@ -5,7 +5,6 @@ uniform sampler2D normalTex;
 uniform sampler2D uvTex;
 uniform sampler2D tanTex;
 uniform sampler2D bitanTex;
-uniform sampler2D uvTestPattern;
 
 vec3 viewPosition;
 vec3 objectPosition;
@@ -44,6 +43,10 @@ void main()
     normal = nrm.xyz * 2 - 1; // remap to [-1,1]
     tangent = texture(tanTex, vec2(quadTexCoord.x, 1 - quadTexCoord.y)).xyz * 2 - 1;
     bitangent = texture(bitanTex, vec2(quadTexCoord.x, 1 - quadTexCoord.y)).xyz * 2 - 1;
+    vec2 meshTexCoord = texture(uvTex, quadTexCoord).xy;
 
-    fragColor.rgb = normal;
+    fragColor.rgb = texture(UVTestPattern, meshTexCoord).rgb;
+    fragColor.rgb += vec3(Fresnel(vec3(0,0,1), normal));
+
+    fragColor.rgb = mix(vec3(0), fragColor.rgb, nrm.a);
 }

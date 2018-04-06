@@ -552,7 +552,7 @@ namespace Smash_Forge
             ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderVertColor && material.useVertexColor, "renderVertColor");
             SetTextureUniforms(shader, material);
             SetMaterialPropertyUniforms(shader, material);
-            SetLightingUniforms(shader);
+            SetLightingUniforms(shader, lightSetNumber);
             SetXMBUniforms(shader, p);
             SetNscUniform(p, shader);
 
@@ -620,17 +620,17 @@ namespace Smash_Forge
             }
         }
 
-        private void SetLightingUniforms(Shader shader)
+        public static void SetLightingUniforms(Shader shader, int lightSetNumber)
         {
             for (int i = 0; i < 4; i++)
             {
-                SetStageLightUniform(shader, i);
+                SetStageLightUniform(shader, i, lightSetNumber);
             }
 
             ShaderTools.LightColorVector3Uniform(shader, Runtime.lightSetParam.stageFogSet[lightSetNumber], "stageFogColor");
         }
 
-        private void SetStageLightUniform(Shader shader, int lightIndex)
+        private static void SetStageLightUniform(Shader shader, int lightIndex, int lightSetNumber)
         {
             int index = lightIndex + (4 * lightSetNumber);
             DirectionalLight stageLight = Runtime.lightSetParam.stageDiffuseLights[index];
@@ -804,7 +804,7 @@ namespace Smash_Forge
             HasMatPropertyShaderUniform(shader, mat, "NU_effUniverseParam",       "hasUniverseParam");
         }
 
-        private static void SetTextureUniforms(Shader shader, Material mat)
+        public static void SetTextureUniforms(Shader shader, Material mat)
         {
             ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse,         "hasDif");
             ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse2,        "hasDif2");
