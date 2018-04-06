@@ -1537,11 +1537,13 @@ namespace Smash_Forge.Rendering
             DrawScreenTriangle(shader);
         }
 
-        public static void DrawNudMaterialSphere()
+        public static void DrawNudMaterialSphere(NUD.Material material)
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = Runtime.shaders["Nud_Sphere"];
             GL.UseProgram(shader.programID);
+
+            NUD.SetMaterialPropertyUniforms(shader, material);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, sphereNrmTex);

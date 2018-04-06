@@ -831,6 +831,7 @@ namespace Smash_Forge
                 texRgbGlControl.MakeCurrent();
                 GL.Viewport(texRgbGlControl.ClientRectangle);
                 RenderTools.DrawTexturedQuad(displayTexture, 1, 1);
+                RenderTools.DrawNudMaterialSphere(materials[0]);
                 texRgbGlControl.SwapBuffers();
             }
 

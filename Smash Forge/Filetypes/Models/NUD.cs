@@ -737,7 +737,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.DepthTest);
         }
 
-        private static void SetMaterialPropertyUniforms(Shader shader, Material mat)
+        public static void SetMaterialPropertyUniforms(Shader shader, Material mat)
         {
             // UV samplers
             MatPropertyShaderUniform(shader, mat, "NU_colorSamplerUV",   1, 1, 0, 0);

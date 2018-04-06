@@ -1394,8 +1394,6 @@ namespace Smash_Forge
                 RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, brightTexSmall);
             }
 
-            RenderTools.DrawNudMaterialSphere();
-
             FixedFunctionRendering();
 
             GL.PopAttrib();
