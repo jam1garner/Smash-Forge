@@ -1,0 +1,50 @@
+// Stage Lighting
+uniform int lightSet;
+uniform int isStage;
+uniform int renderStageLighting;
+
+// Stage Light 1
+uniform int renderStageLight1;
+uniform vec3 stageLight1Color;
+uniform vec3 stageLight1Direction;
+
+// Stage Light 2
+uniform int renderStageLight2;
+uniform vec3 stageLight2Color;
+uniform vec3 stageLight2Direction;
+
+// Stage Light 3
+uniform int renderStageLight3;
+uniform vec3 stageLight3Color;
+uniform vec3 stageLight3Direction;
+
+// Stage Light 4
+uniform int renderStageLight4;
+uniform vec3 stageLight4Color;
+uniform vec3 stageLight4Direction;
+
+// light_set fog
+uniform int renderFog;
+uniform vec3 stageFogColor;
+
+// Character Lighting
+uniform vec3 difLightColor;
+uniform vec3 ambLightColor;
+uniform vec3 difLightDirection;
+
+uniform vec3 difLight2Color;
+uniform vec3 ambLight2Color;
+uniform vec3 difLight2Direction;
+
+uniform vec3 difLight3Color;
+uniform vec3 ambLight3Color;
+uniform vec3 difLight3Direction;
+
+uniform vec3 specLightColor;
+uniform vec3 specLightDirection;
+
+// Shared by characters and stages.
+uniform vec3 fresGroundColor;
+uniform vec3 fresSkyColor;
+uniform vec3 fresSkyDirection;
+uniform vec3 fresGroundDirection;

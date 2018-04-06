@@ -150,9 +150,15 @@ namespace Smash_Forge
 
                 string nuUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\NU_UNIFORMS.txt");
                 shaderText = shaderText.Replace("#include NU_UNIFORMS", nuUniformText);
+
+                string stageUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\STAGE_LIGHTING_UNIFORMS.txt");
+                shaderText = shaderText.Replace("#include STAGE_LIGHTING_UNIFORMS", stageUniformText);
+
+                string miscUniformsText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\MISC_UNIFORMS.txt");
+                shaderText = shaderText.Replace("#include MISC_UNIFORMS", miscUniformsText);
             }
 
-			GL.ShaderSource(address, shaderText);
+            GL.ShaderSource(address, shaderText);
 			GL.CompileShader(address);
             GL.AttachShader(program, address);
 			Console.WriteLine(GL.GetShaderInfoLog(address));
