@@ -27,6 +27,7 @@ namespace Smash_Forge.Rendering
             CreateShader("Blur", "/lib/Shader/", "/lib/Shader/");
             CreateShader("Shadow", "/lib/Shader/", "/lib/Shader/");
             CreateShader("Point", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Nud_Sphere", "/lib/Shader/", "/lib/Shader/");
         }
 
         public static void CreateShader(string name, string legacyPath, string normalPath)

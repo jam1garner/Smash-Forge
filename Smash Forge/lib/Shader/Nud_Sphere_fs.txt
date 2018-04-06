@@ -1,0 +1,16 @@
+﻿#version 330
+in vec2 texCoord;
+
+uniform sampler2D normalTex;
+uniform sampler2D uvTex;
+uniform sampler2D tanTex;
+uniform sampler2D bitanTex;
+
+out vec4 fragColor;
+
+void main()
+{
+    fragColor = vec4(1,0,0,1);
+    vec4 nrm = texture(normalTex, vec2(texCoord.x, 1 - texCoord.y));
+    fragColor = nrm;
+}
