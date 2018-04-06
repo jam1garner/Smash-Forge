@@ -64,7 +64,10 @@ namespace Smash_Forge
         public void SaveErrorLog(string shaderName)
         {
             string logExport = errorLog.ToString();
-            File.WriteAllText(shaderName + "_ErrorLog.txt", logExport.Replace("\n", Environment.NewLine));
+            string errorLogDirectory = MainForm.executableDir + "\\Shader Error Logs\\";
+            if (!Directory.Exists(errorLogDirectory))
+                Directory.CreateDirectory(errorLogDirectory);
+            File.WriteAllText(errorLogDirectory +  shaderName + " Error Log.txt", logExport.Replace("\n", Environment.NewLine));
         }
 
 		private void AddAttribute(string name, bool isUniform)

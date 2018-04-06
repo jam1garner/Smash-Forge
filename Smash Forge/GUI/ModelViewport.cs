@@ -1585,15 +1585,11 @@ namespace Smash_Forge
             if (e.KeyChar == 'f')
                 FrameSelectionAndSort();
 
-            // Toggles color channel rendering.
-            if (e.KeyChar == 'r')
-                Runtime.renderR = !Runtime.renderR;
-            if (e.KeyChar == 'g')
-                Runtime.renderG = !Runtime.renderG;
-            if (e.KeyChar == 'b')
-                Runtime.renderB = !Runtime.renderB;
-            if (e.KeyChar == 'a')
-                Runtime.renderAlpha = !Runtime.renderAlpha;
+            if (e.KeyChar == 'i')
+            {
+                ShaderTools.SetupShaders();
+                ShaderTools.SaveErrorLogs();
+            }
         }
 
         private void ModelViewport_KeyDown(object sender, KeyEventArgs e)

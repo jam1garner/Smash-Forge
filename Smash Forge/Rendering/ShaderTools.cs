@@ -7,6 +7,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.IO;
 using Smash_Forge.Rendering.Lights;
+using System.Windows.Forms;
 
 namespace Smash_Forge.Rendering
 {
@@ -66,6 +67,21 @@ namespace Smash_Forge.Rendering
         public static void SystemColorVector3Uniform(Shader shader, System.Drawing.Color color, string name)
         {
             GL.Uniform3(shader.GetAttribute(name), ColorTools.Vector4FromColor(color).Xyz);
+        }
+
+        public static void SaveErrorLogs()
+        {
+            int successfulCompilations = Runtime.shaders.Count;
+            foreach (string key in Runtime.shaders.Keys)
+            {
+                if (!Runtime.shaders[key].CompiledSuccessfully())
+                    successfulCompilations -= 1;
+
+                Runtime.shaders[key].SaveErrorLog(key);
+            }
+
+            MessageBox.Show(String.Format("{0} of {1} shaders compiled successfully. Error logs have been saved to the Shader Error Logs directory.", 
+                successfulCompilations, Runtime.shaders.Count), "GLSL Shader Error Logs Export");
         }
     }
 }
