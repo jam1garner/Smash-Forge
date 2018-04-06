@@ -26,4 +26,4 @@ uniform vec4 dualNormalScrollParams;
 uniform vec4 alphaBlendParams;
 uniform vec4 softLightingParams;
 uniform vec4 customSoftLightParams;
-uniform vec4 effUniverseParam;﻿
+uniform vec4 effUniverseParam;

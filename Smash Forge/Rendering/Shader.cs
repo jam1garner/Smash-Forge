@@ -142,11 +142,15 @@ namespace Smash_Forge
 		{
 			address = GL.CreateShader(type);
 
-            // Hard coded #include for reducing redundant shader code. 
-            shaderText = shaderText.Replace("#include SMASH_SHADER", 
-                File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\SMASH_SHADER.txt"));
-            shaderText = shaderText.Replace("#include NU_UNIFORMS",
-                File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\NU_UNIFORMS.txt"));
+            if (shaderText.Contains("#include"))
+            {
+                // Hard coded #include for reducing redundant shader code. 
+                string smashShaderText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\SMASH_SHADER.txt");
+                shaderText = shaderText.Replace("#include SMASH_SHADER", smashShaderText);
+
+                string nuUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\NU_UNIFORMS.txt");
+                shaderText = shaderText.Replace("#include NU_UNIFORMS", nuUniformText);
+            }
 
 			GL.ShaderSource(address, shaderText);
 			GL.CompileShader(address);
