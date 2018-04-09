@@ -91,7 +91,7 @@ namespace Smash_Forge
                 }
                 if (fixMeshName)
                     if (mesh.Text.Length > 5)
-                        mesh.Text = mesh.Text.Substring(5, mesh.Text.Length - 5);
+                        mesh.Text = mesh.Text.Substring(5);
 
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {

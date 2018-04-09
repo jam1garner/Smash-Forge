@@ -16,38 +16,96 @@ namespace Smash_Forge
 {
     public partial class PARAMEditor : EditorBase
     {
-        public PARAMEditor(string filename)
+        private static IniLabels labelDB;
+        static PARAMEditor()
         {
-            InitializeComponent();
-            tbl = new DataTable();
-            tbl.Columns.Add(new DataColumn("Name") { ReadOnly = true });
-            tbl.Columns.Add("Value");
-            dataGridView1.DataSource = tbl;
-            labels = new IniLabels(filename);
-            openParam(filename);
-            FilePath = filename;
-            Edited = false;
+            labelDB = new IniLabels();
         }
 
-        private IniLabels labels;
         private ParamFile p;
         private DataTable tbl;
         private int[] currentEntry = new int[2];
+        private IniLabels.LabelFile labelFile;
+
+        public PARAMEditor(string filename)
+        {
+            InitializeComponent();
+
+            tbl = new DataTable();
+            tbl.Columns.Add(new DataColumn("Name") { ReadOnly = true });
+            tbl.Columns.Add(new DataColumn("Type") { ReadOnly = true });
+            tbl.Columns.Add("Value");
+            dataGridView1.DataSource = tbl;
+            labelFile = labelDB.GetLabels(Path.GetFileNameWithoutExtension(filename));
+            openParam(filename);
+            Edited = false;
+        }
+
+        public enum Columns : int
+        {
+            Name,
+            Type,
+            Value
+        };
 
         private string getValueName(int i, int j, int k)
         {
-            foreach (IniLabels.Label label in labels.labels)
-                if (label.Type == IniLabels.Label.type.Value && (label.group == -1 || label.group == i) && (label.entry == -1 || label.entry == j) && label.value == k)
-                    return label.name;
+            if (labelFile != null)
+                foreach (IniLabels.Label label in labelFile.labels)
+                    if (label.type == IniLabels.Label.LabelType.Value && (label.group == -1 || label.group == i) && (label.entry == -1 || label.entry == j) && label.value == k)
+                        return label.name;
             return $"{k}";
         }
 
         private string getValueToolTip(int i, int j, int k)
         {
-            foreach (IniLabels.Label label in labels.labels)
-                if (label.Type == IniLabels.Label.type.Value && (label.group == -1 || label.group == i) && (label.entry == -1 || label.entry == j) && label.value == k)
-                    return label.description;
+            if (labelFile != null)
+                foreach (IniLabels.Label label in labelFile.labels)
+                    if (label.type == IniLabels.Label.LabelType.Value && (label.group == -1 || label.group == i) && (label.entry == -1 || label.entry == j) && label.value == k)
+                        return label.description;
             return null;
+        }
+
+        private static string getValueTypeString(ParamEntry pvalue)
+        {
+            switch (pvalue.Type)
+            {
+                case ParamType.s8:
+                    return "int8";
+                case ParamType.u8:
+                    return "uint8";
+                case ParamType.s16:
+                    return "int16";
+                case ParamType.u16:
+                    return "uint16";
+                case ParamType.s32:
+                    return "int32";
+                case ParamType.u32:
+                    return "uint32";
+                case ParamType.f32:
+                    return "float";
+                case ParamType.str:
+                    return "string";
+                default:
+                    return "";
+            }
+        }
+
+        private int getEntrySize(int groupNum)
+        {
+            int entrySize = -1;
+            if (p.Groups[groupNum] is ParamGroup)
+            {
+                entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
+            }
+            else
+            {
+                if (labelFile != null)
+                    foreach (IniLabels.Label label in labelFile.labels)
+                        if (label.type == IniLabels.Label.LabelType.Group && label.group == groupNum && label.entries != -1)
+                            entrySize = (int)((p.Groups[groupNum].Values.ToArray().Length / label.entries) + 0.5);
+            }
+            return entrySize;
         }
 
         private void fillTable(int groupNum, int entryNum)
@@ -57,66 +115,52 @@ namespace Smash_Forge
             tbl.Clear();
             if (p.Groups.Count > groupNum)
             {
-                int entrySize = -1;
-                if (p.Groups[groupNum] is ParamGroup)
-                {
-                    entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
-                }
-                else
-                {
-                    foreach (IniLabels.Label label in labels.labels)
-                    {
-                        if (label.Type == IniLabels.Label.type.Group && label.group == groupNum && label.entries != -1)
-                        {
-                            entrySize = (int)((p.Groups[groupNum].Values.ToArray().Length / label.entries) + 0.5);
-                        }
-                    }
-                }
-                
+                int entrySize = getEntrySize(groupNum);
+                int count;
                 if (entrySize == -1)
                 {
-                    int i = 0;
-                    foreach (ParamEntry val in p.Groups[groupNum].Values)
-                    {
-                        DataRow tempRow = tbl.NewRow();
-                        tempRow[0] = getValueName(groupNum, entryNum, i);
-                        tempRow[1] = val.Value;
-                        tbl.Rows.Add(tempRow);
-                        string toolTip = getValueToolTip(groupNum, entryNum, i);
-                        if (toolTip != null)
-                            dataGridView1.Rows[i].Cells[0].ToolTipText = toolTip;
-                        i++;
-                    }
+                    count = p.Groups[groupNum].Values.Count;
+                    entrySize = 0;
                 }
                 else
                 {
-                    for (int j = 0; j < entrySize; j++)
-                    {
-                        DataRow tempRow = tbl.NewRow();
-                        tempRow[0] = getValueName(groupNum, entryNum, j);
-                        tempRow[1] = p.Groups[groupNum].Values[entrySize * entryNum + j].Value;
-                        tbl.Rows.Add(tempRow);
-                        string toolTip = getValueToolTip(groupNum, entryNum, j);
-                        if (toolTip != null)
-                            dataGridView1.Rows[j].Cells[0].ToolTipText = toolTip;
-                    }
+                    count = entrySize;
+                }
+
+                for (int i = 0; i < count; i++)
+                {
+                    ParamEntry val = p.Groups[groupNum].Values[(entrySize * entryNum) + i];
+
+                    DataRow tempRow = tbl.NewRow();
+                    tempRow[(int)Columns.Name] = getValueName(groupNum, entryNum, i);
+                    tempRow[(int)Columns.Type] = getValueTypeString(val);
+                    tempRow[(int)Columns.Value] = val.Value;
+                    string toolTip = getValueToolTip(groupNum, entryNum, i);
+                    tbl.Rows.Add(tempRow);
+                    //The Cells property only exists through the dataGridView, so the tooltip can only be set after adding the row
+                    if (toolTip != null)
+                        dataGridView1.Rows[i].Cells[0].ToolTipText = toolTip;
                 }
             }
+            //I couldn't find any way to manually set a width for a DataColumn, so this will have to do
+            dataGridView1.AutoResizeColumn((int)Columns.Type, System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells);
         }
 
         private string getGroupName(int i)
         {
-            foreach(IniLabels.Label label in labels.labels)
-                if(label.Type == IniLabels.Label.type.Group && label.group == i)
-                    return label.name;
+            if (labelFile != null)
+                foreach (IniLabels.Label label in labelFile.labels)
+                    if (label.type == IniLabels.Label.LabelType.Group && label.group == i)
+                        return label.name;
             return "Group [" + (i + 1) + "]";
         }
 
         private string getEntryName(int i, int j)
         {
-            foreach(IniLabels.Label label in labels.labels)
-                if (label.Type == IniLabels.Label.type.Entry && (label.group == -1 || label.group == i) && label.entry == j)
-                    return label.name;
+            if (labelFile != null)
+                foreach (IniLabels.Label label in labelFile.labels)
+                    if (label.type == IniLabels.Label.LabelType.Entry && (label.group == -1 || label.group == i) && label.entry == j)
+                        return label.name;
             return "Entry [" + j + "]";
         }
 
@@ -126,11 +170,10 @@ namespace Smash_Forge
             Dictionary<string, int> moveNameIdMapping = new Dictionary<string, int>();
 
             for (int j = 0; j < ((ParamGroup)p.Groups[0]).EntryCount; j++)
-                foreach(IniLabels.Label label in labels.labels)
-                {
-                    if (label.Type == IniLabels.Label.type.Entry && label.group == 0 && label.entry == j)
-                        moveNameIdMapping[label.name.Split(' ')[0]] = j;
-                }
+                if (labelFile != null)
+                    foreach (IniLabels.Label label in labelFile.labels)
+                        if (label.type == IniLabels.Label.LabelType.Entry && label.group == 0 && label.entry == j)
+                            moveNameIdMapping[label.name.Split(' ')[0]] = j;
             return moveNameIdMapping;
         }
 
@@ -153,14 +196,11 @@ namespace Smash_Forge
                 else
                 {
                     int entryCount = -1;
-                    foreach (IniLabels.Label label in labels.labels)
-                    {
-                        if (label.Type == IniLabels.Label.type.Group && label.group == i && label.entries != -1)
-                        {
-                            entryCount = label.entries;
-                        }
-                    }
-                    if(entryCount == -1)
+                    if (labelFile != null)
+                        foreach (IniLabels.Label label in labelFile.labels)
+                            if (label.type == IniLabels.Label.LabelType.Group && label.group == i && label.entries != -1)
+                                entryCount = label.entries;
+                    if (entryCount == -1)
                     {
                         treeView1.Nodes.Add(new TreeNode(getGroupName(i)));
                     }
@@ -177,7 +217,7 @@ namespace Smash_Forge
                     }
                 }
             }
-            fillTable(0,0);
+            treeView1.SelectedNode = null;
         }
 
         private void select(object sender, TreeViewEventArgs e)
@@ -190,94 +230,51 @@ namespace Smash_Forge
 
         private void edit(object sender, DataGridViewCellEventArgs e)
         {
+            int entrySize = getEntrySize(currentEntry[0]);
+
+            ParamEntry pvalue;
+            if (entrySize == -1)
+                pvalue = p.Groups[currentEntry[0]].Values[e.RowIndex];
+            else
+                pvalue = p.Groups[currentEntry[0]].Values[entrySize * currentEntry[1] + e.RowIndex];
+
             try
             {
-                IParamCollection i = p.Groups[currentEntry[0]];
-                int entrySize = -1;
-                if (i is ParamGroup)
+                switch (pvalue.Type)
                 {
-                    entrySize = ((ParamGroup)i).EntrySize;
+                    case ParamType.s8:
+                        pvalue.Value = Convert.ToSByte(tbl.Rows[e.RowIndex][(int)Columns.Value]);
+                        break;
+                    case ParamType.u8:
+                        pvalue.Value = Convert.ToByte(tbl.Rows[e.RowIndex][(int)Columns.Value]);
+                        break;
+                    case ParamType.s16:
+                        pvalue.Value = Convert.ToInt16(tbl.Rows[e.RowIndex][(int)Columns.Value]);
+                        break;
+                    case ParamType.u16:
+                        pvalue.Value = Convert.ToUInt16(tbl.Rows[e.RowIndex][(int)Columns.Value]);
+                        break;
+                    case ParamType.s32:
+                        pvalue.Value = Convert.ToInt32(tbl.Rows[e.RowIndex][(int)Columns.Value]);
+                        break;
+                    case ParamType.u32:
+                        pvalue.Value = Convert.ToUInt32(tbl.Rows[e.RowIndex][(int)Columns.Value]);
+                        break;
+                    case ParamType.f32:
+                        pvalue.Value = Convert.ToSingle(tbl.Rows[e.RowIndex][(int)Columns.Value]);
+                        break;
+                    case ParamType.str:
+                        pvalue.Value = tbl.Rows[e.RowIndex][(int)Columns.Value];
+                        break;
                 }
-                else
-                {
-                    foreach (IniLabels.Label label in labels.labels)
-                    {
-                        if (label.Type == IniLabels.Label.type.Group && label.group == currentEntry[0] && label.entries != -1)
-                        {
-                            entrySize = (int)((p.Groups[currentEntry[0]].Values.ToArray().Length / label.entries) + 0.5);
-                        }
-                    }
-                }
-                if (entrySize != -1)
-                {
-                    IParamCollection pg = i;
-                    switch (pg.Values[entrySize * currentEntry[1] + e.RowIndex].Type)
-                    {
-                        case ParamType.str:
-                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
-                            break;
-                        case ParamType.s8:
-                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
-                            break;
-                        case ParamType.u8:
-                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
-                            break;
-                        case ParamType.s16:
-                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToInt16(tbl.Rows[e.RowIndex][1]);
-                            break;
-                        case ParamType.u16:
-                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToUInt16(tbl.Rows[e.RowIndex][1]);
-                            break;
-                        case ParamType.s32:
-                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToInt32(tbl.Rows[e.RowIndex][1]);
-                            break;
-                        case ParamType.u32:
-                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToUInt32(tbl.Rows[e.RowIndex][1]);
-                            break;
-                        case ParamType.f32:
-                            pg.Values[entrySize * currentEntry[1] + e.RowIndex].Value = Convert.ToSingle(tbl.Rows[e.RowIndex][1]);
-                            break;
-                    }
-                    //pg.Values[pg.EntrySize * currentEntry[1] + e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
-                }
-                else
-                {
-                    switch (i.Values[e.RowIndex].Type)
-                    {
-                        case ParamType.str:
-                            i.Values[e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
-                            break;
-                        case ParamType.s8:
-                            i.Values[e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
-                            break;
-                        case ParamType.u8:
-                            i.Values[e.RowIndex].Value = Convert.ToByte(tbl.Rows[e.RowIndex][1]);
-                            break;
-                        case ParamType.s16:
-                            i.Values[e.RowIndex].Value = Convert.ToInt16(tbl.Rows[e.RowIndex][1]);
-                            break;
-                        case ParamType.u16:
-                            i.Values[e.RowIndex].Value = Convert.ToUInt16(tbl.Rows[e.RowIndex][1]);
-                            break;
-                        case ParamType.s32:
-                            i.Values[e.RowIndex].Value = Convert.ToInt32(tbl.Rows[e.RowIndex][1]);
-                            break;
-                        case ParamType.u32:
-                            i.Values[e.RowIndex].Value = Convert.ToUInt32(tbl.Rows[e.RowIndex][1]);
-                            break;
-                        case ParamType.f32:
-                            i.Values[e.RowIndex].Value = Convert.ToSingle(tbl.Rows[e.RowIndex][1]);
-                            break;
-                    }
-                    //i.Values[e.RowIndex].Value = tbl.Rows[e.RowIndex][1];
-                }
+
                 Edited = true;
             }
-            catch (Exception)
+            catch (Exception) //Would be better to specifically catch FormatException and OverflowException here
             {
-
             }
-            
+            //If an invalid value was entered, revert it. If a valid value was entered, ensure that the table displays the actual new value (e.g. for floats).
+            tbl.Rows[e.RowIndex][(int)Columns.Value] = pvalue.Value;
         }
 
         public override void Save()
@@ -300,20 +297,19 @@ namespace Smash_Forge
                     Edited = false;
                 }
             }
-
         }
 
         public class IniLabels
         {
             public class Label
             {
-                public enum type
+                public enum LabelType
                 {
                     Group,
                     Entry,
                     Value
                 }
-                public type Type;
+                public LabelType type;
                 public string name;
                 public int group = -1;
                 public int entry = -1;
@@ -322,64 +318,128 @@ namespace Smash_Forge
                 public string description = null;
             }
 
-            public List<Label> labels = new List<Label>();
-
-            public IniLabels(string filename)
+            public class LabelFile
             {
-                List<string> labelPaths = new List<string>();
-                string noExtension = Path.GetFileNameWithoutExtension(filename);
-                if (Directory.Exists(Path.Combine(MainForm.executableDir, "param_labels\\")))
-                {
-                    foreach (string file in Directory.GetFiles(Path.Combine(MainForm.executableDir, "param_labels\\")))
-                    {
-                        string[] ini = File.ReadAllLines(file);
-                        if (ini.Length > 0 && ini[0].StartsWith("name"))
-                        {
-                            string name = ini[0].Split('=')[1];
-                            if ((new Regex(name)).IsMatch(noExtension))
-                                labelPaths.Add(file);
-                        }
-                    }
-                }
-                string testPath = Path.Combine(MainForm.executableDir, Path.Combine("param_labels\\", Path.ChangeExtension(Path.GetFileName(filename), ".ini")));
-                if (File.Exists(testPath))
-                    labelPaths.Add(testPath);
+                public string filePath;
+                public List<string> fileNames;
+                public List<Label> labels;
 
-                foreach(string labelPath in labelPaths)
+                public LabelFile(string filePath)
                 {
-                    string[] ini = File.ReadAllLines(labelPath);
+                    this.filePath = filePath;
+                    fileNames = new List<string>();
+                    labels = new List<Label>();
+
+                    string[] ini = File.ReadAllLines(filePath);
+
+                    Label currentLabel = null;
                     for (int i = 0; i < ini.Length; i++)
                     {
-                        if(ini[i].Length > 0 && ini[i][0] == '[' && ini[i].IndexOf(']') != -1)
+                        if (ini[i].Length <= 0)
+                            continue;
+
+                        //Comment
+                        if (ini[i][0] == ';')
                         {
-                            Label label = new Label();
-                            string name = ini[i].Substring(1, ini[i].IndexOf(']') - 1);
-                            Label.type temp;
-                            if(Enum.TryParse(name, out temp))
+                            continue;
+                        }
+
+                        //Section
+                        if (ini[i][0] == '[')
+                        {
+                            int closeBracket = ini[i].IndexOf(']');
+                            if (closeBracket <= 1)
+                                continue;
+                            currentLabel = null;
+                            string typeName = ini[i].Substring(1, closeBracket - 1);
+                            Label.LabelType tempType;
+                            //If we recognize the section type, start a new label
+                            if (Enum.TryParse(typeName, out tempType))
                             {
-                                label.Type = temp;
-                                for (int j = 1; j <= 5 && i + j < ini.Length; j++)
-                                {
-                                    if (ini[i + j].Length > 0 && ini[i + j][0] == '[')
-                                        break;
-                                    if (ini[i + j].StartsWith("name"))
-                                        label.name = ini[i + j].Split('=')[1].Trim();
-                                    if (ini[i + j].StartsWith("group"))
-                                        label.group = int.Parse(ini[i + j].Split('=')[1].Trim()) - 1;
-                                    if (ini[i + j].StartsWith("entry"))
-                                        label.entry = int.Parse(ini[i + j].Split('=')[1].Trim());
-                                    if (ini[i + j].StartsWith("value"))
-                                        label.value = int.Parse(ini[i + j].Split('=')[1].Trim());
-                                    if (ini[i + j].StartsWith("entries"))
-                                        label.entries = int.Parse(ini[i + j].Split('=')[1].Trim());
-                                    if (ini[i + j].StartsWith("desc"))
-                                        label.description = ini[i + j].Split('=')[1].Trim();
-                                }
-                                labels.Add(label);
+                                currentLabel = new Label();
+                                labels.Add(currentLabel);
+                                currentLabel.type = tempType;
+                            }
+                            //Else skip lines until the next section
+                            else
+                            {
+                                while (++i < ini.Length && ini[i][0] != '[')
+                                {}
+                                --i;
+                            }
+                            continue;
+                        }
+
+                        //Key
+                        {
+                            int splitIndex = ini[i].IndexOf('=');
+                            if (splitIndex <= 0)
+                                continue;
+                            string key = ini[i].Substring(0, splitIndex).ToLowerInvariant(); //Not case-sensitive
+                            string val = ini[i].Substring(splitIndex + 1);
+
+                            if (currentLabel == null)
+                            {
+                                if (key == "name")
+                                    fileNames.Add(val);
+                            }
+                            else
+                            {
+                                if (key == "name")
+                                    currentLabel.name = val;
+                                else if (key == "group")
+                                    currentLabel.group = int.Parse(val) - 1;
+                                else if (key == "entry")
+                                    currentLabel.entry = int.Parse(val);
+                                else if (key == "value")
+                                    currentLabel.value = int.Parse(val);
+                                else if (key == "entries")
+                                    currentLabel.entries = int.Parse(val);
+                                else if (key == "desc")
+                                    currentLabel.description = val;
+                            }
+                        }
+                    }
+                    //If no name keys were defined outside of a valid section, use the file name as the only name
+                    if (fileNames.Count == 0)
+                        fileNames.Add(Path.GetFileNameWithoutExtension(filePath));
+                }
+            }
+
+            public Dictionary<string, string> fileLookup;
+
+            //We want to read every label file initially, so that each label file can be assigned to each file name that it lists, in the fileLookup dictionary.
+            //Loading of labels for actual use can then be done by calls to GetLabels.
+            public IniLabels()
+            {
+                fileLookup = new Dictionary<string, string>();
+                string labelDirectory = Path.Combine(MainForm.executableDir, "param_labels\\");
+                if (Directory.Exists(labelDirectory))
+                {
+                    string[] files = Directory.GetFiles(labelDirectory);
+                    foreach (string filePath in files)
+                    {
+                        if (Path.GetExtension(filePath).ToLowerInvariant() == ".ini")
+                        {
+                            LabelFile lf = new LabelFile(filePath);
+                            foreach (string name in lf.fileNames)
+                            {
+                                fileLookup[name] = filePath;
                             }
                         }
                     }
                 }
+            }
+            public LabelFile GetLabels(string fileName)
+            {
+                //First check if exact name exists, then check with regex
+                if (fileLookup.ContainsKey(fileName))
+                    return new LabelFile(fileLookup[fileName]);
+                else
+                    foreach (string key in fileLookup.Keys)
+                        if ((new Regex(key)).IsMatch(fileName))
+                            return new LabelFile(fileLookup[key]);
+                return null;
             }
         }
 
@@ -396,73 +456,116 @@ namespace Smash_Forge
             }
         }
 
+        private TreeNode duplicateEntry(TreeNode node)
+        {
+            int groupNum = node.Parent.Index;
+            int entryNum = node.Index;
+            int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
+            for (int j = 0; j < entrySize; j++)
+                p.Groups[groupNum].Add(new ParamEntry(p.Groups[groupNum].Values[entrySize * entryNum + j].Value, p.Groups[groupNum].Values[entrySize * entryNum + j].Type));
+
+            ((ParamGroup)p.Groups[groupNum]).EntryCount++;
+            ((ParamGroup)p.Groups[groupNum]).Chunk();
+
+            TreeNode temp2 = new TreeNode();
+            temp2.Text = getEntryName(groupNum, ((ParamGroup)p.Groups[groupNum]).EntryCount - 1);
+            node.Parent.Nodes.Add(temp2);
+
+            //fillTable(groupNum, ((ParamGroup)p.Groups[groupNum]).EntryCount - 1);
+            Edited = true;
+
+            return temp2;
+        }
+
+        private void duplicateSelectedEntry()
+        {
+            if (treeView1.SelectedNode == null || treeView1.SelectedNode.Level == 0)
+                return;
+            treeView1.SelectedNode = duplicateEntry(treeView1.SelectedNode);
+        }
+
         private void duplicateEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(treeView1.SelectedNode != null && treeView1.SelectedNode.Level != 0)
-            {
-                int groupNum = treeView1.SelectedNode.Parent.Index;
-                int entryNum = treeView1.SelectedNode.Index;
-                int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
-                for (int j = 0; j < entrySize; j++)
-                    p.Groups[groupNum].Add(new ParamEntry(p.Groups[groupNum].Values[entrySize * entryNum + j].Value, p.Groups[groupNum].Values[entrySize * entryNum + j].Type));
+            duplicateSelectedEntry();
+        }
 
-                ((ParamGroup)p.Groups[groupNum]).EntryCount++;
-                ((ParamGroup)p.Groups[groupNum]).Chunk();
-                TreeNode temp2 = new TreeNode();
-                temp2.Text = getEntryName(groupNum, ((ParamGroup)p.Groups[groupNum]).EntryCount - 1);
-                treeView1.SelectedNode.Parent.Nodes.Add(temp2);
-                fillTable(groupNum, ((ParamGroup)p.Groups[groupNum]).EntryCount - 1);
-                treeView1.SelectedNode = treeView1.SelectedNode.Parent.LastNode;
-                Edited = true;
-            }
+        private void deleteEntry(TreeNode node)
+        {
+            int groupNum = node.Parent.Index;
+            int entryNum = node.Index;
+            int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
+            for (int j = 0; j < entrySize; j++)
+                p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum);
+            
+            ((ParamGroup)p.Groups[groupNum]).EntryCount--;
+            ((ParamGroup)p.Groups[groupNum]).Chunk();
+
+            treeView1.Nodes.Remove(node);
+
+            Edited = true;
+        }
+
+        private void deleteSelectedEntry()
+        {
+            if (treeView1.SelectedNode == null || treeView1.SelectedNode.Level == 0)
+                return;
+            TreeNode prev = treeView1.SelectedNode.PrevNode;
+            TreeNode next = treeView1.SelectedNode.NextNode;
+            deleteEntry(treeView1.SelectedNode);
+            if (prev != null)
+                treeView1.SelectedNode = prev;
+            else
+                treeView1.SelectedNode = next;
         }
 
         private void deleteEntryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode != null && treeView1.SelectedNode.Level != 0)
-            {
-                int groupNum = treeView1.SelectedNode.Parent.Index;
-                int entryNum = treeView1.SelectedNode.Index;
-                int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
-                for (int j = 0; j < entrySize; j++)
-                    p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum);
-                
-                ((ParamGroup)p.Groups[groupNum]).EntryCount--;
-                ((ParamGroup)p.Groups[groupNum]).Chunk();
-                TreeNode temp2 = treeView1.SelectedNode;
-                treeView1.SelectedNode = temp2.Parent.PrevNode;
-                treeView1.Nodes.Remove(temp2);
-                Edited = true;
-            }
+            deleteSelectedEntry();
         }
 
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Control && e.KeyCode == Keys.Up && treeView1.SelectedNode != null && treeView1.SelectedNode.Level != 0 && treeView1.SelectedNode.Parent.FirstNode != treeView1.SelectedNode)
+            if (treeView1.SelectedNode == null || treeView1.SelectedNode.Level == 0)
             {
-                int groupNum = treeView1.SelectedNode.Parent.Index;
-                int entryNum = treeView1.SelectedNode.Index;
-                int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
-                for (int j = 0; j < entrySize; j++)
-                {
-                    p.Groups[groupNum].Values.Insert(entrySize * (entryNum - 1) + j, p.Groups[groupNum].Values[entrySize * entryNum + j]);
-                    p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum + j + 1);
-                }
-                fillTable(groupNum, entryNum - 1);
-                treeView1.SelectedNode = treeView1.SelectedNode.PrevNode;
+                return;
             }
-            else if (e.Control && e.KeyCode == Keys.Down && treeView1.SelectedNode != null && treeView1.SelectedNode.Level != 0 && treeView1.SelectedNode.Parent.LastNode != treeView1.SelectedNode)
+
+            if (e.Control)
             {
-                int groupNum = treeView1.SelectedNode.Parent.Index;
-                int entryNum = treeView1.SelectedNode.Index;
-                int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
-                for (int j = 0; j < entrySize; j++)
+                if (e.KeyCode == Keys.Up && treeView1.SelectedNode.Parent.FirstNode != treeView1.SelectedNode)
                 {
-                    p.Groups[groupNum].Values.Insert(entrySize * (entryNum + 2), p.Groups[groupNum].Values[entrySize * entryNum]);
-                    p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum);
+                    int groupNum = treeView1.SelectedNode.Parent.Index;
+                    int entryNum = treeView1.SelectedNode.Index;
+                    int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
+                    for (int j = 0; j < entrySize; j++)
+                    {
+                        p.Groups[groupNum].Values.Insert(entrySize * (entryNum - 1) + j, p.Groups[groupNum].Values[entrySize * entryNum + j]);
+                        p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum + j + 1);
+                    }
+                    fillTable(groupNum, entryNum - 1);
+                    treeView1.SelectedNode = treeView1.SelectedNode.PrevNode;
                 }
-                fillTable(groupNum, entryNum + 1);
-                treeView1.SelectedNode = treeView1.SelectedNode.NextNode;
+                else if (e.KeyCode == Keys.Down && treeView1.SelectedNode.Parent.LastNode != treeView1.SelectedNode)
+                {
+                    int groupNum = treeView1.SelectedNode.Parent.Index;
+                    int entryNum = treeView1.SelectedNode.Index;
+                    int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
+                    for (int j = 0; j < entrySize; j++)
+                    {
+                        p.Groups[groupNum].Values.Insert(entrySize * (entryNum + 2), p.Groups[groupNum].Values[entrySize * entryNum]);
+                        p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum);
+                    }
+                    fillTable(groupNum, entryNum + 1);
+                    treeView1.SelectedNode = treeView1.SelectedNode.NextNode;
+                }
+                else if (e.KeyCode == Keys.D)
+                {
+                    duplicateSelectedEntry();
+                }
+            }
+            else if (e.KeyCode == Keys.Delete)
+            {
+                deleteSelectedEntry();
             }
         }
     }

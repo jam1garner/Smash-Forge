@@ -1321,7 +1321,7 @@
             this.Controls.Add(this.splitContainer1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "SwagEditor";
-            this.Text = "Swag Editor";
+            this.Text = "Swing Bone Editor";
             this.Load += new System.EventHandler(this.SwagEditor_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
