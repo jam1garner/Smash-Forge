@@ -23,7 +23,7 @@ namespace Smash_Forge
                 b.BoneChanged += new EventHandler(BoneChange);
 
             FilePath = "";
-            Text = "New Swag Bone";
+            Text = "New Swing Bone";
             Edited = false;
         }
 
@@ -131,7 +131,7 @@ namespace Smash_Forge
         {
             using (SaveFileDialog sfd = new SaveFileDialog())
             {
-                sfd.Filter = "Swag Bone Physics (.sb)|*.sb";
+                sfd.Filter = "Swing Bone Physics (.sb)|*.sb";
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                     swag.Save(sfd.FileName);

@@ -22,7 +22,7 @@ namespace Smash_Forge
         public bool useStartPos = false;
         public int unk1 = 0;
         public float[] unk2 = new float[3];
-        public int unk3 = unchecked((int)0xFFFFFFFF);
+        public int unk3 = -1;
         private string _boneName = new string(new char[0x40]);
 
         private static string getString(string baseStr, int maxLength)
@@ -74,7 +74,7 @@ namespace Smash_Forge
             f.skip(1);
             unk1 = f.readInt();
 
-            //Not sure what this is for, but it seems like it could be an x,y,z followed by a hash
+            //Not sure what this is for, but it seems like it could be a vector followed by an index
             f.skip(1);
             for (int i = 0; i < 3; i++)
                 unk2[i] = f.readFloat();

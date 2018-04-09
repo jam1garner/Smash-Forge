@@ -78,7 +78,7 @@ namespace Smash_Forge.LIGH
                 {
                     for (int k = 0; k < 4; k++)
                     {
-                        temp.lightSets[j].lights[k].enabled = (uint)f.readInt();
+                        temp.lightSets[j].lights[k].enabled = f.readInt();
                         for (int l = 0; l < 3; l++)
                             temp.lightSets[j].lights[k].angle[l] = f.readFloat();
                         temp.lightSets[j].lights[k].colorHue = f.readFloat();
@@ -152,7 +152,7 @@ namespace Smash_Forge.LIGH
                 {
                     for (int k = 0; k < 4; k++)
                     {
-                        f.writeInt((int)lightFrames[i].lightSets[j].lights[k].enabled);
+                        f.writeInt(lightFrames[i].lightSets[j].lights[k].enabled);
                         for (int l = 0; l < 3; l++)
                             f.writeFloat(lightFrames[i].lightSets[j].lights[k].angle[l]);
                         f.writeFloat(lightFrames[i].lightSets[j].lights[k].colorHue);
@@ -214,7 +214,7 @@ namespace Smash_Forge.LIGH
     }
     public class Light
     {
-        public uint enabled;
+        public int enabled;
         public Vector3 angle;
         public float colorHue, colorSat, colorVal;
 
