@@ -19,13 +19,17 @@ main()
     //norm = normalize (norm);
     float lamberFactor= dot (vec3(0.85, 0.85, 0.85), norm) * 1.5;
 
-    vec4 ambiant = vec4(0.3,0.3,0.3,1.0) * texture(tex0, f_texcoord0).rgba;
+    vec4 ambiant = vec4(1,1,1,1.0) * texture(tex0, f_texcoord0).rgba;
 
     //float specular = -0.4 *(texture(spl, f_texcoord0).r - 1);
     //specular = normalize(specular);
 
     vec4 alpha = texture2D(tex0, f_texcoord0).aaaa;
-    //if(alpha.a < 0.5) discard;    
+    //if(alpha.a < 0.5) discard;   
+	
+    float red = texture2D(tex0, f_texcoord0).r;
+
+
 	vec4 outputColor = ambiant + (vec4(texture(tex0, f_texcoord0).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normal);
     gl_FragData[0] =  vec4(((color * alpha * outputColor)).xyz, alpha.x * color.w);
     //gl_FragData[1] = vec4(texture2D(tex0, f_texcoord0))

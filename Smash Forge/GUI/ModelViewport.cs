@@ -554,7 +554,7 @@ namespace Smash_Forge
                 }
                 if (m.BFRES != null)
                 {
-                    foreach (var mo in m.bfres.models)
+                    foreach (var mo in m.BFRES.models)
                     {
                         if (mo.skeleton != null)
                         {
@@ -1357,6 +1357,11 @@ namespace Smash_Forge
                     DrawNutTexAndUvs();
                     return;
                 }
+                if (MeshList.filesTreeView.SelectedNode is BRTI)
+                {
+                    DrawBNTXTex();
+                    return;
+                }
             }
 
             if (Runtime.usePostProcessing)
@@ -1712,6 +1717,13 @@ namespace Smash_Forge
         {
             GL.PopAttrib();
             BCH_Texture tex = ((BCH_Texture)MeshList.filesTreeView.SelectedNode);
+            RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+            glViewport.SwapBuffers();
+        }
+        private void DrawBNTXTex()
+        {
+            GL.PopAttrib();
+            BRTI tex = ((BRTI)MeshList.filesTreeView.SelectedNode);
             RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
             glViewport.SwapBuffers();
         }

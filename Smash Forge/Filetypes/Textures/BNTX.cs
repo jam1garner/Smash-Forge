@@ -115,39 +115,30 @@ namespace Smash_Forge
 
         public static int temp; //This variable is so we can get offsets from start of BNTX file
 
-
-        public BNTX()
-        {
-            ImageKey = "texture";
-            SelectedImageKey = "texture";
-        }
-
         public void ReadBNTX(FileData f)
         {
+            ImageKey = "UVPattern";
+            SelectedImageKey = "UVPattern";
+
+            textures.Clear();
 
             temp = f.pos();
-
 
             f.skip(8); //Magic
             int Version = f.readInt();
             int ByteOrderMark = f.readShort();
             int FormatRevision = f.readShort();
-            Text = f.readString(f.readInt() + 2 + temp, -1);
+            Text = f.readString(f.readInt() + temp, -1);
             f.skip(2);
             int strOffset = f.readShort();
             int relocOffset = f.readInt();
             int FileSize = f.readInt();
-
-
             f.skip(4); //NX Magic
             int TexturesCount = f.readInt();
             int InfoPtrsOffset = f.readInt();
             int DataBlockOffset = f.readInt();
             int DictOffset = f.readInt();
             int strDictSize = f.readInt();
-
-
-
 
             for (int i = 0; i < TexturesCount; i++)
             {
@@ -176,11 +167,14 @@ namespace Smash_Forge
         public BRTI_Texture texture = new BRTI_Texture();
         public byte DataType;
         public byte[] result_;
-  
+
+        public int Width, Height, display;
+
 
         public BRTI(FileData f) //Docs thanks to gdkchan!!
         {
-    
+            ImageKey = "texture";
+            SelectedImageKey = "texture";
 
             f.skip(4);
 
@@ -251,6 +245,9 @@ namespace Smash_Forge
             texture.width = surf.width;
             texture.height = surf.height;
 
+            Width = surf.width;
+            Height = surf.height;
+
             switch (surf.format >> 8)
             {
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC1):
@@ -285,12 +282,12 @@ namespace Smash_Forge
                     }
                     else
                         throw new Exception("Unsupported data type");
-
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC4):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
                     {
                         texture.type = PixelInternalFormat.CompressedRedRgtc1;
+
 
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
@@ -327,6 +324,7 @@ namespace Smash_Forge
                     break;
             }
             texture.display = loadImage(texture);
+            display = texture.display;
         }
 
         public class BRTI_Texture

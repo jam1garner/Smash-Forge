@@ -933,7 +933,6 @@ namespace Smash_Forge
                 BCH bch = new Smash_Forge.BCH();
                 bch.Read(filename);
             }
-         
 
             return null;
         }
@@ -1047,14 +1046,16 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".bfres"))
             {
-                BFRES m = new BFRES();
-                m.Read(fileName);
-          
-                mvp = new ModelViewport();
-                mvp.draw.Add(new ModelContainer() { bfres = m });
-                mvp.Text = fileName;
-                AddDockedControl(mvp);
+                BFRES m = new BFRES(fileName);
 
+                if (m.models.Count != 0)
+                {
+                    mvp = new ModelViewport();
+                    mvp.draw.Add(new ModelContainer() { BFRES = m });
+                    mvp.Text = fileName;
+                    AddDockedControl(mvp);
+                }
+       
                 //Run again for animations to be added. 
                 if (m.FSKACount != 0)
                 {
@@ -1071,8 +1072,8 @@ namespace Smash_Forge
                         {
                             mvp.AnimList.treeView1.Nodes.Add(FSKA.Read(fileName));
                         }
+                        AddDockedControl(mvp);
                     }
-                    AddDockedControl(mvp);
                 }
             }
 

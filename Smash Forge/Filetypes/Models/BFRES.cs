@@ -25,7 +25,6 @@ namespace Smash_Forge
 
 
         public TreeNode Models = new TreeNode() { Text = "Models" };
-        public TreeNode test = new TreeNode() { Text = "TEST" };
         public TreeNode MaterialAnim = new TreeNode() { Text = "Material Animations" };
         public TreeNode SkeletalAnim = new TreeNode() { Text = "Skeletal Animations" };
         public TreeNode VisualAnim = new TreeNode() { Text = "Visual Animations" };
@@ -53,12 +52,6 @@ namespace Smash_Forge
         int[] facedata;
         Vector4[] bonedata, coldata, weightdata;
 
-        public BFRES(string fname) : this()
-        {
-            Text = Path.GetFileName(fname);
-            Read(fname);
-        }
-
         #region Render BFRES
 
         public BFRES()
@@ -72,7 +65,6 @@ namespace Smash_Forge
             Nodes.Add(Embedded);
             ImageKey = "bfres";
             SelectedImageKey = "bfres";
-      
 
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out vbo_color);
@@ -90,6 +82,12 @@ namespace Smash_Forge
 
             Runtime.shaders["BFRES"].DisplayCompilationWarning("BFRES");
         }
+        public BFRES(string fname) : this()
+        {
+            Text = Path.GetFileName(fname);
+            Read(fname);
+        }
+
         public void Destroy()
         {
             GL.DeleteBuffer(vbo_position);
@@ -142,11 +140,11 @@ namespace Smash_Forge
                     }
                     bone.Add(new Vector4(-1, 0, 0, 0));
                     weight.Add(new Vector4(-1, 0, 0, 0));
-                    //bone.Add(new Vector4(v.node[0], v.node[1], v.node[2], v.node[3]));
-                    //weight.Add(new Vector4(v.weight[0], v.weight[1], v.weight[2], v.weight[3]));
-                }
+                  //   bone.Add(new Vector4(v.node[0], v.node[1], v.node[2], v.node[3]));
+                   //  weight.Add(new Vector4(v.weight[0], v.weight[1], v.weight[2], v.weight[3]));
+                    }
 
-                foreach (List<int> l in m.faces)
+                    foreach (List<int> l in m.faces)
                     {
                         //face.AddRange(l);
                         // rearrange faces
@@ -228,8 +226,17 @@ namespace Smash_Forge
             int indiceat = 0;
             foreach (FMDL_Model fmdl in models)
             {
-                foreach (Mesh m in fmdl.poly)
+                Matrix4[] f = fmdl.skeleton.getShaderMatrix();
+
+                int[] bind = fmdl.Node_Array; //Now bind each bone
+                GL.UniformMatrix4(BFRES.shader.getAttribute("bones"), f.Length, false, ref f[0].Row0.X);
+                if (bind.Length != 0)
                 {
+                    GL.Uniform1(shader.getAttribute("boneList"), bind.Length, ref bind[0]);
+                }
+
+                foreach (Mesh m in fmdl.poly)
+                    {
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
 
                     if (m.texHashs.Count > 0 ) {
@@ -266,13 +273,13 @@ namespace Smash_Forge
 #endregion
         public static int verNumA, verNumB, verNumC, verNumD, SwitchCheck; 
 
+
         public override void Read(string filename)
         {
             FileData f = new FileData(filename);
             f.Endian = Endianness.Big;
             f.seek(0);
 
-            Models.Nodes.Add(test); //No tree nodes get added within here for some reason????
 
 
             f.seek(4); // magic check
@@ -327,9 +334,6 @@ namespace Smash_Forge
                             //  Console.WriteLine($"FMAAOffset {FMAAOffset} FMAADict {FMAADict} FVISOffset {FVISOffset} FSHUOffset {FSKAOffset} FSKADict {FSHUDict}");
 
                 //FMDLs -Models-
-
-
-
                 for (int i = 0; i < EMBCount; i++)
                 {
                     f.seek((int)EMBOffset + (i * 16));
@@ -343,16 +347,10 @@ namespace Smash_Forge
                         int temp = f.pos();
                         BNTX t = new BNTX();
                         t.ReadBNTX(f);
-                        Embedded.Nodes.Add(test);
+                        Embedded.Nodes.Add(t);
 
                     }
                 }
-
-
-
-
-
-
                 f.seek((int)FMDLOffset);
                 for (int i = 0; i < FMDLCount; i++)
                 {
@@ -390,6 +388,7 @@ namespace Smash_Forge
                     };
                     int NextFMDL = f.pos();
 
+                    Models.Nodes.Add(fmdl_info.name);
 
                     //   Console.WriteLine($" Name {fmdl_info.name} eofString {fmdl_info.eofString} fsklOff {fmdl_info.fsklOff}");
                     //  Console.WriteLine(fmdl_info.fvtxCount);
@@ -503,20 +502,20 @@ namespace Smash_Forge
 
                     if (verNumB == 8)
                     {
-                        List<int> Node_Array = new List<int>();
+                        model.Node_Array = new int[fskl_infov8.invIndxArrCount + fskl_infov8.exIndxCount];
                         f.seek((int)fskl_infov8.invIndxArrOff);
                         for (int nodes = 0; nodes < fskl_infov8.invIndxArrCount + fskl_infov8.exIndxCount; nodes++)
                         {
-                            Node_Array.Add(f.readShort());
+                            model.Node_Array[nodes] = (f.readShort());
                         }
                     }
                     else
                     {
-                        List<int> Node_Array = new List<int>();
+                        model.Node_Array = new int[fskl_info.invIndxArrCount + fskl_info.exIndxCount];
                         f.seek((int)fskl_info.invIndxArrOff);
                         for (int nodes = 0; nodes < fskl_info.invIndxArrCount + fskl_info.exIndxCount; nodes++)
                         {
-                            Node_Array.Add(f.readShort());
+                            model.Node_Array[nodes] = (f.readShort());
                         }
                     }
 
@@ -562,7 +561,7 @@ namespace Smash_Forge
                     for (int bn = 0; bn < BoneCount; bn++)
                     {
                         Bone bone = new Bone(model.skeleton);
-                        bone.Name = f.readString(f.readInt() + 2, -1);
+                        bone.Text = f.readString(f.readInt() + 2, -1);
                         if (verNumB == 8)
                         {
                             f.skip(36);
@@ -596,16 +595,21 @@ namespace Smash_Forge
                         model.skeleton.bones.Add(bone);
                     }
                     model.skeleton.reset();
+                    model.skeleton.update();
                     // Console.WriteLine("Reading FSHP Array....");
 
                     //MeshTime!!
+                    TreeNode Shapes = new TreeNode() { Text = "Shapes" };
+                    Models.Nodes[i].Nodes.Add(Shapes);
                     for (int m = 0; m < FSHPArr.Count; m++)
                     {
+
                         Mesh poly = new Mesh();
 
 
                         poly.name = f.readString(FSHPArr[m].polyNameOff + 2, -1);
 
+                        Shapes.Nodes.Add(poly.name);
                         //    Console.WriteLine("Polygon = " + poly.name);
 
                         List<attdata> AttrArr = new List<attdata>();
@@ -999,11 +1003,11 @@ namespace Smash_Forge
                         invMatrArrOff = readOffset(f)
                     };
 
-                    List<int> Node_Array = new List<int>();
+                    model.Node_Array = new int[fskl_info.invIndxArrCount];
                     f.seek(fskl_info.invIndxArrOff);
                     for (int nodes = 0; nodes < fskl_info.invIndxArrCount; nodes++)
                     {
-                        Node_Array.Add(f.readShort());
+                        model.Node_Array[i] = (f.readShort());
                     }
 
                     List<WU.FSHPH> FSHPArr = new List<WU.FSHPH>();
@@ -1041,7 +1045,7 @@ namespace Smash_Forge
                     for (int bn = 0; bn < fskl_info.boneArrCount; bn++)
                     {
                         Bone bone = new Bone(model.skeleton);
-                        bone.Name = f.readString(readOffset(f), -1);
+                        bone.Text = f.readString(readOffset(f), -1);
                         bone.boneId = (uint)f.readShort();
                         int parIndx1 = (short)f.readShort();
                         int parIndx2 = f.readShort();
@@ -1369,7 +1373,7 @@ namespace Smash_Forge
             public long padding;
             public int VertexSkinCount;
             public int padding2;
-
+            public int[] Node_Array;
         }
         public class attdata
         {
@@ -1412,12 +1416,23 @@ namespace Smash_Forge
         }
         public class FMDL_Model
         {
-
-            public VBN skeleton = new VBN();
+            private VBN vbn = new VBN();
+            public VBN skeleton
+            {
+                get
+                {
+                    return vbn;
+                }
+                set
+                {
+                    vbn = value;
+                }
+            }
             public List<Mesh> poly = new List<Mesh>();
             public bool isVisible = true;
+            public int[] Node_Array;
         }
-        
+
         public class WU //Wii U BFRES Parse. Temp till i mess with Syroots lib
         {
             public class FMDLheader
@@ -1544,7 +1559,6 @@ namespace Smash_Forge
             }
             public class FMDL_Model
             {
-
                 public VBN skeleton
                 {
                     get

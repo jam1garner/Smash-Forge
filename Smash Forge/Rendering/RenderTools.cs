@@ -1390,7 +1390,7 @@ namespace Smash_Forge.Rendering
                     }
                     if (m.bfres != null)
                     {
-                        DrawVBN(m.bfres.models[0].skeleton);
+                      //  DrawVBN(m.bfres.models[0].skeleton);
                     }
                     if (m.DAT_MELEE != null)
                     {
