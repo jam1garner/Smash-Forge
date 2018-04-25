@@ -1724,7 +1724,17 @@ namespace Smash_Forge
         {
             GL.PopAttrib();
             BRTI tex = ((BRTI)MeshList.filesTreeView.SelectedNode);
-            RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+            switch(tex.format >> 8)
+            {
+                case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC4:
+                    {
+                        RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, false, false);
+                    }
+                    break;
+                default:
+                    RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+                    break;
+            }
             glViewport.SwapBuffers();
         }
 

@@ -169,7 +169,7 @@ namespace Smash_Forge
         public byte[] result_;
 
         public int Width, Height, display;
-
+        public uint format;
 
         public BRTI(FileData f) //Docs thanks to gdkchan!!
         {
@@ -210,7 +210,7 @@ namespace Smash_Forge
             long ParentOffset = f.readInt() | f.readInt() << 32;
             long PtrsOffset = f.readInt() | f.readInt() << 32;
 
-         
+            format = surf.format;
 
             f.seek((int)PtrsOffset + BNTX.temp);
             long dataOff = f.readInt() | f.readInt() << 32;
