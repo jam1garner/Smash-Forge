@@ -552,6 +552,17 @@ namespace Smash_Forge
                         }
                     }
                 }
+                if (m.BFRES != null)
+                {
+                    foreach (var mo in m.bfres.models)
+                    {
+                        if (mo.skeleton != null)
+                        {
+                            Animation.SetFrame(animFrameNum);
+                            Animation.NextFrame(mo.skeleton);
+                        }
+                    }
+                }
             }
 
             //Frame = (int)animFrameNum;
@@ -575,6 +586,16 @@ namespace Smash_Forge
                 if (m.BCH != null)
                 {
                     foreach (BCH_Model mod in m.BCH.Models.Nodes)
+                    {
+                        if (mod.skeleton != null)
+                        {
+                            mod.skeleton.reset();
+                        }
+                    }
+                }
+                if (m.BFRES != null)
+                {
+                    foreach (var mod in m.bfres.models)
                     {
                         if (mod.skeleton != null)
                         {

@@ -933,6 +933,7 @@ namespace Smash_Forge
                 BCH bch = new Smash_Forge.BCH();
                 bch.Read(filename);
             }
+         
 
             return null;
         }
@@ -1043,6 +1044,38 @@ namespace Smash_Forge
                 mvp.Text = fileName;
                 AddDockedControl(mvp);
             }
+
+            if (fileName.EndsWith(".bfres"))
+            {
+                BFRES m = new BFRES();
+                m.Read(fileName);
+          
+                mvp = new ModelViewport();
+                mvp.draw.Add(new ModelContainer() { bfres = m });
+                mvp.Text = fileName;
+                AddDockedControl(mvp);
+
+                //Run again for animations to be added. 
+                if (m.FSKACount != 0)
+                {
+                    if (dockPanel1.ActiveContent is ModelViewport)
+                    {
+                        DialogResult dialogResult = MessageBox.Show("Import Animation Data into active viewport?", "", MessageBoxButtons.YesNo);
+                        if (dialogResult == DialogResult.Yes)
+                        {
+                            mvp = (ModelViewport)dockPanel1.ActiveContent;
+                            mvp.AnimList.treeView1.Nodes.Add(FSKA.Read(fileName));
+                            return;
+                        }
+                        else
+                        {
+                            mvp.AnimList.treeView1.Nodes.Add(FSKA.Read(fileName));
+                        }
+                    }
+                    AddDockedControl(mvp);
+                }
+            }
+
 
             if (fileName.EndsWith(".mbn"))
             {
@@ -1444,7 +1477,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.mdl0|" +
+                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +

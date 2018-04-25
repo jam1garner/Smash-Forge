@@ -135,7 +135,19 @@ namespace Smash_Forge
                 Refresh();
             }
         }
-
+        public BFRES bfres;
+        public BFRES BFRES
+        {
+            get
+            {
+                return bfres;
+            }
+            set
+            {
+                bfres = value;
+                Refresh();
+            }
+        }
         public DAT DAT_MELEE
         {
             get
@@ -183,6 +195,11 @@ namespace Smash_Forge
             if(bch != null)
             {
                 Nodes.Add(bch);
+            }
+            else
+            if (bfres != null)
+            {
+                Nodes.Add(bfres);
             }else
             {
                 if (nud != null) Nodes.Add(nud);
@@ -212,6 +229,8 @@ namespace Smash_Forge
                 NUD.Destroy();
             if (NUT != null)
                 NUT.Destroy();
+            if (bfres != null)
+                bfres.Destroy();
         }
 
         public VBN GetVBN()
@@ -220,6 +239,11 @@ namespace Smash_Forge
             {
                 ((BCH_Model)BCH.Models.Nodes[0]).skeleton.JointTable = JTB;
                 return ((BCH_Model)BCH.Models.Nodes[0]).skeleton;
+            }
+            if (BFRES != null && BFRES.models.Count > 0)
+            {
+                BFRES.models[0].skeleton.JointTable = JTB;
+                return BFRES.models[0].skeleton;
             }
             else if (vbn != null)
             {
@@ -284,7 +308,10 @@ namespace Smash_Forge
                     mo.Render(camera.mvpMatrix);
                 }
             }
-
+            if (BFRES != null)
+            {
+                BFRES.Render(camera.mvpMatrix);
+            }
             if (DAT_MELEE != null && Runtime.shaders["DAT"].CompiledSuccessfully())
             {
                 DAT_MELEE.Render(camera.mvpMatrix);
@@ -356,6 +383,11 @@ namespace Smash_Forge
             if (BCH != null)
             {
                 foreach (BCH_Model mo in BCH.Models.Nodes)
+                    RenderTools.DrawVBN(mo.skeleton);
+            }
+            if (BFRES != null)
+            {
+                foreach (var mo in bfres.models)
                     RenderTools.DrawVBN(mo.skeleton);
             }
 

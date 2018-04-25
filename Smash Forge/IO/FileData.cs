@@ -44,7 +44,16 @@ namespace Smash_Forge
 			}
 			return data;
 		}
-		public int readInt()
+        public long readInt64()
+        {
+            if (Endian == Endianness.Little)
+            {
+                return (b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 32) | ((b[p++] & 0xFF) << 40) | ((b[p++] & 0xFF) << 48) | ((b[p++] & 0xFF) << 56);
+            }
+            else
+                return ((b[p++] & 0xFF) << 56) | ((b[p++] & 0xFF) << 48) | ((b[p++] & 0xFF) << 40) | ((b[p++] & 0xFF) << 32) | ((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF);
+        }
+        public int readInt()
 		{
 			if (Endian == Endianness.Little)
 			{

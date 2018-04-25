@@ -230,7 +230,7 @@ namespace Smash_Forge
                     Animation.KeyFrame f = new Animation.KeyFrame();
                     f.InterType = Animation.InterpolationType.HERMITE;
                     f.Value = step[i];
-                    f.Frame = frame[i];
+                    f.Frame = frame[i]; 
                     f.In = tan[i];
                     switch (part)
                     {

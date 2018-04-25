@@ -78,6 +78,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="DiscordSettings.cs" />
     <Compile Include="Filetypes\Animation\BCHan.cs" />
+    <Compile Include="Filetypes\Animation\FSKA.cs" />
     <Compile Include="Filetypes\Animation\OMO.cs" />
     <Compile Include="Filetypes\ATKD.cs" />
     <Compile Include="Filetypes\BCH\BCH_Animation.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="Filetypes\Melee\LibWii\TLP.cs" />
     <Compile Include="Filetypes\Melee\TriangleTools.cs" />
     <Compile Include="Filetypes\Models\BCH.cs" />
+    <Compile Include="Filetypes\Models\BFRES.cs" />
     <Compile Include="Filetypes\Models\Collada.cs" />
     <Compile Include="Filetypes\Models\MOI.cs" />
     <Compile Include="Filetypes\Models\OBJ.cs" />
@@ -109,7 +111,10 @@
     <Compile Include="Filetypes\Sounds\VGMStreamNative.cs" />
     <Compile Include="Filetypes\Sounds\WAVE.cs" />
     <Compile Include="Filetypes\Textures\3DSTex.cs" />
+    <Compile Include="Filetypes\Textures\BNTX.cs" />
+    <Compile Include="Filetypes\Textures\FTEX.cs" />
     <Compile Include="Filetypes\Textures\RG_ETC1.cs" />
+    <Compile Include="Filetypes\Textures\Swizzle.cs" />
     <Compile Include="GUI\Controls\MeshMover.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1171,6 +1176,9 @@
     <None Include="Resources\ForgeBack.png" />
     <None Include="Resources\icon_info.png" />
     <None Include="Resources\icon_number.png" />
+    <None Include="Resources\icon_model1.png" />
+    <None Include="Resources\icon_model2.png" />
+    <None Include="Resources\icon_bfres.bmp" />
     <Content Include="Resources\sexy_green_down_arrow.png" />
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />
