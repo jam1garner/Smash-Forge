@@ -18,6 +18,15 @@ namespace Smash_Forge.Rendering
         public static int defaultTex = -1;
         public static int floorTexture;
 
+        private static int screenQuadVao;
+        private static int screenQuadVbo;
+        private static float[] screenQuadVertices = 
+            {
+                -1f, -1f, 0.0f,
+                 3f, -1f, 0.0f,
+                 -1f, 3f, 0.0f
+            };
+
         public static Dictionary<NUD.DummyTextures, int> dummyTextures = new Dictionary<NUD.DummyTextures, int>(); 
 
         private static int stageMapHigh;
@@ -33,10 +42,22 @@ namespace Smash_Forge.Rendering
 
         public static void Setup()
         {
-            if(defaultTex == -1)
+            if (defaultTex == -1)
                 LoadTextures();
 
+            SetupScreenQuadBuffers();
             GetOpenGLSystemInfo();
+        }
+
+        private static void SetupScreenQuadBuffers()
+        {
+            GL.GenVertexArrays(1, out screenQuadVao);
+            GL.BindVertexArray(screenQuadVao);
+
+            GL.GenBuffers(1, out screenQuadVbo);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, screenQuadVbo);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * screenQuadVertices.Length), 
+                screenQuadVertices, BufferUsageHint.StaticDraw);
         }
 
         private static void LoadTextures()
@@ -1545,21 +1566,10 @@ namespace Smash_Forge.Rendering
 
         private static void DrawScreenTriangle(Shader shader)
         {
-            float[] vertices =
-            {
-                -1f, -1f, 0.0f,
-                 3f, -1f, 0.0f,
-                 -1f, 3f, 0.0f
-            };
-
-            int vao;
-            GL.GenVertexArrays(1, out vao);
-            GL.BindVertexArray(vao);
-
-            int vbo;
-            GL.GenBuffers(1, out vbo);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * vertices.Length), vertices, BufferUsageHint.StaticDraw);
+            GL.BindVertexArray(screenQuadVao);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, screenQuadVbo);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * screenQuadVertices.Length), 
+                screenQuadVertices, BufferUsageHint.StaticDraw);
 
             GL.VertexAttribPointer(shader.getAttribute("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
             GL.EnableVertexAttribArray(0);

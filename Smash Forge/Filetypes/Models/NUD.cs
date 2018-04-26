@@ -860,21 +860,21 @@ namespace Smash_Forge
             // Jigglypuff has weird eyes.
             if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
             {
-                TextureUniform(shader, mat, mat.hasDiffuse2, "dif2", ref texid, ref mat.diffuse2ID);
-                TextureUniform(shader, mat, mat.hasNormalMap, "normalMap", ref texid, ref mat.normalID);
+                TextureUniform(shader, mat, mat.hasDiffuse2, "dif2", ref texid);
+                TextureUniform(shader, mat, mat.hasNormalMap, "normalMap", ref texid);
             }
             else
             {
                 // The order of the textures here is critical. 
-                TextureUniform(shader, mat, mat.hasSphereMap, "spheremap", ref texid, ref mat.sphereMapID);
-                TextureUniform(shader, mat, mat.hasDiffuse2,  "dif2",      ref texid, ref mat.diffuse2ID);
-                TextureUniform(shader, mat, mat.hasDiffuse3,  "dif3",      ref texid, ref mat.diffuse3ID);
-                TextureUniform(shader, mat, mat.hasStageMap,  "stagecube", ref texid, ref mat.stageMapID);
-                TextureUniform(shader, mat, mat.hasCubeMap,   "cube",      ref texid, ref mat.cubeMapID);
-                TextureUniform(shader, mat, mat.hasAoMap,     "ao",        ref texid, ref mat.aoMapID);
-                TextureUniform(shader, mat, mat.hasNormalMap, "normalMap", ref texid, ref mat.normalID);
-                TextureUniform(shader, mat, mat.hasRamp,      "ramp",      ref texid, ref mat.rampID);
-                TextureUniform(shader, mat, mat.hasDummyRamp, "dummyRamp", ref texid, ref mat.dummyRampID);
+                TextureUniform(shader, mat, mat.hasSphereMap, "spheremap", ref texid);
+                TextureUniform(shader, mat, mat.hasDiffuse2, "dif2", ref texid);
+                TextureUniform(shader, mat, mat.hasDiffuse3, "dif3", ref texid);
+                TextureUniform(shader, mat, mat.hasStageMap, "stagecube", ref texid);
+                TextureUniform(shader, mat, mat.hasCubeMap, "cube", ref texid);
+                TextureUniform(shader, mat, mat.hasAoMap, "ao", ref texid);
+                TextureUniform(shader, mat, mat.hasNormalMap, "normalMap", ref texid);
+                TextureUniform(shader, mat, mat.hasRamp, "ramp", ref texid);
+                TextureUniform(shader, mat, mat.hasDummyRamp, "dummyRamp", ref texid);
             }
         }
 
@@ -897,13 +897,12 @@ namespace Smash_Forge
                 Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
 
-        private static void TextureUniform(Shader shader, Material mat, bool hasTex, string name, ref int texid, ref int matTexId)
+        private static void TextureUniform(Shader shader, Material mat, bool hasTex, string name, ref int texid)
         {
             // Bind the texture and create the uniform if the material has the right textures and flags. 
             if (hasTex && texid < mat.textures.Count)
             {
                 GL.Uniform1(shader.getAttribute(name), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
-                matTexId = mat.textures[texid].hash;
                 texid++;
             }
         }
@@ -2128,6 +2127,41 @@ namespace Smash_Forge
                 {
                     flag = value;
                     CheckFlags();
+                    UpdateLabelledTextureIds();
+                }
+            }
+
+            private void UpdateLabelledTextureIds()
+            {
+                int textureIndex = 0;
+                if ((flag & 0xFFFFFFFF) == 0x9AE11163)
+                {
+                    UpdateLabelledId(hasDiffuse,   ref diffuse1ID, ref textureIndex);
+                    UpdateLabelledId(hasDiffuse2,  ref diffuse2ID, ref textureIndex);
+                    UpdateLabelledId(hasNormalMap, ref normalID,   ref textureIndex);
+                }
+                else
+                {
+                    // The order of the textures here is critical. 
+                    UpdateLabelledId(hasDiffuse,   ref diffuse1ID,  ref textureIndex);
+                    UpdateLabelledId(hasSphereMap, ref sphereMapID, ref textureIndex);
+                    UpdateLabelledId(hasDiffuse2,  ref diffuse2ID,  ref textureIndex);
+                    UpdateLabelledId(hasDiffuse3,  ref diffuse3ID,  ref textureIndex);
+                    UpdateLabelledId(hasStageMap,  ref stageMapID,  ref textureIndex);
+                    UpdateLabelledId(hasCubeMap ,  ref cubeMapID,   ref textureIndex);
+                    UpdateLabelledId(hasAoMap,     ref aoMapID,     ref textureIndex);
+                    UpdateLabelledId(hasNormalMap, ref normalID,    ref textureIndex);
+                    UpdateLabelledId(hasRamp,      ref rampID,      ref textureIndex);
+                    UpdateLabelledId(hasDummyRamp, ref dummyRampID, ref textureIndex);
+                }
+            }
+
+            private void UpdateLabelledId(bool hasTexture, ref int textureId, ref int textureIndex)
+            {
+                if (hasTexture && textureIndex < textures.Count)
+                {
+                    textureId = textures[textureIndex].hash;
+                    textureIndex += 1;
                 }
             }
 
@@ -2309,18 +2343,14 @@ namespace Smash_Forge
 
             public void MakeMetal(int newDifTexId, int newCubeTexId, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor, bool preserveDiffuse = false, bool preserveNrmMap = true)
             {
+                UpdateLabelledTextureIds();
+
                 float materialHash = -1f;
                 if (entries.ContainsKey("NU_materialHash"))
                     materialHash = entries["NU_materialHash"][0];
 
                 anims.Clear();
                 entries.Clear();
-
-                // Don't add normal maps to materials that don't use one. 
-                if (hasNormalMap && preserveNrmMap)
-                    Flags = 0x9601106B;
-                else
-                    Flags = 0x96011069;
 
                 // The texture ID used for diffuse later. 
                 int difTexID = newDifTexId;
@@ -2337,8 +2367,9 @@ namespace Smash_Forge
                 MatTexture dummyRamp = MatTexture.GetDefault();
                 dummyRamp.hash = 0x10080000;
 
-                if (hasNormalMap)
+                if (hasNormalMap && preserveNrmMap)
                 {
+                    Flags = 0x9601106B;
                     textures.Add(diffuse);
                     textures.Add(cube);
                     textures.Add(normal);
@@ -2346,6 +2377,7 @@ namespace Smash_Forge
                 }
                 else
                 {
+                    Flags = 0x96011069;
                     textures.Add(diffuse);
                     textures.Add(cube);
                     textures.Add(dummyRamp);
