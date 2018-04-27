@@ -57,6 +57,7 @@
             this.bitangentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.normalsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uVsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.polyFormatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.meshContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.mergeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aboveToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -184,7 +185,8 @@
             this.generateTanBitanToolStripMenuItem1,
             this.toolStripSeparator3,
             this.detachToolStripMenuItem,
-            this.vertexColorToolStripMenuItem});
+            this.vertexColorToolStripMenuItem,
+            this.polyFormatToolStripMenuItem});
             this.polyContextMenu.Name = "polyContextMenu";
             this.polyContextMenu.Size = new System.Drawing.Size(183, 264);
             this.polyContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
@@ -353,6 +355,13 @@
             this.uVsToolStripMenuItem1.Size = new System.Drawing.Size(130, 22);
             this.uVsToolStripMenuItem1.Text = "UVs";
             this.uVsToolStripMenuItem1.Click += new System.EventHandler(this.uVsToolStripMenuItem1_Click);
+            // 
+            // polyFormatToolStripMenuItem
+            // 
+            this.polyFormatToolStripMenuItem.Name = "polyFormatToolStripMenuItem";
+            this.polyFormatToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.polyFormatToolStripMenuItem.Text = "Change Format...";
+            this.polyFormatToolStripMenuItem.Click += new System.EventHandler(this.polyFormatToolStripMenuItem_Click);
             // 
             // meshContextMenu
             // 
@@ -860,6 +869,7 @@
         private System.Windows.Forms.ToolStripMenuItem bitangentsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem normalsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem uVsToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem polyFormatToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem vertexColorToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem setToWhiteToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem selectColorToolStripMenuItem1;

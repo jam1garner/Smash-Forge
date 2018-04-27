@@ -433,11 +433,11 @@ namespace Smash_Forge
             public LabelFile GetLabels(string fileName)
             {
                 //First check if exact name exists, then check with regex
-                if (fileLookup.ContainsKey(fileName))
+                if (fileLookup.ContainsKey(fileName) && File.Exists(fileLookup[fileName]))
                     return new LabelFile(fileLookup[fileName]);
                 else
                     foreach (string key in fileLookup.Keys)
-                        if ((new Regex(key)).IsMatch(fileName))
+                        if ((new Regex(key)).IsMatch(fileName) && File.Exists(fileLookup[key]))
                             return new LabelFile(fileLookup[key]);
                 return null;
             }

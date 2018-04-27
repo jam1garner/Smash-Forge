@@ -2607,7 +2607,7 @@ namespace Smash_Forge
 
             public void SetVertexColor(Vector4 intColor)
             {
-                // (127, 127, 127, 255) is white.
+                // (127, 127, 127, 127) is white.
                 foreach (Vertex v in vertices)
                 {
                     v.color = intColor;

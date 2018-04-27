@@ -414,6 +414,12 @@
     <Compile Include="GUI\Menus\TexIDSelector.Designer.cs">
       <DependentUpon>TexIDSelector.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\PolygonFormatEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\PolygonFormatEditor.Designer.cs">
+      <DependentUpon>PolygonFormatEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Menus\PolygonSelector.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -611,6 +617,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\TexIDSelector.resx">
       <DependentUpon>TexIDSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\PolygonFormatEditor.resx">
+      <DependentUpon>PolygonFormatEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\PolygonSelector.resx">
       <DependentUpon>PolygonSelector.cs</DependentUpon>
