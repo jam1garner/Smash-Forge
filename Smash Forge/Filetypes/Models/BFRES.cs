@@ -8,6 +8,9 @@ using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using System.Windows.Forms;
+using Syroot.NintenTools.Bfres;
+using Syroot.NintenTools.Bfres.Helpers;
+using Syroot.NintenTools.Bfres.GX2;
 
 namespace Smash_Forge
 {
@@ -32,8 +35,21 @@ namespace Smash_Forge
         public TreeNode SceneAnim = new TreeNode() { Text = "Scene Animations" };
         public TreeNode Embedded = new TreeNode() { Text = "Embedded Files" };
 
+        public static int sign10Bit(int i)
+        {
+            if (((i >> 9) & 0x1) == 1)
+            {
+                i = ~i;
+                i = i & 0x3FF;
+                i += 1;
+                i *= -1;
+            }
+
+            return i;
+        }
+
         public int readOffset(FileData f)
-        { 
+        {
             return f.pos() + f.readInt();
         }
 
@@ -66,6 +82,7 @@ namespace Smash_Forge
             ImageKey = "bfres";
             SelectedImageKey = "bfres";
 
+
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out vbo_color);
             GL.GenBuffers(1, out vbo_nrm);
@@ -85,6 +102,7 @@ namespace Smash_Forge
         public BFRES(string fname) : this()
         {
             Text = Path.GetFileName(fname);
+
             Read(fname);
         }
 
@@ -112,36 +130,51 @@ namespace Smash_Forge
             int i = 0;
             foreach (FMDL_Model fmdl in models)
             {
-                foreach(Mesh m in fmdl.poly) { 
-               // Console.WriteLine(m.vertices.Count);
-               // Console.WriteLine(m.faces.Count);
-                if (m.faces.Count <= 3)
-                    continue;
-                foreach (Vertex v in m.vertices)
-                {
-                    vert.Add(v.pos);
-                   // col.Add(new Vector4(v.col.X * v.col.W, v.col.Y * v.col.W, v.col.Z * v.col.W, 1f));
-                    col.Add(new Vector4(0.9f, 0.9f, 0.9f, 1f)); //Vertex colors disabled atm due to some being used for other effects making the model black
-                    nrm.Add(v.nrm);
+                foreach (Mesh m in fmdl.poly) {
+                    // Console.WriteLine(m.vertices.Count);
+                    // Console.WriteLine(m.faces.Count);
+                    if (m.faces.Count <= 3)
+                        continue;
+                    foreach (Vertex v in m.vertices)
+                    {
+                        vert.Add(v.pos);
+                        col.Add(new Vector4(v.col.X * v.col.W, v.col.Y * v.col.W, v.col.Z * v.col.W, 1f));
+                       // col.Add(new Vector4(0.9f, 0.9f, 0.9f, 1f)); //Vertex colors disabled atm due to some being used for other effects making the model black
+                        nrm.Add(v.nrm);
+                   //     Console.WriteLine(v.nrm.ToString());
 
-                        if (v.tx.Count > 0) { 
+                        if (v.tx.Count > 0) {
                             u0.Add(v.tx[0]);
                             //u1.Add(v.tx[1]);
                         }
-                        else { 
+                        else {
                             u0.Add(new Vector2(0, 0));
                             //u1.Add(new Vector2(0, 0));
                         }
 
                         while (v.node.Count < 4)
-                    {
-                        v.node.Add(0);
-                        v.weight.Add(0);
-                    }
-                    bone.Add(new Vector4(-1, 0, 0, 0));
-                    weight.Add(new Vector4(-1, 0, 0, 0));
-                  //   bone.Add(new Vector4(v.node[0], v.node[1], v.node[2], v.node[3]));
-                   //  weight.Add(new Vector4(v.weight[0], v.weight[1], v.weight[2], v.weight[3]));
+                        {
+                            v.node.Add(0);
+                            v.weight.Add(0);
+                        }
+
+                        if (v.weight[0] + v.weight[1] + v.weight[2] + v.weight[3] != 0)
+                        {
+                            weight.Add(new Vector4(v.weight[0], v.weight[1], v.weight[2], v.weight[3]));
+                        }
+                        else
+                        {
+                            weight.Add(new Vector4(-1, 0, 0, 0));
+                        }
+
+                        if (v.node[0] + v.node[1] + v.node[2] + v.node[3] != -1)
+                        {
+                            bone.Add(new Vector4(v.node[0], v.node[1], v.node[2], v.node[3]));
+                        }
+                        else
+                        {
+                            bone.Add(new Vector4(-1, 0, 0, 0));
+                        }
                     }
 
                     foreach (List<int> l in m.faces)
@@ -190,6 +223,9 @@ namespace Smash_Forge
 
             shader.enableAttrib();
 
+            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
+
             GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref view);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
@@ -223,23 +259,29 @@ namespace Smash_Forge
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(facedata.Length * sizeof(int)), facedata, BufferUsageHint.StaticDraw);
 
+            GL.ActiveTexture(TextureUnit.Texture10);
+            GL.BindTexture(TextureTarget.Texture2D, Rendering.RenderTools.uvTestPattern);
+            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+
             int indiceat = 0;
             foreach (FMDL_Model fmdl in models)
             {
                 Matrix4[] f = fmdl.skeleton.getShaderMatrix();
 
                 int[] bind = fmdl.Node_Array; //Now bind each bone
-                GL.UniformMatrix4(BFRES.shader.getAttribute("bones"), f.Length, false, ref f[0].Row0.X);
+                GL.UniformMatrix4(shader.getAttribute("bones"), f.Length, false, ref f[0].Row0.X);
                 if (bind.Length != 0)
                 {
                     GL.Uniform1(shader.getAttribute("boneList"), bind.Length, ref bind[0]);
                 }
 
                 foreach (Mesh m in fmdl.poly)
-                    {
+                {
                     GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
 
-                    if (m.texHashs.Count > 0 ) {
+
+
+                    if (m.texHashs.Count > 0) {
                         GL.ActiveTexture(TextureUnit.Texture0);
                         GL.BindTexture(TextureTarget.Texture2D, m.texHashs[0]);
                         GL.Uniform1(shader.getAttribute("tex0"), 0);
@@ -260,18 +302,18 @@ namespace Smash_Forge
                     //GL.Uniform1(shader.getAttribute("tex"), 0);
                     GL.Disable(EnableCap.CullFace);
                     foreach (List<int> l in m.faces)
-                {
-                    if (fmdl.isVisible)
-                        GL.DrawElements(PrimitiveType.Triangles, l.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
+                    {
+                        if (fmdl.isVisible)
+                            GL.DrawElements(PrimitiveType.Triangles, l.Count, DrawElementsType.UnsignedInt, indiceat * sizeof(int));
 
-                    indiceat += l.Count;
-                }
+                        indiceat += l.Count;
+                    }
                 }
             }
             shader.disableAttrib();
         }
-#endregion
-        public static int verNumA, verNumB, verNumC, verNumD, SwitchCheck; 
+        #endregion
+        public static int verNumA, verNumB, verNumC, verNumD, SwitchCheck;
 
 
         public override void Read(string filename)
@@ -279,8 +321,6 @@ namespace Smash_Forge
             FileData f = new FileData(filename);
             f.Endian = Endianness.Big;
             f.seek(0);
-
-
 
             f.seek(4); // magic check
             SwitchCheck = f.readInt(); //Switch version only has padded magic
@@ -500,6 +540,8 @@ namespace Smash_Forge
                     };
                     //  Console.WriteLine($"Bone Count {fskl_info.boneArrCount}");
 
+                    //FSKL and many other sections will be revised and cleaner later
+
                     if (verNumB == 8)
                     {
                         model.Node_Array = new int[fskl_infov8.invIndxArrCount + fskl_infov8.exIndxCount];
@@ -594,13 +636,24 @@ namespace Smash_Forge
 
                         model.skeleton.bones.Add(bone);
                     }
+
+                    foreach (var b in model.skeleton.bones)
+                    {
+                        b.transform = Matrix4.Identity;
+                    }
+
                     model.skeleton.reset();
                     model.skeleton.update();
+
+                    foreach (var b in model.skeleton.bones)
+                    {
+                        BoneFixArray.Add(b.transform);
+                    }
+
                     // Console.WriteLine("Reading FSHP Array....");
 
                     //MeshTime!!
-                    TreeNode Shapes = new TreeNode() { Text = "Shapes" };
-                    Models.Nodes[i].Nodes.Add(Shapes);
+ 
                     for (int m = 0; m < FSHPArr.Count; m++)
                     {
 
@@ -608,8 +661,9 @@ namespace Smash_Forge
 
 
                         poly.name = f.readString(FSHPArr[m].polyNameOff + 2, -1);
+                        Models.Nodes[i].Nodes.Add(poly.name);
 
-                        Shapes.Nodes.Add(poly.name);
+
                         //    Console.WriteLine("Polygon = " + poly.name);
 
                         List<attdata> AttrArr = new List<attdata>();
@@ -685,9 +739,9 @@ namespace Smash_Forge
                                     case "_n0":
                                         if (AttrArr[attr].vertType == 526)
                                         {
-                                            uint normVal = (uint)f.readInt();
+                                            int normVal = (int)f.readInt();
                                             //Thanks RayKoopa!
-                                            vert.nrm = new Vector3 { X = ((normVal & 0x3FC00000) >> 22) / 511, Y = ((normVal & 0x000FF000) >> 12) / 511, Z = ((normVal & 0x000003FC) >> 2) / 511 };
+                                            vert.nrm = new Vector3 { X = sign10Bit((normVal) & 0x3FF) / (float)511, Y = sign10Bit((normVal >> 10) & 0x3FF) / (float)511, Z = sign10Bit((normVal >> 20) & 0x3FF) / (float)511 };
                                         }
                                         break;
                                     case "_u0":
@@ -726,19 +780,35 @@ namespace Smash_Forge
                                             vert.node.Add(f.readByte());
                                             vert.node.Add(f.readByte());
                                         }
+                                        if (AttrArr[attr].vertType == 523)
+                                        {
+                                            vert.node.Add(f.readByte());
+                                            vert.node.Add(f.readByte());
+                                            vert.node.Add(f.readByte());
+                                            vert.node.Add(f.readByte());
+                                        }
                                         break;
                                     case "_w0":
+                                        if (AttrArr[attr].vertType == 258)
+                                        {
+                                            vert.weight.Add((f.readByte()) / (float)255);
+                                        }
                                         if (AttrArr[attr].vertType == 265)
                                         {
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                            vert.weight.Add(((float)f.readByte()) / 255);
+                                            vert.weight.Add((f.readByte()) / (float)255);
+                                            vert.weight.Add((f.readByte()) / (float)255);
                                         }
                                         if (AttrArr[attr].vertType == 267)
                                         {
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                            vert.weight.Add(((float)f.readByte()) / 255);
+                                            vert.weight.Add((f.readByte()) / (float)255);
+                                            vert.weight.Add((f.readByte()) / (float)255);
+                                            vert.weight.Add((f.readByte()) / (float)255);
+                                            vert.weight.Add((f.readByte()) / (float)255);
+                                        }
+                                        if (AttrArr[attr].vertType == 274)
+                                        {
+                                            vert.weight.Add((f.readShort()) / (float)255);
+                                            vert.weight.Add((f.readShort()) / (float)255);
                                         }
                                         break;
                                     default:
@@ -810,38 +880,33 @@ namespace Smash_Forge
                                     poly.texHashs.Add(0);
                                 }
                             }
-                            foreach (var b in model.skeleton.bones)
-                            {
-                                BoneFixArray.Add(b.transform);
-                            }
-                            if (FSHPArr[m].matrFlag == 0)
-                            {
 
-                            }
-                            else if (FSHPArr[m].matrFlag == 1)
+                        }
+  
+
+
+                        if (FSHPArr[m].matrFlag == 1)
+                        {
+                            foreach (var b in model.skeleton.bones) //This places the bones back but doesn't move the meshes yet. Need to figureo out a fix
                             {
-                                foreach (var b in model.skeleton.bones)
-                                {
-                                    b.transform = Matrix4.Identity; //Reset bones to 0, 0 ,0 to be replaced to fix wong position models
-                                }
-                                for (int b = 0; b < model.skeleton.bones.Count; b++)
-                                {
-                                    //   model.skeleton.bones[b].transform = BoneFixArray[b];
-                                }
+                             //   b.transform = Matrix4.Identity;
                             }
                         }
+
 
                         model.poly.Add(poly);
                     }
                     models.Add(model);
                     f.seek(NextFMDL);
-                    for (int b = 1; models[0].skeleton.bones.Count > b; b++) //This places the bones back but doesn't move the meshes yet. Need to figureo out a fix
+                    foreach ( var b in model.skeleton.bones) //This places the bones back but doesn't move the meshes yet. Need to figureo out a fix
                     {
-                        models[0].skeleton.bones[b].transform = BoneFixArray[b];
+                     //   b.transform = Matrix4.Identity;
                     }
+
+
                 }
                 PreRender();
-
+               // for (int b = 0; models[0].skeleton.bones.Count > b; b++) models[0].skeleton.bones[b].transform = BoneFixArray[b];
 
 
             }
@@ -849,376 +914,175 @@ namespace Smash_Forge
             {
                 f.seek(0); //Seek back to start of file
 
+                ResFile b = new ResFile(filename);
 
-                f.seek(4);
-                int highVersion = f.readByte();
-                int lowVersion = f.readByte();
-                int overallVerstion = f.readShort();
-                short BOM = (short)f.readShort();
-                f.skip(6);
-                int fileAlignment = f.readInt();
-                string name = f.readString(readOffset(f), -1);
-                int strTblLenth = f.readInt();
-                int strTblOffset = readOffset(f);
-
-                int FMDLOffset = readOffset(f);
-                int FTEXOffset = readOffset(f);
-                int FSKAOffset = readOffset(f);
-                int FSHU0Offset = readOffset(f);
-                int FSHU1Offset = readOffset(f);
-                int FSHU2Offset = readOffset(f);
-                int FTXPOffset = readOffset(f);
-                int FVIS0Offset = readOffset(f);
-                int FVIS1Offset = readOffset(f);
-                int FSHAOffset = readOffset(f);
-                int FSCNOffset = readOffset(f);
-                int EMBOffset = readOffset(f);
-
-                int FMDLCount = f.readShort();
-                int FTEXCount = f.readShort();
-                int FSKACount = f.readShort();
-                int FSHU0Count = f.readShort();
-                int FSHU1Count = f.readShort();
-                int FSHU2Count = f.readShort();
-                int FTXPCount = f.readShort();
-                int FVIS0Count = f.readShort();
-                int FVIS1Count = f.readShort();
-                int FSHACount = f.readShort();
-                int FSCNCount = f.readShort();
-                int EMBCount = f.readShort();
-
-                //FTEX -Texures-
-                f.seek(FTEXOffset + 0x18);
-                for (int i = 0; i < FTEXCount; i++)
-                {
-                    f.skip(0x8);
-                    string TextureName = f.readString(readOffset(f), -1);
-                    int offset = readOffset(f);
-                    int NextFTEX = f.pos();
-                    f.seek(offset + 8);
-                    FTEX texture = new FTEX();
-                    texture.ReadFTEX(f);
-                    textures.Add(TextureName, texture);
-                    f.seek(NextFTEX);
-                }
-
+                int ModelCur = 0;
                 //FMDLs -Models-
-                f.seek(FMDLOffset + 0x18);
-                for (int i = 0; i < FMDLCount; i++)
+                foreach ( Model mdl in b.Models.Values)
                 {
 
-                    FMDL_Model model = new FMDL_Model();
+                    FMDL_Model model = new FMDL_Model(); //This will store VBN data and stuff
 
 
-                    f.skip(0xC);
-                    int offset = readOffset(f);
-                    int NextFMDL = f.pos();
-                    f.seek(offset);
-                    //FMDL modelTest = new FMDL();
-                    //modelTest.Read(f);
-                    f.seek(offset + 4);
-                    WU.FMDLheader fmdl_info = new WU.FMDLheader
+                    model.Node_Array = new int[mdl.Skeleton.MatrixToBoneList.Count];
+                    foreach (ushort node in mdl.Skeleton.MatrixToBoneList)
                     {
-                        name = f.readString(readOffset(f), -1),
-                        eofString = readOffset(f),
-                        fsklOff = readOffset(f),
-                        fvtxArrOff = readOffset(f),
-                        fshpIndx = readOffset(f),
-                        fmatIndx = readOffset(f),
-                        paramOff = readOffset(f),
-                        fvtxCount = f.readShort(),
-                        fshpCount = f.readShort(),
-                        fmatCount = f.readShort(),
-                        paramCount = f.readShort(),
-
-                    };
-
-                    List<WU.FVTXH> FVTXArr = new List<WU.FVTXH>();
-                    f.seek(fmdl_info.fvtxArrOff);
-                    for (int vtx = 0; vtx < fmdl_info.fvtxCount; vtx++)
-                    {
-                        f.skip(4);
-                        FVTXArr.Add(new WU.FVTXH
-                        {
-                            attCount = f.readByte(),
-                            buffCount = f.readByte(),
-                            sectIndx = f.readShort(),
-                            vertCount = f.readInt(),
-                            u1 = f.readShort(),
-                            u2 = f.readShort(),
-                            attArrOff = readOffset(f),
-                            attIndxOff = readOffset(f),
-                            buffArrOff = readOffset(f)
-                        });
-                        f.skip(4);
+                        model.Node_Array[ModelCur] = node;
                     }
-
-
-                    f.seek(fmdl_info.fmatIndx + 0x18);
-                    List<WU.FMATH> FMATheaders = new List<WU.FMATH>();
-                    for (int mat = 0; mat < fmdl_info.fmatCount; mat++)
+                    
+                    foreach(Syroot.NintenTools.Bfres.Bone bn in mdl.Skeleton.Bones.Values)
                     {
-                        f.skip(8);
-                        string FMATNameOffset = f.readString(readOffset(f), -1);
-                        int rtn = f.pos() + 4;
-                        f.seek(readOffset(f) + 4);
-                        WU.FMATH fmat_info = new WU.FMATH
-                        {
-                            name = FMATNameOffset,
-                            matOff = readOffset(f),
-                            u1 = f.readInt(),
-                            sectIndx = f.readShort(),
-                            rendParamCount = f.readShort(),
-                            texSelCount = f.readByte(),
-                            texAttSelCount = f.readByte(),
-                            matParamCount = f.readShort(),
-                            matParamSize = f.readInt(),
-                            u2 = f.readInt(),
-                            rendParamIndx = readOffset(f),
-                            unkMatOff = readOffset(f),
-                            shadeOff = readOffset(f),
-                            texSelOff = readOffset(f),
-                            texAttSelOff = readOffset(f),
-                            texAttIndxOff = readOffset(f),
-                            matParamArrOff = readOffset(f),
-                            matParamIndxOff = readOffset(f),
-                            matParamOff = readOffset(f),
-                            shadParamIndxOff = readOffset(f)
-                        };
-                        f.seek(rtn);
-                        FMATheaders.Add(fmat_info);
-                    }
 
-                    f.seek(fmdl_info.fsklOff + 6);
-                    WU.FSKLH fskl_info = new WU.FSKLH
-                    {
-                        fsklType = f.readShort(),
-                        boneArrCount = f.readShort(),
-                        invIndxArrCount = f.readShort(),
-                        exIndxCount = f.readShort(),
-                        u1 = f.readShort(),
-                        boneIndxOff = readOffset(f),
-                        boneArrOff = readOffset(f),
-                        invIndxArrOff = readOffset(f),
-                        invMatrArrOff = readOffset(f)
-                    };
-
-                    model.Node_Array = new int[fskl_info.invIndxArrCount];
-                    f.seek(fskl_info.invIndxArrOff);
-                    for (int nodes = 0; nodes < fskl_info.invIndxArrCount; nodes++)
-                    {
-                        model.Node_Array[i] = (f.readShort());
-                    }
-
-                    List<WU.FSHPH> FSHPArr = new List<WU.FSHPH>();
-                    f.seek(fmdl_info.fshpIndx + 24);
-                    for (int shp = 0; shp < fmdl_info.fshpCount; shp++)
-                    {
-                        f.skip(12);
-                        int rtn2 = f.pos() + 4;
-                        f.seek(readOffset(f) + 4);
-                        FSHPArr.Add(new WU.FSHPH
-                        {
-                            polyNameOff = readOffset(f),
-                            u1 = f.readInt(),
-                            fvtxIndx = f.readShort(),
-                            fmatIndx = f.readShort(),
-                            fsklIndx = f.readShort(),
-                            sectIndx = f.readShort(),
-                            fsklIndxArrCount = f.readShort(),
-                            matrFlag = f.readByte(),
-                            lodMdlCount = f.readByte(),
-                            visGrpCount = f.readInt(),
-                            u3 = f.readInt(),
-                            fvtxOff = readOffset(f),
-                            lodMdlOff = readOffset(f),
-                            fsklIndxArrOff = readOffset(f),
-                            u4 = f.readInt(),
-                            visGrpNodeOff = readOffset(f),
-                            visGrpRangeOff = readOffset(f),
-                            visGrpIndxOff = readOffset(f)
-                        });
-                        f.seek(rtn2);
-                    }
-
-                    f.seek(fskl_info.boneArrOff);
-                    for (int bn = 0; bn < fskl_info.boneArrCount; bn++)
-                    {
                         Bone bone = new Bone(model.skeleton);
-                        bone.Text = f.readString(readOffset(f), -1);
-                        bone.boneId = (uint)f.readShort();
-                        int parIndx1 = (short)f.readShort();
-                        int parIndx2 = f.readShort();
-                        int parIndx3 = f.readShort();
-                        int parIndx4 = f.readShort();
-                        bone.parentIndex = parIndx1;
-
-                        f.skip(6);
+                        bone.Text = bn.Name;
+                        bone.boneId = bn.BillboardIndex;
+                        bone.parentIndex = bn.ParentIndex;
                         bone.scale = new float[3];
                         bone.rotation = new float[4];
                         bone.position = new float[3];
-                        bone.scale[0] = f.readFloat();
-                        bone.scale[1] = f.readFloat();
-                        bone.scale[2] = f.readFloat();
-                        bone.rotation[0] = f.readFloat();
-                        bone.rotation[1] = f.readFloat();
-                        bone.rotation[2] = f.readFloat();
-                        bone.rotation[3] = f.readFloat();
-                        bone.position[0] = f.readFloat();
-                        bone.position[1] = f.readFloat();
-                        bone.position[2] = f.readFloat();
-                        f.skip(4);
+
+                        bone.scale[0] = bn.Scale.X;
+                        bone.scale[1] = bn.Scale.Y;
+                        bone.scale[2] = bn.Scale.Z;
+                        bone.rotation[0] = bn.Rotation.X;
+                        bone.rotation[1] = bn.Rotation.Y;
+                        bone.rotation[2] = bn.Rotation.Z;
+                        bone.rotation[3] = bn.Rotation.W;
+                        bone.position[0] = bn.Position.X;
+                        bone.position[1] = bn.Position.Y;
+                        bone.position[2] = bn.Position.Z;
 
                         model.skeleton.bones.Add(bone);
 
-                        if (lowVersion < 4)
-                            f.skip(48);
                     }
                     model.skeleton.reset();
 
-
                     //MeshTime!!
-                    for (int m = 0; m < FSHPArr.Count; m++)
+                    foreach (Shape shp in mdl.Shapes.Values)
                     {
                         Mesh poly = new Mesh();
+                        poly.name = shp.Name;
 
+                        //Create a buffer instance which stores all the buffer data
+                        VertexBufferHelper helper = new VertexBufferHelper(mdl.VertexBuffers[shp.VertexBufferIndex], b.ByteOrder);
 
-                        poly.name = f.readString(FSHPArr[m].polyNameOff, -1);
-
-                        List<attdata> AttrArr = new List<attdata>();
-                        f.seek(FVTXArr[FSHPArr[m].fvtxIndx].attArrOff);
-                        for (int att = 0; att < FVTXArr[FSHPArr[m].fvtxIndx].attCount; att++)
+                        // VertexBufferHelperAttrib uv1 = helper["_u1"];
+                        Vertex vert = new Vertex();
+                        foreach (VertexAttrib att in mdl.VertexBuffers[shp.VertexBufferIndex].Attributes.Values)
                         {
-                            string AttType = f.readString(readOffset(f), -1);
-                            int buffIndx = f.readByte();
-                            f.skip(1);
-                            int buffOff = f.readShort();
-                            int vertType = f.readInt();
-                            AttrArr.Add(new attdata { attName = AttType, buffIndx = buffIndx, buffOff = buffOff, vertType = vertType });
-                        }
-
-
-                        List<WU.buffData> BuffArr = new List<WU.buffData>();
-                        f.seek(FVTXArr[FSHPArr[m].fvtxIndx].buffArrOff);
-                        for (int buf = 0; buf < FVTXArr[FSHPArr[m].fvtxIndx].buffCount; buf++)
-                        {
-                            WU.buffData data = new WU.buffData();
-                            f.skip(4);
-                            data.buffSize = f.readInt();
-                            f.skip(4);
-                            data.strideSize = f.readShort();
-                            f.skip(6);
-                            data.dataOffset = readOffset(f);
-                            BuffArr.Add(data);
-                        }
-                        for (int v = 0; v < FVTXArr[FSHPArr[m].fvtxIndx].vertCount; v++)
-                        {
-                            Vertex vert = new Vertex();
-                            for (int attr = 0; attr < AttrArr.Count; attr++)
+                            if (att.Name == "_p0")
                             {
-                                f.seek(((BuffArr[AttrArr[attr].buffIndx].dataOffset) + (AttrArr[attr].buffOff) + (BuffArr[AttrArr[attr].buffIndx].strideSize * v)));
-                                switch (AttrArr[attr].attName)
+                                VertexBufferHelperAttrib position = helper["_p0"];
+                                Syroot.Maths.Vector4F[] vec4Positions = position.Data;
+
+                                foreach (Syroot.Maths.Vector4F p in vec4Positions)
                                 {
-                                    case "_p0":
-                                        if (AttrArr[attr].vertType == 2063)
-                                            vert.pos = new Vector3 { X = f.readHalfFloat(), Y = f.readHalfFloat(), Z = f.readHalfFloat() };
-                                        if (AttrArr[attr].vertType == 2065)
-                                            vert.pos = new Vector3 { X = f.readFloat(), Y = f.readFloat(), Z = f.readFloat() };
-                                        break;
-                                    case "_c0":
-                                        if (AttrArr[attr].vertType == 2063)
-                                            vert.col = new Vector4(f.readHalfFloat(), f.readHalfFloat(), f.readHalfFloat(), f.readHalfFloat());
-                                        if (AttrArr[attr].vertType == 2067)
-                                            vert.col = new Vector4 { X = f.readFloat(), Y = f.readFloat(), Z = f.readFloat(), W = f.readFloat() };
-                                        if (AttrArr[attr].vertType == 10)
-                                            vert.col = new Vector4(f.readByte() / 128, f.readByte() / 128, f.readByte() / 128, f.readByte() / 128);
-                                        break;
-                                    case "_n0":
-                                        if (AttrArr[attr].vertType == 0x20b)
-                                        {
-                                            uint normVal = (uint)f.readInt();
-                                            //Thanks RayKoopa!
-                                            vert.nrm = new Vector3 { X = ((normVal & 0x3FC00000) >> 22) / 511, Y = ((normVal & 0x000FF000) >> 12) / 511, Z = ((normVal & 0x000003FC) >> 2) / 511 };
-                                        }
-                                        break;
-                                    case "_u0":
-                                    case "color":
-                                    case "_u1":
-                                    case "_u2":
-                                    case "_u3":
-                                        if (AttrArr[attr].vertType == 4 || AttrArr[attr].vertType == 516)
-                                            vert.tx.Add(new Vector2 { X = ((float)f.readByte()) / 255, Y = ((float)f.readByte()) / 255 });
-                                        if (AttrArr[attr].vertType == 7)
-                                            vert.tx.Add(new Vector2 { X = ((float)f.readShort()) / 65535, Y = ((float)f.readShort()) / 65535 });
-                                        if (AttrArr[attr].vertType == 519)
-                                            vert.tx.Add(new Vector2 { X = ((float)f.readShort()) / 32767, Y = ((float)f.readShort()) / 32767 });
-                                        if (AttrArr[attr].vertType == 2056)
-                                            vert.tx.Add(new Vector2 { X = f.readHalfFloat(), Y = f.readHalfFloat() });
-                                        if (AttrArr[attr].vertType == 2061)
-                                            vert.tx.Add(new Vector2 { X = f.readFloat(), Y = f.readFloat() });
-                                        break;
-                                    case "_i0":
-                                        if (AttrArr[attr].vertType == 256)
-                                        {
-                                            vert.node.Add(f.readByte());
-                                            vert.weight.Add((float)1.0);
-                                        }
-                                        if (AttrArr[attr].vertType == 260)
-                                        {
-                                            vert.node.Add(f.readByte());
-                                            vert.node.Add(f.readByte());
-                                        }
-                                        if (AttrArr[attr].vertType == 266)
-                                        {
-                                            vert.node.Add(f.readByte());
-                                            vert.node.Add(f.readByte());
-                                            vert.node.Add(f.readByte());
-                                            vert.node.Add(f.readByte());
-                                        }
-                                        break;
-                                    case "_w0":
-                                        if (AttrArr[attr].vertType == 4)
-                                        {
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                        }
-                                        if (AttrArr[attr].vertType == 10)
-                                        {
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                            vert.weight.Add(((float)f.readByte()) / 255);
-                                        }
-                                        break;
+                                    switch (position.Format)
+                                    {
+                                        case GX2AttribFormat.Format_32_32_32_32_Single:
+                                        case GX2AttribFormat.Format_32_32_32_Single:
+                                            vert.pos = new Vector3 { X = p.X, Y = p.Y, Z = p.Z };
+                                            break;
+                                        case GX2AttribFormat.Format_16_16_16_16_Single:
+                                            vert.pos = new Vector3 { X = p.X, Y = p.Y, Z = p.Z };
+                                            break;
+                                    }
                                 }
                             }
-                            poly.vertices.Add(vert);
-                        }
+                            if (att.Name == "_n0")
+                            {
+                                VertexBufferHelperAttrib normal = helper["_n0"];
+                                Syroot.Maths.Vector4F[] vec4Normals = normal.Data;
 
-                        f.seek(FSHPArr[m].lodMdlOff + 4);
-                        int faceType = f.readInt();
-                        f.skip(0xC);
-                        int indxBuffOff = readOffset(f) + 4;
-                        int elmSkip = f.readInt();
-                        f.seek(indxBuffOff);
-                        int FaceCount = f.readInt();
-                        f.skip(0xC);
-                        f.seek(readOffset(f));
-                        if (faceType == 4)
-                            FaceCount = FaceCount / 6;
-                        if (faceType == 9)
-                            FaceCount = FaceCount / 12;
-                        for (int face = 0; face < FaceCount; face++)
+                                foreach (Syroot.Maths.Vector4F n in vec4Normals)
+                                {
+                                    switch (normal.Format)
+                                    {
+                                        case GX2AttribFormat.Format_10_10_10_2_SNorm:
+                                            vert.pos = new Vector3 { X = n.X, Y = n.Y, Z = n.Z };
+                                            break;
+                                    }
+                                }
+                            }
+                            if (att.Name == "_u0")
+                            {
+                                VertexBufferHelperAttrib uv0 = helper["_u0"];
+                                Syroot.Maths.Vector4F[] vec4uv0 = uv0.Data;
+
+                                foreach (Syroot.Maths.Vector4F u in vec4uv0)
+                                {
+                                    switch (uv0.Format)
+                                    {
+                                        case GX2AttribFormat.Format_10_10_10_2_SNorm:
+                                        case GX2AttribFormat.Format_32_32_32_32_UInt:
+                                        case GX2AttribFormat.Format_16_16_UNorm:
+                                        case GX2AttribFormat.Format_8_8_SNorm:
+                                        case GX2AttribFormat.Format_16_16_SNorm:
+                                        case GX2AttribFormat.Format_16_16_Single:
+                                        case GX2AttribFormat.Format_32_32_Single:
+                                            vert.tx.Add(new Vector2 { X = u.X, Y = u.Y });
+                                            break;
+                                    }
+                                }
+                            }
+                            if (att.Name == "_w0")
+                            {
+                                VertexBufferHelperAttrib weight = helper["_w0"];
+                                Syroot.Maths.Vector4F[] vec4weight = weight.Data;
+
+                                foreach (Syroot.Maths.Vector4F w in vec4weight)
+                                {
+                                    switch (weight.Format)
+                                    {
+                                        case GX2AttribFormat.Format_10_10_10_2_SNorm:
+                                            vert.weight.Add(w.X);
+                                            vert.weight.Add(w.Y);
+                                            break;
+                                        case GX2AttribFormat.Format_8_8_8_8_UNorm:
+                                            vert.weight.Add(w.X);
+                                            vert.weight.Add(w.Y);
+                                            vert.weight.Add(w.Z);
+                                            vert.weight.Add(w.W);
+                                            break;
+                                    }
+                                }
+                            }
+                            if (att.Name == "_i0")
+                            {
+                                VertexBufferHelperAttrib boneindex = helper["_i0"];
+                                Syroot.Maths.Vector4F[] vec4boneindex = boneindex.Data;
+
+                                foreach (Syroot.Maths.Vector4F i in vec4boneindex)
+                                {
+                                    switch (boneindex.Format)
+                                    {
+                                        case GX2AttribFormat.Format_8_UInt:
+                                            vert.node.Add((int)i.X);
+                                            break;
+                                        case GX2AttribFormat.Format_8_8_UInt:
+                                            vert.node.Add((int)i.X);
+                                            vert.node.Add((int)i.Y);
+                                            break;
+                                        case GX2AttribFormat.Format_8_8_8_8_UInt:
+                                            vert.node.Add((int)i.X);
+                                            vert.node.Add((int)i.Y);
+                                            vert.node.Add((int)i.Z);
+                                            vert.node.Add((int)i.W);
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                        poly.vertices.Add(vert);
+
+
+
+                        foreach (var faces in shp.Meshes[0].GetIndices())
                         {
-                            if (faceType == 4)
-                                poly.faces.Add(new List<int> { elmSkip + f.readShort(), elmSkip + f.readShort(), elmSkip + f.readShort() });
-                            else if (faceType == 9)
-                                poly.faces.Add(new List<int> { elmSkip + f.readInt(), elmSkip + f.readInt(), elmSkip + f.readInt() });
-                            else
-                                Console.Write("UnkFaceFormat");
-
+                            poly.faces.Add(new List<int> { (int)faces });
                         }
 
+                /*
                         f.seek(FMATheaders[FSHPArr[m].fmatIndx].texSelOff);
                         for (int tex = 0; FMATheaders[FSHPArr[m].fmatIndx].texAttSelCount > tex; tex++)
                         {
@@ -1232,13 +1096,14 @@ namespace Smash_Forge
                                 poly.texHashs.Add(0);
                             }
                             f.skip(4);
-                        }
+                        }*/
                         model.poly.Add(poly);
                     }
                     models.Add(model);
-                    f.seek(NextFMDL);
+                    ModelCur++;
                 }
                 PreRender();
+            //    for (int b = 0; models[0].skeleton.bones.Count > b; b++) models[0].skeleton.bones[b].transform = BoneFixArray[b];
             }
         }
 
@@ -1414,9 +1279,16 @@ namespace Smash_Forge
             public List<int> texHashs = new List<int>();
             public string name;
         }
+        private static VBN vbn()
+        {
+
+          if (Runtime.TargetVBN == null) //Create VBN as target so we can export anims
+                Runtime.TargetVBN = new VBN();
+
+            return Runtime.TargetVBN;
+        }
         public class FMDL_Model
         {
-            private VBN vbn = new VBN();
             public VBN skeleton
             {
                 get
@@ -1428,6 +1300,7 @@ namespace Smash_Forge
                     vbn = value;
                 }
             }
+            private VBN vbn = new VBN();
             public List<Mesh> poly = new List<Mesh>();
             public bool isVisible = true;
             public int[] Node_Array;
@@ -1557,8 +1430,11 @@ namespace Smash_Forge
                 public List<int> texHashs = new List<int>();
                 public string name;
             }
+
             public class FMDL_Model
             {
+
+
                 public VBN skeleton
                 {
                     get
@@ -1570,6 +1446,7 @@ namespace Smash_Forge
                         vbn = value;
                     }
                 }
+                
                 private VBN vbn = new VBN();
                 public List<Mesh> poly = new List<Mesh>();
                 public bool isVisible = true;

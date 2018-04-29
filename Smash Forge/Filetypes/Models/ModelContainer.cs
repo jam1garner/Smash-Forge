@@ -388,7 +388,10 @@ namespace Smash_Forge
             if (BFRES != null)
             {
                 foreach (var mo in BFRES.models)
+                {
                     RenderTools.DrawVBN(mo.skeleton);
+                }
+                   
             }
 
             if (DAT_MELEE != null)

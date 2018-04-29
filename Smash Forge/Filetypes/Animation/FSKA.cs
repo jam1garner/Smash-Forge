@@ -34,11 +34,10 @@ namespace Smash_Forge
             f.skip(126);
             int FSKACount = f.readShort();
 
-            Console.WriteLine(FSKAOffset + " test " + FSKACount);
 
             AnimationGroupNode ThisAnimation = new AnimationGroupNode() { Text = filename };
 
-    
+
             for (int i = 0; i < FSKACount; i++)
             {
                 f.seek((int)FSKAOffset + (i * 96));
@@ -49,63 +48,75 @@ namespace Smash_Forge
 
                 a.FrameCount = anim.frameCount;
 
-                f.seek((int)anim.BoneAnimArrayOffset);
-                for (int b = 0; b < anim.boneCount - 1; b++)
+
+                try
                 {
-                    FSKANode bonean = new FSKANode(f);
-
-                    Animation.KeyNode bone = new Animation.KeyNode("");
-                    a.Bones.Add(bone);
-                    bone.RotType = Animation.RotationType.EULER;
-                    bone.Text = bonean.Text;
-
-                    for (int Frame = 0; Frame < anim.frameCount; Frame++)
+                    f.seek((int)anim.BoneAnimArrayOffset);
+                    for (int b = 0; b < anim.boneCount; b++)
                     {
+                        FSKANode bonean = new FSKANode(f);
 
-                        //Set base/start values for bones.
-                        //Note. BOTW doesn't use base values as it uses havok engine
-                        if (Frame == 0)
+                        Animation.KeyNode bone = new Animation.KeyNode("");
+                        a.Bones.Add(bone);
+                        bone.RotType = Animation.RotationType.EULER;
+                        bone.Text = bonean.Text;
+
+                        for (int Frame = 0; Frame < anim.frameCount; Frame++)
                         {
-                            bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
-                            bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
-                            bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
-                            bone.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
-                            bone.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
-                            bone.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
-                            bone.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
-                            bone.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
-                            bone.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
-                        }
 
-                        foreach (FSKATrack track in bonean.tracks)
-                        {
-                            Animation.KeyFrame frame = new Animation.KeyFrame();
-                            frame.InterType = Animation.InterpolationType.HERMITE;
-                            frame.Frame = Frame;
-
-                            FSKAKey left = track.GetLeft(Frame);
-                            FSKAKey right = track.GetRight(Frame);
-                            float value;
-
-                            value = CHR0.interHermite(Frame, left.frame, right.frame, 0, 0, left.unk1, right.unk1);
-
-
-                            // interpolate the value and apply
-                            switch (track.flag)
+                            //Set base/start values for bones.
+                            //Note. BOTW doesn't use base values as it uses havok engine
+                            if (Frame == 0)
                             {
-                                case (int)TrackType.XPOS: frame.Value = value; bone.XPOS.Keys.Add(frame); break;
-                                case (int)TrackType.YPOS: frame.Value = value; bone.YPOS.Keys.Add(frame); break;
-                                case (int)TrackType.ZPOS: frame.Value = value; bone.ZPOS.Keys.Add(frame); break;
-                                case (int)TrackType.XROT: frame.Value = value; bone.XROT.Keys.Add(frame); break;
-                                case (int)TrackType.YROT: frame.Value = value; bone.YROT.Keys.Add(frame); break;
-                                case (int)TrackType.ZROT: frame.Value = value; bone.ZROT.Keys.Add(frame); break;
-                                case (int)TrackType.XSCA: frame.Value = value; bone.XSCA.Keys.Add(frame); break;
-                                case (int)TrackType.YSCA: frame.Value = value; bone.YSCA.Keys.Add(frame); break;
-                                case (int)TrackType.ZSCA: frame.Value = value; bone.ZSCA.Keys.Add(frame); break;
+                                bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
+                                bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
+                                bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
+                                bone.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
+                                bone.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
+                                bone.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
+                                bone.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
+                                bone.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
+                                bone.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
+                            }
+
+
+                            foreach (FSKATrack track in bonean.tracks)
+                            {
+                                Animation.KeyFrame frame = new Animation.KeyFrame();
+                                frame.InterType = Animation.InterpolationType.HERMITE;
+                                frame.Frame = Frame;
+
+                                FSKAKey left = track.GetLeft(Frame);
+                                FSKAKey right = track.GetRight(Frame);
+                                float value;
+
+                                value = CHR0.interHermite(Frame, left.frame, right.frame, 0, 0, left.unk1, right.unk1);
+
+
+
+                                // interpolate the value and apply
+                                switch (track.flag)
+                                {
+                                    case (int)TrackType.XPOS: frame.Value = value; bone.XPOS.Keys.Add(frame); break;
+                                    case (int)TrackType.YPOS: frame.Value = value; bone.YPOS.Keys.Add(frame); break;
+                                    case (int)TrackType.ZPOS: frame.Value = value; bone.ZPOS.Keys.Add(frame); break;
+                                    case (int)TrackType.XROT: frame.Value = value; bone.XROT.Keys.Add(frame); break;
+                                    case (int)TrackType.YROT: frame.Value = value; bone.YROT.Keys.Add(frame); break;
+                                    case (int)TrackType.ZROT: frame.Value = value; bone.ZROT.Keys.Add(frame); break;
+                                    case (int)TrackType.XSCA: frame.Value = value; bone.XSCA.Keys.Add(frame); break;
+                                    case (int)TrackType.YSCA: frame.Value = value; bone.YSCA.Keys.Add(frame); break;
+                                    case (int)TrackType.ZSCA: frame.Value = value; bone.ZSCA.Keys.Add(frame); break;
+                                }
                             }
                         }
                     }
                 }
+                catch
+                {
+
+                }
+
+
             }
             return ThisAnimation;
         }
@@ -229,8 +240,8 @@ namespace Smash_Forge
                     });
                     tracks.Add(t);
 
-                    if (t.type != 0x2 && t.type != 0x5 && t.type != 0x6 && t.type != 0x9 && t.type != 0xA)
-                        Console.WriteLine(Text + " " + t.type.ToString("x"));
+                    //    if (t.type != 0x2 && t.type != 0x5 && t.type != 0x6 && t.type != 0x9 && t.type != 0xA)
+                    //   Console.WriteLine(Text + " " + t.type.ToString("x"));
 
                     int tem = f.pos();
                     // bone section
@@ -239,6 +250,8 @@ namespace Smash_Forge
                     for (int i = 0; i < t.keyCount; i++)
                         if (t.type == 0x1 || t.type == 0x5 || t.type == 0x9)
                             frames[i] = f.readShort() >> 5;
+                        else if (t.type == 0x4)
+                            frames[i] = (int)f.readFloat() >> 5;
                         else
                             frames[i] = f.readByte();
                     f.align(4);
@@ -280,6 +293,16 @@ namespace Smash_Forge
                                     unk4 = f.readFloat(),
                                 });
                                 break;
+                            case 0x4: //Unkown
+                                t.keys.Add(new FSKAKey()
+                                {
+                                    frame = frames[i],
+                                    unk1 = t.init + (((short)f.readShort() * t.scale)),
+                                    unk2 = t.unkf3 + (((short)f.readShort() / (float)0x7FFF)),
+                                    unk3 = t.unkf3 + (((short)f.readShort() / (float)0x7FFF)),
+                                    unk4 = t.unkf3 + (((short)f.readShort() / (float)0x7FFF))
+                                });
+                                break;
                             case 0x5:
                                 t.keys.Add(new FSKAKey()
                                 {
@@ -298,6 +321,16 @@ namespace Smash_Forge
                                     unk2 = t.unkf3 + (((short)f.readShort() / (float)0x7FFF)),
                                     unk3 = t.unkf3 + (((short)f.readShort() / (float)0x7FFF)),
                                     unk4 = t.unkf3 + (((short)f.readShort() / (float)0x7FFF))
+                                });
+                                break;
+                            case 0x8: //Unkown
+                                t.keys.Add(new FSKAKey()
+                                {
+                                    frame = frames[i],
+                                    unk1 = t.init + (((sbyte)f.readByte() * t.scale)),
+                                    unk2 = t.unkf3 + (((sbyte)f.readByte() * t.scale)),
+                                    unk3 = t.unkf3 + (((sbyte)f.readByte() * t.scale)),
+                                    unk4 = t.unkf3 + (((sbyte)f.readByte() * t.scale))
                                 });
                                 break;
                             case 0x9:

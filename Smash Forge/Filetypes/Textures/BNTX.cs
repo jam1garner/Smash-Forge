@@ -7,6 +7,8 @@ using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.IO;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Smash_Forge
 {
@@ -105,15 +107,23 @@ namespace Smash_Forge
             }
         }
     }
-  
 
     public class BNTX : TreeNode
     {
-        public static List<BRTI> textures = new List<BRTI>();
-        public static Dictionary<string, BRTI> textured = new Dictionary<string, BRTI>();
+        //Todo: Have these 2 combined into one list
+        public static List<BRTI> textures = new List<BRTI>(); //For loading a list of texture instances
+        public static Dictionary<string, BRTI> textured = new Dictionary<string, BRTI>(); //For texture mapping
         int BRTIOffset;
 
         public static int temp; //This variable is so we can get offsets from start of BNTX file
+
+        public void ReadBNTXFile(string FileName) //For single BNTX files
+        {
+            FileData f = new FileData(FileName);
+            f.Endian = Endianness.Little;
+
+            ReadBNTX(f);
+        }
 
         public void ReadBNTX(FileData f)
         {
@@ -121,6 +131,7 @@ namespace Smash_Forge
             SelectedImageKey = "UVPattern";
 
             textures.Clear();
+            textured.Clear();
 
             temp = f.pos();
 
@@ -170,6 +181,8 @@ namespace Smash_Forge
 
         public int Width, Height, display;
         public uint format;
+        public static List<BRTI_Texture> RenderableTex = new List<BRTI_Texture>();
+
 
         public BRTI(FileData f) //Docs thanks to gdkchan!!
         {
@@ -223,12 +236,11 @@ namespace Smash_Forge
 
             uint bpp = Formats.bpps(surf.format >> 8);
 
-       //     Console.WriteLine($"{Name} Height {surf.height}wdith = {surf.width}allignment = {surf.alignment}blkwidth = {blkWidth}blkheight = {blkHeight}blkdims = {blk_dim} format = {surf.format} datatype = {DataType} dataoffset = {dataOff}");
+            //     Console.WriteLine($"{Name} Height {surf.height}wdith = {surf.width}allignment = {surf.alignment}blkwidth = {blkWidth}blkheight = {blkHeight}blkdims = {blk_dim} format = {surf.format} datatype = {DataType} dataoffset = {dataOff}");
 
 
             // byte[] result = surf.data;
 
-            
 
 
             byte[] result = Swizzle.deswizzle((uint)surf.width, (uint)surf.height, blkWidth, blkHeight, bpp, (uint)surf.tileMode, (uint)surf.alignment, surf.sizeRange, surf.data, 0);
@@ -247,6 +259,8 @@ namespace Smash_Forge
 
             Width = surf.width;
             Height = surf.height;
+
+            texture.mipmaps.Add(result_);
 
             switch (surf.format >> 8)
             {
@@ -325,10 +339,26 @@ namespace Smash_Forge
             }
             texture.display = loadImage(texture);
             display = texture.display;
+
+            RenderableTex.Add(texture);
+        }
+
+        public static byte[] DecodeBC5(int X, int Y, int block)
+        {
+            byte[] result = null;
+
+            return result;
+        }
+        public static byte[] DecodeBC7(int X, int Y, int block)
+        {
+            byte[] result = null;
+
+            return result;
         }
 
         public class BRTI_Texture
         {
+            public List<byte[]> mipmaps = new List<byte[]>();
             public byte[] data;
             public int width, height;
             public int display = 0;
@@ -376,6 +406,27 @@ namespace Smash_Forge
                     t.utype, PixelType.UnsignedByte, t.data);
             }
 
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            return texID;
+        }
+      
+
+        public static int LoadBitmap(Bitmap image)
+        {
+            int texID = GL.GenTexture();
+
+            GL.BindTexture(TextureTarget.Texture2D, texID);
+
+            BitmapData data = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
+                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
+                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+
+            image.UnlockBits(data);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 2);
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             return texID;

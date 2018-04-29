@@ -1050,10 +1050,16 @@ namespace Smash_Forge
 
                 if (m.models.Count != 0)
                 {
-                    mvp = new ModelViewport();
-                    mvp.draw.Add(new ModelContainer() { BFRES = m });
-                    mvp.Text = fileName;
-                    AddDockedControl(mvp);
+                    Runtime.TargetVBN = m.models[0].skeleton;
+                    resyncTargetVBN();
+
+                    if (m.models[0].poly.Count != 0)
+                    {
+                        mvp = new ModelViewport();
+                        mvp.draw.Add(new ModelContainer() { BFRES = m });
+                        mvp.Text = fileName;
+                        AddDockedControl(mvp);
+                    }
                 }
        
                 //Run again for animations to be added. 
@@ -1108,6 +1114,12 @@ namespace Smash_Forge
             if (fileName.EndsWith(".nut"))
             {
                 NUTEditor editor = new NUTEditor(fileName);
+                AddDockedControl(editor);
+            }
+
+            if (fileName.EndsWith(".bntx"))
+            {
+                BNTXEditor editor = new BNTXEditor(fileName);
                 AddDockedControl(editor);
             }
 
@@ -1478,7 +1490,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0|" +
+                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0;*.bntx|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +

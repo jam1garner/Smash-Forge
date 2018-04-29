@@ -47,6 +47,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\OpenTK.dll</HintPath>
     </Reference>
+    <Reference Include="Syroot.BinaryData, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Syroot.BinaryData.dll</HintPath>
+    </Reference>
+    <Reference Include="Syroot.Maths, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Syroot.Maths.dll</HintPath>
+    </Reference>
+    <Reference Include="Syroot.NintenTools.Bfres, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Syroot.NintenTools.Bfres.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
@@ -127,6 +139,12 @@
     </Compile>
     <Compile Include="GUI\Controls\VertexTool.Designer.cs">
       <DependentUpon>VertexTool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BNTXEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BNTXEditor.Designer.cs">
+      <DependentUpon>BNTXEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="lib\DiscordController.cs" />
     <Compile Include="lib\DiscordRpc.cs" />
@@ -486,6 +504,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\EditorBase.resx">
       <DependentUpon>EditorBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BNTXEditor.resx">
+      <DependentUpon>BNTXEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\3DS\3DSTexEditor.resx">
       <DependentUpon>3DSTexEditor.cs</DependentUpon>
@@ -1154,6 +1175,15 @@
     <None Include="lib\Shader\BFRES_vs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="lib\Syroot.BinaryData.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Syroot.Maths.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Syroot.NintenTools.Bfres.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\10080000.png" />
     <None Include="Resources\boneWeightGradient.png" />
     <None Include="Resources\Flat Folder icon.png" />
