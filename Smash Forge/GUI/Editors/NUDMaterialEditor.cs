@@ -24,7 +24,15 @@ namespace Smash_Forge
         public List<NUD.Material> currentMaterialList;
         int currentMatIndex = 0;
         string currentPropertyName = "";
+
         public static Dictionary<string, Params.MatParam> materialParamList = new Dictionary<string, Params.MatParam>();
+
+        // Set to false while using the sliders to avoid a loop of scroll and text changed events.
+        // Set to true when focus on the slider is lost (ex. clicking on text box).
+        bool enableParam1SliderUpdates = true;
+        bool enableParam2SliderUpdates = true;
+        bool enableParam3SliderUpdates = true;
+        bool enableParam4SliderUpdates = true;
 
         public static Dictionary<int, string> dstFactor = new Dictionary<int, string>(){
                     { 0x00, "Nothing"},
@@ -568,7 +576,8 @@ namespace Smash_Forge
                         max = labels.max1;
                     }
 
-                    GuiTools.UpdateTrackBarFromValue(f, param1TrackBar, 0, max);
+                    if (enableParam1SliderUpdates)
+                        GuiTools.UpdateTrackBarFromValue(f, param1TrackBar, 0, max);
                 }
             }
             UpdateButtonColor();
@@ -591,7 +600,8 @@ namespace Smash_Forge
                     max = labels.max2;
                 }
 
-                GuiTools.UpdateTrackBarFromValue(f, param2TrackBar, 0, max);
+                if (enableParam2SliderUpdates)
+                    GuiTools.UpdateTrackBarFromValue(f, param2TrackBar, 0, max);
             }
             UpdateButtonColor();
         }
@@ -613,7 +623,8 @@ namespace Smash_Forge
                     max = labels.max3;
                 }
 
-                GuiTools.UpdateTrackBarFromValue(f, param3TrackBar, 0, max);
+                if (enableParam3SliderUpdates)
+                    GuiTools.UpdateTrackBarFromValue(f, param3TrackBar, 0, max);
             }
             UpdateButtonColor();
         }
@@ -637,7 +648,8 @@ namespace Smash_Forge
                     max = labels.max4;
                 }
 
-                GuiTools.UpdateTrackBarFromValue(f, param4TrackBar, 0, max);
+                if (enableParam4SliderUpdates)
+                    GuiTools.UpdateTrackBarFromValue(f, param4TrackBar, 0, max);
             }
         }
 
@@ -986,6 +998,7 @@ namespace Smash_Forge
             
             if (labels != null)
             {
+                enableParam1SliderUpdates = false;
                 param1TB.Text = GuiTools.GetTrackBarValue(param1TrackBar, 0, labels.max1).ToString();
             }
         }
@@ -997,6 +1010,7 @@ namespace Smash_Forge
 
             if (labels != null)
             {
+                enableParam2SliderUpdates = false;
                 param2TB.Text = GuiTools.GetTrackBarValue(param2TrackBar, 0, labels.max2).ToString();
             }
         }
@@ -1008,6 +1022,7 @@ namespace Smash_Forge
 
             if (labels != null)
             {
+                enableParam3SliderUpdates = false;
                 param3TB.Text = GuiTools.GetTrackBarValue(param3TrackBar, 0, labels.max3).ToString();
             }
         }
@@ -1019,6 +1034,7 @@ namespace Smash_Forge
 
             if (labels != null)
             {
+                enableParam4SliderUpdates = false;
                 param4TB.Text = GuiTools.GetTrackBarValue(param4TrackBar, 0, labels.max4).ToString();
             }
         }
@@ -1045,6 +1061,26 @@ namespace Smash_Forge
                 FillForm();
                 UpdateMatComboBox();
             }
+        }
+
+        private void param1TrackBar_Leave(object sender, EventArgs e)
+        {
+            enableParam1SliderUpdates = true;
+        }
+
+        private void param2TrackBar_Leave(object sender, EventArgs e)
+        {
+            enableParam2SliderUpdates = true;
+        }
+
+        private void param3TrackBar_Leave(object sender, EventArgs e)
+        {
+            enableParam3SliderUpdates = true;
+        }
+
+        private void param4TrackBar_Leave(object sender, EventArgs e)
+        {
+            enableParam4SliderUpdates = true;
         }
     }
 }
