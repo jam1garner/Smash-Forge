@@ -677,10 +677,10 @@ namespace Smash_Forge
             if (matParam != null)
             {
                 toolTip1.SetToolTip(propertyNameLabel, matParam.generalDescription);
-                toolTip1.SetToolTip(param1Label, matParam.generalDescription);
-                toolTip1.SetToolTip(param2Label, matParam.generalDescription);
-                toolTip1.SetToolTip(param3Label, matParam.generalDescription);
-                toolTip1.SetToolTip(param4Label, matParam.generalDescription);
+                toolTip1.SetToolTip(param1Label, matParam.param1Description);
+                toolTip1.SetToolTip(param2Label, matParam.param2Description);
+                toolTip1.SetToolTip(param3Label, matParam.param3Description);
+                toolTip1.SetToolTip(param4Label, matParam.param4Description);
 
                 param1Label.Text = matParam.paramLabels[0].Equals("") ? "Param1" : matParam.paramLabels[0];
                 param2Label.Text = matParam.paramLabels[1].Equals("") ? "Param2" : matParam.paramLabels[1];

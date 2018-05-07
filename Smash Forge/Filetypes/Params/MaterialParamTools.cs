@@ -57,6 +57,18 @@ namespace Smash_Forge.Params
                                 case "description":
                                     matParam.generalDescription = args[1];
                                     break;
+                                case "descriptionX":
+                                    matParam.param1Description = args[1];
+                                    break;
+                                case "descriptionY":
+                                    matParam.param2Description = args[1];
+                                    break;
+                                case "descriptionZ":
+                                    matParam.param3Description = args[1];
+                                    break;
+                                case "descriptionW":
+                                    matParam.param4Description = args[1];
+                                    break;
                                 case "param1":
                                     matParam.paramLabels[0] = args[1];
                                     break;
