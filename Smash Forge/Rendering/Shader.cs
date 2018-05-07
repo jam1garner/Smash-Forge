@@ -16,14 +16,13 @@ namespace Smash_Forge
 		private int fsID;
 
         private bool checkedCompilation = false;
+        public bool HasCheckedCompilation { get => checkedCompilation; }
+
         private StringBuilder errorLog = new StringBuilder();
 
-        private string vertFilePath = "";
-        private string fragFilePath = "";
+		private Dictionary<string, int> attributes = new Dictionary<string, int>();
 
-		Dictionary<string, int> attributes = new Dictionary<string, int>();
-
-		public Shader ()
+        public Shader ()
 		{
 			programID = GL.CreateProgram();
 
@@ -35,55 +34,48 @@ namespace Smash_Forge
             errorLog.AppendLine("GLSL Version: " + GL.GetString(StringName.ShadingLanguageVersion));
         }
 
-        public string getVertPath()
+		public int GetAttribute(string name)
         {
-            return vertFilePath;
-        }
-
-        public string getFragPath()
-        {
-            return fragFilePath;
-        }
-
-        public bool hasCheckedCompilation()
-        {
-            return checkedCompilation;
-        }
-
-		public int getAttribute(string s){
-			int v;
-			bool success = attributes.TryGetValue (s, out v);
+			int value;
+			bool success = attributes.TryGetValue(name, out value);
 
             if (success)
-                return v;
+                return value;
             else
                 return -1;
 		}
 
-		public void enableAttrib(){
+		public void EnableVertexAttributes()
+        {
 			foreach(KeyValuePair<string, int> entry in attributes)
 			{
-				GL.EnableVertexAttribArray (entry.Value);
+				GL.EnableVertexAttribArray(entry.Value);
 			}
 		}
 
-		public void disableAttrib(){
+		public void DisableVertexAttributes()
+        {
 			foreach(KeyValuePair<string, int> entry in attributes)
 			{
-				GL.DisableVertexAttribArray (entry.Value);
+				GL.DisableVertexAttribArray(entry.Value);
 			}
 		}
 
         public void SaveErrorLog(string shaderName)
         {
             string logExport = errorLog.ToString();
-            File.WriteAllText(shaderName + "_ErrorLog.txt", logExport.Replace("\n", Environment.NewLine));
+            string errorLogDirectory = MainForm.executableDir + "\\Shader Error Logs\\";
+            if (!Directory.Exists(errorLogDirectory))
+                Directory.CreateDirectory(errorLogDirectory);
+            File.WriteAllText(errorLogDirectory +  shaderName + " Error Log.txt", logExport.Replace("\n", Environment.NewLine));
         }
 
-		private void addAttribute(string name, bool uniform){
-            if (attributes.ContainsKey(name)) attributes.Remove(name);
+		private void AddAttribute(string name, bool isUniform)
+        {
+            if (attributes.ContainsKey(name))
+                attributes.Remove(name);
 			int position = -1;
-			if(uniform)
+			if(isUniform)
 				position = GL.GetUniformLocation(programID, name);
 			else
 				position = GL.GetAttribLocation(programID, name);
@@ -91,9 +83,9 @@ namespace Smash_Forge
 
             errorLog.AppendLine(name + ", " + "Position: " + position);
 
-            attributes.Add (name, position);
+            attributes.Add(name, position);
 		}
-        
+
         public void LoadAttributes(string src, bool fragment = false)
         {
             int attributeCount;
@@ -110,7 +102,7 @@ namespace Smash_Forge
                 if (index > 0)
                     attribute = attribute.Substring(0, index);
 
-                addAttribute(attribute, false);
+                AddAttribute(attribute, false);
             }
 
             int uniformCount;
@@ -127,38 +119,49 @@ namespace Smash_Forge
                 if (index > 0)
                     uniform = uniform.Substring(0, index);
 
-                addAttribute(uniform, true);
+                AddAttribute(uniform, true);
             }
         }
 
-        public void vertexShader(string filePath){
+        public void LoadShader(string filePath, ShaderType shaderType)
+        {
             string shaderText = File.ReadAllText(filePath);
-            vertFilePath = filePath;
-            loadShader(shaderText, ShaderType.VertexShader, programID, out vsID);
-			GL.LinkProgram (programID);
+            if (shaderType == ShaderType.FragmentShader)
+                LoadShader(shaderText, shaderType, programID, out fsID);
+            else if (shaderType == ShaderType.VertexShader)
+                LoadShader(shaderText, shaderType, programID, out vsID);
+            else
+                throw new NotSupportedException(shaderType.ToString() + " is not a supported shader type.");
+
+            GL.LinkProgram(programID);
             LoadAttributes(shaderText);
 
-            errorLog.AppendLine("Vertex Shader");
+            errorLog.AppendLine(shaderType.ToString());
             string error = GL.GetProgramInfoLog(programID);
             errorLog.AppendLine(error);
         }
 
-		public void fragmentShader(string filePath){
-            string shaderText = File.ReadAllText(filePath);
-            fragFilePath = filePath;
-			loadShader(shaderText, ShaderType.FragmentShader, programID, out fsID);
-			GL.LinkProgram (programID);
-            LoadAttributes(shaderText, true);
-
-            errorLog.AppendLine("Fragment Shader");
-            string error = GL.GetProgramInfoLog(programID);
-            errorLog.AppendLine(error);
-        }
-
-        void loadShader(string shaderText, ShaderType type, int program, out int address)
+        void LoadShader(string shaderText, ShaderType type, int program, out int address)
 		{
 			address = GL.CreateShader(type);
-			GL.ShaderSource(address, shaderText);
+
+            if (shaderText.Contains("#include"))
+            {
+                // Hard coded #include for reducing redundant shader code. 
+                string smashShaderText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\SMASH_SHADER.txt");
+                shaderText = shaderText.Replace("#include SMASH_SHADER", smashShaderText);
+
+                string nuUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\NU_UNIFORMS.txt");
+                shaderText = shaderText.Replace("#include NU_UNIFORMS", nuUniformText);
+
+                string stageUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\STAGE_LIGHTING_UNIFORMS.txt");
+                shaderText = shaderText.Replace("#include STAGE_LIGHTING_UNIFORMS", stageUniformText);
+
+                string miscUniformsText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\MISC_UNIFORMS.txt");
+                shaderText = shaderText.Replace("#include MISC_UNIFORMS", miscUniformsText);
+            }
+
+            GL.ShaderSource(address, shaderText);
 			GL.CompileShader(address);
             GL.AttachShader(program, address);
 			Console.WriteLine(GL.GetShaderInfoLog(address));

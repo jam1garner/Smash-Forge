@@ -456,6 +456,7 @@
     </Compile>
     <Compile Include="IO\FileBase.cs" />
     <Compile Include="lib\NintacoAPI.cs" />
+    <Compile Include="Filetypes\Params\MaterialParamTools.cs" />
     <Compile Include="MovesetManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -992,6 +993,8 @@
     <Content Include="lib\SALT.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\uv.png" />
+    <None Include="Resources\tan.png" />
     <None Include="Resources\_10100000.png" />
     <None Include="Resources\_10040001.png" />
     <None Include="Resources\_10040000.png" />
@@ -1146,10 +1149,29 @@
     <None Include="lib\Shader\Screen_Quad_vs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="lib\Shader\MISC_UNIFORMS.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Shader\Nud_Sphere_fs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Shader\Nud_Sphere_vs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Shader\NU_UNIFORMS.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Shader\SMASH_SHADER.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Shader\STAGE_LIGHTING_UNIFORMS.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\10080000.png" />
     <None Include="Resources\boneWeightGradient.png" />
     <None Include="Resources\Flat Folder icon.png" />
     <None Include="Resources\boneWeightGradient2.png" />
+    <None Include="Resources\bitan.png" />
     <Content Include="Resources\forge.ico" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1180,6 +1202,7 @@
     <None Include="Resources\ForgeBack.png" />
     <None Include="Resources\icon_info.png" />
     <None Include="Resources\icon_number.png" />
+    <None Include="Resources\nrm.png" />
     <Content Include="Resources\sexy_green_down_arrow.png" />
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />

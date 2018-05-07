@@ -105,6 +105,9 @@ namespace Smash_Forge
 
             Rendering.ShaderTools.SetupShaders();
 
+            // Make sure it stays invisible.
+            glControl1.Size = new System.Drawing.Size(0, 0);
+
             openFiles();
         }
 
@@ -1557,12 +1560,7 @@ namespace Smash_Forge
 
         private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            foreach (string key in Runtime.shaders.Keys)
-            {
-                Runtime.shaders[key].SaveErrorLog(key);
-            }
-
-            MessageBox.Show("Error logs saved to Forge directory");
+            Rendering.ShaderTools.SaveErrorLogs();
         }
 
         private void nESROMInjectorToolStripMenuItem_Click(object sender, EventArgs e)
