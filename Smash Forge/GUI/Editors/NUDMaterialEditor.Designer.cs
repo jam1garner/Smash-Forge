@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.matsComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.texturesListView = new System.Windows.Forms.ListView();
@@ -50,11 +51,10 @@
             this.param3Label = new System.Windows.Forms.Label();
             this.param2Label = new System.Windows.Forms.Label();
             this.param1Label = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
+            this.propertyNameLabel = new System.Windows.Forms.Label();
             this.param1TB = new System.Windows.Forms.TextBox();
             this.param2TB = new System.Windows.Forms.TextBox();
             this.param3TB = new System.Windows.Forms.TextBox();
-            this.matPropertyNameTB = new System.Windows.Forms.TextBox();
             this.savePresetButton = new System.Windows.Forms.Button();
             this.loadPresetButton = new System.Windows.Forms.Button();
             this.addMatPropertyButton = new System.Windows.Forms.Button();
@@ -71,19 +71,8 @@
             this.param4TB = new System.Windows.Forms.TextBox();
             this.param4Label = new System.Windows.Forms.Label();
             this.param1TrackBar = new System.Windows.Forms.TrackBar();
-            this.descriptionLabel = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.texAlphaGlControl = new OpenTK.GLControl();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.cubemapCB = new System.Windows.Forms.CheckBox();
-            this.stageMapCB = new System.Windows.Forms.CheckBox();
-            this.dummy_rampCB = new System.Windows.Forms.CheckBox();
-            this.rampCB = new System.Windows.Forms.CheckBox();
-            this.AOCB = new System.Windows.Forms.CheckBox();
-            this.sphere_mapCB = new System.Windows.Forms.CheckBox();
-            this.normalCB = new System.Windows.Forms.CheckBox();
-            this.diffuse2CB = new System.Windows.Forms.CheckBox();
-            this.diffuseCB = new System.Windows.Forms.CheckBox();
             this.dummyRampCB = new System.Windows.Forms.CheckBox();
             this.sphereMapCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -116,19 +105,14 @@
             this.dstComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.shadowCB = new System.Windows.Forms.CheckBox();
-            this.mysteryCB = new System.Windows.Forms.CheckBox();
             this.GlowCB = new System.Windows.Forms.CheckBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.label18 = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.flagsTB = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
             this.addMaterialButton = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tableLayoutPanel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox8.SuspendLayout();
@@ -138,7 +122,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.param2TrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.param1TrackBar)).BeginInit();
             this.groupBox2.SuspendLayout();
-            this.groupBox7.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -149,8 +132,6 @@
             this.groupBox6.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox5.SuspendLayout();
-            this.groupBox4.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -253,7 +234,7 @@
             this.minFilterComboBox.Name = "minFilterComboBox";
             this.minFilterComboBox.Size = new System.Drawing.Size(80, 21);
             this.minFilterComboBox.TabIndex = 15;
-            this.minFilterComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox11_SelectedIndexChanged);
+            this.minFilterComboBox.SelectedIndexChanged += new System.EventHandler(this.minFilterComboBox_SelectedIndexChanged);
             // 
             // label12
             // 
@@ -271,7 +252,7 @@
             this.wrapXComboBox.Name = "wrapXComboBox";
             this.wrapXComboBox.Size = new System.Drawing.Size(80, 21);
             this.wrapXComboBox.TabIndex = 15;
-            this.wrapXComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox10_SelectedIndexChanged);
+            this.wrapXComboBox.SelectedIndexChanged += new System.EventHandler(this.wrapXComboBox_SelectedIndexChanged);
             // 
             // label11
             // 
@@ -289,7 +270,7 @@
             this.mapModeComboBox.Name = "mapModeComboBox";
             this.mapModeComboBox.Size = new System.Drawing.Size(80, 21);
             this.mapModeComboBox.TabIndex = 15;
-            this.mapModeComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox9_SelectedIndexChanged);
+            this.mapModeComboBox.SelectedIndexChanged += new System.EventHandler(this.mapModeComboBox_SelectedIndexChanged);
             // 
             // label13
             // 
@@ -307,7 +288,7 @@
             this.wrapYComboBox.Name = "wrapYComboBox";
             this.wrapYComboBox.Size = new System.Drawing.Size(80, 21);
             this.wrapYComboBox.TabIndex = 15;
-            this.wrapYComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox8_SelectedIndexChanged);
+            this.wrapYComboBox.SelectedIndexChanged += new System.EventHandler(this.wrapYComboBox_SelectedIndexChanged);
             // 
             // label16
             // 
@@ -355,7 +336,7 @@
             this.propertiesListView.Size = new System.Drawing.Size(287, 133);
             this.propertiesListView.TabIndex = 12;
             this.propertiesListView.UseCompatibleStateImageBehavior = false;
-            this.propertiesListView.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
+            this.propertiesListView.SelectedIndexChanged += new System.EventHandler(this.propertiesListView_SelectedIndexChanged);
             this.propertiesListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView2_KeyDown);
             this.propertiesListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listView2_KeyPress);
             this.propertiesListView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listView2_KeyUp);
@@ -368,6 +349,7 @@
             this.param3Label.Size = new System.Drawing.Size(43, 13);
             this.param3Label.TabIndex = 15;
             this.param3Label.Text = "Param3";
+            this.toolTip1.SetToolTip(this.param3Label, "Param 3");
             // 
             // param2Label
             // 
@@ -377,6 +359,7 @@
             this.param2Label.Size = new System.Drawing.Size(43, 13);
             this.param2Label.TabIndex = 15;
             this.param2Label.Text = "Param2";
+            this.toolTip1.SetToolTip(this.param2Label, "Param 2");
             // 
             // param1Label
             // 
@@ -386,15 +369,16 @@
             this.param1Label.Size = new System.Drawing.Size(43, 13);
             this.param1Label.TabIndex = 15;
             this.param1Label.Text = "Param1";
+            this.toolTip1.SetToolTip(this.param1Label, "Param 1");
             // 
-            // label19
+            // propertyNameLabel
             // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(6, 16);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(35, 13);
-            this.label19.TabIndex = 15;
-            this.label19.Text = "Name";
+            this.propertyNameLabel.AutoSize = true;
+            this.propertyNameLabel.Location = new System.Drawing.Point(6, 20);
+            this.propertyNameLabel.Name = "propertyNameLabel";
+            this.propertyNameLabel.Size = new System.Drawing.Size(52, 13);
+            this.propertyNameLabel.TabIndex = 15;
+            this.propertyNameLabel.Text = "Property: ";
             // 
             // param1TB
             // 
@@ -419,15 +403,6 @@
             this.param3TB.Size = new System.Drawing.Size(58, 20);
             this.param3TB.TabIndex = 19;
             this.param3TB.TextChanged += new System.EventHandler(this.param3TB_TextChanged);
-            // 
-            // matPropertyNameTB
-            // 
-            this.matPropertyNameTB.Enabled = false;
-            this.matPropertyNameTB.Location = new System.Drawing.Point(63, 13);
-            this.matPropertyNameTB.Name = "matPropertyNameTB";
-            this.matPropertyNameTB.Size = new System.Drawing.Size(198, 20);
-            this.matPropertyNameTB.TabIndex = 16;
-            this.matPropertyNameTB.TextChanged += new System.EventHandler(this.matPropertyTB_TextChanged);
             // 
             // savePresetButton
             // 
@@ -500,7 +475,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(293, 504);
+            this.groupBox1.Size = new System.Drawing.Size(293, 392);
             this.groupBox1.TabIndex = 25;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Properties";
@@ -510,9 +485,7 @@
             this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox8.Controls.Add(this.paramGB);
-            this.groupBox8.Controls.Add(this.descriptionLabel);
-            this.groupBox8.Controls.Add(this.label19);
-            this.groupBox8.Controls.Add(this.matPropertyNameTB);
+            this.groupBox8.Controls.Add(this.propertyNameLabel);
             this.groupBox8.Location = new System.Drawing.Point(3, 186);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(287, 310);
@@ -540,7 +513,7 @@
             this.paramGB.Controls.Add(this.param3Label, 0, 2);
             this.paramGB.Controls.Add(this.param2Label, 0, 1);
             this.paramGB.Controls.Add(this.param1TrackBar, 2, 0);
-            this.paramGB.Location = new System.Drawing.Point(5, 39);
+            this.paramGB.Location = new System.Drawing.Point(3, 43);
             this.paramGB.Name = "paramGB";
             this.paramGB.RowCount = 4;
             this.paramGB.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
@@ -596,6 +569,7 @@
             this.param4Label.Size = new System.Drawing.Size(43, 13);
             this.param4Label.TabIndex = 15;
             this.param4Label.Text = "Param4";
+            this.toolTip1.SetToolTip(this.param4Label, "Param 4");
             // 
             // param1TrackBar
             // 
@@ -607,21 +581,9 @@
             this.param1TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.param1TrackBar.Scroll += new System.EventHandler(this.param1TrackBar_Scroll);
             // 
-            // descriptionLabel
-            // 
-            this.descriptionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.descriptionLabel.AutoSize = true;
-            this.descriptionLabel.Location = new System.Drawing.Point(2, 156);
-            this.descriptionLabel.MaximumSize = new System.Drawing.Size(250, 0);
-            this.descriptionLabel.Name = "descriptionLabel";
-            this.descriptionLabel.Size = new System.Drawing.Size(63, 13);
-            this.descriptionLabel.TabIndex = 14;
-            this.descriptionLabel.Text = "Description:";
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.texAlphaGlControl);
-            this.groupBox2.Controls.Add(this.groupBox7);
             this.groupBox2.Controls.Add(this.texturesListView);
             this.groupBox2.Controls.Add(this.texRgbGlControl);
             this.groupBox2.Controls.Add(this.tableLayoutPanel2);
@@ -630,7 +592,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(3, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(287, 498);
+            this.groupBox2.Size = new System.Drawing.Size(287, 386);
             this.groupBox2.TabIndex = 26;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Textures";
@@ -644,132 +606,6 @@
             this.texAlphaGlControl.TabIndex = 25;
             this.texAlphaGlControl.VSync = false;
             this.texAlphaGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texAlphaGlControl_Paint);
-            // 
-            // groupBox7
-            // 
-            this.groupBox7.Controls.Add(this.cubemapCB);
-            this.groupBox7.Controls.Add(this.stageMapCB);
-            this.groupBox7.Controls.Add(this.dummy_rampCB);
-            this.groupBox7.Controls.Add(this.rampCB);
-            this.groupBox7.Controls.Add(this.AOCB);
-            this.groupBox7.Controls.Add(this.sphere_mapCB);
-            this.groupBox7.Controls.Add(this.normalCB);
-            this.groupBox7.Controls.Add(this.diffuse2CB);
-            this.groupBox7.Controls.Add(this.diffuseCB);
-            this.groupBox7.Location = new System.Drawing.Point(5, 347);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(282, 140);
-            this.groupBox7.TabIndex = 24;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "4th Byte (experimental WIP)";
-            // 
-            // cubemapCB
-            // 
-            this.cubemapCB.AutoSize = true;
-            this.cubemapCB.Enabled = false;
-            this.cubemapCB.Location = new System.Drawing.Point(7, 66);
-            this.cubemapCB.Name = "cubemapCB";
-            this.cubemapCB.Size = new System.Drawing.Size(71, 17);
-            this.cubemapCB.TabIndex = 8;
-            this.cubemapCB.Text = "Cubemap";
-            this.cubemapCB.UseVisualStyleBackColor = true;
-            this.cubemapCB.CheckedChanged += new System.EventHandler(this.cubemapCB_CheckedChanged);
-            // 
-            // stageMapCB
-            // 
-            this.stageMapCB.AutoSize = true;
-            this.stageMapCB.Enabled = false;
-            this.stageMapCB.Location = new System.Drawing.Point(76, 89);
-            this.stageMapCB.Name = "stageMapCB";
-            this.stageMapCB.Size = new System.Drawing.Size(78, 17);
-            this.stageMapCB.TabIndex = 7;
-            this.stageMapCB.Text = "Stage Map";
-            this.stageMapCB.UseVisualStyleBackColor = true;
-            this.stageMapCB.CheckedChanged += new System.EventHandler(this.stageMapCB_CheckedChanged);
-            // 
-            // dummy_rampCB
-            // 
-            this.dummy_rampCB.AutoSize = true;
-            this.dummy_rampCB.Enabled = false;
-            this.dummy_rampCB.Location = new System.Drawing.Point(165, 18);
-            this.dummy_rampCB.Name = "dummy_rampCB";
-            this.dummy_rampCB.Size = new System.Drawing.Size(92, 17);
-            this.dummy_rampCB.TabIndex = 6;
-            this.dummy_rampCB.Text = "Dummy Ramp";
-            this.dummy_rampCB.UseVisualStyleBackColor = true;
-            this.dummy_rampCB.CheckedChanged += new System.EventHandler(this.dummy_rampCB_CheckedChanged);
-            // 
-            // rampCB
-            // 
-            this.rampCB.AutoSize = true;
-            this.rampCB.Enabled = false;
-            this.rampCB.Location = new System.Drawing.Point(78, 66);
-            this.rampCB.Name = "rampCB";
-            this.rampCB.Size = new System.Drawing.Size(54, 17);
-            this.rampCB.TabIndex = 5;
-            this.rampCB.Text = "Ramp";
-            this.rampCB.UseVisualStyleBackColor = true;
-            this.rampCB.CheckedChanged += new System.EventHandler(this.rampCB_CheckedChanged);
-            // 
-            // AOCB
-            // 
-            this.AOCB.AutoSize = true;
-            this.AOCB.Enabled = false;
-            this.AOCB.Location = new System.Drawing.Point(7, 89);
-            this.AOCB.Name = "AOCB";
-            this.AOCB.Size = new System.Drawing.Size(41, 17);
-            this.AOCB.TabIndex = 4;
-            this.AOCB.Text = "AO";
-            this.AOCB.UseVisualStyleBackColor = true;
-            this.AOCB.CheckedChanged += new System.EventHandler(this.AOCB_CheckedChanged);
-            // 
-            // sphere_mapCB
-            // 
-            this.sphere_mapCB.AutoSize = true;
-            this.sphere_mapCB.Enabled = false;
-            this.sphere_mapCB.Location = new System.Drawing.Point(78, 18);
-            this.sphere_mapCB.Name = "sphere_mapCB";
-            this.sphere_mapCB.Size = new System.Drawing.Size(84, 17);
-            this.sphere_mapCB.TabIndex = 3;
-            this.sphere_mapCB.Text = "Sphere Map";
-            this.sphere_mapCB.UseVisualStyleBackColor = true;
-            this.sphere_mapCB.CheckedChanged += new System.EventHandler(this.sphere_mapCB_CheckedChanged);
-            // 
-            // normalCB
-            // 
-            this.normalCB.AutoSize = true;
-            this.normalCB.Enabled = false;
-            this.normalCB.Location = new System.Drawing.Point(78, 43);
-            this.normalCB.Name = "normalCB";
-            this.normalCB.Size = new System.Drawing.Size(59, 17);
-            this.normalCB.TabIndex = 2;
-            this.normalCB.Text = "Normal";
-            this.normalCB.UseVisualStyleBackColor = true;
-            this.normalCB.CheckedChanged += new System.EventHandler(this.normalCB_CheckedChanged);
-            // 
-            // diffuse2CB
-            // 
-            this.diffuse2CB.AutoSize = true;
-            this.diffuse2CB.Enabled = false;
-            this.diffuse2CB.Location = new System.Drawing.Point(7, 44);
-            this.diffuse2CB.Name = "diffuse2CB";
-            this.diffuse2CB.Size = new System.Drawing.Size(65, 17);
-            this.diffuse2CB.TabIndex = 1;
-            this.diffuse2CB.Text = "Diffuse2";
-            this.diffuse2CB.UseVisualStyleBackColor = true;
-            this.diffuse2CB.CheckedChanged += new System.EventHandler(this.diffuse2CB_CheckedChanged);
-            // 
-            // diffuseCB
-            // 
-            this.diffuseCB.AutoSize = true;
-            this.diffuseCB.Enabled = false;
-            this.diffuseCB.Location = new System.Drawing.Point(7, 20);
-            this.diffuseCB.Name = "diffuseCB";
-            this.diffuseCB.Size = new System.Drawing.Size(59, 17);
-            this.diffuseCB.TabIndex = 0;
-            this.diffuseCB.Text = "Diffuse";
-            this.diffuseCB.UseVisualStyleBackColor = true;
-            this.diffuseCB.CheckedChanged += new System.EventHandler(this.diffuseCB_CheckedChanged);
             // 
             // dummyRampCB
             // 
@@ -794,7 +630,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 69);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(301, 530);
+            this.tabControl1.Size = new System.Drawing.Size(301, 418);
             this.tabControl1.TabIndex = 19;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -804,7 +640,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(293, 504);
+            this.tabPage1.Size = new System.Drawing.Size(293, 392);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Material Flags";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -815,13 +651,12 @@
             this.groupBox3.Controls.Add(this.groupBox9);
             this.groupBox3.Controls.Add(this.groupBox6);
             this.groupBox3.Controls.Add(this.groupBox5);
-            this.groupBox3.Controls.Add(this.groupBox4);
             this.groupBox3.Controls.Add(this.label8);
             this.groupBox3.Controls.Add(this.flagsTB);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(3, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(287, 498);
+            this.groupBox3.Size = new System.Drawing.Size(287, 386);
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Material";
@@ -829,7 +664,7 @@
             // groupBox10
             // 
             this.groupBox10.Controls.Add(this.tableLayoutPanel5);
-            this.groupBox10.Location = new System.Drawing.Point(5, 209);
+            this.groupBox10.Location = new System.Drawing.Point(6, 122);
             this.groupBox10.Name = "groupBox10";
             this.groupBox10.Size = new System.Drawing.Size(276, 108);
             this.groupBox10.TabIndex = 24;
@@ -883,7 +718,7 @@
             this.refAlphaTB.Name = "refAlphaTB";
             this.refAlphaTB.Size = new System.Drawing.Size(137, 20);
             this.refAlphaTB.TabIndex = 15;
-            this.refAlphaTB.TextChanged += new System.EventHandler(this.textBox6_TextChanged);
+            this.refAlphaTB.TextChanged += new System.EventHandler(this.refAlphaTB_TextChanged);
             // 
             // AlphaFuncComboBox
             // 
@@ -933,7 +768,7 @@
             // groupBox9
             // 
             this.groupBox9.Controls.Add(this.tableLayoutPanel3);
-            this.groupBox9.Location = new System.Drawing.Point(5, 323);
+            this.groupBox9.Location = new System.Drawing.Point(5, 236);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(276, 75);
             this.groupBox9.TabIndex = 23;
@@ -974,7 +809,7 @@
             this.zBufferTB.Name = "zBufferTB";
             this.zBufferTB.Size = new System.Drawing.Size(121, 20);
             this.zBufferTB.TabIndex = 15;
-            this.zBufferTB.TextChanged += new System.EventHandler(this.textBox8_TextChanged);
+            this.zBufferTB.TextChanged += new System.EventHandler(this.zBufferTB_TextChanged);
             // 
             // label6
             // 
@@ -1007,7 +842,7 @@
             this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox6.Controls.Add(this.tableLayoutPanel1);
-            this.groupBox6.Location = new System.Drawing.Point(6, 129);
+            this.groupBox6.Location = new System.Drawing.Point(3, 39);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(275, 77);
             this.groupBox6.TabIndex = 21;
@@ -1093,9 +928,8 @@
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox5.Controls.Add(this.shadowCB);
-            this.groupBox5.Controls.Add(this.mysteryCB);
             this.groupBox5.Controls.Add(this.GlowCB);
-            this.groupBox5.Location = new System.Drawing.Point(5, 404);
+            this.groupBox5.Location = new System.Drawing.Point(5, 317);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(275, 88);
             this.groupBox5.TabIndex = 20;
@@ -1113,18 +947,6 @@
             this.shadowCB.UseVisualStyleBackColor = true;
             this.shadowCB.CheckedChanged += new System.EventHandler(this.shadowCB_CheckedChanged);
             // 
-            // mysteryCB
-            // 
-            this.mysteryCB.AutoSize = true;
-            this.mysteryCB.Enabled = false;
-            this.mysteryCB.Location = new System.Drawing.Point(6, 65);
-            this.mysteryCB.Name = "mysteryCB";
-            this.mysteryCB.Size = new System.Drawing.Size(62, 17);
-            this.mysteryCB.TabIndex = 9;
-            this.mysteryCB.Text = "Mystery";
-            this.mysteryCB.UseVisualStyleBackColor = true;
-            this.mysteryCB.CheckedChanged += new System.EventHandler(this.mysteryCB_CheckedChanged);
-            // 
             // GlowCB
             // 
             this.GlowCB.AutoSize = true;
@@ -1135,63 +957,6 @@
             this.GlowCB.Text = "Glow";
             this.GlowCB.UseVisualStyleBackColor = true;
             this.GlowCB.CheckedChanged += new System.EventHandler(this.GlowCB_CheckedChanged);
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox4.Controls.Add(this.tableLayoutPanel4);
-            this.groupBox4.Location = new System.Drawing.Point(5, 39);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(277, 84);
-            this.groupBox4.TabIndex = 19;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Lighting Channel";
-            // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.ColumnCount = 2;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 31.49606F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 68.50394F));
-            this.tableLayoutPanel4.Controls.Add(this.label18, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.label24, 0, 1);
-            this.tableLayoutPanel4.Controls.Add(this.label25, 0, 2);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 3;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(271, 65);
-            this.tableLayoutPanel4.TabIndex = 1;
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(3, 0);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(46, 13);
-            this.label18.TabIndex = 0;
-            this.label18.Text = "Channel";
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(3, 22);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(34, 13);
-            this.label24.TabIndex = 1;
-            this.label24.Text = "Byte2";
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(3, 44);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(34, 13);
-            this.label25.TabIndex = 2;
-            this.label25.Text = "Byte3";
             // 
             // label8
             // 
@@ -1216,7 +981,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(293, 504);
+            this.tabPage2.Size = new System.Drawing.Size(293, 392);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Textures";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1226,7 +991,7 @@
             this.tabPage3.Controls.Add(this.groupBox1);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(293, 504);
+            this.tabPage3.Size = new System.Drawing.Size(293, 392);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Properties";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1259,7 +1024,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(301, 599);
+            this.ClientSize = new System.Drawing.Size(301, 487);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1282,8 +1047,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.param1TrackBar)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
@@ -1300,9 +1063,6 @@
             this.tableLayoutPanel1.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.tableLayoutPanel4.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
@@ -1324,7 +1084,7 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ListView propertiesListView;
-        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label propertyNameLabel;
         private System.Windows.Forms.Label param1Label;
         private System.Windows.Forms.Label param3Label;
         private System.Windows.Forms.Label param2Label;
@@ -1335,7 +1095,6 @@
         private System.Windows.Forms.ComboBox mapModeComboBox;
         private System.Windows.Forms.ComboBox wrapYComboBox;
         private System.Windows.Forms.TextBox textureIDTB;
-        private System.Windows.Forms.TextBox matPropertyNameTB;
         private System.Windows.Forms.TextBox param1TB;
         private System.Windows.Forms.TextBox param2TB;
         private System.Windows.Forms.TextBox param3TB;
@@ -1356,21 +1115,10 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.GroupBox groupBox8;
-        private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.Label descriptionLabel;
         private System.Windows.Forms.Label param4Label;
         private System.Windows.Forms.TextBox param4TB;
         private System.Windows.Forms.TableLayoutPanel paramGB;
         private OpenTK.GLControl texAlphaGlControl;
-        private System.Windows.Forms.CheckBox cubemapCB;
-        private System.Windows.Forms.CheckBox stageMapCB;
-        private System.Windows.Forms.CheckBox dummy_rampCB;
-        private System.Windows.Forms.CheckBox rampCB;
-        private System.Windows.Forms.CheckBox AOCB;
-        private System.Windows.Forms.CheckBox sphere_mapCB;
-        private System.Windows.Forms.CheckBox normalCB;
-        private System.Windows.Forms.CheckBox diffuse2CB;
-        private System.Windows.Forms.CheckBox diffuseCB;
         private System.Windows.Forms.TrackBar param1TrackBar;
         private System.Windows.Forms.TrackBar param4TrackBar;
         private System.Windows.Forms.TrackBar param3TrackBar;
@@ -1396,13 +1144,7 @@
         private System.Windows.Forms.TextBox alphaFuncTB;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.CheckBox shadowCB;
-        private System.Windows.Forms.CheckBox mysteryCB;
         private System.Windows.Forms.CheckBox GlowCB;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Label label24;
-        private System.Windows.Forms.Label label25;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox flagsTB;
         private System.Windows.Forms.Button addMaterialButton;
@@ -1413,5 +1155,6 @@
         private System.Windows.Forms.TextBox dstTB;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox dstComboBox;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
