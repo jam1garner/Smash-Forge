@@ -10,7 +10,13 @@ namespace Smash_Forge.Params
     public class MatParam
     {
         public string name = "";
-        public string description = "";
+
+        public string generalDescription = "";
+        public string param1Description = "";
+        public string param2Description = "";
+        public string param3Description = "";
+        public string param4Description = "";
+
         public string[] paramLabels = new string[4];
 
         // Users can still manually enter a value higher than max.
@@ -49,7 +55,7 @@ namespace Smash_Forge.Params
                                     matParam.name = args[1]; Console.WriteLine(matParam.name);
                                     break;
                                 case "description":
-                                    matParam.description = args[1];
+                                    matParam.generalDescription = args[1];
                                     break;
                                 case "param1":
                                     matParam.paramLabels[0] = args[1];
@@ -84,6 +90,7 @@ namespace Smash_Forge.Params
                 }
                 catch (Exception)
                 {
+                    // Who knows what actually went wrong. Pros don't need labels anyway...
                 }
             }
 

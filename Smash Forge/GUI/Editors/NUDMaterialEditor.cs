@@ -663,11 +663,11 @@ namespace Smash_Forge
         {
             if (matParam != null)
             {
-                toolTip1.SetToolTip(propertyNameLabel, matParam.description);
-                toolTip1.SetToolTip(param1Label, matParam.description);
-                toolTip1.SetToolTip(param2Label, matParam.description);
-                toolTip1.SetToolTip(param3Label, matParam.description);
-                toolTip1.SetToolTip(param4Label, matParam.description);
+                toolTip1.SetToolTip(propertyNameLabel, matParam.generalDescription);
+                toolTip1.SetToolTip(param1Label, matParam.generalDescription);
+                toolTip1.SetToolTip(param2Label, matParam.generalDescription);
+                toolTip1.SetToolTip(param3Label, matParam.generalDescription);
+                toolTip1.SetToolTip(param4Label, matParam.generalDescription);
 
                 param1Label.Text = matParam.paramLabels[0].Equals("") ? "Param1" : matParam.paramLabels[0];
                 param2Label.Text = matParam.paramLabels[1].Equals("") ? "Param2" : matParam.paramLabels[1];
@@ -1026,10 +1026,24 @@ namespace Smash_Forge
         {
             // Can only have two materials.
             if (currentMaterialList.Count < 2)
+            {
                 currentMaterialList.Add(NUD.Material.GetDefault());
+                currentMatIndex = 1;
+                FillForm();
+                UpdateMatComboBox();
+            }
+        }
 
-            FillForm();
-            UpdateMatComboBox();
+        private void deleteMaterialButton_Click(object sender, EventArgs e)
+        {
+            // Don't allow removing all materials.
+            if (currentMaterialList.Count > 1)
+            {
+                currentMaterialList.RemoveAt(matsComboBox.SelectedIndex);
+                currentMatIndex = 0; // The last material has been removed.
+                FillForm();
+                UpdateMatComboBox();
+            }
         }
     }
 }
