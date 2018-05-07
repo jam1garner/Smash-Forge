@@ -16,7 +16,7 @@ namespace Smash_Forge
 		private int fsID;
 
         private bool checkedCompilation = false;
-        public bool HasCheckedCompilation { get => checkedCompilation; }
+        public bool HasCheckedCompilation { get { return checkedCompilation; } }
 
         private StringBuilder errorLog = new StringBuilder();
 
