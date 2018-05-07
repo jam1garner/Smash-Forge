@@ -23,6 +23,7 @@ namespace Smash_Forge
         public NUD.Polygon currentPolygon;
         public List<NUD.Material> currentMaterialList;
         int currentMatIndex = 0;
+        string currentPropertyName = "";
         public static Dictionary<string, Params.MatParam> materialParamList = new Dictionary<string, Params.MatParam>();
 
         public static Dictionary<int, string> dstFactor = new Dictionary<int, string>(){
@@ -514,12 +515,12 @@ namespace Smash_Forge
                 return;
 
             // Try and find the name of the property that is selected in the listview.
-            string propertyName = currentMaterialList[currentMatIndex].entries.Keys.ElementAt(propertiesListView.SelectedIndices[0]);
-            Params.MatParam matParam = null;
-            materialParamList.TryGetValue(propertyName, out matParam);
+            currentPropertyName = currentMaterialList[currentMatIndex].entries.Keys.ElementAt(propertiesListView.SelectedIndices[0]);
+            Params.MatParam matParam;
+            materialParamList.TryGetValue(currentPropertyName, out matParam);
 
-            SetPropertyLabelText(propertyName);
-            SetParamTextBoxValues(propertyName);
+            SetPropertyLabelText(currentPropertyName);
+            SetParamTextBoxValues(currentPropertyName);
             SetParamLabelsAndToolTips(matParam);
         }
 
@@ -981,7 +982,7 @@ namespace Smash_Forge
         private void param1TrackBar_Scroll(object sender, EventArgs e)
         {
             Params.MatParam labels = null;
-            materialParamList.TryGetValue(propertyNameLabel.Text, out labels);
+            materialParamList.TryGetValue(currentPropertyName, out labels);
             
             if (labels != null)
             {
@@ -992,7 +993,7 @@ namespace Smash_Forge
         private void param2TrackBar_Scroll(object sender, EventArgs e)
         {
             Params.MatParam labels = null;
-            materialParamList.TryGetValue(propertyNameLabel.Text, out labels);
+            materialParamList.TryGetValue(currentPropertyName, out labels);
 
             if (labels != null)
             {
@@ -1003,7 +1004,7 @@ namespace Smash_Forge
         private void param3TrackBar_Scroll(object sender, EventArgs e)
         {
             Params.MatParam labels = null;
-            materialParamList.TryGetValue(propertyNameLabel.Text, out labels);
+            materialParamList.TryGetValue(currentPropertyName, out labels);
 
             if (labels != null)
             {
@@ -1014,7 +1015,7 @@ namespace Smash_Forge
         private void param4TrackBar_Scroll(object sender, EventArgs e)
         {
             Params.MatParam labels = null;
-            materialParamList.TryGetValue(propertyNameLabel.Text, out labels);
+            materialParamList.TryGetValue(currentPropertyName, out labels);
 
             if (labels != null)
             {
