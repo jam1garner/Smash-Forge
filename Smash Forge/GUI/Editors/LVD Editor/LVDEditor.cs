@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using OpenTK;
@@ -22,7 +23,7 @@ namespace Smash_Forge
         }
 
         public LVDEntry currentEntry;
-        private Vector2 currentVert;
+        //private Vector2 currentVert;
         private Vector2 currentNormal;
         private CollisionMat currentMat;
         private TreeNode currentTreeNode;
@@ -218,10 +219,10 @@ namespace Smash_Forge
         {
             itemSpawnerGroup.Visible = true;
             ItemSpawner spawner = (ItemSpawner)entry;
-            treeView1.Nodes.Clear();
+            itemSpawnSectionTreeView.Nodes.Clear();
             int i = 1;
             foreach (LVDShape section in spawner.sections)
-                treeView1.Nodes.Add(new TreeNode($"Section {i++}") { Tag = section });
+                itemSpawnSectionTreeView.Nodes.Add(new TreeNode($"Section {i++}") { Tag = section });
         }
 
         private void OpenBounds(LVDEntry entry)
@@ -273,16 +274,23 @@ namespace Smash_Forge
 
         private void vertices_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            currentVert = (Vector2)e.Node.Tag;
-            LVD.LVDSelection = currentVert;
-            vertXPosUpDown.Value = (decimal)currentVert.X;
-            yVert.Value = (decimal)currentVert.Y;
+            // Find the selected vert and update the position numeric control.
+            int selectedIndex = verticesTreeView.SelectedNode.Index;
+            Collision collision = (Collision)currentEntry;
+            if (selectedIndex >= collision.verts.Count)
+                return;
+
+            // Used for the blinking during rendering.
+            LVD.LVDSelection = collision.verts[selectedIndex];
+
+            vertXPosUpDown.Value = (decimal)collision.verts[selectedIndex].X;
+            yVert.Value = (decimal)collision.verts[selectedIndex].Y;
         }
 
         private void lines_AfterSelect(object sender, TreeViewEventArgs e)
         {
             currentNormal = (Vector2)((object[])e.Node.Tag)[0];
-            LVD.LVDSelection = currentNormal;
+            //LVD.LVDSelection = currentNormal;
             currentMat = (CollisionMat)((object[])e.Node.Tag)[1];
             leftLedgeCB.Checked = currentMat.getFlag(6);
             rightLedgeCB.Checked = currentMat.getFlag(7);
@@ -303,13 +311,27 @@ namespace Smash_Forge
                 ((Collision)currentEntry).flag4 = dropThroughCB.Checked;
         }
 
-        private void changePos(object sender, EventArgs e)
+        private void ChangeCollisionVertPos(object sender, EventArgs e)
         {
-            if(sender == vertXPosUpDown)
-                currentVert.X = (float)vertXPosUpDown.Value;
-            if(sender == yVert)
-                currentVert.Y = (float)yVert.Value;
-            verticesTreeView.SelectedNode.Text = $"Vertex {verticesTreeView.SelectedNode.Index + 1} ({currentVert.X},{currentVert.Y})";
+            Debug.WriteLine(currentEntry.GetType());
+            if (currentEntry is Collision)
+            {
+                // Find which vert of the collision is selected.
+                int selectedIndex = verticesTreeView.SelectedNode.Index;
+                Collision collision = (Collision)currentEntry;
+                if (selectedIndex >= collision.verts.Count)
+                    return;
+
+                // Update the collision vert's position.
+                if (sender == vertXPosUpDown)
+                    collision.verts[selectedIndex] = new Vector2((float)vertXPosUpDown.Value, collision.verts[selectedIndex].Y);
+                if (sender == yVert)
+                    collision.verts[selectedIndex] = new Vector2(collision.verts[selectedIndex].X, (float)yVert.Value);
+
+                // Verts are named using the index and their position.
+                string name = $"Vertex {verticesTreeView.SelectedNode.Index + 1} ({collision.verts[selectedIndex].X},{collision.verts[selectedIndex].Y})";
+                verticesTreeView.SelectedNode.Text = name;
+            }
         }
 
         private void nameChange(object sender, EventArgs e)
@@ -417,13 +439,15 @@ namespace Smash_Forge
             Collision col = (Collision)currentEntry;
             int index = (verticesTreeView.SelectedNode == null) ? col.verts.Count : verticesTreeView.SelectedNode.Index + 1;
 
-            Vector2 newVert;
-            if (verticesTreeView.SelectedNode == null)
-                newVert = new Vector2();
-            else
-                newVert = new Vector2(currentVert.X, currentVert.Y);
+            // Add a new vertex to the collision. Duplicates the currently selected vertex.
+            int selectedIndex = verticesTreeView.SelectedNode.Index;
+            Vector2 newVert = new Vector2();
+            if (verticesTreeView.SelectedNode != null && selectedIndex < col.verts.Count)
+                newVert = new Vector2(col.verts[selectedIndex].X, col.verts[selectedIndex].Y);
+
             col.verts.Insert(index, newVert);
 
+            // Add the new vert to the tree view.
             TreeNode newNode = new TreeNode("New Vertex") { Tag = newVert };
             verticesTreeView.Nodes.Insert(index, newNode);
             if (verticesTreeView.SelectedNode == null)
@@ -504,11 +528,11 @@ namespace Smash_Forge
         {
             //selecting something in the sections tab of the item spawner editor
             LVDShape section = (LVDShape)e.Node.Tag;
-            treeView2.Nodes.Clear();
+            itemSpawnVertTreeView.Nodes.Clear();
             currentItemSection = section;
             int i = 1;
             foreach (Vector2 v in section.points)
-                treeView2.Nodes.Add(new TreeNode($"Point {i++} ({v.X},{v.Y})") { Tag = v });
+                itemSpawnVertTreeView.Nodes.Add(new TreeNode($"Point {i++} ({v.X},{v.Y})") { Tag = v });
         }
 
         private void treeView2_AfterSelect(object sender, TreeViewEventArgs e)
@@ -523,20 +547,20 @@ namespace Smash_Forge
             //Add section
             LVDShape section = new LVDShape(4);
             
-            TreeNode node = new TreeNode($"Section {treeView1.Nodes.Count + 1}") { Tag = section };
+            TreeNode node = new TreeNode($"Section {itemSpawnSectionTreeView.Nodes.Count + 1}") { Tag = section };
             ((ItemSpawner)currentEntry).sections.Add(section);
-            treeView1.Nodes.Add(node);
+            itemSpawnSectionTreeView.Nodes.Add(node);
         }
 
         private void removeSectionButton_Click(object sender, EventArgs e)
         {
             //remove section
-            LVDShape section = (LVDShape)treeView1.SelectedNode.Tag;
-            TreeNode node = treeView1.SelectedNode;
+            LVDShape section = (LVDShape)itemSpawnSectionTreeView.SelectedNode.Tag;
+            TreeNode node = itemSpawnSectionTreeView.SelectedNode;
             ((ItemSpawner)currentEntry).sections.Remove(section);
-            treeView1.Nodes.Remove(node);
+            itemSpawnSectionTreeView.Nodes.Remove(node);
             int i = 1;
-            foreach (TreeNode n in treeView1.Nodes)
+            foreach (TreeNode n in itemSpawnSectionTreeView.Nodes)
                 n.Text = $"Section {i++}";
         }
 
@@ -544,32 +568,32 @@ namespace Smash_Forge
         {
             //Add item spawner vertex
             Vector2 v = new Vector2();
-            if(treeView2.SelectedNode == null)
+            if(itemSpawnVertTreeView.SelectedNode == null)
             {
-                treeView2.Nodes.Add(new TreeNode("temp") { Tag = v });
+                itemSpawnVertTreeView.Nodes.Add(new TreeNode("temp") { Tag = v });
                 currentItemSection.points.Add(v);
             }
             else
             {
-                int index = treeView2.SelectedNode.Index;
-                treeView2.Nodes.Insert(index + 1, new TreeNode("temp") { Tag = v });
+                int index = itemSpawnVertTreeView.SelectedNode.Index;
+                itemSpawnVertTreeView.Nodes.Insert(index + 1, new TreeNode("temp") { Tag = v });
                 currentItemSection.points.Insert(index + 1, v);
             }
             int i = 1;
-            foreach (TreeNode t in treeView2.Nodes)
+            foreach (TreeNode t in itemSpawnVertTreeView.Nodes)
                 t.Text = $"Point {i++} ({((Vector2)t.Tag).X},{((Vector2)t.Tag).Y})";
         }
 
         private void removeItemSpawnButton_Click(object sender, EventArgs e)
         {
             //Delete item spawner vertex
-            if(treeView2.SelectedNode != null)
+            if(itemSpawnVertTreeView.SelectedNode != null)
             {
-                Vector2 v = (Vector2)treeView2.SelectedNode.Tag;
+                Vector2 v = (Vector2)itemSpawnVertTreeView.SelectedNode.Tag;
                 currentItemSection.points.Remove(v);
-                treeView2.Nodes.Remove(treeView2.SelectedNode);
+                itemSpawnVertTreeView.Nodes.Remove(itemSpawnVertTreeView.SelectedNode);
                 int i = 1;
-                foreach (TreeNode t in treeView2.Nodes)
+                foreach (TreeNode t in itemSpawnVertTreeView.Nodes)
                     t.Text = $"Point {i++} ({((Vector2)t.Tag).X},{((Vector2)t.Tag).Y})";
             }
         }
@@ -577,12 +601,12 @@ namespace Smash_Forge
         private void changeItemVertPosition(object sender, EventArgs e)
         {
             //changed either X or Y pos of item spawner vertex
-            Vector2 v = ((Vector2)treeView2.SelectedNode.Tag);
+            Vector2 v = ((Vector2)itemSpawnVertTreeView.SelectedNode.Tag);
             if (sender == numericUpDown2)
                 v.X = (float)numericUpDown2.Value;
             if(sender == numericUpDown1)
                 v.Y = (float)numericUpDown1.Value;
-            treeView2.SelectedNode.Text = $"Point {treeView2.SelectedNode.Index + 1} ({((Vector2)treeView2.SelectedNode.Tag).X},{((Vector2)treeView2.SelectedNode.Tag).Y})";
+            itemSpawnVertTreeView.SelectedNode.Text = $"Point {itemSpawnVertTreeView.SelectedNode.Index + 1} ({((Vector2)itemSpawnVertTreeView.SelectedNode.Tag).X},{((Vector2)itemSpawnVertTreeView.SelectedNode.Tag).Y})";
         }
 
         private void pointShape_ValueChanged(object sender, EventArgs e)
@@ -660,7 +684,7 @@ namespace Smash_Forge
         public void Clear()
         {
             currentEntry = null;
-            currentVert = new Vector2(0);
+            //currentVert = new Vector2(0);
             currentNormal = new Vector2(0);
             currentMat = null;
             currentTreeNode = null;
