@@ -247,44 +247,40 @@ namespace Smash_Forge.GUI
             switch (Runtime.renderType)
             {
                 default:
-                    debug1CB.Visible = false;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = false;
 
-                    radioButton1.Visible = false;
-                    radioButton2.Visible = false;
-                    radioButton3.Visible = false;
+                    radioButton1.Enabled = false;
+                    radioButton2.Enabled = false;
+                    radioButton3.Enabled = false;
                     break;
                 case Runtime.RenderTypes.UVTestPattern:
-                    debug1CB.Visible = false;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = false;
 
-                    radioButton1.Visible = true;
-                    radioButton2.Visible = true;
-                    radioButton3.Visible = true;
+                    radioButton1.Enabled = true;
+                    radioButton2.Enabled = true;
+                    radioButton3.Enabled = true;
 
                     radioButton1.Text = "UV1";
                     radioButton2.Text = "UV2";
                     radioButton3.Text = "UV3";
                     break;
                 case Runtime.RenderTypes.UVCoords:
-                    debug1CB.Visible = false;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = false;
 
-                    radioButton1.Visible = true;
-                    radioButton2.Visible = true;
-                    radioButton3.Visible = true;
+                    radioButton1.Enabled = true;
+                    radioButton2.Enabled = true;
+                    radioButton3.Enabled = true;
 
                     radioButton1.Text = "UV1";
                     radioButton2.Text = "UV2";
                     radioButton3.Text = "UV3";
                     break;
                 case Runtime.RenderTypes.DiffuseMap:
-                    debug1CB.Visible = false;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = false;
 
-                    radioButton1.Visible = true;
-                    radioButton2.Visible = true;
-                    radioButton3.Visible = true;
+                    radioButton1.Enabled = true;
+                    radioButton2.Enabled = true;
+                    radioButton3.Enabled = true;
 
                     radioButton1.Text = "UV1";
                     radioButton2.Text = "UV2";
@@ -292,42 +288,38 @@ namespace Smash_Forge.GUI
                     break;
                 case Runtime.RenderTypes.AmbientOcclusion:
                     debug1CB.Text = "aoMinGain";
-                    debug1CB.Visible = true;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = true;
 
-                    radioButton1.Visible = false;
-                    radioButton2.Visible = false;
-                    radioButton3.Visible = false;
+                    radioButton1.Enabled = false;
+                    radioButton2.Enabled = false;
+                    radioButton3.Enabled = false;
                     break;
                 case Runtime.RenderTypes.SelectedBoneWeights:
                     debug1CB.Text = "Color Ramp";
-                    debug1CB.Visible = false;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = false;
 
-                    radioButton1.Visible = true;
-                    radioButton2.Visible = true;
-                    radioButton3.Visible = true;
+                    radioButton1.Enabled = true;
+                    radioButton2.Enabled = true;
+                    radioButton3.Enabled = true;
 
                     radioButton1.Text = "BnW";
                     radioButton2.Text = "Color 1";
                     radioButton3.Text = "Color 2";
                     break;
                 case Runtime.RenderTypes.Normals:
-                    debug1CB.Visible = false;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = false;
 
-                    radioButton1.Visible = false;
-                    radioButton2.Visible = false;
-                    radioButton3.Visible = false;
+                    radioButton1.Enabled = false;
+                    radioButton2.Enabled = false;
+                    radioButton3.Enabled = false;
                     break;
                 case Runtime.RenderTypes.VertColor:
                     debug1CB.Text = "Divide by 2";
-                    debug1CB.Visible = true;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = true;
 
-                    radioButton1.Visible = false;
-                    radioButton2.Visible = false;
-                    radioButton3.Visible = false;
+                    radioButton1.Enabled = false;
+                    radioButton2.Enabled = false;
+                    radioButton3.Enabled = false;
                     break;
             }
         }
@@ -339,7 +331,6 @@ namespace Smash_Forge.GUI
             renderChannelB.Enabled = true;
             renderChannelA.Enabled = true;
             debug1CB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            debug2CB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
             radioButton1.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
             radioButton2.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
             radioButton3.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
@@ -760,11 +751,6 @@ namespace Smash_Forge.GUI
             Runtime.debug1 = debug1CB.Checked;
         }
 
-        private void debug2CB_CheckedChanged(object sender, EventArgs e)
-        {
-            Runtime.debug2 = debug2CB.Checked;
-        }
-
         private void pbHitboxAnglesColor_Click(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog();
@@ -861,6 +847,26 @@ namespace Smash_Forge.GUI
         private void bloomThresholdTB_TextChanged(object sender, EventArgs e)
         {
             Runtime.bloomThreshold = GuiTools.TryParseTBFloat(bloomThresholdTB);
+        }
+
+        private void groupBox8_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void floorComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Runtime.floorStyle = (Runtime.FloorStyle)floorComboBox.SelectedIndex;
+        }
+
+        private void openBackgroundTexButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void openFloorTexButton_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -140,7 +140,7 @@ namespace Smash_Forge
         public static TextureWrapMode floorWrap = TextureWrapMode.MirroredRepeat;
         public static float floorSize = 30f;
         public static Color floorColor = Color.Gray;
-        public static FloorStyle floorStyle = FloorStyle.Normal;
+        public static FloorStyle floorStyle = FloorStyle.WireFrame;
         public static bool renderFloorLines = true;
 
         public static Color backgroundGradientTop = Color.FromArgb(255, 26, 26, 26);
@@ -250,10 +250,9 @@ namespace Smash_Forge
 
         public enum FloorStyle
         {
-            Normal = 0,
-            Textured = 1,
-            UserTexture = 2,
-            Solid = 3,
+            WireFrame = 0,
+            UserTexture = 1,
+            Solid = 2,
         }
 
         public static string TargetAnimString { get; set; }

@@ -895,7 +895,7 @@ namespace Smash_Forge.Rendering
             GL.Color3(Runtime.floorColor);
             GL.LineWidth(1f);
 
-            if (Runtime.floorStyle == Runtime.FloorStyle.Textured || Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+            if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
             {
                 GL.Enable(EnableCap.Texture2D);
                 GL.ActiveTexture(TextureUnit.Texture0);
