@@ -28,8 +28,8 @@ namespace Smash_Forge.GUI
             renderCameraPathCB.Checked = Runtime.renderPath;
             drawUvCB.Checked = Runtime.drawUv;
             textParamDir.Text = Runtime.paramDir;
-            RendererLabel.Text = "Renderer: " + Runtime.renderer;
-            OpenGLVersionLabel.Text = "OpenGL Version: " + Runtime.GLSLVersion;
+            //RendererLabel.Text = "Renderer: " + Runtime.renderer;
+            //OpenGLVersionLabel.Text = "OpenGL Version: " + Runtime.GLSLVersion;
             BackgroundGradient1.BackColor = Runtime.backgroundGradientTop;
             BackgroundGradient2.BackColor = Runtime.backgroundGradientBottom;
 
