@@ -313,7 +313,7 @@ namespace Smash_Forge
             {
                 TargetLVD.LVDSelection = e.Node.Tag;
                 //MainForm.Instance.viewports[0].timeSinceSelected.Restart();
-                lvdEditor.open((LVDEntry)e.Node.Tag, e.Node);
+                lvdEditor.Open((LVDEntry)e.Node.Tag, e.Node);
             }
         }
 
