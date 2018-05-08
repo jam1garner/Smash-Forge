@@ -23,8 +23,6 @@ namespace Smash_Forge
         }
 
         public LVDEntry currentEntry;
-        //private Vector2 currentVert;
-        private Vector2 currentNormal;
         private CollisionMat currentMat;
         private TreeNode currentTreeNode;
         private Spawn currentPoint;
@@ -289,14 +287,21 @@ namespace Smash_Forge
 
         private void lines_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            currentNormal = (Vector2)((object[])e.Node.Tag)[0];
-            //LVD.LVDSelection = currentNormal;
+            // Find the currently selected normal.
+            int selectedIndex = linesTreeView.SelectedNode.Index;
+            Collision collision = (Collision)currentEntry;
+            if (selectedIndex >= collision.normals.Count)
+                return;
+
+            LVD.LVDSelection = collision.normals[selectedIndex];
+
             currentMat = (CollisionMat)((object[])e.Node.Tag)[1];
             leftLedgeCB.Checked = currentMat.getFlag(6);
             rightLedgeCB.Checked = currentMat.getFlag(7);
             noWallJumpCB.Checked = currentMat.getFlag(4);
             physicsMatComboBox.Text = Enum.GetName(typeof(materialTypes), currentMat.physics);
-            passthroughAngleUpDown.Value = (decimal)(Math.Atan2(currentNormal.Y, currentNormal.X) * 180.0 / Math.PI);
+
+            passthroughAngleUpDown.Value = (decimal)(Math.Atan2(collision.normals[selectedIndex].Y, collision.normals[selectedIndex].X) * 180.0 / Math.PI);
         }
 
         private void flagChange(object sender, EventArgs e)
@@ -350,9 +355,14 @@ namespace Smash_Forge
 
         private void passthroughAngle_ValueChanged(object sender, EventArgs e)
         {
+            // Find the currently selected normal.
+            int selectedIndex = linesTreeView.SelectedNode.Index;
+            Collision collision = (Collision)currentEntry;
+            if (selectedIndex >= collision.normals.Count)
+                return;
+
             double theta = (double)((NumericUpDown)sender).Value;
-            currentNormal.X = (float)Math.Cos(theta * Math.PI / 180.0f);
-            currentNormal.Y = (float)Math.Sin(theta * Math.PI / 180.0f);
+            collision.normals[selectedIndex] = new Vector2((float)Math.Cos(theta * Math.PI / 180.0f), (float)Math.Sin(theta * Math.PI / 180.0f));
         }
 
         private void physicsMatComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -681,11 +691,9 @@ namespace Smash_Forge
             renamePathTreeview();
         }
 
-        public void Clear()
+        public void ResetUi()
         {
             currentEntry = null;
-            //currentVert = new Vector2(0);
-            currentNormal = new Vector2(0);
             currentMat = null;
             currentTreeNode = null;
             currentPoint = null;
