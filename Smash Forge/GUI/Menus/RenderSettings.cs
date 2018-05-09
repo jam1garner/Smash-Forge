@@ -136,6 +136,7 @@ namespace Smash_Forge.GUI
             // Floor Settings
             renderFloorCB.Checked = Runtime.renderFloor;
             floorComboBox.SelectedIndex = (int)Runtime.floorStyle;
+            floorScaleTB.Text = Runtime.floorSize + "";
             SetFloorPictureBoxToolTip();
 
             // Background Settings
@@ -875,7 +876,14 @@ namespace Smash_Forge.GUI
             if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
             {
                 floorColorPictureBox.BackColor = Color.FromArgb(0, Color.White);
-                floorColorPictureBox.Image = new Bitmap(Runtime.floorTexFilePath);
+
+                try
+                {
+                    floorColorPictureBox.Image = new Bitmap(Runtime.floorTexFilePath);
+                }
+                catch (Exception)
+                {
+                }
             }
             else
             {
@@ -898,13 +906,15 @@ namespace Smash_Forge.GUI
             OpenBackgroundTexture();
         }
 
-        private static void OpenBackgroundTexture()
+        private void OpenBackgroundTexture()
         {
             using (var ofd = new OpenFileDialog() { Filter = "Image (.png)|*.png|All Files (*.*)|*.*" })
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
                     Rendering.RenderTools.backgroundTexture = NUT.loadImage(new Bitmap(ofd.FileName));
+                    Runtime.backgroundTexFilePath = ofd.FileName;
+                    backgroundPictureBox.Image = new Bitmap(Runtime.backgroundTexFilePath);
                 }
             }
         }
@@ -926,10 +936,46 @@ namespace Smash_Forge.GUI
 
         private void backgroundComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // The solid mode only uses a single color.
             Runtime.backgroundStyle = (Runtime.BackgroundStyle)backgroundComboBox.SelectedIndex;
-            backgroundBottomLabel.Visible = (Runtime.backgroundStyle != Runtime.BackgroundStyle.Solid);
-            BackgroundGradient2.Visible = (Runtime.backgroundStyle != Runtime.BackgroundStyle.Solid);
+
+            if (Runtime.backgroundStyle == Runtime.BackgroundStyle.UserTexture)
+            {
+                backgroundPictureBox.Visible = true;
+
+                BackgroundGradient1.Visible = false;
+                backgroundTopLabel.Visible = false;
+                backgroundBottomLabel.Visible = false;
+                BackgroundGradient2.Visible = false;
+            }
+            else if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
+            {
+                // Single color and no picture box.
+                BackgroundGradient1.Visible = true;
+                backgroundTopLabel.Visible = true;
+                backgroundBottomLabel.Visible = false;
+                BackgroundGradient2.Visible = false;
+
+                backgroundPictureBox.Visible = false;
+            }
+            else if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Gradient)
+            {
+                BackgroundGradient1.Visible = true;
+                backgroundTopLabel.Visible = true;
+                backgroundBottomLabel.Visible = true;
+                BackgroundGradient2.Visible = true;
+
+                backgroundPictureBox.Visible = false;
+            }
+        }
+
+        private void ClearBackgroundPictureBox()
+        {
+            if (backgroundPictureBox.Image != null)
+            {
+                backgroundPictureBox.Image.Dispose();
+                backgroundPictureBox.Image = null;
+                backgroundPictureBox.Refresh();
+            }
         }
 
         private void floorScaleTB_TextChanged(object sender, EventArgs e)
@@ -953,6 +999,11 @@ namespace Smash_Forge.GUI
                 Runtime.floorColor = Color.FromArgb(0xFF, colorDialog.Color);
                 floorColorPictureBox.BackColor = Runtime.floorColor;
             }
+        }
+
+        private void backgroundPictureBox_Click(object sender, EventArgs e)
+        {
+            OpenBackgroundTexture();
         }
     }
 }

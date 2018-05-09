@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -148,8 +148,6 @@
             this.useNormCB = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.backgroundImgLabel = new System.Windows.Forms.Label();
-            this.openBackgroundTexButton = new System.Windows.Forms.Button();
             this.backgroundStyleLabel = new System.Windows.Forms.Label();
             this.backgroundComboBox = new System.Windows.Forms.ComboBox();
             this.renderBackgroundCB = new System.Windows.Forms.CheckBox();
@@ -162,8 +160,6 @@
             this.floorColorPictureBox = new System.Windows.Forms.PictureBox();
             this.label7 = new System.Windows.Forms.Label();
             this.floorScaleTB = new System.Windows.Forms.TextBox();
-            this.floorDivisionsTB = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
             this.floorStyleLabel = new System.Windows.Forms.Label();
             this.floorComboBox = new System.Windows.Forms.ComboBox();
             this.renderFloorCB = new System.Windows.Forms.CheckBox();
@@ -189,6 +185,7 @@
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.defaultRadioButton = new System.Windows.Forms.RadioButton();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.backgroundPictureBox = new System.Windows.Forms.PictureBox();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -226,6 +223,7 @@
             this.tableLayoutPanel2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.backgroundPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // tabPage2
@@ -713,8 +711,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3,
-            listViewItem4});
+            listViewItem7,
+            listViewItem8});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -1528,8 +1526,7 @@
             // 
             // groupBox9
             // 
-            this.groupBox9.Controls.Add(this.backgroundImgLabel);
-            this.groupBox9.Controls.Add(this.openBackgroundTexButton);
+            this.groupBox9.Controls.Add(this.backgroundPictureBox);
             this.groupBox9.Controls.Add(this.backgroundStyleLabel);
             this.groupBox9.Controls.Add(this.backgroundComboBox);
             this.groupBox9.Controls.Add(this.renderBackgroundCB);
@@ -1537,38 +1534,19 @@
             this.groupBox9.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox9.Location = new System.Drawing.Point(3, 3);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(550, 159);
+            this.groupBox9.Size = new System.Drawing.Size(550, 180);
             this.groupBox9.TabIndex = 39;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Background Settings";
             // 
-            // backgroundImgLabel
-            // 
-            this.backgroundImgLabel.AutoSize = true;
-            this.backgroundImgLabel.Location = new System.Drawing.Point(22, 72);
-            this.backgroundImgLabel.Name = "backgroundImgLabel";
-            this.backgroundImgLabel.Size = new System.Drawing.Size(97, 13);
-            this.backgroundImgLabel.TabIndex = 37;
-            this.backgroundImgLabel.Text = "Background Image";
-            // 
-            // openBackgroundTexButton
-            // 
-            this.openBackgroundTexButton.Location = new System.Drawing.Point(169, 65);
-            this.openBackgroundTexButton.Name = "openBackgroundTexButton";
-            this.openBackgroundTexButton.Size = new System.Drawing.Size(75, 23);
-            this.openBackgroundTexButton.TabIndex = 36;
-            this.openBackgroundTexButton.Text = "Open Image";
-            this.openBackgroundTexButton.UseVisualStyleBackColor = true;
-            this.openBackgroundTexButton.Click += new System.EventHandler(this.openBackgroundTexButton_Click);
-            // 
             // backgroundStyleLabel
             // 
             this.backgroundStyleLabel.AutoSize = true;
-            this.backgroundStyleLabel.Location = new System.Drawing.Point(22, 43);
+            this.backgroundStyleLabel.Location = new System.Drawing.Point(99, 43);
             this.backgroundStyleLabel.Name = "backgroundStyleLabel";
-            this.backgroundStyleLabel.Size = new System.Drawing.Size(30, 13);
+            this.backgroundStyleLabel.Size = new System.Drawing.Size(91, 13);
             this.backgroundStyleLabel.TabIndex = 35;
-            this.backgroundStyleLabel.Text = "Style";
+            this.backgroundStyleLabel.Text = "Background Style";
             // 
             // backgroundComboBox
             // 
@@ -1578,9 +1556,9 @@
             "Gradient",
             "Textured",
             "Solid"});
-            this.backgroundComboBox.Location = new System.Drawing.Point(63, 39);
+            this.backgroundComboBox.Location = new System.Drawing.Point(196, 40);
             this.backgroundComboBox.Name = "backgroundComboBox";
-            this.backgroundComboBox.Size = new System.Drawing.Size(181, 21);
+            this.backgroundComboBox.Size = new System.Drawing.Size(125, 21);
             this.backgroundComboBox.TabIndex = 34;
             this.backgroundComboBox.SelectedIndexChanged += new System.EventHandler(this.backgroundComboBox_SelectedIndexChanged);
             // 
@@ -1604,7 +1582,7 @@
             this.tableLayoutPanel3.Controls.Add(this.backgroundBottomLabel, 1, 1);
             this.tableLayoutPanel3.Controls.Add(this.backgroundTopLabel, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.BackgroundGradient2, 0, 1);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(25, 94);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(102, 67);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -1653,15 +1631,13 @@
             this.groupBox8.Controls.Add(this.floorColorPictureBox);
             this.groupBox8.Controls.Add(this.label7);
             this.groupBox8.Controls.Add(this.floorScaleTB);
-            this.groupBox8.Controls.Add(this.floorDivisionsTB);
-            this.groupBox8.Controls.Add(this.label9);
             this.groupBox8.Controls.Add(this.floorStyleLabel);
             this.groupBox8.Controls.Add(this.floorComboBox);
             this.groupBox8.Controls.Add(this.renderFloorCB);
             this.groupBox8.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox8.Location = new System.Drawing.Point(3, 168);
+            this.groupBox8.Location = new System.Drawing.Point(3, 189);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(550, 450);
+            this.groupBox8.Size = new System.Drawing.Size(550, 429);
             this.groupBox8.TabIndex = 38;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Floor Settings";
@@ -1670,9 +1646,9 @@
             // floorColorPictureBox
             // 
             this.floorColorPictureBox.InitialImage = null;
-            this.floorColorPictureBox.Location = new System.Drawing.Point(25, 42);
+            this.floorColorPictureBox.Location = new System.Drawing.Point(3, 42);
             this.floorColorPictureBox.Name = "floorColorPictureBox";
-            this.floorColorPictureBox.Size = new System.Drawing.Size(68, 68);
+            this.floorColorPictureBox.Size = new System.Drawing.Size(82, 82);
             this.floorColorPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.floorColorPictureBox.TabIndex = 45;
             this.floorColorPictureBox.TabStop = false;
@@ -1689,27 +1665,11 @@
             // 
             // floorScaleTB
             // 
-            this.floorScaleTB.Location = new System.Drawing.Point(161, 69);
+            this.floorScaleTB.Location = new System.Drawing.Point(196, 69);
             this.floorScaleTB.Name = "floorScaleTB";
-            this.floorScaleTB.Size = new System.Drawing.Size(160, 20);
+            this.floorScaleTB.Size = new System.Drawing.Size(125, 20);
             this.floorScaleTB.TabIndex = 33;
             this.floorScaleTB.TextChanged += new System.EventHandler(this.floorScaleTB_TextChanged);
-            // 
-            // floorDivisionsTB
-            // 
-            this.floorDivisionsTB.Location = new System.Drawing.Point(161, 93);
-            this.floorDivisionsTB.Name = "floorDivisionsTB";
-            this.floorDivisionsTB.Size = new System.Drawing.Size(160, 20);
-            this.floorDivisionsTB.TabIndex = 34;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(99, 97);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(49, 13);
-            this.label9.TabIndex = 36;
-            this.label9.Text = "Divisions";
             // 
             // floorStyleLabel
             // 
@@ -1728,9 +1688,9 @@
             "Wireframe",
             "Textured",
             "Solid"});
-            this.floorComboBox.Location = new System.Drawing.Point(161, 42);
+            this.floorComboBox.Location = new System.Drawing.Point(196, 42);
             this.floorComboBox.Name = "floorComboBox";
-            this.floorComboBox.Size = new System.Drawing.Size(160, 21);
+            this.floorComboBox.Size = new System.Drawing.Size(125, 21);
             this.floorComboBox.TabIndex = 40;
             this.floorComboBox.SelectedIndexChanged += new System.EventHandler(this.floorComboBox_SelectedIndexChanged);
             // 
@@ -1985,6 +1945,18 @@
             this.defaultRadioButton.UseVisualStyleBackColor = true;
             this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
+            // backgroundPictureBox
+            // 
+            this.backgroundPictureBox.InitialImage = null;
+            this.backgroundPictureBox.Location = new System.Drawing.Point(6, 40);
+            this.backgroundPictureBox.Name = "backgroundPictureBox";
+            this.backgroundPictureBox.Size = new System.Drawing.Size(82, 82);
+            this.backgroundPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.backgroundPictureBox.TabIndex = 46;
+            this.backgroundPictureBox.TabStop = false;
+            this.toolTip1.SetToolTip(this.backgroundPictureBox, "Click to select an image.");
+            this.backgroundPictureBox.Click += new System.EventHandler(this.backgroundPictureBox_Click);
+            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2048,6 +2020,7 @@
             this.tabPage3.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.backgroundPictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -2168,11 +2141,7 @@
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.Label backgroundStyleLabel;
         private System.Windows.Forms.ComboBox backgroundComboBox;
-        private System.Windows.Forms.Label backgroundImgLabel;
-        private System.Windows.Forms.Button openBackgroundTexButton;
-        private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox floorDivisionsTB;
         private System.Windows.Forms.TextBox floorScaleTB;
         private System.Windows.Forms.Label floorStyleLabel;
         private System.Windows.Forms.ComboBox floorComboBox;
@@ -2212,5 +2181,6 @@
         private System.Windows.Forms.CheckBox useNormCB;
         private System.Windows.Forms.PictureBox floorColorPictureBox;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.PictureBox backgroundPictureBox;
     }
 }

@@ -144,6 +144,7 @@ namespace Smash_Forge
 
         // Viewport Background
         public static bool renderBackGround = true;
+        public static string backgroundTexFilePath = "";
         public static BackgroundStyle backgroundStyle = BackgroundStyle.Gradient;
         public static Color backgroundGradientTop = Color.FromArgb(255, 26, 26, 26);
         public static Color backgroundGradientBottom = Color.FromArgb(255, 77, 77, 77);
