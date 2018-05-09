@@ -359,7 +359,7 @@ namespace Smash_Forge.GUI
             Runtime.renderSwagZ = showSwagDataCB.Checked;
         }
 
-        private void lightCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void materialLightingCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderMaterialLighting = materialLightingCB.Checked;
             
@@ -369,7 +369,7 @@ namespace Smash_Forge.GUI
             reflectionCB.Enabled = materialLightingCB.Checked;
         }
 
-        private void cb_normals_CheckedChanged(object sender, EventArgs e)
+        private void renderAlphaCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderAlpha= renderAlphaCB.Checked;
         }

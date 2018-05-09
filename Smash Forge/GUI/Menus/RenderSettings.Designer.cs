@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -148,6 +148,7 @@
             this.useNormCB = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.backgroundPictureBox = new System.Windows.Forms.PictureBox();
             this.backgroundStyleLabel = new System.Windows.Forms.Label();
             this.backgroundComboBox = new System.Windows.Forms.ComboBox();
             this.renderBackgroundCB = new System.Windows.Forms.CheckBox();
@@ -185,7 +186,6 @@
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.defaultRadioButton = new System.Windows.Forms.RadioButton();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.backgroundPictureBox = new System.Windows.Forms.PictureBox();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -213,6 +213,7 @@
             this.tableLayoutPanel1.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBox9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.backgroundPictureBox)).BeginInit();
             this.tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient2)).BeginInit();
@@ -223,7 +224,6 @@
             this.tableLayoutPanel2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.backgroundPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // tabPage2
@@ -711,8 +711,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem7,
-            listViewItem8});
+            listViewItem9,
+            listViewItem10});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -1278,6 +1278,7 @@
             this.stageLightingCB.TabIndex = 33;
             this.stageLightingCB.Text = "Stage Lighting";
             this.stageLightingCB.UseVisualStyleBackColor = true;
+            this.stageLightingCB.CheckedChanged += new System.EventHandler(this.stageLightingCB_CheckedChanged);
             // 
             // renderFogCB
             // 
@@ -1288,6 +1289,7 @@
             this.renderFogCB.TabIndex = 34;
             this.renderFogCB.Text = "Fog";
             this.renderFogCB.UseVisualStyleBackColor = true;
+            this.renderFogCB.CheckedChanged += new System.EventHandler(this.renderFogCB_CheckedChanged);
             // 
             // tableLayoutPanel1
             // 
@@ -1324,6 +1326,7 @@
             this.modelscaleTB.Name = "modelscaleTB";
             this.modelscaleTB.Size = new System.Drawing.Size(100, 20);
             this.modelscaleTB.TabIndex = 33;
+            this.modelscaleTB.TextChanged += new System.EventHandler(this.modelscaleTB_TextChanged);
             // 
             // difTB
             // 
@@ -1331,6 +1334,7 @@
             this.difTB.Name = "difTB";
             this.difTB.Size = new System.Drawing.Size(100, 20);
             this.difTB.TabIndex = 30;
+            this.difTB.TextChanged += new System.EventHandler(this.difTB_TextChanged);
             // 
             // spcTB
             // 
@@ -1338,6 +1342,7 @@
             this.spcTB.Name = "spcTB";
             this.spcTB.Size = new System.Drawing.Size(100, 20);
             this.spcTB.TabIndex = 31;
+            this.spcTB.TextChanged += new System.EventHandler(this.spcTB_TextChanged);
             // 
             // frsTB
             // 
@@ -1345,6 +1350,7 @@
             this.frsTB.Name = "frsTB";
             this.frsTB.Size = new System.Drawing.Size(100, 20);
             this.frsTB.TabIndex = 32;
+            this.frsTB.TextChanged += new System.EventHandler(this.frsTB_TextChanged);
             // 
             // ambTB
             // 
@@ -1352,6 +1358,7 @@
             this.ambTB.Name = "ambTB";
             this.ambTB.Size = new System.Drawing.Size(100, 20);
             this.ambTB.TabIndex = 33;
+            this.ambTB.TextChanged += new System.EventHandler(this.ambTB_TextChanged);
             // 
             // specIntensityLabel
             // 
@@ -1395,6 +1402,7 @@
             this.refTB.Name = "refTB";
             this.refTB.Size = new System.Drawing.Size(100, 20);
             this.refTB.TabIndex = 39;
+            this.refTB.TextChanged += new System.EventHandler(this.refTB_TextChanged);
             // 
             // difIntensityLabel
             // 
@@ -1425,6 +1433,7 @@
             this.vertColorCB.TabIndex = 15;
             this.vertColorCB.Text = "Show Vertex Colors";
             this.vertColorCB.UseVisualStyleBackColor = true;
+            this.vertColorCB.CheckedChanged += new System.EventHandler(this.cb_vertcolor_CheckedChanged);
             // 
             // renderAlphaCB
             // 
@@ -1437,6 +1446,7 @@
             this.renderAlphaCB.TabIndex = 17;
             this.renderAlphaCB.Text = "Render Alpha";
             this.renderAlphaCB.UseVisualStyleBackColor = true;
+            this.renderAlphaCB.CheckedChanged += new System.EventHandler(this.renderAlphaCB_CheckedChanged);
             // 
             // materialLightingCB
             // 
@@ -1447,6 +1457,7 @@
             this.materialLightingCB.TabIndex = 19;
             this.materialLightingCB.Text = "Material Lighting";
             this.materialLightingCB.UseVisualStyleBackColor = true;
+            this.materialLightingCB.CheckedChanged += new System.EventHandler(this.materialLightingCB_CheckedChanged);
             // 
             // cameraLightCB
             // 
@@ -1457,6 +1468,7 @@
             this.cameraLightCB.TabIndex = 32;
             this.cameraLightCB.Text = "Camera Light";
             this.cameraLightCB.UseVisualStyleBackColor = true;
+            this.cameraLightCB.CheckedChanged += new System.EventHandler(this.cameraLightCB_CheckedChanged);
             // 
             // diffuseCB
             // 
@@ -1468,6 +1480,7 @@
             this.diffuseCB.TabIndex = 20;
             this.diffuseCB.Text = "Diffuse";
             this.diffuseCB.UseVisualStyleBackColor = true;
+            this.diffuseCB.CheckedChanged += new System.EventHandler(this.diffuseCB_CheckedChanged);
             // 
             // fresnelCB
             // 
@@ -1479,6 +1492,7 @@
             this.fresnelCB.TabIndex = 21;
             this.fresnelCB.Text = "Fresnel";
             this.fresnelCB.UseVisualStyleBackColor = true;
+            this.fresnelCB.CheckedChanged += new System.EventHandler(this.fresnelCB_CheckedChanged);
             // 
             // specularCB
             // 
@@ -1490,6 +1504,7 @@
             this.specularCB.TabIndex = 22;
             this.specularCB.Text = "Specular";
             this.specularCB.UseVisualStyleBackColor = true;
+            this.specularCB.CheckedChanged += new System.EventHandler(this.specularCB_CheckedChanged);
             // 
             // reflectionCB
             // 
@@ -1501,6 +1516,7 @@
             this.reflectionCB.TabIndex = 23;
             this.reflectionCB.Text = "Reflection";
             this.reflectionCB.UseVisualStyleBackColor = true;
+            this.reflectionCB.CheckedChanged += new System.EventHandler(this.reflectionCB_CheckedChanged);
             // 
             // useNormCB
             // 
@@ -1511,6 +1527,7 @@
             this.useNormCB.TabIndex = 26;
             this.useNormCB.Text = "Use Normal Maps";
             this.useNormCB.UseVisualStyleBackColor = true;
+            this.useNormCB.CheckedChanged += new System.EventHandler(this.useNormCB_CheckedChanged);
             // 
             // tabPage5
             // 
@@ -1538,6 +1555,18 @@
             this.groupBox9.TabIndex = 39;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Background Settings";
+            // 
+            // backgroundPictureBox
+            // 
+            this.backgroundPictureBox.InitialImage = null;
+            this.backgroundPictureBox.Location = new System.Drawing.Point(6, 40);
+            this.backgroundPictureBox.Name = "backgroundPictureBox";
+            this.backgroundPictureBox.Size = new System.Drawing.Size(82, 82);
+            this.backgroundPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.backgroundPictureBox.TabIndex = 46;
+            this.backgroundPictureBox.TabStop = false;
+            this.toolTip1.SetToolTip(this.backgroundPictureBox, "Click to select an image.");
+            this.backgroundPictureBox.Click += new System.EventHandler(this.backgroundPictureBox_Click);
             // 
             // backgroundStyleLabel
             // 
@@ -1945,18 +1974,6 @@
             this.defaultRadioButton.UseVisualStyleBackColor = true;
             this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
-            // backgroundPictureBox
-            // 
-            this.backgroundPictureBox.InitialImage = null;
-            this.backgroundPictureBox.Location = new System.Drawing.Point(6, 40);
-            this.backgroundPictureBox.Name = "backgroundPictureBox";
-            this.backgroundPictureBox.Size = new System.Drawing.Size(82, 82);
-            this.backgroundPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.backgroundPictureBox.TabIndex = 46;
-            this.backgroundPictureBox.TabStop = false;
-            this.toolTip1.SetToolTip(this.backgroundPictureBox, "Click to select an image.");
-            this.backgroundPictureBox.Click += new System.EventHandler(this.backgroundPictureBox_Click);
-            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2003,6 +2020,7 @@
             this.tabPage5.ResumeLayout(false);
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.backgroundPictureBox)).EndInit();
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient1)).EndInit();
@@ -2020,7 +2038,6 @@
             this.tabPage3.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.backgroundPictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }
