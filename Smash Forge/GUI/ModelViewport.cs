@@ -1424,7 +1424,12 @@ namespace Smash_Forge
         {
             Vector3 topColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
             Vector3 bottomColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
-            RenderTools.DrawQuadGradient(topColor, bottomColor);
+
+            // Only use the top color for solid color rendering.
+            if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
+                RenderTools.DrawQuadGradient(topColor, topColor);
+            else
+                RenderTools.DrawQuadGradient(topColor, bottomColor);
         }
 
         private void SetupViewport()

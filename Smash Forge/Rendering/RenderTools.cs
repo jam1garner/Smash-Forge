@@ -17,6 +17,7 @@ namespace Smash_Forge.Rendering
     {
         public static int defaultTex = -1;
         public static int floorTexture;
+        public static int backgroundTexture;
 
         private static int screenQuadVao;
         private static int screenQuadVbo;
@@ -45,13 +46,17 @@ namespace Smash_Forge.Rendering
         public static int sphereTanTex;
         public static int sphereBitanTex;
 
+        public static bool hasSetup = false;
+
         public static void Setup()
         {
-            if (defaultTex == -1)
-                LoadTextures();
+            if (hasSetup)
+                return;
 
+            LoadTextures();
             SetupScreenQuadBuffers();
             GetOpenGLSystemInfo();
+            hasSetup = true;
         }
 
         private static void SetupScreenQuadBuffers()
@@ -97,7 +102,17 @@ namespace Smash_Forge.Rendering
             boneWeightGradient = NUT.loadImage(Properties.Resources.boneWeightGradient);
             boneWeightGradient2 = NUT.loadImage(Properties.Resources.boneWeightGradient2);
 
-            defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
+            defaultTex = NUT.loadImage(Resources.Resources.DefaultTexture);
+
+            try
+            {
+                floorTexture = NUT.loadImage(new Bitmap(Runtime.floorTexFilePath));
+                backgroundTexture = NUT.loadImage(new Bitmap(Runtime.backgroundTexFilePath));
+            }
+            catch (Exception)
+            {
+                // File paths are incorrect or never set. 
+            }
         }
 
         private static void GetOpenGLSystemInfo()
@@ -600,7 +615,6 @@ namespace Smash_Forge.Rendering
             //  sides
             GL.PushMatrix();
 
-            //GL.Scale(scale.X, scale.Y, scale.Z);
             double[] f = new double[] {
                 transform.M11, transform.M12, transform.M13, transform.M14,
                 transform.M21, transform.M22, transform.M23, transform.M24,
@@ -608,7 +622,6 @@ namespace Smash_Forge.Rendering
                 transform.M41, transform.M42, transform.M43, transform.M44,
             };
             GL.MultMatrix(f);
-            //Vector3 scale = transform.ExtractScale();
             GL.Translate(mid);
             GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
 
@@ -882,7 +895,7 @@ namespace Smash_Forge.Rendering
 
         public static void DrawFloor(Matrix4 mvpMatrix)
         {
-            float s = Runtime.floorSize;
+            float scale = Runtime.floorSize;
 
             GL.UseProgram(0);
             GL.MatrixMode(MatrixMode.Modelview);
@@ -895,7 +908,7 @@ namespace Smash_Forge.Rendering
             GL.Color3(Runtime.floorColor);
             GL.LineWidth(1f);
 
-            if (Runtime.floorStyle == Runtime.FloorStyle.Textured || Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+            if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
             {
                 GL.Enable(EnableCap.Texture2D);
                 GL.ActiveTexture(TextureUnit.Texture0);
@@ -911,13 +924,13 @@ namespace Smash_Forge.Rendering
                 GL.Begin(PrimitiveType.Quads);
 
                 GL.TexCoord2(0, 0);
-                GL.Vertex3(new Vector3(-s, 0f, -s));
+                GL.Vertex3(new Vector3(-scale, 0f, -scale));
                 GL.TexCoord2(0, 2);
-                GL.Vertex3(new Vector3(-s, 0f, s));
+                GL.Vertex3(new Vector3(-scale, 0f, scale));
                 GL.TexCoord2(2, 2);
-                GL.Vertex3(new Vector3(s, 0f, s));
+                GL.Vertex3(new Vector3(scale, 0f, scale));
                 GL.TexCoord2(2, 0);
-                GL.Vertex3(new Vector3(s, 0f, -s));
+                GL.Vertex3(new Vector3(scale, 0f, -scale));
 
                 GL.End();
                 GL.Disable(EnableCap.Texture2D);
@@ -925,23 +938,23 @@ namespace Smash_Forge.Rendering
             else if (Runtime.floorStyle == Runtime.FloorStyle.Solid)
             {
                 GL.Begin(PrimitiveType.Quads);
-                GL.Vertex3(-s, 0f, -s);
-                GL.Vertex3(-s, 0f, s);
-                GL.Vertex3(s, 0f, s);
-                GL.Vertex3(s, 0f, -s);
+                GL.Vertex3(-scale, 0f, -scale);
+                GL.Vertex3(-scale, 0f, scale);
+                GL.Vertex3(scale, 0f, scale);
+                GL.Vertex3(scale, 0f, -scale);
                 GL.End();
             }
             else
             {
                 GL.Begin(PrimitiveType.Lines);
-                for (var i = -s / 2; i <= s / 2; i++)
+                for (var i = -scale / 2; i <= scale / 2; i++)
                 {
                     if (i != 0)
                     {
-                        GL.Vertex3(-s, 0f, i * 2);
-                        GL.Vertex3(s, 0f, i * 2);
-                        GL.Vertex3(i * 2, 0f, -s);
-                        GL.Vertex3(i * 2, 0f, s);
+                        GL.Vertex3(-scale, 0f, i * 2);
+                        GL.Vertex3(scale, 0f, i * 2);
+                        GL.Vertex3(i * 2, 0f, -scale);
+                        GL.Vertex3(i * 2, 0f, scale);
                     }
                 }
                 GL.End();
@@ -953,10 +966,10 @@ namespace Smash_Forge.Rendering
                 GL.Begin(PrimitiveType.Lines);
                 GL.Color3(Color.White);
                 GL.Begin(PrimitiveType.Lines);
-                GL.Vertex3(-s, 0f, 0);
-                GL.Vertex3(s, 0f, 0);
-                GL.Vertex3(0, 0f, -s);
-                GL.Vertex3(0, 0f, s);
+                GL.Vertex3(-scale, 0f, 0);
+                GL.Vertex3(scale, 0f, 0);
+                GL.Vertex3(0, 0f, -scale);
+                GL.Vertex3(0, 0f, scale);
                 GL.End();
                 GL.Enable(EnableCap.DepthTest);
 

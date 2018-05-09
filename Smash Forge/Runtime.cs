@@ -25,7 +25,6 @@ namespace Smash_Forge
 
         public static Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
 
-        //public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
         public static List<NUT> TextureContainers = new List<NUT>();
         public static List<NUS3BANK> SoundContainers = new List<NUS3BANK>();
 
@@ -74,8 +73,6 @@ namespace Smash_Forge
         public static bool renderInterpolatedHitboxes = true;
         public static bool renderHitboxesColorByKb;
         public static bool renderHitboxAngles = true;
-        public static bool renderFloor = true;
-        public static bool renderBackGround = true;
         public static bool renderPath = true;
         public static bool renderRespawns = true;
         public static bool renderSpawns = true;
@@ -136,13 +133,19 @@ namespace Smash_Forge
             ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.DeepYellowishBrown)
         };
 
-        public static string FloorURL = "";
+        // Floor Grid
+        public static bool renderFloor = true;
+        public static string floorTexFilePath = "";
         public static TextureWrapMode floorWrap = TextureWrapMode.MirroredRepeat;
         public static float floorSize = 30f;
         public static Color floorColor = Color.Gray;
-        public static FloorStyle floorStyle = FloorStyle.Normal;
+        public static FloorStyle floorStyle = FloorStyle.WireFrame;
         public static bool renderFloorLines = true;
 
+        // Viewport Background
+        public static bool renderBackGround = true;
+        public static string backgroundTexFilePath = "";
+        public static BackgroundStyle backgroundStyle = BackgroundStyle.Gradient;
         public static Color backgroundGradientTop = Color.FromArgb(255, 26, 26, 26);
         public static Color backgroundGradientBottom = Color.FromArgb(255, 77, 77, 77);
         public static float fov = 0.524f; // default 30 degrees from stage param files
@@ -250,10 +253,16 @@ namespace Smash_Forge
 
         public enum FloorStyle
         {
-            Normal = 0,
-            Textured = 1,
-            UserTexture = 2,
-            Solid = 3,
+            WireFrame = 0,
+            UserTexture = 1,
+            Solid = 2,
+        }
+
+        public enum BackgroundStyle
+        {
+            Gradient = 0,
+            UserTexture = 1,
+            Solid = 2,
         }
 
         public static string TargetAnimString { get; set; }
@@ -279,7 +288,6 @@ namespace Smash_Forge
         public static void clearMoveset()
         {
             Moveset = null;
-            //acmdEditor.updateCrcList();
         }
 
         public static bool killWorkspace { get; set; }

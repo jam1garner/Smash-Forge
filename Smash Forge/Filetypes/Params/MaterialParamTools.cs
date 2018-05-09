@@ -30,7 +30,6 @@ namespace Smash_Forge.Params
 
     public class MaterialParamTools
     {
-        // TODO: Store and read the information from the material_params.ini
         public static Dictionary<string, MatParam> GetMatParamsFromFile()
         {
             Dictionary<string, MatParam> propList = new Dictionary<string, MatParam>();
