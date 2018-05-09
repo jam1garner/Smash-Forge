@@ -17,6 +17,7 @@ namespace Smash_Forge.Rendering
     {
         public static int defaultTex = -1;
         public static int floorTexture;
+        public static int backgroundTexture;
 
         private static int screenQuadVao;
         private static int screenQuadVbo;

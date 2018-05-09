@@ -23,13 +23,12 @@ namespace Smash_Forge.GUI
             disableRuntimeUpdates = true;
 
             // Misc Settings
-            renderFloorCB.Checked = Runtime.renderFloor;
-            renderBackgroundCB.Checked = Runtime.renderBackGround;
             renderCameraPathCB.Checked = Runtime.renderPath;
             drawUvCB.Checked = Runtime.drawUv;
             textParamDir.Text = Runtime.paramDir;
             BackgroundGradient1.BackColor = Runtime.backgroundGradientTop;
             BackgroundGradient2.BackColor = Runtime.backgroundGradientBottom;
+            floorColorPictureBox.BackColor = Runtime.floorColor;
 
             // Bone settings
             renderBonesCB.Checked = Runtime.renderBones;
@@ -134,7 +133,24 @@ namespace Smash_Forge.GUI
             bloomIntensityTB.Text = Runtime.bloomIntensity + "";
             bloomThresholdTB.Text = Runtime.bloomThreshold + "";
 
+            // Floor Settings
+            renderFloorCB.Checked = Runtime.renderFloor;
+            floorComboBox.SelectedIndex = (int)Runtime.floorStyle;
+            SetFloorPictureBoxToolTip();
+
+            // Background Settings
+            renderBackgroundCB.Checked = Runtime.renderBackGround;
+            backgroundComboBox.SelectedIndex = (int)Runtime.backgroundStyle;
+
             disableRuntimeUpdates = false;
+        }
+
+        private void SetFloorPictureBoxToolTip()
+        {
+            if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+                toolTip1.SetToolTip(floorColorPictureBox, "Click to select an image.");
+            else
+                toolTip1.SetToolTip(floorColorPictureBox, "Click to select a color.");
         }
 
         private void renderLvdCB_CheckedChanged(object sender, EventArgs e)
@@ -855,16 +871,57 @@ namespace Smash_Forge.GUI
         private void floorComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             Runtime.floorStyle = (Runtime.FloorStyle)floorComboBox.SelectedIndex;
+
+            if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+            {
+                floorColorPictureBox.BackColor = Color.FromArgb(0, Color.White);
+                floorColorPictureBox.Image = new Bitmap(Runtime.floorTexFilePath);
+            }
+            else
+            {
+                floorColorPictureBox.BackColor = Runtime.floorColor;
+
+                // Flashbacks to previous memory leaks involving bitmaps...
+                if (floorColorPictureBox.Image != null)
+                {
+                    floorColorPictureBox.Image.Dispose();
+                    floorColorPictureBox.Image = null;
+                }
+            }
+
+            SetFloorPictureBoxToolTip();
+            floorColorPictureBox.Refresh();
         }
 
         private void openBackgroundTexButton_Click(object sender, EventArgs e)
         {
-
+            OpenBackgroundTexture();
         }
 
-        private void openFloorTexButton_Click(object sender, EventArgs e)
+        private static void OpenBackgroundTexture()
         {
+            using (var ofd = new OpenFileDialog() { Filter = "Image (.png)|*.png|All Files (*.*)|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    Rendering.RenderTools.backgroundTexture = NUT.loadImage(new Bitmap(ofd.FileName));
+                }
+            }
+        }
 
+        private void OpenFloorTexture()
+        {
+            using (var ofd = new OpenFileDialog() { Filter = "Image (.png)|*.png|All Files (*.*)|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    Bitmap floorImg = new Bitmap(ofd.FileName);
+                    Runtime.floorTexFilePath = ofd.FileName;
+                    floorColorPictureBox.Image = floorImg;
+                    floorColorPictureBox.Refresh();
+                    Rendering.RenderTools.floorTexture = NUT.loadImage(floorImg);
+                }
+            }
         }
 
         private void backgroundComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -878,6 +935,24 @@ namespace Smash_Forge.GUI
         private void floorScaleTB_TextChanged(object sender, EventArgs e)
         {
             Runtime.floorSize = GuiTools.TryParseTBFloat(floorScaleTB);
+        }
+
+        private void floorPictureBox_Click(object sender, EventArgs e)
+        {
+            if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+                OpenFloorTexture();
+            else 
+                SelectFloorColor();
+        }
+
+        private void SelectFloorColor()
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.floorColor = Color.FromArgb(0xFF, colorDialog.Color);
+                floorColorPictureBox.BackColor = Runtime.floorColor;
+            }
         }
     }
 }
