@@ -48,7 +48,6 @@ namespace Smash_Forge
                                     if (File.Exists(node.InnerText) && node.InnerText.ToLower().EndsWith(".png"))
                                     {
                                         Runtime.floorTexFilePath = node.InnerText;
-                                        Rendering.RenderTools.floorTexture = NUT.loadImage(new Bitmap(node.InnerText));
                                         Runtime.floorStyle = Runtime.FloorStyle.UserTexture;
                                     }
                                     break;

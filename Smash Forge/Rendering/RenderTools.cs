@@ -46,13 +46,17 @@ namespace Smash_Forge.Rendering
         public static int sphereTanTex;
         public static int sphereBitanTex;
 
+        public static bool hasSetup = false;
+
         public static void Setup()
         {
-            if (defaultTex == -1)
-                LoadTextures();
+            if (hasSetup)
+                return;
 
+            LoadTextures();
             SetupScreenQuadBuffers();
             GetOpenGLSystemInfo();
+            hasSetup = true;
         }
 
         private static void SetupScreenQuadBuffers()
@@ -98,7 +102,17 @@ namespace Smash_Forge.Rendering
             boneWeightGradient = NUT.loadImage(Properties.Resources.boneWeightGradient);
             boneWeightGradient2 = NUT.loadImage(Properties.Resources.boneWeightGradient2);
 
-            defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
+            defaultTex = NUT.loadImage(Resources.Resources.DefaultTexture);
+
+            try
+            {
+                floorTexture = NUT.loadImage(new Bitmap(Runtime.floorTexFilePath));
+                backgroundTexture = NUT.loadImage(new Bitmap(Runtime.backgroundTexFilePath));
+            }
+            catch (Exception)
+            {
+                // File paths are incorrect or never set. 
+            }
         }
 
         private static void GetOpenGLSystemInfo()
