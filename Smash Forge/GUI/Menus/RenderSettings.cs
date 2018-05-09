@@ -28,8 +28,6 @@ namespace Smash_Forge.GUI
             renderCameraPathCB.Checked = Runtime.renderPath;
             drawUvCB.Checked = Runtime.drawUv;
             textParamDir.Text = Runtime.paramDir;
-            //RendererLabel.Text = "Renderer: " + Runtime.renderer;
-            //OpenGLVersionLabel.Text = "OpenGL Version: " + Runtime.GLSLVersion;
             BackgroundGradient1.BackColor = Runtime.backgroundGradientTop;
             BackgroundGradient2.BackColor = Runtime.backgroundGradientBottom;
 
@@ -867,6 +865,19 @@ namespace Smash_Forge.GUI
         private void openFloorTexButton_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void backgroundComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // The solid mode only uses a single color.
+            Runtime.backgroundStyle = (Runtime.BackgroundStyle)backgroundComboBox.SelectedIndex;
+            backgroundBottomLabel.Visible = (Runtime.backgroundStyle != Runtime.BackgroundStyle.Solid);
+            BackgroundGradient2.Visible = (Runtime.backgroundStyle != Runtime.BackgroundStyle.Solid);
+        }
+
+        private void floorScaleTB_TextChanged(object sender, EventArgs e)
+        {
+            Runtime.floorSize = GuiTools.TryParseTBFloat(floorScaleTB);
         }
     }
 }

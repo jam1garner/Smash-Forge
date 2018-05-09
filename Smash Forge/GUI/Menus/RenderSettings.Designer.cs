@@ -84,6 +84,17 @@
             this.renderHurtboxZonesCB = new System.Windows.Forms.CheckBox();
             this.renderInterpHitboxCB = new System.Windows.Forms.CheckBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.debug1CB = new System.Windows.Forms.CheckBox();
+            this.renderChannelR = new System.Windows.Forms.Button();
+            this.renderChannelA = new System.Windows.Forms.Button();
+            this.renderChannelG = new System.Windows.Forms.Button();
+            this.renderChannelB = new System.Windows.Forms.Button();
+            this.renderModeComboBox = new System.Windows.Forms.ComboBox();
+            this.debugModeLabel = new System.Windows.Forms.Label();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.renderGeneralShapesCB = new System.Windows.Forms.CheckBox();
             this.renderCollisionsCB = new System.Windows.Forms.CheckBox();
@@ -107,60 +118,7 @@
             this.showSwagDataCB = new System.Windows.Forms.CheckBox();
             this.renderBonesCB = new System.Windows.Forms.CheckBox();
             this.renderCameraPathCB = new System.Windows.Forms.CheckBox();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.debug1CB = new System.Windows.Forms.CheckBox();
-            this.renderChannelR = new System.Windows.Forms.Button();
-            this.renderChannelA = new System.Windows.Forms.Button();
-            this.renderChannelG = new System.Windows.Forms.Button();
-            this.renderChannelB = new System.Windows.Forms.Button();
-            this.renderModeComboBox = new System.Windows.Forms.ComboBox();
-            this.debugModeLabel = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.backgroundImgTB = new System.Windows.Forms.TextBox();
-            this.backgroundImgLabel = new System.Windows.Forms.Label();
-            this.openBackgroundTexButton = new System.Windows.Forms.Button();
-            this.backgroundStyleLabel = new System.Windows.Forms.Label();
-            this.backgroundComboBox = new System.Windows.Forms.ComboBox();
-            this.renderBackgroundCB = new System.Windows.Forms.CheckBox();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.BackgroundGradient1 = new System.Windows.Forms.PictureBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.BackgroundGradient2 = new System.Windows.Forms.PictureBox();
-            this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.floorStyleLabel = new System.Windows.Forms.Label();
-            this.floorComboBox = new System.Windows.Forms.ComboBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.renderFloorCB = new System.Windows.Forms.CheckBox();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.bloomGroupBox = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.bloomIntensityTB = new System.Windows.Forms.TextBox();
-            this.bloomThresholdTB = new System.Windows.Forms.TextBox();
-            this.bloomRadiusTB = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.bloomCB = new System.Windows.Forms.CheckBox();
-            this.postProcessingCB = new System.Windows.Forms.CheckBox();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.timeElapsedCheckbox = new System.Windows.Forms.CheckBox();
-            this.showActiveWindowCheckbox = new System.Windows.Forms.CheckBox();
-            this.modNameTextBox = new System.Windows.Forms.TextBox();
-            this.userModCheckbox = new System.Windows.Forms.CheckBox();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.customComboBox = new System.Windows.Forms.ComboBox();
-            this.filenameRadioButton = new System.Windows.Forms.RadioButton();
-            this.customRadioButton = new System.Windows.Forms.RadioButton();
-            this.defaultRadioButton = new System.Windows.Forms.RadioButton();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.stageLightingCB = new System.Windows.Forms.CheckBox();
@@ -187,9 +145,53 @@
             this.specularCB = new System.Windows.Forms.CheckBox();
             this.reflectionCB = new System.Windows.Forms.CheckBox();
             this.useNormCB = new System.Windows.Forms.CheckBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.backgroundImgTB = new System.Windows.Forms.TextBox();
+            this.backgroundImgLabel = new System.Windows.Forms.Label();
+            this.openBackgroundTexButton = new System.Windows.Forms.Button();
+            this.backgroundStyleLabel = new System.Windows.Forms.Label();
+            this.backgroundComboBox = new System.Windows.Forms.ComboBox();
+            this.renderBackgroundCB = new System.Windows.Forms.CheckBox();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.BackgroundGradient1 = new System.Windows.Forms.PictureBox();
+            this.backgroundBottomLabel = new System.Windows.Forms.Label();
+            this.backgroundTopLabel = new System.Windows.Forms.Label();
+            this.BackgroundGradient2 = new System.Windows.Forms.PictureBox();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.floorScaleTB = new System.Windows.Forms.TextBox();
+            this.floorDivisionsTB = new System.Windows.Forms.TextBox();
             this.floorImgTB = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.floorImgLabel = new System.Windows.Forms.Label();
             this.openFloorTexButton = new System.Windows.Forms.Button();
+            this.floorStyleLabel = new System.Windows.Forms.Label();
+            this.floorComboBox = new System.Windows.Forms.ComboBox();
+            this.renderFloorCB = new System.Windows.Forms.CheckBox();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.bloomGroupBox = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.bloomIntensityTB = new System.Windows.Forms.TextBox();
+            this.bloomThresholdTB = new System.Windows.Forms.TextBox();
+            this.bloomRadiusTB = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.bloomCB = new System.Windows.Forms.CheckBox();
+            this.postProcessingCB = new System.Windows.Forms.CheckBox();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.timeElapsedCheckbox = new System.Windows.Forms.CheckBox();
+            this.showActiveWindowCheckbox = new System.Windows.Forms.CheckBox();
+            this.modNameTextBox = new System.Windows.Forms.TextBox();
+            this.userModCheckbox = new System.Windows.Forms.CheckBox();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.customComboBox = new System.Windows.Forms.ComboBox();
+            this.filenameRadioButton = new System.Windows.Forms.RadioButton();
+            this.customRadioButton = new System.Windows.Forms.RadioButton();
+            this.defaultRadioButton = new System.Windows.Forms.RadioButton();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -207,25 +209,26 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).BeginInit();
             this.tabPage1.SuspendLayout();
+            this.groupBox6.SuspendLayout();
             this.groupBox10.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
-            this.groupBox6.SuspendLayout();
             this.tabControl1.SuspendLayout();
+            this.tabPage6.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient2)).BeginInit();
             this.groupBox8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPage4.SuspendLayout();
             this.bloomGroupBox.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox7.SuspendLayout();
-            this.tabPage6.SuspendLayout();
-            this.groupBox5.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabPage2
@@ -820,6 +823,152 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
             // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.radioButton3);
+            this.groupBox6.Controls.Add(this.radioButton2);
+            this.groupBox6.Controls.Add(this.radioButton1);
+            this.groupBox6.Controls.Add(this.debug1CB);
+            this.groupBox6.Controls.Add(this.renderChannelR);
+            this.groupBox6.Controls.Add(this.renderChannelA);
+            this.groupBox6.Controls.Add(this.renderChannelG);
+            this.groupBox6.Controls.Add(this.renderChannelB);
+            this.groupBox6.Controls.Add(this.renderModeComboBox);
+            this.groupBox6.Controls.Add(this.debugModeLabel);
+            this.groupBox6.Location = new System.Drawing.Point(266, 6);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(284, 234);
+            this.groupBox6.TabIndex = 36;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Debug Shading";
+            // 
+            // radioButton3
+            // 
+            this.radioButton3.AutoSize = true;
+            this.radioButton3.Location = new System.Drawing.Point(155, 111);
+            this.radioButton3.Name = "radioButton3";
+            this.radioButton3.Size = new System.Drawing.Size(46, 17);
+            this.radioButton3.TabIndex = 38;
+            this.radioButton3.TabStop = true;
+            this.radioButton3.Text = "UV3";
+            this.radioButton3.UseVisualStyleBackColor = true;
+            this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Location = new System.Drawing.Point(86, 111);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(46, 17);
+            this.radioButton2.TabIndex = 37;
+            this.radioButton2.TabStop = true;
+            this.radioButton2.Text = "UV2";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(11, 111);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(46, 17);
+            this.radioButton1.TabIndex = 36;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "UV1";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            // 
+            // debug1CB
+            // 
+            this.debug1CB.AutoSize = true;
+            this.debug1CB.Location = new System.Drawing.Point(10, 85);
+            this.debug1CB.Name = "debug1CB";
+            this.debug1CB.Size = new System.Drawing.Size(61, 17);
+            this.debug1CB.TabIndex = 34;
+            this.debug1CB.Text = "option1";
+            this.debug1CB.UseVisualStyleBackColor = true;
+            this.debug1CB.CheckedChanged += new System.EventHandler(this.debug1CB_CheckedChanged);
+            // 
+            // renderChannelR
+            // 
+            this.renderChannelR.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderChannelR.ForeColor = System.Drawing.Color.Red;
+            this.renderChannelR.Location = new System.Drawing.Point(11, 50);
+            this.renderChannelR.Name = "renderChannelR";
+            this.renderChannelR.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelR.TabIndex = 29;
+            this.renderChannelR.Text = "R";
+            this.renderChannelR.UseVisualStyleBackColor = true;
+            this.renderChannelR.Click += new System.EventHandler(this.renderChannelR_Click);
+            // 
+            // renderChannelA
+            // 
+            this.renderChannelA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderChannelA.Location = new System.Drawing.Point(89, 50);
+            this.renderChannelA.Name = "renderChannelA";
+            this.renderChannelA.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelA.TabIndex = 32;
+            this.renderChannelA.Text = "A";
+            this.renderChannelA.UseVisualStyleBackColor = true;
+            this.renderChannelA.Click += new System.EventHandler(this.renderChannelA_Click);
+            // 
+            // renderChannelG
+            // 
+            this.renderChannelG.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderChannelG.ForeColor = System.Drawing.Color.Green;
+            this.renderChannelG.Location = new System.Drawing.Point(37, 50);
+            this.renderChannelG.Name = "renderChannelG";
+            this.renderChannelG.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelG.TabIndex = 31;
+            this.renderChannelG.Text = "G";
+            this.renderChannelG.UseVisualStyleBackColor = true;
+            this.renderChannelG.Click += new System.EventHandler(this.renderChannelG_Click);
+            // 
+            // renderChannelB
+            // 
+            this.renderChannelB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderChannelB.ForeColor = System.Drawing.Color.Blue;
+            this.renderChannelB.Location = new System.Drawing.Point(63, 50);
+            this.renderChannelB.Name = "renderChannelB";
+            this.renderChannelB.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelB.TabIndex = 30;
+            this.renderChannelB.Text = "B";
+            this.renderChannelB.UseVisualStyleBackColor = true;
+            this.renderChannelB.Click += new System.EventHandler(this.renderChannelB_Click);
+            // 
+            // renderModeComboBox
+            // 
+            this.renderModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.renderModeComboBox.FormattingEnabled = true;
+            this.renderModeComboBox.Items.AddRange(new object[] {
+            "Shaded",
+            "Normals",
+            "Lighting",
+            "Diffuse Maps",
+            "Normal Maps",
+            "Vertex Color",
+            "Ambient Occlusion",
+            "UV Coords",
+            "UV Test Pattern",
+            "Tangents",
+            "Bitangents",
+            "Light Set",
+            "Bone Weights"});
+            this.renderModeComboBox.Location = new System.Drawing.Point(129, 19);
+            this.renderModeComboBox.Name = "renderModeComboBox";
+            this.renderModeComboBox.Size = new System.Drawing.Size(149, 21);
+            this.renderModeComboBox.TabIndex = 16;
+            this.renderModeComboBox.SelectionChangeCommitted += new System.EventHandler(this.renderMode_SelectionChangeCommitted);
+            // 
+            // debugModeLabel
+            // 
+            this.debugModeLabel.AutoSize = true;
+            this.debugModeLabel.Location = new System.Drawing.Point(8, 22);
+            this.debugModeLabel.Name = "debugModeLabel";
+            this.debugModeLabel.Size = new System.Drawing.Size(69, 13);
+            this.debugModeLabel.TabIndex = 28;
+            this.debugModeLabel.Text = "Debug Mode";
+            // 
             // groupBox10
             // 
             this.groupBox10.Controls.Add(this.renderGeneralShapesCB);
@@ -1077,152 +1226,6 @@
             this.renderCameraPathCB.UseVisualStyleBackColor = true;
             this.renderCameraPathCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.radioButton3);
-            this.groupBox6.Controls.Add(this.radioButton2);
-            this.groupBox6.Controls.Add(this.radioButton1);
-            this.groupBox6.Controls.Add(this.debug1CB);
-            this.groupBox6.Controls.Add(this.renderChannelR);
-            this.groupBox6.Controls.Add(this.renderChannelA);
-            this.groupBox6.Controls.Add(this.renderChannelG);
-            this.groupBox6.Controls.Add(this.renderChannelB);
-            this.groupBox6.Controls.Add(this.renderModeComboBox);
-            this.groupBox6.Controls.Add(this.debugModeLabel);
-            this.groupBox6.Location = new System.Drawing.Point(266, 6);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(284, 234);
-            this.groupBox6.TabIndex = 36;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Debug Shading";
-            // 
-            // radioButton3
-            // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(155, 111);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(46, 17);
-            this.radioButton3.TabIndex = 38;
-            this.radioButton3.TabStop = true;
-            this.radioButton3.Text = "UV3";
-            this.radioButton3.UseVisualStyleBackColor = true;
-            this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
-            // 
-            // radioButton2
-            // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(86, 111);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(46, 17);
-            this.radioButton2.TabIndex = 37;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "UV2";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
-            // 
-            // radioButton1
-            // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(11, 111);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(46, 17);
-            this.radioButton1.TabIndex = 36;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "UV1";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
-            // 
-            // debug1CB
-            // 
-            this.debug1CB.AutoSize = true;
-            this.debug1CB.Location = new System.Drawing.Point(10, 85);
-            this.debug1CB.Name = "debug1CB";
-            this.debug1CB.Size = new System.Drawing.Size(61, 17);
-            this.debug1CB.TabIndex = 34;
-            this.debug1CB.Text = "option1";
-            this.debug1CB.UseVisualStyleBackColor = true;
-            this.debug1CB.CheckedChanged += new System.EventHandler(this.debug1CB_CheckedChanged);
-            // 
-            // renderChannelR
-            // 
-            this.renderChannelR.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderChannelR.ForeColor = System.Drawing.Color.Red;
-            this.renderChannelR.Location = new System.Drawing.Point(11, 50);
-            this.renderChannelR.Name = "renderChannelR";
-            this.renderChannelR.Size = new System.Drawing.Size(24, 24);
-            this.renderChannelR.TabIndex = 29;
-            this.renderChannelR.Text = "R";
-            this.renderChannelR.UseVisualStyleBackColor = true;
-            this.renderChannelR.Click += new System.EventHandler(this.renderChannelR_Click);
-            // 
-            // renderChannelA
-            // 
-            this.renderChannelA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderChannelA.Location = new System.Drawing.Point(89, 50);
-            this.renderChannelA.Name = "renderChannelA";
-            this.renderChannelA.Size = new System.Drawing.Size(24, 24);
-            this.renderChannelA.TabIndex = 32;
-            this.renderChannelA.Text = "A";
-            this.renderChannelA.UseVisualStyleBackColor = true;
-            this.renderChannelA.Click += new System.EventHandler(this.renderChannelA_Click);
-            // 
-            // renderChannelG
-            // 
-            this.renderChannelG.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderChannelG.ForeColor = System.Drawing.Color.Green;
-            this.renderChannelG.Location = new System.Drawing.Point(37, 50);
-            this.renderChannelG.Name = "renderChannelG";
-            this.renderChannelG.Size = new System.Drawing.Size(24, 24);
-            this.renderChannelG.TabIndex = 31;
-            this.renderChannelG.Text = "G";
-            this.renderChannelG.UseVisualStyleBackColor = true;
-            this.renderChannelG.Click += new System.EventHandler(this.renderChannelG_Click);
-            // 
-            // renderChannelB
-            // 
-            this.renderChannelB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderChannelB.ForeColor = System.Drawing.Color.Blue;
-            this.renderChannelB.Location = new System.Drawing.Point(63, 50);
-            this.renderChannelB.Name = "renderChannelB";
-            this.renderChannelB.Size = new System.Drawing.Size(24, 24);
-            this.renderChannelB.TabIndex = 30;
-            this.renderChannelB.Text = "B";
-            this.renderChannelB.UseVisualStyleBackColor = true;
-            this.renderChannelB.Click += new System.EventHandler(this.renderChannelB_Click);
-            // 
-            // renderModeComboBox
-            // 
-            this.renderModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.renderModeComboBox.FormattingEnabled = true;
-            this.renderModeComboBox.Items.AddRange(new object[] {
-            "Shaded",
-            "Normals",
-            "Lighting",
-            "Diffuse Maps",
-            "Normal Maps",
-            "Vertex Color",
-            "Ambient Occlusion",
-            "UV Coords",
-            "UV Test Pattern",
-            "Tangents",
-            "Bitangents",
-            "Light Set",
-            "Bone Weights"});
-            this.renderModeComboBox.Location = new System.Drawing.Point(129, 19);
-            this.renderModeComboBox.Name = "renderModeComboBox";
-            this.renderModeComboBox.Size = new System.Drawing.Size(149, 21);
-            this.renderModeComboBox.TabIndex = 16;
-            this.renderModeComboBox.SelectionChangeCommitted += new System.EventHandler(this.renderMode_SelectionChangeCommitted);
-            // 
-            // debugModeLabel
-            // 
-            this.debugModeLabel.AutoSize = true;
-            this.debugModeLabel.Location = new System.Drawing.Point(8, 22);
-            this.debugModeLabel.Name = "debugModeLabel";
-            this.debugModeLabel.Size = new System.Drawing.Size(69, 13);
-            this.debugModeLabel.TabIndex = 28;
-            this.debugModeLabel.Text = "Debug Mode";
-            // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
@@ -1236,475 +1239,6 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(564, 647);
             this.tabControl1.TabIndex = 17;
-            // 
-            // tabPage5
-            // 
-            this.tabPage5.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage5.Controls.Add(this.groupBox9);
-            this.tabPage5.Controls.Add(this.groupBox8);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(556, 621);
-            this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "Background/Floor";
-            // 
-            // groupBox9
-            // 
-            this.groupBox9.Controls.Add(this.backgroundImgTB);
-            this.groupBox9.Controls.Add(this.backgroundImgLabel);
-            this.groupBox9.Controls.Add(this.openBackgroundTexButton);
-            this.groupBox9.Controls.Add(this.backgroundStyleLabel);
-            this.groupBox9.Controls.Add(this.backgroundComboBox);
-            this.groupBox9.Controls.Add(this.renderBackgroundCB);
-            this.groupBox9.Controls.Add(this.tableLayoutPanel3);
-            this.groupBox9.Dock = System.Windows.Forms.DockStyle.Top;
-            this.groupBox9.Location = new System.Drawing.Point(3, 3);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(550, 159);
-            this.groupBox9.TabIndex = 39;
-            this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "Background Settings";
-            // 
-            // backgroundImgTB
-            // 
-            this.backgroundImgTB.Location = new System.Drawing.Point(63, 68);
-            this.backgroundImgTB.Name = "backgroundImgTB";
-            this.backgroundImgTB.Size = new System.Drawing.Size(100, 20);
-            this.backgroundImgTB.TabIndex = 38;
-            this.backgroundImgTB.Text = "image.png";
-            // 
-            // backgroundImgLabel
-            // 
-            this.backgroundImgLabel.AutoSize = true;
-            this.backgroundImgLabel.Location = new System.Drawing.Point(22, 72);
-            this.backgroundImgLabel.Name = "backgroundImgLabel";
-            this.backgroundImgLabel.Size = new System.Drawing.Size(36, 13);
-            this.backgroundImgLabel.TabIndex = 37;
-            this.backgroundImgLabel.Text = "Image";
-            // 
-            // openBackgroundTexButton
-            // 
-            this.openBackgroundTexButton.Location = new System.Drawing.Point(169, 66);
-            this.openBackgroundTexButton.Name = "openBackgroundTexButton";
-            this.openBackgroundTexButton.Size = new System.Drawing.Size(75, 23);
-            this.openBackgroundTexButton.TabIndex = 36;
-            this.openBackgroundTexButton.Text = "Open Image";
-            this.openBackgroundTexButton.UseVisualStyleBackColor = true;
-            this.openBackgroundTexButton.Click += new System.EventHandler(this.openBackgroundTexButton_Click);
-            // 
-            // backgroundStyleLabel
-            // 
-            this.backgroundStyleLabel.AutoSize = true;
-            this.backgroundStyleLabel.Location = new System.Drawing.Point(22, 43);
-            this.backgroundStyleLabel.Name = "backgroundStyleLabel";
-            this.backgroundStyleLabel.Size = new System.Drawing.Size(30, 13);
-            this.backgroundStyleLabel.TabIndex = 35;
-            this.backgroundStyleLabel.Text = "Style";
-            // 
-            // backgroundComboBox
-            // 
-            this.backgroundComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.backgroundComboBox.FormattingEnabled = true;
-            this.backgroundComboBox.Items.AddRange(new object[] {
-            "Gradient",
-            "Solid",
-            "Textured"});
-            this.backgroundComboBox.Location = new System.Drawing.Point(63, 39);
-            this.backgroundComboBox.Name = "backgroundComboBox";
-            this.backgroundComboBox.Size = new System.Drawing.Size(181, 21);
-            this.backgroundComboBox.TabIndex = 34;
-            // 
-            // renderBackgroundCB
-            // 
-            this.renderBackgroundCB.AutoSize = true;
-            this.renderBackgroundCB.Location = new System.Drawing.Point(6, 19);
-            this.renderBackgroundCB.Name = "renderBackgroundCB";
-            this.renderBackgroundCB.Size = new System.Drawing.Size(122, 17);
-            this.renderBackgroundCB.TabIndex = 33;
-            this.renderBackgroundCB.Text = "Render Background";
-            this.renderBackgroundCB.UseVisualStyleBackColor = true;
-            this.renderBackgroundCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // tableLayoutPanel3
-            // 
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.60606F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 89.39394F));
-            this.tableLayoutPanel3.Controls.Add(this.BackgroundGradient1, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.label2, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.label3, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.BackgroundGradient2, 0, 1);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(25, 94);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 2;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(200, 55);
-            this.tableLayoutPanel3.TabIndex = 0;
-            // 
-            // BackgroundGradient1
-            // 
-            this.BackgroundGradient1.Location = new System.Drawing.Point(3, 3);
-            this.BackgroundGradient1.Name = "BackgroundGradient1";
-            this.BackgroundGradient1.Size = new System.Drawing.Size(15, 16);
-            this.BackgroundGradient1.TabIndex = 35;
-            this.BackgroundGradient1.TabStop = false;
-            this.BackgroundGradient1.Click += new System.EventHandler(this.BackgroundGradient1_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(24, 27);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(150, 13);
-            this.label2.TabIndex = 37;
-            this.label2.Text = "Background Gradient (Bottom)";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(24, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(136, 13);
-            this.label3.TabIndex = 36;
-            this.label3.Text = "Background Gradient (Top)";
-            // 
-            // BackgroundGradient2
-            // 
-            this.BackgroundGradient2.Location = new System.Drawing.Point(3, 30);
-            this.BackgroundGradient2.Name = "BackgroundGradient2";
-            this.BackgroundGradient2.Size = new System.Drawing.Size(15, 16);
-            this.BackgroundGradient2.TabIndex = 34;
-            this.BackgroundGradient2.TabStop = false;
-            this.BackgroundGradient2.Click += new System.EventHandler(this.BackgroundGradient2_Click);
-            // 
-            // groupBox8
-            // 
-            this.groupBox8.Controls.Add(this.label7);
-            this.groupBox8.Controls.Add(this.textBox2);
-            this.groupBox8.Controls.Add(this.textBox3);
-            this.groupBox8.Controls.Add(this.floorImgTB);
-            this.groupBox8.Controls.Add(this.label9);
-            this.groupBox8.Controls.Add(this.floorImgLabel);
-            this.groupBox8.Controls.Add(this.openFloorTexButton);
-            this.groupBox8.Controls.Add(this.floorStyleLabel);
-            this.groupBox8.Controls.Add(this.floorComboBox);
-            this.groupBox8.Controls.Add(this.renderFloorCB);
-            this.groupBox8.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox8.Location = new System.Drawing.Point(3, 168);
-            this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(550, 450);
-            this.groupBox8.TabIndex = 38;
-            this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "Floor Settings";
-            this.groupBox8.Enter += new System.EventHandler(this.groupBox8_Enter);
-            // 
-            // floorStyleLabel
-            // 
-            this.floorStyleLabel.AutoSize = true;
-            this.floorStyleLabel.Location = new System.Drawing.Point(22, 39);
-            this.floorStyleLabel.Name = "floorStyleLabel";
-            this.floorStyleLabel.Size = new System.Drawing.Size(30, 13);
-            this.floorStyleLabel.TabIndex = 41;
-            this.floorStyleLabel.Text = "Style";
-            // 
-            // floorComboBox
-            // 
-            this.floorComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.floorComboBox.FormattingEnabled = true;
-            this.floorComboBox.Items.AddRange(new object[] {
-            "Wireframe",
-            "Textured",
-            "Solid"});
-            this.floorComboBox.Location = new System.Drawing.Point(63, 36);
-            this.floorComboBox.Name = "floorComboBox";
-            this.floorComboBox.Size = new System.Drawing.Size(181, 21);
-            this.floorComboBox.TabIndex = 40;
-            this.floorComboBox.SelectedIndexChanged += new System.EventHandler(this.floorComboBox_SelectedIndexChanged);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(22, 122);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(49, 13);
-            this.label9.TabIndex = 36;
-            this.label9.Text = "Divisions";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(22, 98);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(34, 13);
-            this.label7.TabIndex = 35;
-            this.label7.Text = "Scale";
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(79, 118);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 20);
-            this.textBox3.TabIndex = 34;
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(79, 94);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
-            this.textBox2.TabIndex = 33;
-            // 
-            // renderFloorCB
-            // 
-            this.renderFloorCB.AutoSize = true;
-            this.renderFloorCB.Location = new System.Drawing.Point(6, 19);
-            this.renderFloorCB.Name = "renderFloorCB";
-            this.renderFloorCB.Size = new System.Drawing.Size(87, 17);
-            this.renderFloorCB.TabIndex = 32;
-            this.renderFloorCB.Text = "Render Floor";
-            this.renderFloorCB.UseVisualStyleBackColor = true;
-            this.renderFloorCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // tabPage4
-            // 
-            this.tabPage4.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage4.Controls.Add(this.bloomGroupBox);
-            this.tabPage4.Controls.Add(this.postProcessingCB);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(556, 621);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Post Processing";
-            // 
-            // bloomGroupBox
-            // 
-            this.bloomGroupBox.Controls.Add(this.tableLayoutPanel2);
-            this.bloomGroupBox.Controls.Add(this.bloomCB);
-            this.bloomGroupBox.Location = new System.Drawing.Point(23, 30);
-            this.bloomGroupBox.Name = "bloomGroupBox";
-            this.bloomGroupBox.Size = new System.Drawing.Size(256, 140);
-            this.bloomGroupBox.TabIndex = 2;
-            this.bloomGroupBox.TabStop = false;
-            this.bloomGroupBox.Text = "Bloom";
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Controls.Add(this.bloomIntensityTB, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.bloomThresholdTB, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.bloomRadiusTB, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.label4, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.label5, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.label8, 0, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 42);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 3;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(244, 85);
-            this.tableLayoutPanel2.TabIndex = 32;
-            // 
-            // bloomIntensityTB
-            // 
-            this.bloomIntensityTB.Location = new System.Drawing.Point(125, 3);
-            this.bloomIntensityTB.Name = "bloomIntensityTB";
-            this.bloomIntensityTB.Size = new System.Drawing.Size(100, 20);
-            this.bloomIntensityTB.TabIndex = 30;
-            this.bloomIntensityTB.TextChanged += new System.EventHandler(this.bloomIntensityTB_TextChanged);
-            // 
-            // bloomThresholdTB
-            // 
-            this.bloomThresholdTB.Location = new System.Drawing.Point(125, 29);
-            this.bloomThresholdTB.Name = "bloomThresholdTB";
-            this.bloomThresholdTB.Size = new System.Drawing.Size(100, 20);
-            this.bloomThresholdTB.TabIndex = 31;
-            this.bloomThresholdTB.TextChanged += new System.EventHandler(this.bloomThresholdTB_TextChanged);
-            // 
-            // bloomRadiusTB
-            // 
-            this.bloomRadiusTB.Location = new System.Drawing.Point(125, 55);
-            this.bloomRadiusTB.Name = "bloomRadiusTB";
-            this.bloomRadiusTB.Size = new System.Drawing.Size(100, 20);
-            this.bloomRadiusTB.TabIndex = 32;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 26);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(86, 13);
-            this.label4.TabIndex = 35;
-            this.label4.Text = "Bloom Threshold";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 52);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(72, 13);
-            this.label5.TabIndex = 36;
-            this.label5.Text = "Bloom Radius";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(3, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(78, 13);
-            this.label8.TabIndex = 34;
-            this.label8.Text = "Bloom Intensity";
-            // 
-            // bloomCB
-            // 
-            this.bloomCB.AutoSize = true;
-            this.bloomCB.Location = new System.Drawing.Point(6, 19);
-            this.bloomCB.Name = "bloomCB";
-            this.bloomCB.Size = new System.Drawing.Size(91, 17);
-            this.bloomCB.TabIndex = 1;
-            this.bloomCB.Text = "Enable Bloom";
-            this.bloomCB.UseVisualStyleBackColor = true;
-            this.bloomCB.CheckedChanged += new System.EventHandler(this.bloomCB_CheckedChanged);
-            // 
-            // postProcessingCB
-            // 
-            this.postProcessingCB.AutoSize = true;
-            this.postProcessingCB.Location = new System.Drawing.Point(7, 7);
-            this.postProcessingCB.Name = "postProcessingCB";
-            this.postProcessingCB.Size = new System.Drawing.Size(138, 17);
-            this.postProcessingCB.TabIndex = 0;
-            this.postProcessingCB.Text = "Enable Post Processing";
-            this.postProcessingCB.UseVisualStyleBackColor = true;
-            this.postProcessingCB.CheckedChanged += new System.EventHandler(this.postProcessingCB_CheckedChanged);
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage3.Controls.Add(this.timeElapsedCheckbox);
-            this.tabPage3.Controls.Add(this.showActiveWindowCheckbox);
-            this.tabPage3.Controls.Add(this.modNameTextBox);
-            this.tabPage3.Controls.Add(this.userModCheckbox);
-            this.tabPage3.Controls.Add(this.groupBox7);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(556, 621);
-            this.tabPage3.TabIndex = 2;
-            this.tabPage3.Text = "Discord Rich Presence";
-            // 
-            // timeElapsedCheckbox
-            // 
-            this.timeElapsedCheckbox.AutoSize = true;
-            this.timeElapsedCheckbox.Location = new System.Drawing.Point(14, 182);
-            this.timeElapsedCheckbox.Name = "timeElapsedCheckbox";
-            this.timeElapsedCheckbox.Size = new System.Drawing.Size(154, 17);
-            this.timeElapsedCheckbox.TabIndex = 4;
-            this.timeElapsedCheckbox.Text = "Show Time Spent Modding";
-            this.timeElapsedCheckbox.UseVisualStyleBackColor = true;
-            this.timeElapsedCheckbox.CheckedChanged += new System.EventHandler(this.discordCheckChanged);
-            // 
-            // showActiveWindowCheckbox
-            // 
-            this.showActiveWindowCheckbox.AutoSize = true;
-            this.showActiveWindowCheckbox.Location = new System.Drawing.Point(14, 156);
-            this.showActiveWindowCheckbox.Name = "showActiveWindowCheckbox";
-            this.showActiveWindowCheckbox.Size = new System.Drawing.Size(128, 17);
-            this.showActiveWindowCheckbox.TabIndex = 3;
-            this.showActiveWindowCheckbox.Text = "Show Active Window";
-            this.showActiveWindowCheckbox.UseVisualStyleBackColor = true;
-            this.showActiveWindowCheckbox.CheckedChanged += new System.EventHandler(this.discordCheckChanged);
-            // 
-            // modNameTextBox
-            // 
-            this.modNameTextBox.Location = new System.Drawing.Point(131, 125);
-            this.modNameTextBox.Name = "modNameTextBox";
-            this.modNameTextBox.Size = new System.Drawing.Size(113, 20);
-            this.modNameTextBox.TabIndex = 2;
-            this.modNameTextBox.TextChanged += new System.EventHandler(this.modNameTextBox_TextChanged);
-            // 
-            // userModCheckbox
-            // 
-            this.userModCheckbox.AutoSize = true;
-            this.userModCheckbox.Location = new System.Drawing.Point(14, 128);
-            this.userModCheckbox.Name = "userModCheckbox";
-            this.userModCheckbox.Size = new System.Drawing.Size(121, 17);
-            this.userModCheckbox.TabIndex = 1;
-            this.userModCheckbox.Text = "Display Working on ";
-            this.userModCheckbox.UseVisualStyleBackColor = true;
-            this.userModCheckbox.CheckedChanged += new System.EventHandler(this.userModCheckbox_CheckedChanged);
-            // 
-            // groupBox7
-            // 
-            this.groupBox7.Controls.Add(this.customComboBox);
-            this.groupBox7.Controls.Add(this.filenameRadioButton);
-            this.groupBox7.Controls.Add(this.customRadioButton);
-            this.groupBox7.Controls.Add(this.defaultRadioButton);
-            this.groupBox7.Location = new System.Drawing.Point(14, 12);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(248, 100);
-            this.groupBox7.TabIndex = 0;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Image Mode";
-            // 
-            // customComboBox
-            // 
-            this.customComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.customComboBox.Enabled = false;
-            this.customComboBox.FormattingEnabled = true;
-            this.customComboBox.Items.AddRange(new object[] {
-            "forge",
-            "file",
-            "mario",
-            "mesh",
-            "nud",
-            "nut",
-            "vbn",
-            "sexy_green_down_arrow",
-            "default_texture",
-            "big_icon_anim"});
-            this.customComboBox.Location = new System.Drawing.Point(95, 41);
-            this.customComboBox.Name = "customComboBox";
-            this.customComboBox.Size = new System.Drawing.Size(134, 21);
-            this.customComboBox.TabIndex = 3;
-            this.customComboBox.SelectedIndexChanged += new System.EventHandler(this.customImageKeyChange);
-            // 
-            // filenameRadioButton
-            // 
-            this.filenameRadioButton.AutoSize = true;
-            this.filenameRadioButton.Location = new System.Drawing.Point(6, 65);
-            this.filenameRadioButton.Name = "filenameRadioButton";
-            this.filenameRadioButton.Size = new System.Drawing.Size(82, 17);
-            this.filenameRadioButton.TabIndex = 2;
-            this.filenameRadioButton.Text = "By Filename";
-            this.filenameRadioButton.UseVisualStyleBackColor = true;
-            this.filenameRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
-            // 
-            // customRadioButton
-            // 
-            this.customRadioButton.AutoSize = true;
-            this.customRadioButton.Location = new System.Drawing.Point(6, 42);
-            this.customRadioButton.Name = "customRadioButton";
-            this.customRadioButton.Size = new System.Drawing.Size(60, 17);
-            this.customRadioButton.TabIndex = 1;
-            this.customRadioButton.Text = "Custom";
-            this.customRadioButton.UseVisualStyleBackColor = true;
-            this.customRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
-            // 
-            // defaultRadioButton
-            // 
-            this.defaultRadioButton.AutoSize = true;
-            this.defaultRadioButton.Checked = true;
-            this.defaultRadioButton.Location = new System.Drawing.Point(6, 19);
-            this.defaultRadioButton.Name = "defaultRadioButton";
-            this.defaultRadioButton.Size = new System.Drawing.Size(59, 17);
-            this.defaultRadioButton.TabIndex = 0;
-            this.defaultRadioButton.TabStop = true;
-            this.defaultRadioButton.Text = "Default";
-            this.defaultRadioButton.UseVisualStyleBackColor = true;
-            this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
             // tabPage6
             // 
@@ -1983,6 +1517,213 @@
             this.useNormCB.Text = "Use Normal Maps";
             this.useNormCB.UseVisualStyleBackColor = true;
             // 
+            // tabPage5
+            // 
+            this.tabPage5.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage5.Controls.Add(this.groupBox9);
+            this.tabPage5.Controls.Add(this.groupBox8);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(556, 621);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Background/Floor";
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.backgroundImgTB);
+            this.groupBox9.Controls.Add(this.backgroundImgLabel);
+            this.groupBox9.Controls.Add(this.openBackgroundTexButton);
+            this.groupBox9.Controls.Add(this.backgroundStyleLabel);
+            this.groupBox9.Controls.Add(this.backgroundComboBox);
+            this.groupBox9.Controls.Add(this.renderBackgroundCB);
+            this.groupBox9.Controls.Add(this.tableLayoutPanel3);
+            this.groupBox9.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox9.Location = new System.Drawing.Point(3, 3);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(550, 159);
+            this.groupBox9.TabIndex = 39;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "Background Settings";
+            // 
+            // backgroundImgTB
+            // 
+            this.backgroundImgTB.Location = new System.Drawing.Point(63, 68);
+            this.backgroundImgTB.Name = "backgroundImgTB";
+            this.backgroundImgTB.Size = new System.Drawing.Size(100, 20);
+            this.backgroundImgTB.TabIndex = 38;
+            this.backgroundImgTB.Text = "image.png";
+            // 
+            // backgroundImgLabel
+            // 
+            this.backgroundImgLabel.AutoSize = true;
+            this.backgroundImgLabel.Location = new System.Drawing.Point(22, 72);
+            this.backgroundImgLabel.Name = "backgroundImgLabel";
+            this.backgroundImgLabel.Size = new System.Drawing.Size(36, 13);
+            this.backgroundImgLabel.TabIndex = 37;
+            this.backgroundImgLabel.Text = "Image";
+            // 
+            // openBackgroundTexButton
+            // 
+            this.openBackgroundTexButton.Location = new System.Drawing.Point(169, 66);
+            this.openBackgroundTexButton.Name = "openBackgroundTexButton";
+            this.openBackgroundTexButton.Size = new System.Drawing.Size(75, 23);
+            this.openBackgroundTexButton.TabIndex = 36;
+            this.openBackgroundTexButton.Text = "Open Image";
+            this.openBackgroundTexButton.UseVisualStyleBackColor = true;
+            this.openBackgroundTexButton.Click += new System.EventHandler(this.openBackgroundTexButton_Click);
+            // 
+            // backgroundStyleLabel
+            // 
+            this.backgroundStyleLabel.AutoSize = true;
+            this.backgroundStyleLabel.Location = new System.Drawing.Point(22, 43);
+            this.backgroundStyleLabel.Name = "backgroundStyleLabel";
+            this.backgroundStyleLabel.Size = new System.Drawing.Size(30, 13);
+            this.backgroundStyleLabel.TabIndex = 35;
+            this.backgroundStyleLabel.Text = "Style";
+            // 
+            // backgroundComboBox
+            // 
+            this.backgroundComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.backgroundComboBox.FormattingEnabled = true;
+            this.backgroundComboBox.Items.AddRange(new object[] {
+            "Gradient",
+            "Textured",
+            "Solid"});
+            this.backgroundComboBox.Location = new System.Drawing.Point(63, 39);
+            this.backgroundComboBox.Name = "backgroundComboBox";
+            this.backgroundComboBox.Size = new System.Drawing.Size(181, 21);
+            this.backgroundComboBox.TabIndex = 34;
+            this.backgroundComboBox.SelectedIndexChanged += new System.EventHandler(this.backgroundComboBox_SelectedIndexChanged);
+            // 
+            // renderBackgroundCB
+            // 
+            this.renderBackgroundCB.AutoSize = true;
+            this.renderBackgroundCB.Location = new System.Drawing.Point(6, 19);
+            this.renderBackgroundCB.Name = "renderBackgroundCB";
+            this.renderBackgroundCB.Size = new System.Drawing.Size(122, 17);
+            this.renderBackgroundCB.TabIndex = 33;
+            this.renderBackgroundCB.Text = "Render Background";
+            this.renderBackgroundCB.UseVisualStyleBackColor = true;
+            this.renderBackgroundCB.CheckedChanged += new System.EventHandler(this.backgroundCB_CheckedChanged);
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.60606F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 89.39394F));
+            this.tableLayoutPanel3.Controls.Add(this.BackgroundGradient1, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.backgroundBottomLabel, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.backgroundTopLabel, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.BackgroundGradient2, 0, 1);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(25, 94);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(200, 55);
+            this.tableLayoutPanel3.TabIndex = 0;
+            // 
+            // BackgroundGradient1
+            // 
+            this.BackgroundGradient1.Location = new System.Drawing.Point(3, 3);
+            this.BackgroundGradient1.Name = "BackgroundGradient1";
+            this.BackgroundGradient1.Size = new System.Drawing.Size(15, 16);
+            this.BackgroundGradient1.TabIndex = 35;
+            this.BackgroundGradient1.TabStop = false;
+            this.BackgroundGradient1.Click += new System.EventHandler(this.BackgroundGradient1_Click);
+            // 
+            // backgroundBottomLabel
+            // 
+            this.backgroundBottomLabel.AutoSize = true;
+            this.backgroundBottomLabel.Location = new System.Drawing.Point(24, 27);
+            this.backgroundBottomLabel.Name = "backgroundBottomLabel";
+            this.backgroundBottomLabel.Size = new System.Drawing.Size(150, 13);
+            this.backgroundBottomLabel.TabIndex = 37;
+            this.backgroundBottomLabel.Text = "Background Gradient (Bottom)";
+            // 
+            // backgroundTopLabel
+            // 
+            this.backgroundTopLabel.AutoSize = true;
+            this.backgroundTopLabel.Location = new System.Drawing.Point(24, 0);
+            this.backgroundTopLabel.Name = "backgroundTopLabel";
+            this.backgroundTopLabel.Size = new System.Drawing.Size(136, 13);
+            this.backgroundTopLabel.TabIndex = 36;
+            this.backgroundTopLabel.Text = "Background Gradient (Top)";
+            // 
+            // BackgroundGradient2
+            // 
+            this.BackgroundGradient2.Location = new System.Drawing.Point(3, 30);
+            this.BackgroundGradient2.Name = "BackgroundGradient2";
+            this.BackgroundGradient2.Size = new System.Drawing.Size(15, 16);
+            this.BackgroundGradient2.TabIndex = 34;
+            this.BackgroundGradient2.TabStop = false;
+            this.BackgroundGradient2.Click += new System.EventHandler(this.BackgroundGradient2_Click);
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.label6);
+            this.groupBox8.Controls.Add(this.pictureBox1);
+            this.groupBox8.Controls.Add(this.label7);
+            this.groupBox8.Controls.Add(this.floorScaleTB);
+            this.groupBox8.Controls.Add(this.floorDivisionsTB);
+            this.groupBox8.Controls.Add(this.floorImgTB);
+            this.groupBox8.Controls.Add(this.label9);
+            this.groupBox8.Controls.Add(this.floorImgLabel);
+            this.groupBox8.Controls.Add(this.openFloorTexButton);
+            this.groupBox8.Controls.Add(this.floorStyleLabel);
+            this.groupBox8.Controls.Add(this.floorComboBox);
+            this.groupBox8.Controls.Add(this.renderFloorCB);
+            this.groupBox8.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.groupBox8.Location = new System.Drawing.Point(3, 168);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(550, 450);
+            this.groupBox8.TabIndex = 38;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "Floor Settings";
+            this.groupBox8.Enter += new System.EventHandler(this.groupBox8_Enter);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(49, 143);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(57, 13);
+            this.label6.TabIndex = 46;
+            this.label6.Text = "Floor Color";
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(28, 143);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(15, 16);
+            this.pictureBox1.TabIndex = 45;
+            this.pictureBox1.TabStop = false;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(22, 98);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(34, 13);
+            this.label7.TabIndex = 35;
+            this.label7.Text = "Scale";
+            // 
+            // floorScaleTB
+            // 
+            this.floorScaleTB.Location = new System.Drawing.Point(79, 94);
+            this.floorScaleTB.Name = "floorScaleTB";
+            this.floorScaleTB.Size = new System.Drawing.Size(100, 20);
+            this.floorScaleTB.TabIndex = 33;
+            this.floorScaleTB.TextChanged += new System.EventHandler(this.floorScaleTB_TextChanged);
+            // 
+            // floorDivisionsTB
+            // 
+            this.floorDivisionsTB.Location = new System.Drawing.Point(79, 118);
+            this.floorDivisionsTB.Name = "floorDivisionsTB";
+            this.floorDivisionsTB.Size = new System.Drawing.Size(100, 20);
+            this.floorDivisionsTB.TabIndex = 34;
+            // 
             // floorImgTB
             // 
             this.floorImgTB.Location = new System.Drawing.Point(63, 65);
@@ -1990,6 +1731,15 @@
             this.floorImgTB.Size = new System.Drawing.Size(100, 20);
             this.floorImgTB.TabIndex = 44;
             this.floorImgTB.Text = "image.png";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(22, 122);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(49, 13);
+            this.label9.TabIndex = 36;
+            this.label9.Text = "Divisions";
             // 
             // floorImgLabel
             // 
@@ -2009,6 +1759,280 @@
             this.openFloorTexButton.Text = "Open Image";
             this.openFloorTexButton.UseVisualStyleBackColor = true;
             this.openFloorTexButton.Click += new System.EventHandler(this.openFloorTexButton_Click);
+            // 
+            // floorStyleLabel
+            // 
+            this.floorStyleLabel.AutoSize = true;
+            this.floorStyleLabel.Location = new System.Drawing.Point(22, 39);
+            this.floorStyleLabel.Name = "floorStyleLabel";
+            this.floorStyleLabel.Size = new System.Drawing.Size(30, 13);
+            this.floorStyleLabel.TabIndex = 41;
+            this.floorStyleLabel.Text = "Style";
+            // 
+            // floorComboBox
+            // 
+            this.floorComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.floorComboBox.FormattingEnabled = true;
+            this.floorComboBox.Items.AddRange(new object[] {
+            "Wireframe",
+            "Textured",
+            "Solid"});
+            this.floorComboBox.Location = new System.Drawing.Point(63, 36);
+            this.floorComboBox.Name = "floorComboBox";
+            this.floorComboBox.Size = new System.Drawing.Size(181, 21);
+            this.floorComboBox.TabIndex = 40;
+            this.floorComboBox.SelectedIndexChanged += new System.EventHandler(this.floorComboBox_SelectedIndexChanged);
+            // 
+            // renderFloorCB
+            // 
+            this.renderFloorCB.AutoSize = true;
+            this.renderFloorCB.Location = new System.Drawing.Point(6, 19);
+            this.renderFloorCB.Name = "renderFloorCB";
+            this.renderFloorCB.Size = new System.Drawing.Size(87, 17);
+            this.renderFloorCB.TabIndex = 32;
+            this.renderFloorCB.Text = "Render Floor";
+            this.renderFloorCB.UseVisualStyleBackColor = true;
+            this.renderFloorCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage4.Controls.Add(this.bloomGroupBox);
+            this.tabPage4.Controls.Add(this.postProcessingCB);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(556, 621);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Post Processing";
+            // 
+            // bloomGroupBox
+            // 
+            this.bloomGroupBox.Controls.Add(this.tableLayoutPanel2);
+            this.bloomGroupBox.Controls.Add(this.bloomCB);
+            this.bloomGroupBox.Location = new System.Drawing.Point(23, 30);
+            this.bloomGroupBox.Name = "bloomGroupBox";
+            this.bloomGroupBox.Size = new System.Drawing.Size(256, 140);
+            this.bloomGroupBox.TabIndex = 2;
+            this.bloomGroupBox.TabStop = false;
+            this.bloomGroupBox.Text = "Bloom";
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.bloomIntensityTB, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.bloomThresholdTB, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.bloomRadiusTB, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.label4, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.label5, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.label8, 0, 0);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 42);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(244, 85);
+            this.tableLayoutPanel2.TabIndex = 32;
+            // 
+            // bloomIntensityTB
+            // 
+            this.bloomIntensityTB.Location = new System.Drawing.Point(125, 3);
+            this.bloomIntensityTB.Name = "bloomIntensityTB";
+            this.bloomIntensityTB.Size = new System.Drawing.Size(100, 20);
+            this.bloomIntensityTB.TabIndex = 30;
+            this.bloomIntensityTB.TextChanged += new System.EventHandler(this.bloomIntensityTB_TextChanged);
+            // 
+            // bloomThresholdTB
+            // 
+            this.bloomThresholdTB.Location = new System.Drawing.Point(125, 29);
+            this.bloomThresholdTB.Name = "bloomThresholdTB";
+            this.bloomThresholdTB.Size = new System.Drawing.Size(100, 20);
+            this.bloomThresholdTB.TabIndex = 31;
+            this.bloomThresholdTB.TextChanged += new System.EventHandler(this.bloomThresholdTB_TextChanged);
+            // 
+            // bloomRadiusTB
+            // 
+            this.bloomRadiusTB.Location = new System.Drawing.Point(125, 55);
+            this.bloomRadiusTB.Name = "bloomRadiusTB";
+            this.bloomRadiusTB.Size = new System.Drawing.Size(100, 20);
+            this.bloomRadiusTB.TabIndex = 32;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 26);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(86, 13);
+            this.label4.TabIndex = 35;
+            this.label4.Text = "Bloom Threshold";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 52);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(72, 13);
+            this.label5.TabIndex = 36;
+            this.label5.Text = "Bloom Radius";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(3, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(78, 13);
+            this.label8.TabIndex = 34;
+            this.label8.Text = "Bloom Intensity";
+            // 
+            // bloomCB
+            // 
+            this.bloomCB.AutoSize = true;
+            this.bloomCB.Location = new System.Drawing.Point(6, 19);
+            this.bloomCB.Name = "bloomCB";
+            this.bloomCB.Size = new System.Drawing.Size(91, 17);
+            this.bloomCB.TabIndex = 1;
+            this.bloomCB.Text = "Enable Bloom";
+            this.bloomCB.UseVisualStyleBackColor = true;
+            this.bloomCB.CheckedChanged += new System.EventHandler(this.bloomCB_CheckedChanged);
+            // 
+            // postProcessingCB
+            // 
+            this.postProcessingCB.AutoSize = true;
+            this.postProcessingCB.Location = new System.Drawing.Point(7, 7);
+            this.postProcessingCB.Name = "postProcessingCB";
+            this.postProcessingCB.Size = new System.Drawing.Size(138, 17);
+            this.postProcessingCB.TabIndex = 0;
+            this.postProcessingCB.Text = "Enable Post Processing";
+            this.postProcessingCB.UseVisualStyleBackColor = true;
+            this.postProcessingCB.CheckedChanged += new System.EventHandler(this.postProcessingCB_CheckedChanged);
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage3.Controls.Add(this.timeElapsedCheckbox);
+            this.tabPage3.Controls.Add(this.showActiveWindowCheckbox);
+            this.tabPage3.Controls.Add(this.modNameTextBox);
+            this.tabPage3.Controls.Add(this.userModCheckbox);
+            this.tabPage3.Controls.Add(this.groupBox7);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(556, 621);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Discord Rich Presence";
+            // 
+            // timeElapsedCheckbox
+            // 
+            this.timeElapsedCheckbox.AutoSize = true;
+            this.timeElapsedCheckbox.Location = new System.Drawing.Point(14, 182);
+            this.timeElapsedCheckbox.Name = "timeElapsedCheckbox";
+            this.timeElapsedCheckbox.Size = new System.Drawing.Size(154, 17);
+            this.timeElapsedCheckbox.TabIndex = 4;
+            this.timeElapsedCheckbox.Text = "Show Time Spent Modding";
+            this.timeElapsedCheckbox.UseVisualStyleBackColor = true;
+            this.timeElapsedCheckbox.CheckedChanged += new System.EventHandler(this.discordCheckChanged);
+            // 
+            // showActiveWindowCheckbox
+            // 
+            this.showActiveWindowCheckbox.AutoSize = true;
+            this.showActiveWindowCheckbox.Location = new System.Drawing.Point(14, 156);
+            this.showActiveWindowCheckbox.Name = "showActiveWindowCheckbox";
+            this.showActiveWindowCheckbox.Size = new System.Drawing.Size(128, 17);
+            this.showActiveWindowCheckbox.TabIndex = 3;
+            this.showActiveWindowCheckbox.Text = "Show Active Window";
+            this.showActiveWindowCheckbox.UseVisualStyleBackColor = true;
+            this.showActiveWindowCheckbox.CheckedChanged += new System.EventHandler(this.discordCheckChanged);
+            // 
+            // modNameTextBox
+            // 
+            this.modNameTextBox.Location = new System.Drawing.Point(131, 125);
+            this.modNameTextBox.Name = "modNameTextBox";
+            this.modNameTextBox.Size = new System.Drawing.Size(113, 20);
+            this.modNameTextBox.TabIndex = 2;
+            this.modNameTextBox.TextChanged += new System.EventHandler(this.modNameTextBox_TextChanged);
+            // 
+            // userModCheckbox
+            // 
+            this.userModCheckbox.AutoSize = true;
+            this.userModCheckbox.Location = new System.Drawing.Point(14, 128);
+            this.userModCheckbox.Name = "userModCheckbox";
+            this.userModCheckbox.Size = new System.Drawing.Size(121, 17);
+            this.userModCheckbox.TabIndex = 1;
+            this.userModCheckbox.Text = "Display Working on ";
+            this.userModCheckbox.UseVisualStyleBackColor = true;
+            this.userModCheckbox.CheckedChanged += new System.EventHandler(this.userModCheckbox_CheckedChanged);
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.customComboBox);
+            this.groupBox7.Controls.Add(this.filenameRadioButton);
+            this.groupBox7.Controls.Add(this.customRadioButton);
+            this.groupBox7.Controls.Add(this.defaultRadioButton);
+            this.groupBox7.Location = new System.Drawing.Point(14, 12);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(248, 100);
+            this.groupBox7.TabIndex = 0;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Image Mode";
+            // 
+            // customComboBox
+            // 
+            this.customComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.customComboBox.Enabled = false;
+            this.customComboBox.FormattingEnabled = true;
+            this.customComboBox.Items.AddRange(new object[] {
+            "forge",
+            "file",
+            "mario",
+            "mesh",
+            "nud",
+            "nut",
+            "vbn",
+            "sexy_green_down_arrow",
+            "default_texture",
+            "big_icon_anim"});
+            this.customComboBox.Location = new System.Drawing.Point(95, 41);
+            this.customComboBox.Name = "customComboBox";
+            this.customComboBox.Size = new System.Drawing.Size(134, 21);
+            this.customComboBox.TabIndex = 3;
+            this.customComboBox.SelectedIndexChanged += new System.EventHandler(this.customImageKeyChange);
+            // 
+            // filenameRadioButton
+            // 
+            this.filenameRadioButton.AutoSize = true;
+            this.filenameRadioButton.Location = new System.Drawing.Point(6, 65);
+            this.filenameRadioButton.Name = "filenameRadioButton";
+            this.filenameRadioButton.Size = new System.Drawing.Size(82, 17);
+            this.filenameRadioButton.TabIndex = 2;
+            this.filenameRadioButton.Text = "By Filename";
+            this.filenameRadioButton.UseVisualStyleBackColor = true;
+            this.filenameRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
+            // 
+            // customRadioButton
+            // 
+            this.customRadioButton.AutoSize = true;
+            this.customRadioButton.Location = new System.Drawing.Point(6, 42);
+            this.customRadioButton.Name = "customRadioButton";
+            this.customRadioButton.Size = new System.Drawing.Size(60, 17);
+            this.customRadioButton.TabIndex = 1;
+            this.customRadioButton.Text = "Custom";
+            this.customRadioButton.UseVisualStyleBackColor = true;
+            this.customRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
+            // 
+            // defaultRadioButton
+            // 
+            this.defaultRadioButton.AutoSize = true;
+            this.defaultRadioButton.Checked = true;
+            this.defaultRadioButton.Location = new System.Drawing.Point(6, 19);
+            this.defaultRadioButton.Name = "defaultRadioButton";
+            this.defaultRadioButton.Size = new System.Drawing.Size(59, 17);
+            this.defaultRadioButton.TabIndex = 0;
+            this.defaultRadioButton.TabStop = true;
+            this.defaultRadioButton.Text = "Default";
+            this.defaultRadioButton.UseVisualStyleBackColor = true;
+            this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
             // RenderSettings
             // 
@@ -2039,15 +2063,20 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).EndInit();
             this.tabPage1.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox6.ResumeLayout(false);
-            this.groupBox6.PerformLayout();
             this.tabControl1.ResumeLayout(false);
+            this.tabPage6.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
             this.tabPage5.ResumeLayout(false);
             this.groupBox9.ResumeLayout(false);
             this.groupBox9.PerformLayout();
@@ -2057,6 +2086,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient2)).EndInit();
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
             this.bloomGroupBox.ResumeLayout(false);
@@ -2067,11 +2097,6 @@
             this.tabPage3.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            this.tabPage6.ResumeLayout(false);
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2181,8 +2206,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TabPage tabPage5;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label backgroundTopLabel;
+        private System.Windows.Forms.Label backgroundBottomLabel;
         private System.Windows.Forms.PictureBox BackgroundGradient2;
         private System.Windows.Forms.PictureBox BackgroundGradient1;
         private System.Windows.Forms.CheckBox renderFloorCB;
@@ -2197,8 +2222,8 @@
         private System.Windows.Forms.Button openBackgroundTexButton;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox floorDivisionsTB;
+        private System.Windows.Forms.TextBox floorScaleTB;
         private System.Windows.Forms.Label floorStyleLabel;
         private System.Windows.Forms.ComboBox floorComboBox;
         private System.Windows.Forms.GroupBox groupBox10;
@@ -2238,5 +2263,7 @@
         private System.Windows.Forms.TextBox floorImgTB;
         private System.Windows.Forms.Label floorImgLabel;
         private System.Windows.Forms.Button openFloorTexButton;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

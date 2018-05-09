@@ -47,7 +47,7 @@ namespace Smash_Forge
                                 case "floor":
                                     if (File.Exists(node.InnerText) && node.InnerText.ToLower().EndsWith(".png"))
                                     {
-                                        Runtime.FloorURL = node.InnerText;
+                                        Runtime.floorTexFilePath = node.InnerText;
                                         Rendering.RenderTools.floorTexture = NUT.loadImage(new Bitmap(node.InnerText));
                                         Runtime.floorStyle = Runtime.FloorStyle.UserTexture;
                                     }
@@ -533,7 +533,7 @@ namespace Smash_Forge
             floorNode.AppendChild(createNode(doc, "color", ColorTranslator.ToHtml(Runtime.floorColor)));
             floorNode.AppendChild(createNode(doc, "size", Runtime.floorSize.ToString()));
             if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
-                floorNode.AppendChild(createNode(doc, "texture", Runtime.FloorURL));
+                floorNode.AppendChild(createNode(doc, "texture", Runtime.floorTexFilePath));
         }
 
         private static void AppendLvdRenderSettings(XmlDocument doc, XmlNode parentNode)
