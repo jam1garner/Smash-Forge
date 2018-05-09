@@ -95,17 +95,17 @@
             this.topValUpDown = new System.Windows.Forms.NumericUpDown();
             this.rightValUpDown = new System.Windows.Forms.NumericUpDown();
             this.itemSpawnerGroup = new System.Windows.Forms.GroupBox();
-            this.treeView2 = new System.Windows.Forms.TreeView();
+            this.itemSpawnVertTreeView = new System.Windows.Forms.TreeView();
             this.label21 = new System.Windows.Forms.Label();
             this.addItemSpawnButton = new System.Windows.Forms.Button();
             this.removeItemSpawnButton = new System.Windows.Forms.Button();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.itemSpawnSectionTreeView = new System.Windows.Forms.TreeView();
             this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
             this.label20 = new System.Windows.Forms.Label();
-            this.addSectionButton = new System.Windows.Forms.Button();
+            this.addItemSpawnSectionButton = new System.Windows.Forms.Button();
             this.label18 = new System.Windows.Forms.Label();
-            this.removeSectionButton = new System.Windows.Forms.Button();
+            this.removeItemSpawnSectionButton = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
             this.rectangleGroup = new System.Windows.Forms.GroupBox();
             this.label24 = new System.Windows.Forms.Label();
@@ -249,7 +249,7 @@
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(280, 893);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(280, 1181);
             this.flowLayoutPanel1.TabIndex = 0;
             this.flowLayoutPanel1.WrapContents = false;
             // 
@@ -479,7 +479,7 @@
             this.yVert.Name = "yVert";
             this.yVert.Size = new System.Drawing.Size(56, 20);
             this.yVert.TabIndex = 24;
-            this.yVert.ValueChanged += new System.EventHandler(this.changePos);
+            this.yVert.ValueChanged += new System.EventHandler(this.ChangeCollisionVertPos);
             // 
             // vertXPosUpDown
             // 
@@ -499,7 +499,7 @@
             this.vertXPosUpDown.Name = "vertXPosUpDown";
             this.vertXPosUpDown.Size = new System.Drawing.Size(56, 20);
             this.vertXPosUpDown.TabIndex = 23;
-            this.vertXPosUpDown.ValueChanged += new System.EventHandler(this.changePos);
+            this.vertXPosUpDown.ValueChanged += new System.EventHandler(this.ChangeCollisionVertPos);
             // 
             // linesTreeView
             // 
@@ -1209,17 +1209,17 @@
             // 
             // itemSpawnerGroup
             // 
-            this.itemSpawnerGroup.Controls.Add(this.treeView2);
+            this.itemSpawnerGroup.Controls.Add(this.itemSpawnVertTreeView);
             this.itemSpawnerGroup.Controls.Add(this.label21);
             this.itemSpawnerGroup.Controls.Add(this.addItemSpawnButton);
             this.itemSpawnerGroup.Controls.Add(this.removeItemSpawnButton);
             this.itemSpawnerGroup.Controls.Add(this.numericUpDown1);
-            this.itemSpawnerGroup.Controls.Add(this.treeView1);
+            this.itemSpawnerGroup.Controls.Add(this.itemSpawnSectionTreeView);
             this.itemSpawnerGroup.Controls.Add(this.numericUpDown2);
             this.itemSpawnerGroup.Controls.Add(this.label20);
-            this.itemSpawnerGroup.Controls.Add(this.addSectionButton);
+            this.itemSpawnerGroup.Controls.Add(this.addItemSpawnSectionButton);
             this.itemSpawnerGroup.Controls.Add(this.label18);
-            this.itemSpawnerGroup.Controls.Add(this.removeSectionButton);
+            this.itemSpawnerGroup.Controls.Add(this.removeItemSpawnSectionButton);
             this.itemSpawnerGroup.Controls.Add(this.label19);
             this.itemSpawnerGroup.Location = new System.Drawing.Point(2, 924);
             this.itemSpawnerGroup.Margin = new System.Windows.Forms.Padding(2);
@@ -1231,15 +1231,15 @@
             this.itemSpawnerGroup.Text = "Item Spawner";
             this.itemSpawnerGroup.Visible = false;
             // 
-            // treeView2
+            // itemSpawnVertTreeView
             // 
-            this.treeView2.HideSelection = false;
-            this.treeView2.Location = new System.Drawing.Point(4, 168);
-            this.treeView2.Margin = new System.Windows.Forms.Padding(2);
-            this.treeView2.Name = "treeView2";
-            this.treeView2.Size = new System.Drawing.Size(180, 103);
-            this.treeView2.TabIndex = 45;
-            this.treeView2.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView2_AfterSelect);
+            this.itemSpawnVertTreeView.HideSelection = false;
+            this.itemSpawnVertTreeView.Location = new System.Drawing.Point(4, 168);
+            this.itemSpawnVertTreeView.Margin = new System.Windows.Forms.Padding(2);
+            this.itemSpawnVertTreeView.Name = "itemSpawnVertTreeView";
+            this.itemSpawnVertTreeView.Size = new System.Drawing.Size(180, 103);
+            this.itemSpawnVertTreeView.TabIndex = 45;
+            this.itemSpawnVertTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView2_AfterSelect);
             // 
             // label21
             // 
@@ -1255,7 +1255,7 @@
             // 
             this.addItemSpawnButton.Location = new System.Drawing.Point(105, 148);
             this.addItemSpawnButton.Margin = new System.Windows.Forms.Padding(2);
-            this.addItemSpawnButton.Name = "button6";
+            this.addItemSpawnButton.Name = "addItemSpawnButton";
             this.addItemSpawnButton.Size = new System.Drawing.Size(37, 18);
             this.addItemSpawnButton.TabIndex = 43;
             this.addItemSpawnButton.Text = "+";
@@ -1266,7 +1266,7 @@
             // 
             this.removeItemSpawnButton.Location = new System.Drawing.Point(146, 148);
             this.removeItemSpawnButton.Margin = new System.Windows.Forms.Padding(2);
-            this.removeItemSpawnButton.Name = "button7";
+            this.removeItemSpawnButton.Name = "removeItemSpawnButton";
             this.removeItemSpawnButton.Size = new System.Drawing.Size(37, 18);
             this.removeItemSpawnButton.TabIndex = 44;
             this.removeItemSpawnButton.Text = "-";
@@ -1293,15 +1293,15 @@
             this.numericUpDown1.TabIndex = 41;
             this.numericUpDown1.ValueChanged += new System.EventHandler(this.changeItemVertPosition);
             // 
-            // treeView1
+            // itemSpawnSectionTreeView
             // 
-            this.treeView1.HideSelection = false;
-            this.treeView1.Location = new System.Drawing.Point(4, 40);
-            this.treeView1.Margin = new System.Windows.Forms.Padding(2);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(180, 103);
-            this.treeView1.TabIndex = 39;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.itemSpawnSectionTreeView.HideSelection = false;
+            this.itemSpawnSectionTreeView.Location = new System.Drawing.Point(4, 40);
+            this.itemSpawnSectionTreeView.Margin = new System.Windows.Forms.Padding(2);
+            this.itemSpawnSectionTreeView.Name = "itemSpawnSectionTreeView";
+            this.itemSpawnSectionTreeView.Size = new System.Drawing.Size(180, 103);
+            this.itemSpawnSectionTreeView.TabIndex = 39;
+            this.itemSpawnSectionTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // numericUpDown2
             // 
@@ -1333,16 +1333,16 @@
             this.label20.TabIndex = 34;
             this.label20.Text = "Sections";
             // 
-            // addSectionButton
+            // addItemSpawnSectionButton
             // 
-            this.addSectionButton.Location = new System.Drawing.Point(105, 20);
-            this.addSectionButton.Margin = new System.Windows.Forms.Padding(2);
-            this.addSectionButton.Name = "button5";
-            this.addSectionButton.Size = new System.Drawing.Size(37, 18);
-            this.addSectionButton.TabIndex = 35;
-            this.addSectionButton.Text = "+";
-            this.addSectionButton.UseVisualStyleBackColor = true;
-            this.addSectionButton.Click += new System.EventHandler(this.addSectionButton_Click);
+            this.addItemSpawnSectionButton.Location = new System.Drawing.Point(105, 20);
+            this.addItemSpawnSectionButton.Margin = new System.Windows.Forms.Padding(2);
+            this.addItemSpawnSectionButton.Name = "addItemSpawnSectionButton";
+            this.addItemSpawnSectionButton.Size = new System.Drawing.Size(37, 18);
+            this.addItemSpawnSectionButton.TabIndex = 35;
+            this.addItemSpawnSectionButton.Text = "+";
+            this.addItemSpawnSectionButton.UseVisualStyleBackColor = true;
+            this.addItemSpawnSectionButton.Click += new System.EventHandler(this.addSectionButton_Click);
             // 
             // label18
             // 
@@ -1354,16 +1354,16 @@
             this.label18.TabIndex = 38;
             this.label18.Text = "Y";
             // 
-            // removeSectionButton
+            // removeItemSpawnSectionButton
             // 
-            this.removeSectionButton.Location = new System.Drawing.Point(146, 20);
-            this.removeSectionButton.Margin = new System.Windows.Forms.Padding(2);
-            this.removeSectionButton.Name = "Remove";
-            this.removeSectionButton.Size = new System.Drawing.Size(37, 18);
-            this.removeSectionButton.TabIndex = 36;
-            this.removeSectionButton.Text = "-";
-            this.removeSectionButton.UseVisualStyleBackColor = true;
-            this.removeSectionButton.Click += new System.EventHandler(this.removeSectionButton_Click);
+            this.removeItemSpawnSectionButton.Location = new System.Drawing.Point(146, 20);
+            this.removeItemSpawnSectionButton.Margin = new System.Windows.Forms.Padding(2);
+            this.removeItemSpawnSectionButton.Name = "removeItemSpawnSectionButton";
+            this.removeItemSpawnSectionButton.Size = new System.Drawing.Size(37, 18);
+            this.removeItemSpawnSectionButton.TabIndex = 36;
+            this.removeItemSpawnSectionButton.Text = "-";
+            this.removeItemSpawnSectionButton.UseVisualStyleBackColor = true;
+            this.removeItemSpawnSectionButton.Click += new System.EventHandler(this.removeSectionButton_Click);
             // 
             // label19
             // 
@@ -2331,7 +2331,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(280, 893);
+            this.ClientSize = new System.Drawing.Size(280, 1181);
             this.Controls.Add(this.flowLayoutPanel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -2464,17 +2464,17 @@
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Button boneRigSelectButton;
         private System.Windows.Forms.GroupBox itemSpawnerGroup;
-        private System.Windows.Forms.TreeView treeView2;
+        private System.Windows.Forms.TreeView itemSpawnVertTreeView;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Button addItemSpawnButton;
         private System.Windows.Forms.Button removeItemSpawnButton;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.TreeView itemSpawnSectionTreeView;
         private System.Windows.Forms.NumericUpDown numericUpDown2;
         private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.Button addSectionButton;
+        private System.Windows.Forms.Button addItemSpawnSectionButton;
         private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Button removeSectionButton;
+        private System.Windows.Forms.Button removeItemSpawnSectionButton;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.GroupBox cliffGroup;
         private System.Windows.Forms.Label label52;
