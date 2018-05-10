@@ -189,20 +189,51 @@ namespace Smash_Forge
         {
             NUD.Material mat = currentMaterialList[currentMatIndex];
 
+            InitializeComboBoxes(mat);
+            InitializeTextBoxes(mat);
+            InitializeCheckBoxes(mat);
+            InitializeTextureListView(mat);
+            InitializePropertiesListView(mat);
+        }
+
+        private void InitializeComboBoxes(NUD.Material mat)
+        {
             alphaTestComboBox.SelectedItem = AlphaTest[mat.alphaTest];
             AlphaFuncComboBox.SelectedItem = AlphaFunc[mat.alphaFunction];
+        }
 
+        private void InitializeCheckBoxes(NUD.Material mat)
+        {
+            shadowCB.Checked = mat.hasShadow;
+            GlowCB.Checked = mat.glow;
+        }
+
+        private void InitializeTextBoxes(NUD.Material mat)
+        {
             flagsTB.Text = mat.Flags.ToString("X");
-
             srcTB.Text = mat.srcFactor + "";
             dstTB.Text = mat.dstFactor + "";
             refAlphaTB.Text = mat.RefAlpha + "";
             cullModeTB.Text = mat.cullMode + "";
             zBufferTB.Text = mat.zBufferOffset + "";
-           
-            shadowCB.Checked = mat.hasShadow;
-            GlowCB.Checked = mat.glow;
+        }
 
+        private void InitializePropertiesListView(NUD.Material mat)
+        {
+            propertiesListView.Items.Clear();
+            propertiesListView.View = View.List;
+            foreach (string propertyName in mat.entries.Keys)
+            {
+                propertiesListView.Items.Add(propertyName);
+            }
+
+            // Select the first property.
+            if (propertiesListView.Items.Count > 0)
+                propertiesListView.SelectedIndices.Add(0);
+        }
+
+        private void InitializeTextureListView(NUD.Material mat)
+        {
             texturesListView.Items.Clear();
 
             // Jigglypuff has weird eyes.
@@ -249,22 +280,12 @@ namespace Smash_Forge
                 if (mat.hasDummyRamp)
                     texturesListView.Items.Add("Dummy Ramp");
             }
-
-            propertiesListView.Items.Clear();
-            propertiesListView.View = View.List;
-            foreach (string propertyName in mat.entries.Keys)
-            {
-                propertiesListView.Items.Add(propertyName);
-            }
-            if(propertiesListView.Items.Count > 0)
-                propertiesListView.SelectedIndices.Add(0);
         }
-        
+
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             currentMatIndex = matsComboBox.SelectedIndex;
             FillForm();
-            matsComboBox.SelectedIndex = currentMatIndex;
         }
 
         private void srcComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -523,7 +544,7 @@ namespace Smash_Forge
                 return;
 
             // Try and find the name of the property that is selected in the listview.
-            currentPropertyName = currentMaterialList[currentMatIndex].entries.Keys.ElementAt(propertiesListView.SelectedIndices[0]);
+            currentPropertyName = propertiesListView.SelectedItems[0].Text;
             Params.MatParam matParam;
             materialParamList.TryGetValue(currentPropertyName, out matParam);
 
@@ -551,106 +572,82 @@ namespace Smash_Forge
             }
         }
 
+        private static float GetMatParamMax(string propertyName)
+        {
+            Params.MatParam labels = null;
+            materialParamList.TryGetValue(propertyName, out labels);
+            if (labels != null)
+            {
+                return labels.max1;
+            }
+
+            return 1;
+        }
+
         private void param1TB_TextChanged(object sender, EventArgs e)
         {
-            if (propertyNameLabel.Text.Equals("NU_materialHash"))
+            string propertyName = propertiesListView.SelectedItems[0].Text;
+            if (propertyName == "NU_materialHash")
             {
-                int f = GuiTools.TryParseTBInt(param1TB, true);
-                if (f != -1 && propertiesListView.SelectedItems.Count > 0)
-                    currentMaterialList[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][0] = BitConverter.ToSingle(BitConverter.GetBytes(f), 0);
+                ParseMaterialHashTBText();
             }
             else
             {
-                float f = -1;
-                float.TryParse(param1TB.Text, out f);
-                if (f != -1 && propertiesListView.SelectedItems.Count > 0)
-                {
-                    currentMaterialList[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][0] = f;
+                float value = GuiTools.TryParseTBFloat(param1TB);
+                currentMaterialList[currentMatIndex].entries[propertyName][0] = value;
 
-                    // Update trackbar.
-                    Params.MatParam labels = null;
-                    materialParamList.TryGetValue(propertyNameLabel.Text, out labels);
-                    float max = 1;
-                    if (labels != null)
-                    {
-                        max = labels.max1;
-                    }
-
-                    if (enableParam1SliderUpdates)
-                        GuiTools.UpdateTrackBarFromValue(f, param1TrackBar, 0, max);
-                }
+                float max = GetMatParamMax(propertyName);
+                if (enableParam1SliderUpdates)
+                    GuiTools.UpdateTrackBarFromValue(value, param1TrackBar, 0, max);
             }
+
             UpdateButtonColor();
+        }
+
+        private void ParseMaterialHashTBText()
+        {
+            int hash = GuiTools.TryParseTBInt(param1TB, true);
+            if (hash != -1 && propertiesListView.SelectedItems.Count > 0)
+                currentMaterialList[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][0] = BitConverter.ToSingle(BitConverter.GetBytes(hash), 0);
         }
 
         private void param2TB_TextChanged(object sender, EventArgs e)
         {
-            float f = -1;
-            float.TryParse(param2TB.Text, out f);
-            if (f != -1 && propertiesListView.SelectedItems.Count > 0)
-            {
-                currentMaterialList[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][1] = f;
+            string propertyName = propertiesListView.SelectedItems[0].Text;
+            float value = GuiTools.TryParseTBFloat(param2TB);
+            currentMaterialList[currentMatIndex].entries[propertyName][1] = value;
 
-                // update trackbar
-                Params.MatParam labels = null;
-                materialParamList.TryGetValue(propertyNameLabel.Text, out labels);
-                float max = 1;
-                if (labels != null)
-                {
-                    max = labels.max2;
-                }
+            float max = GetMatParamMax(propertyName);
+            if (enableParam2SliderUpdates)
+                GuiTools.UpdateTrackBarFromValue(value, param2TrackBar, 0, max);
 
-                if (enableParam2SliderUpdates)
-                    GuiTools.UpdateTrackBarFromValue(f, param2TrackBar, 0, max);
-            }
             UpdateButtonColor();
         }
 
         private void param3TB_TextChanged(object sender, EventArgs e)
         {
-            float f = -1;
-            float.TryParse(param3TB.Text, out f);
-            if (f != -1 && propertiesListView.SelectedItems.Count > 0)
-            {
-                currentMaterialList[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][2] = f;
+            string propertyName = propertiesListView.SelectedItems[0].Text;
+            float value = GuiTools.TryParseTBFloat(param3TB);
+            currentMaterialList[currentMatIndex].entries[propertyName][2] = value;
 
-                // update trackbar
-                Params.MatParam labels = null;
-                materialParamList.TryGetValue(propertyNameLabel.Text, out labels);
-                float max = 1;
-                if (labels != null)
-                {
-                    max = labels.max3;
-                }
+            float max = GetMatParamMax(propertyName);
+            if (enableParam3SliderUpdates)
+                GuiTools.UpdateTrackBarFromValue(value, param3TrackBar, 0, max);
 
-                if (enableParam3SliderUpdates)
-                    GuiTools.UpdateTrackBarFromValue(f, param3TrackBar, 0, max);
-            }
             UpdateButtonColor();
         }
 
         private void param4TB_TextChanged(object sender, EventArgs e)
         {
-            float f = -1;
-            float.TryParse(param4TB.Text, out f);
-            if (f != -1 && propertiesListView.SelectedItems.Count > 0)
-            {
-                // Set the param value for the selected property.
-                string matPropertyKey = propertiesListView.SelectedItems[0].Text;
-                currentMaterialList[currentMatIndex].entries[matPropertyKey][3] = f;
+            string propertyName = propertiesListView.SelectedItems[0].Text;
+            float value = GuiTools.TryParseTBFloat(param4TB);
+            currentMaterialList[currentMatIndex].entries[propertyName][3] = value;
 
-                // Update trackbar
-                Params.MatParam labels = null;
-                materialParamList.TryGetValue(propertyNameLabel.Text, out labels);
-                float max = 1;
-                if (labels != null)
-                {
-                    max = labels.max4;
-                }
+            float max = GetMatParamMax(propertyName);
+            if (enableParam4SliderUpdates)
+                GuiTools.UpdateTrackBarFromValue(value, param4TrackBar, 0, max);
 
-                if (enableParam4SliderUpdates)
-                    GuiTools.UpdateTrackBarFromValue(f, param4TrackBar, 0, max);
-            }
+            UpdateButtonColor();
         }
 
         // property change
