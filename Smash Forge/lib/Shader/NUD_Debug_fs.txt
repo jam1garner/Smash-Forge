@@ -349,10 +349,10 @@ void main()
         // The default range is [0,128].
         // Conversion from [0, 128] to [0, 1] is done prior to shader.
         // This allows values in range [0,2]
-        resultingColor.rgb = vertexColor.rgb;
+        resultingColor = vertexColor;
         if (debug1 == 1)
         {
-            resultingColor.rgb = vertexColor.rgb * 0.5;
+            resultingColor *= 0.5;
         }
     }
     else if (renderType == 6) // ambient occlusion

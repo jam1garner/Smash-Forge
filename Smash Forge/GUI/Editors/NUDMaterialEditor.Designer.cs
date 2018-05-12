@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.matsComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.texturesListView = new System.Windows.Forms.ListView();
@@ -47,43 +48,33 @@
             this.label10 = new System.Windows.Forms.Label();
             this.textureIDTB = new System.Windows.Forms.TextBox();
             this.propertiesListView = new System.Windows.Forms.ListView();
-            this.param3Label = new System.Windows.Forms.Label();
-            this.param2Label = new System.Windows.Forms.Label();
-            this.param1Label = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
-            this.param1TB = new System.Windows.Forms.TextBox();
-            this.param2TB = new System.Windows.Forms.TextBox();
-            this.param3TB = new System.Windows.Forms.TextBox();
-            this.matPropertyNameTB = new System.Windows.Forms.TextBox();
             this.savePresetButton = new System.Windows.Forms.Button();
             this.loadPresetButton = new System.Windows.Forms.Button();
-            this.addMatPropertyButton = new System.Windows.Forms.Button();
-            this.matPropertyComboBox = new System.Windows.Forms.ComboBox();
             this.texRgbGlControl = new OpenTK.GLControl();
-            this.colorSelect = new System.Windows.Forms.Button();
             this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.paramGB = new System.Windows.Forms.TableLayoutPanel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.addMatPropertyButton = new System.Windows.Forms.Button();
+            this.matPropertyComboBox = new System.Windows.Forms.ComboBox();
+            this.colorSelect = new System.Windows.Forms.Button();
+            this.parameterGroupBox = new System.Windows.Forms.GroupBox();
+            this.paramTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.param4TrackBar = new System.Windows.Forms.TrackBar();
             this.param3TrackBar = new System.Windows.Forms.TrackBar();
             this.param2TrackBar = new System.Windows.Forms.TrackBar();
             this.param4TB = new System.Windows.Forms.TextBox();
+            this.param3TB = new System.Windows.Forms.TextBox();
+            this.param2TB = new System.Windows.Forms.TextBox();
+            this.param1TB = new System.Windows.Forms.TextBox();
             this.param4Label = new System.Windows.Forms.Label();
+            this.param1Label = new System.Windows.Forms.Label();
+            this.param3Label = new System.Windows.Forms.Label();
+            this.param2Label = new System.Windows.Forms.Label();
             this.param1TrackBar = new System.Windows.Forms.TrackBar();
-            this.descriptionLabel = new System.Windows.Forms.Label();
+            this.propertyNameLabel = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.texAlphaGlControl = new OpenTK.GLControl();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.cubemapCB = new System.Windows.Forms.CheckBox();
-            this.stageMapCB = new System.Windows.Forms.CheckBox();
-            this.dummy_rampCB = new System.Windows.Forms.CheckBox();
-            this.rampCB = new System.Windows.Forms.CheckBox();
-            this.AOCB = new System.Windows.Forms.CheckBox();
-            this.sphere_mapCB = new System.Windows.Forms.CheckBox();
-            this.normalCB = new System.Windows.Forms.CheckBox();
-            this.diffuse2CB = new System.Windows.Forms.CheckBox();
-            this.diffuseCB = new System.Windows.Forms.CheckBox();
             this.dummyRampCB = new System.Windows.Forms.CheckBox();
             this.sphereMapCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -116,29 +107,26 @@
             this.dstComboBox = new System.Windows.Forms.ComboBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.shadowCB = new System.Windows.Forms.CheckBox();
-            this.mysteryCB = new System.Windows.Forms.CheckBox();
             this.GlowCB = new System.Windows.Forms.CheckBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.label18 = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.flagsTB = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.deleteMaterialButton = new System.Windows.Forms.Button();
             this.addMaterialButton = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tableLayoutPanel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
-            this.groupBox8.SuspendLayout();
-            this.paramGB.SuspendLayout();
+            this.panel3.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.parameterGroupBox.SuspendLayout();
+            this.paramTableLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.param4TrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.param3TrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.param2TrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.param1TrackBar)).BeginInit();
             this.groupBox2.SuspendLayout();
-            this.groupBox7.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -149,8 +137,6 @@
             this.groupBox6.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox5.SuspendLayout();
-            this.groupBox4.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -253,7 +239,7 @@
             this.minFilterComboBox.Name = "minFilterComboBox";
             this.minFilterComboBox.Size = new System.Drawing.Size(80, 21);
             this.minFilterComboBox.TabIndex = 15;
-            this.minFilterComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox11_SelectedIndexChanged);
+            this.minFilterComboBox.SelectedIndexChanged += new System.EventHandler(this.minFilterComboBox_SelectedIndexChanged);
             // 
             // label12
             // 
@@ -271,7 +257,7 @@
             this.wrapXComboBox.Name = "wrapXComboBox";
             this.wrapXComboBox.Size = new System.Drawing.Size(80, 21);
             this.wrapXComboBox.TabIndex = 15;
-            this.wrapXComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox10_SelectedIndexChanged);
+            this.wrapXComboBox.SelectedIndexChanged += new System.EventHandler(this.wrapXComboBox_SelectedIndexChanged);
             // 
             // label11
             // 
@@ -289,7 +275,7 @@
             this.mapModeComboBox.Name = "mapModeComboBox";
             this.mapModeComboBox.Size = new System.Drawing.Size(80, 21);
             this.mapModeComboBox.TabIndex = 15;
-            this.mapModeComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox9_SelectedIndexChanged);
+            this.mapModeComboBox.SelectedIndexChanged += new System.EventHandler(this.mapModeComboBox_SelectedIndexChanged);
             // 
             // label13
             // 
@@ -307,7 +293,7 @@
             this.wrapYComboBox.Name = "wrapYComboBox";
             this.wrapYComboBox.Size = new System.Drawing.Size(80, 21);
             this.wrapYComboBox.TabIndex = 15;
-            this.wrapYComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox8_SelectedIndexChanged);
+            this.wrapYComboBox.SelectedIndexChanged += new System.EventHandler(this.wrapYComboBox_SelectedIndexChanged);
             // 
             // label16
             // 
@@ -352,82 +338,13 @@
             this.propertiesListView.Location = new System.Drawing.Point(3, 16);
             this.propertiesListView.Name = "propertiesListView";
             this.propertiesListView.ShowGroups = false;
-            this.propertiesListView.Size = new System.Drawing.Size(287, 133);
+            this.propertiesListView.Size = new System.Drawing.Size(325, 169);
             this.propertiesListView.TabIndex = 12;
             this.propertiesListView.UseCompatibleStateImageBehavior = false;
-            this.propertiesListView.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
+            this.propertiesListView.SelectedIndexChanged += new System.EventHandler(this.propertiesListView_SelectedIndexChanged);
             this.propertiesListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView2_KeyDown);
             this.propertiesListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.listView2_KeyPress);
             this.propertiesListView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.listView2_KeyUp);
-            // 
-            // param3Label
-            // 
-            this.param3Label.AutoSize = true;
-            this.param3Label.Location = new System.Drawing.Point(3, 54);
-            this.param3Label.Name = "param3Label";
-            this.param3Label.Size = new System.Drawing.Size(43, 13);
-            this.param3Label.TabIndex = 15;
-            this.param3Label.Text = "Param3";
-            // 
-            // param2Label
-            // 
-            this.param2Label.AutoSize = true;
-            this.param2Label.Location = new System.Drawing.Point(3, 27);
-            this.param2Label.Name = "param2Label";
-            this.param2Label.Size = new System.Drawing.Size(43, 13);
-            this.param2Label.TabIndex = 15;
-            this.param2Label.Text = "Param2";
-            // 
-            // param1Label
-            // 
-            this.param1Label.AutoSize = true;
-            this.param1Label.Location = new System.Drawing.Point(3, 0);
-            this.param1Label.Name = "param1Label";
-            this.param1Label.Size = new System.Drawing.Size(43, 13);
-            this.param1Label.TabIndex = 15;
-            this.param1Label.Text = "Param1";
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(6, 16);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(35, 13);
-            this.label19.TabIndex = 15;
-            this.label19.Text = "Name";
-            // 
-            // param1TB
-            // 
-            this.param1TB.Location = new System.Drawing.Point(52, 3);
-            this.param1TB.Name = "param1TB";
-            this.param1TB.Size = new System.Drawing.Size(58, 20);
-            this.param1TB.TabIndex = 17;
-            this.param1TB.TextChanged += new System.EventHandler(this.param1TB_TextChanged);
-            // 
-            // param2TB
-            // 
-            this.param2TB.Location = new System.Drawing.Point(52, 30);
-            this.param2TB.Name = "param2TB";
-            this.param2TB.Size = new System.Drawing.Size(58, 20);
-            this.param2TB.TabIndex = 18;
-            this.param2TB.TextChanged += new System.EventHandler(this.param2TB_TextChanged);
-            // 
-            // param3TB
-            // 
-            this.param3TB.Location = new System.Drawing.Point(52, 57);
-            this.param3TB.Name = "param3TB";
-            this.param3TB.Size = new System.Drawing.Size(58, 20);
-            this.param3TB.TabIndex = 19;
-            this.param3TB.TextChanged += new System.EventHandler(this.param3TB_TextChanged);
-            // 
-            // matPropertyNameTB
-            // 
-            this.matPropertyNameTB.Enabled = false;
-            this.matPropertyNameTB.Location = new System.Drawing.Point(63, 13);
-            this.matPropertyNameTB.Name = "matPropertyNameTB";
-            this.matPropertyNameTB.Size = new System.Drawing.Size(198, 20);
-            this.matPropertyNameTB.TabIndex = 16;
-            this.matPropertyNameTB.TextChanged += new System.EventHandler(this.matPropertyTB_TextChanged);
             // 
             // savePresetButton
             // 
@@ -449,9 +366,51 @@
             this.loadPresetButton.UseVisualStyleBackColor = true;
             this.loadPresetButton.Click += new System.EventHandler(this.loadPresetButton_Click);
             // 
+            // texRgbGlControl
+            // 
+            this.texRgbGlControl.BackColor = System.Drawing.Color.Black;
+            this.texRgbGlControl.Location = new System.Drawing.Point(6, 19);
+            this.texRgbGlControl.Name = "texRgbGlControl";
+            this.texRgbGlControl.Size = new System.Drawing.Size(130, 130);
+            this.texRgbGlControl.TabIndex = 23;
+            this.texRgbGlControl.VSync = false;
+            this.texRgbGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texRgbGlControl_Paint);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.panel3);
+            this.groupBox1.Controls.Add(this.propertiesListView);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox1.Location = new System.Drawing.Point(0, 0);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(331, 396);
+            this.groupBox1.TabIndex = 25;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Properties";
+            // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.panel2);
+            this.panel3.Controls.Add(this.parameterGroupBox);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel3.Location = new System.Drawing.Point(3, 191);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(325, 202);
+            this.panel3.TabIndex = 26;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.addMatPropertyButton);
+            this.panel2.Controls.Add(this.matPropertyComboBox);
+            this.panel2.Controls.Add(this.colorSelect);
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(325, 31);
+            this.panel2.TabIndex = 18;
+            // 
             // addMatPropertyButton
             // 
-            this.addMatPropertyButton.Location = new System.Drawing.Point(236, 159);
+            this.addMatPropertyButton.Location = new System.Drawing.Point(218, 5);
             this.addMatPropertyButton.Name = "addMatPropertyButton";
             this.addMatPropertyButton.Size = new System.Drawing.Size(29, 21);
             this.addMatPropertyButton.TabIndex = 20;
@@ -463,165 +422,198 @@
             // 
             this.matPropertyComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.matPropertyComboBox.FormattingEnabled = true;
-            this.matPropertyComboBox.Location = new System.Drawing.Point(53, 159);
+            this.matPropertyComboBox.Location = new System.Drawing.Point(35, 5);
             this.matPropertyComboBox.Name = "matPropertyComboBox";
             this.matPropertyComboBox.Size = new System.Drawing.Size(177, 21);
             this.matPropertyComboBox.TabIndex = 21;
             this.matPropertyComboBox.SelectedIndexChanged += new System.EventHandler(this.matPropertyComboBox_SelectedIndexChanged);
             // 
-            // texRgbGlControl
-            // 
-            this.texRgbGlControl.BackColor = System.Drawing.Color.Black;
-            this.texRgbGlControl.Location = new System.Drawing.Point(6, 19);
-            this.texRgbGlControl.Name = "texRgbGlControl";
-            this.texRgbGlControl.Size = new System.Drawing.Size(130, 130);
-            this.texRgbGlControl.TabIndex = 23;
-            this.texRgbGlControl.VSync = false;
-            this.texRgbGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texRgbGlControl_Paint);
-            // 
             // colorSelect
             // 
             this.colorSelect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(128)))));
             this.colorSelect.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.colorSelect.Location = new System.Drawing.Point(8, 157);
+            this.colorSelect.Location = new System.Drawing.Point(3, 3);
             this.colorSelect.Name = "colorSelect";
             this.colorSelect.Size = new System.Drawing.Size(26, 23);
             this.colorSelect.TabIndex = 24;
             this.colorSelect.UseVisualStyleBackColor = false;
             this.colorSelect.Click += new System.EventHandler(this.colorSelect_Click);
             // 
-            // groupBox1
+            // parameterGroupBox
             // 
-            this.groupBox1.Controls.Add(this.groupBox8);
-            this.groupBox1.Controls.Add(this.propertiesListView);
-            this.groupBox1.Controls.Add(this.colorSelect);
-            this.groupBox1.Controls.Add(this.matPropertyComboBox);
-            this.groupBox1.Controls.Add(this.addMatPropertyButton);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(0, 0);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(293, 504);
-            this.groupBox1.TabIndex = 25;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Properties";
+            this.parameterGroupBox.Controls.Add(this.paramTableLayout);
+            this.parameterGroupBox.Controls.Add(this.propertyNameLabel);
+            this.parameterGroupBox.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.parameterGroupBox.Location = new System.Drawing.Point(0, 43);
+            this.parameterGroupBox.Name = "parameterGroupBox";
+            this.parameterGroupBox.Size = new System.Drawing.Size(325, 159);
+            this.parameterGroupBox.TabIndex = 25;
+            this.parameterGroupBox.TabStop = false;
+            this.parameterGroupBox.Text = "Parameters";
             // 
-            // groupBox8
+            // paramTableLayout
             // 
-            this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox8.Controls.Add(this.paramGB);
-            this.groupBox8.Controls.Add(this.descriptionLabel);
-            this.groupBox8.Controls.Add(this.label19);
-            this.groupBox8.Controls.Add(this.matPropertyNameTB);
-            this.groupBox8.Location = new System.Drawing.Point(3, 186);
-            this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(287, 310);
-            this.groupBox8.TabIndex = 25;
-            this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "Parameters";
-            // 
-            // paramGB
-            // 
-            this.paramGB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.paramGB.ColumnCount = 3;
-            this.paramGB.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.paramGB.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.paramGB.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.paramGB.Controls.Add(this.param4TrackBar, 2, 3);
-            this.paramGB.Controls.Add(this.param3TrackBar, 2, 2);
-            this.paramGB.Controls.Add(this.param2TrackBar, 2, 1);
-            this.paramGB.Controls.Add(this.param4TB, 1, 3);
-            this.paramGB.Controls.Add(this.param3TB, 1, 2);
-            this.paramGB.Controls.Add(this.param2TB, 1, 1);
-            this.paramGB.Controls.Add(this.param1TB, 1, 0);
-            this.paramGB.Controls.Add(this.param4Label, 0, 3);
-            this.paramGB.Controls.Add(this.param1Label, 0, 0);
-            this.paramGB.Controls.Add(this.param3Label, 0, 2);
-            this.paramGB.Controls.Add(this.param2Label, 0, 1);
-            this.paramGB.Controls.Add(this.param1TrackBar, 2, 0);
-            this.paramGB.Location = new System.Drawing.Point(5, 39);
-            this.paramGB.Name = "paramGB";
-            this.paramGB.RowCount = 4;
-            this.paramGB.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.paramGB.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.paramGB.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.paramGB.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.paramGB.Size = new System.Drawing.Size(276, 108);
-            this.paramGB.TabIndex = 17;
+            this.paramTableLayout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.paramTableLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.paramTableLayout.ColumnCount = 3;
+            this.paramTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.paramTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.paramTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.paramTableLayout.Controls.Add(this.param4TrackBar, 2, 3);
+            this.paramTableLayout.Controls.Add(this.param3TrackBar, 2, 2);
+            this.paramTableLayout.Controls.Add(this.param2TrackBar, 2, 1);
+            this.paramTableLayout.Controls.Add(this.param4TB, 1, 3);
+            this.paramTableLayout.Controls.Add(this.param3TB, 1, 2);
+            this.paramTableLayout.Controls.Add(this.param2TB, 1, 1);
+            this.paramTableLayout.Controls.Add(this.param1TB, 1, 0);
+            this.paramTableLayout.Controls.Add(this.param4Label, 0, 3);
+            this.paramTableLayout.Controls.Add(this.param1Label, 0, 0);
+            this.paramTableLayout.Controls.Add(this.param3Label, 0, 2);
+            this.paramTableLayout.Controls.Add(this.param2Label, 0, 1);
+            this.paramTableLayout.Controls.Add(this.param1TrackBar, 2, 0);
+            this.paramTableLayout.Location = new System.Drawing.Point(6, 32);
+            this.paramTableLayout.Name = "paramTableLayout";
+            this.paramTableLayout.RowCount = 4;
+            this.paramTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.paramTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.paramTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.paramTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.paramTableLayout.Size = new System.Drawing.Size(313, 121);
+            this.paramTableLayout.TabIndex = 17;
             // 
             // param4TrackBar
             // 
-            this.param4TrackBar.Location = new System.Drawing.Point(116, 84);
+            this.param4TrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.param4TrackBar.Location = new System.Drawing.Point(116, 93);
             this.param4TrackBar.Maximum = 200;
             this.param4TrackBar.Name = "param4TrackBar";
-            this.param4TrackBar.Size = new System.Drawing.Size(156, 21);
+            this.param4TrackBar.Size = new System.Drawing.Size(197, 25);
             this.param4TrackBar.TabIndex = 24;
             this.param4TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.param4TrackBar.Scroll += new System.EventHandler(this.param4TrackBar_Scroll);
+            this.param4TrackBar.Leave += new System.EventHandler(this.param4TrackBar_Leave);
             // 
             // param3TrackBar
             // 
-            this.param3TrackBar.Location = new System.Drawing.Point(116, 57);
+            this.param3TrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.param3TrackBar.Location = new System.Drawing.Point(116, 63);
             this.param3TrackBar.Maximum = 200;
             this.param3TrackBar.Name = "param3TrackBar";
-            this.param3TrackBar.Size = new System.Drawing.Size(156, 21);
+            this.param3TrackBar.Size = new System.Drawing.Size(197, 24);
             this.param3TrackBar.TabIndex = 23;
             this.param3TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.param3TrackBar.Scroll += new System.EventHandler(this.param3TrackBar_Scroll);
+            this.param3TrackBar.Leave += new System.EventHandler(this.param3TrackBar_Leave);
             // 
             // param2TrackBar
             // 
-            this.param2TrackBar.Location = new System.Drawing.Point(116, 30);
+            this.param2TrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.param2TrackBar.Location = new System.Drawing.Point(116, 33);
             this.param2TrackBar.Maximum = 200;
             this.param2TrackBar.Name = "param2TrackBar";
-            this.param2TrackBar.Size = new System.Drawing.Size(156, 21);
+            this.param2TrackBar.Size = new System.Drawing.Size(197, 24);
             this.param2TrackBar.TabIndex = 22;
             this.param2TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.param2TrackBar.Scroll += new System.EventHandler(this.param2TrackBar_Scroll);
+            this.param2TrackBar.Leave += new System.EventHandler(this.param2TrackBar_Leave);
             // 
             // param4TB
             // 
-            this.param4TB.Location = new System.Drawing.Point(52, 84);
+            this.param4TB.Location = new System.Drawing.Point(52, 93);
             this.param4TB.Name = "param4TB";
             this.param4TB.Size = new System.Drawing.Size(58, 20);
             this.param4TB.TabIndex = 20;
             this.param4TB.TextChanged += new System.EventHandler(this.param4TB_TextChanged);
             // 
+            // param3TB
+            // 
+            this.param3TB.Location = new System.Drawing.Point(52, 63);
+            this.param3TB.Name = "param3TB";
+            this.param3TB.Size = new System.Drawing.Size(58, 20);
+            this.param3TB.TabIndex = 19;
+            this.param3TB.TextChanged += new System.EventHandler(this.param3TB_TextChanged);
+            // 
+            // param2TB
+            // 
+            this.param2TB.Location = new System.Drawing.Point(52, 33);
+            this.param2TB.Name = "param2TB";
+            this.param2TB.Size = new System.Drawing.Size(58, 20);
+            this.param2TB.TabIndex = 18;
+            this.param2TB.TextChanged += new System.EventHandler(this.param2TB_TextChanged);
+            // 
+            // param1TB
+            // 
+            this.param1TB.Location = new System.Drawing.Point(52, 3);
+            this.param1TB.Name = "param1TB";
+            this.param1TB.Size = new System.Drawing.Size(58, 20);
+            this.param1TB.TabIndex = 17;
+            this.param1TB.TextChanged += new System.EventHandler(this.param1TB_TextChanged);
+            // 
             // param4Label
             // 
             this.param4Label.AutoSize = true;
-            this.param4Label.Location = new System.Drawing.Point(3, 81);
+            this.param4Label.Location = new System.Drawing.Point(3, 90);
             this.param4Label.Name = "param4Label";
             this.param4Label.Size = new System.Drawing.Size(43, 13);
             this.param4Label.TabIndex = 15;
             this.param4Label.Text = "Param4";
+            this.toolTip1.SetToolTip(this.param4Label, "Param 4");
+            // 
+            // param1Label
+            // 
+            this.param1Label.AutoSize = true;
+            this.param1Label.Location = new System.Drawing.Point(3, 0);
+            this.param1Label.Name = "param1Label";
+            this.param1Label.Size = new System.Drawing.Size(43, 13);
+            this.param1Label.TabIndex = 15;
+            this.param1Label.Text = "Param1";
+            this.toolTip1.SetToolTip(this.param1Label, "Param 1");
+            // 
+            // param3Label
+            // 
+            this.param3Label.AutoSize = true;
+            this.param3Label.Location = new System.Drawing.Point(3, 60);
+            this.param3Label.Name = "param3Label";
+            this.param3Label.Size = new System.Drawing.Size(43, 13);
+            this.param3Label.TabIndex = 15;
+            this.param3Label.Text = "Param3";
+            this.toolTip1.SetToolTip(this.param3Label, "Param 3");
+            // 
+            // param2Label
+            // 
+            this.param2Label.AutoSize = true;
+            this.param2Label.Location = new System.Drawing.Point(3, 30);
+            this.param2Label.Name = "param2Label";
+            this.param2Label.Size = new System.Drawing.Size(43, 13);
+            this.param2Label.TabIndex = 15;
+            this.param2Label.Text = "Param2";
+            this.toolTip1.SetToolTip(this.param2Label, "Param 2");
             // 
             // param1TrackBar
             // 
+            this.param1TrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
             this.param1TrackBar.Location = new System.Drawing.Point(116, 3);
             this.param1TrackBar.Maximum = 200;
             this.param1TrackBar.Name = "param1TrackBar";
-            this.param1TrackBar.Size = new System.Drawing.Size(156, 21);
+            this.param1TrackBar.Size = new System.Drawing.Size(197, 24);
             this.param1TrackBar.TabIndex = 21;
             this.param1TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.param1TrackBar.Scroll += new System.EventHandler(this.param1TrackBar_Scroll);
+            this.param1TrackBar.Leave += new System.EventHandler(this.param1TrackBar_Leave);
             // 
-            // descriptionLabel
+            // propertyNameLabel
             // 
-            this.descriptionLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.descriptionLabel.AutoSize = true;
-            this.descriptionLabel.Location = new System.Drawing.Point(2, 156);
-            this.descriptionLabel.MaximumSize = new System.Drawing.Size(250, 0);
-            this.descriptionLabel.Name = "descriptionLabel";
-            this.descriptionLabel.Size = new System.Drawing.Size(63, 13);
-            this.descriptionLabel.TabIndex = 14;
-            this.descriptionLabel.Text = "Description:";
+            this.propertyNameLabel.AutoSize = true;
+            this.propertyNameLabel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.propertyNameLabel.Location = new System.Drawing.Point(3, 16);
+            this.propertyNameLabel.Name = "propertyNameLabel";
+            this.propertyNameLabel.Size = new System.Drawing.Size(52, 13);
+            this.propertyNameLabel.TabIndex = 15;
+            this.propertyNameLabel.Text = "Property: ";
             // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.texAlphaGlControl);
-            this.groupBox2.Controls.Add(this.groupBox7);
             this.groupBox2.Controls.Add(this.texturesListView);
             this.groupBox2.Controls.Add(this.texRgbGlControl);
             this.groupBox2.Controls.Add(this.tableLayoutPanel2);
@@ -630,7 +622,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(3, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(287, 498);
+            this.groupBox2.Size = new System.Drawing.Size(325, 390);
             this.groupBox2.TabIndex = 26;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Textures";
@@ -644,132 +636,6 @@
             this.texAlphaGlControl.TabIndex = 25;
             this.texAlphaGlControl.VSync = false;
             this.texAlphaGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texAlphaGlControl_Paint);
-            // 
-            // groupBox7
-            // 
-            this.groupBox7.Controls.Add(this.cubemapCB);
-            this.groupBox7.Controls.Add(this.stageMapCB);
-            this.groupBox7.Controls.Add(this.dummy_rampCB);
-            this.groupBox7.Controls.Add(this.rampCB);
-            this.groupBox7.Controls.Add(this.AOCB);
-            this.groupBox7.Controls.Add(this.sphere_mapCB);
-            this.groupBox7.Controls.Add(this.normalCB);
-            this.groupBox7.Controls.Add(this.diffuse2CB);
-            this.groupBox7.Controls.Add(this.diffuseCB);
-            this.groupBox7.Location = new System.Drawing.Point(5, 347);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(282, 140);
-            this.groupBox7.TabIndex = 24;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "4th Byte (experimental WIP)";
-            // 
-            // cubemapCB
-            // 
-            this.cubemapCB.AutoSize = true;
-            this.cubemapCB.Enabled = false;
-            this.cubemapCB.Location = new System.Drawing.Point(7, 66);
-            this.cubemapCB.Name = "cubemapCB";
-            this.cubemapCB.Size = new System.Drawing.Size(71, 17);
-            this.cubemapCB.TabIndex = 8;
-            this.cubemapCB.Text = "Cubemap";
-            this.cubemapCB.UseVisualStyleBackColor = true;
-            this.cubemapCB.CheckedChanged += new System.EventHandler(this.cubemapCB_CheckedChanged);
-            // 
-            // stageMapCB
-            // 
-            this.stageMapCB.AutoSize = true;
-            this.stageMapCB.Enabled = false;
-            this.stageMapCB.Location = new System.Drawing.Point(76, 89);
-            this.stageMapCB.Name = "stageMapCB";
-            this.stageMapCB.Size = new System.Drawing.Size(78, 17);
-            this.stageMapCB.TabIndex = 7;
-            this.stageMapCB.Text = "Stage Map";
-            this.stageMapCB.UseVisualStyleBackColor = true;
-            this.stageMapCB.CheckedChanged += new System.EventHandler(this.stageMapCB_CheckedChanged);
-            // 
-            // dummy_rampCB
-            // 
-            this.dummy_rampCB.AutoSize = true;
-            this.dummy_rampCB.Enabled = false;
-            this.dummy_rampCB.Location = new System.Drawing.Point(165, 18);
-            this.dummy_rampCB.Name = "dummy_rampCB";
-            this.dummy_rampCB.Size = new System.Drawing.Size(92, 17);
-            this.dummy_rampCB.TabIndex = 6;
-            this.dummy_rampCB.Text = "Dummy Ramp";
-            this.dummy_rampCB.UseVisualStyleBackColor = true;
-            this.dummy_rampCB.CheckedChanged += new System.EventHandler(this.dummy_rampCB_CheckedChanged);
-            // 
-            // rampCB
-            // 
-            this.rampCB.AutoSize = true;
-            this.rampCB.Enabled = false;
-            this.rampCB.Location = new System.Drawing.Point(78, 66);
-            this.rampCB.Name = "rampCB";
-            this.rampCB.Size = new System.Drawing.Size(54, 17);
-            this.rampCB.TabIndex = 5;
-            this.rampCB.Text = "Ramp";
-            this.rampCB.UseVisualStyleBackColor = true;
-            this.rampCB.CheckedChanged += new System.EventHandler(this.rampCB_CheckedChanged);
-            // 
-            // AOCB
-            // 
-            this.AOCB.AutoSize = true;
-            this.AOCB.Enabled = false;
-            this.AOCB.Location = new System.Drawing.Point(7, 89);
-            this.AOCB.Name = "AOCB";
-            this.AOCB.Size = new System.Drawing.Size(41, 17);
-            this.AOCB.TabIndex = 4;
-            this.AOCB.Text = "AO";
-            this.AOCB.UseVisualStyleBackColor = true;
-            this.AOCB.CheckedChanged += new System.EventHandler(this.AOCB_CheckedChanged);
-            // 
-            // sphere_mapCB
-            // 
-            this.sphere_mapCB.AutoSize = true;
-            this.sphere_mapCB.Enabled = false;
-            this.sphere_mapCB.Location = new System.Drawing.Point(78, 18);
-            this.sphere_mapCB.Name = "sphere_mapCB";
-            this.sphere_mapCB.Size = new System.Drawing.Size(84, 17);
-            this.sphere_mapCB.TabIndex = 3;
-            this.sphere_mapCB.Text = "Sphere Map";
-            this.sphere_mapCB.UseVisualStyleBackColor = true;
-            this.sphere_mapCB.CheckedChanged += new System.EventHandler(this.sphere_mapCB_CheckedChanged);
-            // 
-            // normalCB
-            // 
-            this.normalCB.AutoSize = true;
-            this.normalCB.Enabled = false;
-            this.normalCB.Location = new System.Drawing.Point(78, 43);
-            this.normalCB.Name = "normalCB";
-            this.normalCB.Size = new System.Drawing.Size(59, 17);
-            this.normalCB.TabIndex = 2;
-            this.normalCB.Text = "Normal";
-            this.normalCB.UseVisualStyleBackColor = true;
-            this.normalCB.CheckedChanged += new System.EventHandler(this.normalCB_CheckedChanged);
-            // 
-            // diffuse2CB
-            // 
-            this.diffuse2CB.AutoSize = true;
-            this.diffuse2CB.Enabled = false;
-            this.diffuse2CB.Location = new System.Drawing.Point(7, 44);
-            this.diffuse2CB.Name = "diffuse2CB";
-            this.diffuse2CB.Size = new System.Drawing.Size(65, 17);
-            this.diffuse2CB.TabIndex = 1;
-            this.diffuse2CB.Text = "Diffuse2";
-            this.diffuse2CB.UseVisualStyleBackColor = true;
-            this.diffuse2CB.CheckedChanged += new System.EventHandler(this.diffuse2CB_CheckedChanged);
-            // 
-            // diffuseCB
-            // 
-            this.diffuseCB.AutoSize = true;
-            this.diffuseCB.Enabled = false;
-            this.diffuseCB.Location = new System.Drawing.Point(7, 20);
-            this.diffuseCB.Name = "diffuseCB";
-            this.diffuseCB.Size = new System.Drawing.Size(59, 17);
-            this.diffuseCB.TabIndex = 0;
-            this.diffuseCB.Text = "Diffuse";
-            this.diffuseCB.UseVisualStyleBackColor = true;
-            this.diffuseCB.CheckedChanged += new System.EventHandler(this.diffuseCB_CheckedChanged);
             // 
             // dummyRampCB
             // 
@@ -794,7 +660,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 69);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(301, 530);
+            this.tabControl1.Size = new System.Drawing.Size(339, 422);
             this.tabControl1.TabIndex = 19;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -804,7 +670,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(293, 504);
+            this.tabPage1.Size = new System.Drawing.Size(331, 396);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Material Flags";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -815,23 +681,24 @@
             this.groupBox3.Controls.Add(this.groupBox9);
             this.groupBox3.Controls.Add(this.groupBox6);
             this.groupBox3.Controls.Add(this.groupBox5);
-            this.groupBox3.Controls.Add(this.groupBox4);
             this.groupBox3.Controls.Add(this.label8);
             this.groupBox3.Controls.Add(this.flagsTB);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(3, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(287, 498);
+            this.groupBox3.Size = new System.Drawing.Size(325, 390);
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Material";
             // 
             // groupBox10
             // 
+            this.groupBox10.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox10.Controls.Add(this.tableLayoutPanel5);
-            this.groupBox10.Location = new System.Drawing.Point(5, 209);
+            this.groupBox10.Location = new System.Drawing.Point(6, 122);
             this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(276, 108);
+            this.groupBox10.Size = new System.Drawing.Size(314, 108);
             this.groupBox10.TabIndex = 24;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "Alpha Testing";
@@ -850,13 +717,14 @@
             this.tableLayoutPanel5.Controls.Add(this.label4, 0, 0);
             this.tableLayoutPanel5.Controls.Add(this.alphaTestComboBox, 2, 0);
             this.tableLayoutPanel5.Controls.Add(this.label9, 0, 1);
-            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 17);
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel5.Name = "tableLayoutPanel5";
             this.tableLayoutPanel5.RowCount = 3;
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(273, 85);
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(308, 89);
             this.tableLayoutPanel5.TabIndex = 22;
             // 
             // alphaTestTB
@@ -883,7 +751,7 @@
             this.refAlphaTB.Name = "refAlphaTB";
             this.refAlphaTB.Size = new System.Drawing.Size(137, 20);
             this.refAlphaTB.TabIndex = 15;
-            this.refAlphaTB.TextChanged += new System.EventHandler(this.textBox6_TextChanged);
+            this.refAlphaTB.TextChanged += new System.EventHandler(this.refAlphaTB_TextChanged);
             // 
             // AlphaFuncComboBox
             // 
@@ -932,10 +800,12 @@
             // 
             // groupBox9
             // 
+            this.groupBox9.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox9.Controls.Add(this.tableLayoutPanel3);
-            this.groupBox9.Location = new System.Drawing.Point(5, 323);
+            this.groupBox9.Location = new System.Drawing.Point(5, 236);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(276, 75);
+            this.groupBox9.Size = new System.Drawing.Size(314, 75);
             this.groupBox9.TabIndex = 23;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Misc";
@@ -951,12 +821,13 @@
             this.tableLayoutPanel3.Controls.Add(this.label6, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.cullModeTB, 1, 0);
             this.tableLayoutPanel3.Controls.Add(this.cullModeComboBox, 2, 0);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 17);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(273, 51);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(308, 56);
             this.tableLayoutPanel3.TabIndex = 22;
             // 
             // label7
@@ -974,7 +845,7 @@
             this.zBufferTB.Name = "zBufferTB";
             this.zBufferTB.Size = new System.Drawing.Size(121, 20);
             this.zBufferTB.TabIndex = 15;
-            this.zBufferTB.TextChanged += new System.EventHandler(this.textBox8_TextChanged);
+            this.zBufferTB.TextChanged += new System.EventHandler(this.zBufferTB_TextChanged);
             // 
             // label6
             // 
@@ -1007,9 +878,9 @@
             this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox6.Controls.Add(this.tableLayoutPanel1);
-            this.groupBox6.Location = new System.Drawing.Point(6, 129);
+            this.groupBox6.Location = new System.Drawing.Point(3, 39);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(275, 77);
+            this.groupBox6.Size = new System.Drawing.Size(317, 77);
             this.groupBox6.TabIndex = 21;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Alpha Blending";
@@ -1033,7 +904,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(269, 58);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(311, 58);
             this.tableLayoutPanel1.TabIndex = 8;
             // 
             // dstTB
@@ -1093,11 +964,10 @@
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox5.Controls.Add(this.shadowCB);
-            this.groupBox5.Controls.Add(this.mysteryCB);
             this.groupBox5.Controls.Add(this.GlowCB);
-            this.groupBox5.Location = new System.Drawing.Point(5, 404);
+            this.groupBox5.Location = new System.Drawing.Point(5, 317);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(275, 88);
+            this.groupBox5.Size = new System.Drawing.Size(315, 68);
             this.groupBox5.TabIndex = 20;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Effects";
@@ -1113,18 +983,6 @@
             this.shadowCB.UseVisualStyleBackColor = true;
             this.shadowCB.CheckedChanged += new System.EventHandler(this.shadowCB_CheckedChanged);
             // 
-            // mysteryCB
-            // 
-            this.mysteryCB.AutoSize = true;
-            this.mysteryCB.Enabled = false;
-            this.mysteryCB.Location = new System.Drawing.Point(6, 65);
-            this.mysteryCB.Name = "mysteryCB";
-            this.mysteryCB.Size = new System.Drawing.Size(62, 17);
-            this.mysteryCB.TabIndex = 9;
-            this.mysteryCB.Text = "Mystery";
-            this.mysteryCB.UseVisualStyleBackColor = true;
-            this.mysteryCB.CheckedChanged += new System.EventHandler(this.mysteryCB_CheckedChanged);
-            // 
             // GlowCB
             // 
             this.GlowCB.AutoSize = true;
@@ -1135,63 +993,6 @@
             this.GlowCB.Text = "Glow";
             this.GlowCB.UseVisualStyleBackColor = true;
             this.GlowCB.CheckedChanged += new System.EventHandler(this.GlowCB_CheckedChanged);
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox4.Controls.Add(this.tableLayoutPanel4);
-            this.groupBox4.Location = new System.Drawing.Point(5, 39);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(277, 84);
-            this.groupBox4.TabIndex = 19;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Lighting Channel";
-            // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.ColumnCount = 2;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 31.49606F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 68.50394F));
-            this.tableLayoutPanel4.Controls.Add(this.label18, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.label24, 0, 1);
-            this.tableLayoutPanel4.Controls.Add(this.label25, 0, 2);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 3;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(271, 65);
-            this.tableLayoutPanel4.TabIndex = 1;
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(3, 0);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(46, 13);
-            this.label18.TabIndex = 0;
-            this.label18.Text = "Channel";
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(3, 22);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(34, 13);
-            this.label24.TabIndex = 1;
-            this.label24.Text = "Byte2";
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(3, 44);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(34, 13);
-            this.label25.TabIndex = 2;
-            this.label25.Text = "Byte3";
             // 
             // label8
             // 
@@ -1216,7 +1017,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(293, 504);
+            this.tabPage2.Size = new System.Drawing.Size(331, 396);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Textures";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1226,13 +1027,14 @@
             this.tabPage3.Controls.Add(this.groupBox1);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(293, 504);
+            this.tabPage3.Size = new System.Drawing.Size(331, 396);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Properties";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.deleteMaterialButton);
             this.panel1.Controls.Add(this.addMaterialButton);
             this.panel1.Controls.Add(this.loadPresetButton);
             this.panel1.Controls.Add(this.savePresetButton);
@@ -1241,8 +1043,18 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(301, 69);
+            this.panel1.Size = new System.Drawing.Size(339, 69);
             this.panel1.TabIndex = 26;
+            // 
+            // deleteMaterialButton
+            // 
+            this.deleteMaterialButton.Location = new System.Drawing.Point(302, 41);
+            this.deleteMaterialButton.Name = "deleteMaterialButton";
+            this.deleteMaterialButton.Size = new System.Drawing.Size(29, 21);
+            this.deleteMaterialButton.TabIndex = 22;
+            this.deleteMaterialButton.Text = "x";
+            this.deleteMaterialButton.UseVisualStyleBackColor = true;
+            this.deleteMaterialButton.Click += new System.EventHandler(this.deleteMaterialButton_Click);
             // 
             // addMaterialButton
             // 
@@ -1259,12 +1071,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(301, 599);
+            this.ClientSize = new System.Drawing.Size(339, 491);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.Black;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "NUDMaterialEditor";
             this.TabText = "Material";
             this.Text = "NUDMaterialEditor";
@@ -1272,18 +1083,18 @@
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
-            this.groupBox8.ResumeLayout(false);
-            this.groupBox8.PerformLayout();
-            this.paramGB.ResumeLayout(false);
-            this.paramGB.PerformLayout();
+            this.panel3.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            this.parameterGroupBox.ResumeLayout(false);
+            this.parameterGroupBox.PerformLayout();
+            this.paramTableLayout.ResumeLayout(false);
+            this.paramTableLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.param4TrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.param3TrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.param2TrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.param1TrackBar)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
@@ -1300,9 +1111,6 @@
             this.tableLayoutPanel1.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.tableLayoutPanel4.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
@@ -1324,10 +1132,6 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ListView propertiesListView;
-        private System.Windows.Forms.Label label19;
-        private System.Windows.Forms.Label param1Label;
-        private System.Windows.Forms.Label param3Label;
-        private System.Windows.Forms.Label param2Label;
         private System.Windows.Forms.ComboBox mipDetailComboBox;
         private System.Windows.Forms.ComboBox magFilterComboBox;
         private System.Windows.Forms.ComboBox minFilterComboBox;
@@ -1335,16 +1139,9 @@
         private System.Windows.Forms.ComboBox mapModeComboBox;
         private System.Windows.Forms.ComboBox wrapYComboBox;
         private System.Windows.Forms.TextBox textureIDTB;
-        private System.Windows.Forms.TextBox matPropertyNameTB;
-        private System.Windows.Forms.TextBox param1TB;
-        private System.Windows.Forms.TextBox param2TB;
-        private System.Windows.Forms.TextBox param3TB;
         private System.Windows.Forms.Button savePresetButton;
         private System.Windows.Forms.Button loadPresetButton;
-        private System.Windows.Forms.Button addMatPropertyButton;
-        private System.Windows.Forms.ComboBox matPropertyComboBox;
         private OpenTK.GLControl texRgbGlControl;
-        private System.Windows.Forms.Button colorSelect;
         private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
@@ -1355,26 +1152,7 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.GroupBox groupBox8;
-        private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.Label descriptionLabel;
-        private System.Windows.Forms.Label param4Label;
-        private System.Windows.Forms.TextBox param4TB;
-        private System.Windows.Forms.TableLayoutPanel paramGB;
         private OpenTK.GLControl texAlphaGlControl;
-        private System.Windows.Forms.CheckBox cubemapCB;
-        private System.Windows.Forms.CheckBox stageMapCB;
-        private System.Windows.Forms.CheckBox dummy_rampCB;
-        private System.Windows.Forms.CheckBox rampCB;
-        private System.Windows.Forms.CheckBox AOCB;
-        private System.Windows.Forms.CheckBox sphere_mapCB;
-        private System.Windows.Forms.CheckBox normalCB;
-        private System.Windows.Forms.CheckBox diffuse2CB;
-        private System.Windows.Forms.CheckBox diffuseCB;
-        private System.Windows.Forms.TrackBar param1TrackBar;
-        private System.Windows.Forms.TrackBar param4TrackBar;
-        private System.Windows.Forms.TrackBar param3TrackBar;
-        private System.Windows.Forms.TrackBar param2TrackBar;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
@@ -1396,13 +1174,7 @@
         private System.Windows.Forms.TextBox alphaFuncTB;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.CheckBox shadowCB;
-        private System.Windows.Forms.CheckBox mysteryCB;
         private System.Windows.Forms.CheckBox GlowCB;
-        private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
-        private System.Windows.Forms.Label label18;
-        private System.Windows.Forms.Label label24;
-        private System.Windows.Forms.Label label25;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox flagsTB;
         private System.Windows.Forms.Button addMaterialButton;
@@ -1413,5 +1185,27 @@
         private System.Windows.Forms.TextBox dstTB;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ComboBox dstComboBox;
+        private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.Button deleteMaterialButton;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button addMatPropertyButton;
+        private System.Windows.Forms.ComboBox matPropertyComboBox;
+        private System.Windows.Forms.Button colorSelect;
+        private System.Windows.Forms.GroupBox parameterGroupBox;
+        private System.Windows.Forms.TableLayoutPanel paramTableLayout;
+        private System.Windows.Forms.TrackBar param4TrackBar;
+        private System.Windows.Forms.TrackBar param3TrackBar;
+        private System.Windows.Forms.TrackBar param2TrackBar;
+        private System.Windows.Forms.TextBox param4TB;
+        private System.Windows.Forms.TextBox param3TB;
+        private System.Windows.Forms.TextBox param2TB;
+        private System.Windows.Forms.TextBox param1TB;
+        private System.Windows.Forms.Label param4Label;
+        private System.Windows.Forms.Label param1Label;
+        private System.Windows.Forms.Label param3Label;
+        private System.Windows.Forms.Label param2Label;
+        private System.Windows.Forms.TrackBar param1TrackBar;
+        private System.Windows.Forms.Label propertyNameLabel;
     }
 }

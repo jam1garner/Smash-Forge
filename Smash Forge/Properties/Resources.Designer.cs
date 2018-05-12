@@ -123,6 +123,16 @@ namespace Smash_Forge.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap bitan {
+            get {
+                object obj = ResourceManager.GetObject("bitan", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap boneWeightGradient {
             get {
                 object obj = ResourceManager.GetObject("boneWeightGradient", resourceCulture);
@@ -293,6 +303,16 @@ namespace Smash_Forge.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap nrm {
+            get {
+                object obj = ResourceManager.GetObject("nrm", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap sexy_green_down_arrow {
             get {
                 object obj = ResourceManager.GetObject("sexy_green_down_arrow", resourceCulture);
@@ -366,6 +386,26 @@ namespace Smash_Forge.Properties {
         internal static System.Drawing.Bitmap strip_sca {
             get {
                 object obj = ResourceManager.GetObject("strip_sca", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tan {
+            get {
+                object obj = ResourceManager.GetObject("tan", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap uv {
+            get {
+                object obj = ResourceManager.GetObject("uv", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

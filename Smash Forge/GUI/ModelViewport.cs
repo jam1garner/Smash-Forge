@@ -996,7 +996,7 @@ namespace Smash_Forge
             return renderName;
         }
 
-        public Bitmap CaptureScreen(bool saveAlpha)
+        private Bitmap CaptureScreen(bool saveAlpha)
         {
             int width = glViewport.Width;
             int height = glViewport.Height;
@@ -1321,11 +1321,10 @@ namespace Smash_Forge
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-            GL.ClearColor(0, 0, 0, 0);
 
-            // Return early to avoid rendering other stuff. 
             if (MeshList.filesTreeView.SelectedNode != null)
             {
+                // Return early to avoid rendering other stuff. 
                 if (MeshList.filesTreeView.SelectedNode is BCH_Texture)
                 {
                     DrawBchTex();
@@ -1348,6 +1347,7 @@ namespace Smash_Forge
             if (Runtime.renderBackGround && !Runtime.usePostProcessing)
             {
                 // The screen quad shader draws its own background gradient.
+                // This prevents the second color attachment from having a white background.
                 DrawViewportBackground();
             }
 
@@ -1374,11 +1374,7 @@ namespace Smash_Forge
             if (Runtime.renderFloor)
                 RenderTools.DrawFloor(camera.mvpMatrix);
 
-            // Allow disabling depth testing for experimental "flat" rendering. 
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Lequal);
-            if (!Runtime.useDepthTest)
-                GL.Disable(EnableCap.DepthTest);
+            SetDepthTesting();
 
             DrawModels();
 
@@ -1404,6 +1400,15 @@ namespace Smash_Forge
             glViewport.SwapBuffers();
         }
 
+        private static void SetDepthTesting()
+        {
+            // Allow disabling depth testing for experimental "flat" rendering. 
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+            if (!Runtime.useDepthTest)
+                GL.Disable(EnableCap.DepthTest);
+        }
+
         private void FixedFunctionRendering()
         {
             RenderTools.Setup3DFixedFunctionRendering(camera.mvpMatrix);
@@ -1419,7 +1424,12 @@ namespace Smash_Forge
         {
             Vector3 topColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
             Vector3 bottomColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
-            RenderTools.DrawQuadGradient(topColor, bottomColor);
+
+            // Only use the top color for solid color rendering.
+            if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
+                RenderTools.DrawQuadGradient(topColor, topColor);
+            else
+                RenderTools.DrawQuadGradient(topColor, bottomColor);
         }
 
         private void SetupViewport()
@@ -1580,15 +1590,11 @@ namespace Smash_Forge
             if (e.KeyChar == 'f')
                 FrameSelectionAndSort();
 
-            // Toggles color channel rendering.
-            if (e.KeyChar == 'r')
-                Runtime.renderR = !Runtime.renderR;
-            if (e.KeyChar == 'g')
-                Runtime.renderG = !Runtime.renderG;
-            if (e.KeyChar == 'b')
-                Runtime.renderB = !Runtime.renderB;
-            if (e.KeyChar == 'a')
-                Runtime.renderAlpha = !Runtime.renderAlpha;
+            if (e.KeyChar == 'i')
+            {
+                ShaderTools.SetupShaders();
+                ShaderTools.SaveErrorLogs();
+            }
         }
 
         private void ModelViewport_KeyDown(object sender, KeyEventArgs e)
@@ -1641,7 +1647,7 @@ namespace Smash_Forge
             }
         }
 
-        private void SaveScreenRender(string outputPath)
+        public void SaveScreenRender(string outputPath)
         {
             // Manually dispose the bitmap to avoid memory leaks. 
             Bitmap screenCapture = CaptureScreen(true);

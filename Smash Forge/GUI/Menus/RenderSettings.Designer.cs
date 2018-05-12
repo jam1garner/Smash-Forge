@@ -28,8 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem("test2");
+            this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -84,43 +85,10 @@
             this.renderHurtboxZonesCB = new System.Windows.Forms.CheckBox();
             this.renderInterpHitboxCB = new System.Windows.Forms.CheckBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.zScaleTB = new System.Windows.Forms.TextBox();
-            this.label76 = new System.Windows.Forms.Label();
-            this.depthTestCB = new System.Windows.Forms.CheckBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.RendererLabel = new System.Windows.Forms.Label();
-            this.OpenGLVersionLabel = new System.Windows.Forms.Label();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.BackgroundGradient2 = new System.Windows.Forms.PictureBox();
-            this.BackgroundGradient1 = new System.Windows.Forms.PictureBox();
-            this.swagYCB = new System.Windows.Forms.CheckBox();
-            this.drawUvCB = new System.Windows.Forms.CheckBox();
-            this.areaLightBoundingBoxCB = new System.Windows.Forms.CheckBox();
-            this.renderGeneralShapesCB = new System.Windows.Forms.CheckBox();
-            this.renderModelCB = new System.Windows.Forms.CheckBox();
-            this.renderCollisionsCB = new System.Windows.Forms.CheckBox();
-            this.renderLvdCB = new System.Windows.Forms.CheckBox();
-            this.wireframeCB = new System.Windows.Forms.CheckBox();
-            this.renderSpawnsCB = new System.Windows.Forms.CheckBox();
-            this.modelSelectCB = new System.Windows.Forms.CheckBox();
-            this.renderFloorCB = new System.Windows.Forms.CheckBox();
-            this.boundingCB = new System.Windows.Forms.CheckBox();
-            this.showSwagDataCB = new System.Windows.Forms.CheckBox();
-            this.renderBackgroundCB = new System.Windows.Forms.CheckBox();
-            this.renderRespawnsCB = new System.Windows.Forms.CheckBox();
-            this.renderPassthroughCB = new System.Windows.Forms.CheckBox();
-            this.renderItemSpawnersCB = new System.Windows.Forms.CheckBox();
-            this.renderBonesCB = new System.Windows.Forms.CheckBox();
-            this.renderCameraPathCB = new System.Windows.Forms.CheckBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.debug2CB = new System.Windows.Forms.CheckBox();
             this.debug1CB = new System.Windows.Forms.CheckBox();
             this.renderChannelR = new System.Windows.Forms.Button();
             this.renderChannelA = new System.Windows.Forms.Button();
@@ -128,6 +96,31 @@
             this.renderChannelB = new System.Windows.Forms.Button();
             this.renderModeComboBox = new System.Windows.Forms.ComboBox();
             this.debugModeLabel = new System.Windows.Forms.Label();
+            this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.renderGeneralShapesCB = new System.Windows.Forms.CheckBox();
+            this.renderCollisionsCB = new System.Windows.Forms.CheckBox();
+            this.renderLvdCB = new System.Windows.Forms.CheckBox();
+            this.renderSpawnsCB = new System.Windows.Forms.CheckBox();
+            this.renderRespawnsCB = new System.Windows.Forms.CheckBox();
+            this.renderPassthroughCB = new System.Windows.Forms.CheckBox();
+            this.renderItemSpawnersCB = new System.Windows.Forms.CheckBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.zScaleTB = new System.Windows.Forms.TextBox();
+            this.label76 = new System.Windows.Forms.Label();
+            this.depthTestCB = new System.Windows.Forms.CheckBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.swagYCB = new System.Windows.Forms.CheckBox();
+            this.drawUvCB = new System.Windows.Forms.CheckBox();
+            this.areaLightBoundingBoxCB = new System.Windows.Forms.CheckBox();
+            this.renderModelCB = new System.Windows.Forms.CheckBox();
+            this.wireframeCB = new System.Windows.Forms.CheckBox();
+            this.modelSelectCB = new System.Windows.Forms.CheckBox();
+            this.boundingCB = new System.Windows.Forms.CheckBox();
+            this.showSwagDataCB = new System.Windows.Forms.CheckBox();
+            this.renderBonesCB = new System.Windows.Forms.CheckBox();
+            this.renderCameraPathCB = new System.Windows.Forms.CheckBox();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage6 = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.stageLightingCB = new System.Windows.Forms.CheckBox();
             this.renderFogCB = new System.Windows.Forms.CheckBox();
@@ -153,7 +146,35 @@
             this.specularCB = new System.Windows.Forms.CheckBox();
             this.reflectionCB = new System.Windows.Forms.CheckBox();
             this.useNormCB = new System.Windows.Forms.CheckBox();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.backgroundPictureBox = new System.Windows.Forms.PictureBox();
+            this.backgroundStyleLabel = new System.Windows.Forms.Label();
+            this.backgroundComboBox = new System.Windows.Forms.ComboBox();
+            this.renderBackgroundCB = new System.Windows.Forms.CheckBox();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.BackgroundGradient1 = new System.Windows.Forms.PictureBox();
+            this.backgroundBottomLabel = new System.Windows.Forms.Label();
+            this.backgroundTopLabel = new System.Windows.Forms.Label();
+            this.BackgroundGradient2 = new System.Windows.Forms.PictureBox();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.floorColorPictureBox = new System.Windows.Forms.PictureBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.floorScaleTB = new System.Windows.Forms.TextBox();
+            this.floorStyleLabel = new System.Windows.Forms.Label();
+            this.floorComboBox = new System.Windows.Forms.ComboBox();
+            this.renderFloorCB = new System.Windows.Forms.CheckBox();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.bloomGroupBox = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.bloomIntensityTB = new System.Windows.Forms.TextBox();
+            this.bloomThresholdTB = new System.Windows.Forms.TextBox();
+            this.bloomRadiusTB = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.bloomCB = new System.Windows.Forms.CheckBox();
+            this.postProcessingCB = new System.Windows.Forms.CheckBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.timeElapsedCheckbox = new System.Windows.Forms.CheckBox();
             this.showActiveWindowCheckbox = new System.Windows.Forms.CheckBox();
@@ -164,17 +185,7 @@
             this.filenameRadioButton = new System.Windows.Forms.RadioButton();
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.defaultRadioButton = new System.Windows.Forms.RadioButton();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.postProcessingCB = new System.Windows.Forms.CheckBox();
-            this.bloomCB = new System.Windows.Forms.CheckBox();
-            this.bloomGroupBox = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.bloomIntensityTB = new System.Windows.Forms.TextBox();
-            this.bloomThresholdTB = new System.Windows.Forms.TextBox();
-            this.bloomRadiusTB = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -192,21 +203,27 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).BeginInit();
             this.tabPage1.SuspendLayout();
-            this.groupBox4.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient1)).BeginInit();
-            this.groupBox1.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            this.groupBox10.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage6.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.tabControl1.SuspendLayout();
-            this.tabPage3.SuspendLayout();
-            this.groupBox7.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            this.groupBox9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.backgroundPictureBox)).BeginInit();
+            this.tableLayoutPanel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient2)).BeginInit();
+            this.groupBox8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.floorColorPictureBox)).BeginInit();
             this.tabPage4.SuspendLayout();
             this.bloomGroupBox.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabPage2
@@ -266,14 +283,14 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(556, 672);
+            this.tabPage2.Size = new System.Drawing.Size(556, 621);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Hit/Hurt boxes";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(393, 295);
+            this.label1.Location = new System.Drawing.Point(415, 295);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(97, 13);
             this.label1.TabIndex = 75;
@@ -281,7 +298,7 @@
             // 
             // pbHitboxAnglesColor
             // 
-            this.pbHitboxAnglesColor.Location = new System.Drawing.Point(533, 295);
+            this.pbHitboxAnglesColor.Location = new System.Drawing.Point(519, 295);
             this.pbHitboxAnglesColor.Name = "pbHitboxAnglesColor";
             this.pbHitboxAnglesColor.Size = new System.Drawing.Size(16, 16);
             this.pbHitboxAnglesColor.TabIndex = 74;
@@ -302,7 +319,7 @@
             // renderReverseLedgeGrabCB
             // 
             this.renderReverseLedgeGrabCB.AutoSize = true;
-            this.renderReverseLedgeGrabCB.Location = new System.Drawing.Point(3, 596);
+            this.renderReverseLedgeGrabCB.Location = new System.Drawing.Point(3, 549);
             this.renderReverseLedgeGrabCB.Name = "renderReverseLedgeGrabCB";
             this.renderReverseLedgeGrabCB.Size = new System.Drawing.Size(191, 17);
             this.renderReverseLedgeGrabCB.TabIndex = 72;
@@ -313,7 +330,7 @@
             // renderTetherLedgeCB
             // 
             this.renderTetherLedgeCB.AutoSize = true;
-            this.renderTetherLedgeCB.Location = new System.Drawing.Point(3, 618);
+            this.renderTetherLedgeCB.Location = new System.Drawing.Point(3, 571);
             this.renderTetherLedgeCB.Name = "renderTetherLedgeCB";
             this.renderTetherLedgeCB.Size = new System.Drawing.Size(182, 17);
             this.renderTetherLedgeCB.TabIndex = 71;
@@ -324,7 +341,7 @@
             // renderLedgeGrabCB
             // 
             this.renderLedgeGrabCB.AutoSize = true;
-            this.renderLedgeGrabCB.Location = new System.Drawing.Point(3, 575);
+            this.renderLedgeGrabCB.Location = new System.Drawing.Point(3, 528);
             this.renderLedgeGrabCB.Name = "renderLedgeGrabCB";
             this.renderLedgeGrabCB.Size = new System.Drawing.Size(148, 17);
             this.renderLedgeGrabCB.TabIndex = 70;
@@ -346,7 +363,7 @@
             // label80
             // 
             this.label80.AutoSize = true;
-            this.label80.Location = new System.Drawing.Point(208, 320);
+            this.label80.Location = new System.Drawing.Point(229, 320);
             this.label80.Name = "label80";
             this.label80.Size = new System.Drawing.Size(101, 13);
             this.label80.TabIndex = 68;
@@ -355,7 +372,7 @@
             // label81
             // 
             this.label81.AutoSize = true;
-            this.label81.Location = new System.Drawing.Point(207, 298);
+            this.label81.Location = new System.Drawing.Point(228, 298);
             this.label81.Name = "label81";
             this.label81.Size = new System.Drawing.Size(102, 13);
             this.label81.TabIndex = 67;
@@ -363,7 +380,7 @@
             // 
             // pbShieldColor
             // 
-            this.pbShieldColor.Location = new System.Drawing.Point(533, 273);
+            this.pbShieldColor.Location = new System.Drawing.Point(519, 273);
             this.pbShieldColor.Name = "pbShieldColor";
             this.pbShieldColor.Size = new System.Drawing.Size(16, 16);
             this.pbShieldColor.TabIndex = 66;
@@ -373,7 +390,7 @@
             // label83
             // 
             this.label83.AutoSize = true;
-            this.label83.Location = new System.Drawing.Point(393, 276);
+            this.label83.Location = new System.Drawing.Point(415, 276);
             this.label83.Name = "label83";
             this.label83.Size = new System.Drawing.Size(97, 13);
             this.label83.TabIndex = 65;
@@ -381,7 +398,7 @@
             // 
             // pbAbsorbColor
             // 
-            this.pbAbsorbColor.Location = new System.Drawing.Point(357, 317);
+            this.pbAbsorbColor.Location = new System.Drawing.Point(336, 317);
             this.pbAbsorbColor.Name = "pbAbsorbColor";
             this.pbAbsorbColor.Size = new System.Drawing.Size(16, 16);
             this.pbAbsorbColor.TabIndex = 64;
@@ -390,7 +407,7 @@
             // 
             // pbReflectColor
             // 
-            this.pbReflectColor.Location = new System.Drawing.Point(357, 295);
+            this.pbReflectColor.Location = new System.Drawing.Point(336, 295);
             this.pbReflectColor.Name = "pbReflectColor";
             this.pbReflectColor.Size = new System.Drawing.Size(16, 16);
             this.pbReflectColor.TabIndex = 62;
@@ -399,7 +416,7 @@
             // 
             // pbCounterColor
             // 
-            this.pbCounterColor.Location = new System.Drawing.Point(357, 273);
+            this.pbCounterColor.Location = new System.Drawing.Point(336, 273);
             this.pbCounterColor.Name = "pbCounterColor";
             this.pbCounterColor.Size = new System.Drawing.Size(16, 16);
             this.pbCounterColor.TabIndex = 60;
@@ -409,7 +426,7 @@
             // label82
             // 
             this.label82.AutoSize = true;
-            this.label82.Location = new System.Drawing.Point(207, 276);
+            this.label82.Location = new System.Drawing.Point(228, 276);
             this.label82.Name = "label82";
             this.label82.Size = new System.Drawing.Size(102, 13);
             this.label82.TabIndex = 59;
@@ -471,7 +488,7 @@
             // 
             // pbHurtboxColorSelected
             // 
-            this.pbHurtboxColorSelected.Location = new System.Drawing.Point(157, 524);
+            this.pbHurtboxColorSelected.Location = new System.Drawing.Point(158, 481);
             this.pbHurtboxColorSelected.Name = "pbHurtboxColorSelected";
             this.pbHurtboxColorSelected.Size = new System.Drawing.Size(16, 16);
             this.pbHurtboxColorSelected.TabIndex = 52;
@@ -481,7 +498,7 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(31, 527);
+            this.label18.Location = new System.Drawing.Point(32, 484);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(119, 13);
             this.label18.TabIndex = 51;
@@ -489,7 +506,7 @@
             // 
             // setParamDirButton
             // 
-            this.setParamDirButton.Location = new System.Drawing.Point(497, 637);
+            this.setParamDirButton.Location = new System.Drawing.Point(499, 588);
             this.setParamDirButton.Name = "setParamDirButton";
             this.setParamDirButton.Size = new System.Drawing.Size(50, 23);
             this.setParamDirButton.TabIndex = 50;
@@ -499,7 +516,7 @@
             // 
             // textParamDir
             // 
-            this.textParamDir.Location = new System.Drawing.Point(89, 639);
+            this.textParamDir.Location = new System.Drawing.Point(91, 590);
             this.textParamDir.Name = "textParamDir";
             this.textParamDir.Size = new System.Drawing.Size(402, 20);
             this.textParamDir.TabIndex = 49;
@@ -507,7 +524,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(3, 642);
+            this.label17.Location = new System.Drawing.Point(5, 593);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(80, 13);
             this.label17.TabIndex = 48;
@@ -515,7 +532,7 @@
             // 
             // pbHurtboxColorLw
             // 
-            this.pbHurtboxColorLw.Location = new System.Drawing.Point(157, 502);
+            this.pbHurtboxColorLw.Location = new System.Drawing.Point(519, 455);
             this.pbHurtboxColorLw.Name = "pbHurtboxColorLw";
             this.pbHurtboxColorLw.Size = new System.Drawing.Size(16, 16);
             this.pbHurtboxColorLw.TabIndex = 47;
@@ -525,7 +542,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(31, 505);
+            this.label16.Location = new System.Drawing.Point(416, 458);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(95, 13);
             this.label16.TabIndex = 46;
@@ -533,7 +550,7 @@
             // 
             // pbHurtboxColorMed
             // 
-            this.pbHurtboxColorMed.Location = new System.Drawing.Point(157, 480);
+            this.pbHurtboxColorMed.Location = new System.Drawing.Point(336, 455);
             this.pbHurtboxColorMed.Name = "pbHurtboxColorMed";
             this.pbHurtboxColorMed.Size = new System.Drawing.Size(16, 16);
             this.pbHurtboxColorMed.TabIndex = 45;
@@ -543,7 +560,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(31, 483);
+            this.label15.Location = new System.Drawing.Point(230, 458);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(99, 13);
             this.label15.TabIndex = 44;
@@ -694,8 +711,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem5,
-            listViewItem6});
+            listViewItem9,
+            listViewItem10});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -757,7 +774,7 @@
             // renderEnvCollisionBoxCB
             // 
             this.renderEnvCollisionBoxCB.AutoSize = true;
-            this.renderEnvCollisionBoxCB.Location = new System.Drawing.Point(3, 553);
+            this.renderEnvCollisionBoxCB.Location = new System.Drawing.Point(3, 506);
             this.renderEnvCollisionBoxCB.Name = "renderEnvCollisionBoxCB";
             this.renderEnvCollisionBoxCB.Size = new System.Drawing.Size(196, 17);
             this.renderEnvCollisionBoxCB.TabIndex = 25;
@@ -790,382 +807,22 @@
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage1.Controls.Add(this.groupBox6);
+            this.tabPage1.Controls.Add(this.groupBox10);
             this.tabPage1.Controls.Add(this.groupBox4);
-            this.tabPage1.Controls.Add(this.groupBox3);
             this.tabPage1.Controls.Add(this.groupBox2);
-            this.tabPage1.Controls.Add(this.groupBox1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(556, 672);
+            this.tabPage1.Size = new System.Drawing.Size(556, 621);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.zScaleTB);
-            this.groupBox4.Controls.Add(this.label76);
-            this.groupBox4.Controls.Add(this.depthTestCB);
-            this.groupBox4.Location = new System.Drawing.Point(7, 500);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(243, 78);
-            this.groupBox4.TabIndex = 18;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "zDepth (Experimental WIP)";
-            // 
-            // zScaleTB
-            // 
-            this.zScaleTB.Location = new System.Drawing.Point(149, 42);
-            this.zScaleTB.Name = "zScaleTB";
-            this.zScaleTB.Size = new System.Drawing.Size(77, 20);
-            this.zScaleTB.TabIndex = 2;
-            this.zScaleTB.TextChanged += new System.EventHandler(this.zScaleTB_TextChanged);
-            // 
-            // label76
-            // 
-            this.label76.AutoSize = true;
-            this.label76.Location = new System.Drawing.Point(5, 49);
-            this.label76.Name = "label76";
-            this.label76.Size = new System.Drawing.Size(66, 13);
-            this.label76.TabIndex = 1;
-            this.label76.Text = "Z Axis Scale";
-            // 
-            // depthTestCB
-            // 
-            this.depthTestCB.AutoSize = true;
-            this.depthTestCB.Location = new System.Drawing.Point(8, 19);
-            this.depthTestCB.Name = "depthTestCB";
-            this.depthTestCB.Size = new System.Drawing.Size(129, 17);
-            this.depthTestCB.TabIndex = 0;
-            this.depthTestCB.Text = "Enable Depth Testing";
-            this.depthTestCB.UseVisualStyleBackColor = true;
-            this.depthTestCB.CheckedChanged += new System.EventHandler(this.depthTestCB_CheckedChanged);
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.RendererLabel);
-            this.groupBox3.Controls.Add(this.OpenGLVersionLabel);
-            this.groupBox3.Location = new System.Drawing.Point(6, 581);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(243, 85);
-            this.groupBox3.TabIndex = 17;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "System Information";
-            // 
-            // RendererLabel
-            // 
-            this.RendererLabel.AutoSize = true;
-            this.RendererLabel.Location = new System.Drawing.Point(12, 46);
-            this.RendererLabel.Name = "RendererLabel";
-            this.RendererLabel.Size = new System.Drawing.Size(33, 13);
-            this.RendererLabel.TabIndex = 1;
-            this.RendererLabel.Text = "GPU:";
-            // 
-            // OpenGLVersionLabel
-            // 
-            this.OpenGLVersionLabel.AutoSize = true;
-            this.OpenGLVersionLabel.Location = new System.Drawing.Point(12, 28);
-            this.OpenGLVersionLabel.Name = "OpenGLVersionLabel";
-            this.OpenGLVersionLabel.Size = new System.Drawing.Size(88, 13);
-            this.OpenGLVersionLabel.TabIndex = 0;
-            this.OpenGLVersionLabel.Text = "OpenGL Version:";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.label3);
-            this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Controls.Add(this.BackgroundGradient2);
-            this.groupBox2.Controls.Add(this.BackgroundGradient1);
-            this.groupBox2.Controls.Add(this.swagYCB);
-            this.groupBox2.Controls.Add(this.drawUvCB);
-            this.groupBox2.Controls.Add(this.areaLightBoundingBoxCB);
-            this.groupBox2.Controls.Add(this.renderGeneralShapesCB);
-            this.groupBox2.Controls.Add(this.renderModelCB);
-            this.groupBox2.Controls.Add(this.renderCollisionsCB);
-            this.groupBox2.Controls.Add(this.renderLvdCB);
-            this.groupBox2.Controls.Add(this.wireframeCB);
-            this.groupBox2.Controls.Add(this.renderSpawnsCB);
-            this.groupBox2.Controls.Add(this.modelSelectCB);
-            this.groupBox2.Controls.Add(this.renderFloorCB);
-            this.groupBox2.Controls.Add(this.boundingCB);
-            this.groupBox2.Controls.Add(this.showSwagDataCB);
-            this.groupBox2.Controls.Add(this.renderBackgroundCB);
-            this.groupBox2.Controls.Add(this.renderRespawnsCB);
-            this.groupBox2.Controls.Add(this.renderPassthroughCB);
-            this.groupBox2.Controls.Add(this.renderItemSpawnersCB);
-            this.groupBox2.Controls.Add(this.renderBonesCB);
-            this.groupBox2.Controls.Add(this.renderCameraPathCB);
-            this.groupBox2.Location = new System.Drawing.Point(6, 6);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(244, 491);
-            this.groupBox2.TabIndex = 16;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Display Settings";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(30, 19);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(136, 13);
-            this.label3.TabIndex = 31;
-            this.label3.Text = "Background Gradient (Top)";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(30, 42);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(150, 13);
-            this.label2.TabIndex = 31;
-            this.label2.Text = "Background Gradient (Bottom)";
-            // 
-            // BackgroundGradient2
-            // 
-            this.BackgroundGradient2.Location = new System.Drawing.Point(8, 41);
-            this.BackgroundGradient2.Name = "BackgroundGradient2";
-            this.BackgroundGradient2.Size = new System.Drawing.Size(16, 16);
-            this.BackgroundGradient2.TabIndex = 30;
-            this.BackgroundGradient2.TabStop = false;
-            this.BackgroundGradient2.Click += new System.EventHandler(this.BackgroundGradient2_Click);
-            // 
-            // BackgroundGradient1
-            // 
-            this.BackgroundGradient1.Location = new System.Drawing.Point(8, 19);
-            this.BackgroundGradient1.Name = "BackgroundGradient1";
-            this.BackgroundGradient1.Size = new System.Drawing.Size(16, 16);
-            this.BackgroundGradient1.TabIndex = 30;
-            this.BackgroundGradient1.TabStop = false;
-            this.BackgroundGradient1.Click += new System.EventHandler(this.BackgroundGradient1_Click);
-            // 
-            // swagYCB
-            // 
-            this.swagYCB.AutoSize = true;
-            this.swagYCB.Location = new System.Drawing.Point(127, 154);
-            this.swagYCB.Name = "swagYCB";
-            this.swagYCB.Size = new System.Drawing.Size(104, 17);
-            this.swagYCB.TabIndex = 29;
-            this.swagYCB.Text = "Animate Swing Y";
-            this.swagYCB.UseVisualStyleBackColor = true;
-            this.swagYCB.CheckedChanged += new System.EventHandler(this.swagYCB_CheckedChanged);
-            // 
-            // drawUvCB
-            // 
-            this.drawUvCB.AutoSize = true;
-            this.drawUvCB.Location = new System.Drawing.Point(9, 457);
-            this.drawUvCB.Name = "drawUvCB";
-            this.drawUvCB.Size = new System.Drawing.Size(143, 17);
-            this.drawUvCB.TabIndex = 28;
-            this.drawUvCB.Text = "Draw UVs (Experimental)";
-            this.drawUvCB.UseVisualStyleBackColor = true;
-            this.drawUvCB.CheckedChanged += new System.EventHandler(this.drawUvCB_CheckedChanged);
-            // 
-            // areaLightBoundingBoxCB
-            // 
-            this.areaLightBoundingBoxCB.AutoSize = true;
-            this.areaLightBoundingBoxCB.Checked = true;
-            this.areaLightBoundingBoxCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.areaLightBoundingBoxCB.Location = new System.Drawing.Point(9, 434);
-            this.areaLightBoundingBoxCB.Name = "areaLightBoundingBoxCB";
-            this.areaLightBoundingBoxCB.Size = new System.Drawing.Size(192, 17);
-            this.areaLightBoundingBoxCB.TabIndex = 27;
-            this.areaLightBoundingBoxCB.Text = "Render Area Light Bounding Boxes";
-            this.areaLightBoundingBoxCB.UseVisualStyleBackColor = true;
-            this.areaLightBoundingBoxCB.CheckedChanged += new System.EventHandler(this.areaLightBoundingBoxCB_CheckedChanged);
-            // 
-            // renderGeneralShapesCB
-            // 
-            this.renderGeneralShapesCB.AutoSize = true;
-            this.renderGeneralShapesCB.Location = new System.Drawing.Point(41, 412);
-            this.renderGeneralShapesCB.Name = "renderGeneralShapesCB";
-            this.renderGeneralShapesCB.Size = new System.Drawing.Size(193, 17);
-            this.renderGeneralShapesCB.TabIndex = 26;
-            this.renderGeneralShapesCB.Text = "Render General Shapes and Points";
-            this.renderGeneralShapesCB.UseVisualStyleBackColor = true;
-            this.renderGeneralShapesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // renderModelCB
-            // 
-            this.renderModelCB.AutoSize = true;
-            this.renderModelCB.Location = new System.Drawing.Point(9, 64);
-            this.renderModelCB.Name = "renderModelCB";
-            this.renderModelCB.Size = new System.Drawing.Size(93, 17);
-            this.renderModelCB.TabIndex = 0;
-            this.renderModelCB.Text = "Render Model";
-            this.renderModelCB.UseVisualStyleBackColor = true;
-            this.renderModelCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // renderCollisionsCB
-            // 
-            this.renderCollisionsCB.AutoSize = true;
-            this.renderCollisionsCB.Location = new System.Drawing.Point(41, 296);
-            this.renderCollisionsCB.Name = "renderCollisionsCB";
-            this.renderCollisionsCB.Size = new System.Drawing.Size(107, 17);
-            this.renderCollisionsCB.TabIndex = 6;
-            this.renderCollisionsCB.Text = "Render Collisions";
-            this.renderCollisionsCB.UseVisualStyleBackColor = true;
-            this.renderCollisionsCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // renderLvdCB
-            // 
-            this.renderLvdCB.AutoSize = true;
-            this.renderLvdCB.Location = new System.Drawing.Point(8, 269);
-            this.renderLvdCB.Name = "renderLvdCB";
-            this.renderLvdCB.Size = new System.Drawing.Size(85, 17);
-            this.renderLvdCB.TabIndex = 5;
-            this.renderLvdCB.Text = "Render LVD";
-            this.renderLvdCB.UseVisualStyleBackColor = true;
-            this.renderLvdCB.CheckedChanged += new System.EventHandler(this.renderLvdCB_CheckedChanged);
-            // 
-            // wireframeCB
-            // 
-            this.wireframeCB.AutoSize = true;
-            this.wireframeCB.Location = new System.Drawing.Point(41, 110);
-            this.wireframeCB.Name = "wireframeCB";
-            this.wireframeCB.Size = new System.Drawing.Size(104, 17);
-            this.wireframeCB.TabIndex = 22;
-            this.wireframeCB.Text = "Show Wireframe";
-            this.wireframeCB.UseVisualStyleBackColor = true;
-            this.wireframeCB.CheckedChanged += new System.EventHandler(this.wireframeCB_CheckedChanged);
-            // 
-            // renderSpawnsCB
-            // 
-            this.renderSpawnsCB.AutoSize = true;
-            this.renderSpawnsCB.Location = new System.Drawing.Point(41, 342);
-            this.renderSpawnsCB.Name = "renderSpawnsCB";
-            this.renderSpawnsCB.Size = new System.Drawing.Size(102, 17);
-            this.renderSpawnsCB.TabIndex = 7;
-            this.renderSpawnsCB.Text = "Render Spawns";
-            this.renderSpawnsCB.UseVisualStyleBackColor = true;
-            this.renderSpawnsCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // modelSelectCB
-            // 
-            this.modelSelectCB.AutoSize = true;
-            this.modelSelectCB.Location = new System.Drawing.Point(41, 86);
-            this.modelSelectCB.Name = "modelSelectCB";
-            this.modelSelectCB.Size = new System.Drawing.Size(132, 17);
-            this.modelSelectCB.TabIndex = 21;
-            this.modelSelectCB.Text = "Show Model Selection";
-            this.modelSelectCB.UseVisualStyleBackColor = true;
-            this.modelSelectCB.CheckedChanged += new System.EventHandler(this.modelSelectCB_CheckedChanged);
-            // 
-            // renderFloorCB
-            // 
-            this.renderFloorCB.AutoSize = true;
-            this.renderFloorCB.Location = new System.Drawing.Point(9, 223);
-            this.renderFloorCB.Name = "renderFloorCB";
-            this.renderFloorCB.Size = new System.Drawing.Size(87, 17);
-            this.renderFloorCB.TabIndex = 4;
-            this.renderFloorCB.Text = "Render Floor";
-            this.renderFloorCB.UseVisualStyleBackColor = true;
-            this.renderFloorCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // boundingCB
-            // 
-            this.boundingCB.AutoSize = true;
-            this.boundingCB.Location = new System.Drawing.Point(9, 177);
-            this.boundingCB.Name = "boundingCB";
-            this.boundingCB.Size = new System.Drawing.Size(141, 17);
-            this.boundingCB.TabIndex = 20;
-            this.boundingCB.Text = "Render Bounding Boxes";
-            this.boundingCB.UseVisualStyleBackColor = true;
-            this.boundingCB.CheckedChanged += new System.EventHandler(this.boundingCB_CheckedChanged);
-            // 
-            // showSwagDataCB
-            // 
-            this.showSwagDataCB.AutoSize = true;
-            this.showSwagDataCB.Location = new System.Drawing.Point(9, 154);
-            this.showSwagDataCB.Name = "showSwagDataCB";
-            this.showSwagDataCB.Size = new System.Drawing.Size(104, 17);
-            this.showSwagDataCB.TabIndex = 18;
-            this.showSwagDataCB.Text = "Animate Swing Z";
-            this.showSwagDataCB.UseVisualStyleBackColor = true;
-            this.showSwagDataCB.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
-            // 
-            // renderBackgroundCB
-            // 
-            this.renderBackgroundCB.AutoSize = true;
-            this.renderBackgroundCB.Location = new System.Drawing.Point(8, 246);
-            this.renderBackgroundCB.Name = "renderBackgroundCB";
-            this.renderBackgroundCB.Size = new System.Drawing.Size(122, 17);
-            this.renderBackgroundCB.TabIndex = 19;
-            this.renderBackgroundCB.Text = "Render Background";
-            this.renderBackgroundCB.UseVisualStyleBackColor = true;
-            this.renderBackgroundCB.CheckedChanged += new System.EventHandler(this.backgroundCB_CheckedChanged);
-            // 
-            // renderRespawnsCB
-            // 
-            this.renderRespawnsCB.AutoSize = true;
-            this.renderRespawnsCB.Location = new System.Drawing.Point(41, 365);
-            this.renderRespawnsCB.Name = "renderRespawnsCB";
-            this.renderRespawnsCB.Size = new System.Drawing.Size(114, 17);
-            this.renderRespawnsCB.TabIndex = 8;
-            this.renderRespawnsCB.Text = "Render Respawns";
-            this.renderRespawnsCB.UseVisualStyleBackColor = true;
-            this.renderRespawnsCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // renderPassthroughCB
-            // 
-            this.renderPassthroughCB.AutoSize = true;
-            this.renderPassthroughCB.Location = new System.Drawing.Point(70, 319);
-            this.renderPassthroughCB.Name = "renderPassthroughCB";
-            this.renderPassthroughCB.Size = new System.Drawing.Size(158, 17);
-            this.renderPassthroughCB.TabIndex = 11;
-            this.renderPassthroughCB.Text = "Render Passthrough Angles";
-            this.renderPassthroughCB.UseVisualStyleBackColor = true;
-            this.renderPassthroughCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // renderItemSpawnersCB
-            // 
-            this.renderItemSpawnersCB.AutoSize = true;
-            this.renderItemSpawnersCB.Location = new System.Drawing.Point(41, 388);
-            this.renderItemSpawnersCB.Name = "renderItemSpawnersCB";
-            this.renderItemSpawnersCB.Size = new System.Drawing.Size(134, 17);
-            this.renderItemSpawnersCB.TabIndex = 9;
-            this.renderItemSpawnersCB.Text = "Render Item Spawners";
-            this.renderItemSpawnersCB.UseVisualStyleBackColor = true;
-            this.renderItemSpawnersCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // renderBonesCB
-            // 
-            this.renderBonesCB.AutoSize = true;
-            this.renderBonesCB.Location = new System.Drawing.Point(9, 133);
-            this.renderBonesCB.Name = "renderBonesCB";
-            this.renderBonesCB.Size = new System.Drawing.Size(94, 17);
-            this.renderBonesCB.TabIndex = 1;
-            this.renderBonesCB.Text = "Render Bones";
-            this.renderBonesCB.UseVisualStyleBackColor = true;
-            this.renderBonesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // renderCameraPathCB
-            // 
-            this.renderCameraPathCB.AutoSize = true;
-            this.renderCameraPathCB.Location = new System.Drawing.Point(9, 200);
-            this.renderCameraPathCB.Name = "renderCameraPathCB";
-            this.renderCameraPathCB.Size = new System.Drawing.Size(125, 17);
-            this.renderCameraPathCB.TabIndex = 2;
-            this.renderCameraPathCB.Text = "Render Camera Path";
-            this.renderCameraPathCB.UseVisualStyleBackColor = true;
-            this.renderCameraPathCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.groupBox6);
-            this.groupBox1.Controls.Add(this.groupBox5);
-            this.groupBox1.Location = new System.Drawing.Point(256, 6);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(294, 660);
-            this.groupBox1.TabIndex = 15;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Model Render Settings";
             // 
             // groupBox6
             // 
             this.groupBox6.Controls.Add(this.radioButton3);
             this.groupBox6.Controls.Add(this.radioButton2);
             this.groupBox6.Controls.Add(this.radioButton1);
-            this.groupBox6.Controls.Add(this.debug2CB);
             this.groupBox6.Controls.Add(this.debug1CB);
             this.groupBox6.Controls.Add(this.renderChannelR);
             this.groupBox6.Controls.Add(this.renderChannelA);
@@ -1173,9 +830,9 @@
             this.groupBox6.Controls.Add(this.renderChannelB);
             this.groupBox6.Controls.Add(this.renderModeComboBox);
             this.groupBox6.Controls.Add(this.debugModeLabel);
-            this.groupBox6.Location = new System.Drawing.Point(6, 392);
+            this.groupBox6.Location = new System.Drawing.Point(266, 6);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(282, 262);
+            this.groupBox6.Size = new System.Drawing.Size(284, 234);
             this.groupBox6.TabIndex = 36;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Debug Shading";
@@ -1190,7 +847,6 @@
             this.radioButton3.TabStop = true;
             this.radioButton3.Text = "UV3";
             this.radioButton3.UseVisualStyleBackColor = true;
-            this.radioButton3.Visible = false;
             this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
             // 
             // radioButton2
@@ -1203,7 +859,6 @@
             this.radioButton2.TabStop = true;
             this.radioButton2.Text = "UV2";
             this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.Visible = false;
             this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
             // 
             // radioButton1
@@ -1216,31 +871,17 @@
             this.radioButton1.TabStop = true;
             this.radioButton1.Text = "UV1";
             this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.Visible = false;
             this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
-            // 
-            // debug2CB
-            // 
-            this.debug2CB.AutoSize = true;
-            this.debug2CB.Location = new System.Drawing.Point(155, 85);
-            this.debug2CB.Name = "debug2CB";
-            this.debug2CB.Size = new System.Drawing.Size(80, 17);
-            this.debug2CB.TabIndex = 35;
-            this.debug2CB.Text = "checkBox2";
-            this.debug2CB.UseVisualStyleBackColor = true;
-            this.debug2CB.Visible = false;
-            this.debug2CB.CheckedChanged += new System.EventHandler(this.debug2CB_CheckedChanged);
             // 
             // debug1CB
             // 
             this.debug1CB.AutoSize = true;
             this.debug1CB.Location = new System.Drawing.Point(10, 85);
             this.debug1CB.Name = "debug1CB";
-            this.debug1CB.Size = new System.Drawing.Size(80, 17);
+            this.debug1CB.Size = new System.Drawing.Size(61, 17);
             this.debug1CB.TabIndex = 34;
-            this.debug1CB.Text = "checkBox1";
+            this.debug1CB.Text = "option1";
             this.debug1CB.UseVisualStyleBackColor = true;
-            this.debug1CB.Visible = false;
             this.debug1CB.CheckedChanged += new System.EventHandler(this.debug1CB_CheckedChanged);
             // 
             // renderChannelR
@@ -1308,9 +949,9 @@
             "Bitangents",
             "Light Set",
             "Bone Weights"});
-            this.renderModeComboBox.Location = new System.Drawing.Point(86, 19);
+            this.renderModeComboBox.Location = new System.Drawing.Point(129, 19);
             this.renderModeComboBox.Name = "renderModeComboBox";
-            this.renderModeComboBox.Size = new System.Drawing.Size(164, 21);
+            this.renderModeComboBox.Size = new System.Drawing.Size(149, 21);
             this.renderModeComboBox.TabIndex = 16;
             this.renderModeComboBox.SelectionChangeCommitted += new System.EventHandler(this.renderMode_SelectionChangeCommitted);
             // 
@@ -1322,6 +963,288 @@
             this.debugModeLabel.Size = new System.Drawing.Size(69, 13);
             this.debugModeLabel.TabIndex = 28;
             this.debugModeLabel.Text = "Debug Mode";
+            // 
+            // groupBox10
+            // 
+            this.groupBox10.Controls.Add(this.renderGeneralShapesCB);
+            this.groupBox10.Controls.Add(this.renderCollisionsCB);
+            this.groupBox10.Controls.Add(this.renderLvdCB);
+            this.groupBox10.Controls.Add(this.renderSpawnsCB);
+            this.groupBox10.Controls.Add(this.renderRespawnsCB);
+            this.groupBox10.Controls.Add(this.renderPassthroughCB);
+            this.groupBox10.Controls.Add(this.renderItemSpawnersCB);
+            this.groupBox10.Location = new System.Drawing.Point(6, 246);
+            this.groupBox10.Name = "groupBox10";
+            this.groupBox10.Size = new System.Drawing.Size(254, 369);
+            this.groupBox10.TabIndex = 19;
+            this.groupBox10.TabStop = false;
+            this.groupBox10.Text = "LVD Display";
+            // 
+            // renderGeneralShapesCB
+            // 
+            this.renderGeneralShapesCB.AutoSize = true;
+            this.renderGeneralShapesCB.Location = new System.Drawing.Point(42, 162);
+            this.renderGeneralShapesCB.Name = "renderGeneralShapesCB";
+            this.renderGeneralShapesCB.Size = new System.Drawing.Size(193, 17);
+            this.renderGeneralShapesCB.TabIndex = 33;
+            this.renderGeneralShapesCB.Text = "Render General Shapes and Points";
+            this.renderGeneralShapesCB.UseVisualStyleBackColor = true;
+            // 
+            // renderCollisionsCB
+            // 
+            this.renderCollisionsCB.AutoSize = true;
+            this.renderCollisionsCB.Location = new System.Drawing.Point(42, 46);
+            this.renderCollisionsCB.Name = "renderCollisionsCB";
+            this.renderCollisionsCB.Size = new System.Drawing.Size(107, 17);
+            this.renderCollisionsCB.TabIndex = 28;
+            this.renderCollisionsCB.Text = "Render Collisions";
+            this.renderCollisionsCB.UseVisualStyleBackColor = true;
+            // 
+            // renderLvdCB
+            // 
+            this.renderLvdCB.AutoSize = true;
+            this.renderLvdCB.Location = new System.Drawing.Point(9, 19);
+            this.renderLvdCB.Name = "renderLvdCB";
+            this.renderLvdCB.Size = new System.Drawing.Size(85, 17);
+            this.renderLvdCB.TabIndex = 27;
+            this.renderLvdCB.Text = "Render LVD";
+            this.renderLvdCB.UseVisualStyleBackColor = true;
+            // 
+            // renderSpawnsCB
+            // 
+            this.renderSpawnsCB.AutoSize = true;
+            this.renderSpawnsCB.Location = new System.Drawing.Point(42, 92);
+            this.renderSpawnsCB.Name = "renderSpawnsCB";
+            this.renderSpawnsCB.Size = new System.Drawing.Size(102, 17);
+            this.renderSpawnsCB.TabIndex = 29;
+            this.renderSpawnsCB.Text = "Render Spawns";
+            this.renderSpawnsCB.UseVisualStyleBackColor = true;
+            // 
+            // renderRespawnsCB
+            // 
+            this.renderRespawnsCB.AutoSize = true;
+            this.renderRespawnsCB.Location = new System.Drawing.Point(42, 115);
+            this.renderRespawnsCB.Name = "renderRespawnsCB";
+            this.renderRespawnsCB.Size = new System.Drawing.Size(114, 17);
+            this.renderRespawnsCB.TabIndex = 30;
+            this.renderRespawnsCB.Text = "Render Respawns";
+            this.renderRespawnsCB.UseVisualStyleBackColor = true;
+            // 
+            // renderPassthroughCB
+            // 
+            this.renderPassthroughCB.AutoSize = true;
+            this.renderPassthroughCB.Location = new System.Drawing.Point(71, 69);
+            this.renderPassthroughCB.Name = "renderPassthroughCB";
+            this.renderPassthroughCB.Size = new System.Drawing.Size(158, 17);
+            this.renderPassthroughCB.TabIndex = 32;
+            this.renderPassthroughCB.Text = "Render Passthrough Angles";
+            this.renderPassthroughCB.UseVisualStyleBackColor = true;
+            // 
+            // renderItemSpawnersCB
+            // 
+            this.renderItemSpawnersCB.AutoSize = true;
+            this.renderItemSpawnersCB.Location = new System.Drawing.Point(42, 138);
+            this.renderItemSpawnersCB.Name = "renderItemSpawnersCB";
+            this.renderItemSpawnersCB.Size = new System.Drawing.Size(134, 17);
+            this.renderItemSpawnersCB.TabIndex = 31;
+            this.renderItemSpawnersCB.Text = "Render Item Spawners";
+            this.renderItemSpawnersCB.UseVisualStyleBackColor = true;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.zScaleTB);
+            this.groupBox4.Controls.Add(this.label76);
+            this.groupBox4.Controls.Add(this.depthTestCB);
+            this.groupBox4.Location = new System.Drawing.Point(266, 246);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(284, 369);
+            this.groupBox4.TabIndex = 18;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "zDepth (Experimental WIP)";
+            // 
+            // zScaleTB
+            // 
+            this.zScaleTB.Location = new System.Drawing.Point(129, 43);
+            this.zScaleTB.Name = "zScaleTB";
+            this.zScaleTB.Size = new System.Drawing.Size(149, 20);
+            this.zScaleTB.TabIndex = 2;
+            this.zScaleTB.TextChanged += new System.EventHandler(this.zScaleTB_TextChanged);
+            // 
+            // label76
+            // 
+            this.label76.AutoSize = true;
+            this.label76.Location = new System.Drawing.Point(11, 47);
+            this.label76.Name = "label76";
+            this.label76.Size = new System.Drawing.Size(66, 13);
+            this.label76.TabIndex = 1;
+            this.label76.Text = "Z Axis Scale";
+            // 
+            // depthTestCB
+            // 
+            this.depthTestCB.AutoSize = true;
+            this.depthTestCB.Location = new System.Drawing.Point(8, 19);
+            this.depthTestCB.Name = "depthTestCB";
+            this.depthTestCB.Size = new System.Drawing.Size(129, 17);
+            this.depthTestCB.TabIndex = 0;
+            this.depthTestCB.Text = "Enable Depth Testing";
+            this.depthTestCB.UseVisualStyleBackColor = true;
+            this.depthTestCB.CheckedChanged += new System.EventHandler(this.depthTestCB_CheckedChanged);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.swagYCB);
+            this.groupBox2.Controls.Add(this.drawUvCB);
+            this.groupBox2.Controls.Add(this.areaLightBoundingBoxCB);
+            this.groupBox2.Controls.Add(this.renderModelCB);
+            this.groupBox2.Controls.Add(this.wireframeCB);
+            this.groupBox2.Controls.Add(this.modelSelectCB);
+            this.groupBox2.Controls.Add(this.boundingCB);
+            this.groupBox2.Controls.Add(this.showSwagDataCB);
+            this.groupBox2.Controls.Add(this.renderBonesCB);
+            this.groupBox2.Controls.Add(this.renderCameraPathCB);
+            this.groupBox2.Location = new System.Drawing.Point(6, 6);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(254, 234);
+            this.groupBox2.TabIndex = 16;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Display Settings";
+            // 
+            // swagYCB
+            // 
+            this.swagYCB.AutoSize = true;
+            this.swagYCB.Location = new System.Drawing.Point(127, 114);
+            this.swagYCB.Name = "swagYCB";
+            this.swagYCB.Size = new System.Drawing.Size(106, 17);
+            this.swagYCB.TabIndex = 29;
+            this.swagYCB.Text = "Animate Swing Y";
+            this.swagYCB.UseVisualStyleBackColor = true;
+            this.swagYCB.CheckedChanged += new System.EventHandler(this.swagYCB_CheckedChanged);
+            // 
+            // drawUvCB
+            // 
+            this.drawUvCB.AutoSize = true;
+            this.drawUvCB.Location = new System.Drawing.Point(9, 206);
+            this.drawUvCB.Name = "drawUvCB";
+            this.drawUvCB.Size = new System.Drawing.Size(143, 17);
+            this.drawUvCB.TabIndex = 28;
+            this.drawUvCB.Text = "Draw UVs (Experimental)";
+            this.drawUvCB.UseVisualStyleBackColor = true;
+            this.drawUvCB.CheckedChanged += new System.EventHandler(this.drawUvCB_CheckedChanged);
+            // 
+            // areaLightBoundingBoxCB
+            // 
+            this.areaLightBoundingBoxCB.AutoSize = true;
+            this.areaLightBoundingBoxCB.Checked = true;
+            this.areaLightBoundingBoxCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.areaLightBoundingBoxCB.Location = new System.Drawing.Point(9, 183);
+            this.areaLightBoundingBoxCB.Name = "areaLightBoundingBoxCB";
+            this.areaLightBoundingBoxCB.Size = new System.Drawing.Size(192, 17);
+            this.areaLightBoundingBoxCB.TabIndex = 27;
+            this.areaLightBoundingBoxCB.Text = "Render Area Light Bounding Boxes";
+            this.areaLightBoundingBoxCB.UseVisualStyleBackColor = true;
+            this.areaLightBoundingBoxCB.CheckedChanged += new System.EventHandler(this.areaLightBoundingBoxCB_CheckedChanged);
+            // 
+            // renderModelCB
+            // 
+            this.renderModelCB.AutoSize = true;
+            this.renderModelCB.Location = new System.Drawing.Point(9, 24);
+            this.renderModelCB.Name = "renderModelCB";
+            this.renderModelCB.Size = new System.Drawing.Size(93, 17);
+            this.renderModelCB.TabIndex = 0;
+            this.renderModelCB.Text = "Render Model";
+            this.renderModelCB.UseVisualStyleBackColor = true;
+            this.renderModelCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            // 
+            // wireframeCB
+            // 
+            this.wireframeCB.AutoSize = true;
+            this.wireframeCB.Location = new System.Drawing.Point(42, 70);
+            this.wireframeCB.Name = "wireframeCB";
+            this.wireframeCB.Size = new System.Drawing.Size(104, 17);
+            this.wireframeCB.TabIndex = 22;
+            this.wireframeCB.Text = "Show Wireframe";
+            this.wireframeCB.UseVisualStyleBackColor = true;
+            this.wireframeCB.CheckedChanged += new System.EventHandler(this.wireframeCB_CheckedChanged);
+            // 
+            // modelSelectCB
+            // 
+            this.modelSelectCB.AutoSize = true;
+            this.modelSelectCB.Location = new System.Drawing.Point(42, 46);
+            this.modelSelectCB.Name = "modelSelectCB";
+            this.modelSelectCB.Size = new System.Drawing.Size(132, 17);
+            this.modelSelectCB.TabIndex = 21;
+            this.modelSelectCB.Text = "Show Model Selection";
+            this.modelSelectCB.UseVisualStyleBackColor = true;
+            this.modelSelectCB.CheckedChanged += new System.EventHandler(this.modelSelectCB_CheckedChanged);
+            // 
+            // boundingCB
+            // 
+            this.boundingCB.AutoSize = true;
+            this.boundingCB.Location = new System.Drawing.Point(9, 137);
+            this.boundingCB.Name = "boundingCB";
+            this.boundingCB.Size = new System.Drawing.Size(141, 17);
+            this.boundingCB.TabIndex = 20;
+            this.boundingCB.Text = "Render Bounding Boxes";
+            this.boundingCB.UseVisualStyleBackColor = true;
+            this.boundingCB.CheckedChanged += new System.EventHandler(this.boundingCB_CheckedChanged);
+            // 
+            // showSwagDataCB
+            // 
+            this.showSwagDataCB.AutoSize = true;
+            this.showSwagDataCB.Location = new System.Drawing.Point(9, 114);
+            this.showSwagDataCB.Name = "showSwagDataCB";
+            this.showSwagDataCB.Size = new System.Drawing.Size(106, 17);
+            this.showSwagDataCB.TabIndex = 18;
+            this.showSwagDataCB.Text = "Animate Swing Z";
+            this.showSwagDataCB.UseVisualStyleBackColor = true;
+            this.showSwagDataCB.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
+            // 
+            // renderBonesCB
+            // 
+            this.renderBonesCB.AutoSize = true;
+            this.renderBonesCB.Location = new System.Drawing.Point(9, 93);
+            this.renderBonesCB.Name = "renderBonesCB";
+            this.renderBonesCB.Size = new System.Drawing.Size(94, 17);
+            this.renderBonesCB.TabIndex = 1;
+            this.renderBonesCB.Text = "Render Bones";
+            this.renderBonesCB.UseVisualStyleBackColor = true;
+            this.renderBonesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            // 
+            // renderCameraPathCB
+            // 
+            this.renderCameraPathCB.AutoSize = true;
+            this.renderCameraPathCB.Location = new System.Drawing.Point(9, 160);
+            this.renderCameraPathCB.Name = "renderCameraPathCB";
+            this.renderCameraPathCB.Size = new System.Drawing.Size(125, 17);
+            this.renderCameraPathCB.TabIndex = 2;
+            this.renderCameraPathCB.Text = "Render Camera Path";
+            this.renderCameraPathCB.UseVisualStyleBackColor = true;
+            this.renderCameraPathCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage6);
+            this.tabControl1.Controls.Add(this.tabPage5);
+            this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Location = new System.Drawing.Point(12, 12);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(564, 647);
+            this.tabControl1.TabIndex = 17;
+            // 
+            // tabPage6
+            // 
+            this.tabPage6.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage6.Controls.Add(this.groupBox5);
+            this.tabPage6.Location = new System.Drawing.Point(4, 22);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage6.Size = new System.Drawing.Size(556, 621);
+            this.tabPage6.TabIndex = 5;
+            this.tabPage6.Text = "Material Lighting";
             // 
             // groupBox5
             // 
@@ -1337,10 +1260,10 @@
             this.groupBox5.Controls.Add(this.specularCB);
             this.groupBox5.Controls.Add(this.reflectionCB);
             this.groupBox5.Controls.Add(this.useNormCB);
-            this.groupBox5.Location = new System.Drawing.Point(6, 19);
+            this.groupBox5.Location = new System.Drawing.Point(6, 6);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(282, 367);
-            this.groupBox5.TabIndex = 35;
+            this.groupBox5.Size = new System.Drawing.Size(544, 609);
+            this.groupBox5.TabIndex = 36;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Material Lighting";
             // 
@@ -1523,7 +1446,7 @@
             this.renderAlphaCB.TabIndex = 17;
             this.renderAlphaCB.Text = "Render Alpha";
             this.renderAlphaCB.UseVisualStyleBackColor = true;
-            this.renderAlphaCB.CheckedChanged += new System.EventHandler(this.cb_normals_CheckedChanged);
+            this.renderAlphaCB.CheckedChanged += new System.EventHandler(this.renderAlphaCB_CheckedChanged);
             // 
             // materialLightingCB
             // 
@@ -1534,7 +1457,7 @@
             this.materialLightingCB.TabIndex = 19;
             this.materialLightingCB.Text = "Material Lighting";
             this.materialLightingCB.UseVisualStyleBackColor = true;
-            this.materialLightingCB.CheckedChanged += new System.EventHandler(this.lightCheckBox_CheckedChanged);
+            this.materialLightingCB.CheckedChanged += new System.EventHandler(this.materialLightingCB_CheckedChanged);
             // 
             // cameraLightCB
             // 
@@ -1606,17 +1529,325 @@
             this.useNormCB.UseVisualStyleBackColor = true;
             this.useNormCB.CheckedChanged += new System.EventHandler(this.useNormCB_CheckedChanged);
             // 
-            // tabControl1
+            // tabPage5
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage4);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(12, 12);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(564, 698);
-            this.tabControl1.TabIndex = 17;
+            this.tabPage5.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage5.Controls.Add(this.groupBox9);
+            this.tabPage5.Controls.Add(this.groupBox8);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(556, 621);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Background/Floor";
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.backgroundPictureBox);
+            this.groupBox9.Controls.Add(this.backgroundStyleLabel);
+            this.groupBox9.Controls.Add(this.backgroundComboBox);
+            this.groupBox9.Controls.Add(this.renderBackgroundCB);
+            this.groupBox9.Controls.Add(this.tableLayoutPanel3);
+            this.groupBox9.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox9.Location = new System.Drawing.Point(3, 3);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(550, 180);
+            this.groupBox9.TabIndex = 39;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "Background Settings";
+            // 
+            // backgroundPictureBox
+            // 
+            this.backgroundPictureBox.InitialImage = null;
+            this.backgroundPictureBox.Location = new System.Drawing.Point(6, 40);
+            this.backgroundPictureBox.Name = "backgroundPictureBox";
+            this.backgroundPictureBox.Size = new System.Drawing.Size(82, 82);
+            this.backgroundPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.backgroundPictureBox.TabIndex = 46;
+            this.backgroundPictureBox.TabStop = false;
+            this.toolTip1.SetToolTip(this.backgroundPictureBox, "Click to select an image.");
+            this.backgroundPictureBox.Click += new System.EventHandler(this.backgroundPictureBox_Click);
+            // 
+            // backgroundStyleLabel
+            // 
+            this.backgroundStyleLabel.AutoSize = true;
+            this.backgroundStyleLabel.Location = new System.Drawing.Point(99, 43);
+            this.backgroundStyleLabel.Name = "backgroundStyleLabel";
+            this.backgroundStyleLabel.Size = new System.Drawing.Size(91, 13);
+            this.backgroundStyleLabel.TabIndex = 35;
+            this.backgroundStyleLabel.Text = "Background Style";
+            // 
+            // backgroundComboBox
+            // 
+            this.backgroundComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.backgroundComboBox.FormattingEnabled = true;
+            this.backgroundComboBox.Items.AddRange(new object[] {
+            "Gradient",
+            "Textured",
+            "Solid"});
+            this.backgroundComboBox.Location = new System.Drawing.Point(196, 40);
+            this.backgroundComboBox.Name = "backgroundComboBox";
+            this.backgroundComboBox.Size = new System.Drawing.Size(125, 21);
+            this.backgroundComboBox.TabIndex = 34;
+            this.backgroundComboBox.SelectedIndexChanged += new System.EventHandler(this.backgroundComboBox_SelectedIndexChanged);
+            // 
+            // renderBackgroundCB
+            // 
+            this.renderBackgroundCB.AutoSize = true;
+            this.renderBackgroundCB.Location = new System.Drawing.Point(6, 19);
+            this.renderBackgroundCB.Name = "renderBackgroundCB";
+            this.renderBackgroundCB.Size = new System.Drawing.Size(122, 17);
+            this.renderBackgroundCB.TabIndex = 33;
+            this.renderBackgroundCB.Text = "Render Background";
+            this.renderBackgroundCB.UseVisualStyleBackColor = true;
+            this.renderBackgroundCB.CheckedChanged += new System.EventHandler(this.backgroundCB_CheckedChanged);
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.60606F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 89.39394F));
+            this.tableLayoutPanel3.Controls.Add(this.BackgroundGradient1, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.backgroundBottomLabel, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.backgroundTopLabel, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.BackgroundGradient2, 0, 1);
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(102, 67);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(200, 55);
+            this.tableLayoutPanel3.TabIndex = 0;
+            // 
+            // BackgroundGradient1
+            // 
+            this.BackgroundGradient1.Location = new System.Drawing.Point(3, 3);
+            this.BackgroundGradient1.Name = "BackgroundGradient1";
+            this.BackgroundGradient1.Size = new System.Drawing.Size(15, 16);
+            this.BackgroundGradient1.TabIndex = 35;
+            this.BackgroundGradient1.TabStop = false;
+            this.BackgroundGradient1.Click += new System.EventHandler(this.BackgroundGradient1_Click);
+            // 
+            // backgroundBottomLabel
+            // 
+            this.backgroundBottomLabel.AutoSize = true;
+            this.backgroundBottomLabel.Location = new System.Drawing.Point(24, 27);
+            this.backgroundBottomLabel.Name = "backgroundBottomLabel";
+            this.backgroundBottomLabel.Size = new System.Drawing.Size(150, 13);
+            this.backgroundBottomLabel.TabIndex = 37;
+            this.backgroundBottomLabel.Text = "Background Gradient (Bottom)";
+            // 
+            // backgroundTopLabel
+            // 
+            this.backgroundTopLabel.AutoSize = true;
+            this.backgroundTopLabel.Location = new System.Drawing.Point(24, 0);
+            this.backgroundTopLabel.Name = "backgroundTopLabel";
+            this.backgroundTopLabel.Size = new System.Drawing.Size(136, 13);
+            this.backgroundTopLabel.TabIndex = 36;
+            this.backgroundTopLabel.Text = "Background Gradient (Top)";
+            // 
+            // BackgroundGradient2
+            // 
+            this.BackgroundGradient2.Location = new System.Drawing.Point(3, 30);
+            this.BackgroundGradient2.Name = "BackgroundGradient2";
+            this.BackgroundGradient2.Size = new System.Drawing.Size(15, 16);
+            this.BackgroundGradient2.TabIndex = 34;
+            this.BackgroundGradient2.TabStop = false;
+            this.BackgroundGradient2.Click += new System.EventHandler(this.BackgroundGradient2_Click);
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.floorColorPictureBox);
+            this.groupBox8.Controls.Add(this.label7);
+            this.groupBox8.Controls.Add(this.floorScaleTB);
+            this.groupBox8.Controls.Add(this.floorStyleLabel);
+            this.groupBox8.Controls.Add(this.floorComboBox);
+            this.groupBox8.Controls.Add(this.renderFloorCB);
+            this.groupBox8.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.groupBox8.Location = new System.Drawing.Point(3, 189);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(550, 429);
+            this.groupBox8.TabIndex = 38;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "Floor Settings";
+            this.groupBox8.Enter += new System.EventHandler(this.groupBox8_Enter);
+            // 
+            // floorColorPictureBox
+            // 
+            this.floorColorPictureBox.InitialImage = null;
+            this.floorColorPictureBox.Location = new System.Drawing.Point(3, 42);
+            this.floorColorPictureBox.Name = "floorColorPictureBox";
+            this.floorColorPictureBox.Size = new System.Drawing.Size(82, 82);
+            this.floorColorPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.floorColorPictureBox.TabIndex = 45;
+            this.floorColorPictureBox.TabStop = false;
+            this.floorColorPictureBox.Click += new System.EventHandler(this.floorPictureBox_Click);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(99, 73);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(34, 13);
+            this.label7.TabIndex = 35;
+            this.label7.Text = "Scale";
+            // 
+            // floorScaleTB
+            // 
+            this.floorScaleTB.Location = new System.Drawing.Point(196, 69);
+            this.floorScaleTB.Name = "floorScaleTB";
+            this.floorScaleTB.Size = new System.Drawing.Size(125, 20);
+            this.floorScaleTB.TabIndex = 33;
+            this.floorScaleTB.TextChanged += new System.EventHandler(this.floorScaleTB_TextChanged);
+            // 
+            // floorStyleLabel
+            // 
+            this.floorStyleLabel.AutoSize = true;
+            this.floorStyleLabel.Location = new System.Drawing.Point(99, 45);
+            this.floorStyleLabel.Name = "floorStyleLabel";
+            this.floorStyleLabel.Size = new System.Drawing.Size(56, 13);
+            this.floorStyleLabel.TabIndex = 41;
+            this.floorStyleLabel.Text = "Floor Style";
+            // 
+            // floorComboBox
+            // 
+            this.floorComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.floorComboBox.FormattingEnabled = true;
+            this.floorComboBox.Items.AddRange(new object[] {
+            "Wireframe",
+            "Textured",
+            "Solid"});
+            this.floorComboBox.Location = new System.Drawing.Point(196, 42);
+            this.floorComboBox.Name = "floorComboBox";
+            this.floorComboBox.Size = new System.Drawing.Size(125, 21);
+            this.floorComboBox.TabIndex = 40;
+            this.floorComboBox.SelectedIndexChanged += new System.EventHandler(this.floorComboBox_SelectedIndexChanged);
+            // 
+            // renderFloorCB
+            // 
+            this.renderFloorCB.AutoSize = true;
+            this.renderFloorCB.Location = new System.Drawing.Point(6, 19);
+            this.renderFloorCB.Name = "renderFloorCB";
+            this.renderFloorCB.Size = new System.Drawing.Size(87, 17);
+            this.renderFloorCB.TabIndex = 32;
+            this.renderFloorCB.Text = "Render Floor";
+            this.renderFloorCB.UseVisualStyleBackColor = true;
+            this.renderFloorCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            // 
+            // tabPage4
+            // 
+            this.tabPage4.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage4.Controls.Add(this.bloomGroupBox);
+            this.tabPage4.Controls.Add(this.postProcessingCB);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(556, 621);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Post Processing";
+            // 
+            // bloomGroupBox
+            // 
+            this.bloomGroupBox.Controls.Add(this.tableLayoutPanel2);
+            this.bloomGroupBox.Controls.Add(this.bloomCB);
+            this.bloomGroupBox.Location = new System.Drawing.Point(23, 30);
+            this.bloomGroupBox.Name = "bloomGroupBox";
+            this.bloomGroupBox.Size = new System.Drawing.Size(256, 140);
+            this.bloomGroupBox.TabIndex = 2;
+            this.bloomGroupBox.TabStop = false;
+            this.bloomGroupBox.Text = "Bloom";
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.bloomIntensityTB, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.bloomThresholdTB, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.bloomRadiusTB, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.label4, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.label5, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.label8, 0, 0);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 42);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 3;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(244, 85);
+            this.tableLayoutPanel2.TabIndex = 32;
+            // 
+            // bloomIntensityTB
+            // 
+            this.bloomIntensityTB.Location = new System.Drawing.Point(125, 3);
+            this.bloomIntensityTB.Name = "bloomIntensityTB";
+            this.bloomIntensityTB.Size = new System.Drawing.Size(100, 20);
+            this.bloomIntensityTB.TabIndex = 30;
+            this.bloomIntensityTB.TextChanged += new System.EventHandler(this.bloomIntensityTB_TextChanged);
+            // 
+            // bloomThresholdTB
+            // 
+            this.bloomThresholdTB.Location = new System.Drawing.Point(125, 29);
+            this.bloomThresholdTB.Name = "bloomThresholdTB";
+            this.bloomThresholdTB.Size = new System.Drawing.Size(100, 20);
+            this.bloomThresholdTB.TabIndex = 31;
+            this.bloomThresholdTB.TextChanged += new System.EventHandler(this.bloomThresholdTB_TextChanged);
+            // 
+            // bloomRadiusTB
+            // 
+            this.bloomRadiusTB.Location = new System.Drawing.Point(125, 55);
+            this.bloomRadiusTB.Name = "bloomRadiusTB";
+            this.bloomRadiusTB.Size = new System.Drawing.Size(100, 20);
+            this.bloomRadiusTB.TabIndex = 32;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(3, 26);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(86, 13);
+            this.label4.TabIndex = 35;
+            this.label4.Text = "Bloom Threshold";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 52);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(72, 13);
+            this.label5.TabIndex = 36;
+            this.label5.Text = "Bloom Radius";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(3, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(78, 13);
+            this.label8.TabIndex = 34;
+            this.label8.Text = "Bloom Intensity";
+            // 
+            // bloomCB
+            // 
+            this.bloomCB.AutoSize = true;
+            this.bloomCB.Location = new System.Drawing.Point(6, 19);
+            this.bloomCB.Name = "bloomCB";
+            this.bloomCB.Size = new System.Drawing.Size(91, 17);
+            this.bloomCB.TabIndex = 1;
+            this.bloomCB.Text = "Enable Bloom";
+            this.bloomCB.UseVisualStyleBackColor = true;
+            this.bloomCB.CheckedChanged += new System.EventHandler(this.bloomCB_CheckedChanged);
+            // 
+            // postProcessingCB
+            // 
+            this.postProcessingCB.AutoSize = true;
+            this.postProcessingCB.Location = new System.Drawing.Point(7, 7);
+            this.postProcessingCB.Name = "postProcessingCB";
+            this.postProcessingCB.Size = new System.Drawing.Size(138, 17);
+            this.postProcessingCB.TabIndex = 0;
+            this.postProcessingCB.Text = "Enable Post Processing";
+            this.postProcessingCB.UseVisualStyleBackColor = true;
+            this.postProcessingCB.CheckedChanged += new System.EventHandler(this.postProcessingCB_CheckedChanged);
             // 
             // tabPage3
             // 
@@ -1628,7 +1859,7 @@
             this.tabPage3.Controls.Add(this.groupBox7);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(556, 672);
+            this.tabPage3.Size = new System.Drawing.Size(556, 621);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Discord Rich Presence";
             // 
@@ -1743,126 +1974,11 @@
             this.defaultRadioButton.UseVisualStyleBackColor = true;
             this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
-            // tabPage4
-            // 
-            this.tabPage4.Controls.Add(this.bloomGroupBox);
-            this.tabPage4.Controls.Add(this.postProcessingCB);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(556, 672);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Post Processing";
-            this.tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // postProcessingCB
-            // 
-            this.postProcessingCB.AutoSize = true;
-            this.postProcessingCB.Location = new System.Drawing.Point(7, 7);
-            this.postProcessingCB.Name = "postProcessingCB";
-            this.postProcessingCB.Size = new System.Drawing.Size(138, 17);
-            this.postProcessingCB.TabIndex = 0;
-            this.postProcessingCB.Text = "Enable Post Processing";
-            this.postProcessingCB.UseVisualStyleBackColor = true;
-            this.postProcessingCB.CheckedChanged += new System.EventHandler(this.postProcessingCB_CheckedChanged);
-            // 
-            // bloomCB
-            // 
-            this.bloomCB.AutoSize = true;
-            this.bloomCB.Location = new System.Drawing.Point(6, 19);
-            this.bloomCB.Name = "bloomCB";
-            this.bloomCB.Size = new System.Drawing.Size(91, 17);
-            this.bloomCB.TabIndex = 1;
-            this.bloomCB.Text = "Enable Bloom";
-            this.bloomCB.UseVisualStyleBackColor = true;
-            this.bloomCB.CheckedChanged += new System.EventHandler(this.bloomCB_CheckedChanged);
-            // 
-            // bloomGroupBox
-            // 
-            this.bloomGroupBox.Controls.Add(this.tableLayoutPanel2);
-            this.bloomGroupBox.Controls.Add(this.bloomCB);
-            this.bloomGroupBox.Location = new System.Drawing.Point(23, 30);
-            this.bloomGroupBox.Name = "bloomGroupBox";
-            this.bloomGroupBox.Size = new System.Drawing.Size(256, 140);
-            this.bloomGroupBox.TabIndex = 2;
-            this.bloomGroupBox.TabStop = false;
-            this.bloomGroupBox.Text = "Bloom";
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Controls.Add(this.bloomIntensityTB, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.bloomThresholdTB, 1, 1);
-            this.tableLayoutPanel2.Controls.Add(this.bloomRadiusTB, 1, 2);
-            this.tableLayoutPanel2.Controls.Add(this.label4, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.label5, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.label8, 0, 0);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 42);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 3;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(244, 85);
-            this.tableLayoutPanel2.TabIndex = 32;
-            // 
-            // bloomIntensityTB
-            // 
-            this.bloomIntensityTB.Location = new System.Drawing.Point(135, 3);
-            this.bloomIntensityTB.Name = "bloomIntensityTB";
-            this.bloomIntensityTB.Size = new System.Drawing.Size(100, 20);
-            this.bloomIntensityTB.TabIndex = 30;
-            this.bloomIntensityTB.TextChanged += new System.EventHandler(this.bloomIntensityTB_TextChanged);
-            // 
-            // bloomThresholdTB
-            // 
-            this.bloomThresholdTB.Location = new System.Drawing.Point(135, 29);
-            this.bloomThresholdTB.Name = "bloomThresholdTB";
-            this.bloomThresholdTB.Size = new System.Drawing.Size(100, 20);
-            this.bloomThresholdTB.TabIndex = 31;
-            this.bloomThresholdTB.TextChanged += new System.EventHandler(this.bloomThresholdTB_TextChanged);
-            // 
-            // bloomRadiusTB
-            // 
-            this.bloomRadiusTB.Location = new System.Drawing.Point(135, 55);
-            this.bloomRadiusTB.Name = "bloomRadiusTB";
-            this.bloomRadiusTB.Size = new System.Drawing.Size(100, 20);
-            this.bloomRadiusTB.TabIndex = 32;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 26);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(86, 13);
-            this.label4.TabIndex = 35;
-            this.label4.Text = "Bloom Threshold";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 52);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(83, 13);
-            this.label5.TabIndex = 36;
-            this.label5.Text = "Bloom Radius";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(3, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(78, 13);
-            this.label8.TabIndex = 34;
-            this.label8.Text = "Bloom Intensity";
-            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 718);
+            this.ClientSize = new System.Drawing.Size(584, 664);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = global::Smash_Forge.Resources.Resources.forge2;
@@ -1887,32 +2003,41 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).EndInit();
             this.tabPage1.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient1)).EndInit();
-            this.groupBox1.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
+            this.groupBox10.ResumeLayout(false);
+            this.groupBox10.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage6.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage3.PerformLayout();
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
+            this.tabPage5.ResumeLayout(false);
+            this.groupBox9.ResumeLayout(false);
+            this.groupBox9.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.backgroundPictureBox)).EndInit();
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BackgroundGradient2)).EndInit();
+            this.groupBox8.ResumeLayout(false);
+            this.groupBox8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.floorColorPictureBox)).EndInit();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
             this.bloomGroupBox.ResumeLayout(false);
             this.bloomGroupBox.PerformLayout();
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1974,57 +2099,19 @@
         private System.Windows.Forms.TextBox zScaleTB;
         private System.Windows.Forms.Label label76;
         private System.Windows.Forms.CheckBox depthTestCB;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Label RendererLabel;
-        private System.Windows.Forms.Label OpenGLVersionLabel;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.CheckBox renderGeneralShapesCB;
         private System.Windows.Forms.CheckBox renderModelCB;
-        private System.Windows.Forms.CheckBox renderCollisionsCB;
-        private System.Windows.Forms.CheckBox renderLvdCB;
         private System.Windows.Forms.CheckBox wireframeCB;
-        private System.Windows.Forms.CheckBox renderSpawnsCB;
         private System.Windows.Forms.CheckBox modelSelectCB;
-        private System.Windows.Forms.CheckBox renderFloorCB;
         private System.Windows.Forms.CheckBox boundingCB;
         private System.Windows.Forms.CheckBox showSwagDataCB;
-        private System.Windows.Forms.CheckBox renderBackgroundCB;
-        private System.Windows.Forms.CheckBox renderRespawnsCB;
-        private System.Windows.Forms.CheckBox renderPassthroughCB;
-        private System.Windows.Forms.CheckBox renderItemSpawnersCB;
         private System.Windows.Forms.CheckBox renderBonesCB;
         private System.Windows.Forms.CheckBox renderCameraPathCB;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox cameraLightCB;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TextBox modelscaleTB;
-        private System.Windows.Forms.TextBox difTB;
-        private System.Windows.Forms.TextBox spcTB;
-        private System.Windows.Forms.TextBox frsTB;
-        private System.Windows.Forms.TextBox ambTB;
-        private System.Windows.Forms.Label specIntensityLabel;
-        private System.Windows.Forms.Label fresIntensityLabel;
-        private System.Windows.Forms.Label ambIntensityLabel;
-        private System.Windows.Forms.Label refIntensityLabel;
-        private System.Windows.Forms.TextBox refTB;
-        private System.Windows.Forms.Label difIntensityLabel;
-        private System.Windows.Forms.Label modelScaleLabel;
         private System.Windows.Forms.Label debugModeLabel;
-        private System.Windows.Forms.CheckBox useNormCB;
-        private System.Windows.Forms.CheckBox reflectionCB;
-        private System.Windows.Forms.CheckBox specularCB;
-        private System.Windows.Forms.CheckBox fresnelCB;
-        private System.Windows.Forms.CheckBox diffuseCB;
-        private System.Windows.Forms.CheckBox materialLightingCB;
-        private System.Windows.Forms.CheckBox renderAlphaCB;
         private System.Windows.Forms.ComboBox renderModeComboBox;
-        private System.Windows.Forms.CheckBox vertColorCB;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.CheckBox areaLightBoundingBoxCB;
-        private System.Windows.Forms.CheckBox renderFogCB;
-        private System.Windows.Forms.CheckBox stageLightingCB;
         private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button renderChannelR;
         private System.Windows.Forms.Button renderChannelA;
         private System.Windows.Forms.Button renderChannelG;
@@ -2032,7 +2119,6 @@
         private System.Windows.Forms.RadioButton radioButton3;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.CheckBox debug2CB;
         private System.Windows.Forms.CheckBox debug1CB;
         private System.Windows.Forms.CheckBox hitboxAnglesCB;
         private System.Windows.Forms.Label label1;
@@ -2049,10 +2135,6 @@
         private System.Windows.Forms.TextBox modNameTextBox;
         private System.Windows.Forms.CheckBox timeElapsedCheckbox;
         private System.Windows.Forms.CheckBox showActiveWindowCheckbox;
-        private System.Windows.Forms.PictureBox BackgroundGradient1;
-        private System.Windows.Forms.PictureBox BackgroundGradient2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.CheckBox bloomCB;
         private System.Windows.Forms.CheckBox postProcessingCB;
@@ -2064,5 +2146,58 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.Label backgroundTopLabel;
+        private System.Windows.Forms.Label backgroundBottomLabel;
+        private System.Windows.Forms.PictureBox BackgroundGradient2;
+        private System.Windows.Forms.PictureBox BackgroundGradient1;
+        private System.Windows.Forms.CheckBox renderFloorCB;
+        private System.Windows.Forms.CheckBox renderBackgroundCB;
+        private System.Windows.Forms.GroupBox groupBox9;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.Label backgroundStyleLabel;
+        private System.Windows.Forms.ComboBox backgroundComboBox;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox floorScaleTB;
+        private System.Windows.Forms.Label floorStyleLabel;
+        private System.Windows.Forms.ComboBox floorComboBox;
+        private System.Windows.Forms.GroupBox groupBox10;
+        private System.Windows.Forms.CheckBox renderGeneralShapesCB;
+        private System.Windows.Forms.CheckBox renderCollisionsCB;
+        private System.Windows.Forms.CheckBox renderLvdCB;
+        private System.Windows.Forms.CheckBox renderSpawnsCB;
+        private System.Windows.Forms.CheckBox renderRespawnsCB;
+        private System.Windows.Forms.CheckBox renderPassthroughCB;
+        private System.Windows.Forms.CheckBox renderItemSpawnersCB;
+        private System.Windows.Forms.TabPage tabPage6;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.CheckBox stageLightingCB;
+        private System.Windows.Forms.CheckBox renderFogCB;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TextBox modelscaleTB;
+        private System.Windows.Forms.TextBox difTB;
+        private System.Windows.Forms.TextBox spcTB;
+        private System.Windows.Forms.TextBox frsTB;
+        private System.Windows.Forms.TextBox ambTB;
+        private System.Windows.Forms.Label specIntensityLabel;
+        private System.Windows.Forms.Label fresIntensityLabel;
+        private System.Windows.Forms.Label ambIntensityLabel;
+        private System.Windows.Forms.Label refIntensityLabel;
+        private System.Windows.Forms.TextBox refTB;
+        private System.Windows.Forms.Label difIntensityLabel;
+        private System.Windows.Forms.Label modelScaleLabel;
+        private System.Windows.Forms.CheckBox vertColorCB;
+        private System.Windows.Forms.CheckBox renderAlphaCB;
+        private System.Windows.Forms.CheckBox materialLightingCB;
+        private System.Windows.Forms.CheckBox cameraLightCB;
+        private System.Windows.Forms.CheckBox diffuseCB;
+        private System.Windows.Forms.CheckBox fresnelCB;
+        private System.Windows.Forms.CheckBox specularCB;
+        private System.Windows.Forms.CheckBox reflectionCB;
+        private System.Windows.Forms.CheckBox useNormCB;
+        private System.Windows.Forms.PictureBox floorColorPictureBox;
+        private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.PictureBox backgroundPictureBox;
     }
 }

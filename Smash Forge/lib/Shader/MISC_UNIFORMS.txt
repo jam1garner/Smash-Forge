@@ -1,0 +1,85 @@
+// Textures
+uniform sampler2D dif;
+uniform sampler2D dif2;
+uniform sampler2D dif3;
+uniform sampler2D ramp;
+uniform sampler2D dummyRamp;
+uniform sampler2D normalMap;
+uniform sampler2D ao;
+uniform samplerCube cube;
+uniform samplerCube stagecube;
+uniform sampler2D spheremap;
+uniform samplerCube cmap;
+uniform sampler2D UVTestPattern;
+
+// flags tests
+uniform int hasDif;
+uniform int hasDif2;
+uniform int hasDif3;
+uniform int hasStage;
+uniform int hasCube;
+uniform int hasNrm;
+uniform int hasRamp;
+uniform int hasAo;
+uniform int hasSphereMap;
+uniform int hasDummyRamp;
+
+// flags tests
+uniform int hasColorGainOffset;
+uniform int hasSpecularParams;
+uniform int useDiffuseBlend;
+uniform int hasDualNormal;
+uniform int hasSoftLight;
+uniform int hasCustomSoftLight;
+uniform int hasFinalColorGain;
+uniform int useDifRefMask;
+uniform int hasBayoHair;
+uniform int softLightBrighten;
+uniform int hasUniverseParam;
+
+// Da Flags
+uniform uint flags;
+
+// Check if src, dst, alpha function are non zero.
+uniform int isTransparent;
+
+// Render Settings
+uniform int renderDiffuse;
+uniform int renderSpecular;
+uniform int renderFresnel;
+uniform int renderReflection;
+uniform int renderType;
+uniform int renderLighting;
+uniform int renderVertColor;
+uniform int renderNormal;
+uniform int useNormalMap;
+// Wireframe Rendering
+uniform int colorOverride;
+
+// Channel Toggles
+uniform int renderAlpha;
+
+// Render Pass Intensities
+uniform float diffuseIntensity;
+uniform float ambientIntensity;
+uniform float specularIntensity;
+uniform float fresnelIntensity;
+uniform float reflectionIntensity;
+
+// Not found in game yet.
+uniform vec3 refLightColor;
+
+// Matrices
+uniform mat4 mvpMatrix;
+uniform mat4 modelViewMatrix;
+uniform mat4 sphereMapMatrix;
+uniform mat4 rotationMatrix;
+
+// Misc Mesh Attributes
+uniform float zBufferOffset;
+
+uniform vec3 cameraPosition;
+
+uniform float bloomThreshold;
+
+uniform sampler2D shadowMap;

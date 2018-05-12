@@ -24,7 +24,7 @@ namespace Smash_Forge
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            MainForm.Instance.lvdEditor.open((LVDEntry)e.Node.Tag, new TreeNode());
+            MainForm.Instance.lvdEditor.Open((LVDEntry)e.Node.Tag, new TreeNode());
         }
 
         private void DAT_stage_list_Load(object sender, EventArgs e)

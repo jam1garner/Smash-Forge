@@ -198,7 +198,7 @@ namespace Smash_Forge
 
             glControl1.SwapBuffers();
 
-            if (!Runtime.shaders["Texture"].hasCheckedCompilation())
+            if (!Runtime.shaders["Texture"].HasCheckedCompilation)
             {
                 Runtime.shaders["Texture"].DisplayCompilationWarning("Texture");
             }

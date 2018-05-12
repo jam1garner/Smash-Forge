@@ -17,6 +17,7 @@ namespace Smash_Forge.Rendering
     {
         public static int defaultTex = -1;
         public static int floorTexture;
+        public static int backgroundTexture;
 
         private static int screenQuadVao;
         private static int screenQuadVbo;
@@ -40,13 +41,22 @@ namespace Smash_Forge.Rendering
         public static int boneWeightGradient;
         public static int boneWeightGradient2;
 
+        public static int sphereNrmTex;
+        public static int sphereUvTex;
+        public static int sphereTanTex;
+        public static int sphereBitanTex;
+
+        public static bool hasSetup = false;
+
         public static void Setup()
         {
-            if (defaultTex == -1)
-                LoadTextures();
+            if (hasSetup)
+                return;
 
+            LoadTextures();
             SetupScreenQuadBuffers();
             GetOpenGLSystemInfo();
+            hasSetup = true;
         }
 
         private static void SetupScreenQuadBuffers()
@@ -81,12 +91,28 @@ namespace Smash_Forge.Rendering
             shadowMapDummyTex = NUT.loadImage(Properties.Resources._10100000);
             dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
 
+            // Sphere Mesh Attributes
+            sphereNrmTex = NUT.loadImage(Properties.Resources.nrm);
+            sphereUvTex = NUT.loadImage(Properties.Resources.uv);
+            sphereTanTex = NUT.loadImage(Properties.Resources.tan);
+            sphereBitanTex = NUT.loadImage(Properties.Resources.bitan);
+
             // Helpful textures. 
             uvTestPattern = NUT.loadImage(Properties.Resources.UVPattern);
             boneWeightGradient = NUT.loadImage(Properties.Resources.boneWeightGradient);
             boneWeightGradient2 = NUT.loadImage(Properties.Resources.boneWeightGradient2);
 
-            defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
+            defaultTex = NUT.loadImage(Resources.Resources.DefaultTexture);
+
+            try
+            {
+                floorTexture = NUT.loadImage(new Bitmap(Runtime.floorTexFilePath));
+                backgroundTexture = NUT.loadImage(new Bitmap(Runtime.backgroundTexFilePath));
+            }
+            catch (Exception)
+            {
+                // File paths are incorrect or never set. 
+            }
         }
 
         private static void GetOpenGLSystemInfo()
@@ -589,7 +615,6 @@ namespace Smash_Forge.Rendering
             //  sides
             GL.PushMatrix();
 
-            //GL.Scale(scale.X, scale.Y, scale.Z);
             double[] f = new double[] {
                 transform.M11, transform.M12, transform.M13, transform.M14,
                 transform.M21, transform.M22, transform.M23, transform.M24,
@@ -597,7 +622,6 @@ namespace Smash_Forge.Rendering
                 transform.M41, transform.M42, transform.M43, transform.M44,
             };
             GL.MultMatrix(f);
-            //Vector3 scale = transform.ExtractScale();
             GL.Translate(mid);
             GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
 
@@ -871,7 +895,7 @@ namespace Smash_Forge.Rendering
 
         public static void DrawFloor(Matrix4 mvpMatrix)
         {
-            float s = Runtime.floorSize;
+            float scale = Runtime.floorSize;
 
             GL.UseProgram(0);
             GL.MatrixMode(MatrixMode.Modelview);
@@ -884,7 +908,7 @@ namespace Smash_Forge.Rendering
             GL.Color3(Runtime.floorColor);
             GL.LineWidth(1f);
 
-            if (Runtime.floorStyle == Runtime.FloorStyle.Textured || Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+            if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
             {
                 GL.Enable(EnableCap.Texture2D);
                 GL.ActiveTexture(TextureUnit.Texture0);
@@ -900,13 +924,13 @@ namespace Smash_Forge.Rendering
                 GL.Begin(PrimitiveType.Quads);
 
                 GL.TexCoord2(0, 0);
-                GL.Vertex3(new Vector3(-s, 0f, -s));
+                GL.Vertex3(new Vector3(-scale, 0f, -scale));
                 GL.TexCoord2(0, 2);
-                GL.Vertex3(new Vector3(-s, 0f, s));
+                GL.Vertex3(new Vector3(-scale, 0f, scale));
                 GL.TexCoord2(2, 2);
-                GL.Vertex3(new Vector3(s, 0f, s));
+                GL.Vertex3(new Vector3(scale, 0f, scale));
                 GL.TexCoord2(2, 0);
-                GL.Vertex3(new Vector3(s, 0f, -s));
+                GL.Vertex3(new Vector3(scale, 0f, -scale));
 
                 GL.End();
                 GL.Disable(EnableCap.Texture2D);
@@ -914,23 +938,23 @@ namespace Smash_Forge.Rendering
             else if (Runtime.floorStyle == Runtime.FloorStyle.Solid)
             {
                 GL.Begin(PrimitiveType.Quads);
-                GL.Vertex3(-s, 0f, -s);
-                GL.Vertex3(-s, 0f, s);
-                GL.Vertex3(s, 0f, s);
-                GL.Vertex3(s, 0f, -s);
+                GL.Vertex3(-scale, 0f, -scale);
+                GL.Vertex3(-scale, 0f, scale);
+                GL.Vertex3(scale, 0f, scale);
+                GL.Vertex3(scale, 0f, -scale);
                 GL.End();
             }
             else
             {
                 GL.Begin(PrimitiveType.Lines);
-                for (var i = -s / 2; i <= s / 2; i++)
+                for (var i = -scale / 2; i <= scale / 2; i++)
                 {
                     if (i != 0)
                     {
-                        GL.Vertex3(-s, 0f, i * 2);
-                        GL.Vertex3(s, 0f, i * 2);
-                        GL.Vertex3(i * 2, 0f, -s);
-                        GL.Vertex3(i * 2, 0f, s);
+                        GL.Vertex3(-scale, 0f, i * 2);
+                        GL.Vertex3(scale, 0f, i * 2);
+                        GL.Vertex3(i * 2, 0f, -scale);
+                        GL.Vertex3(i * 2, 0f, scale);
                     }
                 }
                 GL.End();
@@ -942,10 +966,10 @@ namespace Smash_Forge.Rendering
                 GL.Begin(PrimitiveType.Lines);
                 GL.Color3(Color.White);
                 GL.Begin(PrimitiveType.Lines);
-                GL.Vertex3(-s, 0f, 0);
-                GL.Vertex3(s, 0f, 0);
-                GL.Vertex3(0, 0f, -s);
-                GL.Vertex3(0, 0f, s);
+                GL.Vertex3(-scale, 0f, 0);
+                GL.Vertex3(scale, 0f, 0);
+                GL.Vertex3(0, 0f, -scale);
+                GL.Vertex3(0, 0f, scale);
                 GL.End();
                 GL.Enable(EnableCap.DepthTest);
 
@@ -1474,8 +1498,8 @@ namespace Smash_Forge.Rendering
 
             Setup2DRendering();
 
-            GL.Uniform3(shader.getAttribute("topColor"), topColor);
-            GL.Uniform3(shader.getAttribute("bottomColor"), bottomColor);
+            GL.Uniform3(shader.GetAttribute("topColor"), topColor);
+            GL.Uniform3(shader.GetAttribute("bottomColor"), bottomColor);
 
             DrawScreenTriangle(shader);          
         }
@@ -1494,7 +1518,7 @@ namespace Smash_Forge.Rendering
             GL.BindTexture(TextureTarget.Texture2D, texture);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.getAttribute("image"), 0);
+            GL.Uniform1(shader.GetAttribute("image"), 0);
 
             // Channel toggle uniforms. 
             ShaderTools.BoolToIntShaderUniform(shader, renderR, "renderR");
@@ -1509,11 +1533,11 @@ namespace Smash_Forge.Rendering
             // This only works properly if the viewport is square.
             ShaderTools.BoolToIntShaderUniform(shader, keepAspectRatio, "preserveAspectRatio");
             float aspectRatio = (float)width / (float)height;
-            GL.Uniform1(shader.getAttribute("width"), width);
-            GL.Uniform1(shader.getAttribute("height"), height);
+            GL.Uniform1(shader.GetAttribute("width"), width);
+            GL.Uniform1(shader.GetAttribute("height"), height);
 
             // Display certain mip levels.
-            GL.Uniform1(shader.getAttribute("currentMipLevel"), currentMipLevel);
+            GL.Uniform1(shader.GetAttribute("currentMipLevel"), currentMipLevel);
 
             // Draw full screen "quad" (big triangle)
             DrawScreenTriangle(shader);
@@ -1529,24 +1553,72 @@ namespace Smash_Forge.Rendering
             GL.BindTexture(TextureTarget.Texture2D, texture0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.getAttribute("image0"), 0);
+            GL.Uniform1(shader.GetAttribute("image0"), 0);
 
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, texture1);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.getAttribute("image1"), 1);
+            GL.Uniform1(shader.GetAttribute("image1"), 1);
 
             ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderBloom, "renderBloom");
-            GL.Uniform1(shader.getAttribute("bloomIntensity"), Runtime.bloomIntensity);
+            GL.Uniform1(shader.GetAttribute("bloomIntensity"), Runtime.bloomIntensity);
 
-            GL.Uniform3(shader.getAttribute("backgroundBottomColor"), ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz);
-            GL.Uniform3(shader.getAttribute("backgroundTopColor"), ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz);
+            ShaderTools.SystemColorVector3Uniform(shader, Runtime.backgroundGradientBottom, "backgroundBottomColor");
+            ShaderTools.SystemColorVector3Uniform(shader, Runtime.backgroundGradientTop, "backgroundTopColor");
 
             // Draw full screen "quad" (big triangle)
             DrawScreenTriangle(shader);
         }
 
+        public static void DrawNudMaterialSphere(NUD.Material material)
+        {
+            // Draws RGB and alpha channels of texture to screen quad.
+            Shader shader = Runtime.shaders["Nud_Sphere"];
+            GL.UseProgram(shader.programID);
+
+            // Use the same uniforms as the NUD shader. 
+            NUD.SetMaterialPropertyUniforms(shader, material);
+            NUD.SetTextureUniforms(shader, material);
+            NUD.SetLightingUniforms(shader, 0);
+
+            GL.Uniform3(shader.GetAttribute("cameraPosition"), 0, 0, 0);
+
+            GL.Uniform1(shader.GetAttribute("zBufferOffset"), 0);
+
+            GL.Uniform1(shader.GetAttribute("bloomThreshold"), Runtime.bloomThreshold);
+
+            bool isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
+            ShaderTools.BoolToIntShaderUniform(shader, isTransparent, "isTransparent");
+
+            // Set texture uniforms for the mesh attributes. 
+            GL.ActiveTexture(TextureUnit.Texture15);
+            GL.BindTexture(TextureTarget.Texture2D, sphereNrmTex);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            GL.Uniform1(shader.GetAttribute("normalTex"), 15);
+
+            GL.ActiveTexture(TextureUnit.Texture16);
+            GL.BindTexture(TextureTarget.Texture2D, sphereUvTex);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            GL.Uniform1(shader.GetAttribute("uvTex"), 16);
+
+            GL.ActiveTexture(TextureUnit.Texture17);
+            GL.BindTexture(TextureTarget.Texture2D, sphereTanTex);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            GL.Uniform1(shader.GetAttribute("tanTex"), 17);
+
+            GL.ActiveTexture(TextureUnit.Texture18);
+            GL.BindTexture(TextureTarget.Texture2D, sphereBitanTex);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            GL.Uniform1(shader.GetAttribute("bitanTex"), 18);
+
+            // Draw full screen "quad" (big triangle)
+            DrawScreenTriangle(shader);
+        }
 
         public static void Setup2DRendering()
         {
@@ -1571,7 +1643,7 @@ namespace Smash_Forge.Rendering
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * screenQuadVertices.Length), 
                 screenQuadVertices, BufferUsageHint.StaticDraw);
 
-            GL.VertexAttribPointer(shader.getAttribute("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
+            GL.VertexAttribPointer(shader.GetAttribute("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
             GL.EnableVertexAttribArray(0);
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);

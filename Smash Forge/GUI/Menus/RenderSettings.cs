@@ -23,15 +23,12 @@ namespace Smash_Forge.GUI
             disableRuntimeUpdates = true;
 
             // Misc Settings
-            renderFloorCB.Checked = Runtime.renderFloor;
-            renderBackgroundCB.Checked = Runtime.renderBackGround;
             renderCameraPathCB.Checked = Runtime.renderPath;
             drawUvCB.Checked = Runtime.drawUv;
             textParamDir.Text = Runtime.paramDir;
-            RendererLabel.Text = "Renderer: " + Runtime.renderer;
-            OpenGLVersionLabel.Text = "OpenGL Version: " + Runtime.GLSLVersion;
             BackgroundGradient1.BackColor = Runtime.backgroundGradientTop;
             BackgroundGradient2.BackColor = Runtime.backgroundGradientBottom;
+            floorColorPictureBox.BackColor = Runtime.floorColor;
 
             // Bone settings
             renderBonesCB.Checked = Runtime.renderBones;
@@ -136,7 +133,25 @@ namespace Smash_Forge.GUI
             bloomIntensityTB.Text = Runtime.bloomIntensity + "";
             bloomThresholdTB.Text = Runtime.bloomThreshold + "";
 
+            // Floor Settings
+            renderFloorCB.Checked = Runtime.renderFloor;
+            floorComboBox.SelectedIndex = (int)Runtime.floorStyle;
+            floorScaleTB.Text = Runtime.floorSize + "";
+            SetFloorPictureBoxToolTip();
+
+            // Background Settings
+            renderBackgroundCB.Checked = Runtime.renderBackGround;
+            backgroundComboBox.SelectedIndex = (int)Runtime.backgroundStyle;
+
             disableRuntimeUpdates = false;
+        }
+
+        private void SetFloorPictureBoxToolTip()
+        {
+            if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+                toolTip1.SetToolTip(floorColorPictureBox, "Click to select an image.");
+            else
+                toolTip1.SetToolTip(floorColorPictureBox, "Click to select a color.");
         }
 
         private void renderLvdCB_CheckedChanged(object sender, EventArgs e)
@@ -247,44 +262,40 @@ namespace Smash_Forge.GUI
             switch (Runtime.renderType)
             {
                 default:
-                    debug1CB.Visible = false;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = false;
 
-                    radioButton1.Visible = false;
-                    radioButton2.Visible = false;
-                    radioButton3.Visible = false;
+                    radioButton1.Enabled = false;
+                    radioButton2.Enabled = false;
+                    radioButton3.Enabled = false;
                     break;
                 case Runtime.RenderTypes.UVTestPattern:
-                    debug1CB.Visible = false;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = false;
 
-                    radioButton1.Visible = true;
-                    radioButton2.Visible = true;
-                    radioButton3.Visible = true;
+                    radioButton1.Enabled = true;
+                    radioButton2.Enabled = true;
+                    radioButton3.Enabled = true;
 
                     radioButton1.Text = "UV1";
                     radioButton2.Text = "UV2";
                     radioButton3.Text = "UV3";
                     break;
                 case Runtime.RenderTypes.UVCoords:
-                    debug1CB.Visible = false;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = false;
 
-                    radioButton1.Visible = true;
-                    radioButton2.Visible = true;
-                    radioButton3.Visible = true;
+                    radioButton1.Enabled = true;
+                    radioButton2.Enabled = true;
+                    radioButton3.Enabled = true;
 
                     radioButton1.Text = "UV1";
                     radioButton2.Text = "UV2";
                     radioButton3.Text = "UV3";
                     break;
                 case Runtime.RenderTypes.DiffuseMap:
-                    debug1CB.Visible = false;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = false;
 
-                    radioButton1.Visible = true;
-                    radioButton2.Visible = true;
-                    radioButton3.Visible = true;
+                    radioButton1.Enabled = true;
+                    radioButton2.Enabled = true;
+                    radioButton3.Enabled = true;
 
                     radioButton1.Text = "UV1";
                     radioButton2.Text = "UV2";
@@ -292,42 +303,38 @@ namespace Smash_Forge.GUI
                     break;
                 case Runtime.RenderTypes.AmbientOcclusion:
                     debug1CB.Text = "aoMinGain";
-                    debug1CB.Visible = true;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = true;
 
-                    radioButton1.Visible = false;
-                    radioButton2.Visible = false;
-                    radioButton3.Visible = false;
+                    radioButton1.Enabled = false;
+                    radioButton2.Enabled = false;
+                    radioButton3.Enabled = false;
                     break;
                 case Runtime.RenderTypes.SelectedBoneWeights:
                     debug1CB.Text = "Color Ramp";
-                    debug1CB.Visible = false;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = false;
 
-                    radioButton1.Visible = true;
-                    radioButton2.Visible = true;
-                    radioButton3.Visible = true;
+                    radioButton1.Enabled = true;
+                    radioButton2.Enabled = true;
+                    radioButton3.Enabled = true;
 
                     radioButton1.Text = "BnW";
                     radioButton2.Text = "Color 1";
                     radioButton3.Text = "Color 2";
                     break;
                 case Runtime.RenderTypes.Normals:
-                    debug1CB.Visible = false;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = false;
 
-                    radioButton1.Visible = false;
-                    radioButton2.Visible = false;
-                    radioButton3.Visible = false;
+                    radioButton1.Enabled = false;
+                    radioButton2.Enabled = false;
+                    radioButton3.Enabled = false;
                     break;
                 case Runtime.RenderTypes.VertColor:
                     debug1CB.Text = "Divide by 2";
-                    debug1CB.Visible = true;
-                    debug2CB.Visible = false;
+                    debug1CB.Enabled = true;
 
-                    radioButton1.Visible = false;
-                    radioButton2.Visible = false;
-                    radioButton3.Visible = false;
+                    radioButton1.Enabled = false;
+                    radioButton2.Enabled = false;
+                    radioButton3.Enabled = false;
                     break;
             }
         }
@@ -339,7 +346,6 @@ namespace Smash_Forge.GUI
             renderChannelB.Enabled = true;
             renderChannelA.Enabled = true;
             debug1CB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            debug2CB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
             radioButton1.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
             radioButton2.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
             radioButton3.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
@@ -353,7 +359,7 @@ namespace Smash_Forge.GUI
             Runtime.renderSwagZ = showSwagDataCB.Checked;
         }
 
-        private void lightCheckBox_CheckedChanged(object sender, EventArgs e)
+        private void materialLightingCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderMaterialLighting = materialLightingCB.Checked;
             
@@ -363,7 +369,7 @@ namespace Smash_Forge.GUI
             reflectionCB.Enabled = materialLightingCB.Checked;
         }
 
-        private void cb_normals_CheckedChanged(object sender, EventArgs e)
+        private void renderAlphaCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderAlpha= renderAlphaCB.Checked;
         }
@@ -760,11 +766,6 @@ namespace Smash_Forge.GUI
             Runtime.debug1 = debug1CB.Checked;
         }
 
-        private void debug2CB_CheckedChanged(object sender, EventArgs e)
-        {
-            Runtime.debug2 = debug2CB.Checked;
-        }
-
         private void pbHitboxAnglesColor_Click(object sender, EventArgs e)
         {
             ColorDialog colorDialog = new ColorDialog();
@@ -861,6 +862,148 @@ namespace Smash_Forge.GUI
         private void bloomThresholdTB_TextChanged(object sender, EventArgs e)
         {
             Runtime.bloomThreshold = GuiTools.TryParseTBFloat(bloomThresholdTB);
+        }
+
+        private void groupBox8_Enter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void floorComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Runtime.floorStyle = (Runtime.FloorStyle)floorComboBox.SelectedIndex;
+
+            if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+            {
+                floorColorPictureBox.BackColor = Color.FromArgb(0, Color.White);
+
+                try
+                {
+                    floorColorPictureBox.Image = new Bitmap(Runtime.floorTexFilePath);
+                }
+                catch (Exception)
+                {
+                }
+            }
+            else
+            {
+                floorColorPictureBox.BackColor = Runtime.floorColor;
+
+                // Flashbacks to previous memory leaks involving bitmaps...
+                if (floorColorPictureBox.Image != null)
+                {
+                    floorColorPictureBox.Image.Dispose();
+                    floorColorPictureBox.Image = null;
+                }
+            }
+
+            SetFloorPictureBoxToolTip();
+            floorColorPictureBox.Refresh();
+        }
+
+        private void openBackgroundTexButton_Click(object sender, EventArgs e)
+        {
+            OpenBackgroundTexture();
+        }
+
+        private void OpenBackgroundTexture()
+        {
+            using (var ofd = new OpenFileDialog() { Filter = "Image (.png)|*.png|All Files (*.*)|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    Rendering.RenderTools.backgroundTexture = NUT.loadImage(new Bitmap(ofd.FileName));
+                    Runtime.backgroundTexFilePath = ofd.FileName;
+                    backgroundPictureBox.Image = new Bitmap(Runtime.backgroundTexFilePath);
+                }
+            }
+        }
+
+        private void OpenFloorTexture()
+        {
+            using (var ofd = new OpenFileDialog() { Filter = "Image (.png)|*.png|All Files (*.*)|*.*" })
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    Bitmap floorImg = new Bitmap(ofd.FileName);
+                    Runtime.floorTexFilePath = ofd.FileName;
+                    floorColorPictureBox.Image = floorImg;
+                    floorColorPictureBox.Refresh();
+                    Rendering.RenderTools.floorTexture = NUT.loadImage(floorImg);
+                }
+            }
+        }
+
+        private void backgroundComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Runtime.backgroundStyle = (Runtime.BackgroundStyle)backgroundComboBox.SelectedIndex;
+
+            if (Runtime.backgroundStyle == Runtime.BackgroundStyle.UserTexture)
+            {
+                backgroundPictureBox.Visible = true;
+
+                BackgroundGradient1.Visible = false;
+                backgroundTopLabel.Visible = false;
+                backgroundBottomLabel.Visible = false;
+                BackgroundGradient2.Visible = false;
+            }
+            else if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
+            {
+                // Single color and no picture box.
+                BackgroundGradient1.Visible = true;
+                backgroundTopLabel.Visible = true;
+                backgroundBottomLabel.Visible = false;
+                BackgroundGradient2.Visible = false;
+
+                backgroundPictureBox.Visible = false;
+            }
+            else if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Gradient)
+            {
+                BackgroundGradient1.Visible = true;
+                backgroundTopLabel.Visible = true;
+                backgroundBottomLabel.Visible = true;
+                BackgroundGradient2.Visible = true;
+
+                backgroundPictureBox.Visible = false;
+            }
+        }
+
+        private void ClearBackgroundPictureBox()
+        {
+            if (backgroundPictureBox.Image != null)
+            {
+                backgroundPictureBox.Image.Dispose();
+                backgroundPictureBox.Image = null;
+                backgroundPictureBox.Refresh();
+            }
+        }
+
+        private void floorScaleTB_TextChanged(object sender, EventArgs e)
+        {
+            Runtime.floorSize = GuiTools.TryParseTBFloat(floorScaleTB);
+        }
+
+        private void floorPictureBox_Click(object sender, EventArgs e)
+        {
+            if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+                OpenFloorTexture();
+            else 
+                SelectFloorColor();
+        }
+
+        private void SelectFloorColor()
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK)
+            {
+                Runtime.floorColor = Color.FromArgb(0xFF, colorDialog.Color);
+                floorColorPictureBox.BackColor = Runtime.floorColor;
+            }
+        }
+
+        private void backgroundPictureBox_Click(object sender, EventArgs e)
+        {
+            OpenBackgroundTexture();
         }
     }
 }

@@ -268,7 +268,7 @@ namespace Smash_Forge
             GL.UseProgram(shader.programID);
 
             // Load Bones
-            shader.enableAttrib();
+            shader.EnableVertexAttributes();
             if (vbn != null && !Runtime.useLegacyShaders)
             {
                 Matrix4[] f = vbn.getShaderMatrix();
@@ -545,22 +545,22 @@ namespace Smash_Forge
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material)
         {
-            GL.Uniform1(shader.getAttribute("flags"), material.Flags);
-            GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
+            GL.Uniform1(shader.GetAttribute("flags"), material.Flags);
+            GL.Uniform1(shader.GetAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
             // Shader Uniforms
             ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderVertColor && material.useVertexColor, "renderVertColor");
             SetTextureUniforms(shader, material);
             SetMaterialPropertyUniforms(shader, material);
-            SetLightingUniforms(shader);
+            SetLightingUniforms(shader, lightSetNumber);
             SetXMBUniforms(shader, p);
             SetNscUniform(p, shader);
 
-            GL.Uniform3(shader.getAttribute("cameraPosition"), camera.position);
+            GL.Uniform3(shader.GetAttribute("cameraPosition"), camera.position);
 
-            GL.Uniform1(shader.getAttribute("zBufferOffset"), material.zBufferOffset);
+            GL.Uniform1(shader.GetAttribute("zBufferOffset"), material.zBufferOffset);
 
-            GL.Uniform1(shader.getAttribute("bloomThreshold"), Runtime.bloomThreshold);
+            GL.Uniform1(shader.GetAttribute("bloomThreshold"), Runtime.bloomThreshold);
 
             p.isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
             ShaderTools.BoolToIntShaderUniform(shader, p.isTransparent, "isTransparent");
@@ -620,17 +620,17 @@ namespace Smash_Forge
             }
         }
 
-        private void SetLightingUniforms(Shader shader)
+        public static void SetLightingUniforms(Shader shader, int lightSetNumber)
         {
             for (int i = 0; i < 4; i++)
             {
-                SetStageLightUniform(shader, i);
+                SetStageLightUniform(shader, i, lightSetNumber);
             }
 
             ShaderTools.LightColorVector3Uniform(shader, Runtime.lightSetParam.stageFogSet[lightSetNumber], "stageFogColor");
         }
 
-        private void SetStageLightUniform(Shader shader, int lightIndex)
+        private static void SetStageLightUniform(Shader shader, int lightIndex, int lightSetNumber)
         {
             int index = lightIndex + (4 * lightSetNumber);
             DirectionalLight stageLight = Runtime.lightSetParam.stageDiffuseLights[index];
@@ -642,7 +642,7 @@ namespace Smash_Forge
             ShaderTools.LightColorVector3Uniform(shader, stageLight.diffuseColor, uniformBoolName);
 
             string uniformDirectionName = "stageLight" + (lightIndex + 1) + "Direction";
-            GL.Uniform3(shader.getAttribute(uniformDirectionName), stageLight.direction);
+            GL.Uniform3(shader.GetAttribute(uniformDirectionName), stageLight.direction);
         }
 
         private static void SetNscUniform(Polygon p, Shader shader)
@@ -660,7 +660,7 @@ namespace Smash_Forge
                 }
             }
 
-            GL.UniformMatrix4(shader.getAttribute("nscMatrix"), false, ref nscMatrix);
+            GL.UniformMatrix4(shader.GetAttribute("nscMatrix"), false, ref nscMatrix);
         }
         
         private void SetXMBUniforms(Shader shader, Polygon p)
@@ -670,35 +670,35 @@ namespace Smash_Forge
             bool directUVTimeFlags = (p.materials[0].Flags & 0x00001900) == 0x00001900; // should probably move elsewhere
             ShaderTools.BoolToIntShaderUniform(shader, useDirectUVTime && directUVTimeFlags, "useDirectUVTime");
 
-            GL.Uniform1(shader.getAttribute("lightSet"), lightSetNumber);
+            GL.Uniform1(shader.GetAttribute("lightSet"), lightSetNumber);
         }
 
         private void SetVertexAttributes(Polygon p, Shader shader)
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-            GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
-            GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
-            GL.VertexAttribPointer(shader.getAttribute("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
-            GL.VertexAttribPointer(shader.getAttribute("vBiTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 36);
-            GL.VertexAttribPointer(shader.getAttribute("vUV"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 48);
-            GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 56);
-            GL.VertexAttribIPointer(shader.getAttribute("vBone"), 4, VertexAttribIntegerType.Int, DisplayVertex.Size, new IntPtr(72));
-            GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
-            GL.VertexAttribPointer(shader.getAttribute("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
-            GL.VertexAttribPointer(shader.getAttribute("vUV3"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
+            GL.VertexAttribPointer(shader.GetAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
+            GL.VertexAttribPointer(shader.GetAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
+            GL.VertexAttribPointer(shader.GetAttribute("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
+            GL.VertexAttribPointer(shader.GetAttribute("vBiTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 36);
+            GL.VertexAttribPointer(shader.GetAttribute("vUV"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 48);
+            GL.VertexAttribPointer(shader.GetAttribute("vColor"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 56);
+            GL.VertexAttribIPointer(shader.GetAttribute("vBone"), 4, VertexAttribIntegerType.Int, DisplayVertex.Size, new IntPtr(72));
+            GL.VertexAttribPointer(shader.GetAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
+            GL.VertexAttribPointer(shader.GetAttribute("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
+            GL.VertexAttribPointer(shader.GetAttribute("vUV3"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
         }
 
         private static void DrawModelWireframe(Polygon p, Shader shader)
         {
             // use vertex color for wireframe color
-            GL.Uniform1(shader.getAttribute("colorOverride"), 1);
+            GL.Uniform1(shader.GetAttribute("colorOverride"), 1);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1f);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            GL.Uniform1(shader.getAttribute("colorOverride"), 0);
+            GL.Uniform1(shader.GetAttribute("colorOverride"), 0);
         }
 
         private static void DrawModelSelection(Polygon p, Shader shader)
@@ -722,14 +722,14 @@ namespace Smash_Forge
             GL.StencilMask(0x00);
 
             // use vertex color for model selection color
-            GL.Uniform1(shader.getAttribute("colorOverride"), 1);
+            GL.Uniform1(shader.GetAttribute("colorOverride"), 1);
 
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.LineWidth(2.0f);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
-            GL.Uniform1(shader.getAttribute("colorOverride"), 0);
+            GL.Uniform1(shader.GetAttribute("colorOverride"), 0);
 
             GL.StencilMask(0xFF);
             GL.Clear(ClearBufferMask.StencilBufferBit);
@@ -737,7 +737,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.DepthTest);
         }
 
-        private static void SetMaterialPropertyUniforms(Shader shader, Material mat)
+        public static void SetMaterialPropertyUniforms(Shader shader, Material mat)
         {
             // UV samplers
             MatPropertyShaderUniform(shader, mat, "NU_colorSamplerUV",   1, 1, 0, 0);
@@ -804,7 +804,7 @@ namespace Smash_Forge
             HasMatPropertyShaderUniform(shader, mat, "NU_effUniverseParam",       "hasUniverseParam");
         }
 
-        private static void SetTextureUniforms(Shader shader, Material mat)
+        public static void SetTextureUniforms(Shader shader, Material mat)
         {
             ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse,         "hasDif");
             ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse2,        "hasDif2");
@@ -827,54 +827,60 @@ namespace Smash_Forge
 
             GL.ActiveTexture(TextureUnit.Texture10);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern);
-            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+            GL.Uniform1(shader.GetAttribute("UVTestPattern"), 10);
 
             GL.ActiveTexture(TextureUnit.Texture11);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient);
-            GL.Uniform1(shader.getAttribute("weightRamp1"), 11);
+            GL.Uniform1(shader.GetAttribute("weightRamp1"), 11);
 
             GL.ActiveTexture(TextureUnit.Texture12);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient2);
-            GL.Uniform1(shader.getAttribute("weightRamp2"), 12);
+            GL.Uniform1(shader.GetAttribute("weightRamp2"), 12);
 
             // This is necessary to prevent some models from disappearing. 
-            GL.Uniform1(shader.getAttribute("dif"), 0);
-            GL.Uniform1(shader.getAttribute("dif2"), 0);
-            GL.Uniform1(shader.getAttribute("normalMap"), 0);
-            GL.Uniform1(shader.getAttribute("cube"), 2);
-            GL.Uniform1(shader.getAttribute("stagecube"), 2);
-            GL.Uniform1(shader.getAttribute("spheremap"), 0);
-            GL.Uniform1(shader.getAttribute("ao"), 0);
-            GL.Uniform1(shader.getAttribute("ramp"), 0);
+            GL.Uniform1(shader.GetAttribute("dif"), 0);
+            GL.Uniform1(shader.GetAttribute("dif2"), 0);
+            GL.Uniform1(shader.GetAttribute("normalMap"), 0);
+            GL.Uniform1(shader.GetAttribute("cube"), 2);
+            GL.Uniform1(shader.GetAttribute("stagecube"), 2);
+            GL.Uniform1(shader.GetAttribute("spheremap"), 0);
+            GL.Uniform1(shader.GetAttribute("ao"), 0);
+            GL.Uniform1(shader.GetAttribute("ramp"), 0);
 
-            int texid = 0;
-            if (mat.hasDiffuse && texid < mat.textures.Count)
+            // The order of the textures in the following section is critical. 
+            int textureIndex = 0; 
+            if (mat.hasDiffuse && textureIndex < mat.textures.Count)
             {
-                int hash = mat.textures[texid].hash;
+                int hash = mat.textures[textureIndex].hash;
                 if (mat.displayTexId != -1) hash = mat.displayTexId;
-                GL.Uniform1(shader.getAttribute("dif"), BindTexture(mat.textures[texid], hash, texid));
-                mat.diffuse1ID = mat.textures[texid].hash;
-                texid++;
+                GL.Uniform1(shader.GetAttribute("dif"), BindTexture(mat.textures[textureIndex], hash, textureIndex));
+                mat.diffuse1ID = mat.textures[textureIndex].hash;
+                textureIndex++;
             }
 
             // Jigglypuff has weird eyes.
             if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
             {
-                TextureUniform(shader, mat, mat.hasDiffuse2, "dif2", ref texid);
-                TextureUniform(shader, mat, mat.hasNormalMap, "normalMap", ref texid);
+                SetTextureUniformAndSetTexId(shader, mat, true, "dif2",      ref textureIndex, ref mat.diffuse2ID);
+                SetTextureUniformAndSetTexId(shader, mat, true, "normalMap", ref textureIndex, ref mat.normalID);
+            }
+            else if ((mat.Flags & 0xFFFFFFFF) == 0x92F01101)
+            {
+                SetTextureUniformAndSetTexId(shader, mat, true, "dif2",      ref textureIndex, ref mat.diffuse2ID);
+                SetTextureUniformAndSetTexId(shader, mat, true, "ramp",      ref textureIndex, ref mat.rampID);
+                SetTextureUniformAndSetTexId(shader, mat, true, "dummyRamp", ref textureIndex, ref mat.dummyRampID);
             }
             else
             {
-                // The order of the textures here is critical. 
-                TextureUniform(shader, mat, mat.hasSphereMap, "spheremap", ref texid);
-                TextureUniform(shader, mat, mat.hasDiffuse2, "dif2", ref texid);
-                TextureUniform(shader, mat, mat.hasDiffuse3, "dif3", ref texid);
-                TextureUniform(shader, mat, mat.hasStageMap, "stagecube", ref texid);
-                TextureUniform(shader, mat, mat.hasCubeMap, "cube", ref texid);
-                TextureUniform(shader, mat, mat.hasAoMap, "ao", ref texid);
-                TextureUniform(shader, mat, mat.hasNormalMap, "normalMap", ref texid);
-                TextureUniform(shader, mat, mat.hasRamp, "ramp", ref texid);
-                TextureUniform(shader, mat, mat.hasDummyRamp, "dummyRamp", ref texid);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasSphereMap, "spheremap", ref textureIndex, ref mat.sphereMapID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse2,  "dif2",      ref textureIndex, ref mat.diffuse2ID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse3,  "dif3",      ref textureIndex, ref mat.diffuse3ID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasStageMap,  "stagecube", ref textureIndex, ref mat.stageMapID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasCubeMap,   "cube",      ref textureIndex, ref mat.cubeMapID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasAoMap,     "ao",        ref textureIndex, ref mat.aoMapID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasNormalMap, "normalMap", ref textureIndex, ref mat.normalID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasRamp,      "ramp",      ref textureIndex, ref mat.rampID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasDummyRamp, "dummyRamp", ref textureIndex, ref mat.dummyRampID);
             }
         }
 
@@ -892,18 +898,19 @@ namespace Smash_Forge
             string uniformName = propertyName.Substring(3); // remove the NU_ from name
 
             if (values.Length == 4)
-                GL.Uniform4(shader.getAttribute(uniformName), values[0], values[1], values[2], values[3]);
+                GL.Uniform4(shader.GetAttribute(uniformName), values[0], values[1], values[2], values[3]);
             else
                 Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
 
-        private static void TextureUniform(Shader shader, Material mat, bool hasTex, string name, ref int texid)
+        private static void SetTextureUniformAndSetTexId(Shader shader, Material mat, bool hasTex, string name, ref int textureIndex, ref int matTexId)
         {
             // Bind the texture and create the uniform if the material has the right textures and flags. 
-            if (hasTex && texid < mat.textures.Count)
+            if (hasTex && textureIndex < mat.textures.Count)
             {
-                GL.Uniform1(shader.getAttribute(name), BindTexture(mat.textures[texid], mat.textures[texid].hash, texid));
-                texid++;
+                GL.Uniform1(shader.GetAttribute(name), BindTexture(mat.textures[textureIndex], mat.textures[textureIndex].hash, textureIndex));
+                matTexId = mat.textures[textureIndex].hash;
+                textureIndex++;
             }
         }
 
@@ -932,7 +939,7 @@ namespace Smash_Forge
             if (values == null)
                 hasParam = 0;
 
-            GL.Uniform1(shader.getAttribute(uniformName), hasParam);
+            GL.Uniform1(shader.GetAttribute(uniformName), hasParam);
         }
 
         public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)
@@ -940,33 +947,33 @@ namespace Smash_Forge
             Shader shader = Runtime.shaders["Point"];
             GL.UseProgram(shader.programID);
             Matrix4 mat = camera.mvpMatrix;
-            GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mat);
+            GL.UniformMatrix4(shader.GetAttribute("mvpMatrix"), false, ref mat);
 
             if (type == PrimitiveType.Points)
             {
-                GL.Uniform3(shader.getAttribute("col1"), 0f, 0f, 1f);
-                GL.Uniform3(shader.getAttribute("col2"), 1f, 1f, 0f);
+                GL.Uniform3(shader.GetAttribute("col1"), 0f, 0f, 1f);
+                GL.Uniform3(shader.GetAttribute("col2"), 1f, 1f, 0f);
             }
             if (type == PrimitiveType.Triangles)
             {
-                GL.Uniform3(shader.getAttribute("col1"), 0.5f, 0.5f, 0.5f);
-                GL.Uniform3(shader.getAttribute("col2"), 1f, 0f, 0f);
+                GL.Uniform3(shader.GetAttribute("col1"), 0.5f, 0.5f, 0.5f);
+                GL.Uniform3(shader.GetAttribute("col2"), 1f, 0f, 0f);
             }
 
-            shader.enableAttrib();
+            shader.EnableVertexAttributes();
             foreach (Mesh m in Nodes)
             {
                 foreach (Polygon p in m.Nodes)
                 {
                     GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-                    GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
-                    GL.VertexAttribPointer(shader.getAttribute("vBone"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 72);
-                    GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
+                    GL.VertexAttribPointer(shader.GetAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
+                    GL.VertexAttribPointer(shader.GetAttribute("vBone"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 72);
+                    GL.VertexAttribPointer(shader.GetAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
 
                     GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_select);
                     if (p.selectedVerts == null) return;
                     GL.BufferData<int>(BufferTarget.ArrayBuffer, (IntPtr)(p.selectedVerts.Length * sizeof(int)), p.selectedVerts, BufferUsageHint.StaticDraw);
-                    GL.VertexAttribPointer(shader.getAttribute("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
+                    GL.VertexAttribPointer(shader.GetAttribute("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
                     GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -976,7 +983,7 @@ namespace Smash_Forge
                     GL.DrawElements(type, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                 }
             }
-            shader.disableAttrib();
+            shader.DisableVertexAttributes();
         }
 
         Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
@@ -2397,24 +2404,24 @@ namespace Smash_Forge
 
             public uint RebuildFlag4thByte()
             {
-                int new4thByte = 0;
+                byte new4thByte = 0;
                 if (hasDiffuse)
-                    new4thByte |= (int)TextureFlags.DiffuseMap;
+                    new4thByte |= (byte)TextureFlags.DiffuseMap;
                 if (hasNormalMap)
-                    new4thByte |= (int)TextureFlags.NormalMap;
+                    new4thByte |= (byte)TextureFlags.NormalMap;
                 if (hasCubeMap || hasRamp)
-                    new4thByte |= (int)TextureFlags.RampCubeMap;
+                    new4thByte |= (byte)TextureFlags.RampCubeMap;
                 if (hasStageMap || hasAoMap)
-                    new4thByte |= (int)TextureFlags.StageAOMap;
+                    new4thByte |= (byte)TextureFlags.StageAOMap;
                 if (hasSphereMap)
-                    new4thByte |= (int)TextureFlags.SphereMap;
+                    new4thByte |= (byte)TextureFlags.SphereMap;
                 if (glow)
-                    new4thByte |= (int) TextureFlags.Glow;
+                    new4thByte |= (byte) TextureFlags.Glow;
                 if (hasShadow)
-                    new4thByte |= (int) TextureFlags.Shadow;
+                    new4thByte |= (byte) TextureFlags.Shadow;
                 if (hasDummyRamp)
-                    new4thByte |= (int) TextureFlags.DummyRamp; 
-                flag = (uint)(((int)flag & 0xFFFFFF00) | new4thByte);
+                    new4thByte |= (byte) TextureFlags.DummyRamp; 
+                flag = (flag & 0xFFFFFF00) | new4thByte;
 
                 return flag;
             }
@@ -2452,9 +2459,9 @@ namespace Smash_Forge
 
             private bool CheckColorGain(uint matFlags)
             {
-                byte byte1 = (byte)((matFlags & 0xFF000000) >> 24);
-                byte byte2 = (byte)((matFlags & 0x00FF0000) >> 16);
-                byte byte4 = (byte)((matFlags & 0xFF));
+                byte byte1 = (byte)(matFlags >> 24);
+                byte byte2 = (byte)(matFlags >> 16);
+                byte byte4 = (byte)(matFlags & 0xFF);
 
                 bool hasLightingChannel = (byte1 & 0x0C) == 0x0C;
                 bool hasByte2 = (byte2 == 0x61) || (byte2== 0x42) || (byte2 == 0x44);
@@ -2467,22 +2474,32 @@ namespace Smash_Forge
             {
                 // Why figure out how these values work when you can just hardcode all the important ones?
                 // Effect materials use 4th byte 00 but often still have a diffuse texture.
-                hasDummyRamp = (matFlags & (int)TextureFlags.DummyRamp) > 0;
+                byte byte1 = (byte)(matFlags >> 24);
+                byte byte2 = (byte)(matFlags >> 16);
+                byte byte3 = (byte)(matFlags >> 8);
+                byte byte4 = (byte)(matFlags & 0xFF);
 
-                hasDiffuse = (matFlags & (int)TextureFlags.DiffuseMap) > 0 || (matFlags & 0xF0000000) == 0xB0000000;
+                bool isEffectMaterial = (byte1 & 0xF0) == 0xB0;
+                hasDiffuse = (matFlags & (byte)TextureFlags.DiffuseMap) > 0 || isEffectMaterial;
 
-                byte byte3 = (byte)((matFlags & 0x0000FF00) >> 8);
+                hasSphereMap = (byte4 & (byte)TextureFlags.SphereMap) > 0;
+
+                hasNormalMap = (byte4 & (byte)TextureFlags.NormalMap) > 0;
+
+                hasDummyRamp = (byte4 & (byte)TextureFlags.DummyRamp) > 0;
+
+                hasAoMap = (byte4 & (byte)TextureFlags.StageAOMap) > 0 && !hasDummyRamp;
+
+                hasStageMap = (byte4 & (byte)TextureFlags.StageAOMap) > 0 && hasDummyRamp;
+
+                bool hasRampCubeMap = (matFlags & (int)TextureFlags.RampCubeMap) > 0;
+                hasCubeMap = (matFlags & (int)TextureFlags.RampCubeMap) > 0 && (!hasDummyRamp) && (!hasSphereMap);
+                hasRamp = (matFlags & (int)TextureFlags.RampCubeMap) > 0 && hasDummyRamp;
+
                 hasDiffuse3 = (byte3 & 0x91) == 0x91 || (byte3 & 0x96) == 0x96 || (byte3 & 0x99) == 0x99;
 
-                hasDiffuse2 = ((matFlags & (int)TextureFlags.RampCubeMap) > 0) && ((matFlags & (int)TextureFlags.NormalMap) == 0)
-                    && (hasDummyRamp || hasDiffuse3) || ((matFlags & 0xFFFFFFFF) == 0x9AE11163);
-
-                hasNormalMap = (matFlags & (int)TextureFlags.NormalMap) > 0;
-                hasSphereMap = (matFlags & (int)TextureFlags.SphereMap) > 0;
-                hasAoMap = (matFlags & (int)TextureFlags.StageAOMap) > 0 && !hasDummyRamp;
-                hasStageMap = (matFlags & (int)TextureFlags.StageAOMap) > 0 && hasDummyRamp;
-                hasCubeMap = (matFlags & (int)TextureFlags.RampCubeMap) > 0 && (!hasDummyRamp) && (!hasSphereMap);
-                hasRamp = (matFlags & (int) TextureFlags.RampCubeMap) > 0 && hasDummyRamp; 
+                hasDiffuse2 = hasRampCubeMap && ((matFlags & (int)TextureFlags.NormalMap) == 0)
+                    && (hasDummyRamp || hasDiffuse3);
             }
         }
 
