@@ -486,9 +486,7 @@ vec4 SmashShader()
 
     // Adjust the alpha.
     // TODO: Is this affected by multiple diffuse maps?
-    if (renderAlpha == 1)
-        resultingColor.a = texture(dif, texCoord).a;
-
+    resultingColor.a *= texture(dif, texCoord).a;
     resultingColor.a *= finalColorGain.a;
     resultingColor.a *= effColorGain.a;
     resultingColor.a *= AngleFade(N, I);
