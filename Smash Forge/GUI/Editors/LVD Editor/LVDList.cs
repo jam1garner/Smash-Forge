@@ -309,7 +309,7 @@ namespace Smash_Forge
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if(e.Node.Level != 0)
+            if (e.Node.Level != 0)
             {
                 TargetLVD.LVDSelection = e.Node.Tag;
                 //MainForm.Instance.viewports[0].timeSinceSelected.Restart();
