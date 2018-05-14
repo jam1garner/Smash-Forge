@@ -38,13 +38,13 @@ namespace Smash_Forge.Rendering
                 Shader shader = new Shader();
                 if (Runtime.useLegacyShaders)
                 {
-                    shader.LoadShader(MainForm.executableDir + legacyPath + name + "_vs.txt", ShaderType.VertexShader);
-                    shader.LoadShader(MainForm.executableDir + legacyPath + name + "_fs.txt", ShaderType.FragmentShader);
-                }
+                    shader.LoadShader(MainForm.executableDir + legacyPath + name + ".vert", ShaderType.VertexShader);
+                    shader.LoadShader(MainForm.executableDir + legacyPath + name + ".frag", ShaderType.FragmentShader);
+                } 
                 else
                 {
-                    shader.LoadShader(MainForm.executableDir + normalPath + name + "_vs.txt", ShaderType.VertexShader);
-                    shader.LoadShader(MainForm.executableDir + normalPath + name + "_fs.txt", ShaderType.FragmentShader);
+                    shader.LoadShader(MainForm.executableDir + normalPath + name + ".vert", ShaderType.VertexShader);
+                    shader.LoadShader(MainForm.executableDir + normalPath + name + ".frag", ShaderType.FragmentShader);
                 }
                 Runtime.shaders.Add(name, shader);
             }
