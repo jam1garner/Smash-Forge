@@ -19,27 +19,36 @@ namespace Smash_Forge
     {
         public NUD()
         {
-            if (!Runtime.shaders.ContainsKey("NUD"))
-            {
-                ShaderTools.CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
-            }
+            SetupShaders();
+            GenerateBuffers();
+            SetupTreeNode();
+        }
 
-            if (!Runtime.shaders.ContainsKey("NUD_Debug"))
-            {
-                ShaderTools.CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
-            }
+        private void SetupTreeNode()
+        {
+            Text = "model.nud";
+            ImageKey = "model";
+            SelectedImageKey = "model";
+        }
 
-            Runtime.shaders["NUD"].DisplayCompilationWarning("NUD");
-            Runtime.shaders["NUD_Debug"].DisplayCompilationWarning("NUD_Debug");
-
+        private void GenerateBuffers()
+        {
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out ibo_elements);
             GL.GenBuffers(1, out ubo_bones);
             GL.GenBuffers(1, out vbo_select);
+        }
 
-            Text = "model.nud";
-            ImageKey = "model";
-            SelectedImageKey = "model";
+        private static void SetupShaders()
+        {
+            if (!Runtime.shaders.ContainsKey("NUD"))
+                ShaderTools.CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
+
+            if (!Runtime.shaders.ContainsKey("NUD_Debug"))
+                ShaderTools.CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
+
+            Runtime.shaders["NUD"].DisplayCompilationWarning("NUD");
+            Runtime.shaders["NUD_Debug"].DisplayCompilationWarning("NUD_Debug");
         }
 
         public NUD(string fname) : this()
@@ -253,22 +262,23 @@ namespace Smash_Forge
         public void Render(VBN vbn, Camera camera)
         {
             if (Runtime.renderBoundingBox)
-            {
                 DrawBoundingBoxes();
-            }
 
-            //Prepare Shader
+            // Prepare Shader
             Shader shader = Runtime.shaders["NUD"];
-
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NUD_Debug"];
-            else
-                shader = Runtime.shaders["NUD"];
 
             GL.UseProgram(shader.programID);
 
-            // Load Bones
             shader.EnableVertexAttributes();
+            LoadBoneAttributes(vbn, shader);
+            Render(shader, camera);
+            shader.DisableVertexAttributes();
+        }
+
+        private void LoadBoneAttributes(VBN vbn, Shader shader)
+        {
             if (vbn != null && !Runtime.useLegacyShaders)
             {
                 Matrix4[] f = vbn.getShaderMatrix();
@@ -290,8 +300,6 @@ namespace Smash_Forge
                     GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
                 }
             }
-            
-            Render(shader, camera);
         }
 
         private void DrawBoundingBoxes()
