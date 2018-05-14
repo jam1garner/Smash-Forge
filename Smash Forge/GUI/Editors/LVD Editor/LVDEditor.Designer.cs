@@ -43,7 +43,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.useStartPosCB = new System.Windows.Forms.CheckBox();
             this.collisionGroup = new System.Windows.Forms.GroupBox();
-            this.yVert = new System.Windows.Forms.NumericUpDown();
+            this.vertYPosUpDown = new System.Windows.Forms.NumericUpDown();
             this.vertXPosUpDown = new System.Windows.Forms.NumericUpDown();
             this.linesTreeView = new System.Windows.Forms.TreeView();
             this.verticesTreeView = new System.Windows.Forms.TreeView();
@@ -107,7 +107,7 @@
             this.label18 = new System.Windows.Forms.Label();
             this.removeItemSpawnSectionButton = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
-            this.rectangleGroup = new System.Windows.Forms.GroupBox();
+            this.shapeGroup = new System.Windows.Forms.GroupBox();
             this.label24 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
             this.rectLowerY = new System.Windows.Forms.NumericUpDown();
@@ -116,7 +116,6 @@
             this.label27 = new System.Windows.Forms.Label();
             this.rectUpperY = new System.Windows.Forms.NumericUpDown();
             this.rectUpperX = new System.Windows.Forms.NumericUpDown();
-            this.pathGroup = new System.Windows.Forms.GroupBox();
             this.label29 = new System.Windows.Forms.Label();
             this.treeViewPath = new System.Windows.Forms.TreeView();
             this.label32 = new System.Windows.Forms.Label();
@@ -181,7 +180,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.yStartPosUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xStartPosUpDown)).BeginInit();
             this.collisionGroup.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.yVert)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vertYPosUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.vertXPosUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngleUpDown)).BeginInit();
             this.cliffGroup.SuspendLayout();
@@ -204,12 +203,11 @@
             this.itemSpawnerGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
-            this.rectangleGroup.SuspendLayout();
+            this.shapeGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rectLowerY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rectLowerX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rectUpperY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rectUpperX)).BeginInit();
-            this.pathGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeX)).BeginInit();
             this.meleeCollisionGroup.SuspendLayout();
@@ -240,8 +238,7 @@
             this.flowLayoutPanel1.Controls.Add(this.point2dGroup);
             this.flowLayoutPanel1.Controls.Add(this.boundsGroup);
             this.flowLayoutPanel1.Controls.Add(this.itemSpawnerGroup);
-            this.flowLayoutPanel1.Controls.Add(this.rectangleGroup);
-            this.flowLayoutPanel1.Controls.Add(this.pathGroup);
+            this.flowLayoutPanel1.Controls.Add(this.shapeGroup);
             this.flowLayoutPanel1.Controls.Add(this.meleeCollisionGroup);
             this.flowLayoutPanel1.Controls.Add(this.groupBox1);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -431,7 +428,7 @@
             // 
             // collisionGroup
             // 
-            this.collisionGroup.Controls.Add(this.yVert);
+            this.collisionGroup.Controls.Add(this.vertYPosUpDown);
             this.collisionGroup.Controls.Add(this.vertXPosUpDown);
             this.collisionGroup.Controls.Add(this.linesTreeView);
             this.collisionGroup.Controls.Add(this.verticesTreeView);
@@ -461,25 +458,25 @@
             this.collisionGroup.TabStop = false;
             this.collisionGroup.Text = "Collision Editing";
             // 
-            // yVert
+            // vertYPosUpDown
             // 
-            this.yVert.DecimalPlaces = 4;
-            this.yVert.Location = new System.Drawing.Point(100, 196);
-            this.yVert.Margin = new System.Windows.Forms.Padding(2);
-            this.yVert.Maximum = new decimal(new int[] {
+            this.vertYPosUpDown.DecimalPlaces = 4;
+            this.vertYPosUpDown.Location = new System.Drawing.Point(100, 196);
+            this.vertYPosUpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.vertYPosUpDown.Maximum = new decimal(new int[] {
             1000000000,
             0,
             0,
             0});
-            this.yVert.Minimum = new decimal(new int[] {
+            this.vertYPosUpDown.Minimum = new decimal(new int[] {
             1000000000,
             0,
             0,
             -2147483648});
-            this.yVert.Name = "yVert";
-            this.yVert.Size = new System.Drawing.Size(56, 20);
-            this.yVert.TabIndex = 24;
-            this.yVert.ValueChanged += new System.EventHandler(this.ChangeCollisionVertPos);
+            this.vertYPosUpDown.Name = "vertYPosUpDown";
+            this.vertYPosUpDown.Size = new System.Drawing.Size(56, 20);
+            this.vertYPosUpDown.TabIndex = 24;
+            this.vertYPosUpDown.ValueChanged += new System.EventHandler(this.ChangeCollisionVertPos);
             // 
             // vertXPosUpDown
             // 
@@ -1375,30 +1372,40 @@
             this.label19.TabIndex = 37;
             this.label19.Text = "X";
             // 
-            // rectangleGroup
+            // shapeGroup
             // 
-            this.rectangleGroup.Controls.Add(this.label24);
-            this.rectangleGroup.Controls.Add(this.label25);
-            this.rectangleGroup.Controls.Add(this.rectLowerY);
-            this.rectangleGroup.Controls.Add(this.rectLowerX);
-            this.rectangleGroup.Controls.Add(this.label26);
-            this.rectangleGroup.Controls.Add(this.label27);
-            this.rectangleGroup.Controls.Add(this.rectUpperY);
-            this.rectangleGroup.Controls.Add(this.rectUpperX);
-            this.rectangleGroup.Location = new System.Drawing.Point(2, 1228);
-            this.rectangleGroup.Margin = new System.Windows.Forms.Padding(2);
-            this.rectangleGroup.Name = "rectangleGroup";
-            this.rectangleGroup.Padding = new System.Windows.Forms.Padding(2);
-            this.rectangleGroup.Size = new System.Drawing.Size(276, 67);
-            this.rectangleGroup.TabIndex = 38;
-            this.rectangleGroup.TabStop = false;
-            this.rectangleGroup.Text = "Rectangle (Shape)";
-            this.rectangleGroup.Visible = false;
+            this.shapeGroup.Controls.Add(this.label24);
+            this.shapeGroup.Controls.Add(this.label25);
+            this.shapeGroup.Controls.Add(this.rectLowerY);
+            this.shapeGroup.Controls.Add(this.rectLowerX);
+            this.shapeGroup.Controls.Add(this.label26);
+            this.shapeGroup.Controls.Add(this.label27);
+            this.shapeGroup.Controls.Add(this.rectUpperY);
+            this.shapeGroup.Controls.Add(this.rectUpperX);
+            this.shapeGroup.Controls.Add(this.label29);
+            this.shapeGroup.Controls.Add(this.treeViewPath);
+            this.shapeGroup.Controls.Add(this.label32);
+            this.shapeGroup.Controls.Add(this.label28);
+            this.shapeGroup.Controls.Add(this.button8);
+            this.shapeGroup.Controls.Add(this.button9);
+            this.shapeGroup.Controls.Add(this.pathNodeY);
+            this.shapeGroup.Controls.Add(this.pathNodeX);
+            this.shapeGroup.Controls.Add(this.label30);
+            this.shapeGroup.Controls.Add(this.label31);
+            this.shapeGroup.Location = new System.Drawing.Point(2, 1228);
+            this.shapeGroup.Margin = new System.Windows.Forms.Padding(2);
+            this.shapeGroup.Name = "shapeGroup";
+            this.shapeGroup.Padding = new System.Windows.Forms.Padding(2);
+            this.shapeGroup.Size = new System.Drawing.Size(276, 224);
+            this.shapeGroup.TabIndex = 38;
+            this.shapeGroup.TabStop = false;
+            this.shapeGroup.Text = "Rectangle (Shape)";
+            this.shapeGroup.Visible = false;
             // 
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(90, 40);
+            this.label24.Location = new System.Drawing.Point(90, 20);
             this.label24.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(17, 13);
@@ -1408,7 +1415,7 @@
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(6, 40);
+            this.label25.Location = new System.Drawing.Point(6, 20);
             this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(17, 13);
@@ -1418,7 +1425,7 @@
             // rectLowerY
             // 
             this.rectLowerY.DecimalPlaces = 4;
-            this.rectLowerY.Location = new System.Drawing.Point(112, 38);
+            this.rectLowerY.Location = new System.Drawing.Point(112, 18);
             this.rectLowerY.Margin = new System.Windows.Forms.Padding(2);
             this.rectLowerY.Maximum = new decimal(new int[] {
             1000000000,
@@ -1438,7 +1445,7 @@
             // rectLowerX
             // 
             this.rectLowerX.DecimalPlaces = 4;
-            this.rectLowerX.Location = new System.Drawing.Point(28, 38);
+            this.rectLowerX.Location = new System.Drawing.Point(28, 18);
             this.rectLowerX.Margin = new System.Windows.Forms.Padding(2);
             this.rectLowerX.Maximum = new decimal(new int[] {
             1000000000,
@@ -1458,7 +1465,7 @@
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(90, 20);
+            this.label26.Location = new System.Drawing.Point(90, 40);
             this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(20, 13);
@@ -1468,7 +1475,7 @@
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(6, 20);
+            this.label27.Location = new System.Drawing.Point(6, 40);
             this.label27.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(20, 13);
@@ -1478,7 +1485,7 @@
             // rectUpperY
             // 
             this.rectUpperY.DecimalPlaces = 4;
-            this.rectUpperY.Location = new System.Drawing.Point(112, 18);
+            this.rectUpperY.Location = new System.Drawing.Point(112, 38);
             this.rectUpperY.Margin = new System.Windows.Forms.Padding(2);
             this.rectUpperY.Maximum = new decimal(new int[] {
             1000000000,
@@ -1498,7 +1505,7 @@
             // rectUpperX
             // 
             this.rectUpperX.DecimalPlaces = 4;
-            this.rectUpperX.Location = new System.Drawing.Point(28, 18);
+            this.rectUpperX.Location = new System.Drawing.Point(28, 38);
             this.rectUpperX.Margin = new System.Windows.Forms.Padding(2);
             this.rectUpperX.Maximum = new decimal(new int[] {
             1000000000,
@@ -1515,32 +1522,10 @@
             this.rectUpperX.TabIndex = 32;
             this.rectUpperX.ValueChanged += new System.EventHandler(this.rectValueChanged);
             // 
-            // pathGroup
-            // 
-            this.pathGroup.Controls.Add(this.label29);
-            this.pathGroup.Controls.Add(this.treeViewPath);
-            this.pathGroup.Controls.Add(this.label32);
-            this.pathGroup.Controls.Add(this.label28);
-            this.pathGroup.Controls.Add(this.button8);
-            this.pathGroup.Controls.Add(this.button9);
-            this.pathGroup.Controls.Add(this.pathNodeY);
-            this.pathGroup.Controls.Add(this.pathNodeX);
-            this.pathGroup.Controls.Add(this.label30);
-            this.pathGroup.Controls.Add(this.label31);
-            this.pathGroup.Location = new System.Drawing.Point(2, 1299);
-            this.pathGroup.Margin = new System.Windows.Forms.Padding(2);
-            this.pathGroup.Name = "pathGroup";
-            this.pathGroup.Padding = new System.Windows.Forms.Padding(2);
-            this.pathGroup.Size = new System.Drawing.Size(276, 166);
-            this.pathGroup.TabIndex = 46;
-            this.pathGroup.TabStop = false;
-            this.pathGroup.Text = "General Path (Shape)";
-            this.pathGroup.Visible = false;
-            // 
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(79, 143);
+            this.label29.Location = new System.Drawing.Point(79, 203);
             this.label29.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(14, 13);
@@ -1550,7 +1535,7 @@
             // treeViewPath
             // 
             this.treeViewPath.HideSelection = false;
-            this.treeViewPath.Location = new System.Drawing.Point(4, 33);
+            this.treeViewPath.Location = new System.Drawing.Point(4, 93);
             this.treeViewPath.Margin = new System.Windows.Forms.Padding(2);
             this.treeViewPath.Name = "treeViewPath";
             this.treeViewPath.Size = new System.Drawing.Size(180, 103);
@@ -1560,7 +1545,7 @@
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(9, 143);
+            this.label32.Location = new System.Drawing.Point(9, 203);
             this.label32.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(14, 13);
@@ -1570,7 +1555,7 @@
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(56, 16);
+            this.label28.Location = new System.Drawing.Point(56, 76);
             this.label28.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(45, 13);
@@ -1579,7 +1564,7 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(105, 13);
+            this.button8.Location = new System.Drawing.Point(105, 73);
             this.button8.Margin = new System.Windows.Forms.Padding(2);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(37, 18);
@@ -1590,7 +1575,7 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(146, 13);
+            this.button9.Location = new System.Drawing.Point(146, 73);
             this.button9.Margin = new System.Windows.Forms.Padding(2);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(37, 18);
@@ -1602,7 +1587,7 @@
             // pathNodeY
             // 
             this.pathNodeY.DecimalPlaces = 3;
-            this.pathNodeY.Location = new System.Drawing.Point(97, 140);
+            this.pathNodeY.Location = new System.Drawing.Point(97, 200);
             this.pathNodeY.Margin = new System.Windows.Forms.Padding(2);
             this.pathNodeY.Maximum = new decimal(new int[] {
             1000000000,
@@ -1622,7 +1607,7 @@
             // pathNodeX
             // 
             this.pathNodeX.DecimalPlaces = 3;
-            this.pathNodeX.Location = new System.Drawing.Point(27, 140);
+            this.pathNodeX.Location = new System.Drawing.Point(27, 200);
             this.pathNodeX.Margin = new System.Windows.Forms.Padding(2);
             this.pathNodeX.Maximum = new decimal(new int[] {
             1000000000,
@@ -1642,7 +1627,7 @@
             // label30
             // 
             this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(76, 278);
+            this.label30.Location = new System.Drawing.Point(76, 338);
             this.label30.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(14, 13);
@@ -1652,7 +1637,7 @@
             // label31
             // 
             this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(7, 278);
+            this.label31.Location = new System.Drawing.Point(7, 338);
             this.label31.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(14, 13);
@@ -2348,7 +2333,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.xStartPosUpDown)).EndInit();
             this.collisionGroup.ResumeLayout(false);
             this.collisionGroup.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.yVert)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.vertYPosUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.vertXPosUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.passthroughAngleUpDown)).EndInit();
             this.cliffGroup.ResumeLayout(false);
@@ -2376,14 +2361,12 @@
             this.itemSpawnerGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
-            this.rectangleGroup.ResumeLayout(false);
-            this.rectangleGroup.PerformLayout();
+            this.shapeGroup.ResumeLayout(false);
+            this.shapeGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rectLowerY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rectLowerX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rectUpperY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rectUpperX)).EndInit();
-            this.pathGroup.ResumeLayout(false);
-            this.pathGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeX)).EndInit();
             this.meleeCollisionGroup.ResumeLayout(false);
@@ -2445,7 +2428,7 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.NumericUpDown yVert;
+        private System.Windows.Forms.NumericUpDown vertYPosUpDown;
         private System.Windows.Forms.NumericUpDown vertXPosUpDown;
         private System.Windows.Forms.GroupBox point2dGroup;
         private System.Windows.Forms.NumericUpDown yPointUpDown;
@@ -2492,7 +2475,7 @@
         private System.Windows.Forms.NumericUpDown pointShapeZUpDown;
         private System.Windows.Forms.NumericUpDown pointShapeYUpDown;
         private System.Windows.Forms.NumericUpDown pointShapeXUpDown;
-        private System.Windows.Forms.GroupBox rectangleGroup;
+        private System.Windows.Forms.GroupBox shapeGroup;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.NumericUpDown rectLowerY;
@@ -2501,7 +2484,6 @@
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.NumericUpDown rectUpperY;
         private System.Windows.Forms.NumericUpDown rectUpperX;
-        private System.Windows.Forms.GroupBox pathGroup;
         private System.Windows.Forms.TreeView treeViewPath;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Button button8;

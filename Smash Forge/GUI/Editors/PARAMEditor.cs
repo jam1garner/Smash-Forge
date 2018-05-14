@@ -419,7 +419,7 @@ namespace Smash_Forge
                     string[] files = Directory.GetFiles(labelDirectory);
                     foreach (string filePath in files)
                     {
-                        if (Path.GetExtension(filePath).ToLowerInvariant() == ".ini")
+                        if (Path.GetExtension(filePath).ToLowerInvariant() == ".ini" && Path.GetFileNameWithoutExtension(filePath) != "material_params")
                         {
                             LabelFile lf = new LabelFile(filePath);
                             foreach (string name in lf.fileNames)

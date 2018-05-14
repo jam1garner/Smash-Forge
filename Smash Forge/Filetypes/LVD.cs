@@ -111,14 +111,14 @@ namespace Smash_Forge
             f.writeString(_boneName);
         }
     }
-   
+
     public class Point : LVDEntry
     {
         public override string magic { get { return ""; } }
         public float x;
         public float y;
     }
-    
+
     public class CollisionMat
     {
         public byte[] material = new byte[0xC];
@@ -365,11 +365,11 @@ namespace Smash_Forge
         }
     }
 
-    public enum LVDShapeTypes
+    public enum LVDShapeType : int
     {
-        point = 1,
-        rectangle = 3,
-        path = 4
+        Point = 1,
+        Rectangle = 3,
+        Path = 4
     }
 
     //Basic shape structure, this is used for the sections of item spawners and enemy generators
@@ -704,10 +704,10 @@ namespace Smash_Forge
         }
     }
 
-    public enum DamageShapeTypes
+    public enum DamageShapeType
     {
-        sphere = 2,
-        capsule = 3
+        Sphere = 2,
+        Capsule = 3
     }
 
     public class DamageShape : LVDEntry

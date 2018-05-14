@@ -15,22 +15,23 @@ namespace Smash_Forge
 {
     public partial class LVDEditor : DockContent
     {
-        public LVD LVD;
-
         public LVDEditor()
         {
             InitializeComponent();
         }
+        private void LVDEditor_Load(object sender, EventArgs e)
+        {
+            HideAllGroupBoxes();
+        }
+
+        public LVD LVD;
 
         public LVDEntry currentEntry;
-        private CollisionMat currentMat;
         private TreeNode currentTreeNode;
+        private CollisionMat currentMat;
         private Spawn currentPoint;
         private Bounds currentBounds;
-        private LVDShape currentItemSection;
-        private GeneralPoint currentGeneralPoint;
-        private GeneralShape currentGeneralRect;
-        private GeneralShape currentGeneralPath;
+
         private DAT.JOBJ currentJobj;
         public DAT datToPrerender = null;
 
@@ -87,9 +88,20 @@ namespace Smash_Forge
             boundsGroup.Visible = false;
             itemSpawnerGroup.Visible = false;
             point3dGroup.Visible = false;
-            rectangleGroup.Visible = false;
-            pathGroup.Visible = false;
+            shapeGroup.Visible = false;
             meleeCollisionGroup.Visible = false;
+        }
+
+        public void ResetUi()
+        {
+            currentEntry = null;
+            currentTreeNode = null;
+            currentMat = null;
+            currentPoint = null;
+            currentBounds = null;
+            nameTB.Text = "";
+            subnameTB.Text = "";
+            HideAllGroupBoxes();
         }
 
         private void OpenDatJObj(DAT.JOBJ jobj)
@@ -103,8 +115,8 @@ namespace Smash_Forge
         private void OpenLvdEntry(LVDEntry entry, TreeNode entryTree)
         {
             lvdEntryGroup.Visible = true;
-            currentTreeNode = entryTree;
             currentEntry = entry;
+            currentTreeNode = entryTree;
 
             nameTB.Text = currentEntry.name;
             subnameTB.Text = currentEntry.subname;
@@ -178,22 +190,34 @@ namespace Smash_Forge
 
         private void OpenGeneralShape(GeneralShape shape)
         {
-            if (shape.type == 1)
+            shapeGroup.Visible = true;
+
+            rectLowerX.Value = (decimal)shape.x1;
+            rectLowerY.Value = (decimal)shape.y1;
+            rectUpperX.Value = (decimal)shape.x2;
+            rectUpperY.Value = (decimal)shape.y2;
+
+            treeViewPath.Nodes.Clear();
+            for (int i = 0; i < shape.points.Count; ++i)
+                treeViewPath.Nodes.Add(new TreeNode());
+            renamePathTreeview();
+
+            /*if (shape.type == (int)LVDShapeType.Point)
             {
                 point2dGroup.Visible = true;
                 xPointUpDown.Value = (decimal)shape.x1;
                 yPointUpDown.Value = (decimal)shape.y1;
             }
-            else if (shape.type == 3)
+            else if (shape.type == (int)LVDShapeType.Rectangle)
             {
-                rectangleGroup.Visible = true;
+                shapeGroup.Visible = true;
                 currentGeneralRect = shape;
                 rectUpperX.Value = (Decimal)shape.x2;
                 rectUpperY.Value = (Decimal)shape.y2;
                 rectLowerX.Value = (Decimal)shape.x1;
                 rectLowerY.Value = (Decimal)shape.y1;
             }
-            else if (shape.type == 4)
+            else if (shape.type == (int)LVDShapeType.Path)
             {
                 pathGroup.Visible = true;
                 currentGeneralPath = shape;
@@ -201,16 +225,15 @@ namespace Smash_Forge
                 int j = 0;
                 foreach (Vector2 v in shape.points)
                     treeViewPath.Nodes.Add(new TreeNode($"Point {++j} ({v.X},{v.Y})") { Tag = v });
-            }
+            }*/
         }
 
-        private void OpenGeneralPoint(GeneralPoint p)
+        private void OpenGeneralPoint(GeneralPoint point)
         {
             point3dGroup.Visible = true;
-            currentGeneralPoint = p;
-            pointShapeXUpDown.Value = (Decimal)p.x;
-            pointShapeYUpDown.Value = (Decimal)p.y;
-            pointShapeZUpDown.Value = (Decimal)p.z;
+            pointShapeXUpDown.Value = (Decimal)point.x;
+            pointShapeYUpDown.Value = (Decimal)point.y;
+            pointShapeZUpDown.Value = (Decimal)point.z;
         }
 
         private void OpenItemSpawner(LVDEntry entry)
@@ -282,7 +305,7 @@ namespace Smash_Forge
             LVD.LVDSelection = collision.verts[selectedIndex];
 
             vertXPosUpDown.Value = (decimal)collision.verts[selectedIndex].X;
-            yVert.Value = (decimal)collision.verts[selectedIndex].Y;
+            vertYPosUpDown.Value = (decimal)collision.verts[selectedIndex].Y;
         }
 
         private void lines_AfterSelect(object sender, TreeViewEventArgs e)
@@ -330,8 +353,8 @@ namespace Smash_Forge
                 // Update the collision vert's position.
                 if (sender == vertXPosUpDown)
                     collision.verts[selectedIndex] = new Vector2((float)vertXPosUpDown.Value, collision.verts[selectedIndex].Y);
-                if (sender == yVert)
-                    collision.verts[selectedIndex] = new Vector2(collision.verts[selectedIndex].X, (float)yVert.Value);
+                if (sender == vertYPosUpDown)
+                    collision.verts[selectedIndex] = new Vector2(collision.verts[selectedIndex].X, (float)vertYPosUpDown.Value);
 
                 // Verts are named using the index and their position.
                 string name = $"Vertex {verticesTreeView.SelectedNode.Index + 1} ({collision.verts[selectedIndex].X},{collision.verts[selectedIndex].Y})";
@@ -384,20 +407,12 @@ namespace Smash_Forge
 
         private void lineFlagChange(object sender, EventArgs e)
         {
-            if (sender == rightLedgeCB)
-                currentMat.setFlag(7, ((CheckBox)sender).Checked);
-            if (sender == leftLedgeCB)
-                currentMat.setFlag(6, ((CheckBox)sender).Checked);
             if (sender == noWallJumpCB)
                 currentMat.setFlag(4, ((CheckBox)sender).Checked);
-        }
-
-        private void LVDEditor_Load(object sender, EventArgs e)
-        {
-            lvdEntryGroup.Visible = false;
-            collisionGroup.Visible = false;
-            point2dGroup.Visible = false;
-            boundsGroup.Visible = false;
+            if (sender == leftLedgeCB)
+                currentMat.setFlag(6, ((CheckBox)sender).Checked);
+            if (sender == rightLedgeCB)
+                currentMat.setFlag(7, ((CheckBox)sender).Checked);
         }
 
         private void cliff_ValueChanged(object sender, EventArgs e)
@@ -534,27 +549,30 @@ namespace Smash_Forge
             boneRigSelectButton.Text = boneNameRigging;
         }
 
+        //selecting something in the sections tab of the item spawner editor
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            //selecting something in the sections tab of the item spawner editor
             LVDShape section = (LVDShape)e.Node.Tag;
             itemSpawnVertTreeView.Nodes.Clear();
-            currentItemSection = section;
             int i = 1;
             foreach (Vector2 v in section.points)
                 itemSpawnVertTreeView.Nodes.Add(new TreeNode($"Point {i++} ({v.X},{v.Y})") { Tag = v });
         }
 
+        //selecting something in the vertices tab of the item spawner editor
         private void treeView2_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            //selecting something in the vertices tab of the item spawner editor
-            numericUpDown2.Value = (Decimal)((Vector2)e.Node.Tag).X;
-            numericUpDown1.Value = (Decimal)((Vector2)e.Node.Tag).Y;
+            LVDShape shape = (LVDShape)itemSpawnSectionTreeView.SelectedNode.Tag;
+            int selectionIndex = itemSpawnVertTreeView.SelectedNode.Index;
+            Vector2 vert = shape.points[selectionIndex];
+
+            numericUpDown2.Value = (decimal)vert.X;
+            numericUpDown1.Value = (decimal)vert.Y;
         }
 
+        //Add section
         private void addSectionButton_Click(object sender, EventArgs e)
         {
-            //Add section
             LVDShape section = new LVDShape(4);
             
             TreeNode node = new TreeNode($"Section {itemSpawnSectionTreeView.Nodes.Count + 1}") { Tag = section };
@@ -562,9 +580,9 @@ namespace Smash_Forge
             itemSpawnSectionTreeView.Nodes.Add(node);
         }
 
+        //Remove section
         private void removeSectionButton_Click(object sender, EventArgs e)
         {
-            //remove section
             LVDShape section = (LVDShape)itemSpawnSectionTreeView.SelectedNode.Tag;
             TreeNode node = itemSpawnSectionTreeView.SelectedNode;
             ((ItemSpawner)currentEntry).sections.Remove(section);
@@ -574,145 +592,158 @@ namespace Smash_Forge
                 n.Text = $"Section {i++}";
         }
 
+        //Add item spawner vertex
         private void addItemSpawnButton_Click(object sender, EventArgs e)
         {
-            //Add item spawner vertex
-            Vector2 v = new Vector2();
-            if(itemSpawnVertTreeView.SelectedNode == null)
-            {
-                itemSpawnVertTreeView.Nodes.Add(new TreeNode("temp") { Tag = v });
-                currentItemSection.points.Add(v);
-            }
+            LVDShape shape = (LVDShape)itemSpawnSectionTreeView.SelectedNode.Tag;
+
+            int selectionIndex;
+            if (itemSpawnVertTreeView.SelectedNode != null)
+                selectionIndex = itemSpawnVertTreeView.SelectedNode.Index + 1;
             else
-            {
-                int index = itemSpawnVertTreeView.SelectedNode.Index;
-                itemSpawnVertTreeView.Nodes.Insert(index + 1, new TreeNode("temp") { Tag = v });
-                currentItemSection.points.Insert(index + 1, v);
-            }
-            int i = 1;
-            foreach (TreeNode t in itemSpawnVertTreeView.Nodes)
-                t.Text = $"Point {i++} ({((Vector2)t.Tag).X},{((Vector2)t.Tag).Y})";
+                selectionIndex = shape.points.Count;
+
+            shape.points.Insert(selectionIndex, new Vector2());
+            itemSpawnVertTreeView.Nodes.Insert(selectionIndex, new TreeNode());
+
+            renameItemSpawnVertTreeview();
         }
 
+        //Delete item spawner vertex
         private void removeItemSpawnButton_Click(object sender, EventArgs e)
         {
-            //Delete item spawner vertex
-            if(itemSpawnVertTreeView.SelectedNode != null)
-            {
-                Vector2 v = (Vector2)itemSpawnVertTreeView.SelectedNode.Tag;
-                currentItemSection.points.Remove(v);
-                itemSpawnVertTreeView.Nodes.Remove(itemSpawnVertTreeView.SelectedNode);
-                int i = 1;
-                foreach (TreeNode t in itemSpawnVertTreeView.Nodes)
-                    t.Text = $"Point {i++} ({((Vector2)t.Tag).X},{((Vector2)t.Tag).Y})";
-            }
+            LVDShape shape = (LVDShape)itemSpawnSectionTreeView.SelectedNode.Tag;
+            if (shape.points.Count == 0)
+                return;
+
+            int selectionIndex;
+            if (itemSpawnVertTreeView.SelectedNode != null)
+                selectionIndex = itemSpawnVertTreeView.SelectedNode.Index;
+            else
+                selectionIndex = shape.points.Count - 1;
+            
+            shape.points.RemoveAt(selectionIndex);
+            itemSpawnVertTreeView.Nodes.RemoveAt(selectionIndex);
+
+            renameItemSpawnVertTreeview();
         }
 
+        //changed either X or Y pos of item spawner vertex
         private void changeItemVertPosition(object sender, EventArgs e)
         {
-            //changed either X or Y pos of item spawner vertex
-            Vector2 v = ((Vector2)itemSpawnVertTreeView.SelectedNode.Tag);
+            LVDShape shape = (LVDShape)itemSpawnSectionTreeView.SelectedNode.Tag;
+            int selectionIndex = itemSpawnVertTreeView.SelectedNode.Index;
+            Vector2 vert = shape.points[selectionIndex];
+
             if (sender == numericUpDown2)
-                v.X = (float)numericUpDown2.Value;
+                vert.X = (float)numericUpDown2.Value;
             if(sender == numericUpDown1)
-                v.Y = (float)numericUpDown1.Value;
-            itemSpawnVertTreeView.SelectedNode.Text = $"Point {itemSpawnVertTreeView.SelectedNode.Index + 1} ({((Vector2)itemSpawnVertTreeView.SelectedNode.Tag).X},{((Vector2)itemSpawnVertTreeView.SelectedNode.Tag).Y})";
+                vert.Y = (float)numericUpDown1.Value;
+
+            shape.points[selectionIndex] = vert;
+            renameItemSpawnVertTreeview();
         }
 
+        private void renameItemSpawnVertTreeview()
+        {
+            LVDShape shape = (LVDShape)itemSpawnSectionTreeView.SelectedNode.Tag;
+
+            for (int i = 0; i < shape.points.Count; ++i)
+                itemSpawnVertTreeView.Nodes[i].Text = $"Point {i + 1} ({shape.points[i].X},{shape.points[i].Y})";
+        }
+
+        //General point editing
         private void pointShape_ValueChanged(object sender, EventArgs e)
         {
-            //General point editing
+            GeneralPoint point = (GeneralPoint)currentEntry;
+
             if (sender == pointShapeXUpDown)
-                currentGeneralPoint.x = (float)pointShapeXUpDown.Value;
+                point.x = (float)pointShapeXUpDown.Value;
             if (sender == pointShapeYUpDown)
-                currentGeneralPoint.y = (float)pointShapeYUpDown.Value;
+                point.y = (float)pointShapeYUpDown.Value;
             if (sender == pointShapeZUpDown)
-                currentGeneralPoint.z = (float)pointShapeZUpDown.Value;
+                point.z = (float)pointShapeZUpDown.Value;
         }
 
         private void rectValueChanged(object sender, EventArgs e)
         {
-            GeneralShape r = currentGeneralRect;
-            if(sender == rectUpperX)
-                r.x2 = (float)rectUpperX.Value;
-            if (sender == rectUpperY)
-                r.y2 = (float)rectUpperY.Value;
+            GeneralShape shape = (GeneralShape)currentEntry;
+
             if (sender == rectLowerX)
-                r.x1 = (float)rectLowerX.Value;
+                shape.x1 = (float)rectLowerX.Value;
             if (sender == rectLowerY)
-                r.y1 = (float)rectLowerY.Value;
+                shape.y1 = (float)rectLowerY.Value;
+            if(sender == rectUpperX)
+                shape.x2 = (float)rectUpperX.Value;
+            if (sender == rectUpperY)
+                shape.y2 = (float)rectUpperY.Value;
         }
 
         private void treeViewPath_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            //select vertex in path
-            Vector2 v = (Vector2)e.Node.Tag;
-            pathNodeX.Value = (Decimal)v.X;
-            pathNodeY.Value = (Decimal)v.Y;
+            GeneralShape shape = (GeneralShape)currentEntry;
+            int selectionIndex = treeViewPath.SelectedNode.Index;
+            Vector2 vert = shape.points[selectionIndex];
+
+            pathNodeX.Value = (decimal)vert.X;
+            pathNodeY.Value = (decimal)vert.Y;
         }
 
         private void pathValueChanged(object sender, EventArgs e)
         {
-            Vector2 v = (Vector2)treeViewPath.SelectedNode.Tag;
+            GeneralShape shape = (GeneralShape)currentEntry;
+            int selectionIndex = treeViewPath.SelectedNode.Index;
+            Vector2 vert = shape.points[selectionIndex];
+
             if (sender == pathNodeX)
-                v.X = (float)pathNodeX.Value;
+                vert.X = (float)pathNodeX.Value;
             if (sender == pathNodeY)
-                v.Y = (float)pathNodeY.Value;
+                vert.Y = (float)pathNodeY.Value;
+
+            shape.points[selectionIndex] = vert;
             renamePathTreeview();
         }
 
         private void renamePathTreeview()
         {
-            int i = 0;
-            foreach(TreeNode t in treeViewPath.Nodes)
-            {
-                Vector2 v = (Vector2)t.Tag;
-                t.Text = $"Point {++i} ({v.X},{v.Y})";
-            }
+            GeneralShape shape = (GeneralShape)currentEntry;
+
+            for (int i = 0; i < shape.points.Count; ++i)
+                treeViewPath.Nodes[i].Text = $"Point {i + 1} ({shape.points[i].X},{shape.points[i].Y})";
         }
 
+        //Add path point
         private void addPathPointButton_Click(object sender, EventArgs e)
         {
-            //Add path point
-            Vector2 newPoint = new Vector2();
-            currentGeneralPath.points.Add(newPoint);
-            treeViewPath.Nodes.Add(new TreeNode("") { Tag = newPoint });
+            GeneralShape shape = (GeneralShape)currentEntry;
+
+            int selectionIndex;
+            if (treeViewPath.SelectedNode != null)
+                selectionIndex = treeViewPath.SelectedNode.Index + 1;
+            else
+                selectionIndex = shape.points.Count;
+
+            shape.points.Insert(selectionIndex, new Vector2());
+            treeViewPath.Nodes.Insert(selectionIndex, new TreeNode());
             renamePathTreeview();
         }
 
+        //Remove path point
         private void removePathPointButton_Click(object sender, EventArgs e)
         {
-            //Remove path point
-            if (treeViewPath.SelectedNode == null)
-                treeViewPath.SelectedNode = treeViewPath.Nodes[0];
-            Vector2 v = (Vector2)treeViewPath.SelectedNode.Tag;
-            treeViewPath.Nodes.Remove(treeViewPath.SelectedNode);
-            currentGeneralPath.points.Remove(v);
-            renamePathTreeview();
-        }
+            GeneralShape shape = (GeneralShape)currentEntry;
+            if (shape.points.Count == 0)
+                return;
 
-        public void ResetUi()
-        {
-            currentEntry = null;
-            currentMat = null;
-            currentTreeNode = null;
-            currentPoint = null;
-            currentBounds = null;
-            currentItemSection = null;
-            currentGeneralPoint = null;
-            currentGeneralRect = null;
-            currentGeneralPath = null;
-            nameTB.Text = "";
-            subnameTB.Text = "";
-            lvdEntryGroup.Visible = false;
-            collisionGroup.Visible = false;
-            cliffGroup.Visible = false;
-            point2dGroup.Visible = false;
-            boundsGroup.Visible = false;
-            itemSpawnerGroup.Visible = false;
-            point3dGroup.Visible = false;
-            rectangleGroup.Visible = false;
-            pathGroup.Visible = false;
+            int selectionIndex;
+            if (treeViewPath.SelectedNode != null)
+                selectionIndex = treeViewPath.SelectedNode.Index;
+            else
+                selectionIndex = shape.points.Count - 1;
+
+            shape.points.RemoveAt(selectionIndex);
+            treeViewPath.Nodes.RemoveAt(selectionIndex);
+            renamePathTreeview();
         }
 
         #region meleeCollisions
