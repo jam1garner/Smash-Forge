@@ -657,12 +657,6 @@
     <None Include="hashTable.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Blur.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\Blur.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="lib\Shader\DAT.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -739,12 +733,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Shader\Point.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\Quad.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\Quad.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Shader\Screen_Quad.frag">

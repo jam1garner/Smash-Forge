@@ -55,12 +55,12 @@ namespace Smash_Forge.Rendering
                 return;
 
             LoadTextures();
-            SetupScreenQuadBuffers();
+            SetupScreenQuadBuffer();
             GetOpenGLSystemInfo();
             hasSetup = true;
         }
 
-        private static void SetupScreenQuadBuffers()
+        private static void SetupScreenQuadBuffer()
         {
             // Create buffer for vertex positions. The data won't change, so only initialize once.
             GL.GenBuffers(1, out screenQuadVbo);

@@ -24,8 +24,6 @@ namespace Smash_Forge.Rendering
             CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
             CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
             CreateShader("Gradient", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Quad", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Blur", "/lib/Shader/", "/lib/Shader/");
             CreateShader("Shadow", "/lib/Shader/", "/lib/Shader/");
             CreateShader("Point", "/lib/Shader/", "/lib/Shader/");
             CreateShader("Nud_Sphere", "/lib/Shader/", "/lib/Shader/");
