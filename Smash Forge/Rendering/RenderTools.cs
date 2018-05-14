@@ -19,7 +19,8 @@ namespace Smash_Forge.Rendering
         public static int floorTexture;
         public static int backgroundTexture;
 
-        private static int screenQuadVao;
+        // A triangle that extends past the screen.
+        // Avoids the need for a second triangle to fill a rectangular screen.
         private static int screenQuadVbo;
         private static float[] screenQuadVertices = 
             {
@@ -61,9 +62,7 @@ namespace Smash_Forge.Rendering
 
         private static void SetupScreenQuadBuffers()
         {
-            GL.GenVertexArrays(1, out screenQuadVao);
-            GL.BindVertexArray(screenQuadVao);
-
+            // Create buffer for vertex positions. The data won't change, so only initialize once.
             GL.GenBuffers(1, out screenQuadVbo);
             GL.BindBuffer(BufferTarget.ArrayBuffer, screenQuadVbo);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * screenQuadVertices.Length), 
@@ -1638,15 +1637,14 @@ namespace Smash_Forge.Rendering
 
         private static void DrawScreenTriangle(Shader shader)
         {
-            GL.BindVertexArray(screenQuadVao);
+            shader.EnableVertexAttributes();
             GL.BindBuffer(BufferTarget.ArrayBuffer, screenQuadVbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * screenQuadVertices.Length), 
-                screenQuadVertices, BufferUsageHint.StaticDraw);
 
+            // Set everytime because multiple shaders use this for drawing.
             GL.VertexAttribPointer(shader.GetAttribute("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
-            GL.EnableVertexAttribArray(0);
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+            shader.DisableVertexAttributes();
         }
 
         public static byte[] DXT5ScreenShot(GLControl gc, int x, int y, int width, int height)
