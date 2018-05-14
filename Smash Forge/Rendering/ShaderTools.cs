@@ -71,17 +71,33 @@ namespace Smash_Forge.Rendering
 
         public static void SaveErrorLogs()
         {
+            // Export error logs for all the shaders.
+            List<String> compileErrorList = new List<String>(); 
             int successfulCompilations = Runtime.shaders.Count;
-            foreach (string key in Runtime.shaders.Keys)
+            foreach (string shaderName in Runtime.shaders.Keys)
             {
-                if (!Runtime.shaders[key].CompiledSuccessfully())
+                if (!Runtime.shaders[shaderName].CompiledSuccessfully())
+                {
+                    compileErrorList.Add(shaderName);
                     successfulCompilations -= 1;
+                }
 
-                Runtime.shaders[key].SaveErrorLog(key);
+                Runtime.shaders[shaderName].SaveErrorLog(shaderName);
             }
 
-            MessageBox.Show(String.Format("{0} of {1} shaders compiled successfully. Error logs have been saved to the Shader Error Logs directory.", 
-                successfulCompilations, Runtime.shaders.Count), "GLSL Shader Error Logs Export");
+            // Display how many shaders correctly compiled.
+            string message = String.Format("{0} of {1} shaders compiled successfully. Error logs have been saved to the Shader Error Logs directory.\n",
+                successfulCompilations, Runtime.shaders.Count);
+
+            // Display the shaders that didn't compile.
+            if (compileErrorList.Count > 0)
+            {
+                message += "The following shaders failed to compile:\n";
+                foreach (String shader in compileErrorList)
+                    message += shader + "\n";
+            }
+
+            MessageBox.Show(message, "GLSL Shader Error Logs Exported");
         }
     }
 }

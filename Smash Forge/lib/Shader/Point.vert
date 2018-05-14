@@ -1,11 +1,11 @@
-#version 150
+#version 330
 
 in vec3 vPosition;
 in vec4 vBone;
 in vec4 vWeight;
 in int vSelected;
 
-out flat vec4 color;
+flat out vec4 color;
 
 uniform mat4 mvpMatrix;
 
@@ -37,8 +37,8 @@ void main()
        objPos = skin(vPosition, ivec4(vBone));
 
 	color = vec4(col1,0.5);
-	if(vSelected)
-		color = vec4(col2,1);
+	if (vSelected == 1)
+		color = vec4(col2, 1);
 
     //objPos.z *= zScale;
     objPos = mvpMatrix * vec4(objPos.xyz, 1.0);
