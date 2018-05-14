@@ -308,8 +308,26 @@ namespace Smash_Forge
                     mo.Render(camera.mvpMatrix);
                 }
             }
-            if (BFRES != null)
+            if (BFRES != null && Runtime.shaders["BFRES"].CompiledSuccessfully() && Runtime.shaders["BFRES_PBR"].CompiledSuccessfully())
             {
+                if (Runtime.renderPhysicallyBasedRendering == true)
+                {
+                    shader = Runtime.shaders["BFRES_PBR"];
+                    GL.UseProgram(shader.programID);
+
+                    GL.Uniform3(shader.getAttribute("difLightColor"), diffuseColor.R, diffuseColor.G, diffuseColor.B);
+                    GL.Uniform3(shader.getAttribute("ambLightColor"), ambientColor.R, ambientColor.G, ambientColor.B);
+                }
+                else
+                {
+                    shader = Runtime.shaders["BFRES"];
+                    GL.UseProgram(shader.programID);
+
+                    GL.Uniform3(shader.getAttribute("difLightColor"), diffuseColor.R, diffuseColor.G, diffuseColor.B);
+                    GL.Uniform3(shader.getAttribute("ambLightColor"), ambientColor.R, ambientColor.G, ambientColor.B);
+                }
+
+
                 BFRES.Render(camera.mvpMatrix);
             }
             if (DAT_MELEE != null && Runtime.shaders["DAT"].CompiledSuccessfully())

@@ -1,0 +1,59 @@
+﻿#version 330 core
+
+in vec2 f_texcoord0;
+in vec2 f_texcoord1;
+in vec2 f_texcoord2;
+in vec3 normal;
+in vec4 color;
+in vec3 tangent;
+in vec3 bitangent;
+
+uniform int uvChannel;
+uniform vec3 difLightDirection;
+uniform int renderType;
+uniform int useNormalMap;
+uniform vec4 colorSamplerUV;
+uniform int renderVertColor;
+uniform vec3 difLightColor;
+uniform vec3 ambLightColor;
+uniform int colorOverride;
+
+//Texture Samplers
+uniform sampler2D tex0;
+uniform sampler2D BakeShadowMap;
+uniform sampler2D spl;
+uniform sampler2D nrm;
+uniform sampler2D BakeLightMap;
+uniform sampler2D UVTestPattern;
+uniform sampler2D metallicMap;
+uniform sampler2D roughnessMap;
+uniform sampler2D MRA; 
+
+uniform mat4 modelview;
+
+//Shader Params via BFRES
+uniform float normal_map_weight;
+
+// Channel Toggles
+uniform int renderR;
+uniform int renderG;
+uniform int renderB;
+uniform int renderAlpha;
+
+out vec4 FragColor;
+
+vec2 displayTexCoord =  f_texcoord0;
+
+#define PI 3.1415926
+
+void main()
+{
+
+    vec3 albedo     = texture(tex0, displayTexCoord).rgb;
+    float metallic  = texture(metallicMap, displayTexCoord).r;
+    float roughness = texture(roughnessMap, displayTexCoord).r;
+
+
+	vec4 outputColor = vec4(metallic,metallic,metallic,1);
+    FragColor =  outputColor;
+}

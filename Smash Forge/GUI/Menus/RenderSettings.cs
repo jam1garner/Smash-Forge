@@ -862,5 +862,15 @@ namespace Smash_Forge.GUI
         {
             Runtime.bloomThreshold = GuiTools.TryParseTBFloat(bloomThresholdTB);
         }
+
+        private void PhysicallyBasedRendering_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderPhysicallyBasedRendering = PhysicallyBasedRenderingCheckBox.Checked;
+        }
+
+        private void groupBox5_Enter(object sender, EventArgs e)
+        {
+
+        }
     }
 }

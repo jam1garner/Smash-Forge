@@ -22,6 +22,7 @@ using System.ComponentModel;
 using Smash_Forge.Rendering.Lights;
 using System.Text;
 
+
 namespace Smash_Forge
 {
     public partial class MainForm : FormBase
@@ -301,7 +302,7 @@ namespace Smash_Forge
             {
                 string filename = "";
                 SaveFileDialog save = new SaveFileDialog();
-                save.Filter = "Supported Filetypes (VBN,LVD,DAE,DAT)|*.vbn;*.lvd;*.dae;*.dat;|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
+                save.Filter = "Supported Filetypes (VBN,LVD,DAE,DAT)|*.vbn;*.lvd;*.dae;*.dat;*.byaml*.byml;;|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
                 DialogResult result = save.ShowDialog();
 
                 if (result == DialogResult.OK)
@@ -372,6 +373,104 @@ namespace Smash_Forge
             mvp.FrameSelectionAndSort();
             return mvp;
         }
+        public ModelViewport OpenBFRES(string pathBfres, string name = "", ModelViewport mvp = null)
+        {
+            // All the model files will be in the same directory as the model.nud file.
+            string[] files = Directory.GetFiles(Path.GetDirectoryName(pathBfres));
+
+            //Todo. Support loading bfres texture and animations if seperate and in same directory
+            FileData f = new FileData(pathBfres);
+            int Magic = f.readInt();
+
+            if (mvp == null)
+            {
+                mvp = new ModelViewport();
+                AddDockedControl(mvp);
+            }
+
+            ModelContainer modelContainer = new ModelContainer();
+            mvp.draw.Add(modelContainer);
+            modelContainer.Text = name;
+            mvp.Text = name;
+
+            /*   foreach (string file in files)
+               {
+                   if (file.EndsWith(".sbfres"))
+                   {
+                       string t = pathBfres.Replace(".sbfres", "");
+                       if (file.Contains(t) && file.Contains("Tex"))
+                       {
+                           modelContainer.BFRES = new BFRES(file);
+                           Console.WriteLine("Reading " + file);
+                       }
+                   }
+               }*/
+
+            Vector3 pos = new Vector3(0, 0.0f, 0);
+            Vector3 sca = new Vector3(1, 1, 1);
+            Vector3 rot = new Vector3(0, 0, 0);
+
+            Console.WriteLine(pathBfres);
+
+            if (pathBfres.Contains("Mario") && pathBfres.Contains("Face"))
+            {
+                Console.WriteLine("Positioning Face Mesh.....");
+                pos = new Vector3(0, 97.0f, 0);
+                sca = new Vector3(1, 1, 1);
+                rot = new Vector3(0, 0, 0);
+            }
+            if (pathBfres.Contains("Mario") && pathBfres.Contains("Head"))
+            {
+                Console.WriteLine("Positioning Head Mesh.....");
+                pos = new Vector3(0, 97.0f, 0);
+                sca = new Vector3(1, 1, 1);
+                rot = new Vector3(0, 0, 0);
+            }
+            if (pathBfres.Contains("Mario") && pathBfres.Contains("HandL"))
+            {
+                Console.WriteLine("Positioning Face Mesh.....");
+                pos = new Vector3(48.877f, 82.551f, -3.3f);
+                sca = new Vector3(1, 1, 1);
+                rot = new Vector3(0, 90f, 0);
+            }
+            if (pathBfres.Contains("Mario") && pathBfres.Contains("HandR"))
+            {
+                Console.WriteLine("Positioning HandR Mesh.....");
+                pos = new Vector3(-48.877f, 82.551f, -3.3f);
+                sca = new Vector3(1, 1, 1);
+                rot = new Vector3(0, -90f, 0);
+            }
+            if (pathBfres.Contains("Mario") && pathBfres.Contains("Eye"))
+            {
+                Console.WriteLine("Positioning Eye Mesh.....");
+                pos = new Vector3(0, 97.0f, 0);
+                sca = new Vector3(1, 1, 1);
+                rot = new Vector3(0, 0f, 0);
+            }
+            if (pathBfres.Contains("Mario") && pathBfres.Contains("Skirt"))
+            {
+                Console.WriteLine("Positioning Skirt Mesh.....");
+                pos = new Vector3(0, 56.0f, 0);
+                sca = new Vector3(1, 1, 1);
+                rot = new Vector3(0, 0f, 0);
+            }
+
+                
+            modelContainer.BFRES = new BFRES(pathBfres, pos, sca, rot);
+
+            if (modelContainer.BFRES.models.Count != 0)
+            {
+                Runtime.TargetVBN = modelContainer.BFRES.models[0].skeleton;
+                resyncTargetVBN();
+            }
+
+         
+
+            // Reset the camera. 
+        //    mvp.FrameSelectionAndSort();
+            return mvp;
+        }
+
 
         private static void OpenPacs(List<string> pacs, ModelContainer modelContainer)
         {
@@ -966,6 +1065,10 @@ namespace Smash_Forge
 
             if (filename.EndsWith(".lvd") && Runtime.TargetLVD != null)
                 File.WriteAllBytes(filename, Runtime.TargetLVD.Rebuild());
+
+
+            if (filename.EndsWith(".byaml") && Runtime.TargetBYAML != null)
+                Runtime.TargetBYAML.Rebuild(filename);
         }
 
         ///<summary>
@@ -979,6 +1082,8 @@ namespace Smash_Forge
 
             // Reassigned if a valid model file is opened. 
             ModelViewport mvp = new ModelViewport();
+
+      
 
             if (fileName.EndsWith(".omo"))
             {
@@ -1044,24 +1149,68 @@ namespace Smash_Forge
                 AddDockedControl(mvp);
             }
 
-            if (fileName.EndsWith(".bfres"))
+            if (fileName.EndsWith(".nud"))
             {
-                BFRES m = new BFRES(fileName);
-
-                if (m.models.Count != 0)
+                if (dockPanel1.ActiveContent is ModelViewport)
                 {
-                    Runtime.TargetVBN = m.models[0].skeleton;
-                    resyncTargetVBN();
-
-                    if (m.models[0].poly.Count != 0)
+                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
                     {
-                        mvp = new ModelViewport();
-                        mvp.draw.Add(new ModelContainer() { BFRES = m });
-                        mvp.Text = fileName;
-                        AddDockedControl(mvp);
+                        OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name, (ModelViewport)dockPanel1.ActiveContent);
+                    }
+                    if (dialogResult == DialogResult.No)
+                    {
+                        OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
                     }
                 }
+                else
+                {
+                    OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
+                }
+            }
+            if (fileName.EndsWith(".byaml") || fileName.EndsWith(".sprm") || fileName.EndsWith(".byml"))
+            {
+                if (CheckCurrentViewport(out mvp))
+                {
+                    mvp.BYAML = new BYAML(fileName);
+                }
+                else
+                {
+                    mvp.Text = fileName;
+                    mvp.BYAML = new BYAML(fileName);
+                }
+            }
+            if (fileName.EndsWith(".bfres") || fileName.EndsWith(".szs") || fileName.EndsWith(".sbfres"))
+            {
+
+                Vector3 pos = new Vector3(0, 0, 0);
+                Vector3 sca = new Vector3(1, 1, 1);
+                Vector3 rot = new Vector3(0, 0, 0);
+
+
+                BFRES m = new BFRES(fileName, pos, sca, rot);
+
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        OpenBFRES(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name, (ModelViewport)dockPanel1.ActiveContent);
+                        m.Read(fileName);
+                    }
+                    if (dialogResult == DialogResult.No)
+                    {
+                        OpenBFRES(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
+                        m.Read(fileName);
+                    }
+                }
+                else
+                {
+                    OpenBFRES(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
+                }
        
+      
+
                 //Run again for animations to be added. 
                 if (m.FSKACount != 0)
                 {
@@ -1076,13 +1225,15 @@ namespace Smash_Forge
                         }
                         else
                         {
+
+                        }
+                        {
                             mvp.AnimList.treeView1.Nodes.Add(FSKA.Read(fileName));
                         }
                         AddDockedControl(mvp);
                     }
                 }
             }
-
 
             if (fileName.EndsWith(".mbn"))
             {
@@ -1490,7 +1641,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0;*.bntx|" +
+                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0;*.bntx;*.szs;*.sbfres;*.sarc;*.pack|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +

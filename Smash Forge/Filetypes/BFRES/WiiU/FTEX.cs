@@ -5,58 +5,36 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
+using Syroot.NintenTools.Bfres;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
-    public class FTEX
+    public class FTEX : TreeNode
     {
-        public class Header
-        {
-            //0xC0 In Lenth
-            public int Name = 0x46544558;
-            public int dim;
-            public int width;
-            public int height;
-            public int depth;
-            public int mipCount;
-            public int format;
-            public int AA;
-            public int usage;
-            public int textureSize;
-            public int u1;
-            public int mipmapSize;
-            public int u2;
-            public int tilemode;
-            public int swizzle;
-            public int alignment;
-            public int pitch;
-            public byte[] gtxFluff = new byte[0x6C];
-            public int textureOffset;
-            public int mipmapOffset;
-            public int pad0;
-            public int pad1;
-        }
+        public int width;
+        public int height;
+        public int format;
+        public int display;
+
         public FTEX_Texture texture = new FTEX_Texture();
-        public int readOffset(FileData f)
+        public void ReadFTEX(Texture tex)
         {
-            return f.pos() + f.readInt();
-        }
-        public void ReadFTEX(FileData f)
-        {
-            texture.width = f.readInt();
-            texture.height = f.readInt();
-            f.skip(8);
-            int format = f.readInt();
-            f.skip(8);
-            int size = f.readInt();
-            f.skip(0xC);
-            int tm = f.readInt();
-            int swizzle = f.readInt();
-            f.skip(4);
-            int pitch = f.readInt();
-            f.skip(0x6C);
-            int gtxOffset = readOffset(f);
-            texture.data = GTX.swizzleBC(f.getSection(gtxOffset, size), texture.width, texture.height, format, tm, pitch, swizzle);
+            ImageKey = "texture";
+            SelectedImageKey = "texture";
+
+            texture.width = (int)tex.Width;
+            texture.height = (int)tex.Height;
+            format = (int)tex.Format;
+            int swizzle = (int)tex.Swizzle;
+            int pitch = (int)tex.Pitch;
+            texture.data = GTX.swizzleBC(tex.Data, texture.width, texture.height, format, (int)tex.TileMode, pitch, swizzle);
+            Text = tex.Name;
+
+            //Setup variables for treenode data
+
+            width = texture.width;
+            height = texture.height;
 
             switch (format)
             {
@@ -88,7 +66,12 @@ namespace Smash_Forge
                     texture.type = PixelInternalFormat.CompressedRgRgtc2;
                     break;
                 case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_SNORM):
-                    texture.type = PixelInternalFormat.CompressedSignedRgRgtc2;
+                    //OpenTK doesn't load BC5 SNORM textures right so I'll use the same decompress method bntx has
+                    byte[] fixBC5 = BRTI.DecompressBC5(texture.data, texture.width, texture.height, true);
+                    texture.data = fixBC5;
+                    texture.type = PixelInternalFormat.Rgba;
+                    texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+
                     break;
                 case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM):
                     texture.type = PixelInternalFormat.Rgba;
@@ -96,6 +79,7 @@ namespace Smash_Forge
                     break;
             }
             texture.display = loadImage(texture);
+            display = texture.display;
         }
 
         public class FTEX_Texture

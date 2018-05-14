@@ -330,6 +330,82 @@ namespace Smash_Forge
             zlibStream.Close();
             return stream.ToArray();
         }
+        public class Decompress
+        {
+            public static FileData YAZ0(FileData i)
+            {
+                return new FileData(YAZ0(i.b));
+            }
+
+            private static byte[] YAZ0(byte[] data)
+            {
+                FileData f = new FileData(data);
+
+                f.Endian = Endianness.Big;
+                f.seek(4);
+                int uncompressedSize = f.readInt();
+                f.seek(0x10);
+
+                byte[] src = f.read(data.Length - 0x10);
+                byte[] dst = new byte[uncompressedSize];
+
+                int srcPlace = 0, dstPlace = 0; //current read/write positions
+
+                uint validBitCount = 0; //number of valid bits left in "code" byte
+                byte currCodeByte = 0;
+                while (dstPlace < uncompressedSize)
+                {
+                    //read new "code" byte if the current one is used up
+                    if (validBitCount == 0)
+                    {
+                        currCodeByte = src[srcPlace];
+                        ++srcPlace;
+                        validBitCount = 8;
+                    }
+
+                    if ((currCodeByte & 0x80) != 0)
+                    {
+                        //straight copy
+                        dst[dstPlace] = src[srcPlace];
+                        dstPlace++;
+                        srcPlace++;
+                    }
+                    else
+                    {
+                        //RLE part
+                        byte byte1 = src[srcPlace];
+                        byte byte2 = src[srcPlace + 1];
+                        srcPlace += 2;
+
+                        uint dist = (uint)(((byte1 & 0xF) << 8) | byte2);
+                        uint copySource = (uint)(dstPlace - (dist + 1));
+
+                        uint numBytes = (uint)(byte1 >> 4);
+                        if (numBytes == 0)
+                        {
+                            numBytes = (uint)(src[srcPlace] + 0x12);
+                            srcPlace++;
+                        }
+                        else
+                            numBytes += 2;
+
+                        //copy run
+                        for (int i = 0; i < numBytes; ++i)
+                        {
+                            dst[dstPlace] = dst[copySource];
+                            copySource++;
+                            dstPlace++;
+                        }
+                    }
+
+                    //use next bit from "code" byte
+                    currCodeByte <<= 1;
+                    validBitCount -= 1;
+                }
+
+                return dst;
+            }
+        }
     }
 }
 

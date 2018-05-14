@@ -170,6 +170,20 @@ namespace Smash_Forge
         LVDList LVDList = new LVDList();
         LVDEditor LVDEditor = new LVDEditor();
 
+        
+        public BYAML BYAML
+        {
+            get
+            {
+                return byaml;
+            }
+            set
+            {
+                byaml = value;
+            }
+        }
+        private BYAML byaml;
+
         //Path
         public PathBin PathBin;
         
@@ -595,6 +609,10 @@ namespace Smash_Forge
                 }
                 if (m.BFRES != null)
                 {
+                    if (m.bfres.IsWiiU == false)
+                    {
+
+                    }
                     foreach (var mod in m.bfres.models)
                     {
                         if (mod.skeleton != null)
@@ -1362,6 +1380,11 @@ namespace Smash_Forge
                     DrawBNTXTex();
                     return;
                 }
+                if (MeshList.filesTreeView.SelectedNode is FTEX)
+                {
+                    DrawFTEXTex();
+                    return;
+                }
             }
 
             if (Runtime.usePostProcessing)
@@ -1737,7 +1760,28 @@ namespace Smash_Forge
             }
             glViewport.SwapBuffers();
         }
-
+        private void DrawFTEXTex()
+        {
+            GL.PopAttrib();
+            FTEX tex = ((FTEX)MeshList.filesTreeView.SelectedNode);
+            switch (tex.format)
+            {
+                case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM:
+                    {
+                        RenderTools.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
+                    }
+                    break;
+                case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM:
+                    {
+                        RenderTools.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
+                    }
+                    break;
+                default:
+                    RenderTools.DrawTexturedQuad(tex.display, tex.width, tex.height);
+                    break;
+            }
+            glViewport.SwapBuffers();
+        }
         private void DrawAreaLightBoundingBoxes()
         {
             foreach (AreaLight light in LightTools.areaLights)
@@ -1746,6 +1790,18 @@ namespace Smash_Forge
 
                 RenderTools.DrawRectangularPrism(new Vector3(light.positionX, light.positionY, light.positionZ),
                     light.scaleX, light.scaleY, light.scaleZ, true);
+            }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                Runtime.HasNoAnimationBaseValues = true;
+            }
+            else
+            {
+                Runtime.HasNoAnimationBaseValues = false;
             }
         }
 

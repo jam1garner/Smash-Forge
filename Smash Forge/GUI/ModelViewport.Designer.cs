@@ -60,7 +60,8 @@
             this.beginButton = new System.Windows.Forms.Button();
             this.prevButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
-            this.glViewport = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
+            this.glViewport = new OpenTK.GLControl();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.toolStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animationTrackBar)).BeginInit();
@@ -287,6 +288,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.animationTrackBar);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
@@ -436,6 +438,17 @@
             this.glViewport.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseUp);
             this.glViewport.Resize += new System.EventHandler(this.glViewport_Resize);
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(482, 91);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(165, 17);
+            this.checkBox1.TabIndex = 10;
+            this.checkBox1.Text = "Disable Base Values (BOTW)\r\n";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // ModelViewport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -499,5 +512,6 @@
         private System.Windows.Forms.ToolStripButton stripRot;
         private System.Windows.Forms.ToolStripButton stripSca;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }

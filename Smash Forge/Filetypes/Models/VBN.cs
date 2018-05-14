@@ -13,6 +13,7 @@ namespace Smash_Forge
     {
         public VBN vbnParent;
         public UInt32 boneType;
+        public bool IsInverted = true;
 
         public enum BoneType
         {
@@ -851,7 +852,7 @@ namespace Smash_Forge
 
                 for (int i = 0; i < bones.Count; i++)
                 {
-                    bonemat[i] = bones[i].invert * bones[i].transform;
+                     bonemat[i] = bones[i].invert * bones[i].transform;
                     //bonematIT[i] = bones[i].invert * bones[i].transform;
                     //bonematIT[i].Invert();
                     //bonematIT[i].Transpose();
@@ -859,6 +860,29 @@ namespace Smash_Forge
             }
 
             return bonemat;
+        }
+
+        public Matrix4[] bonemat2 = { };
+
+        public Matrix4[] getShaderMatrixSingleBinded()
+        {
+            Updated = true;
+            if (Updated)
+            {
+                Updated = false;
+                if (bonemat2.Length != bones.Count)
+                    bonemat2 = new Matrix4[bones.Count];
+
+                for (int i = 0; i < bones.Count; i++)
+                {
+                    bonemat2[i] = bones[i].transform;
+                    //bonematIT[i] = bones[i].invert * bones[i].transform;
+                    //bonematIT[i].Invert();
+                    //bonematIT[i].Transpose();
+                }
+            }
+
+            return bonemat2;
         }
 
         private static string charsToString(char[] c)

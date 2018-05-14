@@ -38,6 +38,9 @@
     <ApplicationIcon>Resources\forge.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DDSReader">
+      <HintPath>lib\DDSReader.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Octokit, Version=0.29.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -58,6 +61,10 @@
     <Reference Include="Syroot.NintenTools.Bfres, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Syroot.NintenTools.Bfres.dll</HintPath>
+    </Reference>
+    <Reference Include="Syroot.NintenTools.Yaz0, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Syroot.NintenTools.Yaz0.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -90,7 +97,6 @@
     <Compile Include="Config.cs" />
     <Compile Include="DiscordSettings.cs" />
     <Compile Include="Filetypes\Animation\BCHan.cs" />
-    <Compile Include="Filetypes\Animation\FSKA.cs" />
     <Compile Include="Filetypes\Animation\OMO.cs" />
     <Compile Include="Filetypes\ATKD.cs" />
     <Compile Include="Filetypes\BCH\BCH_Animation.cs" />
@@ -99,6 +105,14 @@
     <Compile Include="Filetypes\BCH\BCH_Texture.cs" />
     <Compile Include="Filetypes\BCH\PatriciaTree.cs" />
     <Compile Include="Filetypes\BCH\_3DSGPU.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\BFRES.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\BNTX.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\FSKA.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\MaterialAnimation.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\Swizzle.cs" />
+    <Compile Include="Filetypes\BFRES\WiiU\BFRES_WiiU.cs" />
+    <Compile Include="Filetypes\BFRES\WiiU\FTEX.cs" />
+    <Compile Include="Filetypes\BYAML.cs" />
     <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\MaterialXML.cs" />
     <Compile Include="Filetypes\Melee\DAT.cs" />
@@ -109,7 +123,6 @@
     <Compile Include="Filetypes\Melee\LibWii\TLP.cs" />
     <Compile Include="Filetypes\Melee\TriangleTools.cs" />
     <Compile Include="Filetypes\Models\BCH.cs" />
-    <Compile Include="Filetypes\Models\BFRES.cs" />
     <Compile Include="Filetypes\Models\Collada.cs" />
     <Compile Include="Filetypes\Models\MOI.cs" />
     <Compile Include="Filetypes\Models\OBJ.cs" />
@@ -117,16 +130,20 @@
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
     <Compile Include="Filetypes\Animation\LIGH.cs" />
-    <Compile Include="Filetypes\Params\LightSetParam.cs" />
-    <Compile Include="Filetypes\Params\ParamTools.cs" />
+    <Compile Include="Filetypes\Models\Params\LightSetParam.cs" />
+    <Compile Include="Filetypes\Models\Params\ParamTools.cs" />
+    <Compile Include="Filetypes\SARC.cs" />
     <Compile Include="Filetypes\Sounds\NUS3BANK.cs" />
     <Compile Include="Filetypes\Sounds\VGMStreamNative.cs" />
     <Compile Include="Filetypes\Sounds\WAVE.cs" />
     <Compile Include="Filetypes\Textures\3DSTex.cs" />
-    <Compile Include="Filetypes\Textures\BNTX.cs" />
-    <Compile Include="Filetypes\Textures\FTEX.cs" />
     <Compile Include="Filetypes\Textures\RG_ETC1.cs" />
-    <Compile Include="Filetypes\Textures\Swizzle.cs" />
+    <Compile Include="GUI\BFRES_Loaders\OdysseyCostumeLoader.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\BFRES_Loaders\OdysseyCostumeLoader.Designer.cs">
+      <DependentUpon>OdysseyCostumeLoader.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Controls\MeshMover.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -496,6 +513,9 @@
     <Compile Include="Rendering\ShaderTools.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
+    <EmbeddedResource Include="GUI\BFRES_Loaders\OdysseyCostumeLoader.resx">
+      <DependentUpon>OdysseyCostumeLoader.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
       <DependentUpon>MeshMover.cs</DependentUpon>
     </EmbeddedResource>
@@ -672,6 +692,9 @@
     </None>
     <None Include="hashTable.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\BFRES_PBR_fs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Skapon.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -985,6 +1008,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="lib\DDSReader.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\discord-rpc.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1175,6 +1201,9 @@
     <None Include="lib\Shader\BFRES_vs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="lib\Shader\BFRES_PBR_vs.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="lib\Syroot.BinaryData.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1184,6 +1213,10 @@
     <Content Include="lib\Syroot.NintenTools.Bfres.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="lib\Syroot.NintenTools.Yaz0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\texconv.exe" />
     <Content Include="Resources\10080000.png" />
     <None Include="Resources\boneWeightGradient.png" />
     <None Include="Resources\Flat Folder icon.png" />
@@ -1225,6 +1258,7 @@
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>del *.dll

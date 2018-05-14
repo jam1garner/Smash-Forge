@@ -214,5 +214,13 @@ namespace Smash_Forge.GUI.Menus
                 }
             }
         }
+
+        private void FreeCamToggle_CheckedChanged(object sender, EventArgs e)
+        {
+            if (FreeCamToggle.Checked)
+            {
+                Camera.FreeCam();
+            }
+        }
     }
 }

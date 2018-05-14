@@ -36,6 +36,7 @@ namespace Smash_Forge
         public static VBN TargetVBN { get; set; }
         public static NUD TargetNUD { get; set; }
         public static LVD TargetLVD { get; set; }
+        public static BYAML TargetBYAML { get; set; }
         public static PathBin TargetPath { get; set; }
         public static LIGH.LighBin TargetLigh { get; set; }
         public static CMR0 TargetCMR0 { get; set; }
@@ -108,6 +109,7 @@ namespace Smash_Forge
         public static bool renderHitboxesNoOverlap;
         public static bool useFrameDuration = true;
         public static bool useFAFasAnimationLength = false;
+        public static bool HasNoAnimationBaseValues = false;
 
         public static Color counterBubbleColor = Color.FromArgb(0x89, 0x89, 0x89);
         public static Color reflectBubbleColor = Color.Cyan;
@@ -202,6 +204,8 @@ namespace Smash_Forge
         public static bool useDepthTest = true;
         public static bool drawAreaLightBoundingBoxes = true;
         public static bool renderStageLighting = true;
+        public static bool renderPhysicallyBasedRendering = false;
+
 
         // Debug Shading
         public static RenderTypes renderType;

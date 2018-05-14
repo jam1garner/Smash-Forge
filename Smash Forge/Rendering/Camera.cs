@@ -67,6 +67,11 @@ namespace Smash_Forge.Rendering
             billboardMatrix = translation * perspFov;
             billboardYMatrix = Matrix4.CreateRotationX(rotX) * translation * perspFov;
         }
+        public void FreeCam()
+        {
+            mouseTranslateSpeed = 1f;
+
+        }
 
         public void Update()
         {
@@ -92,7 +97,8 @@ namespace Smash_Forge.Rendering
 
                 // Holding shift changes zoom speed.
                 if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
-                    zoomscale *= shiftZoomMultiplier;
+                    zoomscale *= shiftZoomMultiplier; 
+
 
                 // Zooms in or out with arrow keys.
                 if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
