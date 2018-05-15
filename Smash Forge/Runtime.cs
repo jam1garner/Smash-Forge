@@ -173,7 +173,7 @@ namespace Smash_Forge
         public static float refIntensity = 1.00f;
         public static float ambItensity = 1.00f;
 
-        public static float model_scale = 1f;
+        public static float modelScale = 1f;
         public static float zScale = 1.0f;
 
         public static int selectedBoneIndex = -1;

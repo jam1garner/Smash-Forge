@@ -472,7 +472,7 @@ namespace Smash_Forge
             {
                 b.transform = Matrix4.CreateScale(b.sca) * Matrix4.CreateFromQuaternion(b.rot) * Matrix4.CreateTranslation(b.pos);
                 // scale down the model in its entirety only when mid-animation (i.e. reset == false)
-                if (!reset && Runtime.model_scale != 1) b.transform *= Matrix4.CreateScale(Runtime.model_scale);
+                if (!reset && Runtime.modelScale != 1) b.transform *= Matrix4.CreateScale(Runtime.modelScale);
             }
 
             // Process as a tree from the root node's children and beyond. These
@@ -543,7 +543,7 @@ namespace Smash_Forge
                     bones[i].invert = Matrix4.Zero;
                 }
             }
-            if (Runtime.model_scale != 1f) update();
+            if (Runtime.modelScale != 1f) update();
         }
 
         public override void Read(string filename)
