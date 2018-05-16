@@ -11,7 +11,7 @@ in vec3 normal;
 in vec3 viewNormal;
 in vec3 tangent;
 in vec3 bitangent;
-in vec3 edgeDistance;
+noperspective in vec3 edgeDistance;
 
 layout (location = 0) out vec4 fragColor;
 layout (location = 1) out vec4 fragColorBright;
@@ -45,4 +45,5 @@ void main()
 
     vec3 edgeColor = vec3(1, 0, 0);
     fragColor.rgb = mix(fragColor.rgb, edgeColor, edgeIntensity);
+    //fragColor.rgb = normalize(edgeDistance);
 }

@@ -312,7 +312,6 @@ namespace Smash_Forge
                 // Used for wireframe shader.
                 GL.Uniform2(shader.GetVertexAttributeUniformLocation("windowSize"), screenDimensions);
 
-
                 SetElapsedDirectUvTime(shader);
 
                 GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelMatrix"), false, ref modelMatrix);
