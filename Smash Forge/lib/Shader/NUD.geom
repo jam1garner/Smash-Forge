@@ -3,6 +3,8 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
+uniform vec2 windowSize;
+
 // Attributes from vertex shader.
 in vec3 geomNormal[];
 in vec3 geomViewNormal[];
@@ -31,8 +33,17 @@ out vec3 normal;
 out vec3 viewNormal;
 out vec3 tangent;
 out vec3 bitangent;
+noperspective out vec3 edgeDistance;
 
 void main() {
+    vec2 p0 = windowSize * gl_in[0].gl_Position.xy / gl_in[0].gl_Position.w;
+    vec2 p1 = windowSize * gl_in[1].gl_Position.xy / gl_in[1].gl_Position.w;
+    vec2 p2 = windowSize * gl_in[2].gl_Position.xy / gl_in[2].gl_Position.w;
+    vec2 v0 = p2 - p1;
+    vec2 v1 = p2 - p0;
+    vec2 v2 = p1 = p0;
+    float area = abs(v1.x * v2.y - v1.y * v2.x);
+
     // Create a triangle and assign the vertex attributes.
     for (int i = 0; i < 3; i++) {
         gl_Position = gl_in[i].gl_Position;
@@ -47,6 +58,16 @@ void main() {
         viewNormal = geomViewNormal[i];
         tangent = geomTangent[i];
         bitangent = geomBitangent[i];
+
+        // The distance from a point to each of the edges.
+        // This will be correct after interpolation.
+        if (i == 0)
+            edgeDistance = vec3(area / length(v0), 0, 0);
+        else if (i == 1)
+            edgeDistance = vec3(0, area / length(v1), 0);
+        else if (i == 2)
+            edgeDistance = vec3(0, 0, area / length(v2));
+
         EmitVertex();
     }
 

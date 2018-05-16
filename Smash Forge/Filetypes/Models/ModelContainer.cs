@@ -228,7 +228,7 @@ namespace Smash_Forge
             return null;
         }
 
-        public void Render(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix, bool specialWireFrame = false)
+        public void Render(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix, Vector2 screenDimensions, bool specialWireFrame = false)
         {
             if (!Checked)
                 return;
@@ -308,6 +308,10 @@ namespace Smash_Forge
 
                 GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderType"), renderType);
                 GL.Uniform1(shader.GetVertexAttributeUniformLocation("debugOption"), (int)Runtime.uvChannel);
+
+                // Used for wireframe shader.
+                GL.Uniform2(shader.GetVertexAttributeUniformLocation("windowSize"), screenDimensions);
+
 
                 SetElapsedDirectUvTime(shader);
 

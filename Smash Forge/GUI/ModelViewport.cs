@@ -1444,7 +1444,7 @@ namespace Smash_Forge
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
                     if (m is ModelContainer)
-                        ((ModelContainer)m).Render(camera, 0, Matrix4.Zero, camera.mvpMatrix);
+                        ((ModelContainer)m).Render(camera, 0, Matrix4.Zero, camera.mvpMatrix, new Vector2(glViewport.Width, glViewport.Height));
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)
