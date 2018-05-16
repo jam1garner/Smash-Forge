@@ -41,8 +41,14 @@ namespace Smash_Forge.Rendering
                 } 
                 else
                 {
-                    shader.LoadShader(MainForm.executableDir + normalPath + name + ".vert", ShaderType.VertexShader);
-                    shader.LoadShader(MainForm.executableDir + normalPath + name + ".frag", ShaderType.FragmentShader);
+                    string shaderFile = MainForm.executableDir + normalPath + name;
+                    shader.LoadShader(shaderFile + ".vert", ShaderType.VertexShader);
+                    shader.LoadShader(shaderFile + ".frag", ShaderType.FragmentShader);
+
+                    if (File.Exists(shaderFile + ".geom"))
+                    {
+                        shader.LoadShader(shaderFile + ".geom", ShaderType.GeometryShader);
+                    }
                 }
                 Runtime.shaders.Add(name, shader);
             }

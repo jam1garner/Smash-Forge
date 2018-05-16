@@ -15,6 +15,8 @@ namespace Smash_Forge
 
         private int vsID;
         private int fsID;
+
+        private bool hasGeometryShader = false;
         private int geomID;
 
         private bool checkedCompilation = false;
@@ -164,13 +166,22 @@ namespace Smash_Forge
         {
             string shaderText = File.ReadAllText(filePath);
             if (shaderType == ShaderType.FragmentShader)
+            {
                 LoadShader(shaderText, shaderType, programID, out fsID);
+            }
             else if (shaderType == ShaderType.VertexShader)
+            {
                 LoadShader(shaderText, shaderType, programID, out vsID);
+            }
             else if (shaderType == ShaderType.GeometryShader)
+            {
                 LoadShader(shaderText, shaderType, programID, out geomID);
+                hasGeometryShader = true;
+            }
             else
+            {
                 throw new NotSupportedException(shaderType.ToString() + " is not a supported shader type.");
+            }
         }
 
         void LoadShader(string shaderText, ShaderType type, int program, out int id)
@@ -211,15 +222,19 @@ namespace Smash_Forge
         {
             // Make sure the shaders were compiled correctly.
             // Don't try to render if the shaders have errors to avoid crashes.
-            int compileStatusVS;
+            int compileStatusVS = 1;
             GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
 
-            int compileStatusFS;
+            int compileStatusFS = 1;
             GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
-            if (compileStatusFS == 0 || compileStatusVS == 0)
-                return false;
-            else
-                return true;
+
+            // Most shaders won't use a geometry shader.
+            int compileStatusGS = 1;
+            if (hasGeometryShader)
+                GL.GetShader(geomID, ShaderParameter.CompileStatus, out compileStatusGS);
+
+            // A value of 0 is a failed compilation.
+            return (compileStatusFS != 0 && compileStatusVS != 0 && compileStatusGS != 0);
         }
         
         private void ShowCompileWarning(string shaderName, string shaderType)
@@ -245,6 +260,15 @@ namespace Smash_Forge
             GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
             if (compileStatusFS == 0)
                 ShowCompileWarning(shaderName, "fragment shader");
+
+            // Most shaders won't use a geometry shader.
+            if (hasGeometryShader)
+            {
+                int compileStatusGS;
+                GL.GetShader(geomID, ShaderParameter.CompileStatus, out compileStatusGS);
+                if (compileStatusGS == 0)
+                    ShowCompileWarning(shaderName, "geometry shader");
+            }
 
             checkedCompilation = true;      
         }
