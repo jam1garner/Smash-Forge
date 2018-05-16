@@ -52,19 +52,19 @@ namespace Smash_Forge.Rendering
         {
             // Else if is faster than ternary operator. 
             if (value)
-                GL.Uniform1(shader.GetUniformLocation(name), 1);
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation(name), 1);
             else
-                GL.Uniform1(shader.GetUniformLocation(name), 0);
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation(name), 0);
         }
 
         public static void LightColorVector3Uniform(Shader shader, LightColor color, string name)
         {
-            GL.Uniform3(shader.GetUniformLocation(name), color.R, color.G, color.B);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation(name), color.R, color.G, color.B);
         }
 
         public static void SystemColorVector3Uniform(Shader shader, System.Drawing.Color color, string name)
         {
-            GL.Uniform3(shader.GetUniformLocation(name), ColorTools.Vector4FromColor(color).Xyz);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation(name), ColorTools.Vector4FromColor(color).Xyz);
         }
 
         public static void SaveErrorLogs()

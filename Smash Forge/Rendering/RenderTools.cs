@@ -1497,8 +1497,8 @@ namespace Smash_Forge.Rendering
 
             Setup2DRendering();
 
-            GL.Uniform3(shader.GetUniformLocation("topColor"), topColor);
-            GL.Uniform3(shader.GetUniformLocation("bottomColor"), bottomColor);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("topColor"), topColor);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("bottomColor"), bottomColor);
 
             DrawScreenTriangle(shader);          
         }
@@ -1517,7 +1517,7 @@ namespace Smash_Forge.Rendering
             GL.BindTexture(TextureTarget.Texture2D, texture);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.GetUniformLocation("image"), 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("image"), 0);
 
             // Channel toggle uniforms. 
             ShaderTools.BoolToIntShaderUniform(shader, renderR, "renderR");
@@ -1532,11 +1532,11 @@ namespace Smash_Forge.Rendering
             // This only works properly if the viewport is square.
             ShaderTools.BoolToIntShaderUniform(shader, keepAspectRatio, "preserveAspectRatio");
             float aspectRatio = (float)width / (float)height;
-            GL.Uniform1(shader.GetUniformLocation("width"), width);
-            GL.Uniform1(shader.GetUniformLocation("height"), height);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("width"), width);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("height"), height);
 
             // Display certain mip levels.
-            GL.Uniform1(shader.GetUniformLocation("currentMipLevel"), currentMipLevel);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("currentMipLevel"), currentMipLevel);
 
             // Draw full screen "quad" (big triangle)
             DrawScreenTriangle(shader);
@@ -1552,16 +1552,16 @@ namespace Smash_Forge.Rendering
             GL.BindTexture(TextureTarget.Texture2D, texture0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.GetUniformLocation("image0"), 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("image0"), 0);
 
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, texture1);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.GetUniformLocation("image1"), 1);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("image1"), 1);
 
             ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderBloom, "renderBloom");
-            GL.Uniform1(shader.GetUniformLocation("bloomIntensity"), Runtime.bloomIntensity);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("bloomIntensity"), Runtime.bloomIntensity);
 
             ShaderTools.SystemColorVector3Uniform(shader, Runtime.backgroundGradientBottom, "backgroundBottomColor");
             ShaderTools.SystemColorVector3Uniform(shader, Runtime.backgroundGradientTop, "backgroundTopColor");
@@ -1581,11 +1581,11 @@ namespace Smash_Forge.Rendering
             NUD.SetTextureUniforms(shader, material);
             NUD.SetLightingUniforms(shader, 0);
 
-            GL.Uniform3(shader.GetUniformLocation("cameraPosition"), 0, 0, 0);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("cameraPosition"), 0, 0, 0);
 
-            GL.Uniform1(shader.GetUniformLocation("zBufferOffset"), 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("zBufferOffset"), 0);
 
-            GL.Uniform1(shader.GetUniformLocation("bloomThreshold"), Runtime.bloomThreshold);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("bloomThreshold"), Runtime.bloomThreshold);
 
             bool isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
             ShaderTools.BoolToIntShaderUniform(shader, isTransparent, "isTransparent");
@@ -1595,25 +1595,25 @@ namespace Smash_Forge.Rendering
             GL.BindTexture(TextureTarget.Texture2D, sphereNrmTex);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.GetUniformLocation("normalTex"), 15);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalTex"), 15);
 
             GL.ActiveTexture(TextureUnit.Texture16);
             GL.BindTexture(TextureTarget.Texture2D, sphereUvTex);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.GetUniformLocation("uvTex"), 16);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("uvTex"), 16);
 
             GL.ActiveTexture(TextureUnit.Texture17);
             GL.BindTexture(TextureTarget.Texture2D, sphereTanTex);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.GetUniformLocation("tanTex"), 17);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("tanTex"), 17);
 
             GL.ActiveTexture(TextureUnit.Texture18);
             GL.BindTexture(TextureTarget.Texture2D, sphereBitanTex);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.GetUniformLocation("bitanTex"), 18);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("bitanTex"), 18);
 
             // Draw full screen "quad" (big triangle)
             DrawScreenTriangle(shader);
@@ -1641,7 +1641,7 @@ namespace Smash_Forge.Rendering
             GL.BindBuffer(BufferTarget.ArrayBuffer, screenQuadVbo);
 
             // Set everytime because multiple shaders use this for drawing.
-            GL.VertexAttribPointer(shader.GetVertexAttributeLocation("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
             shader.DisableVertexAttributes();
