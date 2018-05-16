@@ -20,44 +20,55 @@ namespace Smash_Forge
 
         private StringBuilder errorLog = new StringBuilder();
 
-		private Dictionary<string, int> attributes = new Dictionary<string, int>();
+		private Dictionary<string, int> vertexAttributeLocations = new Dictionary<string, int>();
+        private Dictionary<string, int> uniformLocations = new Dictionary<string, int>();
 
         public Shader ()
 		{
 			programID = GL.CreateProgram();
 
-            errorLog.AppendLine("Program ID: " + programID);
-            errorLog.AppendLine("MaxUniformBlockSize: " + GL.GetInteger(GetPName.MaxUniformBlockSize));
             errorLog.AppendLine("Vendor: " + GL.GetString(StringName.Vendor));
             errorLog.AppendLine("Renderer: " + GL.GetString(StringName.Renderer));
             errorLog.AppendLine("OpenGL Version: " + GL.GetString(StringName.Version));
             errorLog.AppendLine("GLSL Version: " + GL.GetString(StringName.ShadingLanguageVersion));
         }
 
-		public int GetAttribute(string name)
+		public int GetVertexAttributeLocation(string name)
         {
 			int value;
-			bool success = attributes.TryGetValue(name, out value);
-
-            if (success)
+            if (vertexAttributeLocations.TryGetValue(name, out value))
+            {
                 return value;
+            }
             else
                 return -1;
 		}
 
-		public void EnableVertexAttributes()
+        public int GetUniformLocation(string name)
         {
-			foreach(KeyValuePair<string, int> entry in attributes)
+            int value;
+            if (vertexAttributeLocations.TryGetValue(name, out value))
+            {
+                return value;
+            }
+            else
+                return -1;
+        }
+
+        public void EnableVertexAttributes()
+        {
+			foreach(int location in vertexAttributeLocations.Values)
 			{
-				GL.EnableVertexAttribArray(entry.Value);
+                Debug.WriteLine(location);
+                GL.EnableVertexAttribArray(location);
 			}
 		}
 
 		public void DisableVertexAttributes()
         {
-			foreach(KeyValuePair<string, int> entry in attributes)
+			foreach(int location in vertexAttributeLocations.Values)
 			{
-				GL.DisableVertexAttribArray(entry.Value);
+				GL.DisableVertexAttribArray(location);
 			}
 		}
 
@@ -70,23 +81,43 @@ namespace Smash_Forge
             File.WriteAllText(errorLogDirectory +  shaderName + " Error Log.txt", logExport.Replace("\n", Environment.NewLine));
         }
 
-		private void AddAttribute(string name, bool isUniform)
+		private void AddVertexAttribute(string name)
         {
-            if (attributes.ContainsKey(name))
-                attributes.Remove(name);
-			int position = -1;
-			if(isUniform)
-				position = GL.GetUniformLocation(programID, name);
-			else
-				position = GL.GetAttribLocation(programID, name);
-
+            if (vertexAttributeLocations.ContainsKey(name))
+                vertexAttributeLocations.Remove(name);
+			int position = GL.GetAttribLocation(programID, name);
+            vertexAttributeLocations.Add(name, position);
 
             errorLog.AppendLine(name + ", " + "Position: " + position);
+        }
 
-            attributes.Add(name, position);
-		}
+        private void AddUniform(string name)
+        {
+            if (vertexAttributeLocations.ContainsKey(name))
+                vertexAttributeLocations.Remove(name);
+            int position = GL.GetUniformLocation(programID, name);
+            vertexAttributeLocations.Add(name, position);
 
-        public void LoadAttributes(string src, bool fragment = false)
+            errorLog.AppendLine(name + ", " + "Position: " + position);
+        }
+
+        private void LoadUniforms()
+        {
+            int uniformCount;
+            GL.GetProgram(programID, GetProgramParameterName.ActiveUniforms, out uniformCount);
+            errorLog.AppendLine("Uniform Count: " + uniformCount);
+
+            for (int i = 0; i < uniformCount; i++)
+            {
+                int uniformSize;
+                ActiveUniformType uniformType;
+                string uniform = GL.GetActiveUniform(programID, i, out uniformSize, out uniformType);
+                uniform = RemoveEndingBrackets(uniform);
+                AddUniform(uniform);
+            }
+        }
+
+        private void LoadAttributes()
         {
             int attributeCount;
             GL.GetProgram(programID, GetProgramParameterName.ActiveAttributes, out attributeCount);
@@ -97,30 +128,19 @@ namespace Smash_Forge
                 int attributeSize;
                 ActiveAttribType attributeType;
                 string attribute = GL.GetActiveAttrib(programID, i, out attributeSize, out attributeType);
-
-                int index = attribute.IndexOf('[');
-                if (index > 0)
-                    attribute = attribute.Substring(0, index);
-
-                AddAttribute(attribute, false);
+                attribute = RemoveEndingBrackets(attribute);
+                AddVertexAttribute(attribute);
             }
+        }
 
-            int uniformCount;
-            GL.GetProgram(programID, GetProgramParameterName.ActiveUniforms, out uniformCount);
-            errorLog.AppendLine("Uniform Count: " + uniformCount);
-
-            for (int i = 0; i < uniformCount; i++)
-            {
-                int uniformSize;
-                ActiveUniformType uniformType;
-                string uniform = GL.GetActiveUniform(programID, i, out uniformSize, out uniformType);
-
-                int index = uniform.IndexOf('[');
-                if (index > 0)
-                    uniform = uniform.Substring(0, index);
-
-                AddAttribute(uniform, true);
-            }
+        private static string RemoveEndingBrackets(string name)
+        {
+            // Removes the brackets at the end of the name.
+            // Ex: "name[0]" becomes "name".
+            int index = name.IndexOf('[');
+            if (index > 0)
+                name = name.Substring(0, index);
+            return name;
         }
 
         public void LoadShader(string filePath, ShaderType shaderType)
@@ -134,11 +154,15 @@ namespace Smash_Forge
                 throw new NotSupportedException(shaderType.ToString() + " is not a supported shader type.");
 
             GL.LinkProgram(programID);
-            LoadAttributes(shaderText);
 
+            // Append shader compilation errors.
             errorLog.AppendLine(shaderType.ToString());
+            errorLog.AppendLine("Compilation Errors:");
             string error = GL.GetProgramInfoLog(programID);
             errorLog.AppendLine(error);
+
+            LoadAttributes();
+            LoadUniforms();
         }
 
         void LoadShader(string shaderText, ShaderType type, int program, out int address)
