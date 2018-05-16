@@ -11,7 +11,7 @@ in vec2 vUV3;
 in vec4 vBone;
 in vec4 vWeight;
 in vec4 vBoneHash;
-a
+
 out vec3 normal;
 out vec3 viewNormal;
 out vec3 tangent;

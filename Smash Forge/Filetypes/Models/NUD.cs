@@ -17,6 +17,30 @@ namespace Smash_Forge
 {
     public class NUD : FileBase, IDisposable
     {
+        // OpenGL Buffers
+        int positionVbo;
+        int elementsIbo;
+        int bonesUbo;
+        int selectVbo;
+
+        public const int SMASH = 0;
+        public const int POKKEN = 1;
+        public int type = SMASH;
+        public int boneCount = 0;
+        public bool hasBones = false;
+        List<Mesh> depthSortedMeshes = new List<Mesh>();
+        public float[] boundingBox = new float[4];
+
+        // xmb stuff
+        public int lightSetNumber = 0;
+        public int directUVTime = 0;
+        public int drawRange = 0;
+        public int drawingOrder = 0;
+        public bool useDirectUVTime = false;
+        public string modelType = "";
+
+        public override Endianness Endian { get; set; }
+
         public NUD()
         {
             SetupShaders();
@@ -33,10 +57,10 @@ namespace Smash_Forge
 
         private void GenerateBuffers()
         {
-            GL.GenBuffers(1, out vbo_position);
-            GL.GenBuffers(1, out ibo_elements);
-            GL.GenBuffers(1, out ubo_bones);
-            GL.GenBuffers(1, out vbo_select);
+            GL.GenBuffers(1, out positionVbo);
+            GL.GenBuffers(1, out elementsIbo);
+            GL.GenBuffers(1, out bonesUbo);
+            GL.GenBuffers(1, out selectVbo);
         }
 
         private static void SetupShaders()
@@ -109,35 +133,12 @@ namespace Smash_Forge
             return incorrectTextureIds.ToString();
         }
 
-        int vbo_position;
-        int ibo_elements;
-        int ubo_bones;
-        int vbo_select;
-
-        public const int SMASH = 0;
-        public const int POKKEN = 1;
-        public int type = SMASH;
-        public int boneCount = 0;
-        public bool hasBones = false;
-        List<Mesh> depthSortedMeshes = new List<Mesh>();
-        public float[] boundingBox = new float[4];
-
-        // xmb stuff
-        public int lightSetNumber = 0;
-        public int directUVTime = 0;
-        public int drawRange = 0;
-        public int drawingOrder = 0;
-        public bool useDirectUVTime = false;
-        public string modelType = "";
-
-        public override Endianness Endian { get; set; }
-
         public void Destroy()
         {
-            GL.DeleteBuffer(vbo_position);
-            GL.DeleteBuffer(ibo_elements);
-            GL.DeleteBuffer(ubo_bones);
-            GL.DeleteBuffer(vbo_select);
+            GL.DeleteBuffer(positionVbo);
+            GL.DeleteBuffer(elementsIbo);
+            GL.DeleteBuffer(bonesUbo);
+            GL.DeleteBuffer(selectVbo);
 
             Nodes.Clear();
         }
@@ -252,10 +253,10 @@ namespace Smash_Forge
             Faces = Ds.ToArray();
 
             // Bind only once!
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, positionVbo);
             GL.BufferData<DisplayVertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
 
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementsIbo);
             GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
         }
 
@@ -287,16 +288,16 @@ namespace Smash_Forge
                 int boneCount = vbn.bones.Count;
                 int dataSize = boneCount * Vector4.SizeInBytes * 4;
 
-                GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
+                GL.BindBuffer(BufferTarget.UniformBuffer, bonesUbo);
                 GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
                 GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
                 var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
-                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
+                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, bonesUbo);
 
                 if (f.Length > 0)
                 {
-                    GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
+                    GL.BindBuffer(BufferTarget.UniformBuffer, bonesUbo);
                     GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
                 }
             }
@@ -473,6 +474,34 @@ namespace Smash_Forge
 
         public void Render(Shader shader, Camera camera)
         {
+            DrawShadedPolygons(shader, camera);
+            DrawWireFrameAndSelectedPolygons(shader);
+        }
+
+        private void DrawWireFrameAndSelectedPolygons(Shader shader)
+        {
+            foreach (Mesh m in Nodes)
+            {
+                foreach (Polygon p in m.Nodes)
+                {
+                    if (((Mesh)p.Parent).Checked && p.Checked)
+                    {
+                        if ((p.IsSelected || p.Parent.IsSelected))
+                        {
+                            DrawModelSelection(p, shader);
+                        }
+
+                        if (Runtime.renderModelWireframe)
+                        {
+                            DrawModelWireframe(p, shader);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void DrawShadedPolygons(Shader shader, Camera camera)
+        {
             // For proper alpha blending, draw in reverse order and draw opaque objects first. 
             List<Polygon> opaque = new List<Polygon>();
             List<Polygon> transparent = new List<Polygon>();
@@ -497,21 +526,6 @@ namespace Smash_Forge
             foreach (Polygon p in transparent)
                 if (((Mesh)p.Parent).Checked)
                     DrawPolygon(p, shader, camera);
-
-            foreach (Mesh m in Nodes)
-            {
-                for (int i = m.Nodes.Count - 1; i >= 0; i--)
-                {
-                    Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - i];
-                    if (((Mesh)p.Parent).Checked)
-                    {
-                        if (Runtime.renderModelSelection && (((Mesh)p.Parent).IsSelected || p.IsSelected))
-                        {
-                            DrawPolygon(p, shader, camera, true);
-                        }
-                    }
-                }
-            }
         }
 
         private void DrawPolygon(Polygon p, Shader shader, Camera camera, bool drawSelection = false)
@@ -529,7 +543,9 @@ namespace Smash_Forge
             SetAlphaTesting(material);
             SetFaceCulling(material);
 
-            if (p.Checked)
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementsIbo);
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+            /*if (p.Checked)
             {
                 if ((p.IsSelected || p.Parent.IsSelected) && drawSelection)
                 {
@@ -537,18 +553,18 @@ namespace Smash_Forge
                 }
                 else
                 {
+                    if (Runtime.renderModel)
+                    {
+                        // Draw the model normally.
+                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+                    }
                     if (Runtime.renderModelWireframe)
                     {
                         DrawModelWireframe(p, shader);
                     }
 
-                    // need this
-                    if (Runtime.renderModel)
-                    {
-                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
-                    }
                 }
-            }
+            }*/
         }
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material)
@@ -683,7 +699,7 @@ namespace Smash_Forge
 
         private void SetVertexAttributes(Polygon p, Shader shader)
         {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, positionVbo);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
@@ -694,14 +710,18 @@ namespace Smash_Forge
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV3"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
         }
 
         private static void DrawModelWireframe(Polygon p, Shader shader)
         {
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+
             // use vertex color for wireframe color
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("colorOverride"), 1);
-            GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1f);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
@@ -973,17 +993,17 @@ namespace Smash_Forge
             {
                 foreach (Polygon p in m.Nodes)
                 {
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, positionVbo);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 72);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
 
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_select);
+                    GL.BindBuffer(BufferTarget.ArrayBuffer, selectVbo);
                     if (p.selectedVerts == null) return;
                     GL.BufferData<int>(BufferTarget.ArrayBuffer, (IntPtr)(p.selectedVerts.Length * sizeof(int)), p.selectedVerts, BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementsIbo);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                     
                     GL.PointSize(6f);
@@ -3242,12 +3262,12 @@ namespace Smash_Forge
 
         public void Dispose()
         {
-            if (GL.IsBuffer(ibo_elements))
+            if (GL.IsBuffer(elementsIbo))
             {
-                GL.DeleteBuffer(ibo_elements);
-                GL.DeleteBuffer(vbo_position);
-                GL.DeleteBuffer(ubo_bones);
-                GL.DeleteBuffer(vbo_select);
+                GL.DeleteBuffer(elementsIbo);
+                GL.DeleteBuffer(positionVbo);
+                GL.DeleteBuffer(bonesUbo);
+                GL.DeleteBuffer(selectVbo);
             }
             Nodes.Clear();
         }

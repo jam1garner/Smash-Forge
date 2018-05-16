@@ -15,6 +15,7 @@ namespace Smash_Forge
 
         private int vsID;
         private int fsID;
+        private int geomID;
 
         private bool checkedCompilation = false;
         public bool HasCheckedCompilation { get { return checkedCompilation; } }
@@ -166,13 +167,15 @@ namespace Smash_Forge
                 LoadShader(shaderText, shaderType, programID, out fsID);
             else if (shaderType == ShaderType.VertexShader)
                 LoadShader(shaderText, shaderType, programID, out vsID);
+            else if (shaderType == ShaderType.GeometryShader)
+                LoadShader(shaderText, shaderType, programID, out geomID);
             else
                 throw new NotSupportedException(shaderType.ToString() + " is not a supported shader type.");
         }
 
-        void LoadShader(string shaderText, ShaderType type, int program, out int address)
+        void LoadShader(string shaderText, ShaderType type, int program, out int id)
 		{
-			address = GL.CreateShader(type);
+			id = GL.CreateShader(type);
 
             // This probably shouldn't be hardcoded...
             if (shaderText.Contains("#include"))
@@ -180,11 +183,11 @@ namespace Smash_Forge
                 shaderText = ProcessIncludes(shaderText);
             }
 
-            GL.ShaderSource(address, shaderText);
-			GL.CompileShader(address);
-            GL.AttachShader(program, address);
-			Console.WriteLine(GL.GetShaderInfoLog(address));
-            errorLog.AppendLine(GL.GetShaderInfoLog(address));
+            GL.ShaderSource(id, shaderText);
+			GL.CompileShader(id);
+            GL.AttachShader(program, id);
+
+            errorLog.AppendLine(GL.GetShaderInfoLog(id));
         }
 
         private static string ProcessIncludes(string shaderText)
