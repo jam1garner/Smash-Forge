@@ -47,8 +47,8 @@ namespace Smash_Forge
             if (!Runtime.shaders.ContainsKey("NUD_Debug"))
                 ShaderTools.CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
 
-            Runtime.shaders["NUD"].DisplayCompilationWarning("NUD");
-            Runtime.shaders["NUD_Debug"].DisplayCompilationWarning("NUD_Debug");
+            Runtime.shaders["NUD"].DisplayCompilationWarnings("NUD");
+            Runtime.shaders["NUD_Debug"].DisplayCompilationWarnings("NUD_Debug");
         }
 
         public NUD(string fname) : this()

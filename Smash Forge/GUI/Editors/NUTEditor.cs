@@ -200,7 +200,7 @@ namespace Smash_Forge
 
             if (!Runtime.shaders["Texture"].HasCheckedCompilation)
             {
-                Runtime.shaders["Texture"].DisplayCompilationWarning("Texture");
+                Runtime.shaders["Texture"].DisplayCompilationWarnings("Texture");
             }
         }
 

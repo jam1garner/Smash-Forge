@@ -77,7 +77,7 @@ namespace Smash_Forge
                 Rendering.ShaderTools.CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
             }
 
-            Runtime.shaders["DAT"].DisplayCompilationWarning("DAT");
+            Runtime.shaders["DAT"].DisplayCompilationWarnings("DAT");
         }
 
         ~DAT()

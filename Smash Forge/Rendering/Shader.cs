@@ -12,8 +12,9 @@ namespace Smash_Forge
 	public class Shader
 	{
 		public int programID;
-		private int vsID;
-		private int fsID;
+
+        private int vsID;
+        private int fsID;
 
         private bool checkedCompilation = false;
         public bool HasCheckedCompilation { get { return checkedCompilation; } }
@@ -25,16 +26,20 @@ namespace Smash_Forge
 		private Dictionary<string, int> vertexAttributeAndUniformLocations = new Dictionary<string, int>();
 
         public Shader ()
-		{
-			programID = GL.CreateProgram();
+        {
+            programID = GL.CreateProgram();
+            AppendHardwareAndVersionInfo();
+        }
 
+        private void AppendHardwareAndVersionInfo()
+        {
             errorLog.AppendLine("Vendor: " + GL.GetString(StringName.Vendor));
             errorLog.AppendLine("Renderer: " + GL.GetString(StringName.Renderer));
             errorLog.AppendLine("OpenGL Version: " + GL.GetString(StringName.Version));
             errorLog.AppendLine("GLSL Version: " + GL.GetString(StringName.ShadingLanguageVersion));
         }
 
-		public int GetVertexAttributeUniformLocation(string name)
+        public int GetVertexAttributeUniformLocation(string name)
         {
 			int value;
             if (vertexAttributeAndUniformLocations.TryGetValue(name, out value))
@@ -172,18 +177,7 @@ namespace Smash_Forge
             // This probably shouldn't be hardcoded...
             if (shaderText.Contains("#include"))
             {
-                // Hard coded #include for reducing redundant shader code. 
-                string smashShaderText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\SMASH_SHADER.txt");
-                shaderText = shaderText.Replace("#include SMASH_SHADER", smashShaderText);
-
-                string nuUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\NU_UNIFORMS.txt");
-                shaderText = shaderText.Replace("#include NU_UNIFORMS", nuUniformText);
-
-                string stageUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\STAGE_LIGHTING_UNIFORMS.txt");
-                shaderText = shaderText.Replace("#include STAGE_LIGHTING_UNIFORMS", stageUniformText);
-
-                string miscUniformsText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\MISC_UNIFORMS.txt");
-                shaderText = shaderText.Replace("#include MISC_UNIFORMS", miscUniformsText);
+                shaderText = ProcessIncludes(shaderText);
             }
 
             GL.ShaderSource(address, shaderText);
@@ -193,6 +187,22 @@ namespace Smash_Forge
             errorLog.AppendLine(GL.GetShaderInfoLog(address));
         }
 
+        private static string ProcessIncludes(string shaderText)
+        {
+            // Hard coded #include for reducing redundant shader code. 
+            string smashShaderText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\SMASH_SHADER.txt");
+            shaderText = shaderText.Replace("#include SMASH_SHADER", smashShaderText);
+
+            string nuUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\NU_UNIFORMS.txt");
+            shaderText = shaderText.Replace("#include NU_UNIFORMS", nuUniformText);
+
+            string stageUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\STAGE_LIGHTING_UNIFORMS.txt");
+            shaderText = shaderText.Replace("#include STAGE_LIGHTING_UNIFORMS", stageUniformText);
+
+            string miscUniformsText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\MISC_UNIFORMS.txt");
+            shaderText = shaderText.Replace("#include MISC_UNIFORMS", miscUniformsText);
+            return shaderText;
+        }
 
         public bool CompiledSuccessfully()
         {
@@ -208,8 +218,17 @@ namespace Smash_Forge
             else
                 return true;
         }
+        
+        private void ShowCompileWarning(string shaderName, string shaderType)
+        {
+            string message = "The {0} {1} shader failed to compile. Check that your system supports OpenGL 3.30."
+                + "Enable legacy shading in the config for OpenGL 2.10."
+                + " Please export a shader error log and "
+                + "upload it when reporting rendering issues.";
+            MessageBox.Show(String.Format(message, shaderName, shaderType), "Shader Compilation Error");
+        }
 
-        public void DisplayCompilationWarning(string shaderName)
+        public void DisplayCompilationWarnings(string shaderName)
         {
             if (checkedCompilation)
                 return;
@@ -217,22 +236,12 @@ namespace Smash_Forge
             int compileStatusVS;
             GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
             if (compileStatusVS == 0)
-            {
-                MessageBox.Show("The " + shaderName
-                    + " vertex shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
-                    " Please export a shader error log and " +
-                    "upload it when reporting rendering issues.", "Shader Compilation Error");
-            }
+                ShowCompileWarning(shaderName, "vertex shader");
 
             int compileStatusFS;
             GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
             if (compileStatusFS == 0)
-            {
-                MessageBox.Show("The " + shaderName
-                    + " fragment shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
-                    " Please export a shader error log and " +
-                    "upload it when reporting rendering issues.", "Shader Compilation Error");
-            }
+                ShowCompileWarning(shaderName, "fragment shader");
 
             checkedCompilation = true;      
         }
