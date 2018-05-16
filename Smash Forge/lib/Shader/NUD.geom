@@ -35,14 +35,18 @@ out vec3 tangent;
 out vec3 bitangent;
 noperspective out vec3 edgeDistance;
 
+// Adapted from code in David Wolff's "OpenGL 4.0 Shading Language Cookbook"
+// https://gamedev.stackexchange.com/questions/136915/geometry-shader-wireframe-not-rendering-correctly-glsl-opengl-c
 void main() {
-    vec2 p0 = windowSize * gl_in[0].gl_Position.xy / gl_in[0].gl_Position.w;
-    vec2 p1 = windowSize * gl_in[1].gl_Position.xy / gl_in[1].gl_Position.w;
-    vec2 p2 = windowSize * gl_in[2].gl_Position.xy / gl_in[2].gl_Position.w;
-    vec2 v0 = p2 - p1;
-    vec2 v1 = p2 - p0;
-    vec2 v2 = p1 = p0;
-    float area = abs(v1.x * v2.y - v1.y * v2.x);
+    float a = length(gl_in[1].gl_Position.xyz - gl_in[2].gl_Position.xyz);
+    float b = length(gl_in[2].gl_Position.xyz - gl_in[0].gl_Position.xyz);
+    float c = length(gl_in[1].gl_Position.xyz - gl_in[0].gl_Position.xyz);
+
+    float alpha = acos( (b*b + c*c - a*a) / (2.0*b*c) );
+    float beta = acos( (a*a + c*c - b*b) / (2.0*a*c) );
+    float ha = abs( c * sin( beta ) );
+    float hb = abs( c * sin( alpha ) );
+    float hc = abs( b * sin( alpha ) );
 
     // Create a triangle and assign the vertex attributes.
     for (int i = 0; i < 3; i++) {
@@ -60,13 +64,13 @@ void main() {
         bitangent = geomBitangent[i];
 
         // The distance from a point to each of the edges.
-        // This will be correct after interpolation.
+        // This benefits from interpolation.
         if (i == 0)
-            edgeDistance = vec3(area / length(v0), 0, 0);
+            edgeDistance = vec3(ha, 0, 0);
         else if (i == 1)
-            edgeDistance = vec3(0, area / length(v1), 0);
+            edgeDistance = vec3(0, hb, 0);
         else if (i == 2)
-            edgeDistance = vec3(0, 0, area / length(v2));
+            edgeDistance = vec3(0, 0, hc);
 
         EmitVertex();
     }
