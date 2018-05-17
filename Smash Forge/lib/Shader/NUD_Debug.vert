@@ -1,4 +1,4 @@
-﻿#version 330
+#version 330
 
 in vec3 vPosition;
 in vec4 vColor;
@@ -12,22 +12,21 @@ in vec4 vBone;
 in vec4 vWeight;
 in vec4 vBoneHash;
 
-out vec3 normal;
-out vec3 viewNormal;
-out vec3 tangent;
-out vec3 bitangent;
-out vec3 fragpos;
-out vec3 viewPosition;
-out vec3 objectPosition;
+// Outputs for geometry shader.
+out vec3 geomNormal;
+out vec3 geomViewNormal;
+out vec3 geomTangent;
+out vec3 geomBitangent;
+out vec3 geomFragpos;
+out vec3 geomViewPosition;
+out vec3 geomObjectPosition;
 
-out vec4 vertexColor;
+out vec4 geomVertexColor;
 
-out vec2 texCoord;
-out vec2 texCoord2;
-out vec2 texCoord3;
-out vec2 normaltexCoord;
-
-out vec3 boneWeightsColored;
+out vec2 geomTexCoord;
+out vec2 geomTexCoord2;
+out vec2 geomTexCoord3;
+out vec2 geomNormaltexCoord;
 
 uniform vec4 colorSamplerUV;
 uniform vec4 colorSampler2UV;
@@ -37,6 +36,7 @@ uniform vec4 normalSamplerBUV;
 
 uniform mat4 mvpMatrix;
 uniform mat4 nscMatrix;
+uniform mat4 modelViewMatrix;
 uniform mat4 sphereMapMatrix;
 
 uniform uint flags;
@@ -50,34 +50,11 @@ uniform int selectedBoneIndex;
 uniform int hasNrmSamplerAUV;
 uniform int hasNrmSamplerBUV;
 
-uniform sampler2D weightRamp1;
-uniform sampler2D weightRamp2;
-
-uniform int debug1;
-uniform int debug2;
-uniform int debugOption;
-
 uniform bones
 {
     mat4 transforms[200];
 } bones_;
 
-uniform int renderType;
-
-float BoneWeightDisplay()
-{
-    float weight = 0;
-    if (selectedBoneIndex == vBone.x)
-        weight += vWeight.x;
-    if (selectedBoneIndex == vBone.y)
-        weight += vWeight.y;
-    if (selectedBoneIndex == vBone.z)
-        weight += vWeight.z;
-    if (selectedBoneIndex == vBone.w)
-        weight += vWeight.w;
-
-    return weight;
-}
 
 vec4 skin(vec3 po, ivec4 index)
 {
@@ -103,21 +80,9 @@ vec3 skinNRM(vec3 nr, ivec4 index)
     return nrmPos;
 }
 
-vec3 BoneWeightColor(float weights)
-{
-	float rampInputLuminance = weights;
-	rampInputLuminance = clamp((rampInputLuminance), 0.001, 0.999);
-    if (debugOption == 1)
-        return vec3(weights);
-    else if (debugOption == 2)
-	   return texture(weightRamp1, vec2(1 - rampInputLuminance, 0.50)).rgb;
-    else
-        return texture(weightRamp2, vec2(1 - rampInputLuminance, 0.50)).rgb;
-}
-
 void main()
 {
-    // vertex skinning
+    // Vertex Skinning
     vec4 objPos = vec4(vPosition.xyz, 1.0);
     if(vBone.x != -1.0)
        objPos = skin(vPosition, ivec4(vBone));
@@ -127,6 +92,7 @@ void main()
     objPos = mvpMatrix * vec4(objPos.xyz, 1.0);
     gl_Position = objPos;
 
+    // Texture samplers.
     vec4 sampler1 = colorSamplerUV;
     vec4 sampler2 = colorSampler2UV;
     if (hasNrmSamplerBUV == 1)
@@ -138,35 +104,30 @@ void main()
 
     if (useDirectUVTime == 1)
     {
-        texCoord = vec2((vUV * sampler1.xy) + (sampler1.zw * elapsedTime));
-        texCoord2 = vec2((vUV2 * sampler2.xy) + (sampler2.zw * elapsedTime));
-        texCoord3 = vec2((vUV3 * sampler3.xy) + (sampler3.zw * elapsedTime));
-        normaltexCoord = vec2((vUV * nrmSampler.xy) + (nrmSampler.zw * elapsedTime));
-    }
-    else
-    {
-        texCoord = vec2((vUV * sampler1.xy) + sampler1.zw);
-        texCoord2 = vec2((vUV2 * sampler2.xy) + (sampler2.zw));
-        texCoord3 = vec2((vUV3 * sampler3.xy) + (sampler3.zw));
-        normaltexCoord = vec2((vUV * nrmSampler.xy) + nrmSampler.zw);
+        // UV translation animation.
+        sampler1.zw *= elapsedTime;
+        sampler2.zw *= elapsedTime;
+        sampler3.zw *= elapsedTime;
+        nrmSampler.zw *= elapsedTime;
     }
 
-    tangent.xyz = vTangent.xyz;
-    bitangent.xyz = vBiTangent.xyz;
-    viewPosition = vec3(vPosition * mat3(mvpMatrix));
+    // Vertex attributes for geometry shader.
+    geomTexCoord = vec2(sampler1.xy * (vUV + sampler1.zw));
+    geomTexCoord2 = vec2(sampler2.xy * (vUV2 + sampler2.zw));
+    geomTexCoord3 = vec2(sampler3.xy * (vUV3 + sampler3.zw));
+    geomNormaltexCoord = vec2(nrmSampler.xy * (vUV + nrmSampler.zw));
 
-    // fragment shader attributes
-    float totalWeight = BoneWeightDisplay();
-    boneWeightsColored = BoneWeightColor(totalWeight).rgb;
+    geomVertexColor = vColor;
+	geomFragpos = objPos.xyz;
+    geomObjectPosition = vPosition.xyz;
+    geomTangent.xyz = vTangent.xyz;
+    geomBitangent.xyz = vBiTangent.xyz;
+    geomViewPosition = vec3(vPosition * mat3(mvpMatrix));
 
-    vertexColor = vColor;
-	fragpos = objPos.xyz;
-    objectPosition = vPosition.xyz;
-
-    normal = vNormal;
+    geomNormal = vNormal;
 	if(vBone.x != -1.0)
-		normal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
+		geomNormal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
 
-    viewNormal = mat3(sphereMapMatrix) * normal.xyz;
-    viewNormal = viewNormal * 0.5 + 0.5;
+    geomViewNormal = mat3(sphereMapMatrix) * geomNormal.xyz;
+    geomViewNormal = geomViewNormal * 0.5 + 0.5;
 }

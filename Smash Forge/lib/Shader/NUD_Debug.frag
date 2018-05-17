@@ -11,6 +11,7 @@ in vec3 normal;
 in vec3 tangent;
 in vec3 bitangent;
 in vec3 boneWeightsColored;
+noperspective in vec3 edgeDistance;
 
 out vec4 fragColor;
 
@@ -56,7 +57,7 @@ uniform int renderStageLighting;
 uniform int uvChannel;
 uniform int debug1;
 uniform int debug2;
-uniform int colorOverride;
+uniform int drawWireframe;
 
 // NU_ Material Properties
 uniform vec4 colorOffset;
@@ -148,6 +149,8 @@ uniform sampler2D shadowMap;
 uniform int selectedBoneIndex;
 uniform vec3 NSC;
 uniform float elapsedTime;
+
+uniform int drawSelection;
 
 // Constants
 #define gamma 2.2
@@ -265,9 +268,8 @@ void main()
 {
     fragColor = vec4(0,0,0,1);
 
-    if (colorOverride == 1)
+    if (drawSelection == 1)
     {
-        // Wireframe color.
         fragColor = vec4(1);
         return;
     }
@@ -405,4 +407,12 @@ void main()
     }
     if (alphaOverride == 1)
         fragColor = vec4(resultingColor.aaa, 1);
+
+    if (drawWireframe == 1)
+    {
+        float minDistance = min(min(edgeDistance.x, edgeDistance.y), edgeDistance.z);
+        float smoothedDistance = exp2(-512.0 * minDistance * minDistance);
+        vec3 edgeColor = vec3(1);
+        fragColor.rgb = mix(fragColor.rgb, edgeColor, smoothedDistance);
+    }
 }
