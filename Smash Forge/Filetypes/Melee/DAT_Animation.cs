@@ -301,11 +301,11 @@ namespace Smash_Forge
                 case 0x00:
                     return d.readFloat();
                 case 0x20:
-                    return unchecked((short)d.readShort()) / (double)scale;
-                case 0x40:
                     return d.readShort() / (double)scale;
+                case 0x40:
+                    return d.readUShort() / (double)scale;
                 case 0x60:
-                    return unchecked((sbyte)d.readByte()) / (double)scale;
+                    return d.readSByte() / (double)scale;
                 case 0x80:
                     return d.readByte() / (double)scale;
                 default:

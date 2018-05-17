@@ -100,8 +100,8 @@ namespace Smash_Forge
             unknown = f.readInt();
             valueCount = f.readInt();
             int frameCount = f.readInt();
-            unknown2 = f.readShort();
-            unknown3 = f.readShort();
+            unknown2 = f.readUShort();
+            unknown3 = f.readUShort();
             int dataOff = f.readInt();
             f.seek(nameOff);
             name = f.readString();
@@ -306,16 +306,16 @@ namespace Smash_Forge
             name = f.readString();
             f.seek(dataOff);
             frameCount = f.readInt();
-            unk2 = (f.readShort() != 0);
-            short keyframeCount = (short)f.readShort();
+            unk2 = (f.readUShort() != 0);
+            short keyframeCount = f.readShort();
             int keyframeOffset = f.readInt();
             f.seek(keyframeOffset);
             frame tempFrame;
             for (int i = 0; i < keyframeCount; i++)
             {
-                tempFrame.frameNum = (short)f.readShort();
-                tempFrame.state = (byte)f.readByte();
-                tempFrame.unknown = (byte)f.readByte();
+                tempFrame.frameNum = f.readShort();
+                tempFrame.state = f.readByte();
+                tempFrame.unknown = f.readByte();
                 frames.Add(tempFrame);
                 tempFrame = new frame();
             }

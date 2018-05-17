@@ -47,10 +47,15 @@ namespace Smash_Forge
         {
             InitializeComponent();
             Populate();
+
+            transUvVerticalCB.Checked = true;
         }
         
         public void Populate()
         {
+            vertTypeComboBox.BeginUpdate();
+            boneTypeComboBox.BeginUpdate();
+
             foreach (string key in VertexTypes.Keys)
                 vertTypeComboBox.Items.Add(key);
 
@@ -59,6 +64,9 @@ namespace Smash_Forge
 
             vertTypeComboBox.SelectedIndex = 4;
             boneTypeComboBox.SelectedIndex = 3;
+
+            vertTypeComboBox.EndUpdate();
+            boneTypeComboBox.EndUpdate();
         }
 
         public void Apply(NUD nud)

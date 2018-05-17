@@ -1297,7 +1297,7 @@ namespace Smash_Forge
             else if (fileName.EndsWith(".bin"))
             {
                 FileData f = new FileData(fileName);
-                if(f.readShort() == 0xFFFF)
+                if (f.readUShort() == 0xFFFF)
                 {
                     PARAMEditor p = new PARAMEditor(fileName) { ShowHint = DockState.Document };
                     p.Text = Path.GetFileName(fileName);
@@ -1807,7 +1807,7 @@ namespace Smash_Forge
             NUT n = new NUT();
             data.Endian = Endianness.Big;
             data.seek(0x6);
-            int count = data.readShort();
+            int count = data.readUShort();
 
             data.seek(0x10);
 
@@ -1822,11 +1822,11 @@ namespace Smash_Forge
                 data.skip(4);
                 int size = data.readInt();
                 int DDSSize = size;
-                headerSize = data.readShort();
+                headerSize = data.readUShort();
                 data.skip(5);
                 int typet = data.readByte();
-                int Width = data.readShort();
-                int Height = data.readShort();
+                int Width = data.readUShort();
+                int Height = data.readUShort();
 
                 data.skip(8);// mipmaps and padding
 

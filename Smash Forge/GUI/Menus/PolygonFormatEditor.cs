@@ -41,6 +41,8 @@ namespace Smash_Forge
             normalTypeComboBox.SelectedIndex = 0;
             weightTypeComboBox.EndUpdate();
             normalTypeComboBox.EndUpdate();
+
+            vertexColorCB.Checked = true;
         }
 
         private NUD.Polygon poly;
@@ -66,6 +68,8 @@ namespace Smash_Forge
                     break;
                 }
             }
+
+            vertexColorCB.Checked = poly.UVSize >> 4 != 0;
         }
 
         private void applyButton_Click(object sender, EventArgs e)
@@ -97,6 +101,28 @@ namespace Smash_Forge
                         v.boneWeights[i] = ((float)((byte)(v.boneWeights[i] * 255))) / 255;
                 }
             }
+
+            int uvFlag = poly.UVSize;
+            if (vertexColorCB.Checked)
+            {
+                if (uvFlag >> 4 == 0)
+                {
+                    uvFlag = 0x10 | uvFlag;
+                    foreach (NUD.Vertex v in poly.vertices)
+                        v.color = new OpenTK.Vector4(127, 127, 127, 127);
+                }
+            }
+            else
+            {
+                if (uvFlag >> 4 != 0)
+                {
+                    uvFlag &= 0x0F;
+                    foreach (NUD.Vertex v in poly.vertices)
+                        v.color = new OpenTK.Vector4(127, 127, 127, 127);
+                }
+            }
+            poly.UVSize = uvFlag;
+
             Close();
         }
     }

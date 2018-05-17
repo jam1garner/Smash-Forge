@@ -41,7 +41,7 @@ namespace Smash_Forge
             f.skip(4);
             int backwardCompatibility = f.readByte();
             int forwardCompatibility = f.readByte();
-            int version = f.readShort();
+            int version = f.readUShort();
 
             int mainHeaderOffset = f.readInt();
             int stringTableOffset = f.readInt();
@@ -64,8 +64,8 @@ namespace Smash_Forge
 
             if (backwardCompatibility > 7)
             {
-                int flags = f.readShort();
-                int addressCount = f.readShort();
+                int flags = f.readUShort();
+                int addressCount = f.readUShort();
             }
 
             // Relocation table
@@ -248,7 +248,7 @@ namespace Smash_Forge
                 Models.Nodes.Add(model);
                 model.flags = f.readByte();
                 model.skeletonScaleType = f.readByte();
-                model.silhouetteMaterialEntries = f.readShort();
+                model.silhouetteMaterialEntries = f.readUShort();
                 model.worldTransform = new OpenTK.Matrix4(f.readFloat(), f.readFloat(), f.readFloat(), f.readFloat()
                      , f.readFloat(), f.readFloat(), f.readFloat(), f.readFloat()
                      , f.readFloat(), f.readFloat(), f.readFloat(), f.readFloat()
@@ -277,8 +277,8 @@ namespace Smash_Forge
                 string[] objectName = new string[objectsNodeNameEntries];
                 f.seek(objectsNodeNameOffset);
                 int rootReferenceBit = f.readInt();
-                int rootLeftNode = f.readShort();
-                int rootRightNode = f.readShort();
+                int rootLeftNode = f.readUShort();
+                int rootRightNode = f.readUShort();
                 int rootNameOffset = f.readInt();
 
                 //Console.WriteLine(rootReferenceBit.ToString("x") + " " + f.readString(rootNameOffset, -1) + " " + rootLeftNode + " " + rootRightNode);
@@ -286,8 +286,8 @@ namespace Smash_Forge
                 for (int i = 0; i < objectsNodeNameEntries; i++)
                 {
                     int referenceBit = f.readInt();
-                    short leftNode = (short)f.readShort();
-                    short rightNode = (short)f.readShort();
+                    short leftNode = f.readShort();
+                    short rightNode = f.readShort();
                     objectName[i] = f.readString(f.readInt(), -1);
                     Console.WriteLine((referenceBit>>3) + " " + (referenceBit&0x7) + " " + objectName[i] + " " + leftNode + " " + rightNode);
                 }
@@ -299,9 +299,9 @@ namespace Smash_Forge
                 for (int i = 0; i < verticesTableEntries; i++)
                 {
                     BCH_Mesh Mesh = new BCH_Mesh();
-                    Mesh.MaterialIndex = f.readShort();
-                    int mflags = f.readShort();
-                    int meshId = f.readShort();
+                    Mesh.MaterialIndex = f.readUShort();
+                    int mflags = f.readUShort();
+                    int meshId = f.readUShort();
                     if (!MeshIndex.ContainsKey(meshId))
                     {
                         MeshIndex.Add(meshId, Mesh);
@@ -318,7 +318,7 @@ namespace Smash_Forge
                     // node visibility TODO: finish...
                     Mesh.Checked = ((nodeVisibility & (1 << i)) > 0);
 
-                    Mesh.renderPriority = f.readShort();
+                    Mesh.renderPriority = f.readUShort();
                     
                     int vshAttBufferCommandOffset = f.readInt();
                     int vshAttBufferCommandCount = f.readInt();
@@ -363,8 +363,8 @@ namespace Smash_Forge
                 {
                     Bone bone = new Bone(model.skeleton);
                     int boneFlags = f.readInt();
-                    bone.parentIndex = (short)f.readShort();
-                    short boneSpace = (short)f.readShort();
+                    bone.parentIndex = f.readShort();
+                    short boneSpace = f.readShort();
                     bone.scale = new float[3];
                     bone.rotation = new float[3];
                     bone.position = new float[3];

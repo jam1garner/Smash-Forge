@@ -52,9 +52,9 @@ namespace Smash_Forge
             d.skip(4); //flags?
 
             d.skip(2);
-            int boneCount = d.readShort();
-            int frameCount = d.readShort();
-            int frameSize = d.readShort();
+            int boneCount = d.readUShort();
+            int frameCount = d.readUShort();
+            int frameSize = d.readUShort();
 
             int offset1 = d.readInt();  // nodeOffset
             int offset2 = d.readInt();  // interOffset
@@ -203,9 +203,9 @@ namespace Smash_Forge
 
                     if (baseNode[j].t_type == KeyNode.INTERPOLATED)
                     {
-                        float i1 = ((float)d.readShort() / 0xffff);
-                        float i2 = ((float)d.readShort() / 0xffff);
-                        float i3 = ((float)d.readShort() / 0xffff);
+                        float i1 = ((float)d.readUShort() / 0xffff);
+                        float i2 = ((float)d.readUShort() / 0xffff);
+                        float i3 = ((float)d.readUShort() / 0xffff);
 
                         float x = baseNode[j].t.X + (baseNode[j].t2.X * (i1));
                         float y = baseNode[j].t.Y + (baseNode[j].t2.Y * (i2));
@@ -298,9 +298,9 @@ namespace Smash_Forge
                     }
                     else if (baseNode[j].r_type == KeyNode.INTERPOLATED)
                     {
-                        float i1 = ((float)d.readShort() / (0xffff));
-                        float i2 = ((float)d.readShort() / (0xffff));
-                        float i3 = ((float)d.readShort() / (0xffff));
+                        float i1 = ((float)d.readUShort() / (0xffff));
+                        float i2 = ((float)d.readUShort() / (0xffff));
+                        float i3 = ((float)d.readUShort() / (0xffff));
 
                         float x = baseNode[j].rv.X + (baseNode[j].rv2.X * (i1));
                         float y = baseNode[j].rv.Y + (baseNode[j].rv2.Y * (i2));
@@ -319,7 +319,7 @@ namespace Smash_Forge
                     }
                     else if (baseNode[j].r_type == KeyNode.KEYFRAME)
                     {
-                        float scale = d.readShort() * baseNode[j].r_extra;
+                        float scale = d.readUShort() * baseNode[j].r_extra;
                         float x = baseNode[j].rv.X;
                         float y = baseNode[j].rv.Y;
                         float z = baseNode[j].rv.Z + scale;
@@ -350,9 +350,9 @@ namespace Smash_Forge
 
                     if (baseNode[j].s_type == KeyNode.INTERPOLATED)
                     {
-                        float i1 = ((float)d.readShort() / (0xffff));
-                        float i2 = ((float)d.readShort() / (0xffff));
-                        float i3 = ((float)d.readShort() / (0xffff));
+                        float i1 = ((float)d.readUShort() / (0xffff));
+                        float i2 = ((float)d.readUShort() / (0xffff));
+                        float i3 = ((float)d.readUShort() / (0xffff));
 
                         float x = baseNode[j].s.X + (baseNode[j].s2.X * (i1));
                         float y = baseNode[j].s.Y + (baseNode[j].s2.Y * (i2));

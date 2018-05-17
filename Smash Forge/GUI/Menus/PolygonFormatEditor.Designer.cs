@@ -33,6 +33,7 @@
             this.normalTypeLabel = new System.Windows.Forms.Label();
             this.weightTypeComboBox = new System.Windows.Forms.ComboBox();
             this.normalTypeComboBox = new System.Windows.Forms.ComboBox();
+            this.vertexColorCB = new System.Windows.Forms.CheckBox();
             this.applyButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -75,12 +76,23 @@
             this.normalTypeComboBox.Size = new System.Drawing.Size(141, 33);
             this.normalTypeComboBox.TabIndex = 1;
             // 
+            // vertexColorCB
+            // 
+            this.vertexColorCB.AutoSize = true;
+            this.vertexColorCB.Location = new System.Drawing.Point(6, 59);
+            this.vertexColorCB.Margin = new System.Windows.Forms.Padding(2);
+            this.vertexColorCB.Name = "vertexColorCB";
+            this.vertexColorCB.Size = new System.Drawing.Size(110, 17);
+            this.vertexColorCB.TabIndex = 2;
+            this.vertexColorCB.Text = "Has Vertex Color";
+            this.vertexColorCB.UseVisualStyleBackColor = true;
+            // 
             // applyButton
             // 
             this.applyButton.Location = new System.Drawing.Point(100, 76);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(100, 23);
-            this.applyButton.TabIndex = 2;
+            this.applyButton.TabIndex = 3;
             this.applyButton.Text = "Apply";
             this.applyButton.UseVisualStyleBackColor = true;
             this.applyButton.Click += new System.EventHandler(this.applyButton_Click);
@@ -94,6 +106,7 @@
             this.Controls.Add(this.normalTypeLabel);
             this.Controls.Add(this.weightTypeComboBox);
             this.Controls.Add(this.normalTypeComboBox);
+            this.Controls.Add(this.vertexColorCB);
             this.Controls.Add(this.applyButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "PolygonFormatEditor";
@@ -109,6 +122,7 @@
         private System.Windows.Forms.Label normalTypeLabel;
         private System.Windows.Forms.ComboBox weightTypeComboBox;
         private System.Windows.Forms.ComboBox normalTypeComboBox;
+        private System.Windows.Forms.CheckBox vertexColorCB;
         private System.Windows.Forms.Button applyButton;
     }
 }

@@ -380,8 +380,8 @@ namespace Smash_Forge
 
         public void ReadNTP3(FileData d)
         {
-            Version = d.readShort();
-            int count = d.readShort();
+            Version = d.readUShort();
+            int count = d.readUShort();
             d.skip(0x8);
             if (Version == 0x100) count -= 1;
 
@@ -397,14 +397,14 @@ namespace Smash_Forge
                 d.skip(4); // padding
 
                 int dataSize = d.readInt();
-                int headerSize = d.readShort();
+                int headerSize = d.readUShort();
                 d.skip(3);
                 int numMips = d.readByte();
                 //Debug.WriteLine(numMips);
                 d.skip(1);
                 tex.setPixelFormatFromNutFormat(d.readByte());
-                tex.Width = d.readShort();
-                tex.Height = d.readShort();
+                tex.Width = d.readUShort();
+                tex.Height = d.readUShort();
 
                 d.skip(8); // padding?
 
@@ -501,7 +501,7 @@ namespace Smash_Forge
         public void ReadNTWU(FileData d)
         {
             d.skip(0x02);
-            int count = d.readShort();
+            int count = d.readUShort();
 
             d.skip(0x10);
             int headerPtr = d.pos();
@@ -514,11 +514,11 @@ namespace Smash_Forge
 
                 d.seek(headerPtr);
                 int totalSize = d.readInt();
-                int headerSize = d.readShort();
+                int headerSize = d.readUShort();
                 int numMips = d.readInt();
-                tex.setPixelFormatFromNutFormat(d.readShort());
-                tex.Width = d.readShort();
-                tex.Height = d.readShort();
+                tex.setPixelFormatFromNutFormat(d.readUShort());
+                tex.Width = d.readUShort();
+                tex.Height = d.readUShort();
 
                 d.skip(8); // mipmaps and padding
                 int dataOffset = d.readInt() + dataPtr + 0x10;

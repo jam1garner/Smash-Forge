@@ -35,26 +35,26 @@ namespace Smash_Forge
             {
                 {
                     FileData d = new FileData(filename);
-                    var size1 = d.readShort();
+                    var size1 = d.readUShort();
                     if (size1 > 255)
                     {
                         d.seek(0);
                         d.Endian = Endianness.Little;
-                        size1 = d.readShort();
+                        size1 = d.readUShort();
                     }
                     if (d.size() < 4) return;
-                    var size2 = d.readShort();
+                    var size2 = d.readUShort();
                     List<short> Table1 = new List<short>();
                     for (int i = 0; i < size1; i++)
                     {
                         if (d.pos() + 2 > d.size()) break;
-                        Table1.Add((short)d.readShort());
+                        Table1.Add(d.readShort());
                     }
                     List<short> Table2 = new List<short>();
                     for (int i = 0; i < size2; i++)
                     {
                         if (d.pos() + 2 > d.size()) break;
-                        Table2.Add((short)d.readShort());
+                        Table2.Add(d.readShort());
                     }
                     Tables = new List<List<short>>();
                     Tables.Add(Table1);

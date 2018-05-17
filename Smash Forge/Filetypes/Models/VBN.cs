@@ -17,7 +17,7 @@ namespace Smash_Forge
         public enum BoneType
         {
             Normal = 0,
-            UNK,
+            Follow,
             Helper,
             Swing
         }
@@ -168,19 +168,19 @@ namespace Smash_Forge
 
                         if (id == 4)
                         {
-                            int b1 = (short)f.readShort();
-                            int b2 = (short)f.readShort();
+                            short b1 = f.readShort();
+                            short b2 = f.readShort();
                             Console.Write("\t" + (b1 == -1 ? b1 + "" : bonename[b1]) + " " + b2 + "\t");
                         }
                         else
                         if (id == 5)
                         {
-                            int b1 = (short)f.readShort();
-                            int b2 = (short)f.readShort();
+                            short b1 = f.readShort();
+                            short b2 = f.readShort();
                             Console.Write("\t" + (b1 == -1 ? b1 + "" : bonename[b1]) + " " + (b2 == -1 ? b2 + "" : bonename[b2]) + "\t");
                         }
                         else
-                            Console.Write("\t" + (f.readShort() / (id == 7 ? (float)0xffff : 1)) + " " + (f.readShort() / (id == 7 ? (float)0xffff : 1)) + "\t");
+                            Console.Write("\t" + (f.readUShort() / (id == 7 ? (float)0xffff : 1)) + " " + (f.readUShort() / (id == 7 ? (float)0xffff : 1)) + "\t");
                     }
                     Console.WriteLine();
                 }
@@ -562,8 +562,8 @@ namespace Smash_Forge
 
                 file.seek(4);
 
-                unk_1 = (short)file.readShort();
-                unk_2 = (short)file.readShort();
+                unk_1 = file.readShort();
+                unk_2 = file.readShort();
                 totalBoneCount = (UInt32)file.readInt();
                 boneCountPerType[0] = (UInt32)file.readInt();
                 boneCountPerType[1] = (UInt32)file.readInt();
