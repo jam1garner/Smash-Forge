@@ -12,178 +12,263 @@ namespace Smash_Forge
 	public class Shader
 	{
 		public int programID;
-		private int vsID;
-		private int fsID;
+
+        private bool programStatusIsOk = true;
+
+        private int vsID;
+        private int fsID;
+
+        private bool hasGeometryShader = false;
+        private int geomID;
 
         private bool checkedCompilation = false;
         public bool HasCheckedCompilation { get { return checkedCompilation; } }
 
         private StringBuilder errorLog = new StringBuilder();
 
-		private Dictionary<string, int> attributes = new Dictionary<string, int>();
+        int activeUniformCount = 0;
+        int activeAttributeCount = 0;
+		private Dictionary<string, int> vertexAttributeAndUniformLocations = new Dictionary<string, int>();
 
         public Shader ()
-		{
-			programID = GL.CreateProgram();
+        {
+            programID = GL.CreateProgram();
+            AppendHardwareAndVersionInfo();
+        }
 
-            errorLog.AppendLine("Program ID: " + programID);
-            errorLog.AppendLine("MaxUniformBlockSize: " + GL.GetInteger(GetPName.MaxUniformBlockSize));
+        private void AppendHardwareAndVersionInfo()
+        {
             errorLog.AppendLine("Vendor: " + GL.GetString(StringName.Vendor));
             errorLog.AppendLine("Renderer: " + GL.GetString(StringName.Renderer));
             errorLog.AppendLine("OpenGL Version: " + GL.GetString(StringName.Version));
             errorLog.AppendLine("GLSL Version: " + GL.GetString(StringName.ShadingLanguageVersion));
         }
 
-		public int GetAttribute(string name)
+        public int GetVertexAttributeUniformLocation(string name)
         {
 			int value;
-			bool success = attributes.TryGetValue(name, out value);
-
-            if (success)
+            if (vertexAttributeAndUniformLocations.TryGetValue(name, out value))
+            {
                 return value;
+            }
             else
                 return -1;
 		}
 
-		public void EnableVertexAttributes()
+        public void EnableVertexAttributes()
         {
-			foreach(KeyValuePair<string, int> entry in attributes)
+            // Only enable the necessary vertex attributes.
+            for (int location = 0; location < activeAttributeCount; location++)
 			{
-				GL.EnableVertexAttribArray(entry.Value);
+                GL.EnableVertexAttribArray(location);
 			}
 		}
 
 		public void DisableVertexAttributes()
         {
-			foreach(KeyValuePair<string, int> entry in attributes)
+            // Disable all the vertex attributes. This could be used with a VAO in the future.
+            for (int location = 0; location < activeAttributeCount; location++)
 			{
-				GL.DisableVertexAttribArray(entry.Value);
+				GL.DisableVertexAttribArray(location);
 			}
 		}
 
         public void SaveErrorLog(string shaderName)
         {
-            string logExport = errorLog.ToString();
+            // Create the error logs directory if not found.
             string errorLogDirectory = MainForm.executableDir + "\\Shader Error Logs\\";
             if (!Directory.Exists(errorLogDirectory))
                 Directory.CreateDirectory(errorLogDirectory);
+
+            // Export the error log.
+            string logExport = errorLog.ToString();
             File.WriteAllText(errorLogDirectory +  shaderName + " Error Log.txt", logExport.Replace("\n", Environment.NewLine));
         }
 
-		private void AddAttribute(string name, bool isUniform)
+		private void AddVertexAttribute(string name)
         {
-            if (attributes.ContainsKey(name))
-                attributes.Remove(name);
-			int position = -1;
-			if(isUniform)
-				position = GL.GetUniformLocation(programID, name);
-			else
-				position = GL.GetAttribLocation(programID, name);
-
+            if (vertexAttributeAndUniformLocations.ContainsKey(name))
+                vertexAttributeAndUniformLocations.Remove(name);
+			int position = GL.GetAttribLocation(programID, name);
+            vertexAttributeAndUniformLocations.Add(name, position);
 
             errorLog.AppendLine(name + ", " + "Position: " + position);
+        }
 
-            attributes.Add(name, position);
-		}
-
-        public void LoadAttributes(string src, bool fragment = false)
+        private void AddUniform(string name)
         {
-            int attributeCount;
-            GL.GetProgram(programID, GetProgramParameterName.ActiveAttributes, out attributeCount);
-            errorLog.AppendLine("Attribute Count: " + attributeCount);
+            if (vertexAttributeAndUniformLocations.ContainsKey(name))
+                vertexAttributeAndUniformLocations.Remove(name);
+            int position = GL.GetUniformLocation(programID, name);
+            vertexAttributeAndUniformLocations.Add(name, position);
 
-            for (int i = 0; i < attributeCount; i++)
-            {
-                int attributeSize;
-                ActiveAttribType attributeType;
-                string attribute = GL.GetActiveAttrib(programID, i, out attributeSize, out attributeType);
+            errorLog.AppendLine(name + ", " + "Position: " + position);
+        }
 
-                int index = attribute.IndexOf('[');
-                if (index > 0)
-                    attribute = attribute.Substring(0, index);
+        private void LoadUniforms()
+        {
+            GL.GetProgram(programID, GetProgramParameterName.ActiveUniforms, out activeUniformCount);
+            errorLog.AppendLine("Uniform Count: " + activeUniformCount);
 
-                AddAttribute(attribute, false);
-            }
-
-            int uniformCount;
-            GL.GetProgram(programID, GetProgramParameterName.ActiveUniforms, out uniformCount);
-            errorLog.AppendLine("Uniform Count: " + uniformCount);
-
-            for (int i = 0; i < uniformCount; i++)
+            for (int i = 0; i < activeUniformCount; i++)
             {
                 int uniformSize;
                 ActiveUniformType uniformType;
                 string uniform = GL.GetActiveUniform(programID, i, out uniformSize, out uniformType);
-
-                int index = uniform.IndexOf('[');
-                if (index > 0)
-                    uniform = uniform.Substring(0, index);
-
-                AddAttribute(uniform, true);
+                uniform = RemoveEndingBrackets(uniform);
+                AddUniform(uniform);
             }
+        }
+
+        private void LoadAttributes()
+        {
+            GL.GetProgram(programID, GetProgramParameterName.ActiveAttributes, out activeAttributeCount);
+            errorLog.AppendLine("Attribute Count: " + activeAttributeCount);
+
+            for (int i = 0; i < activeAttributeCount; i++)
+            {
+                int attributeSize;
+                ActiveAttribType attributeType;
+                string attribute = GL.GetActiveAttrib(programID, i, out attributeSize, out attributeType);
+                attribute = RemoveEndingBrackets(attribute);
+                AddVertexAttribute(attribute);
+            }
+        }
+
+        private static string RemoveEndingBrackets(string name)
+        {
+            // Removes the brackets at the end of the name.
+            // Ex: "name[0]" becomes "name".
+            int index = name.IndexOf('[');
+            if (index > 0)
+                name = name.Substring(0, index);
+            return name;
         }
 
         public void LoadShader(string filePath, ShaderType shaderType)
         {
-            string shaderText = File.ReadAllText(filePath);
-            if (shaderType == ShaderType.FragmentShader)
-                LoadShader(shaderText, shaderType, programID, out fsID);
-            else if (shaderType == ShaderType.VertexShader)
-                LoadShader(shaderText, shaderType, programID, out vsID);
-            else
-                throw new NotSupportedException(shaderType.ToString() + " is not a supported shader type.");
-
+            LoadAllShaders(filePath, shaderType);
             GL.LinkProgram(programID);
-            LoadAttributes(shaderText);
 
+            AppendShaderCompilationErrors(shaderType);
+
+            LoadAttributes();
+            LoadUniforms();
+        }
+
+        private void AppendShaderCompilationErrors(ShaderType shaderType)
+        {
             errorLog.AppendLine(shaderType.ToString());
+            errorLog.AppendLine("Compilation Errors:");
             string error = GL.GetProgramInfoLog(programID);
             errorLog.AppendLine(error);
         }
 
-        void LoadShader(string shaderText, ShaderType type, int program, out int address)
-		{
-			address = GL.CreateShader(type);
+        private void LoadAllShaders(string filePath, ShaderType shaderType)
+        {
+            string shaderText = File.ReadAllText(filePath);
+            if (shaderType == ShaderType.FragmentShader)
+            {
+                LoadShader(shaderText, shaderType, programID, out fsID);
+            }
+            else if (shaderType == ShaderType.VertexShader)
+            {
+                LoadShader(shaderText, shaderType, programID, out vsID);
+            }
+            else if (shaderType == ShaderType.GeometryShader)
+            {
+                LoadShader(shaderText, shaderType, programID, out geomID);
+                hasGeometryShader = true;
+            }
+            else
+            {
+                throw new NotSupportedException(shaderType.ToString() + " is not a supported shader type.");
+            }
+        }
 
+        void LoadShader(string shaderText, ShaderType type, int program, out int id)
+		{
+			id = GL.CreateShader(type);
+
+            // This probably shouldn't be hardcoded...
             if (shaderText.Contains("#include"))
             {
-                // Hard coded #include for reducing redundant shader code. 
-                string smashShaderText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\SMASH_SHADER.txt");
-                shaderText = shaderText.Replace("#include SMASH_SHADER", smashShaderText);
-
-                string nuUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\NU_UNIFORMS.txt");
-                shaderText = shaderText.Replace("#include NU_UNIFORMS", nuUniformText);
-
-                string stageUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\STAGE_LIGHTING_UNIFORMS.txt");
-                shaderText = shaderText.Replace("#include STAGE_LIGHTING_UNIFORMS", stageUniformText);
-
-                string miscUniformsText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\MISC_UNIFORMS.txt");
-                shaderText = shaderText.Replace("#include MISC_UNIFORMS", miscUniformsText);
+                shaderText = ProcessIncludes(shaderText);
             }
 
-            GL.ShaderSource(address, shaderText);
-			GL.CompileShader(address);
-            GL.AttachShader(program, address);
-			Console.WriteLine(GL.GetShaderInfoLog(address));
-            errorLog.AppendLine(GL.GetShaderInfoLog(address));
+            GL.ShaderSource(id, shaderText);
+			GL.CompileShader(id);
+            GL.AttachShader(program, id);
+
+            errorLog.AppendLine(GL.GetShaderInfoLog(id));
         }
 
-        public bool CompiledSuccessfully()
+        private static string ProcessIncludes(string shaderText)
         {
+            // Hard coded #include for reducing redundant shader code. 
+            string smashShaderText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\SMASH_SHADER.txt");
+            shaderText = shaderText.Replace("#include SMASH_SHADER", smashShaderText);
+
+            string nuUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\NU_UNIFORMS.txt");
+            shaderText = shaderText.Replace("#include NU_UNIFORMS", nuUniformText);
+
+            string stageUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\STAGE_LIGHTING_UNIFORMS.txt");
+            shaderText = shaderText.Replace("#include STAGE_LIGHTING_UNIFORMS", stageUniformText);
+
+            string miscUniformsText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\MISC_UNIFORMS.txt");
+            shaderText = shaderText.Replace("#include MISC_UNIFORMS", miscUniformsText);
+            return shaderText;
+        }
+
+        public bool ProgramCreatedSuccessfully()
+        {
+            if (!checkedCompilation)
+                programStatusIsOk = CheckProgramStatus();
+            return programStatusIsOk;
+        }
+
+        private bool CheckProgramStatus()
+        {
+            // This is checked frequently, so only do it once.
+            checkedCompilation = true;
+
+            int majorVersion = GL.GetInteger(GetPName.MajorVersion);
+            int minorVersion = GL.GetInteger(GetPName.MinorVersion);
+            if (majorVersion < 3 && minorVersion < 3)
+                return false;
+
+            // Rendering should be disabled if any error occurs.
+            // Check for linker errors first. 
+            int linkStatus = 1;
+            GL.GetProgram(programID, GetProgramParameterName.LinkStatus, out linkStatus);
+            if (linkStatus == 0)
+                return false;
+
             // Make sure the shaders were compiled correctly.
-            // Don't try to render if the shaders have errors to avoid crashes.
-            int compileStatusVS;
+            int compileStatusVS = 1;
             GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
 
-            int compileStatusFS;
+            int compileStatusFS = 1;
             GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
-            if (compileStatusFS == 0 || compileStatusVS == 0)
-                return false;
-            else
-                return true;
+
+            // Most shaders won't use a geometry shader.
+            int compileStatusGS = 1;
+            if (hasGeometryShader)
+                GL.GetShader(geomID, ShaderParameter.CompileStatus, out compileStatusGS);
+
+            // The program was linked, but the shaders may have minor syntax errors.
+            return (compileStatusFS != 0 && compileStatusVS != 0 && compileStatusGS != 0);
         }
 
-        public void DisplayCompilationWarning(string shaderName)
+        private void ShowCompileWarning(string shaderName, string shaderType)
+        {
+            string message = "The {0} {1} shader failed to compile."
+                + " Please export a shader error log and upload it when reporting rendering issues.\n"
+                + "The application will still function, but rendering for this shader will be disabled.";
+            MessageBox.Show(String.Format(message, shaderName, shaderType), "Shader Compilation Error");
+        }
+
+        public void DisplayCompilationWarnings(string shaderName)
         {
             if (checkedCompilation)
                 return;
@@ -191,21 +276,20 @@ namespace Smash_Forge
             int compileStatusVS;
             GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
             if (compileStatusVS == 0)
-            {
-                MessageBox.Show("The " + shaderName
-                    + " vertex shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
-                    " Please export a shader error log and " +
-                    "upload it when reporting rendering issues.", "Shader Compilation Error");
-            }
+                ShowCompileWarning(shaderName, "vertex shader");
 
             int compileStatusFS;
             GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
             if (compileStatusFS == 0)
+                ShowCompileWarning(shaderName, "fragment shader");
+
+            // Most shaders won't use a geometry shader.
+            if (hasGeometryShader)
             {
-                MessageBox.Show("The " + shaderName
-                    + " fragment shader failed to compile. Check that your system supports OpenGL 3.30. Enable legacy shading in the config for OpenGL 2.10." +
-                    " Please export a shader error log and " +
-                    "upload it when reporting rendering issues.", "Shader Compilation Error");
+                int compileStatusGS;
+                GL.GetShader(geomID, ShaderParameter.CompileStatus, out compileStatusGS);
+                if (compileStatusGS == 0)
+                    ShowCompileWarning(shaderName, "geometry shader");
             }
 
             checkedCompilation = true;      

@@ -1,4 +1,4 @@
-﻿#version 330
+#version 330
 
 in vec3 vPosition;
 in vec4 vColor;
@@ -12,20 +12,21 @@ in vec4 vBone;
 in vec4 vWeight;
 in vec4 vBoneHash;
 
-out vec3 normal;
-out vec3 viewNormal;
-out vec3 tangent;
-out vec3 bitangent;
-out vec3 fragpos;
-out vec3 viewPosition;
-out vec3 objectPosition;
+// Outputs for geometry shader.
+out vec3 geomNormal;
+out vec3 geomViewNormal;
+out vec3 geomTangent;
+out vec3 geomBitangent;
+out vec3 geomFragpos;
+out vec3 geomViewPosition;
+out vec3 geomObjectPosition;
 
-out vec4 vertexColor;
+out vec4 geomVertexColor;
 
-out vec2 texCoord;
-out vec2 texCoord2;
-out vec2 texCoord3;
-out vec2 normaltexCoord;
+out vec2 geomTexCoord;
+out vec2 geomTexCoord2;
+out vec2 geomTexCoord3;
+out vec2 geomNormaltexCoord;
 
 uniform vec4 colorSamplerUV;
 uniform vec4 colorSampler2UV;
@@ -110,23 +111,23 @@ void main()
         nrmSampler.zw *= elapsedTime;
     }
 
-    texCoord = vec2(sampler1.xy * (vUV + sampler1.zw));
-    texCoord2 = vec2(sampler2.xy * (vUV2 + sampler2.zw));
-    texCoord3 = vec2(sampler3.xy * (vUV3 + sampler3.zw));
-    normaltexCoord = vec2(nrmSampler.xy * (vUV + nrmSampler.zw));
+    // Vertex attributes for geometry shader.
+    geomTexCoord = vec2(sampler1.xy * (vUV + sampler1.zw));
+    geomTexCoord2 = vec2(sampler2.xy * (vUV2 + sampler2.zw));
+    geomTexCoord3 = vec2(sampler3.xy * (vUV3 + sampler3.zw));
+    geomNormaltexCoord = vec2(nrmSampler.xy * (vUV + nrmSampler.zw));
 
-    // Vertex attributes for fragment shader.
-    vertexColor = vColor;
-	fragpos = objPos.xyz;
-    objectPosition = vPosition.xyz;
-    tangent.xyz = vTangent.xyz;
-    bitangent.xyz = vBiTangent.xyz;
-    viewPosition = vec3(vPosition * mat3(mvpMatrix));
+    geomVertexColor = vColor;
+	geomFragpos = objPos.xyz;
+    geomObjectPosition = vPosition.xyz;
+    geomTangent.xyz = vTangent.xyz;
+    geomBitangent.xyz = vBiTangent.xyz;
+    geomViewPosition = vec3(vPosition * mat3(mvpMatrix));
 
-    normal = vNormal;
+    geomNormal = vNormal;
 	if(vBone.x != -1.0)
-		normal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
+		geomNormal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
 
-    viewNormal = mat3(sphereMapMatrix) * normal.xyz;
-    viewNormal = viewNormal * 0.5 + 0.5;
+    geomViewNormal = mat3(sphereMapMatrix) * geomNormal.xyz;
+    geomViewNormal = geomViewNormal * 0.5 + 0.5;
 }

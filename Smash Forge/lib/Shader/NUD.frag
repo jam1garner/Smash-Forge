@@ -11,6 +11,7 @@ in vec3 normal;
 in vec3 viewNormal;
 in vec3 tangent;
 in vec3 bitangent;
+noperspective in vec3 edgeDistance;
 
 layout (location = 0) out vec4 fragColor;
 layout (location = 1) out vec4 fragColorBright;
@@ -29,9 +30,23 @@ layout (location = 1) out vec4 fragColorBright;
 
 void main()
 {
+    if (drawSelection == 1)
+    {
+        fragColor = vec4(1);
+        return;
+    }
+    
     fragColor = SmashShader();
     // Separate bright and regular color for bloom calculations.
     fragColorBright = vec4(vec3(0), 1);
     if (Luminance(fragColor.rgb) > bloomThreshold)
         fragColorBright.rgb = fragColor.rgb;
+
+    if (drawWireframe == 1)
+    {
+        float minDistance = min(min(edgeDistance.x, edgeDistance.y), edgeDistance.z);
+        float smoothedDistance = exp2(-512.0 * minDistance * minDistance);
+        vec3 edgeColor = vec3(1);
+        fragColor.rgb = mix(fragColor.rgb, edgeColor, smoothedDistance);
+    }
 }

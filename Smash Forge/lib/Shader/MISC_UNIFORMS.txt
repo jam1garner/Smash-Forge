@@ -54,7 +54,10 @@ uniform int renderVertColor;
 uniform int renderNormal;
 uniform int useNormalMap;
 // Wireframe Rendering
-uniform int colorOverride;
+uniform int drawWireframe;
+uniform float lineWidth;
+
+uniform int drawSelection;
 
 // Channel Toggles
 uniform int renderAlpha;
