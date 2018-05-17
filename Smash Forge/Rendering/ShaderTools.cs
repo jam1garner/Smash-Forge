@@ -72,7 +72,7 @@ namespace Smash_Forge.Rendering
             int successfulCompilations = Runtime.shaders.Count;
             foreach (string shaderName in Runtime.shaders.Keys)
             {
-                if (!Runtime.shaders[shaderName].CompiledSuccessfully())
+                if (!Runtime.shaders[shaderName].ProgramCreatedSuccessfully())
                 {
                     compileErrorList.Add(shaderName);
                     successfulCompilations -= 1;

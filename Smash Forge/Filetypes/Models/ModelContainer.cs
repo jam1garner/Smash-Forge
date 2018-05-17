@@ -285,12 +285,12 @@ namespace Smash_Forge
                 }
             }
 
-            if (DAT_MELEE != null && Runtime.shaders["DAT"].CompiledSuccessfully())
+            if (DAT_MELEE != null && Runtime.shaders["DAT"].ProgramCreatedSuccessfully())
             {
                 DAT_MELEE.Render(camera.mvpMatrix);
             }
 
-            if (NUD != null && Runtime.shaders["NUD"].CompiledSuccessfully() && Runtime.shaders["NUD_Debug"].CompiledSuccessfully())
+            if (NUD != null && Runtime.shaders["NUD"].ProgramCreatedSuccessfully() && Runtime.shaders["NUD_Debug"].ProgramCreatedSuccessfully())
             {
                 if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                     shader = Runtime.shaders["NUD_Debug"];

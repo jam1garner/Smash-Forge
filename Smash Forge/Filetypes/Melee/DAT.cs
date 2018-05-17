@@ -357,7 +357,7 @@ namespace Smash_Forge
 
             facedata = face.ToArray();
 
-            if (Runtime.shaders["DAT"].CompiledSuccessfully())
+            if (Runtime.shaders["DAT"].ProgramCreatedSuccessfully())
                 SetupShader();
         }
 

@@ -13,6 +13,8 @@ namespace Smash_Forge
 	{
 		public int programID;
 
+        private bool programStatusIsOk = true;
+
         private int vsID;
         private int fsID;
 
@@ -218,8 +220,23 @@ namespace Smash_Forge
             return shaderText;
         }
 
-        public bool CompiledSuccessfully()
+        public bool ProgramCreatedSuccessfully()
         {
+            if (!checkedCompilation)
+                programStatusIsOk = CheckProgramStatus();
+            return programStatusIsOk;
+        }
+
+        private bool CheckProgramStatus()
+        {
+            // This is checked frequently, so only do it once.
+            checkedCompilation = true;
+
+            int majorVersion = GL.GetInteger(GetPName.MajorVersion);
+            int minorVersion = GL.GetInteger(GetPName.MinorVersion);
+            if (majorVersion < 3 && minorVersion < 3)
+                return false;
+
             // Rendering should be disabled if any error occurs.
             // Check for linker errors first. 
             int linkStatus = 1;
@@ -242,13 +259,12 @@ namespace Smash_Forge
             // The program was linked, but the shaders may have minor syntax errors.
             return (compileStatusFS != 0 && compileStatusVS != 0 && compileStatusGS != 0);
         }
-        
+
         private void ShowCompileWarning(string shaderName, string shaderType)
         {
-            string message = "The {0} {1} shader failed to compile. Check that your system supports OpenGL 3.30."
-                + "Enable legacy shading in the config for OpenGL 2.10."
-                + " Please export a shader error log and "
-                + "upload it when reporting rendering issues.";
+            string message = "The {0} {1} shader failed to compile."
+                + " Please export a shader error log and upload it when reporting rendering issues.\n"
+                + "The application will still function, but rendering for this shader will be disabled.";
             MessageBox.Show(String.Format(message, shaderName, shaderType), "Shader Compilation Error");
         }
 
