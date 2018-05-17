@@ -17,7 +17,7 @@ namespace Smash_Forge
         }
 
         int format = 6;
-        ushort unkown = 0xFFFF;
+        ushort unknown = 0xFFFF;
         int flags = 0;
         int mode = 1;
         //public TreeNode MeshNodes = new TreeNode() { Text = "Mesh" };
@@ -167,8 +167,8 @@ namespace Smash_Forge
             d.seek(0);
             d.Endian = Endianness.Little;
 
-            format = d.readShort();
-            unkown = (ushort)d.readShort();
+            format = d.readUShort();
+            unknown = d.readUShort();
             flags = d.readInt();
             mode = d.readInt();
             bool hasNameTable = (flags & 2) > 0;
@@ -218,7 +218,7 @@ namespace Smash_Forge
                             int[] buffer = new int[primitiveCount];
                             for (int k = 0; k < primitiveCount; k++)
                             {
-                                buffer[k] = d.readShort();
+                                buffer[k] = d.readUShort();
                             }
                             d.align(4);
                             List<int> buf = new List<int>();
@@ -318,7 +318,7 @@ namespace Smash_Forge
                         List<int> face = new List<int>();
                         mesh[j].faces.Add(face);
                         for (int k = 0; k < l; k++)
-                            face.Add(d.readShort());
+                            face.Add(d.readUShort());
                         d.align(32);
                     }
                 }
@@ -336,7 +336,7 @@ namespace Smash_Forge
             fv.Endian = Endianness.Little;
 
             f.writeShort(format);
-            f.writeShort(unkown);
+            f.writeShort(unknown);
             f.writeInt(flags);
             f.writeInt(mode);
             bool hasNameTable = (flags & 2) > 0;
@@ -500,9 +500,9 @@ namespace Smash_Forge
                 case 1:
                     return d.readByte() * scale;
                 case 2:
-                    return (sbyte)d.readByte() * scale;
+                    return d.readSByte() * scale;
                 case 3:
-                    return (short)d.readShort() * scale;
+                    return d.readShort() * scale;
             }
             return 0;
         }
@@ -513,7 +513,7 @@ namespace Smash_Forge
                     d.writeFloat(value / scale);
                     break;
                 case 1:
-                    d.writeByte((int)(value / scale));
+                    d.writeByte((byte)(value / scale));
                     break;
                 case 2:
                     d.writeByte((byte)(value / scale));

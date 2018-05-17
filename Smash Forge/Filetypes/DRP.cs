@@ -26,7 +26,7 @@ namespace Smash_Forge
             d.Endian = Endianness.Big;
 
             d.seek(0x16);
-            int count = d.readShort();
+            int count = d.readUShort();
 
             d.seek(0x60);
 
@@ -36,8 +36,8 @@ namespace Smash_Forge
                 d.skip(0x40);
                 int unk = d.readInt();
                 int nextFile = d.readInt();
-                int c2 = d.readShort();
-                int c1 = d.readShort();
+                int c2 = d.readUShort();
+                int c1 = d.readUShort();
                 d.skip(4); // padding?
 
                 int[] partsizes = new int[4];

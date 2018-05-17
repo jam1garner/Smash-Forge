@@ -27,8 +27,8 @@ namespace Smash_Forge
 			int nameoff = d.readInt();
 
 			d.skip(4);
-			int fCount = d.readShort();
-			int animDataCount =d.readShort();
+			int fCount = d.readUShort();
+			int animDataCount = d.readUShort();
 			d.skip(8);
 
 			Animation anim = new Animation(d.readString(nameoff, -1));
@@ -43,8 +43,8 @@ namespace Smash_Forge
             for (int i = 0; i < size ; i++){
 				//			System.out.print(d.readShort()); // id
 				d.skip(4); // id and unknown
-				d.readShort(); //left
-				d.readShort(); //right
+				d.readUShort(); //left
+				d.readUShort(); //right
 				int nameOffset = d.readInt() + offset;
 				int dataOffset = d.readInt() + offset;
 				if(dataOffset == offset){
@@ -153,7 +153,7 @@ namespace Smash_Forge
 			float[] frame = null, step = null, tan = null;
 
 			if(type == 0x1){
-				fCount = d.readShort();
+				fCount = d.readUShort();
 				d.skip(2);
 				scale = d.readFloat();
 				float stepb = d.readFloat();
@@ -176,7 +176,7 @@ namespace Smash_Forge
 			}
 
 			if(type == 0x2){
-				fCount = d.readShort();
+				fCount = d.readUShort();
 				d.skip(2);
 				scale = d.readFloat();
 				float stepb = d.readFloat();
@@ -187,9 +187,9 @@ namespace Smash_Forge
 				tan = new float[fCount];
 
 				for(int i = 0; i < fCount ; i++){
-					frame[i] = d.readShort() / 32f;
-					step[i] = base2 + d.readShort() * stepb;
-					tan[i] = ((short)d.readShort() / 256f);
+					frame[i] = d.readUShort() / 32f;
+					step[i] = base2 + d.readUShort() * stepb;
+					tan[i] = (d.readShort() / 256f);
 
 					if(frame[i] > max){
 						max = (int)frame[i];
@@ -201,7 +201,7 @@ namespace Smash_Forge
 				//if(debug)
 					//System.out.println(part + "\tInterpolated 12 " + Integer.toHexString(offset));
 
-				fCount = d.readShort();
+				fCount = d.readUShort();
 				d.skip(2);
 				scale = d.readFloat();
 

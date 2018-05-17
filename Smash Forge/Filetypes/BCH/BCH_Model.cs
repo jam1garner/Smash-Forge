@@ -218,9 +218,9 @@ namespace Smash_Forge
                     case 1:
                         return d.readByte() * scale;
                     case 2:
-                        return (sbyte)d.readByte() * scale;
+                        return d.readSByte() * scale;
                     case 3:
-                        return (short)d.readShort() * scale;
+                        return d.readShort() * scale;
                 }
                 return 0;
             }
@@ -236,10 +236,10 @@ namespace Smash_Forge
                         d.writeByte((byte)(data / scale));
                         break;
                     case 2:
-                        d.writeByte((sbyte)(data / scale));
+                        d.writeByte((byte)(data / scale));
                         break;
                     case 3:
-                        d.writeShort((int)(data / scale));
+                        d.writeShort((short)(data / scale));
                         break;
                 }
             }
@@ -321,7 +321,7 @@ namespace Smash_Forge
             f.Endian = Endianness.Little;
             f.seek(0);
 
-            int format = f.readShort();
+            int format = f.readUShort();
             f.skip(2);//0xFFFF
             int flags = f.readInt();
             int mode = f.readInt();
@@ -405,7 +405,7 @@ namespace Smash_Forge
                     pg.Text = "Polygroup_"+pi++;
                     pg.Faces = new int[pg.Count];
                     for(int k = 0; k < pg.Count; k++)
-                        pg.Faces[k] = f.readShort();
+                        pg.Faces[k] = f.readUShort();
                     f.align(32);
                 }
             }

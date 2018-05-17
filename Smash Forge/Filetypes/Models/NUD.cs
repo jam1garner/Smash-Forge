@@ -1173,8 +1173,8 @@ namespace Smash_Forge
             Endian = fileData.Endian;
 
             fileData.seek(0xA);
-            int polysets = fileData.readShort();
-            boneCount = fileData.readShort();
+            int polysets = fileData.readUShort();
+            boneCount = fileData.readUShort();
             fileData.skip(2);  // somethingsets
             int polyClumpStart = fileData.readInt() + 0x30;
             int polyClumpSize = fileData.readInt();
@@ -1212,7 +1212,7 @@ namespace Smash_Forge
                 fileData.seek(temp);
                 boneflags[i] = fileData.readInt();
                 obj[i].singlebind = fileData.readShort();
-                obj[i].polyCount = fileData.readShort();
+                obj[i].polyCount = fileData.readUShort();
                 obj[i].positionb = fileData.readInt();
             }
 
@@ -1234,14 +1234,14 @@ namespace Smash_Forge
                     polyData.polyStart = fileData.readInt() + polyClumpStart;
                     polyData.vertStart = fileData.readInt() + vertClumpStart;
                     polyData.verAddStart = fileData.readInt() + vertaddClumpStart;
-                    polyData.vertCount = fileData.readShort();
+                    polyData.vertCount = fileData.readUShort();
                     polyData.vertSize = fileData.readByte();
                     polyData.UVSize = fileData.readByte();
                     polyData.texprop1 = fileData.readInt();
                     polyData.texprop2 = fileData.readInt();
                     polyData.texprop3 = fileData.readInt();
                     polyData.texprop4 = fileData.readInt();
-                    polyData.polyCount = fileData.readShort();
+                    polyData.polyCount = fileData.readUShort();
                     polyData.polySize = fileData.readByte();
                     polyData.polyFlag = fileData.readByte();
                     fileData.skip(0xC);
@@ -1273,15 +1273,15 @@ namespace Smash_Forge
 
                 m.Flags = (uint)d.readInt();
                 d.skip(4);             
-                m.srcFactor = d.readShort();
-                int propCount = d.readShort();
-                m.dstFactor = d.readShort();
+                m.srcFactor = d.readUShort();
+                int propCount = d.readUShort();
+                m.dstFactor = d.readUShort();
                 m.alphaTest = d.readByte();
                 m.alphaFunction = d.readByte();
 
                 d.skip(1); // unknown
                 m.RefAlpha = d.readByte();
-                m.cullMode = d.readShort();
+                m.cullMode = d.readUShort();
                 d.skip(4); // padding
                 m.unkownWater = d.readInt();
                 m.zBufferOffset = d.readInt();
@@ -1291,7 +1291,7 @@ namespace Smash_Forge
                     MatTexture tex = new MatTexture();
                     tex.hash = d.readInt();
                     d.skip(6); // padding?
-                    tex.mapMode = d.readShort();
+                    tex.mapMode = d.readUShort();
                     tex.wrapModeS = d.readByte();
                     tex.wrapModeT = d.readByte();
                     tex.minFilter = d.readByte();
@@ -1361,7 +1361,7 @@ namespace Smash_Forge
 
             for (int x = 0; x < p.polyCount; x++)
             {
-                m.faces.Add(d.readShort());
+                m.faces.Add(d.readUShort());
             }
 
             return m;
@@ -1515,10 +1515,10 @@ namespace Smash_Forge
                 }
                 else if (boneType == (int)Polygon.BoneTypes.HalfFloat)
                 {
-                    v.boneIds.Add(d.readShort());
-                    v.boneIds.Add(d.readShort());
-                    v.boneIds.Add(d.readShort());
-                    v.boneIds.Add(d.readShort());
+                    v.boneIds.Add(d.readUShort());
+                    v.boneIds.Add(d.readUShort());
+                    v.boneIds.Add(d.readUShort());
+                    v.boneIds.Add(d.readUShort());
                     v.boneWeights.Add(d.readHalfFloat());
                     v.boneWeights.Add(d.readHalfFloat());
                     v.boneWeights.Add(d.readHalfFloat());
