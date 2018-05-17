@@ -220,8 +220,14 @@ namespace Smash_Forge
 
         public bool CompiledSuccessfully()
         {
+            // Rendering should be disabled if any error occurs.
+            // Check for linker errors first. 
+            int linkStatus = 1;
+            GL.GetProgram(programID, GetProgramParameterName.LinkStatus, out linkStatus);
+            if (linkStatus == 0)
+                return false;
+
             // Make sure the shaders were compiled correctly.
-            // Don't try to render if the shaders have errors to avoid crashes.
             int compileStatusVS = 1;
             GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
 
@@ -233,7 +239,7 @@ namespace Smash_Forge
             if (hasGeometryShader)
                 GL.GetShader(geomID, ShaderParameter.CompileStatus, out compileStatusGS);
 
-            // A value of 0 is a failed compilation.
+            // The program was linked, but the shaders may have minor syntax errors.
             return (compileStatusFS != 0 && compileStatusVS != 0 && compileStatusGS != 0);
         }
         
