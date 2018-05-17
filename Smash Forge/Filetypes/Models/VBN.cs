@@ -17,7 +17,7 @@ namespace Smash_Forge
         public enum BoneType
         {
             Normal = 0,
-            UNK,
+            Follow,
             Helper,
             Swing
         }
