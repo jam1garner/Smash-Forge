@@ -57,6 +57,8 @@ uniform int useNormalMap;
 uniform int drawWireframe;
 uniform float lineWidth;
 
+uniform int drawSelection;
+
 // Channel Toggles
 uniform int renderAlpha;
 

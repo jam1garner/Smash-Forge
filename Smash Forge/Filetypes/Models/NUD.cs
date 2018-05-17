@@ -711,15 +711,15 @@ namespace Smash_Forge
             GL.StencilFunc(StencilFunction.Notequal, 1, 0xFF);
             GL.StencilMask(0x00);
 
-            // use vertex color for model selection color
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("colorOverride"), 1);
+            // Override the model color with white in the shader.
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("drawSelection"), 1);
 
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.LineWidth(2.0f);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("colorOverride"), 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("drawSelection"), 0);
 
             GL.StencilMask(0xFF);
             GL.Clear(ClearBufferMask.StencilBufferBit);

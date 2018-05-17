@@ -150,6 +150,8 @@ uniform int selectedBoneIndex;
 uniform vec3 NSC;
 uniform float elapsedTime;
 
+uniform int drawSelection;
+
 // Constants
 #define gamma 2.2
 #define PI 3.14159
@@ -265,6 +267,12 @@ vec3 CalculateFog(vec3 inputColor)
 void main()
 {
     fragColor = vec4(0,0,0,1);
+
+    if (drawSelection == 1)
+    {
+        fragColor = vec4(1);
+        return;
+    }
 
     // remap vectors for nicer visualization
     vec3 bumpMapNormal = CalcBumpedNormal(normal);

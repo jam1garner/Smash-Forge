@@ -30,6 +30,12 @@ layout (location = 1) out vec4 fragColorBright;
 
 void main()
 {
+    if (drawSelection == 1)
+    {
+        fragColor = vec4(1);
+        return;
+    }
+    
     fragColor = SmashShader();
     // Separate bright and regular color for bloom calculations.
     fragColorBright = vec4(vec3(0), 1);
