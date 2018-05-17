@@ -228,7 +228,6 @@ namespace Smash_Forge
         public static string renderer = "";
         public static string openGLVersion = "";
         public static string GLSLVersion = "";
-        public static bool useLegacyShaders = false;
 
         public enum RenderTypes
         {

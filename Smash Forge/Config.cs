@@ -103,9 +103,6 @@ namespace Smash_Forge
                         if (node.ParentNode != null && node.ParentNode.Name.Equals("RENDERSETTINGS"))
                             Enum.TryParse(node.InnerText, out Runtime.renderType);
                         break;
-                    case "OpenGL_2.10":
-                        bool.TryParse(node.InnerText, out Runtime.useLegacyShaders);
-                        break;
                     case "camera_light":
                         bool.TryParse(node.InnerText, out Runtime.cameraLight);
                         break;
@@ -424,7 +421,6 @@ namespace Smash_Forge
             renderSettingsNode.AppendChild(createNode(doc, "render_alpha", Runtime.renderAlpha.ToString()));
             renderSettingsNode.AppendChild(createNode(doc, "camera_light", Runtime.cameraLight.ToString()));
             renderSettingsNode.AppendChild(createNode(doc, "use_normal_map", Runtime.renderNormalMap.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "OpenGL_2.10", Runtime.useLegacyShaders.ToString()));
 
             AppendMaterialLightingSettings(doc, renderSettingsNode);
             AppendModelRenderSettings(doc, renderSettingsNode);

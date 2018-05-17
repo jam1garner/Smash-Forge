@@ -17,39 +17,31 @@ namespace Smash_Forge.Rendering
         {
             // Reset the shaders first so that shaders can be replaced.
             Runtime.shaders.Clear();
-            CreateShader("Texture", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("Screen_Quad", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("MBN", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
-            CreateShader("Gradient", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Shadow", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Point", "/lib/Shader/", "/lib/Shader/");
-            CreateShader("Nud_Sphere", "/lib/Shader/", "/lib/Shader/");
+            CreateShader("Texture",     "/lib/Shader/");
+            CreateShader("Screen_Quad", "/lib/Shader/");
+            CreateShader("NUD",         "/lib/Shader/");
+            CreateShader("MBN",         "/lib/Shader/");
+            CreateShader("DAT",         "/lib/Shader/");
+            CreateShader("NUD_Debug",   "/lib/Shader/");
+            CreateShader("Gradient",    "/lib/Shader/");
+            CreateShader("Shadow",      "/lib/Shader/");
+            CreateShader("Point",       "/lib/Shader/");
+            CreateShader("Nud_Sphere",  "/lib/Shader/");
         }
 
-        public static void CreateShader(string name, string legacyPath, string normalPath)
+        public static void CreateShader(string name, string normalPath)
         {
             if (!Runtime.shaders.ContainsKey(name))
             {
                 Shader shader = new Shader();
-                if (Runtime.useLegacyShaders)
-                {
-                    shader.LoadShader(MainForm.executableDir + legacyPath + name + ".vert", ShaderType.VertexShader);
-                    shader.LoadShader(MainForm.executableDir + legacyPath + name + ".frag", ShaderType.FragmentShader);
-                } 
-                else
-                {
-                    string shaderFile = MainForm.executableDir + normalPath + name;
-                    shader.LoadShader(shaderFile + ".vert", ShaderType.VertexShader);
-                    shader.LoadShader(shaderFile + ".frag", ShaderType.FragmentShader);
+                string shaderFile = MainForm.executableDir + normalPath + name;
+                shader.LoadShader(shaderFile + ".vert", ShaderType.VertexShader);
+                shader.LoadShader(shaderFile + ".frag", ShaderType.FragmentShader);
 
-                    if (File.Exists(shaderFile + ".geom"))
-                    {
-                        shader.LoadShader(shaderFile + ".geom", ShaderType.GeometryShader);
-                    }
-                }
+                // Geometry shaders are optional.
+                if (File.Exists(shaderFile + ".geom"))
+                    shader.LoadShader(shaderFile + ".geom", ShaderType.GeometryShader);
+
                 Runtime.shaders.Add(name, shader);
             }
         }

@@ -66,10 +66,10 @@ namespace Smash_Forge
         private static void SetupShaders()
         {
             if (!Runtime.shaders.ContainsKey("NUD"))
-                ShaderTools.CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
+                ShaderTools.CreateShader("NUD", "/lib/Shader/");
 
             if (!Runtime.shaders.ContainsKey("NUD_Debug"))
-                ShaderTools.CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
+                ShaderTools.CreateShader("NUD_Debug", "/lib/Shader/");
 
             Runtime.shaders["NUD"].DisplayCompilationWarnings("NUD");
             Runtime.shaders["NUD_Debug"].DisplayCompilationWarnings("NUD_Debug");
@@ -280,7 +280,7 @@ namespace Smash_Forge
 
         private void LoadBoneAttributes(VBN vbn, Shader shader)
         {
-            if (vbn != null && !Runtime.useLegacyShaders)
+            if (vbn != null)
             {
                 Matrix4[] f = vbn.getShaderMatrix();
 
