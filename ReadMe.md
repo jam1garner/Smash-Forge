@@ -1,9 +1,10 @@
 Smash Forge
 ===========
+<a href="url"><img src="https://github.com/jam1garner/Smash-Forge/wiki/Images/Application Main.png" align="top" height="auto" width="auto" ></a>  
 [Bug Tracker](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Request a feature](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Forge Wiki](https://github.com/jam1garner/Smash-Forge/wiki) | [![Build status](https://ci.appveyor.com/api/projects/status/o73kaah41uewf1kx/branch/master?svg=true)](https://ci.appveyor.com/project/Sammi-Husky/smash-4-bone-animator/branch/master)
 
 ## Installation
-Download the latest commit from the [releases page](https://github.com/jam1garner/Smash-Forge/releases). See the wiki for more information. **Do not accidentally download the source code (contains a .sln).**
+Download the latest commit from the [releases page](https://github.com/jam1garner/Smash-Forge/releases). See the wiki for more information and basic usage. **Do not accidentally download the source code (contains a .sln).**
 
 ## Features
  - Can open, preview and edit Smash 4 boneset files (.vbn)
@@ -28,7 +29,7 @@ Download the latest commit from the [releases page](https://github.com/jam1garne
 
 NOTE: this entire program is still very much a WIP. There may be bugs or incomplete features. Please stick with us as we're working on it!
 
-While credit on projects made using this tool is in no way necessary it is very much appreciated, thank you to those who use it.
+While credit on projects made using this tool is in no way necessary, it is very much appreciated. Thank you to those who use it.
 
 ## Building
 ### Windows
