@@ -36,14 +36,11 @@ void main()
     if (Luminance(fragColor.rgb) > bloomThreshold)
         fragColorBright.rgb = fragColor.rgb;
 
-    float minDistance = min(min(edgeDistance.x, edgeDistance.y), edgeDistance.z);
-
-    float edgeIntensity = 0;
-    float edgeThreshold = 0.15;
-    if (minDistance < edgeThreshold)
-        edgeIntensity = 1;
-
-    vec3 edgeColor = vec3(1, 0, 0);
-    fragColor.rgb = mix(fragColor.rgb, edgeColor, edgeIntensity);
-    //fragColor.rgb = normalize(edgeDistance);
+    if (drawWireframe == 1)
+    {
+        float minDistance = min(min(edgeDistance.x, edgeDistance.y), edgeDistance.z);
+        float smoothedDistance = exp2(-512.0 * minDistance * minDistance);
+        vec3 edgeColor = vec3(1);
+        fragColor.rgb = mix(fragColor.rgb, edgeColor, smoothedDistance);
+    }
 }

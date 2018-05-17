@@ -455,12 +455,6 @@ vec4 SmashShader()
 {
     vec4 resultingColor = vec4(0,0,0,1);
 
-    if (colorOverride == 1)
-    {
-        // Wireframe color.
-        return vec4(1);
-    }
-
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
     vec3 N = BumpMapNormal(normal, dualNormalScrollParams, normalMap, normaltexCoord);
 

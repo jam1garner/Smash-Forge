@@ -63,9 +63,12 @@ namespace Smash_Forge
 
         public static float RenderLineSize = 2;
         public static bool renderLVD = true;
+
         public static bool renderModel = true;
         public static bool renderModelSelection = true;
         public static bool renderModelWireframe;
+        public static float wireframeLineWidth = 0.01f;
+
         public static bool renderBones = true;
         public static bool renderCollisions = true;
         public static bool renderCollisionNormals = false;

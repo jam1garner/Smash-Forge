@@ -475,10 +475,10 @@ namespace Smash_Forge
         public void Render(Shader shader, Camera camera)
         {
             DrawShadedPolygons(shader, camera);
-            DrawWireFrameAndSelectedPolygons(shader);
+            DrawSelectionOutlines(shader);
         }
 
-        private void DrawWireFrameAndSelectedPolygons(Shader shader)
+        private void DrawSelectionOutlines(Shader shader)
         {
             foreach (Mesh m in Nodes)
             {
@@ -489,11 +489,6 @@ namespace Smash_Forge
                         if ((p.IsSelected || p.Parent.IsSelected))
                         {
                             DrawModelSelection(p, shader);
-                        }
-
-                        if (Runtime.renderModelWireframe)
-                        {
-                            DrawModelWireframe(p, shader);
                         }
                     }
                 }
@@ -545,26 +540,6 @@ namespace Smash_Forge
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementsIbo);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
-            /*if (p.Checked)
-            {
-                if ((p.IsSelected || p.Parent.IsSelected) && drawSelection)
-                {
-                    DrawModelSelection(p, shader);
-                }
-                else
-                {
-                    if (Runtime.renderModel)
-                    {
-                        // Draw the model normally.
-                        GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
-                    }
-                    if (Runtime.renderModelWireframe)
-                    {
-                        DrawModelWireframe(p, shader);
-                    }
-
-                }
-            }*/
         }
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material)
@@ -579,6 +554,10 @@ namespace Smash_Forge
             SetLightingUniforms(shader, lightSetNumber);
             SetXMBUniforms(shader, p);
             SetNscUniform(p, shader);
+
+            ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderModelWireframe, "drawWireframe");
+
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("lineWidth"), Runtime.wireframeLineWidth);
 
             GL.Uniform3(shader.GetVertexAttributeUniformLocation("cameraPosition"), camera.position);
 
@@ -710,23 +689,6 @@ namespace Smash_Forge
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV3"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
-        }
-
-        private static void DrawModelWireframe(Polygon p, Shader shader)
-        {
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Lequal);
-
-            // use vertex color for wireframe color
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("colorOverride"), 1);
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-            GL.Enable(EnableCap.LineSmooth);
-            GL.LineWidth(1f);
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("colorOverride"), 0);
         }
 
         private static void DrawModelSelection(Polygon p, Shader shader)
