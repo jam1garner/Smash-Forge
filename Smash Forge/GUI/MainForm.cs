@@ -1297,7 +1297,7 @@ namespace Smash_Forge
             else if (fileName.EndsWith(".bin"))
             {
                 FileData f = new FileData(fileName);
-                if(f.readShort() == 0xFFFF)
+                if (f.readUShort() == 0xFFFF)
                 {
                     PARAMEditor p = new PARAMEditor(fileName) { ShowHint = DockState.Document };
                     p.Text = Path.GetFileName(fileName);

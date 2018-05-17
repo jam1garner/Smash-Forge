@@ -44,49 +44,55 @@ namespace Smash_Forge
 			}
 			return data;
 		}
+
 		public int readInt()
 		{
 			if (Endian == Endianness.Little)
-			{
-				return (b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 24);
-			}
+				return (int) ((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 24));
 			else
-				return ((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF);
+				return (int) (((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
+		}
+
+		public uint readUInt()
+		{
+			if (Endian == Endianness.Little)
+				return (uint) ((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 24));
+			else
+				return (uint) (((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
 		}
 
 		public int readThree()
 		{
 			if (Endian == Endianness.Little)
-			{
 				return (b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16);
-			}
 			else
 				return ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF);
 		}
 
-		public int readShort()
+		public short readShort()
 		{
 			if (Endian == Endianness.Little)
-			{
-				return (b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8);
-			}
+				return (short) ((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8));
 			else
-				return ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF);
+				return (short) (((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
 		}
 
-        public short readSignedShort()
+        public ushort readUShort()
         {
             if (Endian == Endianness.Little)
-            {
-                return (short) ((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8));
-            }
+                return (ushort) ((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8));
             else
-                return (short) (((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
+                return (ushort) (((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
         }
 
-		public int readByte()
+		public byte readByte()
 		{
-			return (b[p++] & 0xFF);
+			return (byte) (b[p++] & 0xFF);
+		}
+
+		public sbyte readSByte()
+		{
+			return (sbyte) (b[p++] & 0xFF);
 		}
 
 		public float readFloat()

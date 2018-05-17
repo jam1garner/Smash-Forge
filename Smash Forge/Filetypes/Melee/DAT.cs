@@ -860,21 +860,21 @@ namespace Smash_Forge
                 for (int i = 0; i < polyCount; i++)
                 {
                     AreaTableEntry entry = new AreaTableEntry();
-                    entry.idxFirstTopLink = (ushort)f.readShort();
-                    entry.nbTopLinks = (ushort)f.readShort();
-                    entry.idxFirstBotLink = (ushort)f.readShort();
-                    entry.nbBotLinks = (ushort)f.readShort();
-                    entry.idxFirstRightLink = (ushort)f.readShort();
-                    entry.nbRightLinks = (ushort)f.readShort();
-                    entry.idxFirstLeftLink = (ushort)f.readShort();
-                    entry.nbLeftLinks = (ushort)f.readShort();
+                    entry.idxFirstTopLink = f.readUShort();
+                    entry.nbTopLinks = f.readUShort();
+                    entry.idxFirstBotLink = f.readUShort();
+                    entry.nbBotLinks = f.readUShort();
+                    entry.idxFirstRightLink = f.readUShort();
+                    entry.nbRightLinks = f.readUShort();
+                    entry.idxFirstLeftLink = f.readUShort();
+                    entry.nbLeftLinks = f.readUShort();
                     f.skip(4);
                     entry.xBotLeftCorner = f.readFloat();
                     entry.yBotLeftCorner = f.readFloat();
                     entry.xTopRightCorner = f.readFloat();
                     entry.yTopRightCorner = f.readFloat();
-                    entry.idxLowestSpot = (ushort)f.readShort();
-                    entry.nbLinks = (ushort)f.readShort();
+                    entry.idxLowestSpot = f.readUShort();
+                    entry.nbLinks = f.readUShort();
                     areaTable.Add(entry);
                     int[] range = { entry.idxLowestSpot, entry.idxLowestSpot + entry.nbLinks };
                     polyRanges.Add(range);
