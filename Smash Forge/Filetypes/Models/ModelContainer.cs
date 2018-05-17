@@ -228,7 +228,7 @@ namespace Smash_Forge
             return null;
         }
 
-        public void Render(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix, bool specialWireFrame = false)
+        public void Render(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix, Vector2 screenDimensions, bool specialWireFrame = false)
         {
             if (!Checked)
                 return;
@@ -243,29 +243,29 @@ namespace Smash_Forge
             int renderType = (int)Runtime.renderType;
             
             Matrix4 mvpMatrix = camera.mvpMatrix;
-            GL.UniformMatrix4(shader.GetAttribute("mvpMatrix"), false, ref mvpMatrix);
+            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("mvpMatrix"), false, ref mvpMatrix);
 
             // Perform the calculations here to reduce render times in shader
             Matrix4 modelViewMatrix = camera.modelViewMatrix;
             Matrix4 sphereMapMatrix = modelViewMatrix;
             sphereMapMatrix.Invert();
             sphereMapMatrix.Transpose();
-            GL.UniformMatrix4(shader.GetAttribute("modelViewMatrix"), false, ref modelViewMatrix);
-            GL.UniformMatrix4(shader.GetAttribute("sphereMapMatrix"), false, ref sphereMapMatrix);
+            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelViewMatrix"), false, ref modelViewMatrix);
+            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("sphereMapMatrix"), false, ref sphereMapMatrix);
 
             Matrix4 rotationMatrix = camera.rotationMatrix;
-            GL.UniformMatrix4(shader.GetAttribute("rotationMatrix"), false, ref rotationMatrix);
+            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("rotationMatrix"), false, ref rotationMatrix);
 
             shader = Runtime.shaders["MBN"];
             GL.UseProgram(shader.programID);
 
             if (Runtime.cameraLight)
             {
-                GL.Uniform3(shader.GetAttribute("difLightDirection"), Vector3.TransformNormal(new Vector3(0f, 0f, -1f), camera.mvpMatrix.Inverted()).Normalized());
+                GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLightDirection"), Vector3.TransformNormal(new Vector3(0f, 0f, -1f), camera.mvpMatrix.Inverted()).Normalized());
             }
             else
             {
-                GL.Uniform3(shader.GetAttribute("difLightDirection"), Runtime.lightSetParam.characterDiffuse.direction);
+                GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLightDirection"), Runtime.lightSetParam.characterDiffuse.direction);
             }
 
             shader = Runtime.shaders["DAT"];
@@ -273,8 +273,8 @@ namespace Smash_Forge
 
             LightColor diffuseColor = Runtime.lightSetParam.characterDiffuse.diffuseColor;
             LightColor ambientColor = Runtime.lightSetParam.characterDiffuse.ambientColor;
-            GL.Uniform3(shader.GetAttribute("difLightColor"), diffuseColor.R, diffuseColor.G, diffuseColor.B);
-            GL.Uniform3(shader.GetAttribute("ambLightColor"), ambientColor.R, ambientColor.G, ambientColor.B);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLightColor"), diffuseColor.R, diffuseColor.G, diffuseColor.B);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("ambLightColor"), ambientColor.R, ambientColor.G, ambientColor.B);
             
             
             if (BCH != null)
@@ -285,12 +285,12 @@ namespace Smash_Forge
                 }
             }
 
-            if (DAT_MELEE != null && Runtime.shaders["DAT"].CompiledSuccessfully())
+            if (DAT_MELEE != null && Runtime.shaders["DAT"].ProgramCreatedSuccessfully())
             {
                 DAT_MELEE.Render(camera.mvpMatrix);
             }
 
-            if (NUD != null && Runtime.shaders["NUD"].CompiledSuccessfully() && Runtime.shaders["NUD_Debug"].CompiledSuccessfully())
+            if (NUD != null && Runtime.shaders["NUD"].ProgramCreatedSuccessfully() && Runtime.shaders["NUD_Debug"].ProgramCreatedSuccessfully())
             {
                 if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                     shader = Runtime.shaders["NUD_Debug"];
@@ -304,14 +304,17 @@ namespace Smash_Forge
 
                 GL.ActiveTexture(TextureUnit.Texture2);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh]);
-                GL.Uniform1(shader.GetAttribute("cmap"), 2);
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("cmap"), 2);
 
-                GL.Uniform1(shader.GetAttribute("renderType"), renderType);
-                GL.Uniform1(shader.GetAttribute("debugOption"), (int)Runtime.uvChannel);
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderType"), renderType);
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("debugOption"), (int)Runtime.uvChannel);
+
+                // Used for wireframe shader.
+                GL.Uniform2(shader.GetVertexAttributeUniformLocation("windowSize"), screenDimensions);
 
                 SetElapsedDirectUvTime(shader);
 
-                GL.UniformMatrix4(shader.GetAttribute("modelMatrix"), false, ref modelMatrix);
+                GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelMatrix"), false, ref modelMatrix);
 
                 if (specialWireFrame)
                 {
@@ -336,7 +339,7 @@ namespace Smash_Forge
             else
                 ModelViewport.directUVTimeStopWatch.Stop();
 
-            GL.Uniform1(shader.GetAttribute("elapsedTime"), elapsedSeconds);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("elapsedTime"), elapsedSeconds);
         }
 
         public void RenderPoints(Camera camera)
@@ -367,41 +370,41 @@ namespace Smash_Forge
 
         private static void SetRenderSettingsUniforms(Shader shader)
         {
-            GL.Uniform1(shader.GetAttribute("renderStageLighting"), Runtime.renderStageLighting ? 1 : 0);
-            GL.Uniform1(shader.GetAttribute("renderLighting"), Runtime.renderMaterialLighting ? 1 : 0);
-            GL.Uniform1(shader.GetAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.GetAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
-            GL.Uniform1(shader.GetAttribute("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
-            GL.Uniform1(shader.GetAttribute("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
-            GL.Uniform1(shader.GetAttribute("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
-            GL.Uniform1(shader.GetAttribute("renderReflection"), Runtime.renderReflection ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderStageLighting"), Runtime.renderStageLighting ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderLighting"), Runtime.renderMaterialLighting ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderDiffuse"), Runtime.renderDiffuse ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderFresnel"), Runtime.renderFresnel ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderSpecular"), Runtime.renderSpecular ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderReflection"), Runtime.renderReflection ? 1 : 0);
 
-            GL.Uniform1(shader.GetAttribute("useNormalMap"), Runtime.renderNormalMap ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("useNormalMap"), Runtime.renderNormalMap ? 1 : 0);
 
-            GL.Uniform1(shader.GetAttribute("ambientIntensity"), Runtime.ambItensity);
-            GL.Uniform1(shader.GetAttribute("diffuseIntensity"), Runtime.difIntensity);
-            GL.Uniform1(shader.GetAttribute("specularIntensity"), Runtime.spcIntentensity);
-            GL.Uniform1(shader.GetAttribute("fresnelIntensity"), Runtime.frsIntensity);
-            GL.Uniform1(shader.GetAttribute("reflectionIntensity"), Runtime.refIntensity);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("ambientIntensity"), Runtime.ambItensity);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("diffuseIntensity"), Runtime.difIntensity);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("specularIntensity"), Runtime.spcIntentensity);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("fresnelIntensity"), Runtime.frsIntensity);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("reflectionIntensity"), Runtime.refIntensity);
 
-            GL.Uniform1(shader.GetAttribute("zScale"), Runtime.zScale);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("zScale"), Runtime.zScale);
 
-            GL.Uniform1(shader.GetAttribute("renderR"), Runtime.renderR ? 1 : 0);
-            GL.Uniform1(shader.GetAttribute("renderG"), Runtime.renderG ? 1 : 0);
-            GL.Uniform1(shader.GetAttribute("renderB"), Runtime.renderB ? 1 : 0);
-            GL.Uniform1(shader.GetAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderR"), Runtime.renderR ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderG"), Runtime.renderG ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderB"), Runtime.renderB ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
 
-            GL.Uniform1(shader.GetAttribute("uvChannel"), (int)Runtime.uvChannel);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("uvChannel"), (int)Runtime.uvChannel);
 
             bool alphaOverride = Runtime.renderAlpha && !Runtime.renderR && !Runtime.renderG && !Runtime.renderB;
-            GL.Uniform1(shader.GetAttribute("alphaOverride"), alphaOverride ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("alphaOverride"), alphaOverride ? 1 : 0);
 
-            GL.Uniform3(shader.GetAttribute("lightSetColor"), 0, 0, 0);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("lightSetColor"), 0, 0, 0);
 
-            GL.Uniform1(shader.GetAttribute("colorOverride"), 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("colorOverride"), 0);
 
-            GL.Uniform1(shader.GetAttribute("debug1"), Runtime.debug1 ? 1 : 0);
-            GL.Uniform1(shader.GetAttribute("debug2"), Runtime.debug2 ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("debug1"), Runtime.debug1 ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("debug2"), Runtime.debug2 ? 1 : 0);
 
         }
 
@@ -410,46 +413,46 @@ namespace Smash_Forge
             // fresnel sky/ground color for characters & stages
             ShaderTools.LightColorVector3Uniform(shader, Runtime.lightSetParam.fresnelLight.groundColor, "fresGroundColor");
             ShaderTools.LightColorVector3Uniform(shader, Runtime.lightSetParam.fresnelLight.skyColor, "fresSkyColor");
-            GL.Uniform3(shader.GetAttribute("fresSkyDirection"), Runtime.lightSetParam.fresnelLight.getSkyDirection());
-            GL.Uniform3(shader.GetAttribute("fresGroundDirection"), Runtime.lightSetParam.fresnelLight.getGroundDirection());
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("fresSkyDirection"), Runtime.lightSetParam.fresnelLight.getSkyDirection());
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("fresGroundDirection"), Runtime.lightSetParam.fresnelLight.getGroundDirection());
 
             // reflection color for characters & stages
             float refR, refG, refB = 1.0f;
             ColorTools.HsvToRgb(Runtime.reflectionHue, Runtime.reflectionSaturation, Runtime.reflectionIntensity, out refR, out refG, out refB);
-            GL.Uniform3(shader.GetAttribute("refLightColor"), refR, refG, refB);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("refLightColor"), refR, refG, refB);
             
             // character diffuse lights
-            GL.Uniform3(shader.GetAttribute("difLightColor"), Runtime.lightSetParam.characterDiffuse.diffuseColor.R, Runtime.lightSetParam.characterDiffuse.diffuseColor.G, Runtime.lightSetParam.characterDiffuse.diffuseColor.B);
-            GL.Uniform3(shader.GetAttribute("ambLightColor"), Runtime.lightSetParam.characterDiffuse.ambientColor.R, Runtime.lightSetParam.characterDiffuse.ambientColor.G, Runtime.lightSetParam.characterDiffuse.ambientColor.B);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLightColor"), Runtime.lightSetParam.characterDiffuse.diffuseColor.R, Runtime.lightSetParam.characterDiffuse.diffuseColor.G, Runtime.lightSetParam.characterDiffuse.diffuseColor.B);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("ambLightColor"), Runtime.lightSetParam.characterDiffuse.ambientColor.R, Runtime.lightSetParam.characterDiffuse.ambientColor.G, Runtime.lightSetParam.characterDiffuse.ambientColor.B);
 
-            GL.Uniform3(shader.GetAttribute("difLightColor2"), Runtime.lightSetParam.characterDiffuse2.diffuseColor.R, Runtime.lightSetParam.characterDiffuse2.diffuseColor.G, Runtime.lightSetParam.characterDiffuse2.diffuseColor.B);
-            GL.Uniform3(shader.GetAttribute("ambLightColor2"), Runtime.lightSetParam.characterDiffuse2.ambientColor.R, Runtime.lightSetParam.characterDiffuse2.ambientColor.G, Runtime.lightSetParam.characterDiffuse2.ambientColor.B);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLightColor2"), Runtime.lightSetParam.characterDiffuse2.diffuseColor.R, Runtime.lightSetParam.characterDiffuse2.diffuseColor.G, Runtime.lightSetParam.characterDiffuse2.diffuseColor.B);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("ambLightColor2"), Runtime.lightSetParam.characterDiffuse2.ambientColor.R, Runtime.lightSetParam.characterDiffuse2.ambientColor.G, Runtime.lightSetParam.characterDiffuse2.ambientColor.B);
 
-            GL.Uniform3(shader.GetAttribute("difLightColor3"), Runtime.lightSetParam.characterDiffuse3.diffuseColor.R, Runtime.lightSetParam.characterDiffuse3.diffuseColor.G, Runtime.lightSetParam.characterDiffuse3.diffuseColor.B);
-            GL.Uniform3(shader.GetAttribute("ambLightColor3"), Runtime.lightSetParam.characterDiffuse3.ambientColor.R, Runtime.lightSetParam.characterDiffuse3.ambientColor.G, Runtime.lightSetParam.characterDiffuse3.ambientColor.B);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLightColor3"), Runtime.lightSetParam.characterDiffuse3.diffuseColor.R, Runtime.lightSetParam.characterDiffuse3.diffuseColor.G, Runtime.lightSetParam.characterDiffuse3.diffuseColor.B);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("ambLightColor3"), Runtime.lightSetParam.characterDiffuse3.ambientColor.R, Runtime.lightSetParam.characterDiffuse3.ambientColor.G, Runtime.lightSetParam.characterDiffuse3.ambientColor.B);
             
             // character specular light
-            GL.Uniform3(shader.GetAttribute("specLightColor"), LightTools.specularLight.diffuseColor.R, LightTools.specularLight.diffuseColor.G, LightTools.specularLight.diffuseColor.B);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("specLightColor"), LightTools.specularLight.diffuseColor.R, LightTools.specularLight.diffuseColor.G, LightTools.specularLight.diffuseColor.B);
             
             // stage fog
-            GL.Uniform1(shader.GetAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderFog"), Runtime.renderFog ? 1 : 0);
 
-            GL.Uniform3(shader.GetAttribute("difLight2Direction"), Runtime.lightSetParam.characterDiffuse2.direction);
-            GL.Uniform3(shader.GetAttribute("difLight3Direction"), Runtime.lightSetParam.characterDiffuse2.direction);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLight2Direction"), Runtime.lightSetParam.characterDiffuse2.direction);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLight3Direction"), Runtime.lightSetParam.characterDiffuse2.direction);
 
             if (Runtime.cameraLight) 
             {
                 // Camera light should only affect character lighting.
                 Matrix4 invertedCamera = camera.mvpMatrix.Inverted();
                 Vector3 lightDirection = new Vector3(0f, 0f, -1f);
-                GL.Uniform3(shader.GetAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
-                GL.Uniform3(shader.GetAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
-                GL.Uniform3(shader.GetAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+                GL.Uniform3(shader.GetVertexAttributeUniformLocation("lightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+                GL.Uniform3(shader.GetVertexAttributeUniformLocation("specLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+                GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
             }
             else
             {
-                GL.Uniform3(shader.GetAttribute("specLightDirection"), LightTools.specularLight.direction);
-                GL.Uniform3(shader.GetAttribute("difLightDirection"), Runtime.lightSetParam.characterDiffuse.direction);
+                GL.Uniform3(shader.GetVertexAttributeUniformLocation("specLightDirection"), LightTools.specularLight.direction);
+                GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLightDirection"), Runtime.lightSetParam.characterDiffuse.direction);
             }
         }
 

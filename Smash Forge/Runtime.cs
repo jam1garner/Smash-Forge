@@ -63,9 +63,12 @@ namespace Smash_Forge
 
         public static float RenderLineSize = 2;
         public static bool renderLVD = true;
+
         public static bool renderModel = true;
         public static bool renderModelSelection = true;
         public static bool renderModelWireframe;
+        public static float wireframeLineWidth = 0.01f;
+
         public static bool renderBones = true;
         public static bool renderCollisions = true;
         public static bool renderCollisionNormals = false;
@@ -173,7 +176,7 @@ namespace Smash_Forge
         public static float refIntensity = 1.00f;
         public static float ambItensity = 1.00f;
 
-        public static float model_scale = 1f;
+        public static float modelScale = 1f;
         public static float zScale = 1.0f;
 
         public static int selectedBoneIndex = -1;
@@ -225,7 +228,6 @@ namespace Smash_Forge
         public static string renderer = "";
         public static string openGLVersion = "";
         public static string GLSLVersion = "";
-        public static bool useLegacyShaders = false;
 
         public enum RenderTypes
         {

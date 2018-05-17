@@ -1,16 +1,19 @@
-#version 120
+#version 330
 
-varying vec3 viewPosition;
-varying vec3 objectPosition;
-varying vec2 texCoord;
-varying vec2 texCoord2;
-varying vec2 texCoord3;
-varying vec2 normaltexCoord;
-varying vec4 vertexColor;
-varying vec3 normal;
-varying vec3 tangent;
-varying vec3 bitangent;
-varying vec3 boneWeightsColored;
+in vec3 viewPosition;
+in vec3 objectPosition;
+in vec2 texCoord;
+in vec2 texCoord2;
+in vec2 texCoord3;
+in vec2 normaltexCoord;
+in vec4 vertexColor;
+in vec3 normal;
+in vec3 tangent;
+in vec3 bitangent;
+in vec3 boneWeightsColored;
+noperspective in vec3 edgeDistance;
+
+out vec4 fragColor;
 
 // Textures
 uniform sampler2D dif;
@@ -44,7 +47,7 @@ uniform int hasSoftLight;
 uniform int hasCustomSoftLight;
 
 // Da Flags
-// uniform uint flags;
+uniform uint flags;
 uniform int isTransparent;
 
 uniform int lightSet;
@@ -54,6 +57,7 @@ uniform int renderStageLighting;
 uniform int uvChannel;
 uniform int debug1;
 uniform int debug2;
+uniform int drawWireframe;
 
 // NU_ Material Properties
 uniform vec4 colorOffset;
@@ -146,6 +150,8 @@ uniform int selectedBoneIndex;
 uniform vec3 NSC;
 uniform float elapsedTime;
 
+uniform int drawSelection;
+
 // Constants
 #define gamma 2.2
 #define PI 3.14159
@@ -188,7 +194,7 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
-    float closestDepth = texture2D(shadowMap, projCoords.xy).r;
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
     float currentDepth = projCoords.z;
     float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
@@ -202,8 +208,8 @@ vec3 CalcBumpedNormal(vec3 inputNormal)
 	   return inputNormal;
 
     float normalIntensity = normalParams.x;
-    vec3 BumpMapNormal = texture2D(normalMap, normaltexCoord).xyz;
-    vec3 BumpMapNormal2 = texture2D(normalMap, vec2(normaltexCoord.x + dualNormalScrollParams.x, normaltexCoord.y + dualNormalScrollParams.y)).xyz;
+    vec3 BumpMapNormal = texture(normalMap, normaltexCoord).xyz;
+    vec3 BumpMapNormal2 = texture(normalMap, vec2(normaltexCoord.x + dualNormalScrollParams.x, normaltexCoord.y + dualNormalScrollParams.y)).xyz;
     if(hasDualNormal == 1)
         BumpMapNormal = normalize(BumpMapNormal + BumpMapNormal2);
     BumpMapNormal = mix(vec3(0.5, 0.5, 1), BumpMapNormal, normalIntensity); // probably a better way to do this
@@ -216,33 +222,6 @@ vec3 CalcBumpedNormal(vec3 inputNormal)
     NewNormal = normalize(NewNormal);
 
     return NewNormal;
-}
-
-vec3 ScreenBlend(vec3 base, vec3 top)
-{
-    return vec3(1) - (vec3(1) - base) * (vec3(1) - top);
-}
-
-vec3 RampColor(vec3 color){
-	if(hasRamp == 1)
-	{
-		float rampInputLuminance = Luminance(color);
-		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
-		return texture2D(ramp, vec2(1-rampInputLuminance, 0.50)).rgb;
-	}
-	else
-		return vec3(0);
-}
-
-vec3 DummyRampColor(vec3 color){
-	if(hasDummyRamp == 1)
-	{
-		float rampInputLuminance = Luminance(color);
-		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
-		return texture2D(dummyRamp, vec2(1-rampInputLuminance, 0.50)).rgb;
-	}
-	else
-		return vec3(1);
 }
 
 vec3 CalculateLighting(vec3 N, float halfLambert)
@@ -268,8 +247,8 @@ vec3 CalculateLighting(vec3 N, float halfLambert)
         lighting = mix(ambLightColor * ambientIntensity, difLightColor * diffuseIntensity, halfLambert);
     }
 
-    // if (((flags & 0x0F000000u) < 0x04000000u) || renderStageLighting != 1)
-        // lighting = vec3(1); // flags for "no lighting"
+    if (((flags & 0x0F000000u) < 0x04000000u) || renderStageLighting != 1)
+        lighting = vec3(1); // flags for "no lighting"
 
     return lighting;
 }
@@ -287,7 +266,13 @@ vec3 CalculateFog(vec3 inputColor)
 
 void main()
 {
-    gl_FragColor = vec4(0,0,0,1);
+    fragColor = vec4(0,0,0,1);
+
+    if (drawSelection == 1)
+    {
+        fragColor = vec4(1);
+        return;
+    }
 
     // remap vectors for nicer visualization
     vec3 bumpMapNormal = CalcBumpedNormal(normal);
@@ -313,36 +298,17 @@ void main()
     float offsetIntensity = 0;
     if(useNormalMap == 1)
         offsetIntensity = normalParams.z;
-    vec2 textureOffset = 1 - texture2D(normalMap, normaltexCoord).xy;
+    vec2 textureOffset = 1 - texture(normalMap, normaltexCoord).xy;
     textureOffset = (textureOffset * 2) -1; // remap to -1 to 1?
     vec2 offsetTexCoord = texCoord + (textureOffset * offsetIntensity);
 
     // calculate diffuse map blending to use in Shaded and Diffuse Maps render modes
-    vec4 diffuse1 = vec4(0);
-    vec4 diffuse2 = vec4(0);
-    vec4 diffuse3 = texture2D(dif3, texCoord3);
-    vec4 diffuseMapTotal = vec4(0);
-    if (hasDif == 1) // 1st diffuse texture
-    {
-        diffuse1 = texture2D(dif, offsetTexCoord);
-        diffuseMapTotal = diffuse1;
-
-        if (hasDif2 == 1 && hasDif3 != 1) // 2nd diffuse texture. doesnt work properly with stages
-        {
-            diffuse2 = texture2D(dif2, texCoord2);
-            diffuseMapTotal = mix(diffuse2, diffuse1, diffuse1.a);
-            diffuseMapTotal.a = 1.0;
-
-            if (hasDif3 == 1)
-            {
-                diffuse3 = texture2D(dif3, texCoord3);
-                diffuseMapTotal = mix(diffuse3, diffuseMapTotal, vertexColor.a);
-            }
-        }
-    }
+    vec4 diffuse1 = texture(dif, texCoord);
+    vec4 diffuse2 = texture(dif2, texCoord2);
+    vec4 diffuse3 = texture(dif3, texCoord3);
 
     vec3 aoBlend = vec3(1);
-    float aoMap = texture2D(normalMap, texCoord).a;
+    float aoMap = texture(normalMap, texCoord).a;
     float maxAOBlendValue = 1.2;
     aoBlend = min((vec3(aoMap) + aoMinGain.rgb), vec3(maxAOBlendValue));
     vec3 aoGain = min((aoMap * (1 + aoMinGain.rgb)), vec3(1.0));
@@ -351,11 +317,20 @@ void main()
 	aoBlend.rgb = HSV2RGB(vec3(c1.x, c2.y, c1.z));
 
     vec4 resultingColor = vec4(1);
+
+    // Sets which diffuse texture or UV coords to display based on UV channel.
+    vec4 displayDiffuse = diffuse1;
     vec2 displayTexCoord = texCoord;
     if (uvChannel == 2)
+    {
         displayTexCoord = texCoord2;
+        displayDiffuse = diffuse2;
+    }
     else if (uvChannel == 3)
+    {
         displayTexCoord = texCoord3;
+        displayDiffuse = diffuse3;
+    }
 
     // render modes
     if (renderType == 1) // normals color
@@ -366,14 +341,25 @@ void main()
         resultingColor.rgb = CalculateFog(resultingColor.rgb);
     }
     else if (renderType == 3) // diffuse map
-        resultingColor.rgba = diffuseMapTotal.rgba;
+    {
+        resultingColor.rgba = displayDiffuse;
+    }
     else if (renderType == 4) // normal map
-        resultingColor.rgb = texture2D(normalMap, normaltexCoord).rgb;
+        resultingColor.rgb = texture(normalMap, normaltexCoord).rgb;
     else if (renderType == 5) // vertexColor
-        resultingColor.rgb = vertexColor.rgb;
+    {
+        // The default range is [0,128].
+        // Conversion from [0, 128] to [0, 1] is done prior to shader.
+        // This allows values in range [0,2]
+        resultingColor = vertexColor;
+        if (debug1 == 1)
+        {
+            resultingColor *= 0.5;
+        }
+    }
     else if (renderType == 6) // ambient occlusion
     {
-        resultingColor.rgb = texture2D(normalMap, texCoord).aaa;
+        resultingColor.rgb = texture(normalMap, texCoord).aaa;
         if (debug1 == 1)
             resultingColor.rgb = aoBlend.rgb;
     }
@@ -381,7 +367,7 @@ void main()
     else if (renderType == 7) // uv coords
 		resultingColor.rgb = vec3(displayTexCoord, 1);
     else if (renderType == 8) // uv test pattern
-        resultingColor.rgb = texture2D(UVTestPattern, displayTexCoord).rgb;
+        resultingColor.rgb = texture(UVTestPattern, displayTexCoord).rgb;
     else if (renderType == 9) // tangents
         resultingColor.rgb = displayTangent;
     else if (renderType == 10) // bitangents
@@ -406,29 +392,27 @@ void main()
     else if (renderType == 12)
         resultingColor.rgb = boneWeightsColored;
 
-    // toggle rendering of individual color channels
-    if (renderR == 1)
-    {
-        gl_FragColor.r = resultingColor.r;
-        if (renderB == 0 && renderG == 0)
-            gl_FragColor.rgb = resultingColor.rrr;
-    }
-    if (renderG == 1)
-    {
-        gl_FragColor.g = resultingColor.g;
-        if (renderB == 0 && renderR == 0)
-            gl_FragColor.rgb = resultingColor.ggg;
-    }
-    if (renderB == 1)
-    {
-        gl_FragColor.b = resultingColor.b;
-        if (renderG == 0 && renderR == 0)
-            gl_FragColor.rgb = resultingColor.bbb;
-    }
+    // Toggles rendering of individual color channels for all render modes.
+    fragColor.rgb = resultingColor.rgb * vec3(renderR, renderG, renderB);
+    if (renderR == 1 && renderG == 0 && renderB == 0)
+        fragColor.rgb = resultingColor.rrr;
+    else if (renderG == 1 && renderR == 0 && renderB == 0)
+        fragColor.rgb = resultingColor.ggg;
+    else if (renderB == 1 && renderR == 0 && renderG == 0)
+        fragColor.rgb = resultingColor.bbb;
+
     if (renderAlpha == 1)
     {
-        gl_FragColor.a = resultingColor.a;
+        fragColor.a = resultingColor.a;
     }
     if (alphaOverride == 1)
-        gl_FragColor = vec4(resultingColor.aaa, 1);
+        fragColor = vec4(resultingColor.aaa, 1);
+
+    if (drawWireframe == 1)
+    {
+        float minDistance = min(min(edgeDistance.x, edgeDistance.y), edgeDistance.z);
+        float smoothedDistance = exp2(-512.0 * minDistance * minDistance);
+        vec3 edgeColor = vec3(1);
+        fragColor.rgb = mix(fragColor.rgb, edgeColor, smoothedDistance);
+    }
 }

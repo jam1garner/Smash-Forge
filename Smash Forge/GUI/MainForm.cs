@@ -695,7 +695,7 @@ namespace Smash_Forge
                             ParamFile param = new ParamFile(Runtime.paramDir + "\\fighter\\fighter_param.bin");
                             ParamEntry[] characterParams = ((ParamGroup)param.Groups[0])[CharacterParamManager.FIGHTER_ID[fighterName]];
                             int modelScaleIndex = 44;
-                            Runtime.model_scale = Convert.ToSingle(characterParams[modelScaleIndex].Value);
+                            Runtime.modelScale = Convert.ToSingle(characterParams[modelScaleIndex].Value);
                         }
                         catch { }
                     }

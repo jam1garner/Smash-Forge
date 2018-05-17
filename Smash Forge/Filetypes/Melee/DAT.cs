@@ -74,10 +74,10 @@ namespace Smash_Forge
 
             if (!Runtime.shaders.ContainsKey("DAT"))
             {
-                Rendering.ShaderTools.CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
+                Rendering.ShaderTools.CreateShader("DAT", "/lib/Shader/");
             }
 
-            Runtime.shaders["DAT"].DisplayCompilationWarning("DAT");
+            Runtime.shaders["DAT"].DisplayCompilationWarnings("DAT");
         }
 
         ~DAT()
@@ -357,7 +357,7 @@ namespace Smash_Forge
 
             facedata = face.ToArray();
 
-            if (Runtime.shaders["DAT"].CompiledSuccessfully())
+            if (Runtime.shaders["DAT"].ProgramCreatedSuccessfully())
                 SetupShader();
         }
 
@@ -389,14 +389,14 @@ namespace Smash_Forge
             shader = Runtime.shaders["DAT"];
             GL.UseProgram(shader.programID);
 
-            GL.UniformMatrix4(shader.GetAttribute("modelview"), false, ref modelview);
+            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelview"), false, ref modelview);
             GL.ActiveTexture(TextureUnit.Texture10);
             GL.BindTexture(TextureTarget.Texture2D, Rendering.RenderTools.uvTestPattern);
-            GL.Uniform1(shader.GetAttribute("UVTestPattern"), 10);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("UVTestPattern"), 10);
 
-            GL.Uniform1(shader.GetAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.GetAttribute("renderType"), (int)Runtime.renderType);
-            GL.Uniform1(shader.GetAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderType"), (int)Runtime.renderType);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
 
             if (bones != null)
@@ -416,27 +416,27 @@ namespace Smash_Forge
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
             GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(vertdata.Length * Vector3.SizeInBytes), vertdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.GetAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, 0, 0);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_color);
             GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(coldata.Length * Vector4.SizeInBytes), coldata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.GetAttribute("vColor"), 4, VertexAttribPointerType.Float, false, 0, 0);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vColor"), 4, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_nrm);
             GL.BufferData<Vector3>(BufferTarget.ArrayBuffer, (IntPtr)(nrmdata.Length * Vector3.SizeInBytes), nrmdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.GetAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, 0, 0);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_uv);
             GL.BufferData<Vector2>(BufferTarget.ArrayBuffer, (IntPtr)(uvdata.Length * Vector2.SizeInBytes), uvdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.GetAttribute("vUV"), 2, VertexAttribPointerType.Float, false, 0, 0);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV"), 2, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_bone);
             GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(bonedata.Length * Vector4.SizeInBytes), bonedata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.GetAttribute("vBone"), 4, VertexAttribPointerType.Float, false, 0, 0);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_weight);
             GL.BufferData<Vector4>(BufferTarget.ArrayBuffer, (IntPtr)(weightdata.Length * Vector4.SizeInBytes), weightdata, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.GetAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, 0, 0);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, 0, 0);
 
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(facedata.Length * sizeof(int)), facedata, BufferUsageHint.StaticDraw);
@@ -455,9 +455,9 @@ namespace Smash_Forge
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)GX_TEXTUREWRAP[data.material.texture.wrap_t]);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                GL.Uniform1(shader.GetAttribute("tex"), 0);
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("tex"), 0);
 
-                GL.Uniform2(shader.GetAttribute("uvscale"), new Vector2(data.material.texture.scale_w, data.material.texture.scale_h));
+                GL.Uniform2(shader.GetVertexAttributeUniformLocation("uvscale"), new Vector2(data.material.texture.scale_w, data.material.texture.scale_h));
 
                 foreach (POBJ poly in data.polygons)
                 {

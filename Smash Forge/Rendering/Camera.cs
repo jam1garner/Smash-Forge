@@ -34,7 +34,7 @@ namespace Smash_Forge.Rendering
         // Camera control settings. 
         public float zoomMultiplier = Runtime.zoomModifierScale; 
         public float zoomSpeed = Runtime.zoomspeed;
-        public float mouseTranslateSpeed = 0.050f;
+        public float mouseTranslateSpeed = 0.5f;
         public float scrollWheelZoomSpeed = 1.75f;
         public float shiftZoomMultiplier = 2.5f;
         public float mouseSLast = 0;
@@ -77,8 +77,14 @@ namespace Smash_Forge.Rendering
                 // Left click drag to rotate. Right click drag to pan.
                 if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
                 {
-                    position.Y += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                    position.X += mouseTranslateSpeed * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                    // Find the change in normalized screen coordinates.
+                    float deltaYNormalized = (OpenTK.Input.Mouse.GetState().Y - mouseYLast) / renderHeight;
+                    float deltaXNormalized = (OpenTK.Input.Mouse.GetState().X - mouseXLast) / renderWidth;
+
+                    // Translate the camera based on the distance from the origin and field of view.
+                    // Objects will "follow" the mouse while panning.
+                    position.Y += deltaYNormalized * ((float)Math.Sin(fovRadians) * position.Length);
+                    position.X += deltaXNormalized * ((float)Math.Sin(fovRadians) * position.Length);
                 }
                 if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
                 {

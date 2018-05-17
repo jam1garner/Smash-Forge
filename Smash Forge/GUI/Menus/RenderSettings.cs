@@ -29,6 +29,7 @@ namespace Smash_Forge.GUI
             BackgroundGradient1.BackColor = Runtime.backgroundGradientTop;
             BackgroundGradient2.BackColor = Runtime.backgroundGradientBottom;
             floorColorPictureBox.BackColor = Runtime.floorColor;
+            modelscaleTB.Text = Runtime.modelScale + "";
 
             // Bone settings
             renderBonesCB.Checked = Runtime.renderBones;
@@ -459,7 +460,7 @@ namespace Smash_Forge.GUI
             if (disableRuntimeUpdates)
                 return;
 
-            Runtime.model_scale = GuiTools.TryParseTBFloat(modelscaleTB);
+            Runtime.modelScale = GuiTools.TryParseTBFloat(modelscaleTB);
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
