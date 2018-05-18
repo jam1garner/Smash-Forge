@@ -287,8 +287,7 @@ vec3 SoftLighting(vec3 diffuse, vec4 params, float darkenMultiplier, float satur
     return result;
 }
 
-vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor,
-                 vec3 fresSkyDirection, vec3 fresGroundDirection, vec3 fresSkyColor, vec3 fresGroundColor, vec4 fresnelParams, vec4 fresnelColor, float fresnelIntensity)
+vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor)
 {
     // hemisphere fresnel with fresnelParams exponent
     float hemiBlendSky = dot(N, fresSkyDirection) * 0.5 + 0.5;
@@ -310,8 +309,7 @@ vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor,
     return fresnelPass;
 }
 
-vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, samplerCube stagecube, int hasCube, vec4 reflectionParams,
-                    int hasStage, vec4 reflectionColor, vec3 normal, vec3 viewNormal, sampler2D spheremap, int hasSphereMap, float reflectionIntensity, int useDifRefMask)
+vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, VertexAttributes vert)
 {
     vec3 reflectionPass = vec3(0);
 	// cubemap reflection
@@ -327,7 +325,7 @@ vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintCol
     if (hasStage == 1)
        reflectionPass += reflectionColor.rgb * stageCubeColor.rgb * tintColor;
 
-	reflectionPass += SphereMapColor(normal.xyz, viewNormal, spheremap, hasSphereMap) * reflectionColor.xyz * tintColor;
+	reflectionPass += SphereMapColor(vert.normal.xyz, vert.viewNormal, spheremap, hasSphereMap) * reflectionColor.xyz * tintColor;
 
     // It sort of conserves energy for low values.
     reflectionPass -= 0.5 * Luminance(diffuseMap.rgb);
@@ -368,16 +366,13 @@ vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, vec3 specLightDirection, vec4 ref
     return specularColorTotal;
 }
 
-vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor,
-                vec3 specLightDirection, vec4 reflectionParams, vec3 tangent, vec3 bitangent, int hasSpecularParams,
-                    vec4 specularParams, vec4 specularColor, int hasBayoHair, int hasColorGainOffset, vec4 specularColorGain, uint flags, vec3 specLightColor,
-                    float specularIntensity)
+vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, VertexAttributes vert)
 {
     vec3 specularPass = vec3(0);
 
     // Only uses the anisotropic exponent for mats without NU_specularParams.
     vec3 halfAngle = normalize(I + specLightDirection);
-    float exponent = AnisotropicSpecExponent(halfAngle, reflectionParams.z, reflectionParams.w, tangent, bitangent);
+    float exponent = AnisotropicSpecExponent(halfAngle, reflectionParams.z, reflectionParams.w, vert.tangent, vert.bitangent);
     if (hasSpecularParams == 1)
         exponent = specularParams.y;
 
@@ -388,7 +383,7 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor
 
     // TODO: Fix bayo hair calculations.
     if (hasBayoHair == 1)
-        specColorTotal = BayoHairSpecular(diffuseMap.rgb, I, specLightDirection, reflectionParams, tangent, bitangent);
+        specColorTotal = BayoHairSpecular(diffuseMap.rgb, I, specLightDirection, reflectionParams, vert.tangent, vert.bitangent);
 
     if (hasColorGainOffset == 1)
         specColorTotal *= specularColorGain.rgb;
@@ -416,7 +411,7 @@ float AngleFade(vec3 N, vec3 I, vec4 angleFadeParams)
     return max((1 - angleFadeAmount), 0);
 }
 
-vec3 FogColor(vec3 inputColor, vec4 fogParams, float depth, vec3 stageFogColor, int renderFog, int renderStageLighting)
+vec3 FogColor(vec3 inputColor, vec4 fogParams, float depth, vec3 stageFogColor)
 {
     depth = clamp((depth / fogParams.y), 0, 1);
     float fogIntensity = mix(fogParams.z, fogParams.w, depth);
@@ -628,9 +623,9 @@ vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert)
 
     // The ambient occlusion calculations for diffuse are done separately.
     float ambientOcclusionBlend = AmbientOcclusionBlend(diffuseMap, aoMinGain, vert);
-    // vec3 specularPass = SpecularPass(N, I, diffuseMap, ambientOcclusionBlend, specTintColor);
-    // vec3 fresnelPass = FresnelPass(N, I, diffuseMap, ambientOcclusionBlend, fresTintColor);
-	// vec3 reflectionPass = ReflectionPass(N, I, diffuseMap, ambientOcclusionBlend, reflTintColor);
+    vec3 specularPass = SpecularPass(N, I, diffuseMap, ambientOcclusionBlend, specTintColor, vert);
+    vec3 fresnelPass = FresnelPass(N, I, diffuseMap, ambientOcclusionBlend, fresTintColor);
+	vec3 reflectionPass = ReflectionPass(N, I, diffuseMap, ambientOcclusionBlend, reflTintColor, vert);
 
 	vec3 resultingColor = vec3(0);
 
@@ -638,12 +633,12 @@ vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert)
 	{
         // Prevent negative colors for some GPUs.
     	resultingColor += max((diffusePass * renderDiffuse), 0);
-    	// resultingColor += max((fresnelPass * renderFresnel), 0);
-    	// resultingColor += max((specularPass * renderSpecular), 0);
-    	// resultingColor += max((reflectionPass * renderReflection), 0);
+    	resultingColor += max((fresnelPass * renderFresnel), 0);
+    	resultingColor += max((specularPass * renderSpecular), 0);
+    	resultingColor += max((reflectionPass * renderReflection), 0);
 
         // light_set_param.bin fog
-        // resultingColor = FogColor(resultingColor, fogParams, viewPosition.z, stageFogColor);
+        resultingColor = FogColor(resultingColor, fogParams, vert.viewPosition.z, stageFogColor);
 	}
 	else
 		resultingColor = diffusePass;
@@ -662,13 +657,13 @@ vec4 SmashShader(VertexAttributes vert)
 
     // zOffset correction
     // TODO: Divide by far plane?
-    // gl_FragDepth = gl_FragCoord.z - (zOffset.x / 1500) - zBufferOffset;
+    gl_FragDepth = gl_FragCoord.z - (zOffset.x / 1500) - zBufferOffset;
 
     // Calculate diffuse map blending.
     vec4 diffuseMapTotal = DiffuseMapTotal(vert);
 
     // TODO: Research how mii colors work.
-    // diffuseMapTotal *= characterColor.rgba;
+    diffuseMapTotal *= characterColor.rgba;
     // Material lighting done in SmashShader
     resultingColor.rgb = RenderPasses(diffuseMapTotal, N, I, vert);
 

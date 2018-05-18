@@ -83,6 +83,9 @@ namespace Smash_Forge
 
         public void CheckTexIdErrors(NUT nut)
         {
+            if (!Runtime.checkNudTexIdOnOpen)
+                return;
+
             string incorrectTextureIds = GetTextureIdsWithoutNutOrDummyTex(nut);
             if (incorrectTextureIds.Length > 0)
             {

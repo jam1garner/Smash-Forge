@@ -905,6 +905,8 @@ namespace Smash_Forge
 
         private void BatchRenderModels()
         {
+            Runtime.checkNudTexIdOnOpen = false;
+
             // Get the source model folder and then the output folder. 
             using (var folderSelect = new FolderSelectDialog())
             {
@@ -935,6 +937,8 @@ namespace Smash_Forge
                     }
                 }
             }
+
+            Runtime.checkNudTexIdOnOpen = true;
         }
 
         private void BatchRenderStages()

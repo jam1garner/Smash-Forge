@@ -69,6 +69,9 @@ namespace Smash_Forge
         public static bool renderModelWireframe;
         public static float wireframeLineWidth = 0.01f;
 
+        // The messages are annoying when batch rendering.
+        public static bool checkNudTexIdOnOpen = true;
+
         public static bool renderBones = true;
         public static bool renderCollisions = true;
         public static bool renderCollisionNormals = false;
