@@ -235,9 +235,9 @@ namespace Smash_Forge
 
             Shader shader;
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                shader = Runtime.shaders["NUD_Debug"];
+                shader = Runtime.shaders["NudDebug"];
             else
-                shader = Runtime.shaders["NUD"];
+                shader = Runtime.shaders["Nud"];
             GL.UseProgram(shader.programId);
 
             int renderType = (int)Runtime.renderType;
@@ -256,7 +256,7 @@ namespace Smash_Forge
             Matrix4 rotationMatrix = camera.rotationMatrix;
             GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("rotationMatrix"), false, ref rotationMatrix);
 
-            shader = Runtime.shaders["MBN"];
+            shader = Runtime.shaders["Mbn"];
             GL.UseProgram(shader.programId);
 
             if (Runtime.cameraLight)
@@ -268,7 +268,7 @@ namespace Smash_Forge
                 GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLightDirection"), Runtime.lightSetParam.characterDiffuse.direction);
             }
 
-            shader = Runtime.shaders["DAT"];
+            shader = Runtime.shaders["Dat"];
             GL.UseProgram(shader.programId);
 
             LightColor diffuseColor = Runtime.lightSetParam.characterDiffuse.diffuseColor;
@@ -285,17 +285,17 @@ namespace Smash_Forge
                 }
             }
 
-            if (DAT_MELEE != null && Runtime.shaders["DAT"].ProgramCreatedSuccessfully())
+            if (DAT_MELEE != null && Runtime.shaders["Dat"].ProgramCreatedSuccessfully())
             {
                 DAT_MELEE.Render(camera.mvpMatrix);
             }
 
-            if (NUD != null && Runtime.shaders["NUD"].ProgramCreatedSuccessfully() && Runtime.shaders["NUD_Debug"].ProgramCreatedSuccessfully())
+            if (NUD != null && Runtime.shaders["Nud"].ProgramCreatedSuccessfully() && Runtime.shaders["NudDebug"].ProgramCreatedSuccessfully())
             {
                 if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                    shader = Runtime.shaders["NUD_Debug"];
+                    shader = Runtime.shaders["NudDebug"];
                 else
-                    shader = Runtime.shaders["NUD"];
+                    shader = Runtime.shaders["Nud"];
 
                 GL.UseProgram(shader.programId);
 

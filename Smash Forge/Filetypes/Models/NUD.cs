@@ -65,14 +65,14 @@ namespace Smash_Forge
 
         private static void SetupShaders()
         {
-            if (!Runtime.shaders.ContainsKey("NUD"))
-                ShaderTools.CreateShader("NUD", "/lib/Shader/");
+            if (!Runtime.shaders.ContainsKey("Nud"))
+                ShaderTools.CreateShader("Nud", "/lib/Shader/");
 
-            if (!Runtime.shaders.ContainsKey("NUD_Debug"))
-                ShaderTools.CreateShader("NUD_Debug", "/lib/Shader/");
+            if (!Runtime.shaders.ContainsKey("NudDebug"))
+                ShaderTools.CreateShader("NudDebug", "/lib/Shader/");
 
-            Runtime.shaders["NUD"].DisplayCompilationWarnings("NUD");
-            Runtime.shaders["NUD_Debug"].DisplayCompilationWarnings("NUD_Debug");
+            Runtime.shaders["Nud"].DisplayCompilationWarnings("NUD");
+            Runtime.shaders["NudDebug"].DisplayCompilationWarnings("NudDebug");
         }
 
         public NUD(string fname) : this()
@@ -266,9 +266,9 @@ namespace Smash_Forge
                 DrawBoundingBoxes();
 
             // Prepare Shader
-            Shader shader = Runtime.shaders["NUD"];
+            Shader shader = Runtime.shaders["Nud"];
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                shader = Runtime.shaders["NUD_Debug"];
+                shader = Runtime.shaders["NudDebug"];
 
             GL.UseProgram(shader.programId);
 

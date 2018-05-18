@@ -77,7 +77,7 @@ namespace Smash_Forge
                 Rendering.ShaderTools.CreateShader("DAT", "/lib/Shader/");
             }
 
-            Runtime.shaders["DAT"].DisplayCompilationWarnings("DAT");
+            Runtime.shaders["Dat"].DisplayCompilationWarnings("DAT");
         }
 
         ~DAT()
@@ -357,7 +357,7 @@ namespace Smash_Forge
 
             facedata = face.ToArray();
 
-            if (Runtime.shaders["DAT"].ProgramCreatedSuccessfully())
+            if (Runtime.shaders["Dat"].ProgramCreatedSuccessfully())
                 SetupShader();
         }
 
@@ -370,7 +370,7 @@ namespace Smash_Forge
             if (shader == null)
             {
                 shader = new Shader();
-                shader = Runtime.shaders["DAT"];
+                shader = Runtime.shaders["Dat"];
             }
             
             GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
@@ -386,7 +386,7 @@ namespace Smash_Forge
             if (shader == null)
                 return;
 
-            shader = Runtime.shaders["DAT"];
+            shader = Runtime.shaders["Dat"];
             GL.UseProgram(shader.programId);
 
             GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelview"), false, ref modelview);

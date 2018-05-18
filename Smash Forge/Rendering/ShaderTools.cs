@@ -18,15 +18,15 @@ namespace Smash_Forge.Rendering
             // Reset the shaders first so that shaders can be replaced.
             Runtime.shaders.Clear();
             CreateShader("Texture",     "/lib/Shader/");
-            CreateShader("Screen_Quad", "/lib/Shader/");
-            CreateShader("NUD",         "/lib/Shader/", new List<string>() { "smash_shader.frag" });
-            CreateShader("MBN",         "/lib/Shader/");
-            CreateShader("DAT",         "/lib/Shader/");
-            CreateShader("NUD_Debug",   "/lib/Shader/");
+            CreateShader("ScreenQuad", "/lib/Shader/");
+            CreateShader("Nud",         "/lib/Shader/", new List<string>() { "SmashShader.frag", "Wireframe.frag" });
+            CreateShader("Mbn",         "/lib/Shader/");
+            CreateShader("Dat",         "/lib/Shader/");
+            CreateShader("NudDebug",   "/lib/Shader/");
             CreateShader("Gradient",    "/lib/Shader/");
             CreateShader("Shadow",      "/lib/Shader/");
             CreateShader("Point",       "/lib/Shader/");
-            CreateShader("Nud_Sphere",  "/lib/Shader/");
+            CreateShader("NudSphere",  "/lib/Shader/");
         }
 
         public static void CreateShader(string shaderName, string shaderFolder, List<String> additionalShaderFiles = null)

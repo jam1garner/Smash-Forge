@@ -190,8 +190,7 @@ uniform vec4 effUniverseParam;
 #define gamma 2.2
 #define PI 3.14159
 
-struct VertexAttributes
-{
+struct VertexAttributes {
     vec3 viewPosition;
     vec3 objectPosition;
     vec2 texCoord;
@@ -206,12 +205,11 @@ struct VertexAttributes
 };
 
 // Function declarations.
+float WireframeIntensity(vec3 distanceToEdges);
 float Luminance(vec3 rgb);
 vec4 SmashShader(VertexAttributes vert);
 
-
-void main()
-{
+void main() {
     if (drawSelection == 1)
     {
         fragColor = vec4(1);
@@ -232,7 +230,6 @@ void main()
     vert.tangent = tangent;
     vert.bitangent = bitangent;
 
-
     fragColor = SmashShader(vert);
 
     // Separate bright and regular color for bloom calculations.
@@ -242,9 +239,8 @@ void main()
 
     if (drawWireframe == 1)
     {
-        float minDistance = min(min(edgeDistance.x, edgeDistance.y), edgeDistance.z);
-        float smoothedDistance = exp2(-512.0 * minDistance * minDistance);
         vec3 edgeColor = vec3(1);
-        fragColor.rgb = mix(fragColor.rgb, edgeColor, smoothedDistance);
+        float intensity = WireframeIntensity(edgeDistance);
+        fragColor.rgb = mix(fragColor.rgb, edgeColor, intensity);
     }
 }

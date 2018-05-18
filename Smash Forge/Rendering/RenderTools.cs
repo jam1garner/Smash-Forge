@@ -1545,7 +1545,7 @@ namespace Smash_Forge.Rendering
         public static void DrawScreenQuadPostProcessing(int texture0, int texture1)
         {
             // Draws RGB and alpha channels of texture to screen quad.
-            Shader shader = Runtime.shaders["Screen_Quad"];
+            Shader shader = Runtime.shaders["ScreenQuad"];
             GL.UseProgram(shader.programId);
 
             GL.ActiveTexture(TextureUnit.Texture0);

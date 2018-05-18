@@ -66,12 +66,12 @@ namespace Smash_Forge
             GL.GenBuffers(1, out vbo_weight);
             GL.GenBuffers(1, out ibo_elements);
 
-            if (!Runtime.shaders.ContainsKey("MBN"))
+            if (!Runtime.shaders.ContainsKey("Mbn"))
             {
-                Rendering.ShaderTools.CreateShader("MBN", "/lib/Shader/");
+                Rendering.ShaderTools.CreateShader("Mbn", "/lib/Shader/");
             }
 
-            Runtime.shaders["MBN"].DisplayCompilationWarnings("MBN");
+            Runtime.shaders["Mbn"].DisplayCompilationWarnings("Mbn");
         }
 
         public void Destroy()
