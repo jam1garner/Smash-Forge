@@ -1,5 +1,20 @@
 #version 330
 
+struct VertexAttributes
+{
+    vec3 viewPosition;
+    vec3 objectPosition;
+    vec2 texCoord;
+    vec2 texCoord2;
+    vec2 texCoord3;
+    vec2 normaltexCoord;
+    vec4 vertexColor;
+    vec3 normal;
+    vec3 viewNormal;
+    vec3 tangent;
+    vec3 bitangent;
+};
+
 float Luminance(vec3 rgb)
 {
     const vec3 W = vec3(0.2125, 0.7154, 0.0721);
@@ -469,9 +484,9 @@ vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I)
     return resultingColor;
 }
 
-vec4 SmashShader()
+vec4 SmashShader(VertexAttributes vert)
 {
-    vec4 resultingColor = vec4(0,0,0,1);
+    vec4 resultingColor = vec4(vert.normal, 1);
     return resultingColor;
 
     // vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
