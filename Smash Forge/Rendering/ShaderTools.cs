@@ -13,22 +13,26 @@ namespace Smash_Forge.Rendering
 {
     class ShaderTools
     {
+        public static bool hasSetupShaders = false;
+
         public static void SetupShaders()
         {
             // Reset the shaders first so that shaders can be replaced.
             Runtime.shaders.Clear();
             CreateShader("Texture",     "\\lib\\Shader");
             CreateShader("ScreenQuad", "\\lib\\Shader\\PostProcessing");
-            CreateShader("Nud",         "\\lib\\Shader\\Nud", new List<string>() { "Nud\\SmashShader.frag", "Utility\\Wireframe.frag" });
+            CreateShader("Nud",         "\\lib\\Shader\\Nud", new List<string>() { "Nud\\SmashShader.frag", "Utility\\Wireframe.frag", "Utility\\Utility.frag" });
             CreateShader("Mbn",         "\\lib\\Shader\\3ds");
             CreateShader("Dat",         "\\lib\\Shader\\Melee");
             CreateShader("NudDebug",   "\\lib\\Shader\\Nud\\");
             CreateShader("Gradient",    "\\lib\\Shader\\PostProcessing");
             CreateShader("Point",       "\\lib\\Shader");
             CreateShader("NudSphere",  "\\lib\\Shader\\Nud");
-        }
 
-        public static void CreateShader(string shaderName, string shaderFolder, List<String> additionalShaderFiles = null)
+            hasSetupShaders = true;
+        }
+        
+        private static void CreateShader(string shaderName, string shaderFolder, List<String> additionalShaderFiles = null)
         {
             // All shaders should be named shaderName.frag, shaderName.vert, etc.
             if (!Runtime.shaders.ContainsKey(shaderName))
@@ -57,7 +61,7 @@ namespace Smash_Forge.Rendering
                 Runtime.shaders.Add(shaderName, shader);
             }
         }
-
+        
         public static void BoolToIntShaderUniform(Shader shader, bool value, string name)
         {
             // Else if is faster than ternary operator. 

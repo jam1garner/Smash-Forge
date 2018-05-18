@@ -1,4 +1,4 @@
-﻿#version 330
+#version 330
 in vec2 quadTexCoord;
 
 uniform sampler2D normalTex;
@@ -32,8 +32,7 @@ vec3 bitangent;
 
 out vec4 fragColor;
 
-void main()
-{
+void main() {
     fragColor = vec4(1,0,0,1);
 
     // Set the mesh attributes using textures instead. TODO: Fix texCoords.

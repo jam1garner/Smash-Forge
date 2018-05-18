@@ -53,7 +53,7 @@ namespace Smash_Forge
         int ibo_elements;
         public int testtex;
 
-        public static Shader shader = null;
+        public static Rendering.Shader shader = null;
 
         Dictionary<int, JOBJ> jobjOffsetLinker = new Dictionary<int, JOBJ>();
         public Dictionary<int, Bitmap> texturesLinker = new Dictionary<int, Bitmap>();
@@ -72,9 +72,9 @@ namespace Smash_Forge
             GL.GenBuffers(1, out vbo_weight);
             GL.GenBuffers(1, out ibo_elements);
 
-            if (!Runtime.shaders.ContainsKey("DAT"))
+            if (!Rendering.ShaderTools.hasSetupShaders)
             {
-                Rendering.ShaderTools.CreateShader("DAT", "\\lib\\Shader\\Melee");
+                Rendering.ShaderTools.SetupShaders();
             }
 
             Runtime.shaders["Dat"].DisplayCompilationWarnings("DAT");
@@ -369,7 +369,7 @@ namespace Smash_Forge
 
             if (shader == null)
             {
-                shader = new Shader();
+                shader = new Rendering.Shader();
                 shader = Runtime.shaders["Dat"];
             }
             

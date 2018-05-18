@@ -186,14 +186,12 @@ uniform vec4 softLightingParams;
 uniform vec4 customSoftLightParams;
 uniform vec4 effUniverseParam;
 
-float Luminance(vec3 rgb)
-{
-    const vec3 W = vec3(0.2125, 0.7154, 0.0721);
-    return dot(rgb, W);
-}
+// Defined in Utility.frag.
+float Luminance(vec3 rgb);
+vec3 SrgbToLinear(vec3 color);
 
-vec3 TintColor(vec3 diffuseColor, float tintAmount)
-{
+
+vec3 TintColor(vec3 diffuseColor, float tintAmount) {
     // Approximates an overlay blend mode. Cheaper than converting to HSV/HSL.
     // Normalize the color to avoid color tint making the model darker.
     if (Luminance(diffuseColor) < 0.01)
@@ -202,33 +200,30 @@ vec3 TintColor(vec3 diffuseColor, float tintAmount)
     return colorTint;
 }
 
-vec3 RampColor(float rampCoord, sampler2D ramp, int hasRamp){
+vec3 RampColor(float rampCoord, sampler2D ramp, int hasRamp) {
     // TODO: Vertical component is always 0?
 	rampCoord = clamp(rampCoord, 0.01, 0.99);
 	return texture(ramp, vec2(1 - rampCoord, 0.0)).rgb * hasRamp;
 }
 
-vec3 SphereMapColor(vec3 N, vec3 viewNormal, sampler2D spheremap, int hasSphereMap)
-{
+vec3 SphereMapColor(vec3 N, vec3 viewNormal, sampler2D spheremap, int hasSphereMap) {
     // Calculate UVs based on view space normals.
     vec2 sphereTexcoord = vec2(viewNormal.x, (1 - viewNormal.y));
     return texture(spheremap, sphereTexcoord).xyz * hasSphereMap;
 }
 
-vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed
-{
+// probably not needed
+vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift)  {
     vec3 shiftedT = tangent + shift * normal;
     return normalize(shiftedT);
 }
 
-float Fresnel(vec3 I, vec3 N)
-{
+float Fresnel(vec3 I, vec3 N) {
     return max(1 - max(dot(I, N), 0), 0);
 }
 
 vec3 BumpMapNormal(vec3 inputNormal, vec4 dualNormalScrollParams, sampler2D normalMap, vec2 normaltexCoord, int hasNrm, int useNormalMap,
-    int hasDualNormal, vec4 normalParams, vec3 tangent, vec3 bitangent)
-{
+    int hasDualNormal, vec4 normalParams, vec3 tangent, vec3 bitangent) {
     if(hasNrm == 0 || useNormalMap == 0)
 	   return inputNormal;
 
@@ -247,15 +242,13 @@ vec3 BumpMapNormal(vec3 inputNormal, vec4 dualNormalScrollParams, sampler2D norm
     return normalize(newNormal);
 }
 
-vec3 BayoHairDiffuse(vec3 diffuseMap, vec4 colorOffset, vec4 colorGain, vec4 alphaBlendParams)
-{
+vec3 BayoHairDiffuse(vec3 diffuseMap, vec4 colorOffset, vec4 colorGain, vec4 alphaBlendParams) {
     vec3 diffuseColor = (colorOffset.rgb + diffuseMap.rrr) * colorGain.rgb;
     diffuseColor *= alphaBlendParams.w; // #justbayothings
     return diffuseColor;
 }
 
-vec3 ColorOffsetGain(vec3 diffuseMap, int hasBayoHair,vec4 colorOffset, vec4 colorGain, vec4 alphaBlendParams)
-{
+vec3 ColorOffsetGain(vec3 diffuseMap, int hasBayoHair,vec4 colorOffset, vec4 colorGain, vec4 alphaBlendParams) {
     if (hasBayoHair == 1)
         return BayoHairDiffuse(diffuseMap, colorOffset, colorGain, alphaBlendParams);
 
@@ -267,8 +260,7 @@ vec3 ColorOffsetGain(vec3 diffuseMap, int hasBayoHair,vec4 colorOffset, vec4 col
 }
 
 vec3 SoftLighting(vec3 diffuse, vec4 params, float darkenMultiplier, float saturationMultiplier,
-    float halfLambert)
-{
+    float halfLambert) {
     // Higher blend values make the dark region smoother and larger.
     float edgeL = 0.5;
     float edgeR = 0.5 + (params.z / 2);
@@ -287,8 +279,7 @@ vec3 SoftLighting(vec3 diffuse, vec4 params, float darkenMultiplier, float satur
     return result;
 }
 
-vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor)
-{
+vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor) {
     // hemisphere fresnel with fresnelParams exponent
     float hemiBlendSky = dot(N, fresSkyDirection) * 0.5 + 0.5;
     vec3 hemiColorSky = mix(vec3(0), fresSkyColor, hemiBlendSky);
@@ -309,8 +300,7 @@ vec3 FresnelPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor)
     return fresnelPass;
 }
 
-vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, VertexAttributes vert)
-{
+vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, VertexAttributes vert) {
     vec3 reflectionPass = vec3(0);
 	// cubemap reflection
 	vec3 R = reflect(I, N);
@@ -342,8 +332,7 @@ vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintCol
     return reflectionPass;
 }
 
-float AnisotropicSpecExponent(vec3 halfAngle, float width, float height, vec3 tangent, vec3 bitangent)
-{
+float AnisotropicSpecExponent(vec3 halfAngle, float width, float height, vec3 tangent, vec3 bitangent) {
     // Blinn-phong with some anistropic bits stolen from an anistropic GGX BRDF.
     vec3 X = normalize(tangent);
     vec3 Y = normalize(bitangent);
@@ -353,8 +342,7 @@ float AnisotropicSpecExponent(vec3 halfAngle, float width, float height, vec3 ta
     return xComponent + yComponent;
 }
 
-vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, vec3 specLightDirection, vec4 reflectionParams, vec3 tangent, vec3 bitangent)
-{
+vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, vec3 specLightDirection, vec4 reflectionParams, vec3 tangent, vec3 bitangent) {
     float specMask = diffuseMap.b;
 
     vec3 halfAngle = normalize(I + specLightDirection);
@@ -366,8 +354,7 @@ vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, vec3 specLightDirection, vec4 ref
     return specularColorTotal;
 }
 
-vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, VertexAttributes vert)
-{
+vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, VertexAttributes vert) {
     vec3 specularPass = vec3(0);
 
     // Only uses the anisotropic exponent for mats without NU_specularParams.
@@ -404,15 +391,13 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor
     return specularPass;
 }
 
-float AngleFade(vec3 N, vec3 I, vec4 angleFadeParams)
-{
+float AngleFade(vec3 N, vec3 I, vec4 angleFadeParams) {
     float fresnelBlend = Fresnel(I, N);
     float angleFadeAmount = mix(angleFadeParams.x, angleFadeParams.y, fresnelBlend);
     return max((1 - angleFadeAmount), 0);
 }
 
-vec3 FogColor(vec3 inputColor, vec4 fogParams, float depth, vec3 stageFogColor)
-{
+vec3 FogColor(vec3 inputColor, vec4 fogParams, float depth, vec3 stageFogColor) {
     depth = clamp((depth / fogParams.y), 0, 1);
     float fogIntensity = mix(fogParams.z, fogParams.w, depth);
     if(renderFog == 1 && renderStageLighting == 1)
@@ -421,8 +406,7 @@ vec3 FogColor(vec3 inputColor, vec4 fogParams, float depth, vec3 stageFogColor)
         return inputColor;
 }
 
-vec3 UniverseColor(float universeParam, vec3 objectPosition, vec3 cameraPosition, mat4 modelViewMatrix, sampler2D dif)
-{
+vec3 UniverseColor(float universeParam, vec3 objectPosition, vec3 cameraPosition, mat4 modelViewMatrix, sampler2D dif) {
     // TODO: Doesn't work for all angles (viewing from below).
     vec3 projVec = normalize(objectPosition.xyz - cameraPosition.xyz);
     projVec = mat3(modelViewMatrix) * projVec;
@@ -433,8 +417,7 @@ vec3 UniverseColor(float universeParam, vec3 objectPosition, vec3 cameraPosition
     return pow(texture(dif, vec2(uCoord * universeParam, 1 - vCoord)).rgb, vec3(2.2));
 }
 
-vec3 CharacterDiffuseLighting(float halfLambert, vec3 ambLightColor, float ambientIntensity, vec3 difLightColor, float diffuseIntensity)
-{
+vec3 CharacterDiffuseLighting(float halfLambert, vec3 ambLightColor, float ambientIntensity, vec3 difLightColor, float diffuseIntensity) {
     vec3 ambient = ambLightColor * ambientIntensity;
     vec3 diffuse = difLightColor * diffuseIntensity;
     return mix(ambient, diffuse, halfLambert);
@@ -442,8 +425,7 @@ vec3 CharacterDiffuseLighting(float halfLambert, vec3 ambLightColor, float ambie
 
 vec3 StageDiffuseLighting(vec3 N, vec3 stageLight1Color, vec3 stageLight2Color, vec3 stageLight3Color, vec3 stageLight4Color,
                             vec3 stageLight1Direction, vec3 stageLight2Direction, vec3 stageLight3Direction, vec3 stageLight4Direction,
-                            int renderStageLight1, int renderStageLight2, int renderStageLight3, int renderStageLight4)
-{
+                            int renderStageLight1, int renderStageLight2, int renderStageLight3, int renderStageLight4) {
     // TODO: Do stages use half lambert?
     vec3 stageLight1 = stageLight1Color * max((dot(N, stageLight1Direction)), 0);
     vec3 stageLight2 = stageLight2Color * max((dot(N, stageLight2Direction)), 0);
@@ -461,8 +443,7 @@ vec3 StageDiffuseLighting(vec3 N, vec3 stageLight1Color, vec3 stageLight2Color, 
 vec3 Lighting(vec3 N, float halfLambert, vec3 ambLightColor, float ambientIntensity, vec3 difLightColor,
                             float diffuseIntensity, uint flags, int renderStageLighting, int isStage, vec3 stageLight1Color, vec3 stageLight2Color, vec3 stageLight3Color, vec3 stageLight4Color,
                             vec3 stageLight1Direction, vec3 stageLight2Direction, vec3 stageLight3Direction, vec3 stageLight4Direction,
-                            int renderStageLight1, int renderStageLight2, int renderStageLight3, int renderStageLight4)
-{
+                            int renderStageLight1, int renderStageLight2, int renderStageLight3, int renderStageLight4) {
     // Flags for ignoring stage lighting. TODO: Replace bitwise operations.
     if (((flags & 0x0F000000u) < 0x04000000u) || renderStageLighting != 1)
         return vec3(1);
@@ -477,8 +458,7 @@ vec3 Lighting(vec3 N, float halfLambert, vec3 ambLightColor, float ambientIntens
     return vec3(1);
 }
 
-vec3 DiffuseAOBlend(int hasNrm, sampler2D normalMap, vec2 texCoord, vec4 aoMinGain)
-{
+vec3 DiffuseAOBlend(int hasNrm, sampler2D normalMap, vec2 texCoord, vec4 aoMinGain) {
     // Calculate the effect of NU_aoMinGain on the ambient occlusion map.
     // TODO: Max should be 1 but doesn't look correct.
     float maxAOBlendValue = 1.25;
@@ -489,8 +469,7 @@ vec3 DiffuseAOBlend(int hasNrm, sampler2D normalMap, vec2 texCoord, vec4 aoMinGa
     return min((aoBlend + aoMinGain.rgb), vec3(maxAOBlendValue));
 }
 
-float AmbientOcclusionBlend(vec4 diffuseMap, vec4 aoMinGain, VertexAttributes vert)
-{
+float AmbientOcclusionBlend(vec4 diffuseMap, vec4 aoMinGain, VertexAttributes vert) {
     // Ambient occlusion uses sRGB gamma.
     // Not all materials have an ambient occlusion map.
     float aoMap = pow(texture(normalMap, vert.texCoord).a, 2.2);
@@ -508,8 +487,7 @@ float AmbientOcclusionBlend(vec4 diffuseMap, vec4 aoMinGain, VertexAttributes ve
     return mix(aoMap, 1, aoMixIntensity);
 }
 
-vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert)
-{
+vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert) {
     vec3 diffusePass = vec3(0);
 
     if (hasUniverseParam == 1)
@@ -553,8 +531,7 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert)
     return diffusePass;
 }
 
-vec2 DistortedUvCoords(VertexAttributes vert, sampler2D normalMap, vec4 normalParams, int useNormalMap)
-{
+vec2 DistortedUvCoords(VertexAttributes vert, sampler2D normalMap, vec4 normalParams, int useNormalMap) {
     // Similar effect to du dv but uses just the normal map.
     // TODO: does du dv affect other UV channels?
     float offsetIntensity = 0;
@@ -565,8 +542,7 @@ vec2 DistortedUvCoords(VertexAttributes vert, sampler2D normalMap, vec4 normalPa
     return vert.texCoord + (textureOffset * offsetIntensity);
 }
 
-vec4 DiffuseMapTotal(VertexAttributes vert)
-{
+vec4 DiffuseMapTotal(VertexAttributes vert) {
     vec4 diffuseMapTotal = vec4(0);
 
     // Some stage water materials have NU_diffuseColor but no diffuse map.
@@ -582,14 +558,12 @@ vec4 DiffuseMapTotal(VertexAttributes vert)
         diffuseMapTotal = diffuse1;
 
         // TODO: 2nd diffuse texture. doesnt work properly with stages.
-        if (hasDif2 == 1 && hasDif3 != 1)
-        {
+        if (hasDif2 == 1 && hasDif3 != 1) {
             vec4 diffuse2 = texture(dif2, vert.texCoord2) * finalColorGain2.rgba;
             diffuseMapTotal = mix(diffuse2, diffuse1, diffuse1.a);
             diffuseMapTotal.a = 1.0;
 
-            if (hasDif3 == 1)
-            {
+            if (hasDif3 == 1) {
                 vec4 diffuse3 = texture(dif3, vert.texCoord3) * finalColorGain3.rgba;
                 diffuseMapTotal = mix(diffuse3, diffuseMapTotal, diffuse3.a);
             }
@@ -597,8 +571,7 @@ vec4 DiffuseMapTotal(VertexAttributes vert)
     }
 
     // TODO: Create uniform for flags comparison.
-    if (hasAo == 1)
-    {
+    if (hasAo == 1) {
         vec3 difAO = texture(ao, vert.texCoord2).rgb;
         float normalBlend = vert.normal.y * 0.5 + 0.5;
 
@@ -611,8 +584,7 @@ vec4 DiffuseMapTotal(VertexAttributes vert)
     return pow(diffuseMapTotal, vec4(2.2, 2.2, 2.2, 1));
 }
 
-vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert)
-{
+vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert) {
     // Separate render pass calculations.
     vec3 diffusePass = DiffusePass(N, diffuseMap, vert);
 
@@ -629,8 +601,7 @@ vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert)
 
 	vec3 resultingColor = vec3(0);
 
-	if(renderLighting == 1)
-	{
+	if(renderLighting == 1) {
         // Prevent negative colors for some GPUs.
     	resultingColor += max((diffusePass * renderDiffuse), 0);
     	resultingColor += max((fresnelPass * renderFresnel), 0);
@@ -639,9 +610,10 @@ vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert)
 
         // light_set_param.bin fog
         resultingColor = FogColor(resultingColor, fogParams, vert.viewPosition.z, stageFogColor);
-	}
-	else
-		resultingColor = diffusePass;
+	} else {
+        resultingColor = diffusePass;
+
+    }
 
     resultingColor = pow(resultingColor, vec3(1 / 2.2));
     return resultingColor;

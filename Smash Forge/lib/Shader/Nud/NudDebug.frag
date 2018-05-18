@@ -157,8 +157,7 @@ uniform int drawSelection;
 #define PI 3.14159
 
 // Tools
-vec3 RGB2HSV(vec3 c)
-{
+vec3 RGB2HSV(vec3 c) {
     vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
     vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
     vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
@@ -168,21 +167,18 @@ vec3 RGB2HSV(vec3 c)
     return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
 
-vec3 HSV2RGB(vec3 c)
-{
+vec3 HSV2RGB(vec3 c) {
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-float Luminance(vec3 rgb)
-{
+float Luminance(vec3 rgb) {
     const vec3 W = vec3(0.2125, 0.7154, 0.0721);
     return dot(rgb, W);
 }
 
-vec3 CalculateTintColor(vec3 inputColor, float colorAlpha)
-{
+vec3 CalculateTintColor(vec3 inputColor, float colorAlpha) {
     float intensity = colorAlpha * 0.4;
     vec3 inputHSV = RGB2HSV(inputColor);
     float outSaturation = min((inputHSV.y * intensity),1); // cant have color with saturation > 1
@@ -190,8 +186,7 @@ vec3 CalculateTintColor(vec3 inputColor, float colorAlpha)
     return outColorTint;
 }
 
-float ShadowCalculation(vec4 fragPosLightSpace)
-{
+float ShadowCalculation(vec4 fragPosLightSpace) {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
     float closestDepth = texture(shadowMap, projCoords.xy).r;
@@ -201,8 +196,7 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     return shadow;
 }
 
-vec3 CalcBumpedNormal(vec3 inputNormal)
-{
+vec3 CalcBumpedNormal(vec3 inputNormal) {
     // if no normal map, then return just the normal
     if(hasNrm == 0 || useNormalMap == 0)
 	   return inputNormal;
@@ -224,12 +218,11 @@ vec3 CalcBumpedNormal(vec3 inputNormal)
     return NewNormal;
 }
 
-vec3 CalculateLighting(vec3 N, float halfLambert)
-{
+vec3 CalculateLighting(vec3 N, float halfLambert) {
     vec3 lighting = vec3(1);
 
-    if (isStage == 1) // stage lighting
-    {
+    // stage lighting
+    if (isStage == 1) {
         // should this be half lambert?
         vec3 stageLight1 = stageLight1Color * max((dot(N, stageLight1Direction)), 0);
         vec3 stageLight2 = stageLight2Color * max((dot(N, stageLight2Direction)), 0);
@@ -241,9 +234,8 @@ vec3 CalculateLighting(vec3 N, float halfLambert)
         lighting += (stageLight2 * renderStageLight2);
         lighting += (stageLight3 * renderStageLight3);
         lighting += (stageLight4 * renderStageLight4);
-    }
-    else // gradient based character lighting
-    {
+    } else {
+        // gradient based character lighting
         lighting = mix(ambLightColor * ambientIntensity, difLightColor * diffuseIntensity, halfLambert);
     }
 
@@ -253,8 +245,7 @@ vec3 CalculateLighting(vec3 N, float halfLambert)
     return lighting;
 }
 
-vec3 CalculateFog(vec3 inputColor)
-{
+vec3 CalculateFog(vec3 inputColor) {
     float depth = viewPosition.z;
     depth = clamp((depth / fogParams.y), 0, 1);
     float fogIntensity = mix(fogParams.z, fogParams.w, depth);
@@ -264,12 +255,10 @@ vec3 CalculateFog(vec3 inputColor)
         return inputColor;
 }
 
-void main()
-{
+void main() {
     fragColor = vec4(0,0,0,1);
 
-    if (drawSelection == 1)
-    {
+    if (drawSelection == 1) {
         fragColor = vec4(1);
         return;
     }
@@ -321,13 +310,10 @@ void main()
     // Sets which diffuse texture or UV coords to display based on UV channel.
     vec4 displayDiffuse = diffuse1;
     vec2 displayTexCoord = texCoord;
-    if (uvChannel == 2)
-    {
+    if (uvChannel == 2) {
         displayTexCoord = texCoord2;
         displayDiffuse = diffuse2;
-    }
-    else if (uvChannel == 3)
-    {
+    } else if (uvChannel == 3) {
         displayTexCoord = texCoord3;
         displayDiffuse = diffuse3;
     }
@@ -335,45 +321,43 @@ void main()
     // render modes
     if (renderType == 1) // normals color
         resultingColor.rgb = displayNormal;
-    else if (renderType == 2) // lighting
-    {
+    else if (renderType == 2) {
+        // lighting
         resultingColor.rgb = CalculateLighting(bumpMapNormal, halfLambert);
         resultingColor.rgb = CalculateFog(resultingColor.rgb);
-    }
-    else if (renderType == 3) // diffuse map
-    {
+    } else if (renderType == 3) {
+        // diffuse map
         resultingColor.rgba = displayDiffuse;
-    }
-    else if (renderType == 4) // normal map
+    } else if (renderType == 4) {
+        // normal map
         resultingColor.rgb = texture(normalMap, normaltexCoord).rgb;
-    else if (renderType == 5) // vertexColor
-    {
-        // The default range is [0,128].
-        // Conversion from [0, 128] to [0, 1] is done prior to shader.
-        // This allows values in range [0,2]
+    } else if (renderType == 5) {
+        // vertexColor. The default range is [0,128].
+        // Conversion from [0, 128] to [0, 1] is done prior to shader. This allows value range [0,2]
         resultingColor = vertexColor;
-        if (debug1 == 1)
-        {
+        if (debug1 == 1) {
             resultingColor *= 0.5;
         }
-    }
-    else if (renderType == 6) // ambient occlusion
-    {
+    } else if (renderType == 6) {
+        // ambient occlusion
         resultingColor.rgb = texture(normalMap, texCoord).aaa;
         if (debug1 == 1)
             resultingColor.rgb = aoBlend.rgb;
-    }
-
-    else if (renderType == 7) // uv coords
-		resultingColor.rgb = vec3(displayTexCoord, 1);
-    else if (renderType == 8) // uv test pattern
+    } else if (renderType == 7) {
+        // uv coords
+        resultingColor.rgb = vec3(displayTexCoord, 1);
+    } else if (renderType == 8) {
+        // uv test pattern
         resultingColor.rgb = texture(UVTestPattern, displayTexCoord).rgb;
-    else if (renderType == 9) // tangents
-        resultingColor.rgb = displayTangent;
-    else if (renderType == 10) // bitangents
+    } else if (renderType == 9) {
+         // tangents
+         resultingColor.rgb = displayTangent;
+    }
+    else if (renderType == 10) {
+        // bitangents
         resultingColor.rgb = displayBitangent;
-    else if (renderType == 11) // light set #
-    {
+    } else if (renderType == 11) {
+        // light set #
         if (lightSet == 0)
             resultingColor.rgb = vec3(0,0,0);
         else if (lightSet == 1)
@@ -388,9 +372,9 @@ void main()
             resultingColor.rgb = vec3(0,1,0);
         else
             resultingColor.rgb = vec3(1);
-    }
-    else if (renderType == 12)
+    } else if (renderType == 12) {
         resultingColor.rgb = boneWeightsColored;
+    }
 
     // Toggles rendering of individual color channels for all render modes.
     fragColor.rgb = resultingColor.rgb * vec3(renderR, renderG, renderB);
@@ -401,15 +385,13 @@ void main()
     else if (renderB == 1 && renderR == 0 && renderG == 0)
         fragColor.rgb = resultingColor.bbb;
 
-    if (renderAlpha == 1)
-    {
+    if (renderAlpha == 1) {
         fragColor.a = resultingColor.a;
     }
     if (alphaOverride == 1)
         fragColor = vec4(resultingColor.aaa, 1);
 
-    if (drawWireframe == 1)
-    {
+    if (drawWireframe == 1) {
         float minDistance = min(min(edgeDistance.x, edgeDistance.y), edgeDistance.z);
         float smoothedDistance = exp2(-512.0 * minDistance * minDistance);
         vec3 edgeColor = vec3(1);

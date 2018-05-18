@@ -69,9 +69,9 @@ namespace Smash_Forge
             cm.MenuItems.Add(save);
             ContextMenu = cm;
 
-            if (!Runtime.shaders.ContainsKey("Mbn"))
+            if (!ShaderTools.hasSetupShaders)
             {
-                ShaderTools.CreateShader("Mbn", "\\lib\\Shader\\3ds");
+                ShaderTools.SetupShaders();
             }
 
             Runtime.shaders["Mbn"].DisplayCompilationWarnings("Mbn");

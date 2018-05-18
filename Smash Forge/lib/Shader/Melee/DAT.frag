@@ -19,8 +19,7 @@ uniform sampler2D UVTestPattern;
 uniform vec2 uvscale;
 uniform mat4 modelview;
 
-void main()
-{
+void main() {
     vec3 displayNormal = normal * 0.5 + 0.5;
 
     vec4 alpha = texture(tex, texcoord * uvscale).aaaa;
@@ -39,8 +38,9 @@ void main()
 
     if (renderType == 1) // normals vertexColor
         fragColor = vec4(displayNormal,1);
-    else if (renderType == 2) // normals black & white
+    else if (renderType == 2)
     {
+        // normals black & white
         float normalBnW = dot(vec4(normal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0));
         fragColor.rgb = vec3(normalBnW);
     }

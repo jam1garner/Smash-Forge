@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Text;
 
-namespace Smash_Forge
+namespace Smash_Forge.Rendering
 {
 	public class Shader
 	{

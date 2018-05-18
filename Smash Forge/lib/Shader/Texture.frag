@@ -1,4 +1,5 @@
-﻿#version 330
+#version 330
+
 in vec2 texCoord;
 
 uniform sampler2D image;
@@ -16,8 +17,8 @@ uniform int currentMipLevel;
 
 out vec4 fragColor;
 
-void main()
-{   fragColor = vec4(0,0,0,1);
+void main() {
+    fragColor = vec4(0,0,0,1);
     vec4 textureColor = vec4(1);
     bool fill = false;
     // Perform texture aspect ratio scaling.
@@ -25,17 +26,13 @@ void main()
     float yCoord = 1 - texCoord.y;
 
     float scale = 1;
-    if (preserveAspectRatio == 1)
-    {
-        if (width > height)
-        {
+    if (preserveAspectRatio == 1) {
+        if (width > height) {
             scale = width / height;
             yCoord *= scale;
             if ((1 - texCoord.y) > (1 / scale))
                 fill = true;
-        }
-        else
-        {
+        } else {
             scale = height / width;
             xCoord *= scale;
             if (texCoord.x > (1 / scale))

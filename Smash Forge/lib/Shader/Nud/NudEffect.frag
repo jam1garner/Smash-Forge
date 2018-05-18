@@ -160,8 +160,7 @@ uniform float elapsedTime;
 #define PI 3.14159
 
 // Tools
-vec3 RGB2HSV(vec3 c)
-{
+vec3 RGB2HSV(vec3 c) {
     vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
     vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
     vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
@@ -171,21 +170,18 @@ vec3 RGB2HSV(vec3 c)
     return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
 
-vec3 HSV2RGB(vec3 c)
-{
+vec3 HSV2RGB(vec3 c) {
     vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
     vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
-float Luminance(vec3 rgb)
-{
+float Luminance(vec3 rgb) {
     const vec3 W = vec3(0.2125, 0.7154, 0.0721);
     return dot(rgb, W);
 }
 
-vec3 CalculateTintColor(vec3 inputColor, float colorAlpha)
-{
+vec3 CalculateTintColor(vec3 inputColor, float colorAlpha) {
     float intensity = colorAlpha * 0.4;
     vec3 inputHSV = RGB2HSV(inputColor);
     float outSaturation = min((inputHSV.y * intensity),1); // cant have color with saturation > 1
@@ -193,8 +189,7 @@ vec3 CalculateTintColor(vec3 inputColor, float colorAlpha)
     return outColorTint;
 }
 
-float ShadowCalculation(vec4 fragPosLightSpace)
-{
+float ShadowCalculation(vec4 fragPosLightSpace) {
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     projCoords = projCoords * 0.5 + 0.5;
     float closestDepth = texture(shadowMap, projCoords.xy).r;
@@ -204,8 +199,7 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     return shadow;
 }
 
-vec3 CalcBumpedNormal(vec3 inputNormal)
-{
+vec3 CalcBumpedNormal(vec3 inputNormal) {
     // if no normal map, then return just the normal
     if(hasNrm == 0 || useNormalMap == 0)
 	   return inputNormal;
@@ -227,35 +221,31 @@ vec3 CalcBumpedNormal(vec3 inputNormal)
     return NewNormal;
 }
 
-vec3 ScreenBlend(vec3 base, vec3 top)
-{
+vec3 ScreenBlend(vec3 base, vec3 top) {
     return vec3(1) - (vec3(1) - base) * (vec3(1) - top);
 }
 
 vec3 RampColor(vec3 color){
-	if(hasRamp == 1)
-	{
+	if(hasRamp == 1) {
 		float rampInputLuminance = Luminance(color);
 		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
 		return texture(ramp, vec2(1-rampInputLuminance, 0.50)).rgb;
-	}
-	else
-		return vec3(0);
+	} else {
+        return vec3(0);
+    }
 }
 
 vec3 DummyRampColor(vec3 color){
-	if(hasDummyRamp == 1)
-	{
+	if(hasDummyRamp == 1) {
 		float rampInputLuminance = Luminance(color);
 		rampInputLuminance = clamp((rampInputLuminance), 0.01, 0.99);
 		return texture(dummyRamp, vec2(1-rampInputLuminance, 0.50)).rgb;
-	}
-	else
-		return vec3(0);
+	} else {
+        return vec3(0);
+    }
 }
 
-vec3 SphereMapColor(vec3 N)
-{
+vec3 SphereMapColor(vec3 N) {
     // calculate UVs based on view space normals
     vec4 viewNormals = transpose(inverse(modelViewMatrix)) * vec4(N.xyz, 0);
     float uCoord = viewNormals.x * 0.5 + 0.5;
@@ -265,14 +255,13 @@ vec3 SphereMapColor(vec3 N)
     return texture(spheremap, sphereTexcoord).xyz;
 }
 
-vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift) // probably not needed
-{
+// probably not needed
+vec3 ShiftTangent(vec3 tangent, vec3 normal, float shift)  {
     vec3 shiftedT = tangent + shift * normal;
     return normalize(shiftedT);
 }
 
-vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, float xComponent, float yComponent)
-{
+vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, float xComponent, float yComponent) {
     float shiftTex = diffuseMap.g; // vertical component of ramp?
     shiftTex = 0;
 
@@ -299,8 +288,7 @@ vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, float xComponent, float yComponen
     return (hairSpecular) * diffuseMap.r * 20; // find proper constants
 }
 
-vec3 SoftLighting(vec3 diffuseColorFinal, vec3 ambientIntensityLightColor, vec3 diffuseLightColor, float smoothAmount, float darkenAmount, float saturationAmount, float darkenMultiplier, float saturationMultiplier, float halfLambert)
-{
+vec3 SoftLighting(vec3 diffuseColorFinal, vec3 ambientIntensityLightColor, vec3 diffuseLightColor, float smoothAmount, float darkenAmount, float saturationAmount, float darkenMultiplier, float saturationMultiplier, float halfLambert) {
     // blend between a certain distance from dot(L,N) = 0.5
     float edgeL = 0.5 - (smoothAmount / 2);
     float edgeR = 0.5 + (smoothAmount / 2);

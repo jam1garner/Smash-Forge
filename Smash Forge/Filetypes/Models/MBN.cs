@@ -25,7 +25,7 @@ namespace Smash_Forge
         public List<Vertex> vertices = new List<Vertex>();
         public List<string> nameTable = new List<string>();
 
-        public static Shader shader = null;
+        public static Rendering.Shader shader = null;
 
         public List<Descriptor> descript = new List<Descriptor>(); // Descriptors are used to describe the vertex data...
 
@@ -66,10 +66,8 @@ namespace Smash_Forge
             GL.GenBuffers(1, out vbo_weight);
             GL.GenBuffers(1, out ibo_elements);
 
-            if (!Runtime.shaders.ContainsKey("Mbn"))
-            {
-                Rendering.ShaderTools.CreateShader("Mbn", "\\lib\\Shader\\3ds");
-            }
+            if (!Rendering.ShaderTools.hasSetupShaders)
+                Rendering.ShaderTools.SetupShaders();
 
             Runtime.shaders["Mbn"].DisplayCompilationWarnings("Mbn");
         }
@@ -152,8 +150,8 @@ namespace Smash_Forge
 
             if (shader == null)
             {
-                shader = new Shader();
-                shader = Runtime.shaders["MBN"];
+                shader = new Rendering.Shader();
+                shader = Runtime.shaders["Mbn"];
             }
         }
 

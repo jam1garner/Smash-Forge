@@ -15,13 +15,11 @@ out vec3 boneWeightsColored;
 uniform mat4 modelview;
 uniform int selectedBoneIndex;
 
-uniform bones
-{
+uniform bones {
     mat4 transforms[200];
 } bones_;
 
-float BoneWeightDisplay()
-{
+float BoneWeightDisplay() {
     float weight = 0;
     if (selectedBoneIndex == vBone.x)
         weight += vWeight.x;
@@ -36,8 +34,7 @@ float BoneWeightDisplay()
 }
 
 void
-main()
-{
+main() {
     /*
     // if (debug1 == 1)
     //     boneWeightsColored = BoneWeightRamp(vec3(boneWeightsColored)).rgb;
@@ -45,8 +42,7 @@ main()
 
     vec4 objPos = vec4(vPosition.xyz, 1.0);
 	ivec4 index = ivec4(vBone);
-	if (vBone.x != -1)
-    {
+	if (vBone.x != -1) {
         objPos = bones_.transforms[index.x] * vec4(vPosition, 1.0) * vWeight.x;
         objPos += bones_.transforms[index.y] * vec4(vPosition, 1.0) * vWeight.y;
         objPos += bones_.transforms[index.z] * vec4(vPosition, 1.0) * vWeight.z;
