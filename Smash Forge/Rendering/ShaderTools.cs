@@ -17,16 +17,15 @@ namespace Smash_Forge.Rendering
         {
             // Reset the shaders first so that shaders can be replaced.
             Runtime.shaders.Clear();
-            CreateShader("Texture",     "/lib/Shader/");
-            CreateShader("ScreenQuad", "/lib/Shader/");
-            CreateShader("Nud",         "/lib/Shader/", new List<string>() { "SmashShader.frag", "Wireframe.frag" });
-            CreateShader("Mbn",         "/lib/Shader/");
-            CreateShader("Dat",         "/lib/Shader/");
-            CreateShader("NudDebug",   "/lib/Shader/");
-            CreateShader("Gradient",    "/lib/Shader/");
-            CreateShader("Shadow",      "/lib/Shader/");
-            CreateShader("Point",       "/lib/Shader/");
-            CreateShader("NudSphere",  "/lib/Shader/");
+            CreateShader("Texture",     "\\lib\\Shader");
+            CreateShader("ScreenQuad", "\\lib\\Shader\\PostProcessing");
+            CreateShader("Nud",         "\\lib\\Shader\\Nud", new List<string>() { "Nud\\SmashShader.frag", "Utility\\Wireframe.frag" });
+            CreateShader("Mbn",         "\\lib\\Shader\\3ds");
+            CreateShader("Dat",         "\\lib\\Shader\\Melee");
+            CreateShader("NudDebug",   "\\lib\\Shader\\Nud\\");
+            CreateShader("Gradient",    "\\lib\\Shader\\PostProcessing");
+            CreateShader("Point",       "\\lib\\Shader");
+            CreateShader("NudSphere",  "\\lib\\Shader\\Nud");
         }
 
         public static void CreateShader(string shaderName, string shaderFolder, List<String> additionalShaderFiles = null)
@@ -40,10 +39,10 @@ namespace Smash_Forge.Rendering
                 if (additionalShaderFiles != null)
                 {
                     foreach (string file in additionalShaderFiles)
-                        shader.LoadShader(MainForm.executableDir + shaderFolder + file);
+                        shader.LoadShader(MainForm.executableDir + "\\lib\\Shader\\" + file);
                 }
 
-                string shaderFileName = MainForm.executableDir + shaderFolder + shaderName;
+                string shaderFileName = MainForm.executableDir + shaderFolder + "\\" + shaderName;
 
                 // Required shaders.
                 shader.LoadShader(shaderFileName + ".vert");

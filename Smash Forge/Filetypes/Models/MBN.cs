@@ -68,7 +68,7 @@ namespace Smash_Forge
 
             if (!Runtime.shaders.ContainsKey("Mbn"))
             {
-                Rendering.ShaderTools.CreateShader("Mbn", "/lib/Shader/");
+                Rendering.ShaderTools.CreateShader("Mbn", "\\lib\\Shader\\3ds");
             }
 
             Runtime.shaders["Mbn"].DisplayCompilationWarnings("Mbn");

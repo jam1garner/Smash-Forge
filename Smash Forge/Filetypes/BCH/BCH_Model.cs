@@ -69,17 +69,17 @@ namespace Smash_Forge
             cm.MenuItems.Add(save);
             ContextMenu = cm;
 
-            if (!Runtime.shaders.ContainsKey("MBN"))
+            if (!Runtime.shaders.ContainsKey("Mbn"))
             {
-                ShaderTools.CreateShader("MBN", "/lib/Shader/");
+                ShaderTools.CreateShader("Mbn", "\\lib\\Shader\\3ds");
             }
 
-            Runtime.shaders["MBN"].DisplayCompilationWarnings("MBN");
+            Runtime.shaders["Mbn"].DisplayCompilationWarnings("Mbn");
 
             if (shader == null)
             {
                 shader = new Shader();
-                shader = Runtime.shaders["MBN"];
+                shader = Runtime.shaders["Mbn"];
             }
         }
 
@@ -416,7 +416,7 @@ namespace Smash_Forge
             if (Vertices == null)
                 return;
 
-            shader = Runtime.shaders["MBN"];
+            shader = Runtime.shaders["Mbn"];
             GL.UseProgram(shader.programId);
 
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderVertColor"), Runtime.renderVertColor ? 1 : 0);

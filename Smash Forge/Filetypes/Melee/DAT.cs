@@ -74,7 +74,7 @@ namespace Smash_Forge
 
             if (!Runtime.shaders.ContainsKey("DAT"))
             {
-                Rendering.ShaderTools.CreateShader("DAT", "/lib/Shader/");
+                Rendering.ShaderTools.CreateShader("DAT", "\\lib\\Shader\\Melee");
             }
 
             Runtime.shaders["Dat"].DisplayCompilationWarnings("DAT");

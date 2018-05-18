@@ -66,10 +66,10 @@ namespace Smash_Forge
         private static void SetupShaders()
         {
             if (!Runtime.shaders.ContainsKey("Nud"))
-                ShaderTools.CreateShader("Nud", "/lib/Shader/");
+                ShaderTools.CreateShader("Nud", "\\lib\\Shader\\Nud");
 
             if (!Runtime.shaders.ContainsKey("NudDebug"))
-                ShaderTools.CreateShader("NudDebug", "/lib/Shader/");
+                ShaderTools.CreateShader("NudDebug", "\\lib\\Shader\\Nud");
 
             Runtime.shaders["Nud"].DisplayCompilationWarnings("NUD");
             Runtime.shaders["NudDebug"].DisplayCompilationWarnings("NudDebug");
