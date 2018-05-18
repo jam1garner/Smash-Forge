@@ -173,34 +173,11 @@ namespace Smash_Forge
         {
             id = GL.CreateShader(type);
 
-            // This probably shouldn't be hardcoded...
-            if (shaderText.Contains("#include"))
-            {
-                shaderText = ProcessIncludes(shaderText);
-            }
-
             GL.ShaderSource(id, shaderText);
             GL.CompileShader(id);
             GL.AttachShader(program, id);
 
             errorLog.AppendLine(GL.GetShaderInfoLog(id));
-        }
-
-        private static string ProcessIncludes(string shaderText)
-        {
-            // Hard coded #include for reducing redundant shader code. 
-            //string smashShaderText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\SMASH_SHADER.frag");
-            //shaderText = shaderText.Replace("#include SMASH_SHADER", smashShaderText);
-
-            string nuUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\NU_UNIFORMS.txt");
-            shaderText = shaderText.Replace("#include NU_UNIFORMS", nuUniformText);
-
-            string stageUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\STAGE_LIGHTING_UNIFORMS.txt");
-            shaderText = shaderText.Replace("#include STAGE_LIGHTING_UNIFORMS", stageUniformText);
-
-            string miscUniformsText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\MISC_UNIFORMS.txt");
-            shaderText = shaderText.Replace("#include MISC_UNIFORMS", miscUniformsText);
-            return shaderText;
         }
 
         private void AppendShaderCompilationErrors()
