@@ -29,19 +29,27 @@ namespace Smash_Forge.Rendering
             CreateShader("Nud_Sphere",  "/lib/Shader/");
         }
 
-        public static void CreateShader(string shaderName, string shaderFolder)
+        public static void CreateShader(string shaderName, string shaderFolder, List<String> additionalShaderFiles = null)
         {
             // All shaders should be named shaderName.frag, shaderName.vert, etc.
             if (!Runtime.shaders.ContainsKey(shaderName))
             {
                 Shader shader = new Shader();
                 string shaderFile = MainForm.executableDir + shaderFolder + shaderName;
-                shader.LoadShader(shaderFile + ".vert", ShaderType.VertexShader);
-                shader.LoadShader(shaderFile + ".frag", ShaderType.FragmentShader);
+                shader.LoadShader(shaderFile + ".vert");
+                shader.LoadShader(shaderFile + ".frag");
 
                 // Geometry shaders are optional.
                 if (File.Exists(shaderFile + ".geom"))
-                    shader.LoadShader(shaderFile + ".geom", ShaderType.GeometryShader);
+                    shader.LoadShader(shaderFile + ".geom");
+
+                if (additionalShaderFiles != null)
+                {
+                    foreach (string file in additionalShaderFiles)
+                    {
+
+                    }
+                }
 
                 Runtime.shaders.Add(shaderName, shader);
             }

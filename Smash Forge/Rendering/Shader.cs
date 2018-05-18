@@ -112,9 +112,8 @@ namespace Smash_Forge
 
             for (int i = 0; i < activeUniformCount; i++)
             {
-                int uniformSize;
                 ActiveUniformType uniformType;
-                string uniform = GL.GetActiveUniform(programID, i, out uniformSize, out uniformType);
+                string uniform = GL.GetActiveUniform(programID, i, out int uniformSize, out uniformType);
                 uniform = RemoveEndingBrackets(uniform);
                 AddUniform(uniform);
             }
@@ -127,9 +126,8 @@ namespace Smash_Forge
 
             for (int i = 0; i < activeAttributeCount; i++)
             {
-                int attributeSize;
                 ActiveAttribType attributeType;
-                string attribute = GL.GetActiveAttrib(programID, i, out attributeSize, out attributeType);
+                string attribute = GL.GetActiveAttrib(programID, i, out int attributeSize, out attributeType);
                 attribute = RemoveEndingBrackets(attribute);
                 AddVertexAttribute(attribute);
             }
@@ -145,45 +143,44 @@ namespace Smash_Forge
             return name;
         }
 
-        public void LoadShader(string filePath, ShaderType shaderType)
+        public void LoadShader(string filePath)
         {
-            AttachAllShaders(filePath, shaderType);
-
+            // Compile and attach before linking.
+            LoadShaderBasedOnType(filePath);
             GL.LinkProgram(programID);
 
-            AppendShaderCompilationErrors(shaderType);
+            AppendShaderCompilationErrors();
 
             LoadAttributes();
             LoadUniforms();
         }
 
-        private void AppendShaderCompilationErrors(ShaderType shaderType)
+        private void AppendShaderCompilationErrors()
         {
-            errorLog.AppendLine(shaderType.ToString());
             errorLog.AppendLine("Compilation Errors:");
             string error = GL.GetProgramInfoLog(programID);
             errorLog.AppendLine(error);
         }
 
-        private void AttachAllShaders(string filePath, ShaderType shaderType)
+        private void LoadShaderBasedOnType(string filePath)
         {
             string shaderText = File.ReadAllText(filePath);
-            if (shaderType == ShaderType.FragmentShader)
+            if (filePath.EndsWith(".frag"))
             {
-                AttachAndCompileShader(shaderText, shaderType, programID, out fsID);
+                AttachAndCompileShader(shaderText, ShaderType.FragmentShader, programID, out fsID);
             }
-            else if (shaderType == ShaderType.VertexShader)
+            else if (filePath.EndsWith(".vert"))
             {
-                AttachAndCompileShader(shaderText, shaderType, programID, out vsID);
+                AttachAndCompileShader(shaderText, ShaderType.VertexShader, programID, out vsID);
             }
-            else if (shaderType == ShaderType.GeometryShader)
+            else if (filePath.EndsWith(".geom"))
             {
-                AttachAndCompileShader(shaderText, shaderType, programID, out geomID);
+                AttachAndCompileShader(shaderText, ShaderType.GeometryShader, programID, out geomID);
                 hasGeometryShader = true;
             }
             else
             {
-                throw new NotSupportedException(shaderType.ToString() + " is not a supported shader type.");
+                throw new NotSupportedException(filePath + " does not have a suppported shader type extension.");
             }
         }
 
