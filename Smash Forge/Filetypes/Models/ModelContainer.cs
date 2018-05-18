@@ -238,7 +238,7 @@ namespace Smash_Forge
                 shader = Runtime.shaders["NUD_Debug"];
             else
                 shader = Runtime.shaders["NUD"];
-            GL.UseProgram(shader.programID);
+            GL.UseProgram(shader.programId);
 
             int renderType = (int)Runtime.renderType;
             
@@ -257,7 +257,7 @@ namespace Smash_Forge
             GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("rotationMatrix"), false, ref rotationMatrix);
 
             shader = Runtime.shaders["MBN"];
-            GL.UseProgram(shader.programID);
+            GL.UseProgram(shader.programId);
 
             if (Runtime.cameraLight)
             {
@@ -269,7 +269,7 @@ namespace Smash_Forge
             }
 
             shader = Runtime.shaders["DAT"];
-            GL.UseProgram(shader.programID);
+            GL.UseProgram(shader.programId);
 
             LightColor diffuseColor = Runtime.lightSetParam.characterDiffuse.diffuseColor;
             LightColor ambientColor = Runtime.lightSetParam.characterDiffuse.ambientColor;
@@ -297,7 +297,7 @@ namespace Smash_Forge
                 else
                     shader = Runtime.shaders["NUD"];
 
-                GL.UseProgram(shader.programID);
+                GL.UseProgram(shader.programId);
 
                 SetRenderSettingsUniforms(shader);
                 SetLightingUniforms(shader, camera);

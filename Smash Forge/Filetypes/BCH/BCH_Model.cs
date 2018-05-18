@@ -417,7 +417,7 @@ namespace Smash_Forge
                 return;
 
             shader = Runtime.shaders["MBN"];
-            GL.UseProgram(shader.programID);
+            GL.UseProgram(shader.programId);
 
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderType"), (int)Runtime.renderType);
@@ -442,7 +442,7 @@ namespace Smash_Forge
             GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-            var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
+            var blockIndex = GL.GetUniformBlockIndex(shader.programId, "bones");
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, vbo_bone);
 
             if (f.Length > 0)

@@ -377,7 +377,7 @@ namespace Smash_Forge
             GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-            var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
+            var blockIndex = GL.GetUniformBlockIndex(shader.programId, "bones");
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
         }
 
@@ -387,7 +387,7 @@ namespace Smash_Forge
                 return;
 
             shader = Runtime.shaders["DAT"];
-            GL.UseProgram(shader.programID);
+            GL.UseProgram(shader.programId);
 
             GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelview"), false, ref modelview);
             GL.ActiveTexture(TextureUnit.Texture10);
@@ -407,7 +407,7 @@ namespace Smash_Forge
                 {
                     GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
                     GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
-                    var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
+                    var blockIndex = GL.GetUniformBlockIndex(shader.programId, "bones");
                     GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
                 }
             }

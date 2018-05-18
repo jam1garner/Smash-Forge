@@ -19,7 +19,7 @@ namespace Smash_Forge.Rendering
             Runtime.shaders.Clear();
             CreateShader("Texture",     "/lib/Shader/");
             CreateShader("Screen_Quad", "/lib/Shader/");
-            CreateShader("NUD",         "/lib/Shader/");
+            CreateShader("NUD",         "/lib/Shader/", new List<string>() { "smash_shader.frag" });
             CreateShader("MBN",         "/lib/Shader/");
             CreateShader("DAT",         "/lib/Shader/");
             CreateShader("NUD_Debug",   "/lib/Shader/");
@@ -35,21 +35,25 @@ namespace Smash_Forge.Rendering
             if (!Runtime.shaders.ContainsKey(shaderName))
             {
                 Shader shader = new Shader();
-                string shaderFile = MainForm.executableDir + shaderFolder + shaderName;
-                shader.LoadShader(shaderFile + ".vert");
-                shader.LoadShader(shaderFile + ".frag");
 
-                // Geometry shaders are optional.
-                if (File.Exists(shaderFile + ".geom"))
-                    shader.LoadShader(shaderFile + ".geom");
-
+                // Additional shaders for utility functions. These should be loaded first.
                 if (additionalShaderFiles != null)
                 {
                     foreach (string file in additionalShaderFiles)
-                    {
-
-                    }
+                        shader.LoadShader(MainForm.executableDir + shaderFolder + file);
                 }
+
+                string shaderFileName = MainForm.executableDir + shaderFolder + shaderName;
+
+                // Required shaders.
+                shader.LoadShader(shaderFileName + ".vert");
+                shader.LoadShader(shaderFileName + ".frag");
+
+                // Geometry shaders are optional.
+                if (File.Exists(shaderFileName + ".geom"))
+                    shader.LoadShader(shaderFileName + ".geom");
+
+
 
                 Runtime.shaders.Add(shaderName, shader);
             }

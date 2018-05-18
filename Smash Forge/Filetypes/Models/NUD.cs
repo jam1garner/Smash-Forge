@@ -270,7 +270,7 @@ namespace Smash_Forge
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NUD_Debug"];
 
-            GL.UseProgram(shader.programID);
+            GL.UseProgram(shader.programId);
 
             shader.EnableVertexAttributes();
             LoadBoneAttributes(vbn, shader);
@@ -292,7 +292,7 @@ namespace Smash_Forge
                 GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
                 GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-                var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
+                var blockIndex = GL.GetUniformBlockIndex(shader.programId, "bones");
                 GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, bonesUbo);
 
                 if (f.Length > 0)
@@ -935,7 +935,7 @@ namespace Smash_Forge
         public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)
         {
             Shader shader = Runtime.shaders["Point"];
-            GL.UseProgram(shader.programID);
+            GL.UseProgram(shader.programId);
             Matrix4 mat = camera.mvpMatrix;
             GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("mvpMatrix"), false, ref mat);
 

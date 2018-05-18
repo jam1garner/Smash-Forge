@@ -11,15 +11,15 @@ namespace Smash_Forge
 {
 	public class Shader
 	{
-		public int programID;
+		public int programId;
 
         private bool programStatusIsOk = true;
 
-        private int vsID;
-        private int fsID;
+        private int vertShaderId;
+        private int fragShaderId;
 
         private bool hasGeometryShader = false;
-        private int geomID;
+        private int geomShaderId;
 
         private bool checkedCompilation = false;
         public bool HasCheckedCompilation { get { return checkedCompilation; } }
@@ -30,18 +30,10 @@ namespace Smash_Forge
         int activeAttributeCount = 0;
 		private Dictionary<string, int> vertexAttributeAndUniformLocations = new Dictionary<string, int>();
 
-        public Shader ()
+        public Shader()
         {
-            programID = GL.CreateProgram();
+            programId = GL.CreateProgram();
             AppendHardwareAndVersionInfo();
-        }
-
-        private void AppendHardwareAndVersionInfo()
-        {
-            errorLog.AppendLine("Vendor: " + GL.GetString(StringName.Vendor));
-            errorLog.AppendLine("Renderer: " + GL.GetString(StringName.Renderer));
-            errorLog.AppendLine("OpenGL Version: " + GL.GetString(StringName.Version));
-            errorLog.AppendLine("GLSL Version: " + GL.GetString(StringName.ShadingLanguageVersion));
         }
 
         public int GetVertexAttributeUniformLocation(string name)
@@ -89,7 +81,7 @@ namespace Smash_Forge
         {
             if (vertexAttributeAndUniformLocations.ContainsKey(name))
                 vertexAttributeAndUniformLocations.Remove(name);
-			int position = GL.GetAttribLocation(programID, name);
+			int position = GL.GetAttribLocation(programId, name);
             vertexAttributeAndUniformLocations.Add(name, position);
 
             errorLog.AppendLine(name + ", " + "Position: " + position);
@@ -99,7 +91,7 @@ namespace Smash_Forge
         {
             if (vertexAttributeAndUniformLocations.ContainsKey(name))
                 vertexAttributeAndUniformLocations.Remove(name);
-            int position = GL.GetUniformLocation(programID, name);
+            int position = GL.GetUniformLocation(programId, name);
             vertexAttributeAndUniformLocations.Add(name, position);
 
             errorLog.AppendLine(name + ", " + "Position: " + position);
@@ -107,13 +99,13 @@ namespace Smash_Forge
 
         private void LoadUniforms()
         {
-            GL.GetProgram(programID, GetProgramParameterName.ActiveUniforms, out activeUniformCount);
+            GL.GetProgram(programId, GetProgramParameterName.ActiveUniforms, out activeUniformCount);
             errorLog.AppendLine("Uniform Count: " + activeUniformCount);
 
             for (int i = 0; i < activeUniformCount; i++)
             {
                 ActiveUniformType uniformType;
-                string uniform = GL.GetActiveUniform(programID, i, out int uniformSize, out uniformType);
+                string uniform = GL.GetActiveUniform(programId, i, out int uniformSize, out uniformType);
                 uniform = RemoveEndingBrackets(uniform);
                 AddUniform(uniform);
             }
@@ -121,13 +113,13 @@ namespace Smash_Forge
 
         private void LoadAttributes()
         {
-            GL.GetProgram(programID, GetProgramParameterName.ActiveAttributes, out activeAttributeCount);
+            GL.GetProgram(programId, GetProgramParameterName.ActiveAttributes, out activeAttributeCount);
             errorLog.AppendLine("Attribute Count: " + activeAttributeCount);
 
             for (int i = 0; i < activeAttributeCount; i++)
             {
                 ActiveAttribType attributeType;
-                string attribute = GL.GetActiveAttrib(programID, i, out int attributeSize, out attributeType);
+                string attribute = GL.GetActiveAttrib(programId, i, out int attributeSize, out attributeType);
                 attribute = RemoveEndingBrackets(attribute);
                 AddVertexAttribute(attribute);
             }
@@ -147,7 +139,7 @@ namespace Smash_Forge
         {
             // Compile and attach before linking.
             LoadShaderBasedOnType(filePath);
-            GL.LinkProgram(programID);
+            GL.LinkProgram(programId);
 
             AppendShaderCompilationErrors();
 
@@ -155,27 +147,20 @@ namespace Smash_Forge
             LoadUniforms();
         }
 
-        private void AppendShaderCompilationErrors()
-        {
-            errorLog.AppendLine("Compilation Errors:");
-            string error = GL.GetProgramInfoLog(programID);
-            errorLog.AppendLine(error);
-        }
-
         private void LoadShaderBasedOnType(string filePath)
         {
             string shaderText = File.ReadAllText(filePath);
             if (filePath.EndsWith(".frag"))
             {
-                AttachAndCompileShader(shaderText, ShaderType.FragmentShader, programID, out fsID);
+                AttachAndCompileShader(shaderText, ShaderType.FragmentShader, programId, out fragShaderId);
             }
             else if (filePath.EndsWith(".vert"))
             {
-                AttachAndCompileShader(shaderText, ShaderType.VertexShader, programID, out vsID);
+                AttachAndCompileShader(shaderText, ShaderType.VertexShader, programId, out vertShaderId);
             }
             else if (filePath.EndsWith(".geom"))
             {
-                AttachAndCompileShader(shaderText, ShaderType.GeometryShader, programID, out geomID);
+                AttachAndCompileShader(shaderText, ShaderType.GeometryShader, programId, out geomShaderId);
                 hasGeometryShader = true;
             }
             else
@@ -185,8 +170,8 @@ namespace Smash_Forge
         }
 
         void AttachAndCompileShader(string shaderText, ShaderType type, int program, out int id)
-		{
-			id = GL.CreateShader(type);
+        {
+            id = GL.CreateShader(type);
 
             // This probably shouldn't be hardcoded...
             if (shaderText.Contains("#include"))
@@ -195,7 +180,7 @@ namespace Smash_Forge
             }
 
             GL.ShaderSource(id, shaderText);
-			GL.CompileShader(id);
+            GL.CompileShader(id);
             GL.AttachShader(program, id);
 
             errorLog.AppendLine(GL.GetShaderInfoLog(id));
@@ -204,8 +189,8 @@ namespace Smash_Forge
         private static string ProcessIncludes(string shaderText)
         {
             // Hard coded #include for reducing redundant shader code. 
-            string smashShaderText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\SMASH_SHADER.frag");
-            shaderText = shaderText.Replace("#include SMASH_SHADER", smashShaderText);
+            //string smashShaderText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\SMASH_SHADER.frag");
+            //shaderText = shaderText.Replace("#include SMASH_SHADER", smashShaderText);
 
             string nuUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\NU_UNIFORMS.txt");
             shaderText = shaderText.Replace("#include NU_UNIFORMS", nuUniformText);
@@ -216,6 +201,21 @@ namespace Smash_Forge
             string miscUniformsText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\MISC_UNIFORMS.txt");
             shaderText = shaderText.Replace("#include MISC_UNIFORMS", miscUniformsText);
             return shaderText;
+        }
+
+        private void AppendShaderCompilationErrors()
+        {
+            errorLog.AppendLine("Compilation Errors:");
+            string error = GL.GetProgramInfoLog(programId);
+            errorLog.AppendLine(error);
+        }
+
+        private void AppendHardwareAndVersionInfo()
+        {
+            errorLog.AppendLine("Vendor: " + GL.GetString(StringName.Vendor));
+            errorLog.AppendLine("Renderer: " + GL.GetString(StringName.Renderer));
+            errorLog.AppendLine("OpenGL Version: " + GL.GetString(StringName.Version));
+            errorLog.AppendLine("GLSL Version: " + GL.GetString(StringName.ShadingLanguageVersion));
         }
 
         public bool ProgramCreatedSuccessfully()
@@ -238,21 +238,21 @@ namespace Smash_Forge
             // Rendering should be disabled if any error occurs.
             // Check for linker errors first. 
             int linkStatus = 1;
-            GL.GetProgram(programID, GetProgramParameterName.LinkStatus, out linkStatus);
+            GL.GetProgram(programId, GetProgramParameterName.LinkStatus, out linkStatus);
             if (linkStatus == 0)
                 return false;
 
             // Make sure the shaders were compiled correctly.
             int compileStatusVS = 1;
-            GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
+            GL.GetShader(vertShaderId, ShaderParameter.CompileStatus, out compileStatusVS);
 
             int compileStatusFS = 1;
-            GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
+            GL.GetShader(fragShaderId, ShaderParameter.CompileStatus, out compileStatusFS);
 
             // Most shaders won't use a geometry shader.
             int compileStatusGS = 1;
             if (hasGeometryShader)
-                GL.GetShader(geomID, ShaderParameter.CompileStatus, out compileStatusGS);
+                GL.GetShader(geomShaderId, ShaderParameter.CompileStatus, out compileStatusGS);
 
             // The program was linked, but the shaders may have minor syntax errors.
             return (compileStatusFS != 0 && compileStatusVS != 0 && compileStatusGS != 0);
@@ -272,12 +272,12 @@ namespace Smash_Forge
                 return;
 
             int compileStatusVS;
-            GL.GetShader(vsID, ShaderParameter.CompileStatus, out compileStatusVS);
+            GL.GetShader(vertShaderId, ShaderParameter.CompileStatus, out compileStatusVS);
             if (compileStatusVS == 0)
                 ShowCompileWarning(shaderName, "vertex shader");
 
             int compileStatusFS;
-            GL.GetShader(fsID, ShaderParameter.CompileStatus, out compileStatusFS);
+            GL.GetShader(fragShaderId, ShaderParameter.CompileStatus, out compileStatusFS);
             if (compileStatusFS == 0)
                 ShowCompileWarning(shaderName, "fragment shader");
 
@@ -285,7 +285,7 @@ namespace Smash_Forge
             if (hasGeometryShader)
             {
                 int compileStatusGS;
-                GL.GetShader(geomID, ShaderParameter.CompileStatus, out compileStatusGS);
+                GL.GetShader(geomShaderId, ShaderParameter.CompileStatus, out compileStatusGS);
                 if (compileStatusGS == 0)
                     ShowCompileWarning(shaderName, "geometry shader");
             }
