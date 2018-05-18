@@ -19,13 +19,13 @@ namespace Smash_Forge.Rendering
         {
             // Reset the shaders first so that shaders can be replaced.
             Runtime.shaders.Clear();
-            CreateShader("Texture",     "\\lib\\Shader");
-            CreateShader("ScreenQuad", "\\lib\\Shader\\PostProcessing");
+            CreateShader("Texture",     "\\lib\\Shader", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
+            CreateShader("ScreenQuad", "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
             CreateShader("Nud",         "\\lib\\Shader\\Nud", new List<string>() { "Nud\\SmashShader.frag", "Utility\\Wireframe.frag", "Utility\\Utility.frag" });
             CreateShader("Mbn",         "\\lib\\Shader\\3ds");
             CreateShader("Dat",         "\\lib\\Shader\\Melee");
             CreateShader("NudDebug",   "\\lib\\Shader\\Nud\\");
-            CreateShader("Gradient",    "\\lib\\Shader\\PostProcessing");
+            CreateShader("Gradient",    "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
             CreateShader("Point",       "\\lib\\Shader");
             CreateShader("NudSphere",  "\\lib\\Shader\\Nud");
 
@@ -48,9 +48,11 @@ namespace Smash_Forge.Rendering
 
                 string shaderFileName = MainForm.executableDir + shaderFolder + "\\" + shaderName;
 
-                // Required shaders.
-                shader.LoadShader(shaderFileName + ".vert");
-                shader.LoadShader(shaderFileName + ".frag");
+                // Required shaders. These files can be omitted and specified in the additionalShaderFiles list.
+                if (File.Exists(shaderFileName + ".vert"))
+                    shader.LoadShader(shaderFileName + ".vert");
+                if (File.Exists(shaderFileName + ".frag"))
+                    shader.LoadShader(shaderFileName + ".frag");
 
                 // Geometry shaders are optional.
                 if (File.Exists(shaderFileName + ".geom"))
