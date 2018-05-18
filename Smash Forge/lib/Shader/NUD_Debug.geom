@@ -21,6 +21,8 @@ in vec2 geomTexCoord2[];
 in vec2 geomTexCoord3[];
 in vec2 geomNormaltexCoord[];
 
+in vec3 geomBoneWeightsColored[];
+
 // Outputs to fragment shader.
 out vec3 viewPosition;
 out vec3 objectPosition;
@@ -33,6 +35,7 @@ out vec3 normal;
 out vec3 viewNormal;
 out vec3 tangent;
 out vec3 bitangent;
+out vec3 boneWeightsColored;
 noperspective out vec3 edgeDistance;
 
 // Adapted from code in David Wolff's "OpenGL 4.0 Shading Language Cookbook"
@@ -62,6 +65,7 @@ void main() {
         viewNormal = geomViewNormal[i];
         tangent = geomTangent[i];
         bitangent = geomBitangent[i];
+        boneWeightsColored = geomBoneWeightsColored[i];
 
         // The distance from a point to each of the edges.
         // This benefits from interpolation.
