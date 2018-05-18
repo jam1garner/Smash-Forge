@@ -1,3 +1,4 @@
+// #version 330
 
 float Luminance(vec3 rgb)
 {

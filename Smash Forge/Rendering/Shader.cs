@@ -147,7 +147,8 @@ namespace Smash_Forge
 
         public void LoadShader(string filePath, ShaderType shaderType)
         {
-            LoadAllShaders(filePath, shaderType);
+            AttachAllShaders(filePath, shaderType);
+
             GL.LinkProgram(programID);
 
             AppendShaderCompilationErrors(shaderType);
@@ -164,20 +165,20 @@ namespace Smash_Forge
             errorLog.AppendLine(error);
         }
 
-        private void LoadAllShaders(string filePath, ShaderType shaderType)
+        private void AttachAllShaders(string filePath, ShaderType shaderType)
         {
             string shaderText = File.ReadAllText(filePath);
             if (shaderType == ShaderType.FragmentShader)
             {
-                LoadShader(shaderText, shaderType, programID, out fsID);
+                AttachAndCompileShader(shaderText, shaderType, programID, out fsID);
             }
             else if (shaderType == ShaderType.VertexShader)
             {
-                LoadShader(shaderText, shaderType, programID, out vsID);
+                AttachAndCompileShader(shaderText, shaderType, programID, out vsID);
             }
             else if (shaderType == ShaderType.GeometryShader)
             {
-                LoadShader(shaderText, shaderType, programID, out geomID);
+                AttachAndCompileShader(shaderText, shaderType, programID, out geomID);
                 hasGeometryShader = true;
             }
             else
@@ -186,7 +187,7 @@ namespace Smash_Forge
             }
         }
 
-        void LoadShader(string shaderText, ShaderType type, int program, out int id)
+        void AttachAndCompileShader(string shaderText, ShaderType type, int program, out int id)
 		{
 			id = GL.CreateShader(type);
 
@@ -206,7 +207,7 @@ namespace Smash_Forge
         private static string ProcessIncludes(string shaderText)
         {
             // Hard coded #include for reducing redundant shader code. 
-            string smashShaderText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\SMASH_SHADER.txt");
+            string smashShaderText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\SMASH_SHADER.frag");
             shaderText = shaderText.Replace("#include SMASH_SHADER", smashShaderText);
 
             string nuUniformText = File.ReadAllText(MainForm.executableDir + "\\lib\\shader\\NU_UNIFORMS.txt");
