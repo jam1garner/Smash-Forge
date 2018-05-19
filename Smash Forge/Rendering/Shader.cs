@@ -105,7 +105,8 @@ namespace Smash_Forge.Rendering
             for (int i = 0; i < activeUniformCount; i++)
             {
                 ActiveUniformType uniformType;
-                string uniform = GL.GetActiveUniform(programId, i, out int uniformSize, out uniformType);
+                int uniformSize;
+                string uniform = GL.GetActiveUniform(programId, i, out uniformSize, out uniformType);
                 uniform = RemoveEndingBrackets(uniform);
                 AddUniform(uniform);
             }
@@ -119,7 +120,8 @@ namespace Smash_Forge.Rendering
             for (int i = 0; i < activeAttributeCount; i++)
             {
                 ActiveAttribType attributeType;
-                string attribute = GL.GetActiveAttrib(programId, i, out int attributeSize, out attributeType);
+                int attributeSize;
+                string attribute = GL.GetActiveAttrib(programId, i, out attributeSize, out attributeType);
                 attribute = RemoveEndingBrackets(attribute);
                 AddVertexAttribute(attribute);
             }
