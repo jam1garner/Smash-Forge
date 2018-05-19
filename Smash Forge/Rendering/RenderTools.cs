@@ -42,10 +42,12 @@ namespace Smash_Forge.Rendering
         public static int boneWeightGradient;
         public static int boneWeightGradient2;
 
-        public static int sphereNrmTex;
-        public static int sphereUvTex;
-        public static int sphereTanTex;
-        public static int sphereBitanTex;
+        // Nud Material Sphere
+        private static int sphereNrmTex;
+        private static int sphereUvTex;
+        private static int sphereTanTex;
+        private static int sphereBitanTex;
+        private static Camera nudSphereCamera = new Camera();
 
         public static bool hasSetup = false;
 
@@ -54,6 +56,7 @@ namespace Smash_Forge.Rendering
             if (hasSetup)
                 return;
 
+            nudSphereCamera.Update(); // Update matrices for shader.
             LoadTextures();
             SetupScreenQuadBuffer();
             GetOpenGLSystemInfo();
@@ -1573,13 +1576,16 @@ namespace Smash_Forge.Rendering
         public static void DrawNudMaterialSphere(NUD.Material material)
         {
             // Draws RGB and alpha channels of texture to screen quad.
-            Shader shader = Runtime.shaders["Nud_Sphere"];
+            Shader shader = Runtime.shaders["NudSphere"];
             GL.UseProgram(shader.programId);
 
             // Use the same uniforms as the NUD shader. 
             NUD.SetMaterialPropertyUniforms(shader, material);
             NUD.SetTextureUniforms(shader, material);
-            NUD.SetLightingUniforms(shader, 0);
+            NUD.SetStageLightingUniforms(shader, 0);
+            ModelContainer.SetRenderSettingsUniforms(shader);
+            ModelContainer.SetLightingUniforms(shader, nudSphereCamera);
+            ModelContainer.SetCameraMatrixUniforms(nudSphereCamera, shader);
 
             GL.Uniform3(shader.GetVertexAttributeUniformLocation("cameraPosition"), 0, 0, 0);
 

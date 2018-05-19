@@ -241,20 +241,8 @@ namespace Smash_Forge
             GL.UseProgram(shader.programId);
 
             int renderType = (int)Runtime.renderType;
-            
-            Matrix4 mvpMatrix = camera.mvpMatrix;
-            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("mvpMatrix"), false, ref mvpMatrix);
 
-            // Perform the calculations here to reduce render times in shader
-            Matrix4 modelViewMatrix = camera.modelViewMatrix;
-            Matrix4 sphereMapMatrix = modelViewMatrix;
-            sphereMapMatrix.Invert();
-            sphereMapMatrix.Transpose();
-            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelViewMatrix"), false, ref modelViewMatrix);
-            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("sphereMapMatrix"), false, ref sphereMapMatrix);
-
-            Matrix4 rotationMatrix = camera.rotationMatrix;
-            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("rotationMatrix"), false, ref rotationMatrix);
+            SetCameraMatrixUniforms(camera, shader);
 
             shader = Runtime.shaders["Mbn"];
             GL.UseProgram(shader.programId);
@@ -275,8 +263,8 @@ namespace Smash_Forge
             LightColor ambientColor = Runtime.lightSetParam.characterDiffuse.ambientColor;
             GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLightColor"), diffuseColor.R, diffuseColor.G, diffuseColor.B);
             GL.Uniform3(shader.GetVertexAttributeUniformLocation("ambLightColor"), ambientColor.R, ambientColor.G, ambientColor.B);
-            
-            
+
+
             if (BCH != null)
             {
                 foreach (BCH_Model mo in BCH.Models.Nodes)
@@ -326,6 +314,23 @@ namespace Smash_Forge
             }
         }
 
+        public static void SetCameraMatrixUniforms(Camera camera, Shader shader)
+        {
+            Matrix4 mvpMatrix = camera.mvpMatrix;
+            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("mvpMatrix"), false, ref mvpMatrix);
+
+            // Perform the calculations here to reduce render times in shader
+            Matrix4 modelViewMatrix = camera.modelViewMatrix;
+            Matrix4 sphereMapMatrix = modelViewMatrix;
+            sphereMapMatrix.Invert();
+            sphereMapMatrix.Transpose();
+            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelViewMatrix"), false, ref modelViewMatrix);
+            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("sphereMapMatrix"), false, ref sphereMapMatrix);
+
+            Matrix4 rotationMatrix = camera.rotationMatrix;
+            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("rotationMatrix"), false, ref rotationMatrix);
+        }
+
         private void SetElapsedDirectUvTime(Shader shader)
         {
             float elapsedSeconds = 0;
@@ -368,7 +373,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void SetRenderSettingsUniforms(Shader shader)
+        public static void SetRenderSettingsUniforms(Shader shader)
         {
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderStageLighting"), Runtime.renderStageLighting ? 1 : 0);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderLighting"), Runtime.renderMaterialLighting ? 1 : 0);
@@ -408,7 +413,7 @@ namespace Smash_Forge
 
         }
 
-        private static void SetLightingUniforms(Shader shader, Camera camera)
+        public static void SetLightingUniforms(Shader shader, Camera camera)
         {
             // fresnel sky/ground color for characters & stages
             ShaderTools.LightColorVector3Uniform(shader, Runtime.lightSetParam.fresnelLight.groundColor, "fresGroundColor");

@@ -551,7 +551,7 @@ namespace Smash_Forge
             ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderVertColor && material.useVertexColor, "renderVertColor");
             SetTextureUniforms(shader, material);
             SetMaterialPropertyUniforms(shader, material);
-            SetLightingUniforms(shader, lightSetNumber);
+            SetStageLightingUniforms(shader, lightSetNumber);
             SetXMBUniforms(shader, p);
             SetNscUniform(p, shader);
 
@@ -623,7 +623,7 @@ namespace Smash_Forge
             }
         }
 
-        public static void SetLightingUniforms(Shader shader, int lightSetNumber)
+        public static void SetStageLightingUniforms(Shader shader, int lightSetNumber)
         {
             for (int i = 0; i < 4; i++)
             {

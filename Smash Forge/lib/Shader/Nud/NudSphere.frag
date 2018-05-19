@@ -196,6 +196,9 @@ struct VertexAttributes {
     vec3 bitangent;
 };
 
+// Defined in SmashShader.frag.
+vec4 SmashShader(VertexAttributes vert);
+
 void main() {
     fragColor = vec4(1);
 
@@ -217,5 +220,7 @@ void main() {
     vert.bitangent = texture(bitanTex, texCoord).xyz * 2 - 1;
 
     float alpha = texture(normalTex, texCoord).a;
-    fragColor.rgb = mix(vec3(0), fragColor.rgb, alpha);
+    vec3 shadedColor = SmashShader(vert).rgb;
+    vec3 backgroundColor = vec3(0);
+    fragColor.rgb = mix(backgroundColor, shadedColor, alpha);
 }
