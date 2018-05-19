@@ -30,7 +30,7 @@ namespace Smash_Forge.Rendering
             List<String> nudShaders = new List<string>() { "Nud\\StageLighting.frag", "Nud\\SmashShader.frag", "Utility\\Wireframe.frag",
                                                            "Utility\\Utility.frag"};
             CreateShader("Nud",         "\\lib\\Shader\\Nud", nudShaders);
-            CreateShader("NudDebug",    "\\lib\\Shader\\Nud\\");
+            CreateShader("NudDebug",    "\\lib\\Shader\\Nud\\", nudShaders);
             CreateShader("NudSphere", "\\lib\\Shader\\Nud");
 
             CreateShader("Mbn",         "\\lib\\Shader\\3ds");
@@ -48,6 +48,7 @@ namespace Smash_Forge.Rendering
                 Shader shader = new Shader();
 
                 // Additional shaders for utility functions. These should be loaded first.
+                // The order in which shaders are loaded is important.
                 if (additionalShaderFiles != null)
                 {
                     foreach (string file in additionalShaderFiles)

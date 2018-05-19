@@ -229,14 +229,11 @@ float Fresnel(vec3 I, vec3 N) {
     return max(1 - max(dot(I, N), 0), 0);
 }
 
-vec3 BumpMapNormal(vec3 inputNormal, vec4 dualNormalScrollParams, sampler2D normalMap, vec2 normaltexCoord, int hasNrm, int useNormalMap,
-    int hasDualNormal, vec4 normalParams, vec3 tangent, vec3 bitangent) {
-    if(hasNrm == 0 || useNormalMap == 0)
-	   return inputNormal;
-
+vec3 BumpMapNormal(sampler2D normalMap, VertexAttributes vert, vec4 dualNormalScrollParams,
+    int hasDualNormal, vec4 normalParams) {
     // TODO: How does NU_dualNormalScrollParams work?
-    vec3 bumpMapNormal = texture(normalMap, normaltexCoord).xyz;
-    vec3 bumpMapNormal2 = texture(normalMap, vec2(normaltexCoord.x + dualNormalScrollParams.x, normaltexCoord.y + dualNormalScrollParams.y)).xyz;
+    vec3 bumpMapNormal = texture(normalMap, vert.normaltexCoord).xyz;
+    vec3 bumpMapNormal2 = texture(normalMap, vec2(vert.normaltexCoord.x + dualNormalScrollParams.x, vert.normaltexCoord.y + dualNormalScrollParams.y)).xyz;
     if (hasDualNormal == 1)
         bumpMapNormal = normalize(bumpMapNormal + bumpMapNormal2);
 
@@ -244,7 +241,7 @@ vec3 BumpMapNormal(vec3 inputNormal, vec4 dualNormalScrollParams, sampler2D norm
     bumpMapNormal = mix(vec3(0.5, 0.5, 1), bumpMapNormal, normalParams.x);
 
     bumpMapNormal = 2.0 * bumpMapNormal - vec3(1);
-    mat3 tbnMatrix = mat3(tangent, bitangent, normalize(inputNormal));
+    mat3 tbnMatrix = mat3(vert.tangent, vert.bitangent, vert.normal);
     vec3 newNormal = tbnMatrix * bumpMapNormal;
     return normalize(newNormal);
 }
@@ -444,13 +441,11 @@ vec3 Lighting(vec3 N, float halfLambert) {
     return vec3(1);
 }
 
-vec3 DiffuseAOBlend(int hasNrm, sampler2D normalMap, vec2 texCoord, vec4 aoMinGain) {
+vec3 DiffuseAOBlend(float aoMap, vec4 aoMinGain) {
     // Calculate the effect of NU_aoMinGain on the ambient occlusion map.
     // TODO: Max should be 1 but doesn't look correct.
     float maxAOBlendValue = 1.25;
-    float aoMap = 1;
-    if (hasNrm == 1)
-        aoMap = pow(texture(normalMap, texCoord).a, 2.2);
+    aoMap = pow(aoMap, 2.2);
     vec3 aoBlend = vec3(aoMap);
     return min((aoBlend + aoMinGain.rgb), vec3(maxAOBlendValue));
 }
@@ -485,10 +480,17 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert) {
     float halfLambert3 = dot(difLight3Direction, N) * 0.5 + 0.5;
     vec3 diffuseColorFinal = vec3(0); // result of diffuse map, aoBlend, and some NU_values
 
-    if (hasColorGainOffset == 1) // probably a more elegant solution...
+    if (hasColorGainOffset == 1) {
         diffuseColorFinal = ColorOffsetGain(diffuseMap.rgb, hasBayoHair, colorOffset, colorGain, alphaBlendParams);
-    else
-        diffuseColorFinal = diffuseMap.rgb * DiffuseAOBlend(hasNrm, normalMap, vert.texCoord, aoMinGain) * diffuseColor.rgb;
+    }
+    else {
+        vec3 aoBlend = vec3(1);
+        if (hasNrm == 1)
+            aoBlend = DiffuseAOBlend(texture(normalMap, vert.texCoord).a, aoMinGain);
+        else
+            aoBlend = DiffuseAOBlend(1.0, aoMinGain);
+        diffuseColorFinal = diffuseMap.rgb * aoBlend * diffuseColor.rgb;
+    }
 
     // Stage lighting
     vec3 lighting = Lighting(N, halfLambert);
@@ -609,8 +611,10 @@ vec4 SmashShader(VertexAttributes vert)
     vec4 resultingColor = vec4(vert.normal, 1);
 
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
-    vec3 N = BumpMapNormal(vert.normal, dualNormalScrollParams, normalMap, vert.normaltexCoord, hasNrm, useNormalMap,
-        hasDualNormal, normalParams, vert.tangent, vert.bitangent);
+
+    vec3 N = vert.normal;
+    if (hasNrm == 1 && useNormalMap == 1)
+        N = BumpMapNormal(normalMap, vert, dualNormalScrollParams, hasDualNormal, normalParams);
 
     // zOffset correction
     // TODO: Divide by far plane?

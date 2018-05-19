@@ -8,6 +8,7 @@ in vec2 texCoord3;
 in vec2 normaltexCoord;
 in vec4 vertexColor;
 in vec3 normal;
+in vec3 viewNormal;
 in vec3 tangent;
 in vec3 bitangent;
 in vec3 boneWeightsColored;
@@ -156,104 +157,32 @@ uniform int drawSelection;
 #define gamma 2.2
 #define PI 3.14159
 
-// Tools
-vec3 RGB2HSV(vec3 c) {
-    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
-    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+struct VertexAttributes
+{
+    vec3 viewPosition;
+    vec3 objectPosition;
+    vec2 texCoord;
+    vec2 texCoord2;
+    vec2 texCoord3;
+    vec2 normaltexCoord;
+    vec4 vertexColor;
+    vec3 normal;
+    vec3 viewNormal;
+    vec3 tangent;
+    vec3 bitangent;
+};
 
-    float d = q.x - min(q.w, q.y);
-    float e = 1.0e-10;
-    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
-}
+// Defined in SmashShader.frag.
+vec3 DiffuseAOBlend(float aoMap, vec4 aoMinGain);
+vec3 BumpMapNormal(sampler2D normalMap, VertexAttributes vert, vec4 dualNormalScrollParams,
+                                                               int hasDualNormal, vec4 normalParams);
 
-vec3 HSV2RGB(vec3 c) {
-    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
-    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
-    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
-}
+// Defined in Utility.frag.
+float Luminance(vec3 rgb);
 
-float Luminance(vec3 rgb) {
-    const vec3 W = vec3(0.2125, 0.7154, 0.0721);
-    return dot(rgb, W);
-}
-
-vec3 CalculateTintColor(vec3 inputColor, float colorAlpha) {
-    float intensity = colorAlpha * 0.4;
-    vec3 inputHSV = RGB2HSV(inputColor);
-    float outSaturation = min((inputHSV.y * intensity),1); // cant have color with saturation > 1
-    vec3 outColorTint = HSV2RGB(vec3(inputHSV.x,outSaturation,1));
-    return outColorTint;
-}
-
-float ShadowCalculation(vec4 fragPosLightSpace) {
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
-    float closestDepth = texture(shadowMap, projCoords.xy).r;
-    float currentDepth = projCoords.z;
-    float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
-
-    return shadow;
-}
-
-vec3 CalcBumpedNormal(vec3 inputNormal) {
-    // if no normal map, then return just the normal
-    if(hasNrm == 0 || useNormalMap == 0)
-	   return inputNormal;
-
-    float normalIntensity = normalParams.x;
-    vec3 BumpMapNormal = texture(normalMap, normaltexCoord).xyz;
-    vec3 BumpMapNormal2 = texture(normalMap, vec2(normaltexCoord.x + dualNormalScrollParams.x, normaltexCoord.y + dualNormalScrollParams.y)).xyz;
-    if(hasDualNormal == 1)
-        BumpMapNormal = normalize(BumpMapNormal + BumpMapNormal2);
-    BumpMapNormal = mix(vec3(0.5, 0.5, 1), BumpMapNormal, normalIntensity); // probably a better way to do this
-    BumpMapNormal = 2.0 * BumpMapNormal - vec3(1);
-
-    vec3 NewNormal;
-    vec3 Normal = normalize(normal);
-    mat3 TBN = mat3(tangent, bitangent, Normal);
-    NewNormal = TBN * BumpMapNormal;
-    NewNormal = normalize(NewNormal);
-
-    return NewNormal;
-}
-
-vec3 CalculateLighting(vec3 N, float halfLambert) {
-    vec3 lighting = vec3(1);
-
-    // stage lighting
-    if (isStage == 1) {
-        // should this be half lambert?
-        vec3 stageLight1 = stageLight1Color * max((dot(N, stageLight1Direction)), 0);
-        vec3 stageLight2 = stageLight2Color * max((dot(N, stageLight2Direction)), 0);
-        vec3 stageLight3 = stageLight3Color * max((dot(N, stageLight3Direction)), 0);
-        vec3 stageLight4 = stageLight4Color * max((dot(N, stageLight4Direction)), 0);
-
-        lighting = vec3(0);
-        lighting += (stageLight1 * renderStageLight1);
-        lighting += (stageLight2 * renderStageLight2);
-        lighting += (stageLight3 * renderStageLight3);
-        lighting += (stageLight4 * renderStageLight4);
-    } else {
-        // gradient based character lighting
-        lighting = mix(ambLightColor * ambientIntensity, difLightColor * diffuseIntensity, halfLambert);
-    }
-
-    if (((flags & 0x0F000000u) < 0x04000000u) || renderStageLighting != 1)
-        lighting = vec3(1); // flags for "no lighting"
-
-    return lighting;
-}
-
-vec3 CalculateFog(vec3 inputColor) {
-    float depth = viewPosition.z;
-    depth = clamp((depth / fogParams.y), 0, 1);
-    float fogIntensity = mix(fogParams.z, fogParams.w, depth);
-    if(renderFog == 1 && renderStageLighting == 1)
-        return mix(inputColor, pow((stageFogColor), vec3(gamma)), fogIntensity);
-    else
-        return inputColor;
-}
+// Defined in StageLighting.frag.
+vec3 Lighting(vec3 N, float halfLambert);
+vec3 FogColor(vec3 inputColor, vec4 fogParams, float depth, vec3 stageFogColor);
 
 void main() {
     fragColor = vec4(0,0,0,1);
@@ -263,8 +192,22 @@ void main() {
         return;
     }
 
+    // Create a struct for passing all the vertex attributes to other functions.
+    VertexAttributes vert;
+    vert.viewPosition = viewPosition;
+    vert.objectPosition = objectPosition;
+    vert.texCoord = texCoord;
+    vert.texCoord2 = texCoord2;
+    vert.texCoord3 = texCoord3;
+    vert.normaltexCoord = normaltexCoord;
+    vert.vertexColor = vertexColor;
+    vert.normal = normal;
+    vert.viewNormal = viewNormal;
+    vert.tangent = tangent;
+    vert.bitangent = bitangent;
+
     // remap vectors for nicer visualization
-    vec3 bumpMapNormal = CalcBumpedNormal(normal);
+    vec3 bumpMapNormal = BumpMapNormal(normalMap, vert, dualNormalScrollParams, hasDualNormal, normalParams);
     vec3 displayNormal = (bumpMapNormal * 0.5) + 0.5;
 
     // diffuse calculations
@@ -288,7 +231,7 @@ void main() {
     if(useNormalMap == 1)
         offsetIntensity = normalParams.z;
     vec2 textureOffset = 1 - texture(normalMap, normaltexCoord).xy;
-    textureOffset = (textureOffset * 2) -1; // remap to -1 to 1?
+    textureOffset = (textureOffset * 2) - 1; // remap to -1 to 1?
     vec2 offsetTexCoord = texCoord + (textureOffset * offsetIntensity);
 
     // calculate diffuse map blending to use in Shaded and Diffuse Maps render modes
@@ -297,13 +240,10 @@ void main() {
     vec4 diffuse3 = texture(dif3, texCoord3);
 
     vec3 aoBlend = vec3(1);
-    float aoMap = texture(normalMap, texCoord).a;
-    float maxAOBlendValue = 1.2;
-    aoBlend = min((vec3(aoMap) + aoMinGain.rgb), vec3(maxAOBlendValue));
-    vec3 aoGain = min((aoMap * (1 + aoMinGain.rgb)), vec3(1.0));
-	vec3 c1 = RGB2HSV(aoBlend);
-    vec3 c2 = RGB2HSV(aoGain);
-	aoBlend.rgb = HSV2RGB(vec3(c1.x, c2.y, c1.z));
+    if (hasNrm == 1)
+        aoBlend = DiffuseAOBlend(texture(normalMap, vert.texCoord).a, aoMinGain);
+    else
+        aoBlend = DiffuseAOBlend(1.0, aoMinGain);
 
     vec4 resultingColor = vec4(1);
 
@@ -323,8 +263,8 @@ void main() {
         resultingColor.rgb = displayNormal;
     else if (renderType == 2) {
         // lighting
-        resultingColor.rgb = CalculateLighting(bumpMapNormal, halfLambert);
-        resultingColor.rgb = CalculateFog(resultingColor.rgb);
+        resultingColor.rgb = Lighting(bumpMapNormal, halfLambert);
+        resultingColor.rgb = FogColor(resultingColor.rgb, fogParams, vert.viewPosition.z, stageFogColor);
     } else if (renderType == 3) {
         // diffuse map
         resultingColor.rgba = displayDiffuse;
