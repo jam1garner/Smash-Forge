@@ -850,15 +850,15 @@ namespace Smash_Forge
             {
                 texAlphaGlControl.MakeCurrent();
                 GL.Viewport(texAlphaGlControl.ClientRectangle);
-                //RenderTools.DrawTexturedQuad(displayTexture, 1, 1, false, false, false, true);
-                RenderTools.DrawNudMaterialSphere(currentMaterialList[currentMatIndex]);
+                RenderTools.DrawTexturedQuad(displayTexture, 1, 1, false, false, false, true);
+                //RenderTools.DrawNudMaterialSphere(currentMaterialList[currentMatIndex]);
                 texAlphaGlControl.SwapBuffers();
             }
             else
             {
                 texRgbGlControl.MakeCurrent();
                 GL.Viewport(texRgbGlControl.ClientRectangle);
-                //RenderTools.DrawTexturedQuad(displayTexture, 1, 1);
+                RenderTools.DrawTexturedQuad(displayTexture, 1, 1);
                 //RenderTools.DrawNudMaterialSphere(materials[0]);
                 texRgbGlControl.SwapBuffers();
             }
