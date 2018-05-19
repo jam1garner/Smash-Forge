@@ -20,26 +20,41 @@ namespace Smash_Forge.Rendering
             // Reset the shaders first so that shaders can be replaced.
             Runtime.shaders.Clear();
 
-            // Screen Shaders. A single vertex shader is shared to calculate UVs for all these shaders.
-            CreateShader("Texture",     "\\lib\\Shader", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
-            CreateShader("ScreenQuad",  "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
-            CreateShader("Gradient", "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
-
-
-            // Wii U NUD Shaders.
-            List<String> nudShaders = new List<string>() { "Nud\\StageLighting.frag", "Nud\\SmashShader.frag", "Utility\\Wireframe.frag",
-                                                           "Utility\\Utility.frag"};
-            CreateShader("Nud",         "\\lib\\Shader\\Nud", nudShaders);
-            CreateShader("NudDebug",    "\\lib\\Shader\\Nud\\", nudShaders);
-            CreateShader("NudSphere", "\\lib\\Shader\\Nud");
-
-            CreateShader("Mbn",         "\\lib\\Shader\\3ds");
-            CreateShader("Dat",         "\\lib\\Shader\\Melee");
-            CreateShader("Point",       "\\lib\\Shader");
+            SetupScreenShaders();
+            SetupNudShaders();
+            SetupMiscShaders();
 
             hasSetupShaders = true;
         }
-        
+
+        private static void SetupMiscShaders()
+        {
+            CreateShader("Mbn", "\\lib\\Shader\\3ds");
+            CreateShader("Dat", "\\lib\\Shader\\Melee");
+            CreateShader("Point", "\\lib\\Shader");
+        }
+
+        private static void SetupNudShaders()
+        {
+            // Wii U NUD Shaders.
+            List<String> nudShaders = new List<string>() { "Nud\\StageLighting.frag", "Nud\\SmashShader.frag", "Utility\\Wireframe.frag",
+                                                           "Utility\\Utility.frag", "Nud\\EdgeDistance.geom"};
+            CreateShader("Nud", "\\lib\\Shader\\Nud", nudShaders);
+            CreateShader("NudDebug", "\\lib\\Shader\\Nud\\", nudShaders);
+
+            // Wii U NUD Material Preview Shaders.
+            List<String> nudMatShaders = new List<string>() { "Nud\\StageLighting.frag", "Nud\\SmashShader.frag", "Utility\\Utility.frag" };
+            CreateShader("NudSphere", "\\lib\\Shader\\Nud", nudMatShaders);
+        }
+
+        private static void SetupScreenShaders()
+        {
+            // Screen Shaders. A single vertex shader is shared to calculate UVs for all these shaders.
+            CreateShader("Texture", "\\lib\\Shader", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
+            CreateShader("ScreenQuad", "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
+            CreateShader("Gradient", "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
+        }
+
         private static void CreateShader(string shaderName, string shaderFolder, List<String> additionalShaderFiles = null)
         {
             // All shaders should be named shaderName.frag, shaderName.vert, etc.
