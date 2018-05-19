@@ -16,6 +16,13 @@ struct VertexAttributes
     vec3 bitangent;
 };
 
+// Basic directional light.
+struct StageLight {
+    int enabled;
+    vec3 color;
+    vec3 direction;
+};
+
 // Textures
 uniform sampler2D dif;
 uniform sampler2D dif2;
@@ -206,10 +213,10 @@ vec3 RampColor(float rampCoord, sampler2D ramp, int hasRamp) {
 	return texture(ramp, vec2(1 - rampCoord, 0.0)).rgb * hasRamp;
 }
 
-vec3 SphereMapColor(vec3 N, vec3 viewNormal, sampler2D spheremap, int hasSphereMap) {
+vec3 SphereMapColor(vec3 viewNormal, sampler2D spheremap) {
     // Calculate UVs based on view space normals.
     vec2 sphereTexcoord = vec2(viewNormal.x, (1 - viewNormal.y));
-    return texture(spheremap, sphereTexcoord).xyz * hasSphereMap;
+    return texture(spheremap, sphereTexcoord).rgb;
 }
 
 // probably not needed
@@ -315,14 +322,15 @@ vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintCol
     if (hasStage == 1)
        reflectionPass += reflectionColor.rgb * stageCubeColor.rgb * tintColor;
 
-	reflectionPass += SphereMapColor(vert.normal.xyz, vert.viewNormal, spheremap, hasSphereMap) * reflectionColor.xyz * tintColor;
+    vec3 sphereMapColor = SphereMapColor(vert.viewNormal, spheremap) * reflectionColor.xyz * tintColor;
+	reflectionPass += sphereMapColor * hasSphereMap;
 
     // It sort of conserves energy for low values.
     reflectionPass -= 0.5 * Luminance(diffuseMap.rgb);
     reflectionPass = max(vec3(0), reflectionPass);
 
     reflectionPass *= aoBlend;
-    // reflectionPass *= refLightColor;
+    reflectionPass *= refLightColor;
     reflectionPass *= reflectionIntensity;
 
     if (useDifRefMask == 1)
@@ -397,15 +405,6 @@ float AngleFade(vec3 N, vec3 I, vec4 angleFadeParams) {
     return max((1 - angleFadeAmount), 0);
 }
 
-vec3 FogColor(vec3 inputColor, vec4 fogParams, float depth, vec3 stageFogColor) {
-    depth = clamp((depth / fogParams.y), 0, 1);
-    float fogIntensity = mix(fogParams.z, fogParams.w, depth);
-    if(renderFog == 1 && renderStageLighting == 1)
-        return mix(inputColor, pow((stageFogColor), vec3(2.2)), fogIntensity);
-    else
-        return inputColor;
-}
-
 vec3 UniverseColor(float universeParam, vec3 objectPosition, vec3 cameraPosition, mat4 modelViewMatrix, sampler2D dif) {
     // TODO: Doesn't work for all angles (viewing from below).
     vec3 projVec = normalize(objectPosition.xyz - cameraPosition.xyz);
@@ -417,43 +416,30 @@ vec3 UniverseColor(float universeParam, vec3 objectPosition, vec3 cameraPosition
     return pow(texture(dif, vec2(uCoord * universeParam, 1 - vCoord)).rgb, vec3(2.2));
 }
 
-vec3 CharacterDiffuseLighting(float halfLambert, vec3 ambLightColor, float ambientIntensity, vec3 difLightColor, float diffuseIntensity) {
-    vec3 ambient = ambLightColor * ambientIntensity;
-    vec3 diffuse = difLightColor * diffuseIntensity;
-    return mix(ambient, diffuse, halfLambert);
+vec3 CharacterDiffuseLighting(float halfLambert, vec3 ambLightColor, vec3 difLightColor) {
+    return mix(ambLightColor, difLightColor, halfLambert);
 }
 
-vec3 StageDiffuseLighting(vec3 N, vec3 stageLight1Color, vec3 stageLight2Color, vec3 stageLight3Color, vec3 stageLight4Color,
-                            vec3 stageLight1Direction, vec3 stageLight2Direction, vec3 stageLight3Direction, vec3 stageLight4Direction,
-                            int renderStageLight1, int renderStageLight2, int renderStageLight3, int renderStageLight4) {
-    // TODO: Do stages use half lambert?
-    vec3 stageLight1 = stageLight1Color * max((dot(N, stageLight1Direction)), 0);
-    vec3 stageLight2 = stageLight2Color * max((dot(N, stageLight2Direction)), 0);
-    vec3 stageLight3 = stageLight3Color * max((dot(N, stageLight3Direction)), 0);
-    vec3 stageLight4 = stageLight4Color * max((dot(N, stageLight4Direction)), 0);
+// Defined in StageLighting.frag.
+vec3 StageDiffuseLighting(vec3 N, StageLight[4] lights);
+vec3 FogColor(vec3 inputColor, vec4 fogParams, float depth, vec3 stageFogColor);
 
-    vec3 lighting = vec3(0);
-    lighting += (stageLight1 * renderStageLight1);
-    lighting += (stageLight2 * renderStageLight2);
-    lighting += (stageLight3 * renderStageLight3);
-    lighting += (stageLight4 * renderStageLight4);
-    return lighting;
-}
-
-vec3 Lighting(vec3 N, float halfLambert, vec3 ambLightColor, float ambientIntensity, vec3 difLightColor,
-                            float diffuseIntensity, uint flags, int renderStageLighting, int isStage, vec3 stageLight1Color, vec3 stageLight2Color, vec3 stageLight3Color, vec3 stageLight4Color,
-                            vec3 stageLight1Direction, vec3 stageLight2Direction, vec3 stageLight3Direction, vec3 stageLight4Direction,
-                            int renderStageLight1, int renderStageLight2, int renderStageLight3, int renderStageLight4) {
+vec3 Lighting(vec3 N, float halfLambert) {
     // Flags for ignoring stage lighting. TODO: Replace bitwise operations.
     if (((flags & 0x0F000000u) < 0x04000000u) || renderStageLighting != 1)
         return vec3(1);
 
-    if (isStage == 1) // stage lighting
-        return StageDiffuseLighting(N, stageLight1Color, stageLight2Color, stageLight3Color, stageLight4Color,
-                                    stageLight1Direction, stageLight2Direction, stageLight3Direction, stageLight4Direction,
-                                    renderStageLight1, renderStageLight2, renderStageLight3, renderStageLight4);
-    else
-        return CharacterDiffuseLighting(halfLambert, ambLightColor, ambientIntensity, difLightColor, diffuseIntensity);
+    if (isStage == 1) {
+        // Stage Lighting
+        StageLight light1 = StageLight(renderStageLight1, stageLight1Color, stageLight1Direction);
+        StageLight light2 = StageLight(renderStageLight2, stageLight2Color, stageLight2Direction);
+        StageLight light3 = StageLight(renderStageLight3, stageLight3Color, stageLight3Direction);
+        StageLight light4 = StageLight(renderStageLight4, stageLight4Color, stageLight4Direction);
+        StageLight[4] lights = StageLight[4](light1, light2, light3, light4);
+        return StageDiffuseLighting(N, lights);
+    } else {
+        return CharacterDiffuseLighting(halfLambert, ambLightColor * ambientIntensity, difLightColor * diffuseIntensity);
+    }
 
     return vec3(1);
 }
@@ -505,8 +491,7 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert) {
         diffuseColorFinal = diffuseMap.rgb * DiffuseAOBlend(hasNrm, normalMap, vert.texCoord, aoMinGain) * diffuseColor.rgb;
 
     // Stage lighting
-    // vec3 lighting = Lighting(N, halfLambert);
-    vec3 lighting = vec3(1);
+    vec3 lighting = Lighting(N, halfLambert);
 
     // Dummy ramp calculations.
     // vec3 rampTotal = (0.2 * RampColor(halfLambert, ramp, hasRamp)) + (0.5 * RampColor(halfLambert, dummyRamp, hasDummyRamp));

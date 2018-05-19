@@ -19,15 +19,23 @@ namespace Smash_Forge.Rendering
         {
             // Reset the shaders first so that shaders can be replaced.
             Runtime.shaders.Clear();
+
+            // Screen Shaders. A single vertex shader is shared to calculate UVs for all these shaders.
             CreateShader("Texture",     "\\lib\\Shader", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
-            CreateShader("ScreenQuad", "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
-            CreateShader("Nud",         "\\lib\\Shader\\Nud", new List<string>() { "Nud\\SmashShader.frag", "Utility\\Wireframe.frag", "Utility\\Utility.frag" });
+            CreateShader("ScreenQuad",  "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
+            CreateShader("Gradient", "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
+
+
+            // Wii U NUD Shaders.
+            List<String> nudShaders = new List<string>() { "Nud\\StageLighting.frag", "Nud\\SmashShader.frag", "Utility\\Wireframe.frag",
+                                                           "Utility\\Utility.frag"};
+            CreateShader("Nud",         "\\lib\\Shader\\Nud", nudShaders);
+            CreateShader("NudDebug",    "\\lib\\Shader\\Nud\\");
+            CreateShader("NudSphere", "\\lib\\Shader\\Nud");
+
             CreateShader("Mbn",         "\\lib\\Shader\\3ds");
             CreateShader("Dat",         "\\lib\\Shader\\Melee");
-            CreateShader("NudDebug",   "\\lib\\Shader\\Nud\\");
-            CreateShader("Gradient",    "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
             CreateShader("Point",       "\\lib\\Shader");
-            CreateShader("NudSphere",  "\\lib\\Shader\\Nud");
 
             hasSetupShaders = true;
         }
