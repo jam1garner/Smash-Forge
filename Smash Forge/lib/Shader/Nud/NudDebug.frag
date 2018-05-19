@@ -280,9 +280,9 @@ void main() {
         }
     } else if (renderType == 6) {
         // ambient occlusion
-        resultingColor.rgb = texture(normalMap, texCoord).aaa;
+        resultingColor.rgb = pow(texture(normalMap, texCoord).aaa, vec3(1 / 2.2));
         if (debug1 == 1)
-            resultingColor.rgb = aoBlend.rgb;
+            resultingColor.rgb = pow(aoBlend.rgb, vec3(1 / 2.2));
     } else if (renderType == 7) {
         // uv coords
         resultingColor.rgb = vec3(displayTexCoord, 1);
