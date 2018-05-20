@@ -94,6 +94,7 @@ uniform int renderReflection;
 uniform int renderType;
 uniform int renderLighting;
 uniform int renderVertColor;
+uniform int renderNormal;
 uniform int useNormalMap;
 
 uniform int renderR;
@@ -206,22 +207,27 @@ void main() {
     vert.tangent = tangent;
     vert.bitangent = bitangent;
 
-    // remap vectors for nicer visualization
+    // Remap vectors to visible range, but still show <0,0,0> as black.
+    // Normals
     vec3 bumpMapNormal = BumpMapNormal(normalMap, vert, dualNormalScrollParams, hasDualNormal, normalParams);
     vec3 displayNormal = (bumpMapNormal * 0.5) + 0.5;
+    if (hasNrm == 0 || useNormalMap == 0)
+        displayNormal = vert.normal * 0.5 + 0.5;
+    if (dot(bumpMapNormal, vec3(1)) == 0)
+        displayNormal = vec3(0);
 
-    // diffuse calculations
-    float halfLambert = dot(difLightDirection, bumpMapNormal) * 0.5 + 0.5;
-
-    // still show <0,0,0> as black
+    // Tangents
     vec3 displayTangent = (tangent * 0.5) + 0.5;
     if (dot(tangent, vec3(1)) == 0)
         displayTangent = vec3(0);
 
-    // still show <0,0,0> as black
+    // Bitangents
     vec3 displayBitangent = (bitangent * 0.5) + 0.5;
     if (dot(bitangent, vec3(1)) == 0)
         displayBitangent = vec3(0);
+
+    // Diffuse calculations
+    float halfLambert = dot(difLightDirection, bumpMapNormal) * 0.5 + 0.5;
 
     // zOffset correction
     gl_FragDepth = gl_FragCoord.z - (zOffset.x / 1500); // divide by far plane?
@@ -239,6 +245,7 @@ void main() {
     vec4 diffuse2 = texture(dif2, texCoord2);
     vec4 diffuse3 = texture(dif3, texCoord3);
 
+    // Ambient occlusion map and NU_aoMinGain
     vec3 aoBlend = vec3(1);
     if (hasNrm == 1)
         aoBlend = DiffuseAOBlend(texture(normalMap, vert.texCoord).a, aoMinGain);
