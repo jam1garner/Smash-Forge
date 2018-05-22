@@ -514,12 +514,13 @@ namespace Smash_Forge
                 }
             }
 
+            // Only draw polgons if the polygon and its parent are both checked.
             foreach (Polygon p in opaque)
-                if (p.Parent != null && ((Mesh)p.Parent).Checked)
+                if (p.Parent != null && ((Mesh)p.Parent).Checked && p.Checked)
                     DrawPolygon(p, shader, camera);
 
             foreach (Polygon p in transparent)
-                if (((Mesh)p.Parent).Checked)
+                if (((Mesh)p.Parent).Checked && p.Checked)
                     DrawPolygon(p, shader, camera);
         }
 
