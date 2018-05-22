@@ -1,5 +1,30 @@
-Smash Forge
+Smash Forge (BFRES WIP Implementation)
 ===========
+![Preview](https://i.imgur.com/7aGQwF6.png)
+
+## 
+## BFRES Features
+ - Can open and preview BFRES models, skeleton animations, and textures
+ - Wii U and Switch support. 
+ - Exportable models, animations, and textures
+ - Improved shaders from previous tool
+ - Debug shader options (in view - render settings) to help debug mods
+ 
+ 
+ ## Todo
+ - Clean up code alot. The switch will be reparsed via a library I'm updating from Wii U.
+ - Support BC7 textures.
+ - SARC support. 
+ - Fix up model exporting (bones have issues, and weights, and materials).
+ - Add animation importing.
+ - Add model importing.
+ - Add every other type of animation (texture pattern, visual anim, srt anim, ect)
+ - Add physically based rendering
+ - Full decoding and compression of all texture types for editing.
+ - Merge to master forge branch (code is too messy and not complete atm)
+
+
+
 [Bug Tracker](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Request a feature](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [![Build status](https://ci.appveyor.com/api/projects/status/o73kaah41uewf1kx/branch/master?svg=true)](https://ci.appveyor.com/project/Sammi-Husky/smash-4-bone-animator/branch/master)
 ## Features
  - Can open, preview and edit Smash 4 boneset files (.vbn)
