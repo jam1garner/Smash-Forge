@@ -256,61 +256,10 @@ namespace Smash_Forge
 
         private void SetupBuffersAndTextures()
         {
-            CreateHdrRenderToTexture(out colorHdrFbo, out colorHdrTex0, out colorHdrTex1);
-            CreateBrightSmallHdrRenderToTexture();
-        }
-
-        private void CreateBrightSmallHdrRenderToTexture()
-        {
-            GL.GenFramebuffers(1, out brightHdrSmallFbo);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, brightHdrSmallFbo);
-
+            FramebufferTools.CreateHdrFboTwoTextures(out colorHdrFbo, out hdrDepthRbo, out colorHdrTex0, out colorHdrTex1, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale);
             brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
             brightTexHeight = (int)(glViewport.Height * Runtime.bloomTexScale);
-
-            // Regular texture.
-            GL.GenTextures(1, out brightTexSmall);
-            GL.BindTexture(TextureTarget.Texture2D, brightTexSmall);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, brightTexWidth, brightTexHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, brightTexSmall, 0);
-        }
-
-        private void CreateHdrRenderToTexture(out int fbo, out int texture0, out int texture1)
-        {
-            GL.GenFramebuffers(1, out fbo);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
-
-            int textureWidth = (int) (glViewport.Width * resolutionScale);
-            int textureHeight = (int) (glViewport.Height * resolutionScale);
-
-            // Regular texture.
-            GL.GenTextures(1, out texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture0);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture0, 0);
-
-            // Texture for bright portions of the image that will be blurred later.
-            GL.GenTextures(1, out texture1);
-            GL.BindTexture(TextureTarget.Texture2D, texture1);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, texture1, 0);
-
-            GL.GenRenderbuffers(1, out hdrDepthRbo);
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, hdrDepthRbo);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, textureWidth, textureHeight);
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, hdrDepthRbo);
-
-            // Draw to both textures
-            DrawBuffersEnum[] buffers = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1 };
-            GL.DrawBuffers(2, buffers);
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            FramebufferTools.CreateHdrFboSingleTextureNoDepth(out brightHdrSmallFbo, out brightTexSmall, brightTexWidth, brightTexHeight);
         }
 
         public ModelViewport(string filename) : this()
