@@ -47,7 +47,7 @@ namespace Smash_Forge
         int brightTexHeight;
 
         // Values greater than 1 can be used for higher quality screenshots.
-        int internalResolutionScale = 8;
+        int resolutionScale = 1;
 
         // Functions of Viewer
         public enum Mode
@@ -282,8 +282,8 @@ namespace Smash_Forge
             GL.GenFramebuffers(1, out fbo);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
 
-            int textureWidth = (int) (glViewport.Width * internalResolutionScale);
-            int textureHeight = (int) (glViewport.Height * internalResolutionScale);
+            int textureWidth = (int) (glViewport.Width * resolutionScale);
+            int textureHeight = (int) (glViewport.Height * resolutionScale);
 
             // Regular texture.
             GL.GenTextures(1, out texture0);
@@ -432,7 +432,7 @@ namespace Smash_Forge
             {
                 glViewport.MakeCurrent();
                 GL.LoadIdentity();
-                GL.Viewport(0, 0, (int) (glViewport.Width * internalResolutionScale), (int) (glViewport.Height * internalResolutionScale));
+                GL.Viewport(0, 0, (int) (glViewport.Width * resolutionScale), (int) (glViewport.Height * resolutionScale));
 
                 camera.renderWidth = glViewport.Width;
                 camera.renderHeight = glViewport.Height;
@@ -487,7 +487,7 @@ namespace Smash_Forge
             if (ReadyToRender && CurrentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
             {
                 GL.LoadIdentity();
-                GL.Viewport(0, 0, (int) (glViewport.Width * internalResolutionScale), (int) (glViewport.Height * internalResolutionScale));
+                GL.Viewport(0, 0, (int) (glViewport.Width * resolutionScale), (int) (glViewport.Height * resolutionScale));
 
                 camera.renderWidth = (glViewport.Width);
                 camera.renderHeight = (glViewport.Height);
@@ -902,9 +902,9 @@ namespace Smash_Forge
             }
         }
 
-        private void RenderButton_Click(object sender, EventArgs e)
+        private void toolStripSaveRenderAlphaButton_Click(object sender, EventArgs e)
         {
-            CaptureScreen(true).Save(MainForm.executableDir + "\\Render.png");
+            SaveScreenRender(true);
         }
 
         private void BatchRenderModels()
@@ -976,7 +976,7 @@ namespace Smash_Forge
             SetupNextRender();
             string renderName = FormatFileName(nudFileName, sourcePath);
             // Manually dispose the bitmap to avoid memory leaks. 
-            Bitmap screenCapture = CaptureScreen(true);
+            Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale, true);
             screenCapture.Save(outputPath + "\\" + renderName + ".png");
             screenCapture.Dispose();
 
@@ -1002,47 +1002,6 @@ namespace Smash_Forge
             renderName = renderName.Replace("//", "_");
             renderName = renderName.Replace(".nud", "");
             return renderName;
-        }
-
-        private Bitmap CaptureScreen(bool saveAlpha)
-        {
-            int width = glViewport.Width * internalResolutionScale;
-            int height = glViewport.Height * internalResolutionScale;
-
-            int pixelByteLength = width * height * sizeof(float);
-            byte[] pixels = new byte[pixelByteLength];
-
-            // Render the viewport.
-            glViewport.MakeCurrent();
-            GL.Viewport(0, 0, width, height);
-            GL.Disable(EnableCap.ScissorTest);
-            Render(null, null);
-    
-            // Read the pixels from the framebuffer.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
-            GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
-
-            // Flip data because glReadPixels reads it in from bottom row to top row
-            byte[] fixedPixels = new byte[pixelByteLength];
-            for (int h = 0; h < height; h++)
-            {
-                for (int w = 0; w < width; w++)
-                {
-                    // Remove alpha blending from the end image - we just want the post-render colors
-                    if (!saveAlpha)
-                        pixels[((w + h * width) * sizeof(float)) + 3] = 255;
-
-                    // Copy a 4 byte pixel one at a time
-                    Array.Copy(pixels, (w + h * width) * sizeof(float), fixedPixels, ((height - h - 1) * width + w) * sizeof(float), sizeof(float));
-                }
-            }
-
-            // Format and save the data
-            Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);
-            Marshal.Copy(fixedPixels, 0, bmpData.Scan0, fixedPixels.Length);
-            bmp.UnlockBits(bmpData);
-            return bmp;
         }
 
         private void GIFButton_Click(object sender, EventArgs e)
@@ -1078,7 +1037,7 @@ namespace Smash_Forge
 
                 if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
                 {
-                    Bitmap cs = CaptureScreen(false);
+                    Bitmap cs = FramebufferTools.ReadFrameBufferPixels(0, glViewport.Width * resolutionScale, glViewport.Width * resolutionScale);
                     images.Add(new Bitmap(cs, new Size((int)(cs.Width / ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
                     cs.Dispose();
                 }
@@ -1180,9 +1139,9 @@ namespace Smash_Forge
             }
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        private void toolStripRenderNoAlphaButton_Click(object sender, EventArgs e)
         {
-            CaptureScreen(false).Save(MainForm.executableDir + "\\Render.png");
+            SaveScreenRender();
         }
         
         private void ModelViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
@@ -1407,7 +1366,7 @@ namespace Smash_Forge
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                GL.Viewport(0, 0, glViewport.Width * internalResolutionScale, glViewport.Height * internalResolutionScale);
+                GL.Viewport(0, 0, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale);
 
                 RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, brightTexSmall);
             }
@@ -1454,7 +1413,7 @@ namespace Smash_Forge
         {
             glViewport.MakeCurrent();
             GL.LoadIdentity();
-            GL.Viewport(0, 0, glViewport.Width * internalResolutionScale, glViewport.Height * internalResolutionScale);
+            GL.Viewport(0, 0, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale);
         }
 
         private void DrawModels()
@@ -1665,10 +1624,17 @@ namespace Smash_Forge
             }
         }
 
-        public void SaveScreenRender(string outputPath)
+        public void SaveScreenRender(bool saveAlpha = false)
         {
+            // Render the viewport.
+            glViewport.MakeCurrent();
+            GL.Viewport(0, 0, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale);
+            GL.Disable(EnableCap.ScissorTest);
+            Render(null, null);
+
             // Manually dispose the bitmap to avoid memory leaks. 
-            Bitmap screenCapture = CaptureScreen(true);
+            Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale, saveAlpha);
+            string outputPath = MainForm.executableDir + "\\render.png";
             screenCapture.Save(outputPath);
             screenCapture.Dispose();
         }
