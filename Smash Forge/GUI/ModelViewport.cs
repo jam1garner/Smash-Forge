@@ -381,7 +381,7 @@ namespace Smash_Forge
             {
                 glViewport.MakeCurrent();
                 GL.LoadIdentity();
-                GL.Viewport(0, 0, (int) (glViewport.Width * resolutionScale), (int) (glViewport.Height * resolutionScale));
+                GL.Viewport(0, 0, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale);
 
                 camera.renderWidth = glViewport.Width;
                 camera.renderHeight = glViewport.Height;
@@ -436,15 +436,41 @@ namespace Smash_Forge
             if (ReadyToRender && CurrentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
             {
                 GL.LoadIdentity();
-                GL.Viewport(0, 0, (int) (glViewport.Width * resolutionScale), (int) (glViewport.Height * resolutionScale));
+                GL.Viewport(0, 0, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale);
 
                 camera.renderWidth = (glViewport.Width);
                 camera.renderHeight = (glViewport.Height);
                 camera.Update();
 
-                // Remake the textures and buffers everytime the dimensions change.
-                SetupBuffersAndTextures();
+                ResizePostProcessingTexturesBuffers();
             }
+        }
+
+        private void ResizePostProcessingTexturesBuffers()
+        {
+            // Resize the textures and buffers everytime the dimensions change.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
+
+            int textureWidth = glViewport.Width * resolutionScale;
+            int textureHeight = glViewport.Height * resolutionScale;
+
+            // First color attachment.
+            GL.BindTexture(TextureTarget.Texture2D, colorHdrTex0);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+
+            // Second color attachment.
+            GL.BindTexture(TextureTarget.Texture2D, colorHdrTex1);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+
+            // Render buffer for the depth attachment.
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, hdrDepthRbo);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, textureWidth, textureHeight);
+
+            // Small bright texture.
+            GL.BindTexture(TextureTarget.Texture2D, brightTexSmall);
+            brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
+            brightTexHeight = (int)(glViewport.Height * Runtime.bloomTexScale);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, brightTexWidth, brightTexHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
         }
 
         #region Animation Events
@@ -1582,7 +1608,7 @@ namespace Smash_Forge
             Render(null, null);
 
             // Manually dispose the bitmap to avoid memory leaks. 
-            Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale, saveAlpha);
+            Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(colorHdrFbo, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale, saveAlpha);
             string outputPath = MainForm.executableDir + "\\render.png";
             screenCapture.Save(outputPath);
             screenCapture.Dispose();
