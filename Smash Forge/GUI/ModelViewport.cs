@@ -1609,7 +1609,14 @@ namespace Smash_Forge
 
             // Manually dispose the bitmap to avoid memory leaks. 
             Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(colorHdrFbo, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale, saveAlpha);
-            string outputPath = MainForm.executableDir + "\\render.png";
+            // Keep incrementing the number until unique.
+            int i = 0;
+            string outputPath = MainForm.executableDir + "\\render_" + i + ".png";
+            while (File.Exists(outputPath))
+            {
+                outputPath = MainForm.executableDir + "\\render_" + i +".png";
+                i++;
+            }
             screenCapture.Save(outputPath);
             screenCapture.Dispose();
         }
