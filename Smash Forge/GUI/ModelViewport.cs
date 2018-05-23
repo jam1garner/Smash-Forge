@@ -46,6 +46,9 @@ namespace Smash_Forge
         int brightTexWidth;
         int brightTexHeight;
 
+        // Values greater than 1 can be used for higher quality screenshots.
+        int internalResolutionScale = 8;
+
         // Functions of Viewer
         public enum Mode
         {
@@ -279,8 +282,8 @@ namespace Smash_Forge
             GL.GenFramebuffers(1, out fbo);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
 
-            int textureWidth = glViewport.Width;
-            int textureHeight = glViewport.Height;
+            int textureWidth = (int) (glViewport.Width * internalResolutionScale);
+            int textureHeight = (int) (glViewport.Height * internalResolutionScale);
 
             // Regular texture.
             GL.GenTextures(1, out texture0);
@@ -422,13 +425,14 @@ namespace Smash_Forge
 
         int dbdistance = 0;
         System.Drawing.Point _LastPoint;
+
         private void glViewport_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (ReadyToRender && glViewport != null)
             {
                 glViewport.MakeCurrent();
                 GL.LoadIdentity();
-                GL.Viewport(glViewport.ClientRectangle);
+                GL.Viewport(0, 0, (int) (glViewport.Width * internalResolutionScale), (int) (glViewport.Height * internalResolutionScale));
 
                 camera.renderWidth = glViewport.Width;
                 camera.renderHeight = glViewport.Height;
@@ -483,7 +487,7 @@ namespace Smash_Forge
             if (ReadyToRender && CurrentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
             {
                 GL.LoadIdentity();
-                GL.Viewport(glViewport.ClientRectangle);
+                GL.Viewport(0, 0, (int) (glViewport.Width * internalResolutionScale), (int) (glViewport.Height * internalResolutionScale));
 
                 camera.renderWidth = (glViewport.Width);
                 camera.renderHeight = (glViewport.Height);
@@ -1002,24 +1006,34 @@ namespace Smash_Forge
 
         private Bitmap CaptureScreen(bool saveAlpha)
         {
-            int width = glViewport.Width;
-            int height = glViewport.Height;
+            int width = glViewport.Width * internalResolutionScale;
+            int height = glViewport.Height * internalResolutionScale;
 
-            byte[] pixels = new byte[width * height * 4];
+            int pixelByteLength = width * height * sizeof(float);
+            byte[] pixels = new byte[pixelByteLength];
+
+            // Render the viewport.
             glViewport.MakeCurrent();
+            GL.Viewport(0, 0, width, height);
+            GL.Disable(EnableCap.ScissorTest);
+            Render(null, null);
+    
+            // Read the pixels from the framebuffer.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
             GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+
             // Flip data because glReadPixels reads it in from bottom row to top row
-            byte[] fixedPixels = new byte[width * height * 4];
+            byte[] fixedPixels = new byte[pixelByteLength];
             for (int h = 0; h < height; h++)
             {
                 for (int w = 0; w < width; w++)
                 {
                     // Remove alpha blending from the end image - we just want the post-render colors
                     if (!saveAlpha)
-                        pixels[((w + h * width) * 4) + 3] = 255;
+                        pixels[((w + h * width) * sizeof(float)) + 3] = 255;
 
                     // Copy a 4 byte pixel one at a time
-                    Array.Copy(pixels, (w + h * width) * 4, fixedPixels, ((height - h - 1) * width + w) * 4, 4);
+                    Array.Copy(pixels, (w + h * width) * sizeof(float), fixedPixels, ((height - h - 1) * width + w) * sizeof(float), sizeof(float));
                 }
             }
 
@@ -1393,7 +1407,7 @@ namespace Smash_Forge
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                GL.Viewport(glViewport.ClientRectangle);
+                GL.Viewport(0, 0, glViewport.Width * internalResolutionScale, glViewport.Height * internalResolutionScale);
 
                 RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, brightTexSmall);
             }
@@ -1440,7 +1454,7 @@ namespace Smash_Forge
         {
             glViewport.MakeCurrent();
             GL.LoadIdentity();
-            GL.Viewport(glViewport.ClientRectangle);
+            GL.Viewport(0, 0, glViewport.Width * internalResolutionScale, glViewport.Height * internalResolutionScale);
         }
 
         private void DrawModels()
