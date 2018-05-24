@@ -104,7 +104,11 @@ namespace Smash_Forge
             Config.StartupFromFile(MainForm.executableDir + "\\config.xml");
             DiscordSettings.Update();
 
+            glControl1.MakeCurrent();
+            Rendering.RenderTools.Setup();
             Rendering.ShaderTools.SetupShaders();
+
+            SaveMaterialThumbnailPreviews();
 
             // Make sure it stays invisible.
             //glControl1.Size = new System.Drawing.Size(0, 0);
@@ -114,31 +118,35 @@ namespace Smash_Forge
 
         public void SaveMaterialThumbnailPreviews()
         {
-            // Works but doesn't scale properly to the new resolution. 
-            // THe model viewport is also affected by this issue.
-
             // Setup
             int width = 128;
             int height = 128;
             int fbo;
             int rbo;
-            Rendering.FramebufferTools.CreateOffscreenRenderFboRbo(out fbo, out rbo, FramebufferTarget.DrawFramebuffer, width, height);
-
-            // Doesn't do anything for some reason.
-            GL.Viewport(0, 0, width, height);
-            GL.Disable(EnableCap.ScissorTest);
-
             glControl1.MakeCurrent();
+            Rendering.FramebufferTools.CreateOffscreenRenderFboRbo(out fbo, out rbo, FramebufferTarget.Framebuffer, width, height);
+            GL.Viewport(0, 0, width, height);
+
+            RenderMaterialPresetPreviewsToFiles(width, height, fbo);
+
+            // Cleanup
+            GL.DeleteBuffer(fbo);
+            GL.DeleteRenderbuffer(rbo);
+        }
+
+        private void RenderMaterialPresetPreviewsToFiles(int width, int height, int fbo)
+        {
+            // Render all the material previews.
             int i = 0;
             foreach (string file in Directory.GetFiles(MainForm.executableDir + "\\materials\\Character Mats"))
             {
                 NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
 
-                // Interferes with paint event.
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
                 Rendering.RenderTools.DrawNudMaterialSphere(material);
                 glControl1.SwapBuffers();
 
-                Bitmap image = Rendering.FramebufferTools.ReadFrameBufferPixels(fbo, FramebufferTarget.DrawFramebuffer, width, height);
+                Bitmap image = Rendering.FramebufferTools.ReadFrameBufferPixels(fbo, FramebufferTarget.Framebuffer, width, height, true);
                 image.Save(MainForm.executableDir + "\\image" + i + ".png");
                 image.Dispose();
                 i++;
