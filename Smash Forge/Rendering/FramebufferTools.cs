@@ -105,5 +105,16 @@ namespace Smash_Forge.Rendering
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
+        public static void CreateOffscreenRenderFboRbo(out int fbo, out int rbo, FramebufferTarget target, int width, int height)
+        {
+            // A basic setup for storing a rendered image.
+            GL.GenFramebuffers(1, out fbo);
+            GL.BindFramebuffer(target, fbo);
+
+            GL.GenRenderbuffers(1, out rbo);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rbo);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, width, height);
+            GL.FramebufferRenderbuffer(target, FramebufferAttachment.ColorAttachment0, RenderbufferTarget.Renderbuffer, rbo);
+        }
     }
 }

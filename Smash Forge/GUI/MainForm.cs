@@ -21,6 +21,7 @@ using OpenTK.Graphics.OpenGL;
 using System.ComponentModel;
 using Smash_Forge.Rendering.Lights;
 using System.Text;
+using System.Drawing;
 
 namespace Smash_Forge
 {
@@ -106,9 +107,42 @@ namespace Smash_Forge
             Rendering.ShaderTools.SetupShaders();
 
             // Make sure it stays invisible.
-            glControl1.Size = new System.Drawing.Size(0, 0);
+            //glControl1.Size = new System.Drawing.Size(0, 0);
 
             openFiles();
+        }
+
+        public void SaveMaterialThumbnailPreviews()
+        {
+            // Works but doesn't scale properly to the new resolution. 
+            // THe model viewport is also affected by this issue.
+
+            // Setup
+            int width = 128;
+            int height = 128;
+            int fbo;
+            int rbo;
+            Rendering.FramebufferTools.CreateOffscreenRenderFboRbo(out fbo, out rbo, FramebufferTarget.DrawFramebuffer, width, height);
+
+            // Doesn't do anything for some reason.
+            GL.Viewport(0, 0, width, height);
+            GL.Disable(EnableCap.ScissorTest);
+
+            glControl1.MakeCurrent();
+            int i = 0;
+            foreach (string file in Directory.GetFiles(MainForm.executableDir + "\\materials\\Character Mats"))
+            {
+                NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
+
+                // Interferes with paint event.
+                Rendering.RenderTools.DrawNudMaterialSphere(material);
+                glControl1.SwapBuffers();
+
+                Bitmap image = Rendering.FramebufferTools.ReadFrameBufferPixels(fbo, FramebufferTarget.DrawFramebuffer, width, height);
+                image.Save(MainForm.executableDir + "\\image" + i + ".png");
+                image.Dispose();
+                i++;
+            }
         }
 
         public void openFiles()
@@ -1694,10 +1728,10 @@ namespace Smash_Forge
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             // I got tired of looking at it.
-            glControl1.MakeCurrent();
-            GL.ClearColor(System.Drawing.Color.FromArgb(255, 250, 250, 250));
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            glControl1.SwapBuffers();
+            //glControl1.MakeCurrent();
+            //GL.ClearColor(System.Drawing.Color.FromArgb(255, 250, 250, 250));
+            //GL.Clear(ClearBufferMask.ColorBufferBit);
+            //glControl1.SwapBuffers();
         }
 
         private void modelToolStripMenuItem_Click(object sender, EventArgs e)
