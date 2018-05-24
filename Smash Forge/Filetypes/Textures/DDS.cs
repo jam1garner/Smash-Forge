@@ -202,10 +202,12 @@ namespace Smash_Forge
                     tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                     break;
                 case 0x32495441:
-                    size = 1/2f;
+                case 0x55344342:
+                size = 1/2f;
                     tex.type = PixelInternalFormat.CompressedRedRgtc1;
                     break;
                 case 0x31495441:
+                case 0x55354342:
                     size = 1f;
                     tex.type = PixelInternalFormat.CompressedRgRgtc2;
                     break;
