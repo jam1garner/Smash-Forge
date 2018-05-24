@@ -51,13 +51,10 @@ namespace Smash_Forge
                 switch (type)
                 {
                     case PixelInternalFormat.CompressedRedRgtc1:
-                        return (Width * Height / 2);
-                    case PixelInternalFormat.CompressedRgRgtc2:
-                        return (Width * Height / 2);
                     case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
                         return (Width * Height / 2);
+                    case PixelInternalFormat.CompressedRgRgtc2:
                     case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
-                        return (Width * Height);
                     case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
                         return (Width * Height);
                     case PixelInternalFormat.Rgba16:
