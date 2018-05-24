@@ -128,10 +128,10 @@ namespace Smash_Forge
             switch (tex.type)
             {
                 case PixelInternalFormat.CompressedRedRgtc1:
-                    header.dwFourCC = 0x32495441;
+                    header.dwFourCC = 0x31495441;
                     break;
                 case PixelInternalFormat.CompressedRgRgtc2:
-                    header.dwFourCC = 0x31495441;
+                    header.dwFourCC = 0x32495441;
                     break;
                 case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
                     header.dwFourCC = 0x31545844;
@@ -201,11 +201,13 @@ namespace Smash_Forge
                     size = 1f;
                     tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                     break;
-                case 0x32495441:
-                    size = 1/2f;
+                case 0x31495441:
+                case 0x55344342:
+                size = 1/2f;
                     tex.type = PixelInternalFormat.CompressedRedRgtc1;
                     break;
-                case 0x31495441:
+                case 0x32495441:
+                case 0x55354342:
                     size = 1f;
                     tex.type = PixelInternalFormat.CompressedRgRgtc2;
                     break;
