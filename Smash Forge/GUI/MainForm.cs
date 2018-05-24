@@ -137,8 +137,7 @@ namespace Smash_Forge
         private void RenderMaterialPresetPreviewsToFiles(int width, int height, int fbo)
         {
             // Render all the material previews.
-            int i = 0;
-            foreach (string file in Directory.GetFiles(MainForm.executableDir + "\\materials\\Character Mats"))
+            foreach (string file in Directory.GetFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
             {
                 NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
 
@@ -147,9 +146,15 @@ namespace Smash_Forge
                 glControl1.SwapBuffers();
 
                 Bitmap image = Rendering.FramebufferTools.ReadFrameBufferPixels(fbo, FramebufferTarget.Framebuffer, width, height, true);
-                image.Save(MainForm.executableDir + "\\image" + i + ".png");
+
+                string[] parts = file.Split('\\');
+                string presetName = parts[parts.Length - 1];
+                presetName = presetName.Replace(".nmt", ".png");
+                Debug.WriteLine(presetName);
+                image.Save(MainForm.executableDir + "\\Preview Images\\" + presetName);
+
+                // Cleanup
                 image.Dispose();
-                i++;
             }
         }
 

@@ -785,7 +785,7 @@ namespace Smash_Forge
         // Loading Mat
         private void loadPresetButton_Click(object sender, EventArgs e)
         {
-            /*MaterialSelector matSelector = new MaterialSelector();
+            MaterialSelector matSelector = new MaterialSelector();
             matSelector.ShowDialog();
             if (matSelector.exitStatus == MaterialSelector.Opened)
             {
@@ -802,9 +802,7 @@ namespace Smash_Forge
                 currentMatIndex = 0;
                 Init();
                 FillForm();
-            }*/
-
-            MainForm.Instance.SaveMaterialThumbnailPreviews();
+            }
         }
 
         public static List<NUD.Material> ReadMaterialListFromPreset(string file)
