@@ -12,14 +12,15 @@ namespace Smash_Forge.Rendering
 {
     class FramebufferTools
     {
-        public static Bitmap ReadFrameBufferPixels(int fbo, int width, int height, bool saveAlpha = false)
+        public static Bitmap ReadFrameBufferPixels(int fbo, FramebufferTarget target, int width, int height, bool saveAlpha = false)
         {
             // Calculate the number of bytes needed.
             int pixelByteLength = width * height * sizeof(float);
             byte[] pixels = new byte[pixelByteLength];
 
             // Read the pixels from the framebuffer.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+            GL.BindFramebuffer(target, fbo);
+            GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
             GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
             byte[] fixedPixels = CopyImagePixels(width, height, saveAlpha, pixelByteLength, pixels);
 
@@ -51,10 +52,10 @@ namespace Smash_Forge.Rendering
             return fixedPixels;
         }
 
-        public static void CreateHdrFboSingleTextureNoDepth(out int fbo, out int texture0, int width, int height)
+        public static void CreateHdrFboSingleTextureNoDepth(out int fbo, FramebufferTarget target, out int texture0, int width, int height)
         {
             GL.GenFramebuffers(1, out fbo);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+            GL.BindFramebuffer(target, fbo);
 
             // Create texture color attachment.
             GL.GenTextures(1, out texture0);
@@ -62,7 +63,7 @@ namespace Smash_Forge.Rendering
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture0, 0);
+            GL.FramebufferTexture2D(target, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture0, 0);
 
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);

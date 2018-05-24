@@ -46,6 +46,11 @@ namespace Smash_Forge
         int brightTexWidth;
         int brightTexHeight;
 
+        // Screen Render
+        int screenRenderFbo;
+        int screenRenderTex0;
+        int screenRenderRbo;
+
         // Values greater than 1 can be used for higher quality screenshots.
         int resolutionScale = 1;
 
@@ -259,7 +264,19 @@ namespace Smash_Forge
             FramebufferTools.CreateHdrFboTwoTextures(out colorHdrFbo, out hdrDepthRbo, out colorHdrTex0, out colorHdrTex1, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale);
             brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
             brightTexHeight = (int)(glViewport.Height * Runtime.bloomTexScale);
-            FramebufferTools.CreateHdrFboSingleTextureNoDepth(out brightHdrSmallFbo, out brightTexSmall, brightTexWidth, brightTexHeight);
+            FramebufferTools.CreateHdrFboSingleTextureNoDepth(out brightHdrSmallFbo, FramebufferTarget.Framebuffer, out brightTexSmall, brightTexWidth, brightTexHeight);
+
+            // Create an FBO/RBO just for saving screen renders.
+            GL.GenFramebuffers(1, out screenRenderFbo);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, screenRenderFbo);
+
+            GL.GenRenderbuffers(1, out screenRenderRbo);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, screenRenderRbo);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale);
+            GL.FramebufferRenderbuffer(FramebufferTarget.DrawFramebuffer, FramebufferAttachment.ColorAttachment0, RenderbufferTarget.Renderbuffer, screenRenderRbo);
+
+            // Bind the default framebuffer again.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
         public ModelViewport(string filename) : this()
@@ -951,7 +968,7 @@ namespace Smash_Forge
             SetupNextRender();
             string renderName = FormatFileName(nudFileName, sourcePath);
             // Manually dispose the bitmap to avoid memory leaks. 
-            Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale, true);
+            Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale, true);
             screenCapture.Save(outputPath + "\\" + renderName + ".png");
             screenCapture.Dispose();
 
@@ -1012,7 +1029,7 @@ namespace Smash_Forge
 
                 if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
                 {
-                    Bitmap cs = FramebufferTools.ReadFrameBufferPixels(0, glViewport.Width * resolutionScale, glViewport.Width * resolutionScale);
+                    Bitmap cs = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, glViewport.Width * resolutionScale, glViewport.Width * resolutionScale);
                     images.Add(new Bitmap(cs, new Size((int)(cs.Width / ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
                     cs.Dispose();
                 }
@@ -1269,6 +1286,9 @@ namespace Smash_Forge
                 return;
 
             SetupViewport();
+
+            // Bind the default framebuffer in case it was set elsewhere.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
@@ -1605,20 +1625,29 @@ namespace Smash_Forge
             glViewport.MakeCurrent();
             GL.Viewport(0, 0, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale);
             GL.Disable(EnableCap.ScissorTest);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, screenRenderFbo);
             Render(null, null);
 
-            // Manually dispose the bitmap to avoid memory leaks. 
-            Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(colorHdrFbo, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale, saveAlpha);
+            // Save the render as a PNG.
+            Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(screenRenderFbo, FramebufferTarget.DrawFramebuffer, glViewport.Width * resolutionScale, glViewport.Height * resolutionScale, saveAlpha);
+            string outputPath = CalculateUniqueName();
+            screenCapture.Save(outputPath);
+            screenCapture.Dispose(); // Manually dispose the bitmap to avoid memory leaks. 
+
+        }
+
+        private static string CalculateUniqueName()
+        {
             // Keep incrementing the number until unique.
             int i = 0;
             string outputPath = MainForm.executableDir + "\\render_" + i + ".png";
             while (File.Exists(outputPath))
             {
-                outputPath = MainForm.executableDir + "\\render_" + i +".png";
+                outputPath = MainForm.executableDir + "\\render_" + i + ".png";
                 i++;
             }
-            screenCapture.Save(outputPath);
-            screenCapture.Dispose();
+
+            return outputPath;
         }
 
         private void BatchExportMaterialXml()
