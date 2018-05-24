@@ -48,7 +48,6 @@ namespace Smash_Forge
 
         // Screen Render
         int screenRenderFbo;
-        int screenRenderTex0;
         int screenRenderRbo;
 
         // The viewport dimensions should be used for FBOs visible on screen.
@@ -273,13 +272,7 @@ namespace Smash_Forge
             FramebufferTools.CreateHdrFboSingleTextureNoDepth(out brightHdrSmallFbo, FramebufferTarget.Framebuffer, out brightTexSmall, brightTexWidth, brightTexHeight);
 
             // Create an FBO/RBO just for saving screen renders.
-            GL.GenFramebuffers(1, out screenRenderFbo);
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, screenRenderFbo);
-
-            GL.GenRenderbuffers(1, out screenRenderRbo);
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, screenRenderRbo);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, fboRenderWidth, fboRenderHeight);
-            GL.FramebufferRenderbuffer(FramebufferTarget.DrawFramebuffer, FramebufferAttachment.ColorAttachment0, RenderbufferTarget.Renderbuffer, screenRenderRbo);
+            FramebufferTools.CreateOffscreenRenderFboRbo(out screenRenderFbo, out screenRenderRbo, FramebufferTarget.DrawFramebuffer, fboRenderWidth, fboRenderHeight);
 
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);

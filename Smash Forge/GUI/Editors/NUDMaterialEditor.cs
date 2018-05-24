@@ -804,19 +804,10 @@ namespace Smash_Forge
                 FillForm();
             }*/
 
-            int i = 0;
-            foreach(string file in Directory.GetFiles(MainForm.executableDir + "\\materials\\Character Mats"))
-            {
-                NUD.Material material = ReadMaterialListFromPreset(file)[0];
-                RenderMaterialPreview(material);
-                Bitmap image = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, texRgbGlControl.Width, texRgbGlControl.Height);
-                image.Save(MainForm.executableDir + "\\image" + i + ".png");
-                image.Dispose();
-                i++;
-            }
+            MainForm.Instance.SaveMaterialThumbnailPreviews();
         }
 
-        private static List<NUD.Material> ReadMaterialListFromPreset(string file)
+        public static List<NUD.Material> ReadMaterialListFromPreset(string file)
         {
             FileData matFile = new FileData(file);
             int soff = matFile.readInt();
@@ -890,7 +881,6 @@ namespace Smash_Forge
             if (!tabControl1.SelectedTab.Text.Equals("Textures"))
                 return;
 
-            texRgbGlControl.MakeCurrent();
             GL.Viewport(texAlphaGlControl.ClientRectangle);
             RenderTools.DrawNudMaterialSphere(material);
             texRgbGlControl.SwapBuffers();

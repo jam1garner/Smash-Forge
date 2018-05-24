@@ -21,6 +21,7 @@ using OpenTK.Graphics.OpenGL;
 using System.ComponentModel;
 using Smash_Forge.Rendering.Lights;
 using System.Text;
+using System.Drawing;
 
 namespace Smash_Forge
 {
@@ -106,9 +107,31 @@ namespace Smash_Forge
             Rendering.ShaderTools.SetupShaders();
 
             // Make sure it stays invisible.
-            glControl1.Size = new System.Drawing.Size(0, 0);
+            //glControl1.Size = new System.Drawing.Size(0, 0);
 
             openFiles();
+        }
+
+        public void SaveMaterialThumbnailPreviews()
+        {
+            int i = 0;
+            foreach (string file in Directory.GetFiles(MainForm.executableDir + "\\materials\\Character Mats"))
+            {
+                NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
+                int width = 128;
+                int height = 128;
+                GL.Viewport(0, 0, width, height);
+                GL.Disable(EnableCap.ScissorTest);
+                glControl1.MakeCurrent();
+                Rendering.RenderTools.DrawNudMaterialSphere(material);
+                glControl1.SwapBuffers();
+
+                Bitmap image = Rendering.FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, width, height);
+                image.Save(MainForm.executableDir + "\\image" + i + ".png");
+                image.Dispose();
+                i++;
+            }
+
         }
 
         public void openFiles()
