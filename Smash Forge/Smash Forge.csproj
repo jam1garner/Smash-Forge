@@ -467,6 +467,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
     <Compile Include="Rendering\BatchRenderTools.cs" />
     <Compile Include="Rendering\Camera.cs" />
@@ -478,7 +479,8 @@
     <Compile Include="Rendering\Lights\LightMap.cs" />
     <Compile Include="Rendering\Lights\LightTools.cs" />
     <Compile Include="Rendering\Ray.cs" />
-    <Compile Include="Rendering\ShaderTools.cs" />
+    <Compile Include="Rendering\Shader\ShaderLog.cs" />
+    <Compile Include="Rendering\Shader\ShaderTools.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
@@ -1032,7 +1034,7 @@
     <Compile Include="Runtime.cs" />
     <Compile Include="SkelAnimation.cs" />
     <Compile Include="Filetypes\SMD.cs" />
-    <Compile Include="Rendering\Shader.cs" />
+    <Compile Include="Rendering\Shader\Shader.cs" />
     <Compile Include="Filetypes\Textures\DDS.cs" />
     <Compile Include="Filetypes\Models\NUD.cs" />
     <Compile Include="Filetypes\Textures\NUT.cs" />
@@ -1090,43 +1092,13 @@
     <None Include="Resources\UVPattern.png" />
     <None Include="Resources\10102000.png" />
     <None Include="Resources\10101000.png" />
-    <None Include="Preview Images\Mat01 [Beginners Material].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat02 [Standard Nrm Map].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat03 [Skin Ramp].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat04 [Metal NUD].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat08 [Material Colored Hair].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Preview Images\Character.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Preview Images\Dummy.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Preview Images\Mat06 [Metal Reflectivity Map].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat07 [Cel-Shade].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Preview Images\Stage.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat05 [Metal Ganon Armor].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat09 [Satin Material].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat11 [JoeTE Glow].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Resources\10080000.png" />
@@ -1134,6 +1106,7 @@
     <None Include="Resources\Flat Folder icon.png" />
     <None Include="Resources\boneWeightGradient2.png" />
     <None Include="Resources\bitan.png" />
+    <None Include="Resources\defaultDif.png" />
     <Content Include="Resources\forge.ico" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1165,6 +1138,7 @@
     <None Include="Resources\icon_info.png" />
     <None Include="Resources\icon_number.png" />
     <None Include="Resources\nrm.png" />
+    <None Include="Resources\nrmMap.png" />
     <Content Include="Resources\sexy_green_down_arrow.png" />
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />

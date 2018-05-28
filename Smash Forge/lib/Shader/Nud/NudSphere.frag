@@ -203,7 +203,7 @@ void main() {
     fragColor = vec4(1);
 
     vec2 texCoord = vec2(quadTexCoord.x, 1 - quadTexCoord.y);
-    vec2 meshTexCoord = texture(uvTex, quadTexCoord).xy;
+    vec2 meshTexCoord = texture(uvTex, quadTexCoord).xy * 1.15 + vec2(0.75, 0.0);
 
     // Create a struct for passing all the vertex attributes to other functions.
     VertexAttributes vert;
@@ -222,5 +222,7 @@ void main() {
     float alpha = texture(normalTex, texCoord).a;
     vec3 shadedColor = SmashShader(vert).rgb;
     vec3 backgroundColor = vec3(0);
-    fragColor.rgb = mix(backgroundColor, shadedColor, alpha);
+
+    fragColor.rgb = shadedColor;
+    fragColor.a = alpha;
 }

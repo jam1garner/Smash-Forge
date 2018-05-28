@@ -21,6 +21,7 @@ using OpenTK.Graphics.OpenGL;
 using System.ComponentModel;
 using Smash_Forge.Rendering.Lights;
 using System.Text;
+using System.Drawing;
 
 namespace Smash_Forge
 {
@@ -103,12 +104,56 @@ namespace Smash_Forge
             Config.StartupFromFile(MainForm.executableDir + "\\config.xml");
             DiscordSettings.Update();
 
+            glControl1.MakeCurrent();
+            Rendering.RenderTools.Setup();
             Rendering.ShaderTools.SetupShaders();
 
-            // Make sure it stays invisible.
-            glControl1.Size = new System.Drawing.Size(0, 0);
+            SaveMaterialThumbnailPreviews();
 
             openFiles();
+        }
+
+        public void SaveMaterialThumbnailPreviews()
+        {
+            // Setup
+            int width = 128;
+            int height = 128;
+            int fbo;
+            int rbo;
+            glControl1.MakeCurrent();
+            Rendering.FramebufferTools.CreateOffscreenRenderFboRbo(out fbo, out rbo, FramebufferTarget.Framebuffer, width, height);
+            GL.Viewport(0, 0, width, height);
+
+            RenderMaterialPresetPreviewsToFiles(width, height, fbo);
+
+            // Cleanup
+            GL.DeleteBuffer(fbo);
+            GL.DeleteRenderbuffer(rbo);
+        }
+
+        private void RenderMaterialPresetPreviewsToFiles(int width, int height, int fbo)
+        {
+            // Render all the material previews.
+            foreach (string file in Directory.GetFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
+            {
+                NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
+
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+                Rendering.RenderTools.DrawNudMaterialSphere(material);
+                glControl1.SwapBuffers();
+
+                // Using the other framebuffer targets doesn't work for some reason.
+                Bitmap image = Rendering.FramebufferTools.ReadFrameBufferPixels(fbo, FramebufferTarget.Framebuffer, width, height, true);
+
+                // Save the image file using the name of the preset.
+                string[] parts = file.Split('\\');
+                string presetName = parts[parts.Length - 1];
+                presetName = presetName.Replace(".nmt", ".png");
+                image.Save(MainForm.executableDir + "\\Preview Images\\" + presetName);
+
+                // Cleanup
+                image.Dispose();
+            }
         }
 
         public void openFiles()
@@ -1694,10 +1739,10 @@ namespace Smash_Forge
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             // I got tired of looking at it.
-            glControl1.MakeCurrent();
-            GL.ClearColor(System.Drawing.Color.FromArgb(255, 250, 250, 250));
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            glControl1.SwapBuffers();
+            //glControl1.MakeCurrent();
+            //GL.ClearColor(System.Drawing.Color.FromArgb(255, 250, 250, 250));
+            //GL.Clear(ClearBufferMask.ColorBufferBit);
+            //glControl1.SwapBuffers();
         }
 
         private void modelToolStripMenuItem_Click(object sender, EventArgs e)

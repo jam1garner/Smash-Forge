@@ -21,6 +21,8 @@ namespace Smash_Forge.Rendering
         public int renderWidth = 1;
         public int renderHeight = 1;
 
+        public Vector3 scale = new Vector3(1);
+
         // Matrices for rendering.
         public Matrix4 modelViewMatrix = Matrix4.Identity;
         public Matrix4 mvpMatrix = Matrix4.Identity;
@@ -127,7 +129,8 @@ namespace Smash_Forge.Rendering
             perspFov = Matrix4.CreatePerspectiveFieldOfView(fovRadians, renderWidth / (float)renderHeight, 1.0f, renderDepth);
 
             modelViewMatrix = rotationMatrix * translation;
-            mvpMatrix = modelViewMatrix * perspFov;
+            float offset = Runtime.reflectionIntensity;
+            mvpMatrix = modelViewMatrix * perspFov * Matrix4.CreateScale(scale);
             billboardMatrix = translation * perspFov;
             billboardYMatrix = Matrix4.CreateRotationX(rotX) * translation * perspFov;
         }

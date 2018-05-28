@@ -789,22 +789,11 @@ namespace Smash_Forge
             matSelector.ShowDialog();
             if (matSelector.exitStatus == MaterialSelector.Opened)
             {
-                FileData matFile = new FileData(matSelector.path);
-
-                int soff = matFile.readInt();
-
-                NUD.PolyData pol = new NUD.PolyData()
-                {
-                    texprop1 = matFile.readInt(),
-                    texprop2 = matFile.readInt(),
-                    texprop3 = matFile.readInt(),
-                    texprop4 = matFile.readInt()
-                };
+                List<NUD.Material> presetMaterials = ReadMaterialListFromPreset(matSelector.path);
 
                 // Store the original material to preserve Tex IDs. 
                 NUD.Material original = currentPolygon.materials[0].Clone();
-
-                currentPolygon.materials = NUD.ReadMaterials(matFile, pol, soff);
+                currentPolygon.materials = presetMaterials;
 
                 // Copy the old Tex IDs. 
                 currentPolygon.materials[0].CopyTextureIds(original);
@@ -814,7 +803,23 @@ namespace Smash_Forge
                 Init();
                 FillForm();
             }
+        }
 
+        public static List<NUD.Material> ReadMaterialListFromPreset(string file)
+        {
+            FileData matFile = new FileData(file);
+            int soff = matFile.readInt();
+
+            NUD.PolyData pol = new NUD.PolyData()
+            {
+                texprop1 = matFile.readInt(),
+                texprop2 = matFile.readInt(),
+                texprop3 = matFile.readInt(),
+                texprop4 = matFile.readInt()
+            };
+
+            List<NUD.Material> presetMaterials = NUD.ReadMaterials(matFile, pol, soff);
+            return presetMaterials;
         }
 
         private void RenderTexture(bool justRenderAlpha = false)
@@ -851,7 +856,6 @@ namespace Smash_Forge
                 texAlphaGlControl.MakeCurrent();
                 GL.Viewport(texAlphaGlControl.ClientRectangle);
                 RenderTools.DrawTexturedQuad(displayTexture, 1, 1, false, false, false, true);
-                //RenderTools.DrawNudMaterialSphere(currentMaterialList[currentMatIndex]);
                 texAlphaGlControl.SwapBuffers();
             }
             else
@@ -859,9 +863,25 @@ namespace Smash_Forge
                 texRgbGlControl.MakeCurrent();
                 GL.Viewport(texRgbGlControl.ClientRectangle);
                 RenderTools.DrawTexturedQuad(displayTexture, 1, 1);
-                //RenderTools.DrawNudMaterialSphere(materials[0]);
+                Bitmap image = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, texRgbGlControl.Width, texRgbGlControl.Height);
+                image.Save(MainForm.executableDir + "\\image.png");
                 texRgbGlControl.SwapBuffers();
             }
+
+            if (!Runtime.shaders["Texture"].HasCheckedCompilation)
+            {
+                Runtime.shaders["Texture"].DisplayCompilationWarnings("Texture");
+            }
+        }
+
+        private void RenderMaterialPreview(NUD.Material material)
+        {
+            if (!tabControl1.SelectedTab.Text.Equals("Textures"))
+                return;
+
+            GL.Viewport(texAlphaGlControl.ClientRectangle);
+            RenderTools.DrawNudMaterialSphere(material);
+            texRgbGlControl.SwapBuffers();
 
             if (!Runtime.shaders["Texture"].HasCheckedCompilation)
             {
