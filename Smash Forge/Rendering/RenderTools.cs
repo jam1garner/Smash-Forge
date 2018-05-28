@@ -42,7 +42,12 @@ namespace Smash_Forge.Rendering
         public static int boneWeightGradient;
         public static int boneWeightGradient2;
 
-        // Nud Material Sphere
+        // Nud Material Sphere Textures.
+        private static int sphereDifTex;
+        private static int sphereNrmMapTex;
+        private static int sphereSphereMap;
+
+        // Nud Material Sphere Vert Attribute Textures.
         private static int sphereNrmTex;
         private static int sphereUvTex;
         private static int sphereTanTex;
@@ -1581,7 +1586,7 @@ namespace Smash_Forge.Rendering
 
             // Use the same uniforms as the NUD shader. 
             NUD.SetMaterialPropertyUniforms(shader, material);
-            NUD.SetTextureUniforms(shader, material);
+            NUD.SetTextureUniformsNudMatSphere(shader, material);
             NUD.SetStageLightingUniforms(shader, 0);
             ModelContainer.SetRenderSettingsUniforms(shader);
             ModelContainer.SetLightingUniforms(shader, nudSphereCamera);

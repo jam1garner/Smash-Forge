@@ -479,8 +479,8 @@
     <Compile Include="Rendering\Lights\LightMap.cs" />
     <Compile Include="Rendering\Lights\LightTools.cs" />
     <Compile Include="Rendering\Ray.cs" />
-    <Compile Include="Rendering\ShaderLog.cs" />
-    <Compile Include="Rendering\ShaderTools.cs" />
+    <Compile Include="Rendering\Shader\ShaderLog.cs" />
+    <Compile Include="Rendering\Shader\ShaderTools.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
@@ -1034,7 +1034,7 @@
     <Compile Include="Runtime.cs" />
     <Compile Include="SkelAnimation.cs" />
     <Compile Include="Filetypes\SMD.cs" />
-    <Compile Include="Rendering\Shader.cs" />
+    <Compile Include="Rendering\Shader\Shader.cs" />
     <Compile Include="Filetypes\Textures\DDS.cs" />
     <Compile Include="Filetypes\Models\NUD.cs" />
     <Compile Include="Filetypes\Textures\NUT.cs" />

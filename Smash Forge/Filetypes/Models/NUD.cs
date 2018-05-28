@@ -823,49 +823,14 @@ namespace Smash_Forge
 
         public static void SetTextureUniforms(Shader shader, Material mat)
         {
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse,         "hasDif");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse2,        "hasDif2");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse3,        "hasDif3");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasStageMap,        "hasStage");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasCubeMap,         "hasCube");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasAoMap,           "hasAo");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasNormalMap,       "hasNrm");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasRamp,            "hasRamp");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDummyRamp,       "hasDummyRamp");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.useColorGainOffset, "hasColorGainOffset");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.useDiffuseBlend,    "useDiffuseBlend");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasSphereMap,       "hasSphereMap");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasBayoHair,        "hasBayoHair");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.useReflectionMask,  "useDifRefMask");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.softLightBrighten,  "softLightBrighten");
-                                              
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
-
-            GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("UVTestPattern"), 10);
-
-            GL.ActiveTexture(TextureUnit.Texture11);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("weightRamp1"), 11);
-
-            GL.ActiveTexture(TextureUnit.Texture12);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient2);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("weightRamp2"), 12);
+            SetHasTextureUniforms(shader, mat);
+            SetRenderModeTextureUniforms(shader);
 
             // This is necessary to prevent some models from disappearing. 
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("cube"), 2);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("stagecube"), 2);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("spheremap"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("ao"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), 0);
+            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex);
 
             // The order of the textures in the following section is critical. 
-            int textureIndex = 0; 
+            int textureIndex = 0;
             if (mat.hasDiffuse && textureIndex < mat.textures.Count)
             {
                 int hash = mat.textures[textureIndex].hash;
@@ -878,27 +843,191 @@ namespace Smash_Forge
             // Jigglypuff has weird eyes.
             if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
             {
-                SetTextureUniformAndSetTexId(shader, mat, true, "dif2",      ref textureIndex, ref mat.diffuse2ID);
+                SetTextureUniformAndSetTexId(shader, mat, true, "dif2", ref textureIndex, ref mat.diffuse2ID);
                 SetTextureUniformAndSetTexId(shader, mat, true, "normalMap", ref textureIndex, ref mat.normalID);
             }
             else if ((mat.Flags & 0xFFFFFFFF) == 0x92F01101)
             {
-                SetTextureUniformAndSetTexId(shader, mat, true, "dif2",      ref textureIndex, ref mat.diffuse2ID);
-                SetTextureUniformAndSetTexId(shader, mat, true, "ramp",      ref textureIndex, ref mat.rampID);
+                // Final smash mats and Mega Man's eyes.
+                SetTextureUniformAndSetTexId(shader, mat, true, "dif2", ref textureIndex, ref mat.diffuse2ID);
+                SetTextureUniformAndSetTexId(shader, mat, true, "ramp", ref textureIndex, ref mat.rampID);
                 SetTextureUniformAndSetTexId(shader, mat, true, "dummyRamp", ref textureIndex, ref mat.dummyRampID);
             }
             else
             {
                 SetTextureUniformAndSetTexId(shader, mat, mat.hasSphereMap, "spheremap", ref textureIndex, ref mat.sphereMapID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse2,  "dif2",      ref textureIndex, ref mat.diffuse2ID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse3,  "dif3",      ref textureIndex, ref mat.diffuse3ID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasStageMap,  "stagecube", ref textureIndex, ref mat.stageMapID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasCubeMap,   "cube",      ref textureIndex, ref mat.cubeMapID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasAoMap,     "ao",        ref textureIndex, ref mat.aoMapID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse2, "dif2", ref textureIndex, ref mat.diffuse2ID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse3, "dif3", ref textureIndex, ref mat.diffuse3ID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasStageMap, "stagecube", ref textureIndex, ref mat.stageMapID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasCubeMap, "cube", ref textureIndex, ref mat.cubeMapID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasAoMap, "ao", ref textureIndex, ref mat.aoMapID);
                 SetTextureUniformAndSetTexId(shader, mat, mat.hasNormalMap, "normalMap", ref textureIndex, ref mat.normalID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasRamp,      "ramp",      ref textureIndex, ref mat.rampID);
+                SetTextureUniformAndSetTexId(shader, mat, mat.hasRamp, "ramp", ref textureIndex, ref mat.rampID);
                 SetTextureUniformAndSetTexId(shader, mat, mat.hasDummyRamp, "dummyRamp", ref textureIndex, ref mat.dummyRampID);
             }
+        }
+
+        public static void SetTextureUniformsNudMatSphere(Shader shader, Material mat)
+        {
+            SetHasTextureUniforms(shader, mat);
+            SetRenderModeTextureUniforms(shader);
+
+            // This is necessary to prevent some models from disappearing. 
+            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex);
+
+            // The material shader just uses predefined textures from the Resources folder.
+            MatTexture diffuse = new MatTexture((int)DummyTextures.DummyRamp);
+            MatTexture cubeMapHigh = new MatTexture((int)DummyTextures.StageMapHigh);
+
+            // The order of the textures in the following section is critical. 
+            int textureIndex = 0;
+            if (mat.hasDiffuse && textureIndex < mat.textures.Count)
+            {
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), BindTexture(diffuse, diffuse.hash, textureIndex));
+                textureIndex++;
+            }
+
+            // Jigglypuff has weird eyes.
+            if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
+            {
+                if (mat.hasDiffuse2)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureIndex));
+                    textureIndex++;
+                }
+
+                if (mat.hasNormalMap)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), BindTexture(diffuse, diffuse.hash, textureIndex));
+                    textureIndex++;
+                }
+            }
+            else if ((mat.Flags & 0xFFFFFFFF) == 0x92F01101)
+            {
+                // Final smash mats and Mega Man's eyes.
+                if (mat.hasDiffuse2)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureIndex));
+                    textureIndex++;
+                }
+
+                if (mat.hasRamp)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureIndex));
+                    textureIndex++;
+                }
+
+                if (mat.hasDummyRamp)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureIndex));
+                    textureIndex++;
+                }
+            }
+            else
+            {
+                if (mat.hasSphereMap)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("spheremap"), BindTexture(diffuse, diffuse.hash, textureIndex));
+                    textureIndex++;
+                }
+
+                if (mat.hasDiffuse2)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureIndex));
+                    textureIndex++;
+                }
+
+                if (mat.hasDiffuse3)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif3"), BindTexture(diffuse, diffuse.hash, textureIndex));
+                    textureIndex++;
+                }
+
+                // The stage cube maps already use the appropriate dummy texture.
+                if (mat.hasStageMap)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("stagecube"), BindTexture(mat.textures[textureIndex], mat.stageMapID, textureIndex));
+                    textureIndex++;
+                }
+
+                if (mat.hasCubeMap)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("cube"), BindTexture(cubeMapHigh, cubeMapHigh.hash, textureIndex));
+                    textureIndex++;
+                }
+
+                if (mat.hasAoMap)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ao"), BindTexture(diffuse, diffuse.hash, textureIndex));
+                    textureIndex++;
+                }
+
+                if (mat.hasNormalMap)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), BindTexture(diffuse, diffuse.hash, textureIndex));
+                    textureIndex++;
+                }
+
+                if (mat.hasRamp)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureIndex));
+                    textureIndex++;
+                }
+
+                if (mat.hasDummyRamp)
+                {
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureIndex));
+                    textureIndex++;
+                }
+            }
+        }
+
+        private static void SetTextureUniformsToDefaultTexture(Shader shader, int texture)
+        {
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("cube"), 2);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("stagecube"), 2);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("spheremap"), 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("ao"), 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), 0);
+        }
+
+        private static void SetRenderModeTextureUniforms(Shader shader)
+        {
+            GL.ActiveTexture(TextureUnit.Texture10);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("UVTestPattern"), 10);
+
+            GL.ActiveTexture(TextureUnit.Texture11);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("weightRamp1"), 11);
+
+            GL.ActiveTexture(TextureUnit.Texture12);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient2);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("weightRamp2"), 12);
+        }
+
+        private static void SetHasTextureUniforms(Shader shader, Material mat)
+        {
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse, "hasDif");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse2, "hasDif2");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse3, "hasDif3");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasStageMap, "hasStage");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasCubeMap, "hasCube");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasAoMap, "hasAo");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasNormalMap, "hasNrm");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasRamp, "hasRamp");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDummyRamp, "hasDummyRamp");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.useColorGainOffset, "hasColorGainOffset");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.useDiffuseBlend, "useDiffuseBlend");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasSphereMap, "hasSphereMap");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.hasBayoHair, "hasBayoHair");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.useReflectionMask, "useDifRefMask");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.softLightBrighten, "softLightBrighten");
         }
 
         private static void MatPropertyShaderUniform(Shader shader, Material mat, string propertyName, float default1,
