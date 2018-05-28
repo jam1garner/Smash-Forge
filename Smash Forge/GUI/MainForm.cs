@@ -110,9 +110,6 @@ namespace Smash_Forge
 
             SaveMaterialThumbnailPreviews();
 
-            // Make sure it stays invisible.
-            //glControl1.Size = new System.Drawing.Size(0, 0);
-
             openFiles();
         }
 
@@ -145,12 +142,13 @@ namespace Smash_Forge
                 Rendering.RenderTools.DrawNudMaterialSphere(material);
                 glControl1.SwapBuffers();
 
+                // Using the other framebuffer targets doesn't work for some reason.
                 Bitmap image = Rendering.FramebufferTools.ReadFrameBufferPixels(fbo, FramebufferTarget.Framebuffer, width, height, true);
 
+                // Save the image file using the name of the preset.
                 string[] parts = file.Split('\\');
                 string presetName = parts[parts.Length - 1];
                 presetName = presetName.Replace(".nmt", ".png");
-                Debug.WriteLine(presetName);
                 image.Save(MainForm.executableDir + "\\Preview Images\\" + presetName);
 
                 // Cleanup

@@ -43,9 +43,9 @@ namespace Smash_Forge.Rendering
         public static int boneWeightGradient2;
 
         // Nud Material Sphere Textures.
-        private static int sphereDifTex;
+        public static int sphereDifTex;
         public static int sphereNrmMapTex;
-        private static int sphereSphereMap;
+        public static int sphereSphereMap;
 
         // Nud Material Sphere Vert Attribute Textures.
         private static int sphereNrmTex;
@@ -98,8 +98,12 @@ namespace Smash_Forge.Rendering
             shadowMapDummyTex = NUT.loadImage(Properties.Resources._10100000);
             dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
 
-            // Sphere Mesh Attributes
+            // Sphere Default Textures.
+            sphereDifTex = NUT.loadImage(Properties.Resources.defaultDif);
             sphereNrmMapTex = NUT.loadImage(Properties.Resources.nrmMap);
+
+
+            // Sphere Mesh Attributes.
             sphereNrmTex = NUT.loadImage(Properties.Resources.nrm);
             sphereUvTex = NUT.loadImage(Properties.Resources.uv);
             sphereTanTex = NUT.loadImage(Properties.Resources.tan);

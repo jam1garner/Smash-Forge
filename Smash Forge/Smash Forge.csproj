@@ -1106,6 +1106,7 @@
     <None Include="Resources\Flat Folder icon.png" />
     <None Include="Resources\boneWeightGradient2.png" />
     <None Include="Resources\bitan.png" />
+    <None Include="Resources\defaultDif.png" />
     <Content Include="Resources\forge.ico" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

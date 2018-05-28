@@ -883,8 +883,9 @@ namespace Smash_Forge
             int textureUnitIndexOffset = 0;
             if (mat.hasDiffuse && textureUnitIndexOffset < mat.textures.Count)
             {
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
-                textureUnitIndexOffset++;
+                GL.ActiveTexture(TextureUnit.Texture3 + textureUnitIndexOffset);
+                GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereDifTex);
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), 3 + textureUnitIndexOffset); textureUnitIndexOffset++;
             }
 
             // Jigglypuff has weird eyes.
