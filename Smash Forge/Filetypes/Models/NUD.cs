@@ -1174,7 +1174,13 @@ namespace Smash_Forge
         public static int BindTexture(MatTexture tex, int hash, int loc)
         {
             if (Enum.IsDefined(typeof(DummyTextures), hash))
-                return BindDummyTexture(loc, RenderTools.dummyTextures[(DummyTextures)hash]);
+            {
+                // Two of the dummy textures are cube maps.
+                if ((hash == (int)DummyTextures.StageMapHigh) || (hash == (int)DummyTextures.StageMapLow))
+                    return BindDummyTexture(loc, RenderTools.dummyTextures[(DummyTextures)hash], TextureTarget.TextureCubeMap);
+                else
+                    return BindDummyTexture(loc, RenderTools.dummyTextures[(DummyTextures)hash], TextureTarget.Texture2D);
+            }
             else
             {
                 GL.ActiveTexture(TextureUnit.Texture3 + loc);
@@ -1194,10 +1200,10 @@ namespace Smash_Forge
             return 3 + loc;
         }
 
-        private static int BindDummyTexture(int loc, int texture)
+        private static int BindDummyTexture(int loc, int texture, TextureTarget target)
         {
             GL.ActiveTexture(TextureUnit.Texture20 + loc);
-            GL.BindTexture(TextureTarget.TextureCubeMap, texture);
+            GL.BindTexture(target, texture);
             return 20 + loc;
         }
 
