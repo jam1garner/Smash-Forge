@@ -503,10 +503,8 @@ namespace Smash_Forge
 
             foreach (Mesh m in depthSortedMeshes)
             {
-                for (int i = m.Nodes.Count - 1; i >= 0; i--)
+                foreach (Polygon p in m.Nodes)
                 {
-                    Polygon p = (Polygon)m.Nodes[m.Nodes.Count - 1 - i];
-
                     if (p.materials.Count > 0 && p.materials[0].srcFactor != 0 || p.materials[0].dstFactor != 0)
                         transparent.Add(p);
                     else
@@ -531,14 +529,16 @@ namespace Smash_Forge
 
             Material material = p.materials[0];
 
+            // Set Shader Values.
             SetShaderUniforms(p, shader, camera, material);
-
-            // Set OpenTK Render Options
             SetVertexAttributes(p, shader);
+
+            // Set OpenTK Render Options.
             SetAlphaBlending(material);
             SetAlphaTesting(material);
             SetFaceCulling(material);
 
+            // Draw the model normally.
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementsIbo);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
         }
@@ -572,17 +572,36 @@ namespace Smash_Forge
 
         private void SetAlphaBlending(Material material)
         {
+            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+            {
+                // Disable alpha blending for debug shading.
+                GL.Disable(EnableCap.Blend);
+                return;
+            }
+
+            if (material.srcFactor == 0 && material.dstFactor == 0)
+            {
+                // Src and dst of 0 don't use alpha blending.
+                GL.Disable(EnableCap.Blend);
+                return;
+            }
+
             GL.Enable(EnableCap.Blend);
             BlendingFactorSrc blendSrc = srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha;
             BlendingFactorDest blendDst = dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha;
             GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
             GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
-            if (material.srcFactor == 0 && material.dstFactor == 0)
-                GL.Disable(EnableCap.Blend);
         }
 
         private static void SetAlphaTesting(Material material)
         {
+            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+            {
+                // Disable alpha testing for debug shading.
+                GL.Disable(EnableCap.AlphaTest);
+                return;
+            }
+
             GL.Enable(EnableCap.AlphaTest);
             if (material.alphaTest == 0)
                 GL.Disable(EnableCap.AlphaTest);
@@ -605,6 +624,13 @@ namespace Smash_Forge
 
         private static void SetFaceCulling(Material material)
         {
+            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+            {
+                // Disable face culling for debug shading.
+                GL.Disable(EnableCap.CullFace);
+                return;
+            }
+
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
             switch (material.cullMode)
