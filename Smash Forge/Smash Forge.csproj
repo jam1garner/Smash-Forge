@@ -1137,6 +1137,7 @@
     <None Include="Resources\icon_info.png" />
     <None Include="Resources\icon_number.png" />
     <None Include="Resources\nrm.png" />
+    <None Include="Resources\nrmMap.png" />
     <Content Include="Resources\sexy_green_down_arrow.png" />
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />

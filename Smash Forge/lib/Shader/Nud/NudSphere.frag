@@ -222,7 +222,7 @@ void main() {
     float alpha = texture(normalTex, texCoord).a;
     vec3 shadedColor = SmashShader(vert).rgb;
     vec3 backgroundColor = vec3(0);
-    // fragColor.rgb = mix(backgroundColor, shadedColor, alpha);
+    
     fragColor.rgb = shadedColor;
     fragColor.a = alpha;
 }
