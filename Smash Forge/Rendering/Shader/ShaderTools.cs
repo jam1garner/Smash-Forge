@@ -37,13 +37,13 @@ namespace Smash_Forge.Rendering
         private static void SetupNudShaders()
         {
             // Wii U NUD Shaders.
-            List<String> nudShaders = new List<string>() { "Nud\\StageLighting.frag", "Nud\\SmashShader.frag", "Utility\\Wireframe.frag",
+            List<String> nudShaders = new List<string>() { "Nud\\StageLighting.frag", "Nud\\Bayo.frag", "Nud\\SmashShader.frag", "Utility\\Wireframe.frag",
                                                            "Utility\\Utility.frag", "Nud\\EdgeDistance.geom"};
             CreateShader("Nud", "\\lib\\Shader\\Nud", nudShaders);
             CreateShader("NudDebug", "\\lib\\Shader\\Nud\\", nudShaders);
 
             // Wii U NUD Material Preview Shaders.
-            List<String> nudMatShaders = new List<string>() { "Nud\\StageLighting.frag", "Nud\\SmashShader.frag", "Utility\\Utility.frag" };
+            List<String> nudMatShaders = new List<string>() { "Nud\\StageLighting.frag", "Nud\\Bayo.frag",  "Nud\\SmashShader.frag", "Utility\\Utility.frag" };
             CreateShader("NudSphere", "\\lib\\Shader\\Nud", nudMatShaders);
         }
 

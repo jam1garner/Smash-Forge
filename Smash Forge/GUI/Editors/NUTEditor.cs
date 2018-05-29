@@ -51,6 +51,7 @@ namespace Smash_Forge
             fw.Changed += new FileSystemEventHandler(OnChanged);
             fw.Filter = "";
             
+            // Texture Context Menu
             MenuItem replace = new MenuItem("Replace");
             replace.Click += replaceToolStripMenuItem_Click;
             TextureMenu.MenuItems.Add(replace);
@@ -67,6 +68,7 @@ namespace Smash_Forge
             saveTexToPng.Click += exportTexAsPngToolStripMenuItem_Click;
             TextureMenu.MenuItems.Add(saveTexToPng);
 
+            // NUT Context Menu
             MenuItem import = new MenuItem("Import New Texture");
             import.Click += importToolStripMenuItem_Click;
             NUTMenu.MenuItems.Add(import);
@@ -78,6 +80,10 @@ namespace Smash_Forge
             MenuItem exportAllPng = new MenuItem("Export to Folder as PNG");
             exportAllPng.Click += exportNutAsPngToolStripMenuItem_Click;
             NUTMenu.MenuItems.Add(exportAllPng);
+
+            MenuItem exportAllPngAlpha = new MenuItem("Export to Folder as PNG (Separate Alpha)");
+            exportAllPngAlpha.Click += exportNutAsPngSeparateAlphaToolStripMenuItem_Click;
+            NUTMenu.MenuItems.Add(exportAllPngAlpha);
 
             MenuItem importall = new MenuItem("Import from Folder");
             importall.Click += importNutFromFolder;
@@ -212,7 +218,7 @@ namespace Smash_Forge
             }
         }
 
-        private void RenderTextureToPng(NutTexture nutTexture, string outputPath)
+        private void RenderTextureToPng(NutTexture nutTexture, string outputPath, bool renderR = true, bool renderG = true, bool renderB = true, bool renderAlpha = false)
         {
             if (!_loaded || glControl1 == null)
                 return;
@@ -258,7 +264,7 @@ namespace Smash_Forge
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    RenderTextureToPng(tex, sfd.FileName);
+                    RenderTextureToPng(tex, sfd.FileName, true, true, true, true);
                 }
             }
         }
@@ -275,7 +281,26 @@ namespace Smash_Forge
                     foreach (NutTexture texture in NUT.Nodes)
                     {
                         string texId = texture.HASHID.ToString("X");
-                        RenderTextureToPng(texture, f.SelectedPath + "\\" + texId + ".png");
+                        RenderTextureToPng(texture, f.SelectedPath + "\\" + texId + ".png", true, true, true, true);
+                    }
+                }
+            }
+        }
+
+        private void exportNutAsPngSeparateAlphaToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (FolderSelectDialog f = new FolderSelectDialog())
+            {
+                if (f.ShowDialog() == DialogResult.OK)
+                {
+                    if (!Directory.Exists(f.SelectedPath))
+                        Directory.CreateDirectory(f.SelectedPath);
+
+                    foreach (NutTexture texture in NUT.Nodes)
+                    {
+                        string texId = texture.HASHID.ToString("X");
+                        RenderTextureToPng(texture, f.SelectedPath + "\\" + texId + "_rgb.png");
+                        RenderTextureToPng(texture, f.SelectedPath + "\\" + texId + "_alpha.png", false, false, false, true);
                     }
                 }
             }
@@ -891,13 +916,13 @@ namespace Smash_Forge
                 int itemindex = textureListBox.IndexFromPoint(e.Location);
                 if(itemindex == -1)
                 {
-                    NUTMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
+                    NUTMenu.Show(this, new System.Drawing.Point(e.X + 15, e.Y));
 
                 }
                 else if (textureListBox.Items[itemindex] is NutTexture)
                 {
                     textureListBox.SelectedIndex = itemindex;
-                    TextureMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
+                    TextureMenu.Show(this, new System.Drawing.Point(e.X + 15, e.Y));
                 }
             }
         }

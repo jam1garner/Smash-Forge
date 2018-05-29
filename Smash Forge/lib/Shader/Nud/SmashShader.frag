@@ -197,6 +197,9 @@ uniform vec4 effUniverseParam;
 float Luminance(vec3 rgb);
 vec3 SrgbToLinear(vec3 color);
 
+// Defined in Bayo.frag.
+vec3 BayoHairDiffuse(vec3 diffuseMap, vec4 colorOffset, vec4 colorGain, vec4 alphaBlendParams);
+vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, vec3 specLightDirection, vec4 reflectionParams, VertexAttributes vert);
 
 vec3 TintColor(vec3 diffuseColor, float tintAmount) {
     // Approximates an overlay blend mode. Cheaper than converting to HSV/HSL.
@@ -244,12 +247,6 @@ vec3 BumpMapNormal(sampler2D normalMap, VertexAttributes vert, vec4 dualNormalSc
     mat3 tbnMatrix = mat3(vert.tangent, vert.bitangent, vert.normal);
     vec3 newNormal = tbnMatrix * bumpMapNormal;
     return normalize(newNormal);
-}
-
-vec3 BayoHairDiffuse(vec3 diffuseMap, vec4 colorOffset, vec4 colorGain, vec4 alphaBlendParams) {
-    vec3 diffuseColor = (colorOffset.rgb + diffuseMap.rrr) * colorGain.rgb;
-    diffuseColor *= alphaBlendParams.w; // #justbayothings
-    return diffuseColor;
 }
 
 vec3 ColorOffsetGain(vec3 diffuseMap, int hasBayoHair,vec4 colorOffset, vec4 colorGain, vec4 alphaBlendParams) {
@@ -347,18 +344,6 @@ float AnisotropicSpecExponent(vec3 halfAngle, float width, float height, vec3 ta
     return xComponent + yComponent;
 }
 
-vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, vec3 specLightDirection, vec4 reflectionParams, vec3 tangent, vec3 bitangent) {
-    float specMask = diffuseMap.b;
-
-    vec3 halfAngle = normalize(I + specLightDirection);
-    float exponent = AnisotropicSpecExponent(halfAngle, reflectionParams.z, reflectionParams.w, tangent, bitangent);
-    float specularTerm = pow(dot(bitangent.xyz, halfAngle), exponent);
-
-    // TODO: Find proper constants.
-    vec3 specularColorTotal = vec3(1) * specularTerm * specMask;
-    return specularColorTotal;
-}
-
 vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, VertexAttributes vert) {
     vec3 specularPass = vec3(0);
 
@@ -375,7 +360,7 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor
 
     // TODO: Fix bayo hair calculations.
     if (hasBayoHair == 1)
-        specColorTotal = BayoHairSpecular(diffuseMap.rgb, I, specLightDirection, reflectionParams, vert.tangent, vert.bitangent);
+        specColorTotal = BayoHairSpecular(diffuseMap.rgb, I, specLightDirection, reflectionParams, vert);
 
     if (hasColorGainOffset == 1)
         specColorTotal *= specularColorGain.rgb;
