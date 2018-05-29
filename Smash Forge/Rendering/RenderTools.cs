@@ -1510,8 +1510,8 @@ namespace Smash_Forge.Rendering
 
             Setup2DRendering();
 
-            GL.Uniform3(shader.GetVertexAttributeUniformLocation("topColor"), topColor);
-            GL.Uniform3(shader.GetVertexAttributeUniformLocation("bottomColor"), bottomColor);
+            shader.SetVector3("topColor", topColor);
+            shader.SetVector3("bottomColor", bottomColor);
 
             DrawScreenTriangle(shader);          
         }
@@ -1545,11 +1545,11 @@ namespace Smash_Forge.Rendering
             // This only works properly if the viewport is square.
             shader.SetBoolToInt("preserveAspectRatio", keepAspectRatio);
             float aspectRatio = (float)width / (float)height;
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("width"), width);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("height"), height);
+            shader.SetInt("width", width);
+            shader.SetInt("height", height);
 
             // Display certain mip levels.
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("currentMipLevel"), currentMipLevel);
+            shader.SetInt("currentMipLevel", currentMipLevel);
 
             // Draw full screen "quad" (big triangle)
             DrawScreenTriangle(shader);
@@ -1574,7 +1574,7 @@ namespace Smash_Forge.Rendering
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("image1"), 1);
 
             shader.SetBoolToInt("renderBloom", Runtime.renderBloom);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("bloomIntensity"), Runtime.bloomIntensity);
+            shader.SetFloat("bloomIntensity", Runtime.bloomIntensity);
 
             ShaderTools.SystemColorVector3Uniform(shader, Runtime.backgroundGradientBottom, "backgroundBottomColor");
             ShaderTools.SystemColorVector3Uniform(shader, Runtime.backgroundGradientTop, "backgroundTopColor");
@@ -1597,11 +1597,10 @@ namespace Smash_Forge.Rendering
             ModelContainer.SetLightingUniforms(shader, nudSphereCamera);
             ModelContainer.SetCameraMatrixUniforms(nudSphereCamera, shader);
 
-            GL.Uniform3(shader.GetVertexAttributeUniformLocation("cameraPosition"), 0, 0, 0);
-
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("zBufferOffset"), 0);
-
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("bloomThreshold"), Runtime.bloomThreshold);
+            // These values aren't needed in the shader currently.
+            shader.SetVector3("cameraPosition", 0, 0, 0);
+            shader.SetFloat("zBufferOffset", 0);
+            shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
 
             bool isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
             shader.SetBoolToInt("isTransparent", isTransparent);

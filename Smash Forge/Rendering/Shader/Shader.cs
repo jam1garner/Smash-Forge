@@ -133,6 +133,17 @@ namespace Smash_Forge.Rendering
             GL.Uniform4(GetVertexAttributeUniformLocation(uniformName), x, y, z, w);
         }
 
+        public void SetMatrix4x4(string uniformName, ref Matrix4 value)
+        {
+            if (!vertexAttributeAndUniformLocations.ContainsKey(uniformName) && !invalidUniformNames.Contains(uniformName))
+            {
+                invalidUniformNames.Add(uniformName);
+                return;
+            }
+
+            GL.UniformMatrix4(GetVertexAttributeUniformLocation(uniformName), false, ref value);
+        }
+
         public int GetVertexAttributeUniformLocation(string name)
         {
 			int value;

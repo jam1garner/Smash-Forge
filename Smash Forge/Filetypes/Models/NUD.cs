@@ -686,7 +686,7 @@ namespace Smash_Forge
                 }
             }
 
-            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("nscMatrix"), false, ref nscMatrix);
+            shader.SetMatrix4x4("nscMatrix", ref nscMatrix);
         }
         
         private void SetXMBUniforms(Shader shader, Polygon p)
@@ -1097,7 +1097,7 @@ namespace Smash_Forge
             Shader shader = Runtime.shaders["Point"];
             GL.UseProgram(shader.programId);
             Matrix4 mat = camera.mvpMatrix;
-            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("mvpMatrix"), false, ref mat);
+            shader.SetMatrix4x4("mvpMatrix", ref mat);
 
             if (type == PrimitiveType.Points)
             {
