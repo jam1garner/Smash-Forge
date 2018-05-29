@@ -63,6 +63,10 @@ namespace Smash_Forge
             remove.Click += RemoveToolStripMenuItem1_Click_1;
             TextureMenu.MenuItems.Add(remove);
 
+            MenuItem saveTexToPng = new MenuItem("Export as PNG");
+            saveTexToPng.Click += exportTexAsPngToolStripMenuItem_Click;
+            TextureMenu.MenuItems.Add(saveTexToPng);
+
             MenuItem import = new MenuItem("Import New Texture");
             import.Click += importToolStripMenuItem_Click;
             NUTMenu.MenuItems.Add(import);
@@ -70,6 +74,10 @@ namespace Smash_Forge
             MenuItem exportall = new MenuItem("Export to Folder");
             exportall.Click += exportNutToFolder;
             NUTMenu.MenuItems.Add(exportall);
+
+            MenuItem exportAllPng = new MenuItem("Export to Folder as PNG");
+            exportAllPng.Click += exportNutAsPngToolStripMenuItem_Click;
+            NUTMenu.MenuItems.Add(exportAllPng);
 
             MenuItem importall = new MenuItem("Import from Folder");
             importall.Click += importNutFromFolder;
@@ -201,6 +209,75 @@ namespace Smash_Forge
             if (!Runtime.shaders["Texture"].HasCheckedCompilation)
             {
                 Runtime.shaders["Texture"].DisplayCompilationWarnings("Texture");
+            }
+        }
+
+        private void RenderTextureToPng(NutTexture nutTexture, string outputPath)
+        {
+            if (!_loaded || glControl1 == null)
+                return;
+
+            // Load the OpenGL texture.
+            int width = nutTexture.Width;
+            int height = nutTexture.Height;
+            int texture = NUT.draw[nutTexture.HASHID];
+
+            // Setup
+            int fbo;
+            int rboColor;
+            int rboDepth;
+            glControl1.MakeCurrent();
+            GL.Disable(EnableCap.ScissorTest);
+            Rendering.FramebufferTools.CreateOffscreenRenderFboRbo(out fbo, out rboDepth, out rboColor, FramebufferTarget.Framebuffer, width, height);
+            GL.Viewport(0, 0, width, height);
+
+            // Render the texture to the fbo.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+            Rendering.RenderTools.DrawTexturedQuad(texture, width, height, renderR, renderG, renderB, renderAlpha);
+
+            // Save the image.
+            Bitmap image = Rendering.FramebufferTools.ReadFrameBufferPixels(fbo, FramebufferTarget.Framebuffer, width, height, true);
+            image.Save(outputPath);
+
+            // Cleanup
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.Viewport(glControl1.ClientRectangle);
+            image.Dispose();
+            GL.DeleteBuffer(fbo);
+            GL.DeleteRenderbuffer(rboColor);
+        }
+
+        private void exportTexAsPngToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (textureListBox.SelectedItem == null) return;
+            using (var sfd = new SaveFileDialog())
+            {
+                NutTexture tex = (NutTexture)(textureListBox.SelectedItem);
+                sfd.Filter = "Portable Networks Graphic (.png)|*.png|" +
+                                    "All files(*.*)|*.*";
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    RenderTextureToPng(tex, sfd.FileName);
+                }
+            }
+        }
+
+        private void exportNutAsPngToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (FolderSelectDialog f = new FolderSelectDialog())
+            {
+                if (f.ShowDialog() == DialogResult.OK)
+                {
+                    if (!Directory.Exists(f.SelectedPath))
+                        Directory.CreateDirectory(f.SelectedPath);
+
+                    foreach (NutTexture texture in NUT.Nodes)
+                    {
+                        string texId = texture.HASHID.ToString("X");
+                        RenderTextureToPng(texture, f.SelectedPath + "\\" + texId + ".png");
+                    }
+                }
             }
         }
 
