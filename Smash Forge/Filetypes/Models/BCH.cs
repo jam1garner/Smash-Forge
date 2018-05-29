@@ -482,7 +482,7 @@ namespace Smash_Forge
                 tex.data = f.getSection(doffset, f.size() - doffset);
 
                 tex.texture = _3DS.DecodeImage(tex.data, tex.Width, tex.Height, (_3DS.Tex_Formats)tex.type);
-                tex.display = NUT.loadImage(tex.texture);
+                tex.display = Rendering.Texture.CreateGlTextureFromBitmap(tex.texture);
             }
 
             // Model data

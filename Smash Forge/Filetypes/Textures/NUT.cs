@@ -750,28 +750,6 @@ namespace Smash_Forge
 
         //texture----------------------------------------------------------
 
-        public static int loadImage(Bitmap image)
-        {
-            int texID = GL.GenTexture();
-
-            GL.BindTexture(TextureTarget.Texture2D, texID);
-            BitmapData data = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
-                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
-                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-
-            image.UnlockBits(data);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 1);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-
-            return texID;
-        }
-
         public static int loadImage(NutTexture t, bool DDS = false)
         {
             int texID = GL.GenTexture();

@@ -1315,7 +1315,7 @@ namespace Smash_Forge
             //vertexTool.Show();
         }
 
-        private void Render(object sender, PaintEventArgs e)
+        private void Render(object sender, PaintEventArgs e, int defaultFbo = 0)
         {
             if (!ReadyToRender)
                 return;
@@ -1323,7 +1323,7 @@ namespace Smash_Forge
             SetupViewport();
 
             // Bind the default framebuffer in case it was set elsewhere.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
 
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
@@ -1347,7 +1347,7 @@ namespace Smash_Forge
             if (Runtime.usePostProcessing)
             {
                 // Render models and background into an HDR buffer. 
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, screenRenderFbo);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             }
 
@@ -1386,7 +1386,7 @@ namespace Smash_Forge
             //GL.BindFramebuffer(FramebufferTarget.Framebuffer, screenRenderFbo);
             DrawModels();
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
 
             if (Runtime.usePostProcessing)
             {
@@ -1396,7 +1396,7 @@ namespace Smash_Forge
                 RenderTools.DrawTexturedQuad(colorHdrTex1, brightTexWidth, brightTexHeight);
 
                 // Setup the normal viewport dimensions again.
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
 
                 RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, brightTexSmall);
@@ -1657,17 +1657,20 @@ namespace Smash_Forge
 
         public void SaveScreenRender(bool saveAlpha = false)
         {
+            int oldWidth = glViewport.Width;
+            int oldHeight = glViewport.Height;
+
             // Setup the new render dimensions.
             glViewport.MakeCurrent();
             GL.Disable(EnableCap.ScissorTest);
-            fboRenderWidth *= 2;
-            fboRenderHeight *= 2;
+            fboRenderWidth = oldWidth * 2;
+            fboRenderHeight = oldHeight * 2;
             ResizeTexturesAndBuffers();
             GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
 
             // Render the viewport.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, screenRenderFbo);
-            Render(null, null);
+            Render(null, null, screenRenderFbo);
 
             // Save the render as a PNG.
             Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(screenRenderFbo, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, saveAlpha);
@@ -1677,6 +1680,8 @@ namespace Smash_Forge
 
             // Cleanup
             //GL.Enable(EnableCap.ScissorTest);
+            fboRenderWidth = oldWidth;
+            fboRenderHeight = oldHeight;
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
@@ -1749,6 +1754,11 @@ namespace Smash_Forge
                 RenderTools.DrawRectangularPrism(new Vector3(light.positionX, light.positionY, light.positionZ),
                     light.scaleX, light.scaleY, light.scaleZ, true);
             }
+        }
+
+        private void glViewport_Paint(object sender, PaintEventArgs e)
+        {
+            Render(sender, e);
         }
 
         private void DrawUvsForSelectedTexture(NutTexture tex)

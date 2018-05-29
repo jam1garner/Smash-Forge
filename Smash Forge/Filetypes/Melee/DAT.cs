@@ -1351,7 +1351,7 @@ namespace Smash_Forge
                     }
 
 
-                    texid = NUT.loadImage(image);
+                    texid = Rendering.Texture.CreateGlTextureFromBitmap(image);
                 }
             }
         }

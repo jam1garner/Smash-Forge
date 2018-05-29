@@ -86,40 +86,40 @@ namespace Smash_Forge.Rendering
             stageMapLow = LoadCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
             dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
 
-            dummyRamp = NUT.loadImage(Properties.Resources._10080000);
+            dummyRamp = Texture.CreateGlTextureFromBitmap(Properties.Resources._10080000);
             dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp);
 
-            pokemonStadiumDummyTex = NUT.loadImage(Properties.Resources._10040001);
+            pokemonStadiumDummyTex = Texture.CreateGlTextureFromBitmap(Properties.Resources._10040001);
             dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex);
 
-            punchOutDummyTex = NUT.loadImage(Properties.Resources._10040000);
+            punchOutDummyTex = Texture.CreateGlTextureFromBitmap(Properties.Resources._10040000);
             dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex);
 
-            shadowMapDummyTex = NUT.loadImage(Properties.Resources._10100000);
+            shadowMapDummyTex = Texture.CreateGlTextureFromBitmap(Properties.Resources._10100000);
             dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
 
             // Sphere Default Textures.
-            sphereDifTex = NUT.loadImage(Properties.Resources.defaultDif);
-            sphereNrmMapTex = NUT.loadImage(Properties.Resources.nrmMap);
+            sphereDifTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.defaultDif);
+            sphereNrmMapTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.nrmMap);
 
 
             // Sphere Mesh Attributes.
-            sphereNrmTex = NUT.loadImage(Properties.Resources.nrm);
-            sphereUvTex = NUT.loadImage(Properties.Resources.uv);
-            sphereTanTex = NUT.loadImage(Properties.Resources.tan);
-            sphereBitanTex = NUT.loadImage(Properties.Resources.bitan);
+            sphereNrmTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.nrm);
+            sphereUvTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.uv);
+            sphereTanTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.tan);
+            sphereBitanTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.bitan);
 
             // Helpful textures. 
-            uvTestPattern = NUT.loadImage(Properties.Resources.UVPattern);
-            boneWeightGradient = NUT.loadImage(Properties.Resources.boneWeightGradient);
-            boneWeightGradient2 = NUT.loadImage(Properties.Resources.boneWeightGradient2);
+            uvTestPattern = Texture.CreateGlTextureFromBitmap(Properties.Resources.UVPattern);
+            boneWeightGradient = Texture.CreateGlTextureFromBitmap(Properties.Resources.boneWeightGradient);
+            boneWeightGradient2 = Texture.CreateGlTextureFromBitmap(Properties.Resources.boneWeightGradient2);
 
-            defaultTex = NUT.loadImage(Resources.Resources.DefaultTexture);
+            defaultTex = Texture.CreateGlTextureFromBitmap(Resources.Resources.DefaultTexture);
 
             try
             {
-                floorTexture = NUT.loadImage(new Bitmap(Runtime.floorTexFilePath));
-                backgroundTexture = NUT.loadImage(new Bitmap(Runtime.backgroundTexFilePath));
+                floorTexture = Texture.CreateGlTextureFromBitmap(new Bitmap(Runtime.floorTexFilePath));
+                backgroundTexture = Texture.CreateGlTextureFromBitmap(new Bitmap(Runtime.backgroundTexFilePath));
             }
             catch (Exception)
             {

@@ -52,7 +52,7 @@ namespace Smash_Forge
             if(Width > 0 && Height > 0)
             {
                 texture = _3DS.DecodeImage(data, Width, Height, (_3DS.Tex_Formats)type);
-                display = NUT.loadImage(texture);
+                display = Rendering.Texture.CreateGlTextureFromBitmap(texture);
             }
         }
     }
