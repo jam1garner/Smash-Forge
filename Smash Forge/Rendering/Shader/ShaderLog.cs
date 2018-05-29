@@ -20,6 +20,12 @@ namespace Smash_Forge.Rendering
             errorLog.AppendLine(error);
         }
 
+        public void AppendUniformNameErrors(HashSet<string> invalidUniformNames)
+        {
+            foreach (string uniform in invalidUniformNames)
+                errorLog.AppendLine(String.Format("[Warning] Attempted to set undeclared uniform variable {0}.", uniform));
+        }
+
         public void AppendHardwareAndVersionInfo()
         {
             errorLog.AppendLine("Vendor: " + GL.GetString(StringName.Vendor));

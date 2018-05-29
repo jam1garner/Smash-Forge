@@ -26,14 +26,111 @@ namespace Smash_Forge.Rendering
 
         private ShaderLog errorLog = new ShaderLog();
 
+        // Vertex Attributes and Uniforms
         int activeUniformCount = 0;
         int activeAttributeCount = 0;
 		private Dictionary<string, int> vertexAttributeAndUniformLocations = new Dictionary<string, int>();
+
+        // Write these names to the error log later rather than throwing an exception.
+        private HashSet<string> invalidUniformNames = new HashSet<string>();
 
         public Shader()
         {
             programId = GL.CreateProgram();
             errorLog.AppendHardwareAndVersionInfo();
+        }
+
+        // Shader Uniforms. Keep track of undeclared variables, so they can be fixed later.
+        public void SetFloat(string uniformName, float value)
+        {
+            if (!vertexAttributeAndUniformLocations.ContainsKey(uniformName) && !invalidUniformNames.Contains(uniformName))
+            {
+                invalidUniformNames.Add(uniformName);
+                return;
+            }
+
+            GL.Uniform1(GetVertexAttributeUniformLocation(uniformName), value);
+        }
+
+        public void SetInt(string uniformName, int value)
+        {
+            if (!vertexAttributeAndUniformLocations.ContainsKey(uniformName) && !invalidUniformNames.Contains(uniformName))
+            {
+                invalidUniformNames.Add(uniformName);
+                return;
+            }
+
+            GL.Uniform1(GetVertexAttributeUniformLocation(uniformName), value);
+        }
+
+        public void SetUint(string uniformName, uint value)
+        {
+            if (!vertexAttributeAndUniformLocations.ContainsKey(uniformName) && !invalidUniformNames.Contains(uniformName))
+            {
+                invalidUniformNames.Add(uniformName);
+                return;
+            }
+
+            GL.Uniform1(GetVertexAttributeUniformLocation(uniformName), value);
+        }
+
+        public void SetBoolToInt(string uniformName, bool value)
+        {
+            if (!vertexAttributeAndUniformLocations.ContainsKey(uniformName) && !invalidUniformNames.Contains(uniformName))
+            {
+                invalidUniformNames.Add(uniformName);
+                return;
+            }
+
+            // if/else is faster than the ternary operator. 
+            if (value)
+                GL.Uniform1(GetVertexAttributeUniformLocation(uniformName), 1);
+            else
+                GL.Uniform1(GetVertexAttributeUniformLocation(uniformName), 0);
+        }
+
+        public void SetVector3(string uniformName, Vector3 value)
+        {
+            if (!vertexAttributeAndUniformLocations.ContainsKey(uniformName) && !invalidUniformNames.Contains(uniformName))
+            {
+                invalidUniformNames.Add(uniformName);
+                return;
+            }
+
+            GL.Uniform3(GetVertexAttributeUniformLocation(uniformName), value);
+        }
+
+        public void SetVector3(string uniformName, float x, float y, float z)
+        {
+            if (!vertexAttributeAndUniformLocations.ContainsKey(uniformName) && !invalidUniformNames.Contains(uniformName))
+            {
+                invalidUniformNames.Add(uniformName);
+                return;
+            }
+
+            GL.Uniform3(GetVertexAttributeUniformLocation(uniformName), x, y, z);
+        }
+
+        public void SetVector4(string uniformName, Vector4 value)
+        {
+            if (!vertexAttributeAndUniformLocations.ContainsKey(uniformName) && !invalidUniformNames.Contains(uniformName))
+            {
+                invalidUniformNames.Add(uniformName);
+                return;
+            }
+
+            GL.Uniform4(GetVertexAttributeUniformLocation(uniformName), value);
+        }
+
+        public void SetVector4(string uniformName, float x, float y, float z, float w)
+        {
+            if (!vertexAttributeAndUniformLocations.ContainsKey(uniformName) && !invalidUniformNames.Contains(uniformName))
+            {
+                invalidUniformNames.Add(uniformName);
+                return;
+            }
+
+            GL.Uniform4(GetVertexAttributeUniformLocation(uniformName), x, y, z, w);
         }
 
         public int GetVertexAttributeUniformLocation(string name)
@@ -69,6 +166,8 @@ namespace Smash_Forge.Rendering
         {
             // Don't append program errors until all the shaders are attached and compiled.
             errorLog.AppendProgramInfoLog(programId);
+            // Collect all of the spelling mistakes.
+            errorLog.AppendUniformNameErrors(invalidUniformNames);
 
             errorLog.SaveToErrorLogDir(shaderName);
         }

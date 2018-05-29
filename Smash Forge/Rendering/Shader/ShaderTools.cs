@@ -88,23 +88,15 @@ namespace Smash_Forge.Rendering
             }
         }
         
-        public static void BoolToIntShaderUniform(Shader shader, bool value, string name)
-        {
-            // Else if is faster than ternary operator. 
-            if (value)
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation(name), 1);
-            else
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation(name), 0);
-        }
-
         public static void LightColorVector3Uniform(Shader shader, LightColor color, string name)
         {
-            GL.Uniform3(shader.GetVertexAttributeUniformLocation(name), color.R, color.G, color.B);
+            // Not declared in the Shader class to make the Shader class more portable.
+            shader.SetVector3(name, color.R, color.G, color.B);
         }
 
         public static void SystemColorVector3Uniform(Shader shader, System.Drawing.Color color, string name)
         {
-            GL.Uniform3(shader.GetVertexAttributeUniformLocation(name), ColorTools.Vector4FromColor(color).Xyz);
+            shader.SetVector3(name, ColorTools.Vector4FromColor(color).Xyz);
         }
 
         public static void SaveErrorLogs()

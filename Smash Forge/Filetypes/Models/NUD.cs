@@ -545,29 +545,25 @@ namespace Smash_Forge
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material)
         {
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("flags"), material.Flags);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("selectedBoneIndex"), Runtime.selectedBoneIndex);
+            shader.SetUint("flags", material.Flags);
+            shader.SetInt("selectedBoneIndex", Runtime.selectedBoneIndex);
 
             // Shader Uniforms
-            ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderVertColor && material.useVertexColor, "renderVertColor");
+            shader.SetBoolToInt("renderVertColor", Runtime.renderVertColor && material.useVertexColor);
             SetTextureUniforms(shader, material);
             SetMaterialPropertyUniforms(shader, material);
             SetStageLightingUniforms(shader, lightSetNumber);
             SetXMBUniforms(shader, p);
             SetNscUniform(p, shader);
 
-            ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderModelWireframe, "drawWireframe");
-
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("lineWidth"), Runtime.wireframeLineWidth);
-
-            GL.Uniform3(shader.GetVertexAttributeUniformLocation("cameraPosition"), camera.position);
-
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("zBufferOffset"), material.zBufferOffset);
-
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("bloomThreshold"), Runtime.bloomThreshold);
+            shader.SetBoolToInt("drawWireFrame", Runtime.renderModelWireframe);
+            shader.SetFloat("lineWidth", Runtime.wireframeLineWidth);
+            shader.SetVector3("cameraPosition", camera.position);
+            shader.SetFloat("zBufferOffset", material.zBufferOffset);
+            shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
 
             p.isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
-            ShaderTools.BoolToIntShaderUniform(shader, p.isTransparent, "isTransparent");
+            shader.SetBoolToInt("isTransparent", p.isTransparent);
         }
 
         private void SetAlphaBlending(Material material)
@@ -666,13 +662,13 @@ namespace Smash_Forge
             DirectionalLight stageLight = Runtime.lightSetParam.stageDiffuseLights[index];
 
             string uniformBoolName = "renderStageLight" + (lightIndex + 1);
-            ShaderTools.BoolToIntShaderUniform(shader, Runtime.lightSetParam.stageDiffuseLights[index].enabled, uniformBoolName);
+            shader.SetBoolToInt(uniformBoolName, Runtime.lightSetParam.stageDiffuseLights[index].enabled);
 
             string uniformColorName = "stageLight" + (lightIndex + 1) + "Color";
             ShaderTools.LightColorVector3Uniform(shader, stageLight.diffuseColor, uniformBoolName);
 
             string uniformDirectionName = "stageLight" + (lightIndex + 1) + "Direction";
-            GL.Uniform3(shader.GetVertexAttributeUniformLocation(uniformDirectionName), stageLight.direction);
+            shader.SetVector3(uniformDirectionName, stageLight.direction);
         }
 
         private static void SetNscUniform(Polygon p, Shader shader)
@@ -695,12 +691,12 @@ namespace Smash_Forge
         
         private void SetXMBUniforms(Shader shader, Polygon p)
         {
-            ShaderTools.BoolToIntShaderUniform(shader, modelType.Equals("stage"), "isStage");
+            shader.SetBoolToInt("isStage", modelType.Equals("stage"));
 
             bool directUVTimeFlags = (p.materials[0].Flags & 0x00001900) == 0x00001900; // should probably move elsewhere
-            ShaderTools.BoolToIntShaderUniform(shader, useDirectUVTime && directUVTimeFlags, "useDirectUVTime");
+            shader.SetBoolToInt("useDirectUVTime", useDirectUVTime && directUVTimeFlags);
 
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("lightSet"), lightSetNumber);
+            shader.SetInt("lightSet", lightSetNumber);
         }
 
         private void SetVertexAttributes(Polygon p, Shader shader)
@@ -739,14 +735,14 @@ namespace Smash_Forge
             GL.StencilMask(0x00);
 
             // Override the model color with white in the shader.
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("drawSelection"), 1);
+            shader.SetInt("drawSelection", 1);
 
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.LineWidth(2.0f);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("drawSelection"), 0);
+            shader.SetInt("drawSelection", 0);
 
             GL.StencilMask(0xFF);
             GL.Clear(ClearBufferMask.StencilBufferBit);
@@ -1018,26 +1014,28 @@ namespace Smash_Forge
 
         private static void SetHasTextureUniforms(Shader shader, Material mat)
         {
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse, "hasDif");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse2, "hasDif2");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse3, "hasDif3");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasStageMap, "hasStage");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasCubeMap, "hasCube");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasAoMap, "hasAo");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasNormalMap, "hasNrm");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasRamp, "hasRamp");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasDummyRamp, "hasDummyRamp");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.useColorGainOffset, "hasColorGainOffset");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.useDiffuseBlend, "useDiffuseBlend");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasSphereMap, "hasSphereMap");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.hasBayoHair, "hasBayoHair");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.useReflectionMask, "useDifRefMask");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.softLightBrighten, "softLightBrighten");
+            shader.SetBoolToInt("hasDif", mat.hasDiffuse);
+            shader.SetBoolToInt("hasDif2", mat.hasDiffuse2);
+            shader.SetBoolToInt("hasDif3", mat.hasDiffuse3);
+            shader.SetBoolToInt("hasStage", mat.hasStageMap);
+            shader.SetBoolToInt("hasCube", mat.hasCubeMap);
+            shader.SetBoolToInt("hasAo", mat.hasAoMap);
+            shader.SetBoolToInt("hasNrm", mat.hasNormalMap);
+            shader.SetBoolToInt("hasRamp", mat.hasRamp);
+            shader.SetBoolToInt("hasDummyRamp", mat.hasDummyRamp);
+            shader.SetBoolToInt("hasColorGainOffset", mat.useColorGainOffset);
+            shader.SetBoolToInt("useDiffuseBlend", mat.useDiffuseBlend);
+            shader.SetBoolToInt("hasSphereMap", mat.hasSphereMap);
+            shader.SetBoolToInt("hasBayoHair", mat.hasBayoHair);
+            shader.SetBoolToInt("useDifRefMask", mat.useReflectionMask);
+            shader.SetBoolToInt("softLightBrighten", mat.softLightBrighten);
         }
 
         private static void MatPropertyShaderUniform(Shader shader, Material mat, string propertyName, float default1,
             float default2, float default3, float default4)
         {
+            // Attempt to get the values from the material's properties. 
+            // Otherwise, use the specified default values.
             float[] values;
             mat.entries.TryGetValue(propertyName, out values);
             if (mat.anims.ContainsKey(propertyName))
@@ -1046,10 +1044,11 @@ namespace Smash_Forge
             }
             if (values == null)
                 values = new float[] { default1, default2, default3, default4 };
+
             string uniformName = propertyName.Substring(3); // remove the NU_ from name
 
             if (values.Length == 4)
-                GL.Uniform4(shader.GetVertexAttributeUniformLocation(uniformName), values[0], values[1], values[2], values[3]);
+                shader.SetVector4(uniformName, values[0], values[1], values[2], values[3]);
             else
                 Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
@@ -1090,7 +1089,7 @@ namespace Smash_Forge
             if (values == null)
                 hasParam = 0;
 
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation(uniformName), hasParam);
+            shader.SetInt(uniformName, hasParam);
         }
 
         public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)
@@ -1102,13 +1101,13 @@ namespace Smash_Forge
 
             if (type == PrimitiveType.Points)
             {
-                GL.Uniform3(shader.GetVertexAttributeUniformLocation("col1"), 0f, 0f, 1f);
-                GL.Uniform3(shader.GetVertexAttributeUniformLocation("col2"), 1f, 1f, 0f);
+                shader.SetVector3("col1", 0, 0, 1);
+                shader.SetVector3("col2", 1, 1, 0);
             }
             if (type == PrimitiveType.Triangles)
             {
-                GL.Uniform3(shader.GetVertexAttributeUniformLocation("col1"), 0.5f, 0.5f, 0.5f);
-                GL.Uniform3(shader.GetVertexAttributeUniformLocation("col2"), 1f, 0f, 0f);
+                shader.SetVector3("col1", 0.5f, 0.5f, 0.5f);
+                shader.SetVector3("col2", 1, 0, 0);
             }
 
             shader.EnableVertexAttributes();

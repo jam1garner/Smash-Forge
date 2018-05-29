@@ -1533,17 +1533,17 @@ namespace Smash_Forge.Rendering
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("image"), 0);
 
             // Channel toggle uniforms. 
-            ShaderTools.BoolToIntShaderUniform(shader, renderR, "renderR");
-            ShaderTools.BoolToIntShaderUniform(shader, renderG, "renderG");
-            ShaderTools.BoolToIntShaderUniform(shader, renderB, "renderB");
-            ShaderTools.BoolToIntShaderUniform(shader, renderA, "renderAlpha");
+            shader.SetBoolToInt("renderR",     renderR);
+            shader.SetBoolToInt("renderG",     renderG);
+            shader.SetBoolToInt("renderB",     renderB);
+            shader.SetBoolToInt("renderAlpha", renderA);
 
             bool alphaOverride = renderA && !renderR && !renderG && !renderB;
-            ShaderTools.BoolToIntShaderUniform(shader, alphaOverride, "alphaOverride");
+            shader.SetBoolToInt("alphaOverride", alphaOverride);
 
             // Perform aspect ratio calculations in shader. 
             // This only works properly if the viewport is square.
-            ShaderTools.BoolToIntShaderUniform(shader, keepAspectRatio, "preserveAspectRatio");
+            shader.SetBoolToInt("preserveAspectRatio", keepAspectRatio);
             float aspectRatio = (float)width / (float)height;
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("width"), width);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("height"), height);
@@ -1573,7 +1573,7 @@ namespace Smash_Forge.Rendering
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("image1"), 1);
 
-            ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderBloom, "renderBloom");
+            shader.SetBoolToInt("renderBloom", Runtime.renderBloom);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("bloomIntensity"), Runtime.bloomIntensity);
 
             ShaderTools.SystemColorVector3Uniform(shader, Runtime.backgroundGradientBottom, "backgroundBottomColor");
@@ -1604,7 +1604,7 @@ namespace Smash_Forge.Rendering
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("bloomThreshold"), Runtime.bloomThreshold);
 
             bool isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
-            ShaderTools.BoolToIntShaderUniform(shader, isTransparent, "isTransparent");
+            shader.SetBoolToInt("isTransparent", isTransparent);
 
             // Set texture uniforms for the mesh attributes. 
             GL.ActiveTexture(TextureUnit.Texture15);
