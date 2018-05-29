@@ -155,7 +155,7 @@ namespace Smash_Forge
         public static Color backgroundGradientTop = Color.FromArgb(255, 26, 26, 26);
         public static Color backgroundGradientBottom = Color.FromArgb(255, 77, 77, 77);
         public static float fov = 0.524f; // default 30 degrees from stage param files
-        public static float zoomspeed = 1.0f;
+        public static float zoomspeed = 1.25f;
         public static float zoomModifierScale = 2.0f;
         public static bool cameraLight = false;
 
