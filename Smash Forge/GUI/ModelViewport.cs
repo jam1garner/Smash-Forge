@@ -48,7 +48,8 @@ namespace Smash_Forge
 
         // Screen Render
         int screenRenderFbo;
-        int screenRenderRbo;
+        int screenRenderTex0;
+        int screenRenderRboDepth;
 
         // The viewport dimensions should be used for FBOs visible on screen.
         // Larger dimensions can be used for higher quality outputs for FBOs.
@@ -280,7 +281,7 @@ namespace Smash_Forge
         private void SetupOffScreenFboRbo()
         {
             // Create an FBO/RBO just for saving screen renders.
-            FramebufferTools.CreateOffscreenRenderFboRbo(out screenRenderFbo, out screenRenderRbo, FramebufferTarget.DrawFramebuffer, fboRenderWidth, fboRenderHeight);
+            FramebufferTools.CreateOffscreenRenderFboRbo(out screenRenderFbo, out screenRenderRboDepth, out screenRenderTex0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight);
 
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -481,10 +482,17 @@ namespace Smash_Forge
 
         private void ResizeOffScreenRbo()
         {
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, screenRenderFbo);
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, screenRenderRbo);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Rgba8, fboRenderWidth, fboRenderHeight);
-            GL.FramebufferRenderbuffer(FramebufferTarget.DrawFramebuffer, FramebufferAttachment.ColorAttachment0, RenderbufferTarget.Renderbuffer, screenRenderRbo);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, screenRenderFbo);
+
+            // First color attachment (regular texture).
+            GL.BindTexture(TextureTarget.Texture2D, screenRenderTex0);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, fboRenderWidth, fboRenderHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, screenRenderTex0, 0);
+
+            // Render buffer for the depth attachment, which isn't provided by default.
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, screenRenderRboDepth);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, fboRenderWidth, fboRenderHeight);
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, screenRenderRboDepth);
         }
 
         private void ResizeSmallBrightHdrTexture()
@@ -1339,7 +1347,7 @@ namespace Smash_Forge
             if (Runtime.usePostProcessing)
             {
                 // Render models and background into an HDR buffer. 
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, screenRenderFbo);
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             }
 
@@ -1375,6 +1383,7 @@ namespace Smash_Forge
 
             SetDepthTesting();
 
+            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, screenRenderFbo);
             DrawModels();
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -1651,22 +1660,24 @@ namespace Smash_Forge
             // Setup the new render dimensions.
             glViewport.MakeCurrent();
             GL.Disable(EnableCap.ScissorTest);
-            //ResizeTexturesAndBuffers();
+            fboRenderWidth *= 2;
+            fboRenderHeight *= 2;
+            ResizeTexturesAndBuffers();
             GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
 
             // Render the viewport.
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, screenRenderFbo);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, screenRenderFbo);
             Render(null, null);
 
             // Save the render as a PNG.
-            Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(screenRenderFbo, FramebufferTarget.DrawFramebuffer, fboRenderWidth, fboRenderHeight, saveAlpha);
+            Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(screenRenderFbo, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, saveAlpha);
             string outputPath = CalculateUniqueName();
             screenCapture.Save(outputPath);
             screenCapture.Dispose(); // Manually dispose the bitmap to avoid memory leaks. 
 
             // Cleanup
-            GL.Enable(EnableCap.ScissorTest);
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+            //GL.Enable(EnableCap.ScissorTest);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
         private static string CalculateUniqueName()
