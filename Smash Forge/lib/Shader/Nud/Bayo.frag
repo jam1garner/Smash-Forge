@@ -208,7 +208,9 @@ vec3 BayoHairSpecular(vec3 diffuseMap, vec3 I, vec3 specLightDirection, vec4 ref
     float v = dot(vert.tangent, halfAngle) *  0.5 + 0.5;
     vec3 specColor = texture(dummyRamp, vec2(u, v)).rgb;
     // TODO: Find proper constants.
-    vec3 specularColorTotal = specColor * specularTerm * specMask * 2.5;
+    float intensity = alphaBlendParams.z * 0.1;
+    vec3 specularColorTotal = specColor * specularTerm * specMask * intensity;
     specularColorTotal *= colorGain.rgb; // #justbayothings
+    specularColorTotal = min(specularColorTotal, vec3(1));
     return specularColorTotal;
 }
