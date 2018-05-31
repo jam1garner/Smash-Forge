@@ -137,7 +137,7 @@ namespace Smash_Forge
                     type = PixelInternalFormat.CompressedRgRgtc2;
                     break;
                 default:
-                    throw new NotImplementedException($"Unknown nut format {typet}");
+                    throw new NotImplementedException($"Unknown nut texture format 0x{typet:X}");
             }
         }
     }
@@ -239,47 +239,44 @@ namespace Smash_Forge
             o.writeInt(0);
 
             //calculate total header size
-            int headerLength = 0;
+            uint headerLength = 0;
 
             foreach (NutTexture texture in Nodes)
             {
-                int headerSize = 0x50;
-                
+                ushort headerSize = 0x50;
                 if (texture.mipmaps.Count > 1)
                 {
-                    headerSize += texture.mipmaps.Count * 4;
-                    while (headerSize % 16 != 0)
-                        headerSize += 4;
+                    headerSize += (ushort)(texture.mipmaps.Count * 4);
+                    while (headerSize % 0x10 != 0)
+                        headerSize += 1;
                 }
+
                 headerLength += headerSize;
             }
 
             // write headers+data
             foreach (NutTexture texture in Nodes)
             {
-                int size = 0;
+                uint size = 0;
                 
                 foreach (var mip in texture.mipmaps)
                 {
-                    size += mip.Length;
-                    while (size % 16 != 0)
+                    size += (uint)mip.Length;
+                    while (size % 0x10 != 0)
                         size += 1;
                 }
 
-                int headerSize = 0x50;
-
-                // calculate header size
-                if(texture.mipmaps.Count > 1)
+                ushort headerSize = 0x50;
+                if (texture.mipmaps.Count > 1)
                 {
-                    headerSize += texture.mipmaps.Count * 4;
-                    //align to 16
-                    while (headerSize % 16 != 0)
+                    headerSize += (ushort)(texture.mipmaps.Count * 4);
+                    while (headerSize % 0x10 != 0)
                         headerSize += 1;
                 }
 
-                o.writeInt(size + headerSize);
+                o.writeInt((int)(size + headerSize));
                 o.writeInt(0x00);//padding
-                o.writeInt(size);
+                o.writeInt((int)size);
                 o.writeShort(headerSize); //+ (texture.mipmaps.Count - 4 > 0 ? texture.mipmaps.Count - 4 : 0) * 4
                 o.writeShort(0);
                 o.writeShort(texture.mipmaps.Count);
@@ -288,7 +285,7 @@ namespace Smash_Forge
                 o.writeShort(texture.Height);
                 o.writeInt(0);
                 o.writeInt(0);
-                o.writeInt(headerLength + data.size());
+                o.writeInt((int)(headerLength + data.size()));
                 headerLength -= headerSize;
                 o.writeInt(0);
                 o.writeInt(0);
@@ -317,7 +314,7 @@ namespace Smash_Forge
                     if (texture.mipmaps.Count > 1)
                         o.writeInt(data.size() - ds);
                 }
-                o.align(16);
+                o.align(0x10);
                 
                 if (texture.getNutFormat() == 14 || texture.getNutFormat() == 17)
                 {
@@ -386,7 +383,8 @@ namespace Smash_Forge
 
             for (int i = 0; i < count; i++)
             {
-                //Debug.WriteLine(d.pos().ToString("x"));
+                int currentTexStart = d.pos();
+
                 NutTexture tex = new NutTexture();
                 tex.type = PixelInternalFormat.Rgba32ui;
 
@@ -395,11 +393,9 @@ namespace Smash_Forge
 
                 int dataSize = d.readInt();
                 int headerSize = d.readUShort();
-                d.skip(3);
-                int numMips = d.readByte();
-                //Debug.WriteLine(numMips);
-                d.skip(1);
-                tex.setPixelFormatFromNutFormat(d.readByte());
+                d.skip(2);
+                int numMips = d.readUShort();
+                tex.setPixelFormatFromNutFormat(d.readUShort());
                 tex.Width = d.readUShort();
                 tex.Height = d.readUShort();
 
@@ -460,6 +456,7 @@ namespace Smash_Forge
                 }
 
                 Nodes.Add(tex);
+                d.seek(currentTexStart + headerSize);
 
                 /*for (int miplevel = 0; miplevel < numMips; miplevel++)
                 {
@@ -500,27 +497,28 @@ namespace Smash_Forge
             d.skip(0x02);
             int count = d.readUShort();
 
-            d.skip(0x10);
-            int headerPtr = d.pos();
+            int headerPtr = 0x10;
             int dataPtr = 0;
             int gtxHeaderOffset = 0;
 
             for (int i = 0; i < count; i++) {
+                d.seek(headerPtr);
                 NutTexture tex = new NutTexture();
                 tex.type = PixelInternalFormat.Rgba32ui;
 
-                d.seek(headerPtr);
                 int totalSize = d.readInt();
+                d.skip(4);
+                int dataSize = d.readInt();
                 int headerSize = d.readUShort();
-                int numMips = d.readInt();
+                headerPtr += headerSize;
+                d.skip(2);
+                int numMips = d.readUShort();
                 tex.setPixelFormatFromNutFormat(d.readUShort());
                 tex.Width = d.readUShort();
                 tex.Height = d.readUShort();
 
                 d.skip(8); // mipmaps and padding
                 int dataOffset = d.readInt() + dataPtr + 0x10;
-
-                headerPtr += headerSize;
                 dataPtr += headerSize;
 
                 d.skip(0x04);
@@ -567,7 +565,7 @@ namespace Smash_Forge
                 int ds = dataOffset;
                 int s1 = 0;
                 int size = 0;
-                Console.WriteLine(totalSize.ToString("x"));
+                Console.WriteLine(dataSize.ToString("x"));
                 for (int mipLevel = 0; mipLevel < numMips; mipLevel++)
                 {
                     // Maybe this is the problem?
@@ -575,7 +573,7 @@ namespace Smash_Forge
                     int p = pitch >> mipLevel;
                     
                     size = d.readInt();
-                    //Console.WriteLine("\tMIP: " + size.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + (size == 0 ? ds + totalSize - dataOffset : size));
+                    //Console.WriteLine("\tMIP: " + size.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + (size == 0 ? ds + dataSize - dataOffset : size));
 
                     //Console.WriteLine(tex.id.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + swizzle);
                     //Console.WriteLine((tex.width >> mipLevel) + " " + (tex.height >> mipLevel));

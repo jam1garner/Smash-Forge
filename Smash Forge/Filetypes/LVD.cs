@@ -119,6 +119,42 @@ namespace Smash_Forge
         public float y;
     }
 
+    public enum CollisionMatType : byte
+    {
+        Brick = 0x00,
+        Rock = 0x01,
+        Grass = 0x02,
+        Soil = 0x03,
+        Wood = 0x04,
+        LightMetal = 0x05,
+        HeavyMetal = 0x06,
+        Carpet = 0x07,
+        Fence = 0x08,
+        MasterFortress = 0x09,
+        Water = 0x0a,
+        Bubbles = 0x0b,
+        Ice = 0x0c,
+        Snow = 0x0d,
+        SnowIce = 0x0e,
+        Gamewatch = 0x0f,
+        Ice2 = 0x10,
+        Danbouru = 0x11,
+        SpikesTargetTestOnly = 0x12, //Untested; from Brawl
+        Hazard2SSEOnly = 0x13, //Untested; from Brawl
+        Hazard3SSEOnly = 0x14, //Untested; from Brawl
+        LargeBubbles = 0x15,
+        Clouds = 0x16,
+        Subspace = 0x17, //Untested; from Brawl
+        Stone2 = 0x18,
+        Unknown2 = 0x19, //Untested; from Brawl
+        NES8Bit = 0x1a, //Untested; from Brawl
+        Metal2 = 0x1b,
+        Sand = 0x1c,
+        Homerun = 0x1d, //Untested; from Brawl
+        WaterNoSplash = 0x1e, //Untested; from Brawl
+        Hurt = 0x1f
+    }
+
     public class CollisionMat
     {
         public byte[] material = new byte[0xC];

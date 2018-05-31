@@ -521,31 +521,6 @@
             // physicsMatComboBox
             // 
             this.physicsMatComboBox.FormattingEnabled = true;
-            this.physicsMatComboBox.Items.AddRange(new object[] {
-            "Iron",
-            "Snow",
-            "Ice",
-            "Wood",
-            "LargeBubbles",
-            "Hurt",
-            "Brick",
-            "Stone2",
-            "Metal2",
-            "Water",
-            "Bubbles",
-            "Clouds",
-            "Ice2",
-            "NebuIron",
-            "Danbouru",
-            "Rock",
-            "Gamewatch",
-            "Grass",
-            "SnowIce",
-            "Fence",
-            "Soil",
-            "Sand",
-            "MasterFortress",
-            "Carpet"});
             this.physicsMatComboBox.Location = new System.Drawing.Point(10, 396);
             this.physicsMatComboBox.Margin = new System.Windows.Forms.Padding(2);
             this.physicsMatComboBox.Name = "physicsMatComboBox";
