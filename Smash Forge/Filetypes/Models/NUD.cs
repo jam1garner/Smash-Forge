@@ -93,6 +93,8 @@ namespace Smash_Forge
         private string GetTextureIdsWithoutNutOrDummyTex(NUT nut)
         {
             StringBuilder incorrectTextureIds = new StringBuilder();
+            int textureCount = 0;
+            const int maxTextureCount = 10;
             foreach (Mesh m in Nodes)
             {
                 foreach (Polygon p in m.Nodes)
@@ -123,12 +125,19 @@ namespace Smash_Forge
                                 }
                             }
 
-                            if (!validTextureId)
+                            // If all the textures are incorrect, the message box will fill the entire screen and can't be resized.
+                            if (!validTextureId && (textureCount != maxTextureCount))
+                            {
                                 incorrectTextureIds.AppendLine(m.Text + " [" + p.Index + "] ID: " + matTex.hash.ToString("X"));
+                                textureCount++;
+                            }
                         }
                     }
                 }
             }
+
+            if (textureCount == maxTextureCount)
+                incorrectTextureIds.AppendLine("...");
 
             return incorrectTextureIds.ToString();
         }
