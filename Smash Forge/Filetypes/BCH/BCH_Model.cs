@@ -74,7 +74,7 @@ namespace Smash_Forge
                 ShaderTools.SetupShaders();
             }
 
-            Runtime.shaders["Mbn"].DisplayCompilationWarnings("Mbn");
+            Runtime.shaders["Mbn"].DisplayProgramStatus("Mbn");
 
             if (shader == null)
             {

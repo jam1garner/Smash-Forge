@@ -68,8 +68,8 @@ namespace Smash_Forge
             if (!ShaderTools.hasSetupShaders)
                 ShaderTools.SetupShaders();
 
-            Runtime.shaders["Nud"].DisplayCompilationWarnings("NUD");
-            Runtime.shaders["NudDebug"].DisplayCompilationWarnings("NudDebug");
+            Runtime.shaders["Nud"].DisplayProgramStatus("NUD");
+            Runtime.shaders["NudDebug"].DisplayProgramStatus("NudDebug");
         }
 
         public NUD(string fname) : this()
@@ -270,6 +270,7 @@ namespace Smash_Forge
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NudDebug"];
 
+            Debug.WriteLine(shader.ProgramCreatedSuccessfully());
             GL.UseProgram(shader.programId);
 
             shader.EnableVertexAttributes();
