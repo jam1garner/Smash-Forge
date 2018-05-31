@@ -22,6 +22,7 @@ namespace Smash_Forge
         private void LVDEditor_Load(object sender, EventArgs e)
         {
             HideAllGroupBoxes();
+            physicsMatComboBox.DataSource = Enum.GetValues(typeof(CollisionMatType));
         }
 
         public LVD LVD;
@@ -35,37 +36,9 @@ namespace Smash_Forge
         private DAT.JOBJ currentJobj;
         public DAT datToPrerender = null;
 
-        enum materialTypes : byte
-        {
-            Iron = 0x06,
-            Snow = 0x0d,
-            Ice = 0x0c,
-            Wood = 0x04,
-            LargeBubbles = 0x15,
-            Hurt = 0x1f,
-            Brick = 0x00,
-            Stone2 = 0x18,
-            Metal2 = 0x1b,
-            Water = 0x0a,
-            Bubbles = 0x0b,
-            Clouds = 0x16,
-            Ice2 = 0x10,
-            NebuIron = 0x05,
-            Danbouru = 0x11,
-            Rock = 0x01,
-            Gamewatch = 0x0f,
-            Grass = 0x02,
-            SnowIce = 0x0e,
-            Fence = 0x08,
-            Soil = 0x03,
-            Sand = 0x1c,
-            MasterFortress = 0x09,
-            Carpet = 0x07
-        }
-
         public void Open(Object obj, TreeNode entryTree)
         {
-            HideAllGroupBoxes();
+            ResetUi();
 
             if (obj is LVDEntry)
             {
@@ -322,7 +295,7 @@ namespace Smash_Forge
             leftLedgeCB.Checked = currentMat.getFlag(6);
             rightLedgeCB.Checked = currentMat.getFlag(7);
             noWallJumpCB.Checked = currentMat.getFlag(4);
-            physicsMatComboBox.Text = Enum.GetName(typeof(materialTypes), currentMat.physics);
+            physicsMatComboBox.SelectedItem = (CollisionMatType)currentMat.physics;
 
             passthroughAngleUpDown.Value = (decimal)(Math.Atan2(collision.normals[selectedIndex].Y, collision.normals[selectedIndex].X) * 180.0 / Math.PI);
         }
@@ -390,7 +363,9 @@ namespace Smash_Forge
 
         private void physicsMatComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-             currentMat.physics = ((byte)Enum.Parse(typeof(materialTypes), physicsMatComboBox.Text));
+            if (currentMat == null)
+                return;
+            currentMat.physics = ((byte)Enum.Parse(typeof(CollisionMatType), physicsMatComboBox.Text));
         }
 
         private void changeStart(object sender, EventArgs e)
@@ -407,6 +382,9 @@ namespace Smash_Forge
 
         private void lineFlagChange(object sender, EventArgs e)
         {
+            if (currentMat == null)
+                return;
+
             if (sender == noWallJumpCB)
                 currentMat.setFlag(4, ((CheckBox)sender).Checked);
             if (sender == leftLedgeCB)
@@ -462,18 +440,23 @@ namespace Smash_Forge
         private void addVertButtonClicked(object sender, EventArgs e)
         {
             Collision col = (Collision)currentEntry;
-            int index = (verticesTreeView.SelectedNode == null) ? col.verts.Count : verticesTreeView.SelectedNode.Index + 1;
 
             // Add a new vertex to the collision. Duplicates the currently selected vertex.
-            int selectedIndex = verticesTreeView.SelectedNode.Index;
+            int index = (verticesTreeView.SelectedNode == null) ? -1 : verticesTreeView.SelectedNode.Index;
             Vector2 newVert = new Vector2();
-            if (verticesTreeView.SelectedNode != null && selectedIndex < col.verts.Count)
-                newVert = new Vector2(col.verts[selectedIndex].X, col.verts[selectedIndex].Y);
-
+            if (index == -1)
+            {
+                index = col.verts.Count;
+            }
+            else
+            {
+                newVert = new Vector2(col.verts[index].X, col.verts[index].Y);
+                ++index;
+            }
             col.verts.Insert(index, newVert);
 
             // Add the new vert to the tree view.
-            TreeNode newNode = new TreeNode("New Vertex") { Tag = newVert };
+            TreeNode newNode = new TreeNode("New Vertex") {};
             verticesTreeView.Nodes.Insert(index, newNode);
             if (verticesTreeView.SelectedNode == null)
                 verticesTreeView.SelectedNode = newNode;
@@ -844,7 +827,7 @@ namespace Smash_Forge
                 ceiling.Checked = ((currentLink.collisionAngle & 2) != 0);
                 ledge.Checked = ((currentLink.flags & 2) != 0);
                 meleeDropThrough.Checked = ((currentLink.flags & 1) != 0);
-                comboBox2.Text = Enum.GetName(typeof(materialTypes), currentLink.material);
+                comboBox2.Text = Enum.GetName(typeof(CollisionMatType), currentLink.material);
             }
             else if(sender == meleePolygons)
             {
@@ -859,7 +842,7 @@ namespace Smash_Forge
         {
             if (currentLink == null)
                 return;
-            currentLink.material = (byte)Enum.Parse(typeof(materialTypes), comboBox2.Text);
+            currentLink.material = (byte)Enum.Parse(typeof(CollisionMatType), comboBox2.Text);
         }
         #endregion
 

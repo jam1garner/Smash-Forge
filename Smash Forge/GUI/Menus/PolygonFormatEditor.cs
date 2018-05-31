@@ -69,7 +69,9 @@ namespace Smash_Forge
                 }
             }
 
-            vertexColorCB.Checked = poly.UVSize >> 4 != 0;
+            int uvCount = poly.UVSize >> 4;
+            int colorType = poly.UVSize & 0x0F;
+            vertexColorCB.Checked = colorType != 0;
         }
 
         private void applyButton_Click(object sender, EventArgs e)
@@ -105,18 +107,18 @@ namespace Smash_Forge
             int uvFlag = poly.UVSize;
             if (vertexColorCB.Checked)
             {
-                if (uvFlag >> 4 == 0)
+                if ((uvFlag & 0x0F) == 0)
                 {
-                    uvFlag = 0x10 | uvFlag;
+                    uvFlag = 0x02 | uvFlag;
                     foreach (NUD.Vertex v in poly.vertices)
                         v.color = new OpenTK.Vector4(127, 127, 127, 127);
                 }
             }
             else
             {
-                if (uvFlag >> 4 != 0)
+                if ((uvFlag & 0x0F) != 0)
                 {
-                    uvFlag &= 0x0F;
+                    uvFlag &= 0xF0;
                     foreach (NUD.Vertex v in poly.vertices)
                         v.color = new OpenTK.Vector4(127, 127, 127, 127);
                 }
