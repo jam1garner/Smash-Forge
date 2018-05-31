@@ -1190,7 +1190,7 @@ namespace Smash_Forge
             foreach (NUT nut in Runtime.TextureContainers)
             {
                 int texid = 0;
-                if (nut.draw.TryGetValue(hash, out texid))
+                if (nut.glTexByHashId.TryGetValue(hash, out texid))
                 {
                     BindNutTexture(tex, texid);
                     break;

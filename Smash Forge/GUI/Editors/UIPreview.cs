@@ -73,7 +73,7 @@ namespace Smash_Forge
             int id = n.Nodes.Count > 0 ? ((NutTexture)n.Nodes[0]).HASHID : 0x280052B7;
             n.Destroy();
             n.Nodes.Clear();
-            n.draw.Clear();
+            n.glTexByHashId.Clear();
 
             NutTexture tex = new NutTexture();
             tex.Width = view.ShootWidth;
@@ -82,7 +82,7 @@ namespace Smash_Forge
             tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
             tex.HASHID = id;
             n.Nodes.Add(tex);
-            n.draw.Add(tex.HASHID, NUT.loadImage(tex));
+            n.glTexByHashId.Add(tex.HASHID, NUT.loadImage(tex));
             ((MenuItem)sender).GetContextMenu().SourceControl.Invalidate();
 
             if (((MenuItem)sender).GetContextMenu().SourceControl == stock_90_renderer)
@@ -264,9 +264,9 @@ namespace Smash_Forge
                 if(nut == null)
                     nut = new NUT();
                 nut.Nodes.Clear();
-                nut.draw.Clear();
+                nut.glTexByHashId.Clear();
                 nut.Nodes.Add(tex);
-                nut.draw.Add(tex.HASHID, NUT.loadImage(tex));
+                nut.glTexByHashId.Add(tex.HASHID, NUT.loadImage(tex));
             }
             else
             {
@@ -313,7 +313,7 @@ namespace Smash_Forge
 
             foreach(NutTexture tex in nut.Nodes)
             {
-                RenderTools.DrawTexturedQuad(nut.draw[tex.HASHID], tex.Width, tex.Height, true, true, true, true, true);
+                RenderTools.DrawTexturedQuad(nut.glTexByHashId[tex.HASHID], tex.Width, tex.Height, true, true, true, true, true);
             }
 
             glControl1.SwapBuffers();

@@ -841,10 +841,10 @@ namespace Smash_Forge
                 {
                     foreach (NUT n in Runtime.TextureContainers)
                     {
-                        if (n.draw.ContainsKey(hash))
+                        if (n.glTexByHashId.ContainsKey(hash))
                         {
                             n.getTextureByID(hash, out nutTexture);
-                            displayTexture = n.draw[hash];
+                            displayTexture = n.glTexByHashId[hash];
                             break;
                         }
                     }

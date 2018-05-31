@@ -615,13 +615,15 @@ namespace Smash_Forge
         public void ClearWorkSpace(bool closeEditors = true)
         {
             Runtime.killWorkspace = true;
+
             Runtime.ParamManager.Reset();
             hurtboxList.refresh();
             Runtime.Animnames.Clear();
             Runtime.clearMoveset();
+            animList.treeView1.Nodes.Clear();
+
             LightTools.areaLights.Clear();
             LightTools.lightMaps.Clear();
-            animList.treeView1.Nodes.Clear();
 
             //Close all Editors
             List<DockContent> openContent = new List<DockContent>();
@@ -1954,7 +1956,7 @@ namespace Smash_Forge
 
                         NutTexture tex = new DDS(new FileData("TexConv/temp.dds")).toNUT_Texture();
                         tex.HASHID = fileNum;
-                        n.draw.Add(fileNum, NUT.loadImage(tex, true));
+                        n.glTexByHashId.Add(fileNum, NUT.loadImage(tex, true));
                         n.Nodes.Add(tex);
                     }
                 }

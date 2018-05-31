@@ -936,6 +936,7 @@ namespace Smash_Forge
 
         private void BatchRenderModels()
         {
+            // Ignore warnings.
             Runtime.checkNudTexIdOnOpen = false;
 
             // Get the source model folder and then the output folder. 
@@ -962,7 +963,10 @@ namespace Smash_Forge
                                     Debug.WriteLine(e.Message);
                                     Debug.WriteLine(e.StackTrace);
                                 }
-                                RenderModel(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+                                BatchRenderViewportToFile(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+
+                                // Cleanup the models and nodes but keep the same viewport.
+                                ClearModelContainers();
                             }
                         }
                     }
@@ -988,9 +992,9 @@ namespace Smash_Forge
                             foreach (string stageFolder in Directory.GetDirectories(sourceFolderSelect.SelectedPath))
                             {
                                 MainForm.Instance.OpenStageFolder(stageFolder, this);
-                                RenderStageModels(stageFolder, outputFolderSelect.SelectedPath, sourceFolderSelect.SelectedPath);
-                                RenderModel(stageFolder, sourceFolderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+                                BatchRenderViewportToFile(stageFolder, sourceFolderSelect.SelectedPath, outputFolderSelect.SelectedPath);
                                 MainForm.Instance.ClearWorkSpace(false);
+                                ClearModelContainers();
                             }
                         }
                     }
@@ -998,7 +1002,7 @@ namespace Smash_Forge
             }
         }
 
-        private void RenderModel(string nudFileName, string sourcePath, string outputPath)
+        private void BatchRenderViewportToFile(string nudFileName, string sourcePath, string outputPath)
         {
             SetupNextRender();
             string renderName = FormatFileName(nudFileName, sourcePath);
@@ -1006,10 +1010,6 @@ namespace Smash_Forge
             Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, true);
             screenCapture.Save(outputPath + "\\" + renderName + ".png");
             screenCapture.Dispose();
-
-            // Cleanup the models and nodes.
-            Runtime.TextureContainers.Clear();
-            draw.Clear();
         }
 
         private void SetupNextRender()
@@ -1095,16 +1095,22 @@ namespace Smash_Forge
 
         private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
         {
-            foreach (TreeNode n in MeshList.filesTreeView.Nodes)
+            ClearModelContainers();
+        }
+
+        private void ClearModelContainers()
+        {
+            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
             {
-                if (n is ModelContainer)
+                if (node is ModelContainer)
                 {
-                    Runtime.TextureContainers.Remove(((ModelContainer)n).NUT);
-                    ((ModelContainer)n).NUT.Destroy();
-                    ((ModelContainer)n).NUD.Destroy();
+                    Runtime.TextureContainers.Remove(((ModelContainer)node).NUT);
+                    ((ModelContainer)node).NUT.Destroy();
+                    ((ModelContainer)node).NUD.Destroy();
                 }
             }
-            
+
+            draw.Clear();
             GC.Collect();
         }
 
@@ -1650,7 +1656,7 @@ namespace Smash_Forge
                 string[] nudFileNames = Directory.GetFiles(modelPath, "*.nud", SearchOption.AllDirectories);
                 foreach (string nudFile in nudFileNames)
                 {
-                    RenderModel(nudFile, sourcePath, outputPath);
+                    BatchRenderViewportToFile(nudFile, sourcePath, outputPath);
                 }
             }
         }
@@ -1729,7 +1735,7 @@ namespace Smash_Forge
         {
             GL.PopAttrib();
             NutTexture tex = ((NutTexture)MeshList.filesTreeView.SelectedNode);
-            RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height);
+            RenderTools.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HASHID], tex.Width, tex.Height);
 
             if (Runtime.drawUv)
                 DrawUvsForSelectedTexture(tex);

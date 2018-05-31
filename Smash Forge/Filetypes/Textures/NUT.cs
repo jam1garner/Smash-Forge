@@ -145,7 +145,7 @@ namespace Smash_Forge
     public class NUT : FileBase
     {
         // Dictionary<hash ID, OpenTK texture>
-        public Dictionary<int, int> draw = new Dictionary<int, int>();
+        public Dictionary<int, int> glTexByHashId = new Dictionary<int, int>();
 
         public int Version = 0x200;
 
@@ -485,9 +485,9 @@ namespace Smash_Forge
 
             foreach (NutTexture tex in Nodes)
             {
-                if (!draw.ContainsKey(tex.HASHID))
+                if (!glTexByHashId.ContainsKey(tex.HASHID))
                 {
-                    draw.Add(tex.HASHID, loadImage(tex, true));
+                    glTexByHashId.Add(tex.HASHID, loadImage(tex, true));
                 }
             }
         }
@@ -633,9 +633,9 @@ namespace Smash_Forge
 
             foreach (NutTexture tex in Nodes)
             {
-                if (!draw.ContainsKey(tex.HASHID))
+                if (!glTexByHashId.ContainsKey(tex.HASHID))
                 {
-                    draw.Add(tex.HASHID, loadImage(tex, false));
+                    glTexByHashId.Add(tex.HASHID, loadImage(tex, false));
                 }
 
                 // redo mipmaps
@@ -702,15 +702,15 @@ namespace Smash_Forge
 
             foreach (NutTexture tex in Nodes)
             {
-                int originalTexture = draw[tex.HASHID];
-                draw.Remove(tex.HASHID);
+                int originalTexture = glTexByHashId[tex.HASHID];
+                glTexByHashId.Remove(tex.HASHID);
 
                 // Only change the first 3 bytes.
                 tex.HASHID = tex.HASHID & 0xFF;
                 int first3Bytes = (int)(newTexId & 0xFFFFFF00);
                 tex.HASHID = tex.HASHID | first3Bytes;
 
-                draw.Add(tex.HASHID, originalTexture);
+                glTexByHashId.Add(tex.HASHID, originalTexture);
             }
         }
 
@@ -733,7 +733,7 @@ namespace Smash_Forge
 
         public void Destroy()
         {
-            foreach (var kv in draw)
+            foreach (var kv in glTexByHashId)
             {
                 if (GL.IsTexture(kv.Value))
                     GL.DeleteTexture(kv.Value);
