@@ -279,7 +279,6 @@ namespace Smash_Forge
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NudDebug"];
 
-            Debug.WriteLine(shader.ProgramCreatedSuccessfully());
             GL.UseProgram(shader.programId);
 
             shader.EnableVertexAttributes();

@@ -404,13 +404,9 @@ namespace Smash_Forge
         {
             if (ReadyToRender && glViewport != null)
             {
-                glViewport.MakeCurrent();
-                GL.LoadIdentity();
-                GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
-
-                camera.renderWidth = glViewport.Width;
-                camera.renderHeight = glViewport.Height;
-                camera.Update();
+                byte[] pixelRgba = new byte[4];
+                ColorPickPixelAtMousePosition(pixelRgba);
+                Debug.WriteLine(pixelRgba[0] + "," + pixelRgba[1] + "," + pixelRgba[2]);
             }
             //Mesh Selection Test
             if (e.Button == MouseButtons.Left)
@@ -445,6 +441,23 @@ namespace Smash_Forge
                 if (dbdistance >= selectedSize) dbdistance = 0;
                 _LastPoint = e.Location;
             }
+        }
+
+        private void ColorPickPixelAtMousePosition(byte[] pixelRgba)
+        {
+            if (pixelRgba == null || pixelRgba.Length == 0)
+                return;
+
+            // Render the scene again into an FBO.
+            glViewport.MakeCurrent();
+            GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, screenRenderFbo);
+            Render(null, null, screenRenderFbo);
+
+            // Colorpick the single pixel from the FBO at the mouse's location.
+            System.Drawing.Point mouse = glViewport.PointToClient(Cursor.Position);
+            Debug.WriteLine(mouse.X + "," + (glViewport.Height - mouse.Y));
+            GL.ReadPixels(mouse.X, glViewport.Height - mouse.Y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, pixelRgba);
         }
 
         private Vector3 getScreenPoint(Vector3 pos)
