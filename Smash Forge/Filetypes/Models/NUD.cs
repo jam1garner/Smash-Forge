@@ -521,17 +521,34 @@ namespace Smash_Forge
                 }
             }
 
+            // Used for generating a unique color for each polygon.
+            // This technique works for up to 255 polygons.
+            int polygonId = 0;
+            int polygonCount = opaque.Count + transparent.Count;
+            // Use a scale to distribute the ids more evenly between 0 and 255.
+            int scale = (int)(255.0 / polygonCount);
+
             // Only draw polgons if the polygon and its parent are both checked.
             foreach (Polygon p in opaque)
+            {
                 if (p.Parent != null && ((Mesh)p.Parent).Checked && p.Checked)
-                    DrawPolygon(p, shader, camera);
+                {
+                    DrawPolygon(p, shader, camera, polygonId * scale);
+                    polygonId++;
+                }
+            }
 
             foreach (Polygon p in transparent)
+            {
                 if (((Mesh)p.Parent).Checked && p.Checked)
-                    DrawPolygon(p, shader, camera);
+                {
+                    DrawPolygon(p, shader, camera, polygonId * scale);
+                    polygonId++;
+                }
+            }
         }
 
-        private void DrawPolygon(Polygon p, Shader shader, Camera camera, bool drawSelection = false)
+        private void DrawPolygon(Polygon p, Shader shader, Camera camera, int id = 0)
         {
             if (p.faces.Count <= 3)
                 return;
@@ -539,7 +556,7 @@ namespace Smash_Forge
             Material material = p.materials[0];
 
             // Set Shader Values.
-            SetShaderUniforms(p, shader, camera, material);
+            SetShaderUniforms(p, shader, camera, material, id);
             SetVertexAttributes(p, shader);
 
             // Set OpenTK Render Options.
@@ -552,12 +569,10 @@ namespace Smash_Forge
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
         }
 
-        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material)
+        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, int id = 0)
         {
-            shader.SetUint("flags", material.Flags);
-            shader.SetInt("selectedBoneIndex", Runtime.selectedBoneIndex);
-
             // Shader Uniforms
+            shader.SetUint("flags", material.Flags);
             shader.SetBoolToInt("renderVertColor", Runtime.renderVertColor && material.useVertexColor);
             SetTextureUniforms(shader, material);
             SetMaterialPropertyUniforms(shader, material);
@@ -565,12 +580,17 @@ namespace Smash_Forge
             SetXMBUniforms(shader, p);
             SetNscUniform(p, shader);
 
+            // Misc Uniforms
+            shader.SetInt("selectedBoneIndex", Runtime.selectedBoneIndex);
             shader.SetBoolToInt("drawWireFrame", Runtime.renderModelWireframe);
             shader.SetFloat("lineWidth", Runtime.wireframeLineWidth);
             shader.SetVector3("cameraPosition", camera.position);
             shader.SetFloat("zBufferOffset", material.zBufferOffset);
             shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
+            shader.SetInt("polygonId", id);
 
+            // The fragment alpha is set to 1 when alpha blending/testing aren't used.
+            // This fixes the alpha output for PNG renders.
             p.isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
             shader.SetBoolToInt("isTransparent", p.isTransparent);
         }

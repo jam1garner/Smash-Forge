@@ -186,6 +186,8 @@ uniform vec4 softLightingParams;
 uniform vec4 customSoftLightParams;
 uniform vec4 effUniverseParam;
 
+uniform int polygonId;
+
 // Constants
 #define gamma 2.2
 #define PI 3.14159
@@ -243,4 +245,8 @@ void main() {
         float intensity = WireframeIntensity(edgeDistance);
         fragColor.rgb = mix(fragColor.rgb, edgeColor, intensity);
     }
+
+    // Generate a unique color. This won't work for more than 255 polygons.
+    // The color is used to differentiate polygons for selection purposes.
+    fragColor.rgb = vec3(polygonId / 255.0);
 }
