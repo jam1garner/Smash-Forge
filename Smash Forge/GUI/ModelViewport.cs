@@ -431,11 +431,6 @@ namespace Smash_Forge
             return new Vector2(mx, my);
         }
 
-        private void glViewport_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            MouseClickItemSelect(e);
-        }
-
         private void MouseClickItemSelect(System.Windows.Forms.MouseEventArgs e)
         {
             if (!readyToRender || glViewport == null)
@@ -459,19 +454,26 @@ namespace Smash_Forge
                         SortedList<double, Bone> selected = modelContainer.GetBoneSelection(ray);
                         if (selected.Count > 0)
                             transformTool.b = selected.Values.ElementAt(0);
-                        break;
+                        //break;
                     }
+
                     if (modeMesh.Checked)
+                    {
+                        // TODO: Mesh ID Map.
+                    }
+
+                    if (modePolygon.Checked)
                     {
                         // Use a color ID render pass for more precision.
                         SelectPolygonAtMousePosition();
-                        break;
+                        //break;
                     }
                 }
             }
             else if (e.Button == MouseButtons.Right)
             {
-                // TODO: Context Menus from mesh list.
+                if (meshList.filesTreeView.SelectedNode is NUD.Polygon)
+                    meshList.PolyContextMenu.Show(glViewport, e.X, e.Y);
             }
         }
 
@@ -504,24 +506,21 @@ namespace Smash_Forge
                     continue;
                 ModelContainer con = (ModelContainer)node;
 
-                if (modeMesh.Checked)
+                foreach (NUD.Mesh mesh in con.NUD.Nodes)
                 {
-                    foreach (NUD.Mesh mesh in con.NUD.Nodes)
+                    foreach (NUD.Polygon p in mesh.Nodes)
                     {
-                        foreach (NUD.Polygon p in mesh.Nodes)
-                        {
-                            // The color is the polygon index (not the render order).
-                            // Convert to Vector3 to ignore the alpha.
-                            Vector3 polyColor = ColorTools.Vector4FromColor(Color.FromArgb(p.PolyDisplayId)).Xyz;
-                            Vector3 pickedColor = ColorTools.Vector4FromColor(pixelColor).Xyz;
+                        // The color is the polygon index (not the render order).
+                        // Convert to Vector3 to ignore the alpha.
+                        Vector3 polyColor = ColorTools.Vector4FromColor(Color.FromArgb(p.PolyDisplayId)).Xyz;
+                        Vector3 pickedColor = ColorTools.Vector4FromColor(pixelColor).Xyz;
+                        Debug.WriteLine(polyColor.ToString());
+                        Debug.WriteLine(pickedColor.ToString());
 
-                            if (polyColor == pickedColor)
-                            {
-                                return p;
-                            }
-                        }
+                        if (polyColor == pickedColor)
+                            return p;
                     }
-                }
+                }         
             }
 
             return null;
@@ -1228,14 +1227,6 @@ namespace Smash_Forge
                 currentFrame.Value--;
         }
 
-        private void viewStripButtons(object sender, EventArgs e)
-        {
-            modeBone.Checked = false;
-            modePolygon.Checked = false;
-            modeMesh.Checked = false;
-            ((ToolStripButton)sender).Checked = true;
-        }
-
         private void viewStripButtonsBone(object sender, EventArgs e)
         {
             stripPos.Checked = false;
@@ -1269,11 +1260,6 @@ namespace Smash_Forge
             SaveScreenRender();
         }
         
-        private void ModelViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
-        {
-
-        }
-
         private void totalFrame_ValueChanged(object sender, EventArgs e)
         {
             if (currentAnimation == null) return;
@@ -1857,6 +1843,35 @@ namespace Smash_Forge
         private void glViewport_Paint(object sender, PaintEventArgs e)
         {
             Render(sender, e);
+        }
+
+        private void glViewport_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            MouseClickItemSelect(e);
+        }
+
+        private void modePolygon_Click(object sender, EventArgs e)
+        {
+            // These should act like radio buttons.
+            modeBone.Checked = false;
+            modePolygon.Checked = true;
+            modeMesh.Checked = false;
+        }
+
+        private void modeMesh_Click(object sender, EventArgs e)
+        {
+            // These should act like radio buttons.
+            modeBone.Checked = false;
+            modePolygon.Checked = false;
+            modeMesh.Checked = true;
+        }
+
+        private void modeBone_Click(object sender, EventArgs e)
+        {
+            // These should act like radio buttons.
+            modeBone.Checked = true;
+            modePolygon.Checked = false;
+            modeMesh.Checked = false;
         }
 
         private void DrawUvsForSelectedTexture(NutTexture tex)
