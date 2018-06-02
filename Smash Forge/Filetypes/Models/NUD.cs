@@ -2704,7 +2704,7 @@ namespace Smash_Forge
 
             private static List<int> previousPolyIds = new List<int>();
 
-            public int PolyDisplayId { get => polyDisplayId; }
+            public int PolyDisplayId { get { return polyDisplayId; } }
             private int polyDisplayId = 0;
 
             public List<Vertex> vertices = new List<Vertex>();
