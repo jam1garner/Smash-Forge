@@ -521,7 +521,7 @@ namespace Smash_Forge
         private void boneRigSelectButton_Click(object sender, EventArgs e)
         {
             BoneRiggingSelector brs = new BoneRiggingSelector(currentEntry.boneName);
-            brs.ModelContainers = MainForm.Instance.GetActiveViewport().MeshList.GetModelContainers();
+            brs.ModelContainers = MainForm.Instance.GetActiveViewport().meshList.GetModelContainers();
             brs.ShowDialog();
             if (!brs.Cancelled)
                 currentEntry.boneName = brs.currentValue;

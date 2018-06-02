@@ -29,7 +29,7 @@ namespace Smash_Forge
     public partial class ModelViewport : EditorBase
     {
         // setup
-        bool ReadyToRender = false;
+        bool readyToRender = false;
 
         // View controls
         public Camera camera = new Camera();
@@ -63,47 +63,46 @@ namespace Smash_Forge
             Photoshoot,
             Selection
         }
-        public Mode CurrentMode = Mode.Normal;
+        public Mode currentMode = Mode.Normal;
 
         FrameTimer frameTime = new FrameTimer();
 
-        VertexTool VertexTool = new VertexTool();
-        TransformTool TransformTool = new TransformTool();
+        VertexTool vertexTool = new VertexTool();
+        TransformTool transformTool = new TransformTool();
 
         //Animation
-        private VBN TargetVBN;
-        private Animation Animation;
+        private Animation currentAnimation;
         public Animation CurrentAnimation {
             get
             {
-                return Animation;
+                return currentAnimation;
             }
             set
             {
                 //Moveset
                 //If moveset is loaded then initialize with null script so handleACMD loads script for frame speed modifiers and FAF (if parameters are imported)
-                if (MovesetManager != null && ACMDScript == null)
-                    ACMDScript = new ForgeACMDScript(null);
+                if (MovesetManager != null && acmdScript == null)
+                    acmdScript = new ForgeACMDScript(null);
 
                 if(value != null)
                 {
                     string TargetAnimString = value.Text;
                     if (!string.IsNullOrEmpty(TargetAnimString))
                     {
-                        if (ACMDScript != null)
+                        if (acmdScript != null)
                         {
                             //Remove manual crc flag
                             //acmdEditor.manualCrc = false;
                             HandleACMD(TargetAnimString);
-                            if (ACMDScript != null)
-                                ACMDScript.processToFrame(0);
+                            if (acmdScript != null)
+                                acmdScript.processToFrame(0);
 
                         }
                     }
                 }
                 ResetModels();
-                MaterialAnimation = null;
-                Animation = value;
+                currentMaterialAnimation = null;
+                currentAnimation = value;
                 totalFrame.Value = value.FrameCount;
                 animationTrackBar.TickFrequency = 1;
                 currentFrame.Value = 1;
@@ -111,18 +110,18 @@ namespace Smash_Forge
             }
         }
 
-        private MTA MaterialAnimation;
+        private MTA currentMaterialAnimation;
         public MTA CurrentMaterialAnimation
         {
             get
             {
-                return MaterialAnimation;
+                return currentMaterialAnimation;
             }
             set
             {
                 ResetModels();
-                Animation = null;
-                MaterialAnimation = value;
+                currentAnimation = null;
+                currentMaterialAnimation = value;
                 totalFrame.Value = value.numFrames;
                 animationTrackBar.TickFrequency = 1;
                 animationTrackBar.SetRange(0, (int)value.numFrames);
@@ -133,75 +132,78 @@ namespace Smash_Forge
 
         // ACMD
         public int scriptId = -1;
-        public Dictionary<string, int> ParamMoveNameIdMapping;
-        public CharacterParamManager ParamManager;
-        public PARAMEditor ParamManagerHelper;
+        public Dictionary<string, int> paramMoveNameIdMapping;
+        public CharacterParamManager paramManager;
+        public PARAMEditor paramManagerHelper;
+
+        private MovesetManager movesetManager;
         public MovesetManager MovesetManager
         {
             get
             {
-                return _MovesetManager;
+                return movesetManager;
             }
             set
             {
-                _MovesetManager = value;
-                if(ACMDEditor != null)
-                    ACMDEditor.updateCrcList();
+                movesetManager = value;
+                if(acmdEditor != null)
+                    acmdEditor.updateCrcList();
             }
         }
-        public MovesetManager _MovesetManager;
-        public ForgeACMDScript ACMDScript = null;
 
-        public ACMDPreviewEditor ACMDEditor;
-        public HitboxList HitboxList;
-        public HurtboxList HurtboxList;
-        public VariableList VariableViewer;
+        public ForgeACMDScript acmdScript = null;
+
+        public ACMDPreviewEditor acmdEditor;
+        public HitboxList hitboxList;
+        public HurtboxList hurtboxList;
+        public VariableList variableViewer;
 
         // Used in ModelContainer for direct UV time animation.
         public static Stopwatch directUVTimeStopWatch = new Stopwatch();
 
         //LVD
+        private LVD lvd;
         public LVD LVD
         {
             get
             {
-                return _lvd;
+                return lvd;
             }
             set
             {
-                _lvd = value;
-                _lvd.MeshList = MeshList;
-                LVDEditor.LVD = _lvd;
-                LVDList.TargetLVD = _lvd;
-                LVDList.fillList();
+                lvd = value;
+                lvd.MeshList = meshList;
+                lvdEditor.LVD = lvd;
+                lvdList.TargetLVD = lvd;
+                lvdList.fillList();
             }
         }
-        private LVD _lvd;
-        LVDList LVDList = new LVDList();
-        LVDEditor LVDEditor = new LVDEditor();
+
+        LVDList lvdList = new LVDList();
+        LVDEditor lvdEditor = new LVDEditor();
 
         //Path
-        public PathBin PathBin;
+        public PathBin pathBin;
         
         // Selection Functions
         public float sx1, sy1;
         
         //Animation Functions
-        public int AnimationSpeed = 60;
-        public float Frame = 0;
+        public int animationSpeed = 60;
+        public float frame = 0;
         public bool isPlaying;
 
         // Contents
-        public MeshList MeshList = new MeshList();
-        public AnimListPanel AnimList = new AnimListPanel();
+        public MeshList meshList = new MeshList();
+        public AnimListPanel animListPanel = new AnimListPanel();
         public TreeNodeCollection draw;
 
         // Photoshoot
         public bool freezeCamera = false;
-        public int ShootX = 0;
-        public int ShootY = 0;
-        public int ShootWidth = 50;
-        public int ShootHeight = 50;
+        public int shootX = 0;
+        public int shootY = 0;
+        public int shootWidth = 50;
+        public int shootHeight = 50;
 
         public ModelViewport()
         {
@@ -210,55 +212,87 @@ namespace Smash_Forge
             FilePath = "";
             Text = "Model Viewport";
 
-            MeshList.Dock = DockStyle.Right;
-            MeshList.MaximumSize = new Size(300, 2000);
-            MeshList.Size = new Size(300, 2000);
-            AddControl(MeshList);
-
-            AnimList.Dock = DockStyle.Left;
-            AnimList.MaximumSize = new Size(300, 2000);
-            AnimList.Size = new Size(300, 2000);
-            AddControl(AnimList);
-
-            LVDList.Dock = DockStyle.Left;
-            LVDList.MaximumSize = new Size(300, 2000);
-            AddControl(LVDList);
-            LVDList.lvdEditor = LVDEditor;
-
-            LVDEditor.Dock = DockStyle.Right;
-            LVDEditor.MaximumSize = new Size(300, 2000);
-            AddControl(LVDEditor);
-
-            VertexTool.Dock = DockStyle.Left;
-            VertexTool.MaximumSize = new Size(300, 2000);
-            AddControl(VertexTool);
-            VertexTool.vp = this;
-
-            ACMDEditor = new ACMDPreviewEditor();
-            ACMDEditor.Owner = this;
-            ACMDEditor.Dock = DockStyle.Right;
-            ACMDEditor.updateCrcList();
-            AddControl(ACMDEditor);
-
-            HitboxList = new HitboxList();
-            HitboxList.Dock = DockStyle.Right;
-            AddControl(HitboxList);
-
-            HurtboxList = new HurtboxList();
-            HurtboxList.Dock = DockStyle.Right;
-
-            VariableViewer = new VariableList();
-            VariableViewer.Dock = DockStyle.Right;
+            SetupMeshList();
+            SetupAnimListPanel();
+            SetupLvdEditors();
+            SetupVertexTool();
+            SetupAcmdEditor();
+            SetupHitBoxList();
+            SetupHurtBoxList();
+            SetupVariableViewer();
 
             LVD = new LVD();
 
             ViewComboBox.SelectedIndex = 0;
 
-            draw = MeshList.filesTreeView.Nodes;
+            draw = meshList.filesTreeView.Nodes;
 
-            RenderTools.Setup();
-
+            RenderTools.Setup(); // Just in case.
             SetupBuffersAndTextures();
+        }
+
+        private void SetupVariableViewer()
+        {
+            variableViewer = new VariableList();
+            variableViewer.Dock = DockStyle.Right;
+        }
+
+        private void SetupHurtBoxList()
+        {
+            hurtboxList = new HurtboxList();
+            hurtboxList.Dock = DockStyle.Right;
+        }
+
+        private void SetupHitBoxList()
+        {
+            hitboxList = new HitboxList();
+            hitboxList.Dock = DockStyle.Right;
+            AddControl(hitboxList);
+        }
+
+        private void SetupAcmdEditor()
+        {
+            acmdEditor = new ACMDPreviewEditor();
+            acmdEditor.Owner = this;
+            acmdEditor.Dock = DockStyle.Right;
+            acmdEditor.updateCrcList();
+            AddControl(acmdEditor);
+        }
+
+        private void SetupVertexTool()
+        {
+            vertexTool.Dock = DockStyle.Left;
+            vertexTool.MaximumSize = new Size(300, 2000);
+            AddControl(vertexTool);
+            vertexTool.vp = this;
+        }
+
+        private void SetupLvdEditors()
+        {
+            lvdList.Dock = DockStyle.Left;
+            lvdList.MaximumSize = new Size(300, 2000);
+            AddControl(lvdList);
+            lvdList.lvdEditor = lvdEditor;
+
+            lvdEditor.Dock = DockStyle.Right;
+            lvdEditor.MaximumSize = new Size(300, 2000);
+            AddControl(lvdEditor);
+        }
+
+        private void SetupAnimListPanel()
+        {
+            animListPanel.Dock = DockStyle.Left;
+            animListPanel.MaximumSize = new Size(300, 2000);
+            animListPanel.Size = new Size(300, 2000);
+            AddControl(animListPanel);
+        }
+
+        private void SetupMeshList()
+        {
+            meshList.Dock = DockStyle.Right;
+            meshList.MaximumSize = new Size(300, 2000);
+            meshList.Size = new Size(300, 2000);
+            AddControl(meshList);
         }
 
         private void SetupBuffersAndTextures()
@@ -312,10 +346,10 @@ namespace Smash_Forge
             switch (Path.GetExtension(FilePath).ToLower())
             {
                 case ".lvd":
-                    _lvd.Save(FilePath);
+                    lvd.Save(FilePath);
                     break;
                 case ".mtable":
-                    _MovesetManager.Save(FilePath);
+                    movesetManager.Save(FilePath);
                     break;
             }
             Edited = false;
@@ -331,12 +365,12 @@ namespace Smash_Forge
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    if (sfd.FileName.EndsWith(".lvd") && _lvd != null)
+                    if (sfd.FileName.EndsWith(".lvd") && lvd != null)
                     {
                         FilePath = sfd.FileName;
                         Save();
                     }
-                    if (sfd.FileName.EndsWith(".mtable") && _MovesetManager != null)
+                    if (sfd.FileName.EndsWith(".mtable") && movesetManager != null)
                     {
                         FilePath = sfd.FileName;
                         Save();
@@ -355,7 +389,7 @@ namespace Smash_Forge
 
         private void ModelViewport_Load(object sender, EventArgs e)
         {
-            ReadyToRender = true;
+            readyToRender = true;
             var timer = new Timer();
             timer.Interval = 1000 / 120;
             timer.Tick += new EventHandler(Application_Idle);
@@ -374,7 +408,7 @@ namespace Smash_Forge
             if (this.IsDisposed)
                 return;
 
-            if (ReadyToRender)
+            if (readyToRender)
             {
                 if (isPlaying)
                 {
@@ -397,54 +431,111 @@ namespace Smash_Forge
             return new Vector2(mx, my);
         }
 
-        int dbdistance = 0;
-        System.Drawing.Point _LastPoint;
-
-        private void glViewport_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void MouseClickItemSelect(System.Windows.Forms.MouseEventArgs e)
         {
-            if (ReadyToRender && glViewport != null)
-            {
-                glViewport.MakeCurrent();
-                GL.LoadIdentity();
-                GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
+            if (!readyToRender || glViewport == null)
+                return;
 
-                camera.renderWidth = glViewport.Width;
-                camera.renderHeight = glViewport.Height;
-                camera.Update();
-            }
             //Mesh Selection Test
             if (e.Button == MouseButtons.Left)
             {
                 Ray ray = new Ray(camera, glViewport);
-                int selectedSize = 0;
 
-                TransformTool.b = null;
-
+                transformTool.b = null;
                 foreach (TreeNode node in draw)
                 {
-                    if (!(node is ModelContainer)) continue;
-                    ModelContainer con = (ModelContainer)node;
+                    if (!(node is ModelContainer))
+                        continue;
+                    ModelContainer modelContainer = (ModelContainer)node;
+
                     if (modeBone.Checked)
                     {
-                        SortedList<double, Bone> selected = con.GetBoneSelection(ray);
-                        selectedSize = selected.Count;
-                        if (selected.Count > dbdistance)// && MeshList.treeView1.Nodes.Contains(selected.Values.ElementAt(dbdistance)))
-                            TransformTool.b = (Bone)selected.Values.ElementAt(dbdistance);
-                        break;
+                        // Bounding spheres work well because bones aren't close together.
+                        SortedList<double, Bone> selected = modelContainer.GetBoneSelection(ray);
+                        if (selected.Count > 0)
+                            transformTool.b = selected.Values.ElementAt(0);
+                        //break;
                     }
+
                     if (modeMesh.Checked)
                     {
-                        SortedList<double, NUD.Mesh> selected = con.GetMeshSelection(ray);
-                        selectedSize = selected.Count;
-                        if (selected.Count > dbdistance)
-                            MeshList.filesTreeView.SelectedNode = selected.Values.ElementAt(dbdistance);
+                        // TODO: Mesh ID Map.
+                    }
+
+                    if (modePolygon.Checked)
+                    {
+                        // Use a color ID render pass for more precision.
+                        SelectPolygonAtMousePosition();
+                        //break;
                     }
                 }
-                
-                dbdistance += 1;
-                if (dbdistance >= selectedSize) dbdistance = 0;
-                _LastPoint = e.Location;
             }
+            else if (e.Button == MouseButtons.Right)
+            {
+                if (meshList.filesTreeView.SelectedNode is NUD.Polygon)
+                    meshList.PolyContextMenu.Show(glViewport, e.X, e.Y);
+            }
+        }
+
+        private void SelectPolygonAtMousePosition()
+        {
+            RenderColorIdPassToFbo(screenRenderFbo);
+
+            // Get the color at the mouse's position.
+            Color selectedColor = ColorPickPixelAtMousePosition(screenRenderFbo);
+            meshList.filesTreeView.SelectedNode = GetSelectedPolygonFromColor(selectedColor);
+        }
+
+        private void RenderColorIdPassToFbo(int fbo)
+        {
+            // Render the ID map to the offscreen FBO.
+            glViewport.MakeCurrent();
+            GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
+            Runtime.drawNudPolygonIds = true;
+            Render(null, null, fbo);
+            Runtime.drawNudPolygonIds = false;
+        }
+
+        private NUD.Polygon GetSelectedPolygonFromColor(Color pixelColor)
+        {
+            // Determine what polgyon is selected.
+            // May not select the proper polygon with multiple model containers.
+            foreach (TreeNode node in draw)
+            {
+                if (!(node is ModelContainer))
+                    continue;
+                ModelContainer con = (ModelContainer)node;
+
+                foreach (NUD.Mesh mesh in con.NUD.Nodes)
+                {
+                    foreach (NUD.Polygon p in mesh.Nodes)
+                    {
+                        // The color is the polygon index (not the render order).
+                        // Convert to Vector3 to ignore the alpha.
+                        Vector3 polyColor = ColorTools.Vector4FromColor(Color.FromArgb(p.PolyDisplayId)).Xyz;
+                        Vector3 pickedColor = ColorTools.Vector4FromColor(pixelColor).Xyz;
+                        Debug.WriteLine(polyColor.ToString());
+                        Debug.WriteLine(pickedColor.ToString());
+
+                        if (polyColor == pickedColor)
+                            return p;
+                    }
+                }         
+            }
+
+            return null;
+        }
+
+        private Color ColorPickPixelAtMousePosition(int fbo = 0)
+        {
+            // Make sure the proper FBO is bound.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+
+            // Colorpick the single pixel from the FBO at the mouse's location.
+            System.Drawing.Point mouse = glViewport.PointToClient(Cursor.Position);
+            byte[] rgba = new byte[4];
+            GL.ReadPixels(mouse.X, glViewport.Height - mouse.Y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, rgba);
+            return Color.FromArgb(rgba[3], rgba[0], rgba[1], rgba[2]);
         }
 
         private Vector3 getScreenPoint(Vector3 pos)
@@ -458,7 +549,7 @@ namespace Smash_Forge
 
         private void glViewport_Resize(object sender, EventArgs e)
         {
-            if (ReadyToRender && CurrentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
+            if (readyToRender && currentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
             {
                 GL.LoadIdentity();
                 GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
@@ -538,39 +629,39 @@ namespace Smash_Forge
 
             int frameNum = animationTrackBar.Value;
 
-            if (MaterialAnimation != null)
+            if (currentMaterialAnimation != null)
             {
-                foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+                foreach (TreeNode node in meshList.filesTreeView.Nodes)
                 {
                     if (!(node is ModelContainer)) continue;
                     ModelContainer m = (ModelContainer)node;
-                    m.NUD.ApplyMta(MaterialAnimation, frameNum);
+                    m.NUD.ApplyMta(currentMaterialAnimation, frameNum);
                 }
             }
             
-            if (Animation == null) return;
+            if (currentAnimation == null) return;
 
             // Process script first in case we have to speed up the animation
-            if (ACMDScript != null)
-                ACMDScript.processToFrame(frameNum);
+            if (acmdScript != null)
+                acmdScript.processToFrame(frameNum);
 
             float animFrameNum = frameNum;
-            if (ACMDScript != null && Runtime.useFrameDuration)
-                animFrameNum = ACMDScript.animationFrame;// - 1;
+            if (acmdScript != null && Runtime.useFrameDuration)
+                animFrameNum = acmdScript.animationFrame;// - 1;
             
-            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer)) continue;
                 ModelContainer m = (ModelContainer)node;
-                Animation.SetFrame(animFrameNum);
+                currentAnimation.SetFrame(animFrameNum);
                 if (m.VBN != null)
-                    Animation.NextFrame(m.VBN);
+                    currentAnimation.NextFrame(m.VBN);
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
-                if (m.DAT_MELEE != null)
+                if (m.DatMelee != null)
                 {
-                    Animation.SetFrame(frameNum);
-                    Animation.NextFrame(m.DAT_MELEE.bones);
+                    currentAnimation.SetFrame(frameNum);
+                    currentAnimation.NextFrame(m.DatMelee.bones);
                 }
                 if (m.BCH != null)
                 {
@@ -578,8 +669,8 @@ namespace Smash_Forge
                     {
                         if (mod.skeleton != null)
                         {
-                            Animation.SetFrame(animFrameNum);
-                            Animation.NextFrame(mod.skeleton);
+                            currentAnimation.SetFrame(animFrameNum);
+                            currentAnimation.NextFrame(mod.skeleton);
                         }
                     }
                 }
@@ -590,7 +681,7 @@ namespace Smash_Forge
 
         public void ResetModels()
         {
-            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer)) continue;
                 ModelContainer m = (ModelContainer)node;
@@ -599,9 +690,9 @@ namespace Smash_Forge
                     m.VBN.reset();
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
-                if (m.DAT_MELEE != null)
+                if (m.DatMelee != null)
                 {
-                    m.DAT_MELEE.bones.reset();
+                    m.DatMelee.bones.reset();
                 }
                 if (m.BCH != null)
                 {
@@ -644,19 +735,19 @@ namespace Smash_Forge
 
         public void FrameSelectionAndSort()
         {
-            if (MeshList.filesTreeView.SelectedNode is NUD.Mesh)
+            if (meshList.filesTreeView.SelectedNode is NUD.Mesh)
             {
                 FrameSelectedMesh();
             }
-            else if (MeshList.filesTreeView.SelectedNode is NUD)
+            else if (meshList.filesTreeView.SelectedNode is NUD)
             {
                 FrameSelectedNud();
             }
-            else if (MeshList.filesTreeView.SelectedNode is NUD.Polygon)
+            else if (meshList.filesTreeView.SelectedNode is NUD.Polygon)
             {
                 FrameSelectedPolygon();
             }
-            else if (MeshList.filesTreeView.SelectedNode is ModelContainer)
+            else if (meshList.filesTreeView.SelectedNode is ModelContainer)
             {
                 FrameSelectedModelContainer();
             }
@@ -666,7 +757,7 @@ namespace Smash_Forge
             }
 
             // Depth sorting. 
-            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (node is ModelContainer)
                 {
@@ -678,7 +769,7 @@ namespace Smash_Forge
 
         private void FrameSelectedModelContainer()
         {
-            ModelContainer modelContainer = (ModelContainer)MeshList.filesTreeView.SelectedNode;
+            ModelContainer modelContainer = (ModelContainer)meshList.filesTreeView.SelectedNode;
             float[] boundingBox = new float[] { 0, 0, 0, 0 };
 
             // Use the main bounding box for the NUD.
@@ -708,7 +799,7 @@ namespace Smash_Forge
 
         private void FrameSelectedMesh()
         {
-            NUD.Mesh mesh = (NUD.Mesh)MeshList.filesTreeView.SelectedNode;
+            NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode;
             float[] boundingBox = mesh.boundingBox;
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
@@ -716,7 +807,7 @@ namespace Smash_Forge
 
         private void FrameSelectedNud()
         {
-            NUD nud = (NUD)MeshList.filesTreeView.SelectedNode;
+            NUD nud = (NUD)meshList.filesTreeView.SelectedNode;
             float[] boundingBox = nud.boundingBox;
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
@@ -724,7 +815,7 @@ namespace Smash_Forge
 
         private void FrameSelectedPolygon()
         {
-            NUD.Mesh mesh = (NUD.Mesh)MeshList.filesTreeView.SelectedNode.Parent;
+            NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode.Parent;
             float[] boundingBox = mesh.boundingBox;
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
@@ -734,7 +825,7 @@ namespace Smash_Forge
         {
             // Find the max NUD bounding box for all models. 
             float[] boundingBox = new float[] { 0, 0, 0, 0 };
-            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (node is ModelContainer)
                 {
@@ -781,15 +872,15 @@ namespace Smash_Forge
 
             if (MovesetManager == null)
             {
-                ACMDScript = null;
+                this.acmdScript = null;
                 return;
             }
 
             // Try and set up the editor
             try
             {
-                if (ACMDEditor.crc != crc)
-                    ACMDEditor.SetAnimation(crc);
+                if (acmdEditor.crc != crc)
+                    acmdEditor.SetAnimation(crc);
             }
             catch { }
 
@@ -841,9 +932,9 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    ACMDScript = null;
-                    HitboxList.refresh();
-                    VariableViewer.refresh();
+                    this.acmdScript = null;
+                    hitboxList.refresh();
+                    variableViewer.refresh();
                     return;
                 }
             }
@@ -853,13 +944,13 @@ namespace Smash_Forge
             if (acmdScript != null)
             {
                 // If script wasn't set, or it was set and it changed, load the new script
-                if (ACMDScript == null || (ACMDScript != null && ACMDScript.script != acmdScript))
+                if (this.acmdScript == null || (this.acmdScript != null && this.acmdScript.script != acmdScript))
                 {
-                    ACMDScript = new ForgeACMDScript(acmdScript);
+                    this.acmdScript = new ForgeACMDScript(acmdScript);
                 }
             }
             else
-                ACMDScript = null;
+                this.acmdScript = null;
         }
 
         #endregion
@@ -874,7 +965,7 @@ namespace Smash_Forge
 
         private void glViewport_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (CurrentMode != Mode.Selection && !freezeCamera)
+            if (currentMode != Mode.Selection && !freezeCamera)
                 camera.Update();
         }
 
@@ -882,12 +973,12 @@ namespace Smash_Forge
 
         public void HideAll()
         {
-            LVDEditor.Visible = false;
-            LVDList.Visible = false;
-            MeshList.Visible = false;
-            AnimList.Visible = false;
-            ACMDEditor.Visible = false;
-            VertexTool.Visible = false;
+            lvdEditor.Visible = false;
+            lvdList.Visible = false;
+            meshList.Visible = false;
+            animListPanel.Visible = false;
+            acmdEditor.Visible = false;
+            vertexTool.Visible = false;
             totalFrame.Enabled = false;
         }
 
@@ -898,32 +989,32 @@ namespace Smash_Forge
             switch (ViewComboBox.SelectedItem.ToString())
             {
                 case "Model Viewer":
-                    MeshList.Visible = true;
-                    AnimList.Visible = true;
+                    meshList.Visible = true;
+                    animListPanel.Visible = true;
                     break;
                 case "Model Editor":
-                    MeshList.Visible = true;
-                    VertexTool.Visible = true;
+                    meshList.Visible = true;
+                    vertexTool.Visible = true;
                     break;
                 case "Animation Editor":
-                    AnimList.Visible = true;
+                    animListPanel.Visible = true;
                     totalFrame.Enabled = true;
                     break;
                 case "LVD Editor":
-                    LVDEditor.Visible = true;
-                    LVDList.Visible = true;
+                    lvdEditor.Visible = true;
+                    lvdList.Visible = true;
                     break;
                 case "ACMD Editor":
-                    AnimList.Visible = true;
-                    ACMDEditor.Visible = true;
+                    animListPanel.Visible = true;
+                    acmdEditor.Visible = true;
                     break;
                 case "Clean":
-                    LVDEditor.Visible = false;
-                    LVDList.Visible = false;
-                    MeshList.Visible = false;
-                    AnimList.Visible = false;
-                    ACMDEditor.Visible = false;
-                    VertexTool.Visible = false;
+                    lvdEditor.Visible = false;
+                    lvdList.Visible = false;
+                    meshList.Visible = false;
+                    animListPanel.Visible = false;
+                    acmdEditor.Visible = false;
+                    vertexTool.Visible = false;
                     totalFrame.Enabled = false;
                     break;
             }
@@ -1033,7 +1124,7 @@ namespace Smash_Forge
 
         private void GIFButton_Click(object sender, EventArgs e)
         {
-            if (Animation == null)
+            if (currentAnimation == null)
                 return;
 
             List<Bitmap> images = new List<Bitmap>();
@@ -1080,7 +1171,7 @@ namespace Smash_Forge
 
                 if (sf.ShowDialog() == DialogResult.OK)
                 {
-                    GIFProgress g = new GIFProgress(images, sf.FileName, AnimationSpeed, settings.Repeat, settings.Quality);
+                    GIFProgress g = new GIFProgress(images, sf.FileName, animationSpeed, settings.Repeat, settings.Quality);
                     g.Show();
                 }
 
@@ -1100,7 +1191,7 @@ namespace Smash_Forge
 
         private void ClearModelContainers()
         {
-            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (node is ModelContainer)
                 {
@@ -1136,14 +1227,6 @@ namespace Smash_Forge
                 currentFrame.Value--;
         }
 
-        private void viewStripButtons(object sender, EventArgs e)
-        {
-            modeBone.Checked = false;
-            modePolygon.Checked = false;
-            modeMesh.Checked = false;
-            ((ToolStripButton)sender).Checked = true;
-        }
-
         private void viewStripButtonsBone(object sender, EventArgs e)
         {
             stripPos.Checked = false;
@@ -1151,18 +1234,18 @@ namespace Smash_Forge
             stripSca.Checked = false;
             ((ToolStripButton)sender).Checked = true;
             if (stripPos.Checked)
-                TransformTool.Type = TransformTool.ToolTypes.POSITION;
+                transformTool.Type = TransformTool.ToolTypes.POSITION;
             if (stripRot.Checked)
-                TransformTool.Type = TransformTool.ToolTypes.ROTATION;
+                transformTool.Type = TransformTool.ToolTypes.ROTATION;
             if (stripSca.Checked)
-                TransformTool.Type = TransformTool.ToolTypes.SCALE;
+                transformTool.Type = TransformTool.ToolTypes.SCALE;
         }
 
         #endregion
 
         private void ModelViewport_FormClosing(object sender, FormClosingEventArgs e)
         {
-            foreach(TreeNode n in MeshList.filesTreeView.Nodes)
+            foreach(TreeNode n in meshList.filesTreeView.Nodes)
             {
                 if(n is ModelContainer)
                 {
@@ -1177,30 +1260,25 @@ namespace Smash_Forge
             SaveScreenRender();
         }
         
-        private void ModelViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
-        {
-
-        }
-
         private void totalFrame_ValueChanged(object sender, EventArgs e)
         {
-            if (Animation == null) return;
+            if (currentAnimation == null) return;
             if(totalFrame.Value < 1)
             {
                 totalFrame.Value = 1;
             }else
             {
-                if(Animation.Tag is Animation)
-                    ((Animation)Animation.Tag).FrameCount = (int)totalFrame.Value;
-                Animation.FrameCount = (int)totalFrame.Value;
+                if(currentAnimation.Tag is Animation)
+                    ((Animation)currentAnimation.Tag).FrameCount = (int)totalFrame.Value;
+                currentAnimation.FrameCount = (int)totalFrame.Value;
                 animationTrackBar.Value = 0;
-                animationTrackBar.SetRange(0, Animation.FrameCount);
+                animationTrackBar.SetRange(0, currentAnimation.FrameCount);
             }
         }
 
         private void checkSelect()
         {
-            if (CurrentMode == Mode.Selection)
+            if (currentMode == Mode.Selection)
             {
                 Vector2 m = GetMouseOnViewport();
                 if (!m.Equals(new Vector2(sx1, sy1)))
@@ -1280,8 +1358,8 @@ namespace Smash_Forge
                     }
                 }
 
-                VertexTool.vertexListBox.BeginUpdate();
-                VertexTool.vertexListBox.Items.Clear();
+                vertexTool.vertexListBox.BeginUpdate();
+                vertexTool.vertexListBox.Items.Clear();
                 foreach (TreeNode node in draw)
                 {
                     if (!(node is ModelContainer)) continue;
@@ -1295,14 +1373,14 @@ namespace Smash_Forge
                             {
                                 if (poly.selectedVerts[i++] == 1)
                                 {
-                                    VertexTool.vertexListBox.Items.Add(v);
+                                    vertexTool.vertexListBox.Items.Add(v);
                                 }
                             }
                         }
                     }
                 }
-                VertexTool.vertexListBox.EndUpdate();
-                CurrentMode = Mode.Normal;
+                vertexTool.vertexListBox.EndUpdate();
+                currentMode = Mode.Normal;
             }
         }
 
@@ -1323,7 +1401,7 @@ namespace Smash_Forge
 
         private void Render(object sender, PaintEventArgs e, int defaultFbo = 0)
         {
-            if (!ReadyToRender)
+            if (!readyToRender)
                 return;
 
             SetupViewport();
@@ -1335,15 +1413,15 @@ namespace Smash_Forge
             GL.PushAttrib(AttribMask.AllAttribBits);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-            if (MeshList.filesTreeView.SelectedNode != null)
+            if (meshList.filesTreeView.SelectedNode != null)
             {
                 // Return early to avoid rendering other stuff. 
-                if (MeshList.filesTreeView.SelectedNode is BCH_Texture)
+                if (meshList.filesTreeView.SelectedNode is BCH_Texture)
                 {
                     DrawBchTex();
                     return;
                 }
-                if (MeshList.filesTreeView.SelectedNode is NutTexture)
+                if (meshList.filesTreeView.SelectedNode is NutTexture)
                 {
                     DrawNutTexAndUvs();
                     return;
@@ -1366,8 +1444,8 @@ namespace Smash_Forge
 
             if (glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
              && glViewport.Focused
-             && (CurrentMode == Mode.Normal || (CurrentMode == Mode.Photoshoot && !freezeCamera))
-             && !TransformTool.hit)
+             && (currentMode == Mode.Normal || (currentMode == Mode.Photoshoot && !freezeCamera))
+             && !transformTool.hit)
             {
                 camera.Update();
             }
@@ -1472,21 +1550,21 @@ namespace Smash_Forge
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             if (Runtime.renderLVD)
-                _lvd.Render();
+                lvd.Render();
 
             if (Runtime.renderBones)
                 foreach (ModelContainer m in draw)
                     m.RenderBones();
 
             // ACMD
-            if (ParamManager != null && Runtime.renderHurtboxes && draw.Count > 0 && (draw[0] is ModelContainer))
+            if (paramManager != null && Runtime.renderHurtboxes && draw.Count > 0 && (draw[0] is ModelContainer))
             {
                 // Doesn't do anything. ParamManager is always null.
-                ParamManager.RenderHurtboxes(Frame, scriptId, ACMDScript, ((ModelContainer)draw[0]).GetVBN());
+                paramManager.RenderHurtboxes(frame, scriptId, acmdScript, ((ModelContainer)draw[0]).GetVBN());
             }
 
-            if (ACMDScript != null && draw.Count > 0 && (draw[0] is ModelContainer))
-                ACMDScript.Render(((ModelContainer)draw[0]).GetVBN());
+            if (acmdScript != null && draw.Count > 0 && (draw[0] is ModelContainer))
+                acmdScript.Render(((ModelContainer)draw[0]).GetVBN());
 
             if (ViewComboBox.SelectedIndex == 2)
             {
@@ -1498,16 +1576,16 @@ namespace Smash_Forge
                 MouseSelectionStuff();
             }
 
-            if (CurrentMode == Mode.Photoshoot)
+            if (currentMode == Mode.Photoshoot)
             {
                 freezeCamera = false;
                 if (Keyboard.GetState().IsKeyDown(Key.W) && Mouse.GetState().IsButtonDown(MouseButton.Left))
                 {
-                    ShootX = glViewport.PointToClient(Cursor.Position).X;
-                    ShootY = glViewport.PointToClient(Cursor.Position).Y;
+                    shootX = glViewport.PointToClient(Cursor.Position).X;
+                    shootY = glViewport.PointToClient(Cursor.Position).Y;
                     freezeCamera = true;
                 }
-                RenderTools.DrawPhotoshoot(glViewport, ShootX, ShootY, ShootWidth, ShootHeight);
+                RenderTools.DrawPhotoshoot(glViewport, shootX, shootY, shootWidth, shootHeight);
             }
         }
 
@@ -1515,9 +1593,9 @@ namespace Smash_Forge
         {
             try
             {
-                if (CurrentMode == Mode.Normal && OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
+                if (currentMode == Mode.Normal && OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
                 {
-                    CurrentMode = Mode.Selection;
+                    currentMode = Mode.Selection;
                     Vector2 m = GetMouseOnViewport();
                     sx1 = m.X;
                     sy1 = m.Y;
@@ -1527,12 +1605,12 @@ namespace Smash_Forge
             {
 
             }
-            if (CurrentMode == Mode.Selection)
+            if (currentMode == Mode.Selection)
             {
                 if (!OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
                 {
                     checkSelect();
-                    CurrentMode = Mode.Normal;
+                    currentMode = Mode.Normal;
                 }
 
                 GL.MatrixMode(MatrixMode.Modelview);
@@ -1565,22 +1643,22 @@ namespace Smash_Forge
         {
             if (modeBone.Checked)
             {
-                TransformTool.Render(camera, new Ray(camera, glViewport));
-                if (TransformTool.state == 1)
-                    CurrentMode = Mode.Selection;
+                transformTool.Render(camera, new Ray(camera, glViewport));
+                if (transformTool.state == 1)
+                    currentMode = Mode.Selection;
                 else
-                    CurrentMode = Mode.Normal;
+                    currentMode = Mode.Normal;
             }
 
-            if (TransformTool.HasChanged())
+            if (transformTool.HasChanged())
             {
-                if (Animation != null && TransformTool.b != null)
+                if (currentAnimation != null && transformTool.b != null)
                 {
                     // get the node group for the current bone in animation
                     Animation.KeyNode ThisNode = null;
-                    foreach (Animation.KeyNode node in Animation.Bones)
+                    foreach (Animation.KeyNode node in currentAnimation.Bones)
                     {
-                        if (node.Text.Equals(TransformTool.b.Text))
+                        if (node.Text.Equals(transformTool.b.Text))
                         {
                             // found
                             ThisNode = node;
@@ -1589,12 +1667,12 @@ namespace Smash_Forge
                     }
                     if (ThisNode == null)
                     {
-                        ThisNode = new Animation.KeyNode(TransformTool.b.Text);
-                        Animation.Bones.Add(ThisNode);
+                        ThisNode = new Animation.KeyNode(transformTool.b.Text);
+                        currentAnimation.Bones.Add(ThisNode);
                     }
 
                     // update or add the key frame
-                    ThisNode.SetKeyFromBone((float)currentFrame.Value, TransformTool.b);
+                    ThisNode.SetKeyFromBone((float)currentFrame.Value, transformTool.b);
                 }
             }
         }
@@ -1734,7 +1812,7 @@ namespace Smash_Forge
         private void DrawNutTexAndUvs()
         {
             GL.PopAttrib();
-            NutTexture tex = ((NutTexture)MeshList.filesTreeView.SelectedNode);
+            NutTexture tex = ((NutTexture)meshList.filesTreeView.SelectedNode);
             RenderTools.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HASHID], tex.Width, tex.Height);
 
             if (Runtime.drawUv)
@@ -1746,7 +1824,7 @@ namespace Smash_Forge
         private void DrawBchTex()
         {
             GL.PopAttrib();
-            BCH_Texture tex = ((BCH_Texture)MeshList.filesTreeView.SelectedNode);
+            BCH_Texture tex = ((BCH_Texture)meshList.filesTreeView.SelectedNode);
             RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
             glViewport.SwapBuffers();
         }
@@ -1767,9 +1845,38 @@ namespace Smash_Forge
             Render(sender, e);
         }
 
+        private void glViewport_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            MouseClickItemSelect(e);
+        }
+
+        private void modePolygon_Click(object sender, EventArgs e)
+        {
+            // These should act like radio buttons.
+            modeBone.Checked = false;
+            modePolygon.Checked = true;
+            modeMesh.Checked = false;
+        }
+
+        private void modeMesh_Click(object sender, EventArgs e)
+        {
+            // These should act like radio buttons.
+            modeBone.Checked = false;
+            modePolygon.Checked = false;
+            modeMesh.Checked = true;
+        }
+
+        private void modeBone_Click(object sender, EventArgs e)
+        {
+            // These should act like radio buttons.
+            modeBone.Checked = true;
+            modePolygon.Checked = false;
+            modeMesh.Checked = false;
+        }
+
         private void DrawUvsForSelectedTexture(NutTexture tex)
         {
-            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer))
                     continue;

@@ -269,22 +269,24 @@ namespace Smash_Forge
             GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
         }
 
-        public void Render(VBN vbn, Camera camera)
+        public void Render(VBN vbn, Camera camera, bool drawPolyIds = false)
         {
+            // Main function for NUD rendering.
             if (Runtime.renderBoundingBox)
                 DrawBoundingBoxes();
 
-            // Prepare Shader
+            // Choose the correct shader.
             Shader shader = Runtime.shaders["Nud"];
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NudDebug"];
 
-            Debug.WriteLine(shader.ProgramCreatedSuccessfully());
+            // Render using the selected shader.
             GL.UseProgram(shader.programId);
-
             shader.EnableVertexAttributes();
             LoadBoneAttributes(vbn, shader);
-            Render(shader, camera);
+
+            DrawAllPolygons(shader, camera, drawPolyIds);
+
             shader.DisableVertexAttributes();
         }
 
@@ -482,9 +484,9 @@ namespace Smash_Forge
             }
         }
 
-        public void Render(Shader shader, Camera camera)
+        private void DrawAllPolygons(Shader shader, Camera camera, bool drawPolyIds)
         {
-            DrawShadedPolygons(shader, camera);
+            DrawShadedPolygons(shader, camera, drawPolyIds);
             DrawSelectionOutlines(shader);
         }
 
@@ -505,7 +507,7 @@ namespace Smash_Forge
             }
         }
 
-        private void DrawShadedPolygons(Shader shader, Camera camera)
+        private void DrawShadedPolygons(Shader shader, Camera camera, bool drawPolyIds = false)
         {
             // For proper alpha blending, draw in reverse order and draw opaque objects first. 
             List<Polygon> opaque = new List<Polygon>();
@@ -524,15 +526,23 @@ namespace Smash_Forge
 
             // Only draw polgons if the polygon and its parent are both checked.
             foreach (Polygon p in opaque)
+            {
                 if (p.Parent != null && ((Mesh)p.Parent).Checked && p.Checked)
-                    DrawPolygon(p, shader, camera);
+                {
+                    DrawPolygonShaded(p, shader, camera, drawPolyIds);
+                }
+            }
 
             foreach (Polygon p in transparent)
+            {
                 if (((Mesh)p.Parent).Checked && p.Checked)
-                    DrawPolygon(p, shader, camera);
+                {
+                    DrawPolygonShaded(p, shader, camera, drawPolyIds);
+                }
+            }
         }
 
-        private void DrawPolygon(Polygon p, Shader shader, Camera camera, bool drawSelection = false)
+        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, bool drawId = false)
         {
             if (p.faces.Count <= 3)
                 return;
@@ -540,7 +550,7 @@ namespace Smash_Forge
             Material material = p.materials[0];
 
             // Set Shader Values.
-            SetShaderUniforms(p, shader, camera, material);
+            SetShaderUniforms(p, shader, camera, material, p.PolyDisplayId, drawId);
             SetVertexAttributes(p, shader);
 
             // Set OpenTK Render Options.
@@ -553,12 +563,10 @@ namespace Smash_Forge
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
         }
 
-        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material)
+        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, int id = 0, bool drawId = false)
         {
-            shader.SetUint("flags", material.Flags);
-            shader.SetInt("selectedBoneIndex", Runtime.selectedBoneIndex);
-
             // Shader Uniforms
+            shader.SetUint("flags", material.Flags);
             shader.SetBoolToInt("renderVertColor", Runtime.renderVertColor && material.useVertexColor);
             SetTextureUniforms(shader, material);
             SetMaterialPropertyUniforms(shader, material);
@@ -566,12 +574,18 @@ namespace Smash_Forge
             SetXMBUniforms(shader, p);
             SetNscUniform(p, shader);
 
+            // Misc Uniforms
+            shader.SetInt("selectedBoneIndex", Runtime.selectedBoneIndex);
             shader.SetBoolToInt("drawWireFrame", Runtime.renderModelWireframe);
             shader.SetFloat("lineWidth", Runtime.wireframeLineWidth);
             shader.SetVector3("cameraPosition", camera.position);
             shader.SetFloat("zBufferOffset", material.zBufferOffset);
             shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
+            shader.SetVector3("colorId", ColorTools.Vector4FromColor(Color.FromArgb(id)).Xyz);
+            shader.SetBoolToInt("drawId", drawId);
 
+            // The fragment alpha is set to 1 when alpha blending/testing aren't used.
+            // This fixes the alpha output for PNG renders.
             p.isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
             shader.SetBoolToInt("isTransparent", p.isTransparent);
         }
@@ -2521,7 +2535,6 @@ namespace Smash_Forge
                 float materialHash = -1f;
                 if (entries.ContainsKey("NU_materialHash"))
                     materialHash = entries["NU_materialHash"][0];
-
                 anims.Clear();
                 entries.Clear();
 
@@ -2689,6 +2702,11 @@ namespace Smash_Forge
                 NormalsTanBiTanHalfFloat = 0x7
             }
 
+            private static List<int> previousPolyIds = new List<int>();
+
+            public int PolyDisplayId { get => polyDisplayId; }
+            private int polyDisplayId = 0;
+
             public List<Vertex> vertices = new List<Vertex>();
             public List<int> faces = new List<int>();
             public int displayFaceSize = 0;
@@ -2708,17 +2726,32 @@ namespace Smash_Forge
             public int[] selectedVerts;
             public int Offset; // For Rendering
 
+
             public Polygon()
             {
                 Checked = true;
                 Text = "Polygon";
                 ImageKey = "polygon";
                 SelectedImageKey = "polygon";
+                GenerateDisplayId();
             }
 
             public void AddVertex(Vertex v)
             {
                 vertices.Add(v);
+            }
+
+            private void GenerateDisplayId()
+            {
+                // Find last used ID. Next ID will be last ID + 1.
+                // A color is generated from the integer as hexadecimal, but alpha is ignored.
+                // Incrementing will affect RGB before it affects Alpha (ARGB color).
+                int index = 0;
+                if (previousPolyIds.Count > 0)
+                    index = previousPolyIds.Last();
+                index++;
+                previousPolyIds.Add(index);
+                polyDisplayId = index;
             }
 
             public void AOSpecRefBlend()

@@ -1446,9 +1446,9 @@ namespace Smash_Forge.Rendering
                         //DrawVBN(m.bch.Models.Nodes[0].skeleton);
                     }
 
-                    if (m.DAT_MELEE != null)
+                    if (m.DatMelee != null)
                     {
-                        DrawVBN(m.DAT_MELEE.bones);
+                        DrawVBN(m.DatMelee.bones);
                     }
                 }
             }

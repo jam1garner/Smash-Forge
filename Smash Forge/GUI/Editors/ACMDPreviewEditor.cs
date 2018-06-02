@@ -57,7 +57,7 @@ namespace Smash_Forge
 
             if (Owner.MovesetManager.Game.Scripts.ContainsKey(crc))
             {
-                Owner.ACMDScript = new ForgeACMDScript((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
+                Owner.acmdScript = new ForgeACMDScript((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
                 //if (Runtime.vbnViewport != null && Runtime.TargetAnim != null)
                 //    Runtime.vbnViewport.setAnimMaxFrames(Runtime.TargetAnim);
             }
@@ -157,8 +157,8 @@ namespace Smash_Forge
 
                     if (cb_section.Text.Equals("GAME"))
                     {
-                        Owner.ACMDScript = new ForgeACMDScript(script);
-                        Owner.ACMDScript.processToFrame(0);
+                        Owner.acmdScript = new ForgeACMDScript(script);
+                        Owner.acmdScript.processToFrame(0);
                     }
                 } catch (Exception)
                 {
