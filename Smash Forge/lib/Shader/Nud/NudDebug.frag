@@ -154,6 +154,10 @@ uniform float elapsedTime;
 
 uniform int drawSelection;
 
+// Polygon ID for viewport selection.
+uniform int drawId;
+uniform int polygonId;
+
 // Constants
 #define gamma 2.2
 #define PI 3.14159
@@ -343,5 +347,11 @@ void main() {
         float smoothedDistance = exp2(-512.0 * minDistance * minDistance);
         vec3 edgeColor = vec3(1);
         fragColor.rgb = mix(fragColor.rgb, edgeColor, smoothedDistance);
+    }
+
+    if (drawId == 1) {
+        // Generate a unique color. This won't work for more than 255 polygons.
+        // The color is used to differentiate polygons for selection purposes.
+        fragColor.rgb = vec3(polygonId / 255.0);
     }
 }

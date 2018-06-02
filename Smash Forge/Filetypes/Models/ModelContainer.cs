@@ -62,6 +62,7 @@ namespace Smash_Forge
             }
         }
         private VBN vbn;
+
         public MTA MTA
         {
             get
@@ -74,7 +75,8 @@ namespace Smash_Forge
                 Refresh();
             }
         }
-        public MTA mta;
+        private MTA mta;
+
         public MOI MOI
         {
             get
@@ -122,7 +124,6 @@ namespace Smash_Forge
         private XMBFile xmb;
 
         // Other Model Formats
-        public BCH bch;
         public BCH BCH
         {
             get
@@ -135,21 +136,22 @@ namespace Smash_Forge
                 Refresh();
             }
         }
+        private BCH bch;
 
-        public DAT DAT_MELEE
+        public DAT DatMelee
         {
             get
             {
-                return dat_melee;
+                return datMelee;
             }
             set
             {
-                dat_melee = value;
-                VBN = dat_melee.bones;
+                datMelee = value;
+                VBN = datMelee.bones;
                 Refresh();
             }
         }
-        private DAT dat_melee;
+        private DAT datMelee;
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
         public static MovesetManager Moveset { get; set; }
@@ -173,10 +175,10 @@ namespace Smash_Forge
         {
             Nodes.Clear();
 
-            if(DAT_MELEE != null)
+            if(DatMelee != null)
             {
                 Text = "Melee DAT";
-                Nodes.AddRange(DAT_MELEE.tree.ToArray());
+                Nodes.AddRange(DatMelee.tree.ToArray());
                 if (vbn != null && vbn.Parent == null) Nodes.Add(vbn);
             }
             else
@@ -273,9 +275,9 @@ namespace Smash_Forge
                 }
             }
 
-            if (DAT_MELEE != null && Runtime.shaders["Dat"].ProgramCreatedSuccessfully())
+            if (DatMelee != null && Runtime.shaders["Dat"].ProgramCreatedSuccessfully())
             {
-                DAT_MELEE.Render(camera.mvpMatrix);
+                DatMelee.Render(camera.mvpMatrix);
             }
 
             if (NUD != null && Runtime.shaders["Nud"].ProgramCreatedSuccessfully() && Runtime.shaders["NudDebug"].ProgramCreatedSuccessfully())
@@ -367,9 +369,9 @@ namespace Smash_Forge
                     RenderTools.DrawVBN(mo.skeleton);
             }
 
-            if (DAT_MELEE != null)
+            if (DatMelee != null)
             {
-                RenderTools.DrawVBN(DAT_MELEE.bones);
+                RenderTools.DrawVBN(DatMelee.bones);
             }
         }
 

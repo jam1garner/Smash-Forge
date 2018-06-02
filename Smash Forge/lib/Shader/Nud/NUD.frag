@@ -250,6 +250,6 @@ void main() {
     if (drawId == 1) {
         // Generate a unique color. This won't work for more than 255 polygons.
         // The color is used to differentiate polygons for selection purposes.
-        fragColor.rgb = vec3(polygonId / 255.0) * 10;
+        fragColor.rgb = vec3(polygonId / 255.0);
     }
 }
