@@ -188,7 +188,7 @@ uniform vec4 effUniverseParam;
 
 // Polygon ID for viewport selection.
 uniform int drawId;
-uniform int polygonId;
+uniform vec3 colorId;
 
 // Constants
 #define gamma 2.2
@@ -248,8 +248,7 @@ void main() {
     }
 
     if (drawId == 1) {
-        // Generate a unique color. This won't work for more than 255 polygons.
-        // The color is used to differentiate polygons for selection purposes.
-        fragColor.rgb = vec3(polygonId / 255.0);
+        // Draw a color ID map.
+        fragColor.rgb = colorId;
     }
 }

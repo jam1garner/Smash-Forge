@@ -581,7 +581,7 @@ namespace Smash_Forge
             shader.SetVector3("cameraPosition", camera.position);
             shader.SetFloat("zBufferOffset", material.zBufferOffset);
             shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
-            shader.SetInt("polygonId", id);
+            shader.SetVector3("colorId", ColorTools.Vector4FromColor(Color.FromArgb(id)).Xyz);
             shader.SetBoolToInt("drawId", drawId);
 
             // The fragment alpha is set to 1 when alpha blending/testing aren't used.
@@ -2535,7 +2535,6 @@ namespace Smash_Forge
                 float materialHash = -1f;
                 if (entries.ContainsKey("NU_materialHash"))
                     materialHash = entries["NU_materialHash"][0];
-
                 anims.Clear();
                 entries.Clear();
 
@@ -2745,7 +2744,8 @@ namespace Smash_Forge
             private void GenerateDisplayId()
             {
                 // Find last used ID. Next ID will be last ID + 1.
-                // This works for rendering IDs for up to 255 polygons.
+                // A color is generated from the integer as hexadecimal, but alpha is ignored.
+                // Incrementing will affect RGB before it affects Alpha (ARGB color).
                 int index = 0;
                 if (previousPolyIds.Count > 0)
                     index = previousPolyIds.Last();

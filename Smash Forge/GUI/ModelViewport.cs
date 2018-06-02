@@ -511,7 +511,11 @@ namespace Smash_Forge
                         foreach (NUD.Polygon p in mesh.Nodes)
                         {
                             // The color is the polygon index (not the render order).
-                            if (p.PolyDisplayId == pixelColor.R)
+                            // Convert to Vector3 to ignore the alpha.
+                            Vector3 polyColor = ColorTools.Vector4FromColor(Color.FromArgb(p.PolyDisplayId)).Xyz;
+                            Vector3 pickedColor = ColorTools.Vector4FromColor(pixelColor).Xyz;
+
+                            if (polyColor == pickedColor)
                             {
                                 return p;
                             }
