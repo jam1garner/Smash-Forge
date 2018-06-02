@@ -186,6 +186,8 @@ uniform vec4 softLightingParams;
 uniform vec4 customSoftLightParams;
 uniform vec4 effUniverseParam;
 
+// Polygon ID for viewport selection.
+uniform int drawId;
 uniform int polygonId;
 
 // Constants
@@ -212,8 +214,7 @@ float Luminance(vec3 rgb);
 vec4 SmashShader(VertexAttributes vert);
 
 void main() {
-    if (drawSelection == 1)
-    {
+    if (drawSelection == 1) {
         fragColor = vec4(1);
         return;
     }
@@ -246,7 +247,9 @@ void main() {
         fragColor.rgb = mix(fragColor.rgb, edgeColor, intensity);
     }
 
-    // Generate a unique color. This won't work for more than 255 polygons.
-    // The color is used to differentiate polygons for selection purposes.
-    fragColor.rgb = vec3(polygonId / 255.0);
+    if (drawId == 1) {
+        // Generate a unique color. This won't work for more than 255 polygons.
+        // The color is used to differentiate polygons for selection purposes.
+        fragColor.rgb = vec3(polygonId / 255.0) * 10;
+    }
 }

@@ -404,8 +404,45 @@ namespace Smash_Forge
         {
             if (ReadyToRender && glViewport != null)
             {
+                // Render the ID map to the offscreen FBO.
+                glViewport.MakeCurrent();
+                GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
+                Runtime.drawNudPolygonIds = true;
+                Render(null, null, screenRenderFbo);
+                //Runtime.drawNudPolygonIds = false;
+
+                // Get the color at the mouse position.
                 byte[] pixelRgba = new byte[4];
-                ColorPickPixelAtMousePosition(pixelRgba);
+                ColorPickPixelAtMousePosition(pixelRgba, screenRenderFbo);
+
+                // Determine what polgyon is selected.
+                byte colorR = pixelRgba[0];
+                Debug.WriteLine("Sampled Color: " + colorR);
+                foreach (TreeNode node in draw)
+                {
+                    if (!(node is ModelContainer))
+                        continue;
+                    ModelContainer con = (ModelContainer)node;
+
+                    if (modeMesh.Checked)
+                    {
+                        foreach (NUD.Mesh mesh in con.NUD.Nodes)
+                        {
+                            foreach (NUD.Polygon p in mesh.Nodes)
+                            {
+                                if ((p.polyDisplayId * 10) == colorR)
+                                {
+                                    Debug.WriteLine("Poly Index * 10 : " + (p.polyDisplayId * 10));
+                                    // The color is the polygon index.
+                                    // A scale is used to make the colors more distinct.
+                                    MeshList.filesTreeView.SelectedNode = p;
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Debug.WriteLine(pixelRgba[0] + "," + pixelRgba[1] + "," + pixelRgba[2]);
             }
             //Mesh Selection Test
@@ -443,16 +480,13 @@ namespace Smash_Forge
             }
         }
 
-        private void ColorPickPixelAtMousePosition(byte[] pixelRgba)
+        private void ColorPickPixelAtMousePosition(byte[] pixelRgba, int fbo = 0)
         {
             if (pixelRgba == null || pixelRgba.Length == 0)
                 return;
 
-            // Render the scene again into an FBO.
-            glViewport.MakeCurrent();
-            GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, screenRenderFbo);
-            Render(null, null, screenRenderFbo);
+            // Make sure the proper FBO is bound.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
 
             // Colorpick the single pixel from the FBO at the mouse's location.
             System.Drawing.Point mouse = glViewport.PointToClient(Cursor.Position);

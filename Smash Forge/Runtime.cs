@@ -167,22 +167,28 @@ namespace Smash_Forge
         public static float bloomThreshold = 1.01f;
         public static float bloomTexScale = 0.125f;
 
-        // Material Lighting
+        // Toggle Render Passes
         public static bool renderDiffuse = true;
         public static bool renderFresnel = true;
         public static bool renderSpecular = true;
         public static bool renderReflection = true;
 
+        // Render Passes Intensities
         public static float difIntensity = 1.00f;
         public static float spcIntentensity = 1.00f;
         public static float frsIntensity = 1.00f;
         public static float refIntensity = 1.00f;
         public static float ambItensity = 1.00f;
 
+        // Misc Scale Stuff
         public static float modelScale = 1f;
         public static float zScale = 1.0f;
 
+        // Bone Weight Display
         public static int selectedBoneIndex = -1;
+
+        // Polygon ID Maps
+        public static bool drawNudPolygonIds = false;
 
         public static bool drawUv = false;
 

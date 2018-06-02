@@ -310,7 +310,7 @@ namespace Smash_Forge
                     Runtime.renderModel = false;
                 }
 
-                NUD.Render(VBN, camera);
+                NUD.Render(VBN, camera, Runtime.drawNudPolygonIds);
             }
         }
 

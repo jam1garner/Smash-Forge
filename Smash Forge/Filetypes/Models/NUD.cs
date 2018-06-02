@@ -269,21 +269,24 @@ namespace Smash_Forge
             GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
         }
 
-        public void Render(VBN vbn, Camera camera)
+        public void Render(VBN vbn, Camera camera, bool drawPolyIds = false)
         {
+            // Main function for NUD rendering.
             if (Runtime.renderBoundingBox)
                 DrawBoundingBoxes();
 
-            // Prepare Shader
+            // Choose the correct shader.
             Shader shader = Runtime.shaders["Nud"];
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NudDebug"];
 
+            // Render using the selected shader.
             GL.UseProgram(shader.programId);
-
             shader.EnableVertexAttributes();
             LoadBoneAttributes(vbn, shader);
-            Render(shader, camera);
+
+            DrawAllPolygons(shader, camera, drawPolyIds);
+
             shader.DisableVertexAttributes();
         }
 
@@ -481,9 +484,9 @@ namespace Smash_Forge
             }
         }
 
-        public void Render(Shader shader, Camera camera)
+        private void DrawAllPolygons(Shader shader, Camera camera, bool drawPolyIds)
         {
-            DrawShadedPolygons(shader, camera);
+            DrawShadedPolygons(shader, camera, drawPolyIds);
             DrawSelectionOutlines(shader);
         }
 
@@ -504,7 +507,7 @@ namespace Smash_Forge
             }
         }
 
-        private void DrawShadedPolygons(Shader shader, Camera camera)
+        private void DrawShadedPolygons(Shader shader, Camera camera, bool drawPolyIds = false)
         {
             // For proper alpha blending, draw in reverse order and draw opaque objects first. 
             List<Polygon> opaque = new List<Polygon>();
@@ -521,42 +524,41 @@ namespace Smash_Forge
                 }
             }
 
-            // Used for generating a unique color for each polygon.
-            // This technique works for up to 255 polygons.
-            int polygonId = 0;
-            int polygonCount = opaque.Count + transparent.Count;
-            // Use a scale to distribute the ids more evenly between 0 and 255.
-            int scale = (int)(255.0 / polygonCount);
+            // Used to render a unique greyscale color.
+            // The index should always be incremented for unchecked polygons.
+            int polyIndex = 0;
 
             // Only draw polgons if the polygon and its parent are both checked.
             foreach (Polygon p in opaque)
             {
                 if (p.Parent != null && ((Mesh)p.Parent).Checked && p.Checked)
                 {
-                    DrawPolygon(p, shader, camera, polygonId * scale);
-                    polygonId++;
+                    DrawPolygonShaded(p, shader, camera, polyIndex, drawPolyIds);
                 }
+                polyIndex++;
             }
 
             foreach (Polygon p in transparent)
             {
                 if (((Mesh)p.Parent).Checked && p.Checked)
                 {
-                    DrawPolygon(p, shader, camera, polygonId * scale);
-                    polygonId++;
+                    DrawPolygonShaded(p, shader, camera, polyIndex, drawPolyIds);
                 }
+                polyIndex++;
             }
         }
 
-        private void DrawPolygon(Polygon p, Shader shader, Camera camera, int id = 0)
+        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, int id = 0, bool drawId = false)
         {
             if (p.faces.Count <= 3)
                 return;
 
+            p.polyDisplayId = id;
+
             Material material = p.materials[0];
 
             // Set Shader Values.
-            SetShaderUniforms(p, shader, camera, material, id);
+            SetShaderUniforms(p, shader, camera, material, id, drawId);
             SetVertexAttributes(p, shader);
 
             // Set OpenTK Render Options.
@@ -569,7 +571,7 @@ namespace Smash_Forge
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
         }
 
-        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, int id = 0)
+        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, int id = 0, bool drawId = false)
         {
             // Shader Uniforms
             shader.SetUint("flags", material.Flags);
@@ -588,6 +590,7 @@ namespace Smash_Forge
             shader.SetFloat("zBufferOffset", material.zBufferOffset);
             shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
             shader.SetInt("polygonId", id);
+            shader.SetBoolToInt("drawId", drawId);
 
             // The fragment alpha is set to 1 when alpha blending/testing aren't used.
             // This fixes the alpha output for PNG renders.
@@ -2707,6 +2710,8 @@ namespace Smash_Forge
                 NormalsHalfFloat = 0x6,
                 NormalsTanBiTanHalfFloat = 0x7
             }
+
+            public int polyDisplayId = 0;
 
             public List<Vertex> vertices = new List<Vertex>();
             public List<int> faces = new List<int>();
