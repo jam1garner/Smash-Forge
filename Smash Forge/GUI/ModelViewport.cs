@@ -212,16 +212,63 @@ namespace Smash_Forge
             FilePath = "";
             Text = "Model Viewport";
 
-            meshList.Dock = DockStyle.Right;
-            meshList.MaximumSize = new Size(300, 2000);
-            meshList.Size = new Size(300, 2000);
-            AddControl(meshList);
+            SetupMeshList();
+            SetupAnimListPanel();
+            SetupLvdEditors();
+            SetupVertexTool();
+            SetupAcmdEditor();
+            SetupHitBoxList();
+            SetupHurtBoxList();
+            SetupVariableViewer();
 
-            animListPanel.Dock = DockStyle.Left;
-            animListPanel.MaximumSize = new Size(300, 2000);
-            animListPanel.Size = new Size(300, 2000);
-            AddControl(animListPanel);
+            LVD = new LVD();
 
+            ViewComboBox.SelectedIndex = 0;
+
+            draw = meshList.filesTreeView.Nodes;
+
+            RenderTools.Setup(); // Just in case.
+            SetupBuffersAndTextures();
+        }
+
+        private void SetupVariableViewer()
+        {
+            variableViewer = new VariableList();
+            variableViewer.Dock = DockStyle.Right;
+        }
+
+        private void SetupHurtBoxList()
+        {
+            hurtboxList = new HurtboxList();
+            hurtboxList.Dock = DockStyle.Right;
+        }
+
+        private void SetupHitBoxList()
+        {
+            hitboxList = new HitboxList();
+            hitboxList.Dock = DockStyle.Right;
+            AddControl(hitboxList);
+        }
+
+        private void SetupAcmdEditor()
+        {
+            acmdEditor = new ACMDPreviewEditor();
+            acmdEditor.Owner = this;
+            acmdEditor.Dock = DockStyle.Right;
+            acmdEditor.updateCrcList();
+            AddControl(acmdEditor);
+        }
+
+        private void SetupVertexTool()
+        {
+            vertexTool.Dock = DockStyle.Left;
+            vertexTool.MaximumSize = new Size(300, 2000);
+            AddControl(vertexTool);
+            vertexTool.vp = this;
+        }
+
+        private void SetupLvdEditors()
+        {
             lvdList.Dock = DockStyle.Left;
             lvdList.MaximumSize = new Size(300, 2000);
             AddControl(lvdList);
@@ -230,37 +277,22 @@ namespace Smash_Forge
             lvdEditor.Dock = DockStyle.Right;
             lvdEditor.MaximumSize = new Size(300, 2000);
             AddControl(lvdEditor);
+        }
 
-            vertexTool.Dock = DockStyle.Left;
-            vertexTool.MaximumSize = new Size(300, 2000);
-            AddControl(vertexTool);
-            vertexTool.vp = this;
+        private void SetupAnimListPanel()
+        {
+            animListPanel.Dock = DockStyle.Left;
+            animListPanel.MaximumSize = new Size(300, 2000);
+            animListPanel.Size = new Size(300, 2000);
+            AddControl(animListPanel);
+        }
 
-            acmdEditor = new ACMDPreviewEditor();
-            acmdEditor.Owner = this;
-            acmdEditor.Dock = DockStyle.Right;
-            acmdEditor.updateCrcList();
-            AddControl(acmdEditor);
-
-            hitboxList = new HitboxList();
-            hitboxList.Dock = DockStyle.Right;
-            AddControl(hitboxList);
-
-            hurtboxList = new HurtboxList();
-            hurtboxList.Dock = DockStyle.Right;
-
-            variableViewer = new VariableList();
-            variableViewer.Dock = DockStyle.Right;
-
-            LVD = new LVD();
-
-            ViewComboBox.SelectedIndex = 0;
-
-            draw = meshList.filesTreeView.Nodes;
-
-            RenderTools.Setup();
-
-            SetupBuffersAndTextures();
+        private void SetupMeshList()
+        {
+            meshList.Dock = DockStyle.Right;
+            meshList.MaximumSize = new Size(300, 2000);
+            meshList.Size = new Size(300, 2000);
+            AddControl(meshList);
         }
 
         private void SetupBuffersAndTextures()
@@ -399,10 +431,12 @@ namespace Smash_Forge
             return new Vector2(mx, my);
         }
 
-        int dbdistance = 0;
-        System.Drawing.Point _LastPoint;
-
         private void glViewport_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            MouseClickItemSelect(e);
+        }
+
+        private void MouseClickItemSelect(System.Windows.Forms.MouseEventArgs e)
         {
             if (!readyToRender || glViewport == null)
                 return;
@@ -411,38 +445,43 @@ namespace Smash_Forge
             if (e.Button == MouseButtons.Left)
             {
                 Ray ray = new Ray(camera, glViewport);
-                int selectedSize = 0;
 
                 transformTool.b = null;
-
                 foreach (TreeNode node in draw)
                 {
-                    if (!(node is ModelContainer)) continue;
-                    ModelContainer con = (ModelContainer)node;
+                    if (!(node is ModelContainer))
+                        continue;
+                    ModelContainer modelContainer = (ModelContainer)node;
+
                     if (modeBone.Checked)
                     {
-                        SortedList<double, Bone> selected = con.GetBoneSelection(ray);
-                        selectedSize = selected.Count;
-                        if (selected.Count > dbdistance)
-                            transformTool.b = (Bone)selected.Values.ElementAt(dbdistance);
+                        // Bounding spheres work well because bones aren't close together.
+                        SortedList<double, Bone> selected = modelContainer.GetBoneSelection(ray);
+                        if (selected.Count > 0)
+                            transformTool.b = selected.Values.ElementAt(0);
                         break;
                     }
                     if (modeMesh.Checked)
                     {
-                        RenderColorIdPassToFbo(screenRenderFbo);
-
-                        // Get the color at the mouse's position.
-                        byte[] pixelRgba = new byte[4];
-                        ColorPickPixelAtMousePosition(pixelRgba, screenRenderFbo);
-
-                        meshList.filesTreeView.SelectedNode = GetSelectedPolygonFromColor(pixelRgba);
+                        // Use a color ID render pass for more precision.
+                        SelectPolygonAtMousePosition();
+                        break;
                     }
                 }
-
-                dbdistance += 1;
-                if (dbdistance >= selectedSize) dbdistance = 0;
-                _LastPoint = e.Location;
             }
+            else if (e.Button == MouseButtons.Right)
+            {
+                // TODO: Context Menus from mesh list.
+            }
+        }
+
+        private void SelectPolygonAtMousePosition()
+        {
+            RenderColorIdPassToFbo(screenRenderFbo);
+
+            // Get the color at the mouse's position.
+            Color selectedColor = ColorPickPixelAtMousePosition(screenRenderFbo);
+            meshList.filesTreeView.SelectedNode = GetSelectedPolygonFromColor(selectedColor);
         }
 
         private void RenderColorIdPassToFbo(int fbo)
@@ -455,11 +494,10 @@ namespace Smash_Forge
             Runtime.drawNudPolygonIds = false;
         }
 
-        private NUD.Polygon GetSelectedPolygonFromColor(byte[] pixelRgba)
+        private NUD.Polygon GetSelectedPolygonFromColor(Color pixelColor)
         {
             // Determine what polgyon is selected.
             // May not select the proper polygon with multiple model containers.
-            byte colorR = pixelRgba[0];
             foreach (TreeNode node in draw)
             {
                 if (!(node is ModelContainer))
@@ -472,9 +510,9 @@ namespace Smash_Forge
                     {
                         foreach (NUD.Polygon p in mesh.Nodes)
                         {
-                            if (p.polyDisplayId == colorR)
+                            // The color is the polygon index (not the render order).
+                            if (p.PolyDisplayId == pixelColor.R)
                             {
-                                // The color is the polygon index (not the render order).
                                 return p;
                             }
                         }
@@ -485,18 +523,16 @@ namespace Smash_Forge
             return null;
         }
 
-        private void ColorPickPixelAtMousePosition(byte[] pixelRgba, int fbo = 0)
+        private Color ColorPickPixelAtMousePosition(int fbo = 0)
         {
-            if (pixelRgba == null || pixelRgba.Length == 0)
-                return;
-
             // Make sure the proper FBO is bound.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
 
             // Colorpick the single pixel from the FBO at the mouse's location.
             System.Drawing.Point mouse = glViewport.PointToClient(Cursor.Position);
-            Debug.WriteLine(mouse.X + "," + (glViewport.Height - mouse.Y));
-            GL.ReadPixels(mouse.X, glViewport.Height - mouse.Y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, pixelRgba);
+            byte[] rgba = new byte[4];
+            GL.ReadPixels(mouse.X, glViewport.Height - mouse.Y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, rgba);
+            return Color.FromArgb(rgba[3], rgba[0], rgba[1], rgba[2]);
         }
 
         private Vector3 getScreenPoint(Vector3 pos)

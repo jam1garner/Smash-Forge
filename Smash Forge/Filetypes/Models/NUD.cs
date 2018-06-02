@@ -524,41 +524,33 @@ namespace Smash_Forge
                 }
             }
 
-            // Used to render a unique greyscale color.
-            // The index should always be incremented for unchecked polygons.
-            int polyIndex = 0;
-
             // Only draw polgons if the polygon and its parent are both checked.
             foreach (Polygon p in opaque)
             {
                 if (p.Parent != null && ((Mesh)p.Parent).Checked && p.Checked)
                 {
-                    DrawPolygonShaded(p, shader, camera, polyIndex, drawPolyIds);
+                    DrawPolygonShaded(p, shader, camera, drawPolyIds);
                 }
-                polyIndex++;
             }
 
             foreach (Polygon p in transparent)
             {
                 if (((Mesh)p.Parent).Checked && p.Checked)
                 {
-                    DrawPolygonShaded(p, shader, camera, polyIndex, drawPolyIds);
+                    DrawPolygonShaded(p, shader, camera, drawPolyIds);
                 }
-                polyIndex++;
             }
         }
 
-        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, int id = 0, bool drawId = false)
+        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, bool drawId = false)
         {
             if (p.faces.Count <= 3)
                 return;
 
-            p.polyDisplayId = id;
-
             Material material = p.materials[0];
 
             // Set Shader Values.
-            SetShaderUniforms(p, shader, camera, material, id, drawId);
+            SetShaderUniforms(p, shader, camera, material, p.PolyDisplayId, drawId);
             SetVertexAttributes(p, shader);
 
             // Set OpenTK Render Options.
@@ -2711,7 +2703,10 @@ namespace Smash_Forge
                 NormalsTanBiTanHalfFloat = 0x7
             }
 
-            public int polyDisplayId = 0;
+            private static List<int> previousPolyIds = new List<int>();
+
+            public int PolyDisplayId { get => polyDisplayId; }
+            private int polyDisplayId = 0;
 
             public List<Vertex> vertices = new List<Vertex>();
             public List<int> faces = new List<int>();
@@ -2732,17 +2727,31 @@ namespace Smash_Forge
             public int[] selectedVerts;
             public int Offset; // For Rendering
 
+
             public Polygon()
             {
                 Checked = true;
                 Text = "Polygon";
                 ImageKey = "polygon";
                 SelectedImageKey = "polygon";
+                GenerateDisplayId();
             }
 
             public void AddVertex(Vertex v)
             {
                 vertices.Add(v);
+            }
+
+            private void GenerateDisplayId()
+            {
+                // Find last used ID. Next ID will be last ID + 1.
+                // This works for rendering IDs for up to 255 polygons.
+                int index = 0;
+                if (previousPolyIds.Count > 0)
+                    index = previousPolyIds.Last();
+                index++;
+                previousPolyIds.Add(index);
+                polyDisplayId = index;
             }
 
             public void AOSpecRefBlend()
