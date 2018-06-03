@@ -186,6 +186,8 @@ namespace Smash_Forge
             }
 
             glControl1.Invalidate();
+            glControl1.Update();
+            RenderTexture();
         }
 
         private void RenderTexture()
@@ -944,6 +946,14 @@ namespace Smash_Forge
         {
             keepAspectRatio = preserveAspectRatioCB.Checked;
             glControl1.Invalidate();
+        }
+
+        private void glControl1_Resize(object sender, EventArgs e)
+        {
+            // Update the display again.
+            glControl1.MakeCurrent();
+            RenderTexture();
+            glControl1.SwapBuffers();
         }
     }
 }
