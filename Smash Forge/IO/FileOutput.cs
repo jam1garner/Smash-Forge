@@ -72,6 +72,20 @@ namespace Smash_Forge
                 data.Add((byte)((i)&0xFF));
             }
         }
+
+        public void writeUInt(uint i){
+            if(Endian == Endianness.Little){
+                data.Add((byte)((i)&0xFF));
+                data.Add((byte)((i>>8)&0xFF));
+                data.Add((byte)((i>>16)&0xFF));
+                data.Add((byte)((i>>24)&0xFF));
+            }else{
+                data.Add((byte)((i>>24)&0xFF));
+                data.Add((byte)((i>>16)&0xFF));
+                data.Add((byte)((i>>8)&0xFF));
+                data.Add((byte)((i)&0xFF));
+            }
+        }
         
         public void writeIntAt(int i, int p){
             if(Endian == Endianness.Little){
@@ -97,12 +111,12 @@ namespace Smash_Forge
         }
 
         public void align(int i){
-            while(data.Count % i != 0)
+            while((data.Count % i) != 0)
                 writeByte(0);
         }
 
         public void align(int i, int v){
-            while(data.Count % i != 0)
+            while((data.Count % i) != 0)
                 writeByte(v);
         }
 

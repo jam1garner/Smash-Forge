@@ -57,16 +57,12 @@ namespace Smash_Forge
             TextureMenu.MenuItems.Add(replace);
 
             MenuItem export = new MenuItem("Export");
-            export.Click += exportAsDDSToolStripMenuItem_Click;
+            export.Click += exportTextureToolStripMenuItem_Click;
             TextureMenu.MenuItems.Add(export);
 
             MenuItem remove = new MenuItem("Remove");
             remove.Click += RemoveToolStripMenuItem1_Click_1;
             TextureMenu.MenuItems.Add(remove);
-
-            MenuItem saveTexToPng = new MenuItem("Export as PNG");
-            saveTexToPng.Click += exportTexAsPngToolStripMenuItem_Click;
-            TextureMenu.MenuItems.Add(saveTexToPng);
 
             // NUT Context Menu
             MenuItem import = new MenuItem("Import New Texture");
@@ -116,9 +112,10 @@ namespace Smash_Forge
             }
             FileOutput fileOutput = new FileOutput();
             byte[] n = NUT.Rebuild();
-            DialogResult dialogResult = MessageBox.Show("Would you like to compress this NUT file with zlib?\nIf you are unsure, select \"No\".", "zlib Compression", MessageBoxButtons.YesNo);
+            //Temporarily disabling this prompt until zlib works properly
+            /*DialogResult dialogResult = MessageBox.Show("Would you like to compress this NUT file with zlib?\nIf you are unsure, select \"No\".", "zlib Compression", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
-                n = FileData.DeflateZLIB(n);
+                n = FileData.DeflateZLIB(n);*/
             fileOutput.writeBytes(n);
             fileOutput.save(FilePath);
             Edited = false;
@@ -174,8 +171,8 @@ namespace Smash_Forge
                 heightLabel.Text = "Height:" + tex.Height;
 
                 // Get number of mip maps for current texture.
-                mipLevelTrackBar.Maximum = tex.mipmaps.Count - 1;
-                maxMipLevelLabel.Text = "Total:" + tex.mipmaps.Count + "";
+                mipLevelTrackBar.Maximum = (tex.mipMapCount) - 1;
+                maxMipLevelLabel.Text = "Total:" + tex.mipMapCount + "";
             }
             else
             {
@@ -201,7 +198,7 @@ namespace Smash_Forge
                 glControl1.SwapBuffers();
                 return;
             }
-           
+
             int width = ((NutTexture)textureListBox.SelectedItem).Width;
             int height = ((NutTexture)textureListBox.SelectedItem).Height; 
 
@@ -253,22 +250,6 @@ namespace Smash_Forge
             GL.DeleteRenderbuffer(rboColor);
         }
 
-        private void exportTexAsPngToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (textureListBox.SelectedItem == null) return;
-            using (var sfd = new SaveFileDialog())
-            {
-                NutTexture tex = (NutTexture)(textureListBox.SelectedItem);
-                sfd.Filter = "Portable Networks Graphic (.png)|*.png|" +
-                                    "All files(*.*)|*.*";
-
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    RenderTextureToPng(tex, sfd.FileName, true, true, true, true);
-                }
-            }
-        }
-
         private void exportNutAsPngToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (FolderSelectDialog f = new FolderSelectDialog())
@@ -306,51 +287,61 @@ namespace Smash_Forge
             }
         }
 
-        private void exportAsDDSToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exportTextureToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (textureListBox.SelectedItem == null) return;
+            if (NUT == null || textureListBox.SelectedItem == null)
+                return;
             using (var sfd = new SaveFileDialog())
             {
                 NutTexture tex = (NutTexture)(textureListBox.SelectedItem);
-                if (tex.type == PixelInternalFormat.Rgba)
-                    sfd.Filter = "Portable Networks Graphic (.png)|*.png|" +
-                                    "All files(*.*)|*.*";
-                else
-                    sfd.Filter = "Direct Draw Surface (.dds)|*.dds|" +
-                                    "All files(*.*)|*.*";
+
+                sfd.FileName = tex.ToString() + ".dds";
+                sfd.Filter = "Supported Formats|*.dds;*.png|" +
+                             "DirectDraw Surface (.dds)|*.dds|" +
+                             "Portable Network Graphics (.png)|*.png|" +
+                             "All files(*.*)|*.*";
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    // use png instead
-                    if (sfd.FileName.EndsWith(".png") && NUT != null && tex.type == PixelInternalFormat.Rgba)
+                    string extension = Path.GetExtension(sfd.FileName).ToLowerInvariant();
+
+                    if (extension == ".dds")
+                    {
+                        ExportDDS(sfd.FileName, tex);
+                    }
+                    else if (extension == ".png")
                     {
                         ExportPNG(sfd.FileName, tex);
-                    }
-                    if (sfd.FileName.EndsWith(".dds") && NUT != null)
-                    {
-                        DDS dds = new DDS();
-                        dds.fromNUT_Texture(tex);
-                        dds.Save(sfd.FileName);
                     }
                 }
             }
         }
 
-        private void ExportPNG(string fname, NutTexture tex)
+        private void ExportDDS(string filename, NutTexture tex)
         {
-            if (tex.mipmaps.Count > 1)
-                MessageBox.Show("RGBA texture exported as PNG do not preserve mipmaps");
+            DDS dds = new DDS();
+            dds.fromNUT_Texture(tex);
+            dds.Save(filename);
+        }
+
+        private void ExportPNG(string filename, NutTexture tex)
+        {
+            if (tex.mipMapCount > 1)
+                MessageBox.Show("Note: Textures exported as PNG do not preserve mipmaps.");
 
             switch (tex.utype)
             {
                 case OpenTK.Graphics.OpenGL.PixelFormat.Rgba:
-                    Pixel.fromRGBA(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(fname);
+                    Pixel.fromRGBA(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(filename);
                     break;
                 case OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt:
-                    Pixel.fromABGR(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(fname);
+                    Pixel.fromABGR(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(filename);
                     break;
                 case OpenTK.Graphics.OpenGL.PixelFormat.Bgra:
-                    Pixel.fromBGRA(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(fname);
+                    Pixel.fromBGRA(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(filename);
+                    break;
+                default:
+                    RenderTextureToPng(tex, filename, true, true, true, true);
                     break;
             }
         }
@@ -369,54 +360,57 @@ namespace Smash_Forge
 
         private void importToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (NUT != null)
-                using (var ofd = new OpenFileDialog())
+            if (NUT == null) return;
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "Supported Formats|*.dds;*.png|" + 
+                             "DirectDraw Surface (.dds)|*.dds|" +
+                             "Portable Network Graphics (.png)|*.png|" +
+                             "All files(*.*)|*.*";
+
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    ofd.Filter = "Supported Formats|*.dds;*.png|" + 
-                                 "Direct Draw Surface (.dds)|*.dds|" +
-                                 "Portable Networks Graphic (.png)|*.png|" +
-                                 "All files(*.*)|*.*";
+                    
+                    int texId;
+                    bool isTex = int.TryParse(Path.GetFileNameWithoutExtension(ofd.FileName), NumberStyles.HexNumber,
+                        new CultureInfo("en-US"), out texId);
 
-                    if (ofd.ShowDialog() == DialogResult.OK)
+                    if (isTex)
+                        foreach (NutTexture te in NUT.Nodes)
+                            if (texId == te.HASHID)
+                                isTex = false;
+
+                    NutTexture tex = null;
+                    string extension = Path.GetExtension(ofd.FileName).ToLowerInvariant();
+                    if (extension == ".dds")
                     {
-                        Edited = true;
-                        int texId;
-                        bool isTex = int.TryParse(Path.GetFileNameWithoutExtension(ofd.FileName), NumberStyles.HexNumber,
-                            new CultureInfo("en-US"), out texId);
-
-                        if (isTex)
-                            foreach (NutTexture te in NUT.Nodes)
-                                if (texId == te.HASHID)
-                                    isTex = false;
-
-                        NutTexture tex = null;
-
-                        if (ofd.FileName.EndsWith(".dds") && NUT != null)
-                        {
-                            DDS dds = new DDS(new FileData(ofd.FileName));
-                            tex = dds.toNUT_Texture();
-                        }
-                        if (ofd.FileName.EndsWith(".png") && NUT != null)
-                        {
-                            tex = fromPNG(ofd.FileName, 1);
-                        }
-
-                        if (tex != null)
-                        {
-                            if (isTex)
-                                tex.HASHID = texId;
-                            else
-                                tex.HASHID = 0x40FFFF00 | (NUT.Nodes.Count);
-
-                            if (NUT.draw.ContainsKey(tex.HASHID))
-                                NUT.draw.Remove(tex.HASHID);
-
-                            NUT.Nodes.Add(tex);
-                            NUT.draw.Add(tex.HASHID, NUT.loadImage(tex));
-                            FillForm();
-                        }
+                        DDS dds = new DDS(new FileData(ofd.FileName));
+                        tex = dds.toNUT_Texture();
                     }
+                    else if (extension == ".png")
+                    {
+                        tex = fromPNG(ofd.FileName, 1);
+                    }
+                    else
+                    {
+                        return;
+                    }
+
+                    Edited = true;
+
+                    if (isTex)
+                        tex.HASHID = texId;
+                    else
+                        tex.HASHID = 0x40FFFF00 | (NUT.Nodes.Count);
+
+                    if (NUT.draw.ContainsKey(tex.HASHID))
+                        NUT.draw.Remove(tex.HASHID);
+
+                    NUT.Nodes.Add(tex);
+                    NUT.draw.Add(tex.HASHID, NUT.loadImage(tex));
+                    FillForm();
                 }
+            }
         }
 
         public static NutTexture fromPNG(string fname, int mipcount)
@@ -425,10 +419,12 @@ namespace Smash_Forge
             NutTexture tex = new NutTexture();
 
             tex.mipmaps.Add(fromPNG(bmp));
+            tex.mipMapCount = 1;
             for (int i = 1; i < mipcount; i++)
             {
-                if(bmp.Width / (int)Math.Pow(2, i) < 4 || bmp.Height / (int)Math.Pow(2, i) < 4) break;
+                if (bmp.Width / (int)Math.Pow(2, i) < 4 || bmp.Height / (int)Math.Pow(2, i) < 4) break;
                 tex.mipmaps.Add(fromPNG(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
+                ++tex.mipMapCount;
             }
             tex.Width = bmp.Width;
             tex.Height = bmp.Height;
@@ -496,38 +492,44 @@ namespace Smash_Forge
 
         private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (NUT == null || textureListBox.SelectedItem == null)
+                return;
             using (var ofd = new OpenFileDialog())
             {
                 NutTexture texture = (NutTexture)(textureListBox.SelectedItem);
 
-                if (texture.type == PixelInternalFormat.Rgba)
-                    ofd.Filter = "Portable Networks Graphic (.png)|*.png|" +
-                                 "All files(*.*)|*.*";
-                else
-                    ofd.Filter = "Direct Draw Surface (.dds)|*.dds|" +
-                                 "All files(*.*)|*.*";
+                ofd.Filter = "Supported Formats|*.dds;*.png|" + 
+                             "DirectDraw Surface (.dds)|*.dds|" +
+                             "Portable Network Graphics (.png)|*.png|" +
+                             "All files(*.*)|*.*";
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    Edited = true;
                     NutTexture newTexture = null;
-                    if (ofd.FileName.EndsWith(".dds") && NUT != null)
+                    string extension = Path.GetExtension(ofd.FileName).ToLowerInvariant();
+                    if (extension == ".dds")
                     {
                         DDS dds = new DDS(new FileData(ofd.FileName));
                         newTexture = dds.toNUT_Texture();
                     }
-
-                    if (ofd.FileName.EndsWith(".png") && NUT != null)
+                    else if (extension == ".png")
+                    {
                         newTexture = fromPNG(ofd.FileName, 1);
-                    
+                    }
+                    else
+                    {
+                        return;
+                    }
+
                     texture.Height = newTexture.Height;
                     texture.Width = newTexture.Width;
                     texture.type = newTexture.type;
+                    texture.mipMapCount = newTexture.mipMapCount;
+                    texture.surfaceCount = newTexture.surfaceCount;
                     texture.mipmaps = newTexture.mipmaps;
                     texture.utype = newTexture.utype;
 
-                    if (newTexture == null)
-                        return;
+                    Edited = true;
                     
                     GL.DeleteTexture(NUT.draw[texture.HASHID]);
                     NUT.draw.Remove(texture.HASHID);
@@ -585,7 +587,7 @@ namespace Smash_Forge
 
         private static void DeleteIfExists(string path)
         {
-            if(File.Exists(path))
+            if (File.Exists(path))
                 File.Delete(path);
         }
 
@@ -677,6 +679,8 @@ namespace Smash_Forge
                 tex.Height = ntex.Height;
                 tex.Width = ntex.Width;
                 tex.type = ntex.type;
+                tex.mipMapCount = ntex.mipMapCount;
+                tex.surfaceCount = ntex.surfaceCount;
                 tex.mipmaps = ntex.mipmaps;
                 tex.utype = ntex.utype;
 
@@ -741,7 +745,9 @@ namespace Smash_Forge
 
                     foreach (var texPath in Directory.GetFiles(f.SelectedPath))
                     {
-                        if (!(texPath.ToLower().EndsWith(".dds") || texPath.ToLower().EndsWith(".png"))) continue;
+                        string extension = Path.GetExtension(texPath).ToLowerInvariant();
+                        if (!(extension == ".dds" || extension == ".png"))
+                            continue;
                         int texId;
                         bool isTex = int.TryParse(Path.GetFileNameWithoutExtension(texPath), NumberStyles.HexNumber,
                             new CultureInfo("en-US"), out texId);
@@ -756,13 +762,16 @@ namespace Smash_Forge
                         {
                             //new texture
                             NutTexture tex = null;
-                            if (texPath.ToLower().EndsWith(".png"))
-                                tex = fromPNG(texPath, 1);
-                            else if (texPath.ToLower().EndsWith(".dds"))
+                            if (extension == ".dds")
                             {
                                 DDS dds = new DDS(new FileData(texPath));
                                 tex = dds.toNUT_Texture();
                             }
+                            else if (extension == ".png")
+                            {
+                                tex = fromPNG(texPath, 1);
+                            }
+
                             if (isTex)
                                 tex.HASHID = texId;
                             else
@@ -773,21 +782,25 @@ namespace Smash_Forge
                         }
                         else
                         {
-                            //old texture
+                            //existing texture
                             NutTexture tex = texture;
 
                             NutTexture ntex = null;
-                            if (texPath.ToLower().EndsWith(".png"))
-                                ntex = fromPNG(texPath, 1);
-                            else if (texPath.ToLower().EndsWith(".dds"))
+                            if (extension == ".dds")
                             {
                                 DDS dds = new DDS(new FileData(texPath));
                                 ntex = dds.toNUT_Texture();
+                            }
+                            else if (extension == ".png")
+                            {
+                                ntex = fromPNG(texPath, 1);
                             }
 
                             tex.Height = ntex.Height;
                             tex.Width = ntex.Width;
                             tex.type = ntex.type;
+                            tex.mipMapCount = ntex.mipMapCount;
+                            tex.surfaceCount = ntex.surfaceCount;
                             tex.mipmaps = ntex.mipmaps;
                             tex.utype = ntex.utype;
 

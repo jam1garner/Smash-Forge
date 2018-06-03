@@ -10,112 +10,207 @@ namespace Smash_Forge
 {
     public class DDS
     {
-
-        public enum DDSFormat {
+        public enum DDSFormat
+        {
             RGBA,
-            DXT5,
-            DXT3,
             DXT1,
+            DXT3,
+            DXT5,
             ATI1,
             ATI2
         }
 
+        public enum CubemapFace
+        {
+            PosX,
+            NegX,
+            PosY,
+            NegY,
+            PosZ,
+            NegZ
+        }
+
+        [FlagsAttribute] public enum DDSD : uint
+        {
+            CAPS              = 0x00000001,
+            HEIGHT            = 0x00000002,
+            WIDTH             = 0x00000004,
+            PITCH             = 0x00000008,
+            PIXELFORMAT       = 0x00001000,
+            MIPMAPCOUNT       = 0x00020000,
+            LINEARSIZE        = 0x00080000,
+            DEPTH             = 0x00800000
+        }
+        [FlagsAttribute] public enum DDPF : uint
+        {
+            ALPHAPIXELS       = 0x00000001,
+            ALPHA             = 0x00000002,
+            FOURCC            = 0x00000004,
+            RGB               = 0x00000040,
+            YUV               = 0x00000200,
+            LUMINANCE         = 0x00020000,
+        }
+        [FlagsAttribute] public enum DDSCAPS : uint
+        {
+            COMPLEX           = 0x00000008,
+            TEXTURE           = 0x00001000,
+            MIPMAP            = 0x00400000,
+        }
+        [FlagsAttribute] public enum DDSCAPS2 : uint
+        {
+            CUBEMAP           = 0x00000200,
+            CUBEMAP_POSITIVEX = 0x00000400 | CUBEMAP,
+            CUBEMAP_NEGATIVEX = 0x00000800 | CUBEMAP,
+            CUBEMAP_POSITIVEY = 0x00001000 | CUBEMAP,
+            CUBEMAP_NEGATIVEY = 0x00002000 | CUBEMAP,
+            CUBEMAP_POSITIVEZ = 0x00004000 | CUBEMAP,
+            CUBEMAP_NEGATIVEZ = 0x00008000 | CUBEMAP,
+            CUBEMAP_ALLFACES  = ( CUBEMAP_POSITIVEX | CUBEMAP_NEGATIVEX |
+                                  CUBEMAP_POSITIVEY | CUBEMAP_NEGATIVEY |
+                                  CUBEMAP_POSITIVEZ | CUBEMAP_NEGATIVEZ ),
+            VOLUME            = 0x00200000
+        }
+
+        //Bytes per block (4x4 pixels) for block formats, bytes per pixel for non-block formats
+        public static uint getFormatSize(uint fourCC)
+        {
+            switch (fourCC)
+            {
+                case 0x00000000: //RGBA
+                    return 0x4;
+                case 0x31545844: //DXT1
+                    return 0x8;
+                case 0x33545844: //DXT3
+                    return 0x10;
+                case 0x35545844: //DXT5
+                    return 0x10;
+                case 0x31495441: //ATI1
+                case 0x55344342: //BC4U
+                    return 0x8;
+                case 0x32495441: //ATI2
+                case 0x55354342: //BC5U
+                    return 0x10;
+                default:
+                    return 0;
+            }
+        }
+
+        public const uint magic = 0x20534444; //" SDD"
+        public Header header;
         public class Header
         {
-            public char[] magic;
-            public int size = 0x7C;
-            public int flags = 0x000A1007;
-            public int height;
-            public int width;
-            public int pitchOrLinear = 0x00020000;
-            public int depth = 1;
-            public int mipmapCount;
-            public int[] reserved;
-            public int dwSize = 0x20;
-            public int dwFlags = 0x04;
-            public int dwFourCC;
-            public int dwBitmask = 0;
-            public uint dwCaps = 0;
-            public uint dwCaps2 = 0;
-            public uint dwCaps3 = 0;
-            public uint dwCaps4 = 0;
-            public int reserve = 0;
+            public uint size = 0x7C;
+            public uint flags = 0x00000000;
+            public uint height = 0;
+            public uint width = 0;
+            public uint pitchOrLinearSize = 0;
+            public uint depth = 0;
+            public uint mipMapCount = 0;
+            public uint[] reserved1 = new uint[11];
+            public DDS_PixelFormat ddspf = new DDS_PixelFormat();
+            public class DDS_PixelFormat
+            {
+                public uint size = 0x20;
+                public uint flags = 0x00000000;
+                public uint fourCC = 0x00000000;
+                public uint RGBBitCount = 0;
+                public uint RBitMask = 0x00000000;
+                public uint GBitMask = 0x00000000;
+                public uint BBitMask = 0x00000000;
+                public uint ABitMask = 0x00000000;
+            }
+            public uint caps = 0;
+            public uint caps2 = 0;
+            public uint caps3 = 0;
+            public uint caps4 = 0;
+            public uint reserved2 = 0;
         }
-
-        public Header header;
-        public byte[] data;
-
-        public DDS (FileData d)
-        {
-            d.Endian = System.IO.Endianness.Little;
-            d.seek (0);
-
-            header = new Header();
-            header.magic = new char[4];
-            header.magic [0] = (char)d.readByte ();
-            header.magic [1] = (char)d.readByte ();
-            header.magic [2] = (char)d.readByte ();
-            header.magic [3] = (char)d.readByte ();
-            header.size = d.readInt ();
-            header.flags = d.readInt ();
-            header.height = d.readInt ();
-            header.width = d.readInt ();
-            header.pitchOrLinear = d.readInt ();
-            header.depth = d.readInt ();
-            header.mipmapCount = d.readInt ();
-            header.reserved = new int[11];
-            for (int i = 0; i < 11; i++)
-                header.reserved [i] = d.readInt ();
-            header.dwSize = d.readInt ();
-            header.dwFlags = d.readInt ();
-            header.dwFourCC = d.readInt ();
-            header.dwBitmask = d.readInt ();
-            header.dwCaps = (uint)d.readInt ();
-            header.dwCaps2 = (uint)d.readInt ();
-            header.dwCaps3 = (uint)d.readInt ();
-            header.dwCaps4 = (uint)d.readInt ();
-            header.reserve = d.readInt ();
-
-            d.skip (16);// not needed another header
-
-            data = new byte[d.size() - d.pos()];
-            for (int i = 0; i < data.Length; i++)
-                data [i] = (byte)d.readByte ();
-        }
+        public byte[] bdata;
 
         public DDS()
         {
             header = new Header();
         }
 
+        public DDS(FileData d)
+        {
+            d.Endian = System.IO.Endianness.Little;
+
+            d.seek(0);
+            if (d.readUInt() != magic)
+            {
+                MessageBox.Show("The file does not appear to be a valid DDS file.");
+            }
+
+            header = new Header();
+            header.size = d.readUInt();
+            header.flags = d.readUInt();
+            header.height = d.readUInt();
+            header.width = d.readUInt();
+            header.pitchOrLinearSize = d.readUInt();
+            header.depth = d.readUInt();
+            header.mipMapCount = d.readUInt();
+            header.reserved1 = new uint[11];
+            for (int i = 0; i < 11; ++i)
+                header.reserved1[i] = d.readUInt();
+
+            header.ddspf.size = d.readUInt();
+            header.ddspf.flags = d.readUInt();
+            header.ddspf.fourCC = d.readUInt();
+            header.ddspf.RGBBitCount = d.readUInt();
+            header.ddspf.RBitMask = d.readUInt();
+            header.ddspf.GBitMask = d.readUInt();
+            header.ddspf.BBitMask = d.readUInt();
+            header.ddspf.ABitMask = d.readUInt();
+
+            header.caps = d.readUInt();
+            header.caps2 = d.readUInt();
+            header.caps3 = d.readUInt();
+            header.caps4 = d.readUInt();
+            header.reserved2 = d.readUInt();
+
+            d.seek((int)(4 + header.size));
+            bdata = d.read(d.size() - d.pos());
+        }
+
+        public DDS(NutTexture tex)
+        {
+            fromNUT_Texture(tex);
+        }
+
         public void Save(string fname)
         {
             FileOutput f = new FileOutput();
             f.Endian = System.IO.Endianness.Little;
-            f.writeString("DDS ");
-            f.writeInt(header.size);
-            f.writeInt(header.flags);
-            f.writeInt(header.height);
-            f.writeInt(header.width);
-            f.writeInt(header.pitchOrLinear);
-            f.writeInt(header.depth);
-            f.writeInt(header.mipmapCount);
-            for (int i = 0; i < 11; i++)
-                f.writeInt(0);
-            f.writeInt(header.dwSize);
-            f.writeInt(header.dwFlags);
-            f.writeInt(header.dwFourCC);
-            f.writeInt(header.dwBitmask);
-            f.writeInt((int)header.dwCaps);
-            f.writeInt((int)header.dwCaps2);
-            f.writeInt((int)header.dwCaps3);
-            f.writeInt((int)header.dwCaps4);
-            f.writeInt((int)header.reserve);
 
-            for (int i = 0; i < 4; i++)
-                f.writeInt(0);
+            f.writeUInt(magic);
 
-            f.writeBytes(data);
+            f.writeUInt(header.size);
+            f.writeUInt(header.flags);
+            f.writeUInt(header.height);
+            f.writeUInt(header.width);
+            f.writeUInt(header.pitchOrLinearSize);
+            f.writeUInt(header.depth);
+            f.writeUInt(header.mipMapCount);
+            for (int i = 0; i < 11; ++i)
+                f.writeUInt(header.reserved1[i]);
+
+            f.writeUInt(header.ddspf.size);
+            f.writeUInt(header.ddspf.flags);
+            f.writeUInt(header.ddspf.fourCC);
+            f.writeUInt(header.ddspf.RGBBitCount);
+            f.writeUInt(header.ddspf.RBitMask);
+            f.writeUInt(header.ddspf.GBitMask);
+            f.writeUInt(header.ddspf.BBitMask);
+            f.writeUInt(header.ddspf.ABitMask);
+
+            f.writeUInt(header.caps);
+            f.writeUInt(header.caps2);
+            f.writeUInt(header.caps3);
+            f.writeUInt(header.caps4);
+            f.writeUInt(header.reserved2);
+
+            f.writeBytes(bdata);
 
             f.save(fname);
         }
@@ -123,145 +218,167 @@ namespace Smash_Forge
         public void fromNUT_Texture(NutTexture tex)
         {
             header = new Header();
-            header.width = tex.Width;
-            header.height = tex.Height;
-            header.pitchOrLinear = tex.Size;
-            header.mipmapCount = tex.mipmaps.Count;
+            header.flags = (uint)(DDSD.CAPS | DDSD.HEIGHT | DDSD.WIDTH | DDSD.PIXELFORMAT | DDSD.MIPMAPCOUNT | DDSD.LINEARSIZE);
+            header.width = (uint)tex.Width;
+            header.height = (uint)tex.Height;
+            header.pitchOrLinearSize = (uint)tex.Size;
+            header.mipMapCount = (uint)tex.mipMapCount;
+            header.caps2 = tex.ddsCaps2;
+            bool isCubemap = (header.caps2 & (uint)DDSCAPS2.CUBEMAP) == (uint)DDSCAPS2.CUBEMAP;
+            header.caps = (uint)DDSCAPS.TEXTURE;
+            if (header.mipMapCount > 1)
+                header.caps |= (uint)(DDSCAPS.COMPLEX | DDSCAPS.MIPMAP);
+            if (isCubemap)
+                header.caps |= (uint)DDSCAPS.COMPLEX;
+
             switch (tex.type)
             {
-                case PixelInternalFormat.CompressedRedRgtc1:
-                    header.dwFourCC = 0x31495441;
-                    break;
-                case PixelInternalFormat.CompressedRgRgtc2:
-                    header.dwFourCC = 0x32495441;
-                    break;
                 case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
-                    header.dwFourCC = 0x31545844;
+                    header.ddspf.fourCC = 0x31545844;
+                    header.ddspf.flags = (uint)DDPF.FOURCC;
                     break;
                 case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
-                    header.dwFourCC = 0x33545844;
+                    header.ddspf.fourCC = 0x33545844;
+                    header.ddspf.flags = (uint)DDPF.FOURCC;
                     break;
                 case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
-                    header.dwFourCC = 0x35545844;
+                    header.ddspf.fourCC = 0x35545844;
+                    header.ddspf.flags = (uint)DDPF.FOURCC;
+                    break;
+                case PixelInternalFormat.CompressedRedRgtc1:
+                    header.ddspf.fourCC = 0x31495441;
+                    header.ddspf.flags = (uint)DDPF.FOURCC;
+                    break;
+                case PixelInternalFormat.CompressedRgRgtc2:
+                    header.ddspf.fourCC = 0x32495441;
+                    header.ddspf.flags = (uint)DDPF.FOURCC;
                     break;
                 case PixelInternalFormat.Rgba:
-                    if (tex.utype == OpenTK.Graphics.OpenGL.PixelFormat.Rgba) { 
-                        header.dwFourCC = 0x0;
-                        header.dwBitmask = 0x20;
-                        header.dwCaps = 0xFF;
-                        header.dwCaps2 = 0xFF00;
-                        header.dwCaps3 = 0xFF0000;
-                        header.dwCaps4 = 0xFF000000;
-                        header.reserve = 0x401008;
-                        header.dwFlags = 0x41;
+                    header.ddspf.fourCC = 0x00000000;
+                    if (tex.utype == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
+                    {
+                        header.ddspf.flags = (uint)(DDPF.RGB | DDPF.ALPHAPIXELS);
+                        header.ddspf.RGBBitCount = 0x8 * 4;
+                        header.ddspf.RBitMask = 0x000000FF;
+                        header.ddspf.GBitMask = 0x0000FF00;
+                        header.ddspf.BBitMask = 0x00FF0000;
+                        header.ddspf.ABitMask = 0xFF000000;
                     }
-                    else
-                        header.dwFourCC = 0x0;
                     break;
-                /*case PixelInternalFormat.CompressedRedRgtc1:
-                    break;*/
-                /*case PixelInternalFormat.CompressedRgRgtc2:
-                    header.dwFourCC = 0x42433553;
-                    break;*/
                 default:
                     throw new NotImplementedException($"Unknown pixel format 0x{tex.type:X}");
             }
+
             List<byte> d = new List<byte>();
-            foreach(byte[] b in tex.mipmaps)
+            foreach (byte[] b in tex.mipmaps)
             {
                 d.AddRange(b);
             }
-            data = d.ToArray();
+            bdata = d.ToArray();
         }
 
         public NutTexture toNUT_Texture()
         {
             NutTexture tex = new NutTexture();
             tex.HASHID = 0x48415348;
-            tex.Height = header.height;
-            tex.Width = header.width;
+            tex.Height = (int)header.height;
+            tex.Width = (int)header.width;
+            tex.surfaceCount = 1;
+            bool isCubemap = (header.caps2 & (uint)DDSCAPS2.CUBEMAP) == (uint)DDSCAPS2.CUBEMAP;
+            if (isCubemap)
+            {
+                if ((header.caps2 & (uint)DDSCAPS2.CUBEMAP_ALLFACES) == (uint)DDSCAPS2.CUBEMAP_ALLFACES)
+                    tex.surfaceCount = 6;
+                else
+                    throw new NotImplementedException($"Unsupported cubemap face amount for texture. Six faces are required.");
+            }
 
-            float pixelSize = 1f; //Amount of bytes for each pixel (not literally for block formats, just numerically)
             bool isBlock = true;
 
-            switch (header.dwFourCC)
+            switch (header.ddspf.fourCC)
             {
                 case 0x00000000: //RGBA
-                    pixelSize = 4f;
                     isBlock = false;
                     tex.type = PixelInternalFormat.Rgba;
                     tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 case 0x31545844: //DXT1
-                    pixelSize = 1/2f;
                     tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                     break;
                 case 0x33545844: //DXT3
-                    pixelSize = 1f;
                     tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
                     break;
                 case 0x35545844: //DXT5
-                    pixelSize = 1f;
                     tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                     break;
                 case 0x31495441: //ATI1
                 case 0x55344342: //BC4U
-                    pixelSize = 1/2f;
                     tex.type = PixelInternalFormat.CompressedRedRgtc1;
                     break;
                 case 0x32495441: //ATI2
                 case 0x55354342: //BC5U
-                    pixelSize = 1f;
                     tex.type = PixelInternalFormat.CompressedRgRgtc2;
                     break;
                 default:
-                    MessageBox.Show("Unsupported DDS format - 0x" + header.dwFourCC.ToString("x"));
+                    MessageBox.Show("Unsupported DDS format - 0x" + header.ddspf.fourCC.ToString("x"));
                     break;
             }
 
-            int blockSize = (int)(0x10 * pixelSize); //Amount of bytes per block; represents minimum mip size for block formats
+            uint formatSize = getFormatSize(header.ddspf.fourCC);
 
-            // now for mipmap data...
-            FileData d = new FileData(data);
-            int off = 0, w = header.width, h = header.height;
-            if (header.mipmapCount == 0)
-                header.mipmapCount = 1;
+            FileData d = new FileData(bdata);
+            if (header.mipMapCount == 0)
+                header.mipMapCount = 1;
 
-            for (int i = 0; i < header.mipmapCount; i++)
+            uint off = 0;
+            for (int i = 0; i < tex.surfaceCount; ++i)
             {
-                //If texture is DXT5 and isn't square, limit the mipmaps to an amount the game will accept
-                if (tex.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext && tex.Width != tex.Height && ((tex.Width * tex.Height) >> 2 * (i + 1)) < 16)
-                    break;
+                uint w = header.width, h = header.height;
+                for (int j = 0; j < header.mipMapCount; ++j)
+                {
+                    //If texture is DXT5 and isn't square, limit the mipmaps to an amount such that width and height are each always >= 4
+                    if (tex.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext && tex.Width != tex.Height && (w < 4 || h < 4))
+                        break;
 
-                int s = (int)((w * h) * pixelSize);
-                if (isBlock && s < blockSize)
-                    s = blockSize;
-                w /= 2;
-                h /= 2;
-                tex.mipmaps.Add(d.getSection(off, s));
-                off += s;
+                    uint s = (w * h); //Total pixels
+                    if (isBlock)
+                    {
+                        s = (uint)(s * ((float)formatSize / 0x10)); //Bytes per 16 pixels
+                        if (s < formatSize) //Make sure it's at least one block
+                            s = formatSize;
+                    }
+                    else
+                    {
+                        s = (uint)(s * (formatSize)); //Bytes per pixel
+                    }
+
+                    w /= 2;
+                    h /= 2;
+                    tex.mipmaps.Add(d.getSection((int)off, (int)s));
+                    off += s;
+                }
             }
-            Console.WriteLine(off.ToString("x"));
+            tex.mipMapCount = (byte)(tex.mipmaps.Count / tex.surfaceCount);
 
             return tex;
         }
        
-        public Bitmap toBitmap(){
-
+        public Bitmap toBitmap()
+        {
             byte[] pixels = new byte[header.width * header.height * 4];
 
-            if (header.dwFourCC == 0x31545844)
-                decodeDXT1 (pixels, data, header.width, header.height);
+            if (header.ddspf.fourCC == 0x31545844)
+                decodeDXT1 (pixels, bdata, (int)header.width, (int)header.height);
             else
-            if (header.dwFourCC == 0x33545844)
-                decodeDXT3 (pixels, data, header.width, header.height);
+            if (header.ddspf.fourCC == 0x33545844)
+                decodeDXT3 (pixels, bdata, (int)header.width, (int)header.height);
             else
-            if (header.dwFourCC == 0x35545844)
-                decodeDXT5 (pixels, data, header.width, header.height);
+            if (header.ddspf.fourCC == 0x35545844)
+                decodeDXT5 (pixels, bdata, (int)header.width, (int)header.height);
             else
-                Console.WriteLine ("Unknown DDS format " + header.dwFourCC);
+                Console.WriteLine ("Unknown DDS format " + header.ddspf.fourCC);
 
-            Bitmap bmp = new Bitmap(header.width, header.height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);  
+            Bitmap bmp = new Bitmap((int)header.width, (int)header.height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);  
 
             BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
 
@@ -273,8 +390,8 @@ namespace Smash_Forge
         }
 
 
-        public static Bitmap toBitmap(byte[] d, int width, int height, DDSFormat format){
-
+        public static Bitmap toBitmap(byte[] d, int width, int height, DDSFormat format)
+        {
             byte[] pixels = new byte[width * height * 4];
 
             if (format == DDSFormat.DXT1)
