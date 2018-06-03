@@ -155,7 +155,7 @@ namespace Smash_Forge
                                 while (NUT.texIdUsed(tex.HASHID))
                                     tex.HASHID++;
                                 thisNut.Nodes.Add(tex);
-                                thisNut.draw.Add(tex.HASHID, NUT.loadImage(tex));
+                                thisNut.glTexByHashId.Add(tex.HASHID, NUT.loadImage(tex));
                                 existingTextures.Add(img.initref, tex);
                                 tempTex = tex;
                             }
@@ -672,9 +672,9 @@ namespace Smash_Forge
         {
             Collada dae = new Collada();
 
-            if (con.DAT_MELEE != null)
+            if (con.DatMelee != null)
             {
-                Save(fname, con.DAT_MELEE);
+                Save(fname, con.DatMelee);
                 return;
             }
             NUD nud = con.NUD;

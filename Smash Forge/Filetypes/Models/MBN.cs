@@ -69,7 +69,7 @@ namespace Smash_Forge
             if (!Rendering.ShaderTools.hasSetupShaders)
                 Rendering.ShaderTools.SetupShaders();
 
-            Runtime.shaders["Mbn"].DisplayCompilationWarnings("Mbn");
+            Runtime.shaders["Mbn"].DisplayProgramStatus("Mbn");
         }
 
         public void Destroy()

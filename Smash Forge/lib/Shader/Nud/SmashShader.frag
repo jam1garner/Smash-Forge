@@ -319,9 +319,9 @@ vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintCol
     vec3 sphereMapColor = SphereMapColor(vert.viewNormal, spheremap) * reflectionColor.xyz * tintColor;
 	reflectionPass += sphereMapColor * hasSphereMap;
 
-    // It sort of conserves energy for low values.
+    // Very crude energy conservation approximation.
     reflectionPass -= 0.5 * Luminance(diffuseMap.rgb);
-    reflectionPass = max(vec3(0), reflectionPass);
+    reflectionPass = max(reflectionPass, vec3(0));
 
     reflectionPass *= aoBlend;
     reflectionPass *= refLightColor;
@@ -330,6 +330,7 @@ vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintCol
     if (useDifRefMask == 1)
         reflectionPass *= diffuseMap.a;
 
+    // TODO: Why is this gamma corrected.
     reflectionPass = pow(reflectionPass, vec3(2.2));
     return reflectionPass;
 }
@@ -344,7 +345,7 @@ float AnisotropicSpecExponent(vec3 halfAngle, float width, float height, vec3 ta
     return xComponent + yComponent;
 }
 
-vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, VertexAttributes vert) {
+vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, vec3 diffusePass, VertexAttributes vert) {
     vec3 specularPass = vec3(0);
 
     // Only uses the anisotropic exponent for mats without NU_specularParams.
@@ -358,7 +359,6 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor
 
     vec3 specColorTotal = specularColor.rgb * blinnPhongSpec;
 
-    // TODO: Fix bayo hair calculations.
     if (hasBayoHair == 1)
         specColorTotal = BayoHairSpecular(diffuseMap.rgb, I, specLightDirection, reflectionParams, vert);
 
@@ -369,15 +369,17 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor
     if ((flags & 0x00E10000u) == 0x00E10000u)
         specColorTotal *= diffuseMap.rgb;
 
-    // It sort of conserves energy for low values.
-    specularPass += max(specColorTotal - vec3(0.5 * Luminance(diffuseMap.rgb)), vec3(0));
-    specularPass *= aoBlend;
+    specularPass += specColorTotal;
 
+    // Very crude energy conservation approximation.
+    specularPass -= 0.5 * Luminance(diffusePass.rgb);
+    specularPass = max(specularPass, vec3(0));
+
+    specularPass *= aoBlend;
     specularPass *= tintColor;
     specularPass *= specLightColor;
     specularPass *= specularIntensity;
 
-    specularPass = pow(specularPass, vec3(1));
     return specularPass;
 }
 
@@ -480,13 +482,11 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert) {
     // Stage lighting
     vec3 lighting = Lighting(N, halfLambert);
 
-    // Dummy ramp calculations.
-    // vec3 rampTotal = (0.2 * RampColor(halfLambert, ramp, hasRamp)) + (0.5 * RampColor(halfLambert, dummyRamp, hasDummyRamp));
-    // vec3 rampAdd = pow(rampTotal, vec3(2.2));
-
+    // TODO: Improve ramp shading. This should use two char diffuse lights for intensities.
+    vec3 rampTotal = (0.2 * RampColor(halfLambert, ramp, hasRamp)) + (0.5 * RampColor(halfLambert, dummyRamp, hasDummyRamp));
+    vec3 rampAdd = pow(rampTotal, vec3(2.2));
     diffusePass = diffuseColorFinal * lighting;
-    // TODO: Fix ramp shading. Disabled for now.
-    // diffusePass += diffusePass * min(rampAdd, vec3(1));
+    diffusePass += diffusePass * min(rampAdd, vec3(1));
 
     vec3 softLightDif = diffuseColorFinal * difLightColor;
     vec3 softLightAmb = diffuseColorFinal * ambLightColor;
@@ -499,7 +499,6 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert) {
     if (softLightBrighten == 1)
         diffusePass *= 1.5;
 
-    diffusePass = pow(diffusePass, vec3(1));
     return diffusePass;
 }
 
@@ -553,7 +552,8 @@ vec4 DiffuseMapTotal(VertexAttributes vert) {
             diffuseMapTotal.rgb *= difAO.rgb;
     }
 
-    return pow(diffuseMapTotal, vec4(2.2, 2.2, 2.2, 1));
+    // Diffuse is sRGB.
+    return pow(diffuseMapTotal, vec4(vec3(2.2), 1));
 }
 
 vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert) {
@@ -567,7 +567,7 @@ vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert) {
 
     // The ambient occlusion calculations for diffuse are done separately.
     float ambientOcclusionBlend = AmbientOcclusionBlend(diffuseMap, aoMinGain, vert);
-    vec3 specularPass = SpecularPass(N, I, diffuseMap, ambientOcclusionBlend, specTintColor, vert);
+    vec3 specularPass = SpecularPass(N, I, diffuseMap, ambientOcclusionBlend, specTintColor, diffusePass, vert);
     vec3 fresnelPass = FresnelPass(N, I, diffuseMap, ambientOcclusionBlend, fresTintColor);
 	vec3 reflectionPass = ReflectionPass(N, I, diffuseMap, ambientOcclusionBlend, reflTintColor, vert);
 

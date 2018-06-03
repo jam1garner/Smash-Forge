@@ -841,10 +841,10 @@ namespace Smash_Forge
                 {
                     foreach (NUT n in Runtime.TextureContainers)
                     {
-                        if (n.draw.ContainsKey(hash))
+                        if (n.glTexByHashId.ContainsKey(hash))
                         {
                             n.getTextureByID(hash, out nutTexture);
-                            displayTexture = n.draw[hash];
+                            displayTexture = n.glTexByHashId[hash];
                             break;
                         }
                     }
@@ -870,7 +870,7 @@ namespace Smash_Forge
 
             if (!Runtime.shaders["Texture"].HasCheckedCompilation)
             {
-                Runtime.shaders["Texture"].DisplayCompilationWarnings("Texture");
+                Runtime.shaders["Texture"].DisplayProgramStatus("Texture");
             }
         }
 
@@ -885,7 +885,7 @@ namespace Smash_Forge
 
             if (!Runtime.shaders["Texture"].HasCheckedCompilation)
             {
-                Runtime.shaders["Texture"].DisplayCompilationWarnings("Texture");
+                Runtime.shaders["Texture"].DisplayProgramStatus("Texture");
             }
         }
 

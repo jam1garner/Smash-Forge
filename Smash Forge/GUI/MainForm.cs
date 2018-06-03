@@ -615,13 +615,15 @@ namespace Smash_Forge
         public void ClearWorkSpace(bool closeEditors = true)
         {
             Runtime.killWorkspace = true;
+
             Runtime.ParamManager.Reset();
             hurtboxList.refresh();
             Runtime.Animnames.Clear();
             Runtime.clearMoveset();
+            animList.treeView1.Nodes.Clear();
+
             LightTools.areaLights.Clear();
             LightTools.lightMaps.Clear();
-            animList.treeView1.Nodes.Clear();
 
             //Close all Editors
             List<DockContent> openContent = new List<DockContent>();
@@ -690,7 +692,7 @@ namespace Smash_Forge
                                 MainForm.Instance.Progress.ProgressValue = 25 + (int)((a++ / anims.Length)*25f);
                                 if (ss.EndsWith(".pac"))
                                 {
-                                    mvp.AnimList.treeView1.Nodes.Add(openAnimation(ss));
+                                    mvp.animListPanel.treeView1.Nodes.Add(openAnimation(ss));
                                 }
                             }
                         }
@@ -709,7 +711,7 @@ namespace Smash_Forge
                                 return 0;
                             }); //Sort files so main.pac is opened first
                             foreach (string a in anims)
-                                mvp.AnimList.treeView1.Nodes.Add(openAnimation(a));
+                                mvp.animListPanel.treeView1.Nodes.Add(openAnimation(a));
 
                         }
                         if (s.EndsWith("script"))
@@ -732,10 +734,10 @@ namespace Smash_Forge
                         // If they set the wrong dir, oh well
                         try
                         {
-                            mvp.ParamManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin", fighterName);
-                            mvp.HurtboxList.refresh();
-                            mvp.ParamManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
-                            mvp.ParamMoveNameIdMapping = mvp.ParamManagerHelper.getMoveNameIdMapping();
+                            mvp.paramManager = new CharacterParamManager(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin", fighterName);
+                            mvp.hurtboxList.refresh();
+                            mvp.paramManagerHelper = new PARAMEditor(Runtime.paramDir + $"\\fighter\\fighter_param_vl_{fighterName}.bin");
+                            mvp.paramMoveNameIdMapping = mvp.paramManagerHelper.getMoveNameIdMapping();
 
                             // Model render size
                             ParamFile param = new ParamFile(Runtime.paramDir + "\\fighter\\fighter_param.bin");
@@ -886,12 +888,12 @@ namespace Smash_Forge
                         {
                             Animation a = OMOOld.read(new FileData(f));
                             a.Text = f;
-                            mvp.AnimList.treeView1.Nodes.Add(a);
+                            mvp.animListPanel.treeView1.Nodes.Add(a);
                         }
                         else if (f.EndsWith("path.bin"))
                         {
-                            mvp.PathBin = new PathBin();
-                            mvp.PathBin.Read(f);
+                            mvp.pathBin = new PathBin();
+                            mvp.pathBin.Read(f);
                         }
                     }
                 }
@@ -1038,12 +1040,12 @@ namespace Smash_Forge
                     if (dialogResult == DialogResult.Yes)
                     {
                         mvp = (ModelViewport)dockPanel1.ActiveContent;
-                        mvp.AnimList.treeView1.Nodes.Add(OMOOld.read(new FileData(fileName)));
+                        mvp.animListPanel.treeView1.Nodes.Add(OMOOld.read(new FileData(fileName)));
                         return;
                     }
                     else
                     {
-                        mvp.AnimList.treeView1.Nodes.Add(OMOOld.read(new FileData(fileName)));
+                        mvp.animListPanel.treeView1.Nodes.Add(OMOOld.read(new FileData(fileName)));
                     }
                     mvp.Text = fileName;
                     AddDockedControl(mvp);
@@ -1059,12 +1061,12 @@ namespace Smash_Forge
                     if (dialogResult == DialogResult.Yes)
                     {
                         mvp = (ModelViewport)dockPanel1.ActiveContent;
-                        mvp.AnimList.treeView1.Nodes.Add(openAnimation(fileName));
+                        mvp.animListPanel.treeView1.Nodes.Add(openAnimation(fileName));
                         return;
                     }
                     else
                     {
-                        mvp.AnimList.treeView1.Nodes.Add(openAnimation(fileName));
+                        mvp.animListPanel.treeView1.Nodes.Add(openAnimation(fileName));
                     }
                     mvp.Text = fileName;
                     AddDockedControl(mvp);
@@ -1081,11 +1083,11 @@ namespace Smash_Forge
                     if (dialogResult == DialogResult.Yes)
                     {
                         mvp = (ModelViewport)dockPanel1.ActiveContent;
-                        mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(fileName));
+                        mvp.animListPanel.treeView1.Nodes.Add(BCHan.Read(fileName));
                         return;
                     }else
                     {
-                        mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(fileName));
+                        mvp.animListPanel.treeView1.Nodes.Add(BCHan.Read(fileName));
                     }
                 }
 
@@ -1157,15 +1159,15 @@ namespace Smash_Forge
                     ModelViewport modelViewport;
                     if (CheckCurrentViewport(out modelViewport))
                     {
-                        foreach(ModelContainer modelContainer in modelViewport.MeshList.filesTreeView.Nodes)
+                        foreach(ModelContainer modelContainer in modelViewport.meshList.filesTreeView.Nodes)
                         {
-                            if(modelContainer.DAT_MELEE != null)
+                            if(modelContainer.DatMelee != null)
                             {
-                                Dictionary<string, Animation> Anims = DAT_Animation.GetTracks(fileName, modelContainer.DAT_MELEE.bones);
+                                Dictionary<string, Animation> Anims = DAT_Animation.GetTracks(fileName, modelContainer.DatMelee.bones);
                                 foreach(string key in Anims.Keys)
                                 {
                                     Anims[key].Text = key;
-                                    modelViewport.AnimList.treeView1.Nodes.Add(Anims[key]);
+                                    modelViewport.animListPanel.treeView1.Nodes.Add(Anims[key]);
                                 }
                                 return;
                             }
@@ -1189,7 +1191,7 @@ namespace Smash_Forge
                 }
                 
                 mvp = new ModelViewport();
-                mvp.draw.Add(new ModelContainer() { DAT_MELEE = dat });
+                mvp.draw.Add(new ModelContainer() { DatMelee = dat });
                 mvp.Text = fileName;
                 AddDockedControl(mvp);
             }
@@ -1223,12 +1225,12 @@ namespace Smash_Forge
 
                 if (CheckCurrentViewport(out mvp))
                 {
-                    mvp.MeshList.filesTreeView.Nodes.Add(modelContainer);
+                    mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
                 }
                 else
                 {
                     mvp.Text = fileName;
-                    mvp.MeshList.filesTreeView.Nodes.Add(modelContainer);
+                    mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
                 }
             }
 
@@ -1244,12 +1246,12 @@ namespace Smash_Forge
 
                 if (CheckCurrentViewport(out mvp))
                 {
-                    mvp.MeshList.filesTreeView.Nodes.Add(modelContainer);
+                    mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
                 }
                 else
                 {
                     mvp.Text = fileName;
-                    mvp.MeshList.filesTreeView.Nodes.Add(modelContainer);
+                    mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
                 }
             }
 
@@ -1273,7 +1275,7 @@ namespace Smash_Forge
 
                     if (CheckCurrentViewport(out mvp))
                     {
-                        mvp.MeshList.filesTreeView.Nodes.Add(modelContainer);
+                        mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
                         // Makes sure the vertex data is updated properly and the model will be visible. 
                         mvp.FrameSelectionAndSort();
                     }
@@ -1281,7 +1283,7 @@ namespace Smash_Forge
                     {
                         modelContainer.Text = fileName;
                         mvp.Text = fileName;
-                        mvp.MeshList.filesTreeView.Nodes.Add(modelContainer);
+                        mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
                         // Makes sure the vertex data is updated properly and the model will be visible. 
                         mvp.FrameSelectionAndSort();
                     }
@@ -1802,7 +1804,7 @@ namespace Smash_Forge
                         foreach (string s in anims)
                         {
                             if(s.EndsWith("main.bch"))
-                                mvp.AnimList.treeView1.Nodes.Add(BCHan.Read(s));
+                                mvp.animListPanel.treeView1.Nodes.Add(BCHan.Read(s));
                         }
 
                     }
@@ -1954,7 +1956,7 @@ namespace Smash_Forge
 
                         NutTexture tex = new DDS(new FileData("TexConv/temp.dds")).toNUT_Texture();
                         tex.HASHID = fileNum;
-                        n.draw.Add(fileNum, NUT.loadImage(tex, true));
+                        n.glTexByHashId.Add(fileNum, NUT.loadImage(tex, true));
                         n.Nodes.Add(tex);
                     }
                 }

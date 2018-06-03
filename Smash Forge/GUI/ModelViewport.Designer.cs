@@ -178,7 +178,7 @@
             this.modeBone.Size = new System.Drawing.Size(28, 28);
             this.modeBone.Text = "toolStripButton3";
             this.modeBone.ToolTipText = "Bones";
-            this.modeBone.Click += new System.EventHandler(this.viewStripButtons);
+            this.modeBone.Click += new System.EventHandler(this.modeBone_Click);
             // 
             // modeMesh
             // 
@@ -192,20 +192,19 @@
             this.modeMesh.Size = new System.Drawing.Size(28, 28);
             this.modeMesh.Text = "toolStripButton1";
             this.modeMesh.ToolTipText = "Mesh";
-            this.modeMesh.Click += new System.EventHandler(this.viewStripButtons);
+            this.modeMesh.Click += new System.EventHandler(this.modeMesh_Click);
             // 
             // modePolygon
             // 
             this.modePolygon.CheckOnClick = true;
             this.modePolygon.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.modePolygon.Enabled = false;
             this.modePolygon.Image = global::Smash_Forge.Properties.Resources.icon_polygon;
             this.modePolygon.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.modePolygon.Name = "modePolygon";
             this.modePolygon.Size = new System.Drawing.Size(28, 28);
             this.modePolygon.Text = "toolStripButton2";
             this.modePolygon.ToolTipText = "Polygons";
-            this.modePolygon.Click += new System.EventHandler(this.viewStripButtons);
+            this.modePolygon.Click += new System.EventHandler(this.modePolygon_Click);
             // 
             // toolStripSeparator1
             // 
@@ -431,7 +430,7 @@
             this.glViewport.Click += new System.EventHandler(this.glViewport_Click);
             this.glViewport.Paint += new System.Windows.Forms.PaintEventHandler(this.glViewport_Paint);
             this.glViewport.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.glViewport_KeyPress);
-            this.glViewport.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseDoubleClick);
+            this.glViewport.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseClick);
             this.glViewport.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseMove);
             this.glViewport.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseUp);
             this.glViewport.Resize += new System.EventHandler(this.glViewport_Resize);
@@ -452,7 +451,6 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ModelViewport_FormClosed);
             this.Load += new System.EventHandler(this.ModelViewport_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModelViewport_KeyDown);
-            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ModelViewport_KeyPress);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
