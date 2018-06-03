@@ -41,6 +41,7 @@ namespace Smash_Forge
         int colorHdrTex1;
         int hdrDepthRbo;
 
+        // The texture that will be blurred for bloom.
         int brightTexSmall;
         int brightHdrSmallFbo;
         int brightTexWidth;
@@ -459,47 +460,60 @@ namespace Smash_Forge
 
                     if (modeMesh.Checked)
                     {
-                        // TODO: Mesh ID Map.
+                        // Use a color ID render pass for more precision.
+                        SelectMeshAtMousePosition();
                     }
 
                     if (modePolygon.Checked)
                     {
                         // Use a color ID render pass for more precision.
                         SelectPolygonAtMousePosition();
-                        //break;
                     }
                 }
             }
             else if (e.Button == MouseButtons.Right)
             {
+                // Display the MeshList context menus in the viewport.
+                // This is faster than right clicking in the treeview.
                 if (meshList.filesTreeView.SelectedNode is NUD.Polygon)
                     meshList.PolyContextMenu.Show(glViewport, e.X, e.Y);
+                else if (meshList.filesTreeView.SelectedNode is NUD.Mesh)
+                    meshList.MeshContextMenu.Show(glViewport, e.X, e.Y);
             }
         }
 
         private void SelectPolygonAtMousePosition()
         {
-            RenderColorIdPassToFbo(screenRenderFbo);
+            RenderNudColorIdPassToFbo(screenRenderFbo);
 
             // Get the color at the mouse's position.
             Color selectedColor = ColorPickPixelAtMousePosition(screenRenderFbo);
+            Debug.WriteLine(selectedColor.ToString());
             meshList.filesTreeView.SelectedNode = GetSelectedPolygonFromColor(selectedColor);
         }
 
-        private void RenderColorIdPassToFbo(int fbo)
+        private void SelectMeshAtMousePosition()
+        {
+            RenderNudColorIdPassToFbo(screenRenderFbo);
+
+            // Get the color at the mouse's position.
+            Color selectedColor = ColorPickPixelAtMousePosition(screenRenderFbo);
+            meshList.filesTreeView.SelectedNode = GetSelectedMeshFromColor(selectedColor);
+        }
+
+        private void RenderNudColorIdPassToFbo(int fbo)
         {
             // Render the ID map to the offscreen FBO.
             glViewport.MakeCurrent();
             GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
-            Runtime.drawNudPolygonIds = true;
+            Runtime.drawNudColorIdPass = true;
             Render(null, null, fbo);
-            Runtime.drawNudPolygonIds = false;
+            Runtime.drawNudColorIdPass = false;
         }
 
         private NUD.Polygon GetSelectedPolygonFromColor(Color pixelColor)
         {
             // Determine what polgyon is selected.
-            // May not select the proper polygon with multiple model containers.
             foreach (TreeNode node in draw)
             {
                 if (!(node is ModelContainer))
@@ -512,15 +526,37 @@ namespace Smash_Forge
                     {
                         // The color is the polygon index (not the render order).
                         // Convert to Vector3 to ignore the alpha.
-                        Vector3 polyColor = ColorTools.Vector4FromColor(Color.FromArgb(p.PolyDisplayId)).Xyz;
+                        Vector3 polyColor = ColorTools.Vector4FromColor(Color.FromArgb(p.DisplayId)).Xyz;
                         Vector3 pickedColor = ColorTools.Vector4FromColor(pixelColor).Xyz;
-                        Debug.WriteLine(polyColor.ToString());
-                        Debug.WriteLine(pickedColor.ToString());
 
                         if (polyColor == pickedColor)
                             return p;
                     }
                 }         
+            }
+
+            return null;
+        }
+
+        private NUD.Mesh GetSelectedMeshFromColor(Color pixelColor)
+        {
+            // Determine what mesh is selected.
+            foreach (TreeNode node in draw)
+            {
+                if (!(node is ModelContainer))
+                    continue;
+                ModelContainer con = (ModelContainer)node;
+
+                foreach (NUD.Mesh mesh in con.NUD.Nodes)
+                {
+                    // The color is the mesh index.
+                    // Convert to Vector3 to ignore the alpha.
+                    Vector3 meshColor = ColorTools.Vector4FromColor(Color.FromArgb(mesh.DisplayId)).Xyz;
+                    Vector3 pickedColor = ColorTools.Vector4FromColor(pixelColor).Xyz;
+
+                    if (meshColor == pickedColor)
+                        return mesh;
+                }
             }
 
             return null;
@@ -1020,11 +1056,6 @@ namespace Smash_Forge
             }
         }
 
-        private void toolStripSaveRenderAlphaButton_Click(object sender, EventArgs e)
-        {
-            SaveScreenRender(true);
-        }
-
         private void BatchRenderModels()
         {
             // Ignore warnings.
@@ -1096,7 +1127,7 @@ namespace Smash_Forge
         private void BatchRenderViewportToFile(string nudFileName, string sourcePath, string outputPath)
         {
             SetupNextRender();
-            string renderName = FormatFileName(nudFileName, sourcePath);
+            string renderName = ConvertDirSeparatorsToUnderscore(nudFileName, sourcePath);
             // Manually dispose the bitmap to avoid memory leaks. 
             Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, true);
             screenCapture.Save(outputPath + "\\" + renderName + ".png");
@@ -1111,10 +1142,10 @@ namespace Smash_Forge
             glViewport.SwapBuffers();
         }
 
-        private static string FormatFileName(string fileName, string path)
+        public static string ConvertDirSeparatorsToUnderscore(string fullPath, string sourceDirPath)
         {
             // Save the render using the folder structure as the name.
-            string renderName = fileName.Replace(path, "");
+            string renderName = fullPath.Replace(sourceDirPath, "");
             renderName = renderName.Substring(1);
             renderName = renderName.Replace("\\", "_");
             renderName = renderName.Replace("//", "_");
@@ -1255,9 +1286,14 @@ namespace Smash_Forge
             }
         }
 
+        private void toolStripSaveRenderAlphaButton_Click(object sender, EventArgs e)
+        {
+            SaveScreenRender(true);
+        }
+
         private void toolStripRenderNoAlphaButton_Click(object sender, EventArgs e)
         {
-            SaveScreenRender();
+            SaveScreenRender(false);
         }
         
         private void totalFrame_ValueChanged(object sender, EventArgs e)
@@ -1411,11 +1447,12 @@ namespace Smash_Forge
 
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
+            // Return early to avoid rendering other stuff. 
             if (meshList.filesTreeView.SelectedNode != null)
             {
-                // Return early to avoid rendering other stuff. 
                 if (meshList.filesTreeView.SelectedNode is BCH_Texture)
                 {
                     DrawBchTex();
@@ -1435,12 +1472,10 @@ namespace Smash_Forge
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             }
 
+            // The screen quad shader draws its own background gradient.
+            // This prevents the second color attachment from having a white background.
             if (Runtime.renderBackGround && !Runtime.usePostProcessing)
-            {
-                // The screen quad shader draws its own background gradient.
-                // This prevents the second color attachment from having a white background.
                 DrawViewportBackground();
-            }
 
             if (glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
              && glViewport.Focused
@@ -1465,9 +1500,12 @@ namespace Smash_Forge
             if (Runtime.renderFloor)
                 RenderTools.DrawFloor(camera.mvpMatrix);
 
+            // Depth testing isn't set by materials.
             SetDepthTesting();
 
-            //GL.BindFramebuffer(FramebufferTarget.Framebuffer, screenRenderFbo);
+            if (Runtime.drawNudColorIdPass)
+                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+
             DrawModels();
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
@@ -1696,7 +1734,7 @@ namespace Smash_Forge
                 BatchRenderModels();
 
             if (Keyboard.GetState().IsKeyDown(Key.X) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.L))
-                BatchExportMaterialXml();
+                MaterialXmlBatchExport.ExportAllMaterialsFromFolder();
 
             if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T) && Keyboard.GetState().IsKeyDown(Key.M))
                 BatchRenderStages();
@@ -1781,32 +1819,6 @@ namespace Smash_Forge
             }
 
             return outputPath;
-        }
-
-        private void BatchExportMaterialXml()
-        {
-            // Get the source model folder and then the output folder. 
-            using (var folderSelect = new FolderSelectDialog())
-            {
-                if (folderSelect.ShowDialog() == DialogResult.OK)
-                {
-                    string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*.nud", SearchOption.AllDirectories);
-
-                    using (var outputFolderSelect = new FolderSelectDialog())
-                    {
-                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
-                        {
-                            for (int i = 0; i < files.Length; i++)
-                            {
-                                string xmlName = FormatFileName(files[i], folderSelect.SelectedPath);
-                                NUD nud = new NUD(files[i]);
-                                string outputFileName = outputFolderSelect.SelectedPath + "\\" + xmlName + ".xml";
-                                MaterialXML.ExportMaterialAsXml(nud, outputFileName);
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         private void DrawNutTexAndUvs()

@@ -75,12 +75,13 @@
     <Compile Include="ACMDScript.cs" />
     <Compile Include="Animation.cs" />
     <Compile Include="CharacterParamManager.cs" />
-    <Compile Include="Config.cs" />
+    <Compile Include="Filetypes\Application\Config.cs" />
     <Compile Include="DiscordSettings.cs" />
     <Compile Include="Filetypes\Animation\BCHan.cs" />
     <Compile Include="Filetypes\Animation\LIGH.cs" />
     <Compile Include="Filetypes\Animation\OMO.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
+    <Compile Include="Filetypes\Application\MaterialXmlBatchExport.cs" />
     <Compile Include="Filetypes\ATKD.cs" />
     <Compile Include="Filetypes\BCH\BCH_Animation.cs" />
     <Compile Include="Filetypes\BCH\BCH_Main.cs" />
@@ -89,7 +90,7 @@
     <Compile Include="Filetypes\BCH\PatriciaTree.cs" />
     <Compile Include="Filetypes\BCH\_3DSGPU.cs" />
     <Compile Include="Filetypes\DRP.cs" />
-    <Compile Include="Filetypes\MaterialXML.cs" />
+    <Compile Include="Filetypes\Application\MaterialXML.cs" />
     <Compile Include="Filetypes\Melee\DAT.cs" />
     <Compile Include="Filetypes\Melee\DAT_Animation.cs" />
     <Compile Include="Filetypes\LVD.cs" />

@@ -188,7 +188,7 @@ namespace Smash_Forge
         public static int selectedBoneIndex = -1;
 
         // Polygon ID Maps
-        public static bool drawNudPolygonIds = false;
+        public static bool drawNudColorIdPass = false;
 
         public static bool drawUv = false;
 
