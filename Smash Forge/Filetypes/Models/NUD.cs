@@ -271,6 +271,14 @@ namespace Smash_Forge
 
         public void Render(VBN vbn, Camera camera, bool drawPolyIds = false)
         {
+            // Binding 0 to a buffer target will crash. This also means the NUD buffers weren't generated yet.
+            bool buffersWereInitialized = elementsIbo != 0 && positionVbo != 0 && bonesUbo != 0 && selectVbo != 0;
+            if (!buffersWereInitialized)
+            {
+                GenerateBuffers();
+                UpdateVertexData();
+            }
+
             // Main function for NUD rendering.
             if (Runtime.renderBoundingBox)
                 DrawBoundingBoxes();

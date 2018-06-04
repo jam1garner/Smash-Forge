@@ -327,7 +327,6 @@ namespace Smash_Forge
 
         ~ModelViewport()
         {
-            
         }
 
         public Camera GetCamera()
@@ -1886,10 +1885,28 @@ namespace Smash_Forge
         private void glViewport_Load(object sender, EventArgs e)
         {
             glViewport.MakeCurrent();
-            RenderTools.SetupOpenTKRendering();
+            RenderTools.SetupOpenTkRendering();
             SetupBuffersAndTextures();
 
+            RefreshGlTextures();
+
             readyToRender = true;
+        }
+
+        private void RefreshGlTextures()
+        {
+            // This should only need to be done once when the viewport is created.
+            // Deleting the context will require all the textures to be reloaded.
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
+            {
+                if (!(node is ModelContainer))
+                    continue;
+
+                ModelContainer m = (ModelContainer)node;
+
+                if (m.NUT != null)
+                    m.NUT.RefreshGlTexturesByHashId();
+            }
         }
 
         private void DrawUvsForSelectedTexture(NutTexture tex)

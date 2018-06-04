@@ -54,12 +54,11 @@ namespace Smash_Forge.Rendering
         private static int sphereBitanTex;
         private static Camera nudSphereCamera = new Camera();
 
-        public static bool hasSetup = false;
-
-        public static void SetupOpenTKRendering()
+        public static void SetupOpenTkRendering()
         {
-            if (hasSetup)
-                return;
+            // This method will need to be called more than once during the lifetime of the program.
+            // The textures will be invalid once a context is destroyed.
+            // There isn't a clean way at the moment to keep track of everything.
 
             nudSphereCamera.Update(); // Update matrices for shader.
             LoadTextures();
@@ -67,8 +66,6 @@ namespace Smash_Forge.Rendering
             GetOpenGLSystemInfo();
             ShaderTools.SetupShaders();
             ShaderTools.hasSetupShaders = true;
-
-            hasSetup = true;
         }
 
         private static void SetupScreenQuadBuffer()
@@ -82,6 +79,8 @@ namespace Smash_Forge.Rendering
 
         private static void LoadTextures()
         {
+            dummyTextures.Clear();
+
             // Dummy textures. 
             stageMapHigh = LoadCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
             dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);

@@ -567,6 +567,7 @@ namespace Smash_Forge
             {
                 if (!glTexByHashId.ContainsKey(tex.HASHID))
                 {
+                    Debug.WriteLine(tex.HASHID);
                     glTexByHashId.Add(tex.HASHID, CreateGlTexture(tex, true));
                 }
             }
@@ -581,7 +582,8 @@ namespace Smash_Forge
             int dataPtr = 0;
             int gtxHeaderOffset = 0;
 
-            for (int i = 0; i < count; i++) {
+            for (int i = 0; i < count; i++)
+            {
                 d.seek(headerPtr);
                 NutTexture tex = new NutTexture();
                 tex.type = PixelInternalFormat.Rgba32ui;
@@ -613,14 +615,15 @@ namespace Smash_Forge
                 if (i == 0)
                 {
                     gtxHeaderOffset = d.readInt() + 0x10;
-                } else
+                }
+                else
                 {
                     gtxHeaderOffset += 0x80;
                     d.skip(0x04);
                 }
 
                 d.skip(0x04);
-                
+
                 // check for cubemap
                 bool cmap = (d.readInt() == d.readInt());
                 d.seek(d.pos() - 8);
@@ -659,7 +662,7 @@ namespace Smash_Forge
                     // Maybe this is the problem?
                     int mipSize = imageSize >> (mipLevel * 2);
                     int p = pitch >> mipLevel;
-                    
+
                     size = d.readInt();
                     //Console.WriteLine("\tMIP: " + size.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + (size == 0 ? ds + dataSize - dataOffset : size));
 
@@ -670,7 +673,7 @@ namespace Smash_Forge
 
                     int w = (tex.Width >> mipLevel);
                     int h = (tex.Height >> mipLevel);
-                    
+
                     {
                         byte[] deswiz = GTX.swizzleBC(
                             d.getSection(dataOffset, d.size() - dataOffset),
@@ -687,12 +690,13 @@ namespace Smash_Forge
                     {
                         s1 = size;
                         dataOffset = ds + size;
-                    }else
+                    }
+                    else
                     {
-                        dataOffset = ds + s1 +size;
+                        dataOffset = ds + s1 + size;
                     }
                     //dataOffset += mipSize;
-                    
+
                     /*if (cmap)
                     {
                         for(int k = 0; k < 5; k++)
@@ -719,26 +723,8 @@ namespace Smash_Forge
                 Nodes.Add(tex);
             }
 
-            foreach (NutTexture tex in Nodes)
-            {
-                if (!glTexByHashId.ContainsKey(tex.HASHID))
-                {
-                    glTexByHashId.Add(tex.HASHID, CreateGlTexture(tex, false));
-                }
+            RefreshGlTexturesByHashId();
 
-                // redo mipmaps
-                /*GL.BindTexture(TextureTarget.Texture2D, draw[tex.id]);
-                for (int k = 1; k < tex.mipmaps.Count; k++)
-                {
-                    tex.mipmaps[k] = new byte[tex.mipmaps[k].Length];
-                    GCHandle pinnedArray = GCHandle.Alloc(tex.mipmaps[k], GCHandleType.Pinned);
-                    IntPtr pointer = pinnedArray.AddrOfPinnedObject();
-                    GL.GetCompressedTexImage(TextureTarget.Texture2D, 0, pointer);
-                    pinnedArray.Free();
-                }*/
-            }
-
-            
             //File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\duckhunt\\model\\body\\mip1.bin", bytearray);
 
             //Console.WriteLine(GL.GetError());
@@ -767,6 +753,19 @@ namespace Smash_Forge
                 }
                 j++;
             }*/
+        }
+
+        public void RefreshGlTexturesByHashId()
+        {
+            glTexByHashId.Clear();
+
+            foreach (NutTexture tex in Nodes)
+            {
+                if (!glTexByHashId.ContainsKey(tex.HASHID))
+                {
+                    glTexByHashId.Add(tex.HASHID, CreateGlTexture(tex, false));
+                }
+            }
         }
 
         public static bool texIdUsed(int texId)
@@ -821,12 +820,17 @@ namespace Smash_Forge
 
         public void Destroy()
         {
+            DeleteGlTextures();
+            Nodes.Clear();
+        }
+
+        private void DeleteGlTextures()
+        {
             foreach (var kv in glTexByHashId)
             {
                 if (GL.IsTexture(kv.Value))
                     GL.DeleteTexture(kv.Value);
             }
-            Nodes.Clear();
         }
 
         public override string ToString()

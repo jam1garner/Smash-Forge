@@ -90,7 +90,7 @@ namespace Smash_Forge
             NUTMenu.MenuItems.Add(texid);
 
             // Make sure the shaders and textures are setup for rendering.
-            Rendering.RenderTools.SetupOpenTKRendering();
+            Rendering.RenderTools.SetupOpenTkRendering();
         }
 
         public NUTEditor(NUT nut) : this()
