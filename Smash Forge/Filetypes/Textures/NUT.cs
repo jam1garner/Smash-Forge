@@ -592,12 +592,20 @@ namespace Smash_Forge
                 int headerSize = d.readUShort();
                 headerPtr += headerSize;
                 d.skip(2);
-                int numMips = d.readUShort();
-                tex.setPixelFormatFromNutFormat(d.readUShort());
+
+                d.skip(1);
+                tex.mipMapCount = d.readByte();
+                d.skip(1);
+                tex.setPixelFormatFromNutFormat(d.readByte());
                 tex.Width = d.readUShort();
                 tex.Height = d.readUShort();
+                d.readInt(); //Always 1?
+                uint caps2 = d.readUInt();
 
-                d.skip(8); // mipmaps and padding
+                //Todo: implement cubemaps. Flags are the same as in NTP3
+                bool isCubemap = false;
+                tex.surfaceCount = 1;
+
                 int dataOffset = d.readInt() + dataPtr + 0x10;
                 dataPtr += headerSize;
 
@@ -646,7 +654,7 @@ namespace Smash_Forge
                 int s1 = 0;
                 int size = 0;
                 Console.WriteLine(dataSize.ToString("x"));
-                for (int mipLevel = 0; mipLevel < numMips; mipLevel++)
+                for (int mipLevel = 0; mipLevel < tex.mipMapCount; ++mipLevel)
                 {
                     // Maybe this is the problem?
                     int mipSize = imageSize >> (mipLevel * 2);
