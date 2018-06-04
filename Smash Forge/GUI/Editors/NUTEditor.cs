@@ -88,6 +88,9 @@ namespace Smash_Forge
             MenuItem texid = new MenuItem("Set TEXID for NUT");
             texid.Click += texIDToolStripMenuItem_Click;
             NUTMenu.MenuItems.Add(texid);
+
+            // Make sure the shaders and textures are setup for rendering.
+            Rendering.RenderTools.SetupOpenTKRendering();
         }
 
         public NUTEditor(NUT nut) : this()

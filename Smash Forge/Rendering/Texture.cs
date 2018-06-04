@@ -64,26 +64,30 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        public Texture()
+        public Texture(TextureTarget target)
         {
             Id = GL.GenTexture();
+            textureTarget = target;
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
         ~Texture()
         {
-            // TODO: Delete the texture's resources.
-            Debug.WriteLine("Deleted texture");
+            // The context probably isn't current here, so any GL function will crash.
+            //GL.GenTexture();
+            Debug.WriteLine("Deleting texture");
+            // Delete the texture's resources.
+            //GL.DeleteTexture(Id);
         }
 
-        public Texture(Bitmap image) : this()
+        public Texture(TextureTarget target, Bitmap image) : this(target)
         {
             GL.BindTexture(textureTarget, Id);
 
             // Load the image data.
             BitmapData data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
                 ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
+            GL.TexImage2D(textureTarget, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
                 OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
             image.UnlockBits(data);
 

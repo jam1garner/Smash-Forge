@@ -56,7 +56,7 @@ namespace Smash_Forge.Rendering
 
         public static bool hasSetup = false;
 
-        public static void Setup()
+        public static void SetupOpenTKRendering()
         {
             if (hasSetup)
                 return;
@@ -65,6 +65,9 @@ namespace Smash_Forge.Rendering
             LoadTextures();
             SetupScreenQuadBuffer();
             GetOpenGLSystemInfo();
+            ShaderTools.SetupShaders();
+            ShaderTools.hasSetupShaders = true;
+
             hasSetup = true;
         }
 
@@ -108,7 +111,7 @@ namespace Smash_Forge.Rendering
             sphereBitanTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.bitan);
 
             // Helpful textures. 
-            Texture texture = new Texture(Properties.Resources.UVPattern);
+            Texture texture = new Texture(TextureTarget.Texture2D, Properties.Resources.UVPattern);
             uvTestPattern = texture.Id;
 
             boneWeightGradient = Texture.CreateGlTextureFromBitmap(Properties.Resources.boneWeightGradient);

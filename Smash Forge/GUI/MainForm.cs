@@ -104,12 +104,6 @@ namespace Smash_Forge
             Config.StartupFromFile(MainForm.executableDir + "\\config.xml");
             DiscordSettings.Update();
 
-            glControl1.MakeCurrent();
-            Rendering.RenderTools.Setup();
-            Rendering.ShaderTools.SetupShaders();
-
-            SaveMaterialThumbnailPreviews();
-
             openFiles();
         }
 
