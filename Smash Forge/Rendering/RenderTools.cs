@@ -101,8 +101,6 @@ namespace Smash_Forge.Rendering
             // Sphere Default Textures.
             sphereDifTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.defaultDif);
             sphereNrmMapTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.nrmMap);
-
-
             // Sphere Mesh Attributes.
             sphereNrmTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.nrm);
             sphereUvTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.uv);
@@ -110,7 +108,9 @@ namespace Smash_Forge.Rendering
             sphereBitanTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.bitan);
 
             // Helpful textures. 
-            uvTestPattern = Texture.CreateGlTextureFromBitmap(Properties.Resources.UVPattern);
+            Texture texture = new Texture(Properties.Resources.UVPattern);
+            uvTestPattern = texture.Id;
+
             boneWeightGradient = Texture.CreateGlTextureFromBitmap(Properties.Resources.boneWeightGradient);
             boneWeightGradient2 = Texture.CreateGlTextureFromBitmap(Properties.Resources.boneWeightGradient2);
 
