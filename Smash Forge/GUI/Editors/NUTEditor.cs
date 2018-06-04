@@ -409,7 +409,7 @@ namespace Smash_Forge
                         NUT.glTexByHashId.Remove(tex.HASHID);
 
                     NUT.Nodes.Add(tex);
-                    NUT.glTexByHashId.Add(tex.HASHID, NUT.loadImage(tex));
+                    NUT.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex));
                     FillForm();
                 }
             }
@@ -535,7 +535,7 @@ namespace Smash_Forge
                     
                     GL.DeleteTexture(NUT.glTexByHashId[texture.HASHID]);
                     NUT.glTexByHashId.Remove(texture.HASHID);
-                    NUT.glTexByHashId.Add(texture.HASHID, NUT.loadImage(texture));
+                    NUT.glTexByHashId.Add(texture.HASHID, NUT.CreateGlTexture(texture));
 
                     FillForm();
                 }
@@ -688,7 +688,7 @@ namespace Smash_Forge
 
                 GL.DeleteTexture(NUT.glTexByHashId[tex.HASHID]);
                 NUT.glTexByHashId.Remove(tex.HASHID);
-                NUT.glTexByHashId.Add(tex.HASHID, NUT.loadImage(tex));
+                NUT.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex));
 
                 FillForm();
                 textureListBox.SelectedItem = tex;
@@ -779,7 +779,7 @@ namespace Smash_Forge
                             else
                                 tex.HASHID = nut.Nodes.Count;
                             nut.Nodes.Add(tex);
-                            NUT.glTexByHashId.Add(tex.HASHID, NUT.loadImage(tex));
+                            NUT.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex));
                             FillForm();
                         }
                         else
@@ -808,7 +808,7 @@ namespace Smash_Forge
 
                             GL.DeleteTexture(NUT.glTexByHashId[tex.HASHID]);
                             NUT.glTexByHashId.Remove(tex.HASHID);
-                            NUT.glTexByHashId.Add(tex.HASHID, NUT.loadImage(tex));
+                            NUT.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex));
                             FillForm();
                         }
                     }

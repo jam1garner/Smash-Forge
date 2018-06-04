@@ -1956,7 +1956,7 @@ namespace Smash_Forge
 
                         NutTexture tex = new DDS(new FileData("TexConv/temp.dds")).toNUT_Texture();
                         tex.HASHID = fileNum;
-                        n.glTexByHashId.Add(fileNum, NUT.loadImage(tex, true));
+                        n.glTexByHashId.Add(fileNum, NUT.CreateGlTexture(tex, true));
                         n.Nodes.Add(tex);
                     }
                 }
