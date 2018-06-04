@@ -550,7 +550,7 @@ namespace Smash_Forge
             Material material = p.materials[0];
 
             // Set Shader Values.
-            SetShaderUniforms(p, shader, camera, material, p.PolyDisplayId, drawId);
+            SetShaderUniforms(p, shader, camera, material, p.DisplayId, drawId);
             SetVertexAttributes(p, shader);
 
             // Set OpenTK Render Options.
@@ -2702,10 +2702,10 @@ namespace Smash_Forge
                 NormalsTanBiTanHalfFloat = 0x7
             }
 
-            private static List<int> previousPolyIds = new List<int>();
-
-            public int PolyDisplayId { get { return polyDisplayId; } }
-            private int polyDisplayId = 0;
+            // Used to generate a unique color for viewport selection.
+            private static List<int> previousDisplayIds = new List<int>();
+            public int DisplayId { get { return displayId; } }
+            private int displayId = 0;
 
             public List<Vertex> vertices = new List<Vertex>();
             public List<int> faces = new List<int>();
@@ -2747,11 +2747,11 @@ namespace Smash_Forge
                 // A color is generated from the integer as hexadecimal, but alpha is ignored.
                 // Incrementing will affect RGB before it affects Alpha (ARGB color).
                 int index = 0;
-                if (previousPolyIds.Count > 0)
-                    index = previousPolyIds.Last();
+                if (previousDisplayIds.Count > 0)
+                    index = previousDisplayIds.Last();
                 index++;
-                previousPolyIds.Add(index);
-                polyDisplayId = index;
+                previousDisplayIds.Add(index);
+                displayId = index;
             }
 
             public void AOSpecRefBlend()
@@ -3060,6 +3060,11 @@ namespace Smash_Forge
                 SingleBind = 8
             }
 
+            // Used to generate a unique color for mesh viewport selection.
+            private static List<int> previousDisplayIds = new List<int>();
+            private int displayId = 0;
+            public int DisplayId { get { return displayId; } }
+
             public int boneflag = (int)BoneFlags.Rigged; 
             public short singlebind = -1;
             public int sortBias = 0;
@@ -3076,6 +3081,20 @@ namespace Smash_Forge
                 Checked = true;
                 ImageKey = "mesh";
                 SelectedImageKey = "mesh";
+                GenerateDisplayId();
+            }
+
+            private void GenerateDisplayId()
+            {
+                // Find last used ID. Next ID will be last ID + 1.
+                // A color is generated from the integer as hexadecimal, but alpha is ignored.
+                // Incrementing will affect RGB before it affects Alpha (ARGB color).
+                int index = 0;
+                if (previousDisplayIds.Count > 0)
+                    index = previousDisplayIds.Last();
+                index++;
+                previousDisplayIds.Add(index);
+                displayId = index;
             }
 
             public void addVertex(Vertex v)

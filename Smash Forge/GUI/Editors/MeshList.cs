@@ -59,6 +59,7 @@ namespace Smash_Forge
         bool changingValue = false;
 
         public ContextMenuStrip PolyContextMenu { get { return polyContextMenu; } }
+        public ContextMenuStrip MeshContextMenu { get { return meshContextMenu; } }
 
         public void RefreshNodes()
         {
