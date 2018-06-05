@@ -13,16 +13,29 @@ namespace Smash_Forge.GUI.Menus
 {
     public partial class CameraSettings : Form
     {
-        public Camera Camera;
+        public Camera camera;
 
-        public string VBNFile;
-        public string OMOFile;
-        public VBN VBN;
-        public Animation Anim;
+        public string vbnFilePath;
+        public string omoFilePath;
+        public VBN vbn;
+        public Animation animation;
 
         public CameraSettings(Camera c)
         {
             InitializeComponent();
+
+            SetNumericUpDownMaxMinValues();
+
+            camera = c;
+            depthSlider.Value = Math.Min((int)camera.FarClipPlane, depthSlider.Maximum);
+            fovSlider.Value = (int)(camera.FovDegrees);
+            fovTB.Text = (int)(camera.FovDegrees) + "";
+            renderDepthTB.Text = camera.FarClipPlane + "";
+            updatePosition();
+        }
+
+        private void SetNumericUpDownMaxMinValues()
+        {
             numericHorizontalRadians.Maximum = Decimal.MaxValue;
             numericHorizontalRadians.Minimum = Decimal.MinValue;
             numericHorizontalDegrees.Maximum = Decimal.MaxValue;
@@ -40,13 +53,6 @@ namespace Smash_Forge.GUI.Menus
 
             numericZoom.Maximum = Decimal.MaxValue;
             numericZoom.Minimum = Decimal.MinValue;
-
-            Camera = c;
-            depthSlider.Value = Math.Min((int)Camera.renderDepth, depthSlider.Maximum);
-            fovSlider.Value = (int)(Camera.fovRadians * 180.0f / Math.PI);
-            fovTB.Text = (int)(Camera.fovRadians * 180.0f / Math.PI) + "";
-            renderDepthTB.Text = Camera.renderDepth + "";
-            updatePosition();
         }
 
         private void CameraPosition_Load(object sender, EventArgs e)
@@ -55,110 +61,91 @@ namespace Smash_Forge.GUI.Menus
         }
 
         private void buttonApply_Click(object sender, EventArgs e)
-        {
-         
+        { 
             float yRotation = Convert.ToSingle(numericHorizontalRadians.Value);
             float xRotation = Convert.ToSingle(numericVerticalRadians.Value);
             float width = Convert.ToSingle(numericPositionX.Value);
             float height = Convert.ToSingle(numericPositionY.Value);
             float zoom = Convert.ToSingle(numericZoom.Value);
 
-            Camera.position = new OpenTK.Vector3(width, height, zoom);
-            Camera.rotX = xRotation;
-            Camera.rotY = yRotation;
-            Camera.Update();
+            camera.Position = new OpenTK.Vector3(width, height, zoom);
+            camera.RotationX = xRotation;
+            camera.RotationY = yRotation;
+            camera.Update();
         }
 
         // Updates text controls based on parentViewport's current camera position
         public void updatePosition()
         {
-            OpenTK.Vector3 pos = Camera.position;
+            OpenTK.Vector3 pos = camera.Position;
 
-            numericHorizontalRadians.Value = Convert.ToDecimal(Camera.rotY);
-            numericVerticalRadians.Value = Convert.ToDecimal(Camera.rotX);
+            numericHorizontalRadians.Value = Convert.ToDecimal(camera.RotationY);
+            numericVerticalRadians.Value = Convert.ToDecimal(camera.RotationX);
             numericPositionX.Value = Convert.ToDecimal(pos.X);
             numericPositionY.Value = Convert.ToDecimal(pos.Y);
             numericZoom.Value = Convert.ToDecimal(pos.Z);
 
             // derived values
-            numericHorizontalDegrees.Value = Convert.ToDecimal(Camera.rotY * (180 / Math.PI));
-            numericVerticalDegrees.Value = Convert.ToDecimal(Camera.rotX * (180 / Math.PI));
-
-            //buttonApply_Click(null, null);
+            numericHorizontalDegrees.Value = Convert.ToDecimal(camera.RotationY * (180 / Math.PI));
+            numericVerticalDegrees.Value = Convert.ToDecimal(camera.RotationX * (180 / Math.PI));
         }
 
         private void numericHorizontalDegrees_ValueChanged(object sender, EventArgs e)
         {
             numericHorizontalRadians.Value = Convert.ToDecimal(Convert.ToSingle(numericHorizontalDegrees.Value) * (Math.PI / 180));
-            //buttonApply_Click(null, null);
         }
 
         private void numericVerticalDegrees_ValueChanged(object sender, EventArgs e)
         {
             numericVerticalRadians.Value = Convert.ToDecimal(Convert.ToSingle(numericVerticalDegrees.Value) * (Math.PI / 180));
-            //buttonApply_Click(null, null);
         }
 
         private void numericHorizontalRadians_ValueChanged(object sender, EventArgs e)
         {
             numericHorizontalDegrees.Value = Convert.ToDecimal(Convert.ToSingle(numericHorizontalRadians.Value) * (180 / Math.PI));
-            //buttonApply_Click(null, null);
         }
 
         private void numericVerticalRadians_ValueChanged(object sender, EventArgs e)
         {
             numericVerticalDegrees.Value = Convert.ToDecimal(Convert.ToSingle(numericVerticalRadians.Value) * (180 / Math.PI));
-            //buttonApply_Click(null, null);
         }
 
         private void fovSlider_Scroll(object sender, EventArgs e)
         {
             fovTB.Text = fovSlider.Value + "";
-            //buttonApply_Click(null, null);
         }
 
         private void depthSlider_Scroll(object sender, EventArgs e)
         {
             renderDepthTB.Text = depthSlider.Value + "";
-            //buttonApply_Click(null, null);
         }
 
         private void renderDepthTB_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(renderDepthTB.Text, out i))
-            {
-                renderDepthTB.BackColor = Color.White;
-                Camera.renderDepth = i;
-            }
-            else
-                renderDepthTB.BackColor = Color.Red;
+            float value = GuiTools.TryParseTBFloat(renderDepthTB);
+            // The far clip plane can't come before the near clip plane.
+            if (value <= camera.NearClipPlane)
+                value = camera.NearClipPlane + 0.001f;
+            camera.FarClipPlane = value;
 
             // update trackbar
-            int newSliderValue = (int)(i);
+            GuiTools.UpdateTrackBarFromValue(value, depthSlider, 0, depthSlider.Maximum);
+            /*int newSliderValue = (int)(value);
             newSliderValue = Math.Min(newSliderValue, depthSlider.Maximum);
             newSliderValue = Math.Max(newSliderValue, depthSlider.Minimum);
-            depthSlider.Value = newSliderValue;
-            //buttonApply_Click(null, null);
+            depthSlider.Value = newSliderValue;*/
         }
 
         private void fovTB_TextChanged(object sender, EventArgs e)
         {
-            float i = 0;
-            if (float.TryParse(fovTB.Text, out i))
-            {
-                fovTB.BackColor = Color.White;
-                Camera.fovRadians = i * (float)Math.PI / 180.0f;
-            }
-            else
-                fovTB.BackColor = Color.Red;
+            float value = GuiTools.TryParseTBFloat(fovTB);
+            camera.FovDegrees = value;
 
             // update trackbar
-            int newSliderValue = (int)(i);
+            int newSliderValue = (int)(value);
             newSliderValue = Math.Min(newSliderValue, fovSlider.Maximum);
             newSliderValue = Math.Max(newSliderValue, 0);
             fovSlider.Value = newSliderValue;
-            //buttonApply_Click(null, null);
         }
 
         private void btnLoadAnim_Click(object sender, EventArgs e)
@@ -168,15 +155,15 @@ namespace Smash_Forge.GUI.Menus
                 ofd.Filter = "Camera Animation (.omo)|*.omo";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    OMOFile = ofd.FileName;
-                    Anim = OMOOld.read(new FileData(OMOFile));
-                    lbAnimation.Text = OMOFile;
+                    omoFilePath = ofd.FileName;
+                    animation = OMOOld.read(new FileData(omoFilePath));
+                    lbAnimation.Text = omoFilePath;
                 }
                 else
                 {
-                    OMOFile = "";
-                    Anim = null;
-                    lbAnimation.Text = OMOFile;
+                    omoFilePath = "";
+                    animation = null;
+                    lbAnimation.Text = omoFilePath;
                 }
             }
         }
@@ -188,14 +175,14 @@ namespace Smash_Forge.GUI.Menus
                 ofd.Filter = "Namco Bones (.vbn)|*.vbn";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    VBNFile = ofd.FileName;
-                    VBN = new VBN(VBNFile);
-                    lbVBN.Text = VBNFile;
+                    vbnFilePath = ofd.FileName;
+                    vbn = new VBN(vbnFilePath);
+                    lbVBN.Text = vbnFilePath;
                 }else
                 {
-                    VBNFile = "";
-                    VBN = null;
-                    lbVBN.Text = VBNFile;
+                    vbnFilePath = "";
+                    vbn = null;
+                    lbVBN.Text = vbnFilePath;
                 }
             }
         }
@@ -204,13 +191,13 @@ namespace Smash_Forge.GUI.Menus
         {
             if (useCameraAnimation.Checked)
             {
-                if(VBN != null && Anim != null)
+                if(vbn != null && animation != null)
                 {
-                    Anim.SetFrame(frame);
-                    Anim.NextFrame(VBN);
+                    animation.SetFrame(frame);
+                    animation.NextFrame(vbn);
 
-                    if(VBN.bones.Count > 0)
-                        Cam.SetFromBone(VBN.bones[0]);
+                    if(vbn.bones.Count > 0)
+                        Cam.SetFromBone(vbn.bones[0]);
                 }
             }
         }
