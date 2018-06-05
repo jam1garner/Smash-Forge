@@ -32,35 +32,15 @@ namespace Smash_Forge.GUI.Editors
             InitAreaLightListBox();
             InitLightMapListBox();
             InitFogListBox();
+            InitStageLightListBox();
 
+            RenderTools.SetupOpenTkRendering();
+        }
+
+        private void InitStageLightListBox()
+        {
             for (int groupIndex = 1; groupIndex < 17; groupIndex++)
             {
-                string name = (groupIndex - 1) + "";
-                switch (groupIndex)
-                {
-                    case 0:
-                        name += " black";
-                        break;
-                    case 1:
-                        name += " cyan";
-                        break;
-                    case 2:
-                        name += " blue";
-                        break;
-                    case 3:
-                        name += " yellow";
-                        break;
-                    case 4:
-                        name += " magenta";
-                        break;
-                    case 5:
-                        name += " green";
-                        break;
-                    default:
-                        name += "";
-                        break;
-                }
-
                 TreeNode[] children = new TreeNode[4];
                 for (int lightIndex = 0; lightIndex < 4; lightIndex++)
                 {
@@ -68,12 +48,26 @@ namespace Smash_Forge.GUI.Editors
                     children[lightIndex] = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
                     children[lightIndex].Checked = currentLight.enabled;
                 }
+
+                string name = GetGroupAndColorName(groupIndex - 1);
                 TreeNode parent = new TreeNode(name, children);
 
                 stageLightSetTreeView.Nodes.Add(parent);
             }
+        }
 
-
+        private string GetGroupAndColorName(int groupIndex)
+        {
+            string name = groupIndex + "";
+            try
+            {
+                string colorName = NUD.lightSetColorByIndex[groupIndex].Name;
+                name += String.Format(" {0}", colorName);
+            }
+            catch (KeyNotFoundException)
+            {
+            }
+            return name;
         }
 
         private void InitLightMapListBox()
@@ -96,7 +90,8 @@ namespace Smash_Forge.GUI.Editors
         {
             for (int i = 0; i < Runtime.lightSetParam.stageFogSet.Length; i++)
             {
-                stageFogListBox.Items.Add(i);
+                string name = GetGroupAndColorName(i);
+                stageFogListBox.Items.Add(name);
             }
         }
 
