@@ -120,12 +120,6 @@ namespace Smash_Forge
                 writeByte(v);
         }
 
-        /*public void align(int i, int value){
-            while(data.size() % i != 0)
-                writeByte(value);
-        }*/
-
-
         public void writeFloat(float f){
             int i = SingleToInt32Bits (f, Endian == Endianness.Big);
             data.Add((byte)((i)&0xFF));
@@ -169,7 +163,21 @@ namespace Smash_Forge
             }
         }
 
+        public void writeUShort(ushort i){
+            if(Endian == Endianness.Little){
+                data.Add((byte)((i)&0xFF));
+                data.Add((byte)((i>>8)&0xFF));
+            } else {
+                data.Add((byte)((i>>8)&0xFF));
+                data.Add((byte)((i)&0xFF));
+            }
+        }
+
         public void writeByte(int i){
+            data.Add((byte)((i)&0xFF));
+        }
+
+        public void writeSByte(sbyte i){
             data.Add((byte)((i)&0xFF));
         }
 

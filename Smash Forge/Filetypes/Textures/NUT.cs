@@ -11,14 +11,36 @@ using System.Windows.Forms;
 
 namespace Smash_Forge
 {
-    public class NutTexture : TreeNode
+    public class TextureSurface
     {
         public List<byte[]> mipmaps = new List<byte[]>();
+        public uint cubemapFace = 0; //Not set currently
+    }
+
+    public class NutTexture : TreeNode
+    {
+        public List<TextureSurface> surfaces = new List<TextureSurface>();
+
+        //Return a list containing every mipmap from every surface
+        public List<byte[]> getAllMipmaps()
+        {
+            List<byte[]> mipmaps = new List<byte[]>();
+            foreach (TextureSurface surface in surfaces)
+            {
+                foreach (byte[] mipmap in surface.mipmaps)
+                {
+                    mipmaps.Add(mipmap);
+                }
+            }
+            return mipmaps;
+        }
+
         //Each surface must have mipMapCount many mipmaps, which means: mipmaps.Count == (surfaceCount * mipMapCount)
         //Use mipMapCount, not mipmaps.Count, to check the mipmap amount
         public byte mipMapCount = 1;
         //Either 1 (standard textures) or 6 (cubemaps). No other values are explicitly supported
         public byte surfaceCount = 1;
+
         public int HASHID
         {
             get
@@ -47,6 +69,37 @@ namespace Smash_Forge
             }
         }
 
+        //Move channel 0 to channel 3 (ABGR -> BGRA)
+        public void swapChannelOrderUp()
+        {
+            foreach (byte[] mip in getAllMipmaps())
+            {
+                for (int t = 0; t < mip.Length; t += 4)
+                {
+                    byte t1 = mip[t];
+                    mip[t] = mip[t + 1];
+                    mip[t + 1] = mip[t + 2];
+                    mip[t + 2] = mip[t + 3];
+                    mip[t + 3] = t1;
+                }
+            }
+        }
+        //Move channel 3 to channel 0 (BGRA -> ABGR)
+        public void swapChannelOrderDown()
+        {
+            foreach (byte[] mip in getAllMipmaps())
+            {
+                for (int t = 0; t < mip.Length; t += 4)
+                {
+                    byte t1 = mip[t + 3];
+                    mip[t + 3] = mip[t + 2];
+                    mip[t + 2] = mip[t + 1];
+                    mip[t + 1] = mip[t];
+                    mip[t] = t1;
+                }
+            }
+        }
+
         public NutTexture()
         {
             ImageKey = "texture";
@@ -72,11 +125,11 @@ namespace Smash_Forge
                     case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
                         return (Width * Height);
                     case PixelInternalFormat.Rgba16:
-                        return mipmaps[0].Length / 2;
+                        return surfaces[0].mipmaps[0].Length / 2;
                     case PixelInternalFormat.Rgba:
-                        return mipmaps[0].Length;
+                        return surfaces[0].mipmaps[0].Length;
                     default:
-                        return mipmaps[0].Length;
+                        return surfaces[0].mipmaps[0].Length;
                 }
             }
         }
@@ -246,9 +299,9 @@ namespace Smash_Forge
             FileOutput o = new FileOutput();
             FileOutput data = new FileOutput();
 
-            o.writeInt(0x4E545033); // "NTP3"
-            o.writeShort(Version);
-            o.writeShort(Nodes.Count);
+            o.writeUInt(0x4E545033); // "NTP3"
+            o.writeUShort(Version);
+            o.writeUShort((ushort)Nodes.Count);
             o.writeInt(0);
             o.writeInt(0);
 
@@ -280,7 +333,7 @@ namespace Smash_Forge
 
                 uint dataSize = 0;
 
-                foreach (var mip in texture.mipmaps)
+                foreach (var mip in texture.getAllMipmaps())
                 {
                     dataSize += (uint)mip.Length;
                     while (dataSize % 0x10 != 0)
@@ -300,10 +353,10 @@ namespace Smash_Forge
                 }
 
                 o.writeUInt(dataSize + headerSize);
-                o.writeInt(0x00);//padding
+                o.writeUInt(0);
                 o.writeUInt(dataSize);
-                o.writeShort(headerSize); //+ (texture.mipmaps.Count - 4 > 0 ? texture.mipmaps.Count - 4 : 0) * 4
-                o.writeShort(0);
+                o.writeUShort(headerSize);
+                o.writeUShort(0);
 
                 o.writeByte(0);
                 o.writeByte(texture.mipMapCount);
@@ -319,28 +372,18 @@ namespace Smash_Forge
                 o.writeInt(0);
                 o.writeInt(0);
                 o.writeInt(0);
-                
-                if (texture.getNutFormat() == 14 || texture.getNutFormat() == 17)
-                {
-                    foreach (byte[] mip in texture.mipmaps)
-                    {
-                        for (int t = 0; t < mip.Length; t += 4)
-                        {
-                            byte t1 = mip[t + 3];
-                            mip[t + 3] = mip[t + 2];
-                            mip[t + 2] = mip[t + 1];
-                            mip[t + 1] = mip[t];
-                            mip[t] = t1;
-                        }
-                    }
-                }
 
                 if (isCubemap)
                 {
-                    o.writeInt(texture.mipmaps[0].Length);
-                    o.writeInt(texture.mipmaps[0].Length);
+                    o.writeInt(texture.surfaces[0].mipmaps[0].Length);
+                    o.writeInt(texture.surfaces[0].mipmaps[0].Length);
                     o.writeInt(0);
                     o.writeInt(0);
+                }
+
+                if (texture.getNutFormat() == 14 || texture.getNutFormat() == 17)
+                {
+                    texture.swapChannelOrderDown();
                 }
 
                 for (int surfaceLevel = 0; surfaceLevel < texture.surfaceCount; ++surfaceLevel)
@@ -348,35 +391,25 @@ namespace Smash_Forge
                     for (int mipLevel = 0; mipLevel < texture.mipMapCount; ++mipLevel)
                     {
                         int ds = data.size();
-                        data.writeBytes(texture.mipmaps[(surfaceLevel*texture.mipMapCount)+mipLevel]);
+                        data.writeBytes(texture.surfaces[surfaceLevel].mipmaps[mipLevel]);
                         data.align(0x10);
                         if (texture.mipMapCount > 1 && surfaceLevel == 0)
                             o.writeInt(data.size() - ds);
                     }
                 }
                 o.align(0x10);
-                
+
                 if (texture.getNutFormat() == 14 || texture.getNutFormat() == 17)
                 {
-                    foreach (byte[] mip in texture.mipmaps)
-                    {
-                        for (int t = 0; t < mip.Length; t += 4)
-                        {
-                            byte t1 = mip[t];
-                            mip[t] = mip[t + 1];
-                            mip[t + 1] = mip[t + 2];
-                            mip[t + 2] = mip[t + 3];
-                            mip[t + 3] = t1;
-                        }
-                    }
+                    texture.swapChannelOrderUp();
                 }
 
-                o.writeInt(0x65587400); // "eXt\0"
+                o.writeUInt(0x65587400); // "eXt\0"
                 o.writeInt(0x20);
                 o.writeInt(0x10);
                 o.writeInt(0x00);
 
-                o.writeInt(0x47494458); // "GIDX"
+                o.writeUInt(0x47494458); // "GIDX"
                 o.writeInt(0x10);
                 o.writeInt(texture.HASHID);
                 o.writeInt(0);
@@ -395,7 +428,7 @@ namespace Smash_Forge
         {
             Endian = Endianness.Big;
             d.Endian = Endian;
-            int magic = d.readInt();
+            uint magic = d.readUInt();
 
             if (magic == 0x4E545033)
             {
@@ -507,64 +540,24 @@ namespace Smash_Forge
 
                 for (int surfaceLevel = 0; surfaceLevel < tex.surfaceCount; ++surfaceLevel)
                 {
+                    TextureSurface surface = new TextureSurface();
                     for (int mipLevel = 0; mipLevel < tex.mipMapCount; ++mipLevel)
                     {
                         byte[] texArray = d.getSection(dataOffset, mipSizes[mipLevel]);
-                        tex.mipmaps.Add(texArray);
+                        surface.mipmaps.Add(texArray);
                         dataOffset += mipSizes[mipLevel];
                     }
+                    tex.surfaces.Add(surface);
                 }
 
                 if (tex.getNutFormat() == 14 || tex.getNutFormat() == 17)
                 {
-                    Console.WriteLine("Endian swap");
-                    // swap 
-                    foreach (byte[] mip in tex.mipmaps)
-                    {
-                        for (int t = 0; t < mip.Length; t += 4)
-                        {
-                            byte t1 = mip[t];
-                            mip[t] = mip[t + 1];
-                            mip[t + 1] = mip[t + 2];
-                            mip[t + 2] = mip[t + 3];
-                            mip[t + 3] = t1;
-                            /*byte t1 = mip[t];
-                            byte t2 = mip[t+1];
-                            mip[t] = mip[t + 3];
-                            mip[t + 1] = mip[t + 2];
-                            mip[t + 2] = t2;
-                            mip[t + 3] = t1;*/
-                        }
-                    }
+                    tex.swapChannelOrderUp();
                 }
 
                 headerPtr += headerSize;
 
                 Nodes.Add(tex);
-
-                /*for (int miplevel = 0; miplevel < numMips; miplevel++)
-                {
-                    byte[] texArray = d.getSection(dataOffset, mipSizes[miplevel]);
-
-                    if (tex.getNutFormat() == 14)
-                    {
-                        byte[] oldArray = texArray;
-                        for (int pos = 0; pos < mipSizes[miplevel]; pos+=4)
-                        {
-
-                            for (int p = 0; p < 4; p++)
-                            {
-                                if (p == 0)
-                                    texArray[pos + 3] = oldArray[pos];
-                                else
-                                    texArray[pos + p - 1] = oldArray[pos + p];
-                            }
-
-                        }
-                    }
-                    tex.mipmaps.Add(texArray);
-                    dataOffset += mipSizes[miplevel];
-                }*/
             }
 
             foreach (NutTexture tex in Nodes)
@@ -663,7 +656,6 @@ namespace Smash_Forge
                 tex.HASHID = d.readInt();
                 d.skip(4); // padding align 8
 
-                Console.WriteLine(gtxHeaderOffset.ToString("x"));
                 d.seek(gtxHeaderOffset);
                 GTX.GX2Surface gtxHeader = new GTX.GX2Surface();
 
@@ -695,6 +687,11 @@ namespace Smash_Forge
                     mipOffsets[mipLevel] = mipOffsets[1] + d.readInt();
                 }
 
+                for (int surfaceLevel = 0; surfaceLevel < tex.surfaceCount; ++surfaceLevel)
+                {
+                    tex.surfaces.Add(new TextureSurface());
+                }
+
                 int w = tex.Width, h = tex.Height;
                 for (int mipLevel = 0; mipLevel < tex.mipMapCount; ++mipLevel)
                 {
@@ -708,16 +705,15 @@ namespace Smash_Forge
                     else
                         size = mipOffsets[mipLevel + 1] - mipOffsets[mipLevel];
 
-                    gtxHeader.data = d.getSection(dataOffset + mipOffsets[mipLevel], size);
+                    size /= tex.surfaceCount;
 
-                    //Console.WriteLine("\tMIP: " + size.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + (size == 0 ? ds + dataSize - dataOffset : size));
-
-                    //Console.WriteLine(tex.id.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + swizzle);
-                    //Console.WriteLine((tex.width >> mipLevel) + " " + (tex.height >> mipLevel));
-
+                    for (int surfaceLevel = 0; surfaceLevel < tex.surfaceCount; ++surfaceLevel)
                     {
+                        gtxHeader.data = d.getSection(dataOffset + mipOffsets[mipLevel] + (size * surfaceLevel), size);
+
                         //Real size
-                        size = ((w + 3) >> 2) * ((h + 3) >> 2) * (GTX.getBPP(gtxHeader.format) / 8);
+                        //Leave the below line commented for now because it breaks RGBA textures
+                        //size = ((w + 3) >> 2) * ((h + 3) >> 2) * (GTX.getBPP(gtxHeader.format) / 8);
                         if (size < (GTX.getBPP(gtxHeader.format) / 8))
                             size = (GTX.getBPP(gtxHeader.format) / 8);
 
@@ -730,7 +726,7 @@ namespace Smash_Forge
                             p,
                             gtxHeader.swizzle
                         );
-                        tex.mipmaps.Add(new FileData(deswiz).getSection(0, size));
+                        tex.surfaces[surfaceLevel].mipmaps.Add(new FileData(deswiz).getSection(0, size));
                     }
 
                     w /= 2;
@@ -748,6 +744,11 @@ namespace Smash_Forge
             }
 
             RefreshGlTexturesByHashId();
+
+            //Console.WriteLine("\tMIP: " + size.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + (size == 0 ? ds + dataSize - dataOffset : size));
+
+            //Console.WriteLine(tex.id.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + swizzle);
+            //Console.WriteLine((tex.width >> mipLevel) + " " + (tex.height >> mipLevel));
 
             //File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\duckhunt\\model\\body\\mip1.bin", bytearray);
 
@@ -876,10 +877,10 @@ namespace Smash_Forge
             if (compressedFormatWithMipMaps)
             {
                 // Always load the first level.
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.Width, t.Height, 0, t.Size, t.mipmaps[0]);
+                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.Width, t.Height, 0, t.Size, t.surfaces[0].mipmaps[0]);
 
                 // Reading mip maps past the first level is only supported for DDS currently.
-                if (t.mipmaps.Count > 1 && isDds)
+                if (t.surfaces[0].mipmaps.Count > 1 && isDds)
                     LoadMipMapsCompressed(t);
                 else
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
@@ -894,22 +895,30 @@ namespace Smash_Forge
 
         private static void AutoGenerateMipMaps(NutTexture t)
         {
-            // Only load the first level and generate the other mip maps.
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.mipmaps.Count);
-            GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.Width, t.Height, 0, t.utype, t.PixelType, t.mipmaps[0]);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            for (int i = 0; i < t.surfaces.Count; ++i)
+            {
+                // Only load the first level and generate the other mip maps.
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.surfaces[i].mipmaps.Count);
+                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.Width, t.Height, 0, t.utype, t.PixelType, t.surfaces[i].mipmaps[0]);
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            }
         }
 
         private static void LoadMipMapsCompressed(NutTexture t)
         {
-            // Generate the mip maps.
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.mipmaps.Count);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            for (int i = 0; i < t.surfaces.Count; ++i)
+            {
+                // Generate the mip maps.
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.surfaces[i].mipmaps.Count);
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            // Initialize the data for each level.
-            for (int i = 0; i < t.mipmaps.Count; i++)
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, i, t.type,
-                t.Width / (int)Math.Pow(2, i), t.Height / (int)Math.Pow(2, i), 0, t.mipmaps[i].Length, t.mipmaps[i]);
+                // Initialize the data for each level.
+                for (int j = 0; j < t.surfaces[i].mipmaps.Count; ++j)
+                {
+                    GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, j, t.type,
+                     t.Width / (int)Math.Pow(2, j), t.Height / (int)Math.Pow(2, j), 0, t.surfaces[i].mipmaps[j].Length, t.surfaces[i].mipmaps[j]);
+                }
+            }
         }
     }
 }

@@ -270,7 +270,7 @@ namespace Smash_Forge
             }
 
             List<byte> d = new List<byte>();
-            foreach (byte[] b in tex.mipmaps)
+            foreach (byte[] b in tex.getAllMipmaps())
             {
                 d.AddRange(b);
             }
@@ -333,6 +333,7 @@ namespace Smash_Forge
             uint off = 0;
             for (int i = 0; i < tex.surfaceCount; ++i)
             {
+                TextureSurface surface = new TextureSurface();
                 uint w = header.width, h = header.height;
                 for (int j = 0; j < header.mipMapCount; ++j)
                 {
@@ -354,11 +355,12 @@ namespace Smash_Forge
 
                     w /= 2;
                     h /= 2;
-                    tex.mipmaps.Add(d.getSection((int)off, (int)s));
+                    surface.mipmaps.Add(d.getSection((int)off, (int)s));
                     off += s;
                 }
+                tex.surfaces.Add(surface);
             }
-            tex.mipMapCount = (byte)(tex.mipmaps.Count / tex.surfaceCount);
+            tex.mipMapCount = (byte)(tex.surfaces[0].mipmaps.Count);
 
             return tex;
         }

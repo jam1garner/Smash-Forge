@@ -337,13 +337,13 @@ namespace Smash_Forge
             switch (tex.utype)
             {
                 case OpenTK.Graphics.OpenGL.PixelFormat.Rgba:
-                    Pixel.fromRGBA(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(filename);
+                    Pixel.fromRGBA(new FileData(tex.surfaces[0].mipmaps[0]), tex.Width, tex.Height).Save(filename);
                     break;
                 case OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt:
-                    Pixel.fromABGR(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(filename);
+                    Pixel.fromABGR(new FileData(tex.surfaces[0].mipmaps[0]), tex.Width, tex.Height).Save(filename);
                     break;
                 case OpenTK.Graphics.OpenGL.PixelFormat.Bgra:
-                    Pixel.fromBGRA(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(filename);
+                    Pixel.fromBGRA(new FileData(tex.surfaces[0].mipmaps[0]), tex.Width, tex.Height).Save(filename);
                     break;
                 default:
                     RenderTextureToPng(tex, filename, true, true, true, true);
@@ -423,12 +423,13 @@ namespace Smash_Forge
             Bitmap bmp = new Bitmap(fname);
             NutTexture tex = new NutTexture();
 
-            tex.mipmaps.Add(fromPNG(bmp));
+            tex.surfaces.Add(new TextureSurface());
+            tex.surfaces[0].mipmaps.Add(fromPNG(bmp));
             tex.mipMapCount = 1;
             for (int i = 1; i < mipcount; i++)
             {
                 if (bmp.Width / (int)Math.Pow(2, i) < 4 || bmp.Height / (int)Math.Pow(2, i) < 4) break;
-                tex.mipmaps.Add(fromPNG(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
+                tex.surfaces[0].mipmaps.Add(fromPNG(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
                 ++tex.mipMapCount;
             }
             tex.Width = bmp.Width;
@@ -531,7 +532,7 @@ namespace Smash_Forge
                     texture.type = newTexture.type;
                     texture.mipMapCount = newTexture.mipMapCount;
                     texture.surfaceCount = newTexture.surfaceCount;
-                    texture.mipmaps = newTexture.mipmaps;
+                    texture.surfaces = newTexture.surfaces;
                     texture.utype = newTexture.utype;
 
                     Edited = true;
@@ -686,7 +687,7 @@ namespace Smash_Forge
                 tex.type = ntex.type;
                 tex.mipMapCount = ntex.mipMapCount;
                 tex.surfaceCount = ntex.surfaceCount;
-                tex.mipmaps = ntex.mipmaps;
+                tex.surfaces = ntex.surfaces;
                 tex.utype = ntex.utype;
 
                 GL.DeleteTexture(NUT.glTexByHashId[tex.HASHID]);
@@ -806,7 +807,7 @@ namespace Smash_Forge
                             tex.type = ntex.type;
                             tex.mipMapCount = ntex.mipMapCount;
                             tex.surfaceCount = ntex.surfaceCount;
-                            tex.mipmaps = ntex.mipmaps;
+                            tex.surfaces = ntex.surfaces;
                             tex.utype = ntex.utype;
 
                             GL.DeleteTexture(NUT.glTexByHashId[tex.HASHID]);
