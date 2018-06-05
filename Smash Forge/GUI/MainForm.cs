@@ -104,12 +104,6 @@ namespace Smash_Forge
             Config.StartupFromFile(MainForm.executableDir + "\\config.xml");
             DiscordSettings.Update();
 
-            glControl1.MakeCurrent();
-            Rendering.RenderTools.Setup();
-            Rendering.ShaderTools.SetupShaders();
-
-            SaveMaterialThumbnailPreviews();
-
             openFiles();
         }
 
@@ -1956,7 +1950,7 @@ namespace Smash_Forge
 
                         NutTexture tex = new DDS(new FileData("TexConv/temp.dds")).toNUT_Texture();
                         tex.HASHID = fileNum;
-                        n.glTexByHashId.Add(fileNum, NUT.loadImage(tex, true));
+                        n.glTexByHashId.Add(fileNum, NUT.CreateGlTexture(tex, true));
                         n.Nodes.Add(tex);
                     }
                 }

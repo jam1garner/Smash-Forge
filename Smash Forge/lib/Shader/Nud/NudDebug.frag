@@ -51,7 +51,7 @@ uniform int hasCustomSoftLight;
 uniform uint flags;
 uniform int isTransparent;
 
-uniform int lightSet;
+uniform vec3 lightSetColor;
 uniform int isStage;
 uniform int renderStageLighting;
 
@@ -309,20 +309,7 @@ void main() {
         resultingColor.rgb = displayBitangent;
     } else if (renderType == 11) {
         // light set #
-        if (lightSet == 0)
-            resultingColor.rgb = vec3(0,0,0);
-        else if (lightSet == 1)
-            resultingColor.rgb = vec3(0,1,1);
-        else if (lightSet == 2)
-            resultingColor.rgb = vec3(0,0,1);
-        else if (lightSet == 3)
-            resultingColor.rgb = vec3(1,1,0);
-        else if (lightSet == 4)
-            resultingColor.rgb = vec3(1,0,1);
-        else if (lightSet == 5)
-            resultingColor.rgb = vec3(0,1,0);
-        else
-            resultingColor.rgb = vec3(1);
+        resultingColor.rgb = lightSetColor;
     } else if (renderType == 12) {
         resultingColor.rgb = boneWeightsColored;
     }

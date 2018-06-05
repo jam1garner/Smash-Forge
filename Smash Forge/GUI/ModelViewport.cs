@@ -209,6 +209,7 @@ namespace Smash_Forge
         public ModelViewport()
         {
             InitializeComponent();
+            Debug.WriteLine("initialize component");
             camera = new Camera();
             FilePath = "";
             Text = "Model Viewport";
@@ -227,9 +228,6 @@ namespace Smash_Forge
             ViewComboBox.SelectedIndex = 0;
 
             draw = meshList.filesTreeView.Nodes;
-
-            RenderTools.Setup(); // Just in case.
-            SetupBuffersAndTextures();
         }
 
         private void SetupVariableViewer()
@@ -329,7 +327,6 @@ namespace Smash_Forge
 
         ~ModelViewport()
         {
-            
         }
 
         public Camera GetCamera()
@@ -390,7 +387,6 @@ namespace Smash_Forge
 
         private void ModelViewport_Load(object sender, EventArgs e)
         {
-            readyToRender = true;
             var timer = new Timer();
             timer.Interval = 1000 / 120;
             timer.Tick += new EventHandler(Application_Idle);
@@ -461,7 +457,7 @@ namespace Smash_Forge
                     if (modeMesh.Checked)
                     {
                         // Use a color ID render pass for more precision.
-                        SelectMeshAtMousePosition();
+                        //SelectMeshAtMousePosition();
                     }
 
                     if (modePolygon.Checked)
@@ -1884,6 +1880,33 @@ namespace Smash_Forge
             modeBone.Checked = true;
             modePolygon.Checked = false;
             modeMesh.Checked = false;
+        }
+
+        private void glViewport_Load(object sender, EventArgs e)
+        {
+            glViewport.MakeCurrent();
+            RenderTools.SetupOpenTkRendering();
+            SetupBuffersAndTextures();
+
+            RefreshGlTextures();
+
+            readyToRender = true;
+        }
+
+        private void RefreshGlTextures()
+        {
+            // This should only need to be done once when the viewport is created.
+            // Deleting the context will require all the textures to be reloaded.
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
+            {
+                if (!(node is ModelContainer))
+                    continue;
+
+                ModelContainer m = (ModelContainer)node;
+
+                if (m.NUT != null)
+                    m.NUT.RefreshGlTexturesByHashId();
+            }
         }
 
         private void DrawUvsForSelectedTexture(NutTexture tex)

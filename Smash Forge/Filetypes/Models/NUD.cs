@@ -174,20 +174,25 @@ namespace Smash_Forge
             ShadowMap = 0x10100000
         }
 
-        public enum LightSetColors
+        public static readonly Dictionary<int, Color> lightSetColorByIndex = new Dictionary<int, Color>()
         {
-            Black = 0,
-            Red = 1,
-            Green = 2,
-            Blue = 3,
-            Orange = 4,
-            Yellow = 5,
-            Cyan = 6,
-            Magenta = 7,
-            Purple = 8,
-            Grey = 9,
-            White = 15
-        }
+            { 0, Color.Red },
+            { 1, Color.Blue },
+            { 2, Color.Green },
+            { 3, Color.Black },
+            { 4, Color.Orange },
+            { 5, Color.Cyan },
+            { 6, Color.Yellow },
+            { 7, Color.Magenta },
+            { 8, Color.Purple },
+            { 9, Color.Gray },
+            { 10, Color.White },
+            { 11, Color.Navy },
+            { 12, Color.Lavender },
+            { 13, Color.Brown },
+            { 14, Color.Olive },
+            { 15, Color.Pink },
+        };
 
         public enum SrcFactors
         {
@@ -271,6 +276,14 @@ namespace Smash_Forge
 
         public void Render(VBN vbn, Camera camera, bool drawPolyIds = false)
         {
+            // Binding 0 to a buffer target will crash. This also means the NUD buffers weren't generated yet.
+            bool buffersWereInitialized = elementsIbo != 0 && positionVbo != 0 && bonesUbo != 0 && selectVbo != 0;
+            if (!buffersWereInitialized)
+            {
+                GenerateBuffers();
+                UpdateVertexData();
+            }
+
             // Main function for NUD rendering.
             if (Runtime.renderBoundingBox)
                 DrawBoundingBoxes();
@@ -720,7 +733,17 @@ namespace Smash_Forge
             bool directUVTimeFlags = (p.materials[0].Flags & 0x00001900) == 0x00001900; // should probably move elsewhere
             shader.SetBoolToInt("useDirectUVTime", useDirectUVTime && directUVTimeFlags);
 
-            shader.SetInt("lightSet", lightSetNumber);
+            SetLightSetColorUniform(shader);
+        }
+
+        private void SetLightSetColorUniform(Shader shader)
+        {
+            int maxLightSet = 15;
+            if (lightSetNumber >= 0 && lightSetNumber <= maxLightSet)
+            {
+                Color color = lightSetColorByIndex[lightSetNumber];
+                shader.SetVector3("lightSetColor", ColorTools.Vector4FromColor(color).Xyz);
+            }
         }
 
         private void SetVertexAttributes(Polygon p, Shader shader)

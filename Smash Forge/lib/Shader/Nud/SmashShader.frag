@@ -581,7 +581,8 @@ vec3 RenderPasses(vec4 diffuseMap, vec3 N, vec3 I, VertexAttributes vert) {
     	resultingColor += max((reflectionPass * renderReflection), 0);
 
         // light_set_param.bin fog
-        resultingColor = FogColor(resultingColor, fogParams, vert.viewPosition.z, stageFogColor);
+        if (renderFog == 1 && renderStageLighting == 1)
+            resultingColor = FogColor(resultingColor, fogParams, vert.viewPosition.z, stageFogColor);
 	} else {
         resultingColor = diffusePass;
 
