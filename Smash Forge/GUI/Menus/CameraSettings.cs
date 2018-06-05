@@ -24,14 +24,15 @@ namespace Smash_Forge.GUI.Menus
         {
             InitializeComponent();
 
-            SetNumericUpDownMaxMinValues();
-
             camera = c;
+
+            // Initialize control values.
+            SetNumericUpDownMaxMinValues();
+            SetNumericUpDownValues();
             depthSlider.Value = Math.Min((int)camera.FarClipPlane, depthSlider.Maximum);
             fovSlider.Value = (int)(camera.FovDegrees);
             fovTB.Text = (int)(camera.FovDegrees) + "";
             renderDepthTB.Text = camera.FarClipPlane + "";
-            updatePosition();
         }
 
         private void SetNumericUpDownMaxMinValues()
@@ -57,11 +58,11 @@ namespace Smash_Forge.GUI.Menus
 
         private void CameraPosition_Load(object sender, EventArgs e)
         {
-            updatePosition();
+            SetNumericUpDownValues();
         }
 
         private void buttonApply_Click(object sender, EventArgs e)
-        { 
+        {
             float yRotation = Convert.ToSingle(numericHorizontalRadians.Value);
             float xRotation = Convert.ToSingle(numericVerticalRadians.Value);
             float width = Convert.ToSingle(numericPositionX.Value);
@@ -69,45 +70,50 @@ namespace Smash_Forge.GUI.Menus
             float zoom = Convert.ToSingle(numericZoom.Value);
 
             camera.Position = new OpenTK.Vector3(width, height, zoom);
-            camera.RotationX = xRotation;
-            camera.RotationY = yRotation;
-            camera.Update();
+            camera.RotationXRadians = xRotation;
+            camera.RotationYRadians = yRotation;
         }
 
-        // Updates text controls based on parentViewport's current camera position
-        public void updatePosition()
+        public void SetNumericUpDownValues()
         {
-            OpenTK.Vector3 pos = camera.Position;
+            // Rotation
+            numericHorizontalRadians.Value = Convert.ToDecimal(camera.RotationYRadians);
+            numericVerticalRadians.Value = Convert.ToDecimal(camera.RotationXRadians);
+            numericHorizontalDegrees.Value = Convert.ToDecimal(camera.RotationYDegrees);
+            numericVerticalDegrees.Value = Convert.ToDecimal(camera.RotationXDegrees);
 
-            numericHorizontalRadians.Value = Convert.ToDecimal(camera.RotationY);
-            numericVerticalRadians.Value = Convert.ToDecimal(camera.RotationX);
-            numericPositionX.Value = Convert.ToDecimal(pos.X);
-            numericPositionY.Value = Convert.ToDecimal(pos.Y);
-            numericZoom.Value = Convert.ToDecimal(pos.Z);
-
-            // derived values
-            numericHorizontalDegrees.Value = Convert.ToDecimal(camera.RotationY * (180 / Math.PI));
-            numericVerticalDegrees.Value = Convert.ToDecimal(camera.RotationX * (180 / Math.PI));
+            // Position
+            numericPositionX.Value = Convert.ToDecimal(camera.Position.X);
+            numericPositionY.Value = Convert.ToDecimal(camera.Position.Y);
+            numericZoom.Value = Convert.ToDecimal(camera.Position.Z);
         }
 
         private void numericHorizontalDegrees_ValueChanged(object sender, EventArgs e)
         {
-            numericHorizontalRadians.Value = Convert.ToDecimal(Convert.ToSingle(numericHorizontalDegrees.Value) * (Math.PI / 180));
+            // The Camera class handles the angle conversions.
+            camera.RotationYDegrees = Convert.ToSingle(numericHorizontalDegrees.Value);
+            numericHorizontalRadians.Value = Convert.ToDecimal(camera.RotationYRadians);
         }
 
         private void numericVerticalDegrees_ValueChanged(object sender, EventArgs e)
         {
-            numericVerticalRadians.Value = Convert.ToDecimal(Convert.ToSingle(numericVerticalDegrees.Value) * (Math.PI / 180));
+            // The Camera class handles the angle conversions.
+            camera.RotationXDegrees = Convert.ToSingle(numericVerticalDegrees.Value);
+            numericVerticalRadians.Value = Convert.ToDecimal(camera.RotationXRadians);
         }
 
         private void numericHorizontalRadians_ValueChanged(object sender, EventArgs e)
         {
-            numericHorizontalDegrees.Value = Convert.ToDecimal(Convert.ToSingle(numericHorizontalRadians.Value) * (180 / Math.PI));
+            // The Camera class handles the angle conversions.
+            camera.RotationYRadians = Convert.ToSingle(numericHorizontalRadians.Value);
+            numericHorizontalDegrees.Value = Convert.ToDecimal(camera.RotationYDegrees);
         }
 
         private void numericVerticalRadians_ValueChanged(object sender, EventArgs e)
         {
-            numericVerticalDegrees.Value = Convert.ToDecimal(Convert.ToSingle(numericVerticalRadians.Value) * (180 / Math.PI));
+            // The Camera class handles the angle conversions.
+            camera.RotationXRadians = Convert.ToSingle(numericVerticalRadians.Value);
+            numericVerticalDegrees.Value = Convert.ToDecimal(camera.RotationXDegrees);
         }
 
         private void fovSlider_Scroll(object sender, EventArgs e)
@@ -128,12 +134,7 @@ namespace Smash_Forge.GUI.Menus
                 value = camera.NearClipPlane + 0.001f;
             camera.FarClipPlane = value;
 
-            // update trackbar
             GuiTools.UpdateTrackBarFromValue(value, depthSlider, 0, depthSlider.Maximum);
-            /*int newSliderValue = (int)(value);
-            newSliderValue = Math.Min(newSliderValue, depthSlider.Maximum);
-            newSliderValue = Math.Max(newSliderValue, depthSlider.Minimum);
-            depthSlider.Value = newSliderValue;*/
         }
 
         private void fovTB_TextChanged(object sender, EventArgs e)
@@ -141,11 +142,7 @@ namespace Smash_Forge.GUI.Menus
             float value = GuiTools.TryParseTBFloat(fovTB);
             camera.FovDegrees = value;
 
-            // update trackbar
-            int newSliderValue = (int)(value);
-            newSliderValue = Math.Min(newSliderValue, fovSlider.Maximum);
-            newSliderValue = Math.Max(newSliderValue, 0);
-            fovSlider.Value = newSliderValue;
+            GuiTools.UpdateTrackBarFromValue(value, fovSlider, 0, fovSlider.Maximum);
         }
 
         private void btnLoadAnim_Click(object sender, EventArgs e)
@@ -200,6 +197,24 @@ namespace Smash_Forge.GUI.Menus
                         Cam.SetFromBone(vbn.bones[0]);
                 }
             }
+        }
+
+        private void numericPositionX_ValueChanged(object sender, EventArgs e)
+        {
+            float positionX = Convert.ToSingle(numericPositionX.Value);
+            camera.Position = new OpenTK.Vector3(positionX, camera.Position.Y, camera.Position.Z);
+        }
+
+        private void numericPositionY_ValueChanged(object sender, EventArgs e)
+        {
+            float positionY = Convert.ToSingle(numericPositionY.Value);
+            camera.Position = new OpenTK.Vector3(camera.Position.X, positionY, camera.Position.Z);
+        }
+
+        private void numericZoom_ValueChanged(object sender, EventArgs e)
+        {
+            float positionZ = Convert.ToSingle(numericZoom.Value);
+            camera.Position = new OpenTK.Vector3(camera.Position.X, camera.Position.Y, positionZ);
         }
     }
 }

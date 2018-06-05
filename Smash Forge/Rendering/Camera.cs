@@ -45,24 +45,46 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        private float rotationX = 0;
-        public float RotationX
+        private float rotationXRadians = 0;
+        public float RotationXRadians
         {
-            get { return rotationX; }
+            get { return rotationXRadians; }
             set
             {
-                rotationX = value;
+                rotationXRadians = value;
                 UpdateMatrices();
             }
         }
 
-        private float rotationY = 0;
-        public float RotationY
+        public float RotationXDegrees
         {
-            get { return rotationY; }
+            get { return (float)(rotationXRadians * 180.0f / Math.PI); }
             set
             {
-                rotationY = value;
+                // Only store radians internally.
+                rotationXRadians = (float)(value / 180.0f * Math.PI);
+                UpdateMatrices();
+            }
+        }
+
+        private float rotationYRadians = 0;
+        public float RotationYRadians
+        {
+            get { return rotationYRadians; }
+            set
+            {
+                rotationYRadians = value;
+                UpdateMatrices();
+            }
+        }
+
+        public float RotationYDegrees
+        {
+            get { return (float)(rotationYRadians * 180.0f / Math.PI); }
+            set
+            {
+                // Only store radians internally.
+                rotationYRadians = (float)(value / 180.0f * Math.PI);
                 UpdateMatrices();
             }
         }
@@ -134,8 +156,8 @@ namespace Smash_Forge.Rendering
             Position = position;
             this.renderHeight = renderHeight;
             this.renderWidth = renderWidth;
-            RotationX = rotX;
-            RotationY = rotY;
+            RotationXRadians = rotX;
+            RotationYRadians = rotY;
         }
 
         public void SetFromBone(Bone b)
@@ -173,8 +195,8 @@ namespace Smash_Forge.Rendering
         {
             if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
             {
-                rotationY += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                rotationX += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                rotationYRadians += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
+                rotationXRadians += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
             }
         }
 
@@ -216,7 +238,7 @@ namespace Smash_Forge.Rendering
         private void UpdateMatrices()
         {
             translationMatrix = Matrix4.CreateTranslation(position.X, -position.Y, position.Z);
-            rotationMatrix = Matrix4.CreateRotationY(rotationY) * Matrix4.CreateRotationX(rotationX);
+            rotationMatrix = Matrix4.CreateRotationY(rotationYRadians) * Matrix4.CreateRotationX(rotationXRadians);
             perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(fovRadians, renderWidth / (float)renderHeight, nearClipPlane, farClipPlane);
 
             modelViewMatrix = rotationMatrix * translationMatrix;
@@ -242,8 +264,8 @@ namespace Smash_Forge.Rendering
         public void ResetToDefaultPosition()
         {
             position = new Vector3(0, 10, -80);
-            rotationX = 0;
-            rotationY = 0;
+            rotationXRadians = 0;
+            rotationYRadians = 0;
         }
 
         public void FrameBoundingSphere(Vector3 center, float radius)
@@ -253,8 +275,8 @@ namespace Smash_Forge.Rendering
             float distance = radius / (float)Math.Tan(fovRadians / 2.0f);
 
             float offset = 10 / fovRadians;
-            rotationX = 0;
-            rotationY = 0;
+            rotationXRadians = 0;
+            rotationYRadians = 0;
             position.X = -center.X;
             position.Y = center.Y;
             position.Z = -1 * (distance + offset);
