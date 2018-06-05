@@ -161,7 +161,7 @@ namespace Smash_Forge
         // Dictionary<hash ID, OpenTK texture>
         public Dictionary<int, int> glTexByHashId = new Dictionary<int, int>();
 
-        public int Version = 0x200;
+        public ushort Version = 0x200;
 
         public override Endianness Endian { get; set; }
 
@@ -414,16 +414,19 @@ namespace Smash_Forge
 
         public void ReadNTP3(FileData d)
         {
+            d.seek(0x4);
+
             Version = d.readUShort();
-            int count = d.readUShort();
+            ushort count = d.readUShort();
+            if (Version == 0x100)
+                count -= 1;
+
             d.skip(0x8);
-            if (Version == 0x100) count -= 1;
+            int headerPtr = 0x10;
 
-            int dataPtr = 0;
-
-            for (int i = 0; i < count; i++)
+            for (ushort i = 0; i < count; ++i)
             {
-                int currentTexStart = d.pos();
+                d.seek(headerPtr);
 
                 NutTexture tex = new NutTexture();
                 tex.type = PixelInternalFormat.Rgba32ui;
@@ -444,9 +447,6 @@ namespace Smash_Forge
                 d.skip(4);
                 uint caps2 = d.readUInt();
 
-                int dataOffset = d.readInt() + dataPtr + 0x10;
-                d.skip(0x0C);
-
                 bool isCubemap = false;
                 tex.surfaceCount = 1;
                 if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP) == (uint)DDS.DDSCAPS2.CUBEMAP)
@@ -462,6 +462,11 @@ namespace Smash_Forge
                         throw new NotImplementedException($"Unsupported cubemap face amount for texture {i} with hash 0x{tex.HASHID:X}. Six faces are required.");
                     }
                 }
+
+                int dataOffset = d.readInt() + headerPtr;
+                d.readInt();
+                d.readInt();
+                d.readInt();
 
                 //The size of a single cubemap face (discounting mipmaps). I don't know why it is repeated. If mipmaps are present, this is also specified in the mipSize section anyway.
                 int cmapSize1 = 0;
@@ -487,8 +492,8 @@ namespace Smash_Forge
                     {
                         mipSizes[j] = d.readInt();
                     }
+                    d.align(0x10);
                 }
-                d.align(0x10);
 
                 d.skip(0x10); //eXt data - always the same
 
@@ -510,8 +515,6 @@ namespace Smash_Forge
                     }
                 }
 
-                dataPtr += headerSize;
-                
                 if (tex.getNutFormat() == 14 || tex.getNutFormat() == 17)
                 {
                     Console.WriteLine("Endian swap");
@@ -535,8 +538,9 @@ namespace Smash_Forge
                     }
                 }
 
+                headerPtr += headerSize;
+
                 Nodes.Add(tex);
-                d.seek(currentTexStart + headerSize);
 
                 /*for (int miplevel = 0; miplevel < numMips; miplevel++)
                 {
@@ -574,15 +578,18 @@ namespace Smash_Forge
 
         public void ReadNTWU(FileData d)
         {
-            d.skip(0x02);
-            int count = d.readUShort();
+            d.seek(0x4);
 
+            Version = d.readUShort();
+            ushort count = d.readUShort();
+
+            d.skip(0x8);
             int headerPtr = 0x10;
-            int dataPtr = 0;
-            int gtxHeaderOffset = 0;
 
-            for (int i = 0; i < count; i++) {
+            for (ushort i = 0; i < count; ++i)
+            {
                 d.seek(headerPtr);
+
                 NutTexture tex = new NutTexture();
                 tex.type = PixelInternalFormat.Rgba32ui;
 
@@ -590,7 +597,6 @@ namespace Smash_Forge
                 d.skip(4);
                 int dataSize = d.readInt();
                 int headerSize = d.readUShort();
-                headerPtr += headerSize;
                 d.skip(2);
 
                 d.skip(1);
@@ -602,119 +608,140 @@ namespace Smash_Forge
                 d.readInt(); //Always 1?
                 uint caps2 = d.readUInt();
 
-                //Todo: implement cubemaps. Flags are the same as in NTP3
                 bool isCubemap = false;
                 tex.surfaceCount = 1;
-
-                int dataOffset = d.readInt() + dataPtr + 0x10;
-                dataPtr += headerSize;
-
-                d.skip(0x04);
-                if (i == 0)
+                if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP) == (uint)DDS.DDSCAPS2.CUBEMAP)
                 {
-                    gtxHeaderOffset = d.readInt() + 0x10;
-                } else
-                {
-                    gtxHeaderOffset += 0x80;
-                    d.skip(0x04);
+                    //Only supporting all six faces
+                    if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES) == (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES)
+                    {
+                        isCubemap = true;
+                        tex.surfaceCount = 6;
+                    }
+                    else
+                    {
+                        throw new NotImplementedException($"Unsupported cubemap face amount for texture {i} with hash 0x{tex.HASHID:X}. Six faces are required.");
+                    }
                 }
 
-                d.skip(0x04);
-                
-                // check for cubemap
-                bool cmap = (d.readInt() == d.readInt());
-                d.seek(d.pos() - 8);
-                if (cmap) Console.WriteLine("cubemap detected");
+                int dataOffset = d.readInt() + headerPtr;
+                int mipDataOffset = d.readInt() + headerPtr;
+                int gtxHeaderOffset = d.readInt() + headerPtr;
+                d.readInt();
 
-                d.skip(headerSize - 0x50);
+                int cmapSize1 = 0;
+                int cmapSize2 = 0;
+                if (isCubemap)
+                {
+                    cmapSize1 = d.readInt();
+                    cmapSize2 = d.readInt();
+                    d.skip(8);
+                }
 
-                d.skip(0x18);
+                int imageSize = 0; //Total size of first mipmap of every surface
+                int mipSize = 0; //Total size of mipmaps other than the first of every surface
+                if (tex.mipMapCount == 1)
+                {
+                    if (isCubemap)
+                        imageSize = cmapSize1;
+                    else
+                        imageSize = dataSize;
+                }
+                else
+                {
+                    imageSize = d.readInt();
+                    mipSize = d.readInt();
+                    d.skip((tex.mipMapCount - 2) * 4);
+                    d.align(0x10);
+                }
+
+                d.skip(0x10); //eXt data - always the same
+
+                d.skip(4); //GIDX
+                d.readInt(); //Always 0x10
                 tex.HASHID = d.readInt();
+                d.skip(4); // padding align 8
 
                 Console.WriteLine(gtxHeaderOffset.ToString("x"));
                 d.seek(gtxHeaderOffset);
-                d.skip(0x04); // dim
-                d.skip(0x04); // width
-                d.skip(0x04); // height
-                d.skip(0x04); // depth
-                d.skip(0x04); // numMips
-                int format = d.readInt();
-                d.skip(0x04); // aa
-                d.skip(0x04); // use
-                int imageSize = d.readInt();
-                d.skip(0x04); // imagePtr
-                int maxSize = d.readInt(); // mipSize
-                d.skip(0x04); // mipPtr
-                int tileMode = d.readInt();
-                int swizzle = d.readInt();
-                d.skip(0x04); // alignment
-                int pitch = d.readInt();
+                GTX.GX2Surface gtxHeader = new GTX.GX2Surface();
 
-                int ds = dataOffset;
-                int s1 = 0;
-                int size = 0;
-                Console.WriteLine(dataSize.ToString("x"));
+                gtxHeader.dim = d.readInt();
+                gtxHeader.width = d.readInt();
+                gtxHeader.height = d.readInt();
+                gtxHeader.depth = d.readInt();
+                gtxHeader.numMips = d.readInt();
+                gtxHeader.format = d.readInt();
+                gtxHeader.aa = d.readInt();
+                gtxHeader.use = d.readInt();
+                gtxHeader.imageSize = d.readInt();
+                gtxHeader.imagePtr = d.readInt();
+                gtxHeader.mipSize = d.readInt();
+                gtxHeader.mipPtr = d.readInt();
+                gtxHeader.tileMode = d.readInt();
+                gtxHeader.swizzle = d.readInt();
+                gtxHeader.alignment = d.readInt();
+                gtxHeader.pitch = d.readInt();
+
+                //mipOffsets[0] is not in this list and is simply the start of the data (dataOffset)
+                //mipOffsets[1] is relative to the start of the data (dataOffset + mipOffsets[1])
+                //Other mipOffsets are relative to mipOffset[1] (dataOffset + mipOffsets[1] + mipOffsets[i])
+                int[] mipOffsets = new int[tex.mipMapCount];
+                mipOffsets[0] = 0;
+                for (int mipLevel = 1; mipLevel < tex.mipMapCount; ++mipLevel)
+                {
+                    mipOffsets[mipLevel] = 0;
+                    mipOffsets[mipLevel] = mipOffsets[1] + d.readInt();
+                }
+
+                int w = tex.Width, h = tex.Height;
                 for (int mipLevel = 0; mipLevel < tex.mipMapCount; ++mipLevel)
                 {
-                    // Maybe this is the problem?
-                    int mipSize = imageSize >> (mipLevel * 2);
-                    int p = pitch >> mipLevel;
-                    
-                    size = d.readInt();
+                    int p = gtxHeader.pitch / (gtxHeader.width / w);
+
+                    int size;
+                    if (tex.mipMapCount == 1)
+                        size = imageSize;
+                    else if (mipLevel + 1 == tex.mipMapCount)
+                        size = (mipSize + mipOffsets[1]) - mipOffsets[mipLevel];
+                    else
+                        size = mipOffsets[mipLevel + 1] - mipOffsets[mipLevel];
+
+                    gtxHeader.data = d.getSection(dataOffset + mipOffsets[mipLevel], size);
+
                     //Console.WriteLine("\tMIP: " + size.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + (size == 0 ? ds + dataSize - dataOffset : size));
 
                     //Console.WriteLine(tex.id.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + swizzle);
                     //Console.WriteLine((tex.width >> mipLevel) + " " + (tex.height >> mipLevel));
 
-                    //if (cmap) tex.height *= 2;
-
-                    int w = (tex.Width >> mipLevel);
-                    int h = (tex.Height >> mipLevel);
-                    
                     {
+                        //Real size
+                        size = ((w + 3) >> 2) * ((h + 3) >> 2) * (GTX.getBPP(gtxHeader.format) / 8);
+                        if (size < (GTX.getBPP(gtxHeader.format) / 8))
+                            size = (GTX.getBPP(gtxHeader.format) / 8);
+
                         byte[] deswiz = GTX.swizzleBC(
-                            d.getSection(dataOffset, d.size() - dataOffset),
+                            gtxHeader.data,
                             w,
                             h,
-                            format,
-                            tileMode,
+                            gtxHeader.format,
+                            gtxHeader.tileMode,
                             p,
-                            swizzle
+                            gtxHeader.swizzle
                         );
-                        tex.mipmaps.Add(new FileData(deswiz).getSection(0, mipSize));
+                        tex.mipmaps.Add(new FileData(deswiz).getSection(0, size));
                     }
-                    if (mipLevel == 0)
-                    {
-                        s1 = size;
-                        dataOffset = ds + size;
-                    }else
-                    {
-                        dataOffset = ds + s1 +size;
-                    }
-                    //dataOffset += mipSize;
-                    
-                    /*if (cmap)
-                    {
-                        for(int k = 0; k < 5; k++)
-                        {
-                            p = pitch >> (mipLevel + k + 1);
-                            tex.mipmaps.Add(GTX.swizzleBC(
-                                d.getSection(dataOffset, mipSize),
-                                w,
-                                h,
-                                format,
-                                tileMode,
-                                p,
-                                swizzle
-                            ));
 
-                            dataOffset += mipSize;
-                        }
-                    }*/
+                    w /= 2;
+                    h /= 2;
 
-                    //while (dataOffset % 1024 != 0) dataOffset++;
-                    //if (mipSize == 0x4000) dataOffset += 0x400;
+                    if (w < 1)
+                        w = 1;
+                    if (h < 1)
+                        h = 1;
                 }
+
+                headerPtr += headerSize;
 
                 Nodes.Add(tex);
             }
