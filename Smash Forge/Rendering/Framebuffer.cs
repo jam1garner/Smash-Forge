@@ -47,7 +47,10 @@ namespace Smash_Forge.Rendering
         public Framebuffer(FramebufferTarget target, int width, int height)
         {
             Id = GL.GenFramebuffer();
-            GL.BindFramebuffer(target, Id);
+
+            FramebufferTarget = target;
+            GL.BindFramebuffer(FramebufferTarget, Id);
+
             this.width = width;
             this.height = height;
 
@@ -57,13 +60,17 @@ namespace Smash_Forge.Rendering
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.FramebufferTexture2D(target, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, colorAttachment0Tex, 0);
+            GL.FramebufferTexture2D(FramebufferTarget, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, colorAttachment0Tex, 0);
 
             // Render buffer for the depth attachment, which is necessary for depth testing.
             GL.GenRenderbuffers(1, out rboDepth);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rboDepth);
             GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
-            GL.FramebufferRenderbuffer(target, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, rboDepth);
+            GL.FramebufferRenderbuffer(FramebufferTarget, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, rboDepth);
+
+            // Check if any of the settings were incorrect when creating the fbo.
+            string error = String.Format("FBO: {0} {1}", Id, GL.CheckNamedFramebufferStatus(Id, FramebufferTarget));
+            Debug.WriteLine(error);
 
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);

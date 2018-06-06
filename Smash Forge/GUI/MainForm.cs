@@ -116,14 +116,14 @@ namespace Smash_Forge
             int rboColor;
             int rboDepth;
             glControl1.MakeCurrent();
-            Rendering.FramebufferTools.CreateOffscreenRenderFboRbo(out fbo, out rboDepth, out rboColor, FramebufferTarget.Framebuffer, width, height);
+            //Rendering.FramebufferTools.CreateOffscreenRenderFboRbo(out fbo, out rboDepth, out rboColor, FramebufferTarget.Framebuffer, width, height);
             GL.Viewport(0, 0, width, height);
 
-            RenderMaterialPresetPreviewsToFiles(width, height, fbo);
+            //RenderMaterialPresetPreviewsToFiles(width, height, fbo);
 
             // Cleanup
-            GL.DeleteBuffer(fbo);
-            GL.DeleteRenderbuffer(rboColor);
+            //GL.DeleteBuffer(fbo);
+            //GL.DeleteRenderbuffer(rboColor);
         }
 
         private void RenderMaterialPresetPreviewsToFiles(int width, int height, int fbo)
