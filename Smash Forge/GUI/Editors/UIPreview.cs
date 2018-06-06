@@ -52,7 +52,7 @@ namespace Smash_Forge
 
         private void LetsDance(object sender, EventArgs e)
         {
-            Control c = MainForm.Instance.GetModelViewport();
+            Control c = MainForm.Instance.GetActiveModelViewport();
 
             if (!(c is ModelViewport)) return;
             ModelViewport view =(ModelViewport)c;
@@ -156,7 +156,7 @@ namespace Smash_Forge
 
         private void SnapShotMode(object sender, EventArgs e)
         {
-            Control c = MainForm.Instance.GetModelViewport();
+            Control c = MainForm.Instance.GetActiveModelViewport();
             
             if (!(c is ModelViewport)) return;
             ModelViewport view = (ModelViewport)c;
