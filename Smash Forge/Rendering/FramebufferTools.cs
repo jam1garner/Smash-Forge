@@ -21,10 +21,7 @@ namespace Smash_Forge.Rendering
 
             // Read the pixels from the framebuffer.
             GL.BindFramebuffer(target, fbo);
-            GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
-            GL.GetError();
             GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
-            Debug.WriteLine(GL.GetError());
             byte[] fixedPixels = CopyImagePixels(width, height, saveAlpha, pixelByteLength, pixels);
 
             // Format and save the data
@@ -127,9 +124,6 @@ namespace Smash_Forge.Rendering
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rboDepth);
             GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
             GL.FramebufferRenderbuffer(target, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, rboDepth);
-
-            // Draw to the texture.
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
 
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
