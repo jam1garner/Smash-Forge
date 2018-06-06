@@ -120,12 +120,9 @@ namespace Smash_Forge.Rendering
             // First color attachment (regular texture).
             GL.BindTexture(TextureTarget.Texture2D, colorAttachment0Tex);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
             GL.FramebufferTexture2D(FramebufferTarget, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, colorAttachment0Tex, 0);
 
             // Render buffer for the depth attachment, which is necessary for depth testing.
-            GL.GenRenderbuffers(1, out rboDepth);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rboDepth);
             GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
             GL.FramebufferRenderbuffer(FramebufferTarget, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, rboDepth);
