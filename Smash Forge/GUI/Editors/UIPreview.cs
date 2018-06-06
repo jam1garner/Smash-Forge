@@ -78,7 +78,8 @@ namespace Smash_Forge
             NutTexture tex = new NutTexture();
             tex.Width = view.shootWidth;
             tex.Height = view.shootHeight;
-            tex.mipmaps.Add(FlipDXT5(data, tex.Width, tex.Height));
+            tex.surfaces.Add(new TextureSurface());
+            tex.surfaces[0].mipmaps.Add(FlipDXT5(data, tex.Width, tex.Height));
             tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
             tex.HASHID = id;
             n.Nodes.Add(tex);

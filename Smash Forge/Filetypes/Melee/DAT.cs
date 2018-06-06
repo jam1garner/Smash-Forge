@@ -659,10 +659,10 @@ namespace Smash_Forge
                 tex.Width = texturesLinker[key].Width;
                 tex.Height = texturesLinker[key].Height;
                 tex.HASHID = 0x401B1000 + texid;
-                tex.mipmaps = new List<byte[]>();
+                tex.surfaces.Add(new TextureSurface());
                 byte[] mip1 = ConvertBitmapToByteArray(texturesLinker[key]);
                 Console.WriteLine(mip1.Length);
-                tex.mipmaps.Add(mip1);
+                tex.surfaces[0].mipmaps.Add(mip1);
                 tex.type = PixelInternalFormat.Rgba;
                 tex.utype = PixelFormat.Bgra;
                 nut.Nodes.Add(tex);

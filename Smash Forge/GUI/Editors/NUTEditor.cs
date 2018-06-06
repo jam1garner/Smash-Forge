@@ -174,8 +174,8 @@ namespace Smash_Forge
                 heightLabel.Text = "Height:" + tex.Height;
 
                 // Get number of mip maps for current texture.
-                mipLevelTrackBar.Maximum = (tex.mipMapCount) - 1;
-                maxMipLevelLabel.Text = "Total:" + tex.mipMapCount + "";
+                mipLevelTrackBar.Maximum = (tex.surfaces[0].mipmaps.Count) - 1;
+                maxMipLevelLabel.Text = "Total:" + tex.surfaces[0].mipmaps.Count + "";
             }
             else
             {
@@ -331,19 +331,19 @@ namespace Smash_Forge
 
         private void ExportPNG(string filename, NutTexture tex)
         {
-            if (tex.mipMapCount > 1)
+            if (tex.surfaces[0].mipmaps.Count > 1)
                 MessageBox.Show("Note: Textures exported as PNG do not preserve mipmaps.");
 
             switch (tex.utype)
             {
                 case OpenTK.Graphics.OpenGL.PixelFormat.Rgba:
-                    Pixel.fromRGBA(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(filename);
+                    Pixel.fromRGBA(new FileData(tex.surfaces[0].mipmaps[0]), tex.Width, tex.Height).Save(filename);
                     break;
                 case OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt:
-                    Pixel.fromABGR(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(filename);
+                    Pixel.fromABGR(new FileData(tex.surfaces[0].mipmaps[0]), tex.Width, tex.Height).Save(filename);
                     break;
                 case OpenTK.Graphics.OpenGL.PixelFormat.Bgra:
-                    Pixel.fromBGRA(new FileData(tex.mipmaps[0]), tex.Width, tex.Height).Save(filename);
+                    Pixel.fromBGRA(new FileData(tex.surfaces[0].mipmaps[0]), tex.Width, tex.Height).Save(filename);
                     break;
                 default:
                     RenderTextureToPng(tex, filename, true, true, true, true);
@@ -423,13 +423,12 @@ namespace Smash_Forge
             Bitmap bmp = new Bitmap(fname);
             NutTexture tex = new NutTexture();
 
-            tex.mipmaps.Add(fromPNG(bmp));
-            tex.mipMapCount = 1;
+            tex.surfaces.Add(new TextureSurface());
+            tex.surfaces[0].mipmaps.Add(fromPNG(bmp));
             for (int i = 1; i < mipcount; i++)
             {
                 if (bmp.Width / (int)Math.Pow(2, i) < 4 || bmp.Height / (int)Math.Pow(2, i) < 4) break;
-                tex.mipmaps.Add(fromPNG(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
-                ++tex.mipMapCount;
+                tex.surfaces[0].mipmaps.Add(fromPNG(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
             }
             tex.Width = bmp.Width;
             tex.Height = bmp.Height;
@@ -529,9 +528,7 @@ namespace Smash_Forge
                     texture.Height = newTexture.Height;
                     texture.Width = newTexture.Width;
                     texture.type = newTexture.type;
-                    texture.mipMapCount = newTexture.mipMapCount;
-                    texture.surfaceCount = newTexture.surfaceCount;
-                    texture.mipmaps = newTexture.mipmaps;
+                    texture.surfaces = newTexture.surfaces;
                     texture.utype = newTexture.utype;
 
                     Edited = true;
@@ -684,9 +681,7 @@ namespace Smash_Forge
                 tex.Height = ntex.Height;
                 tex.Width = ntex.Width;
                 tex.type = ntex.type;
-                tex.mipMapCount = ntex.mipMapCount;
-                tex.surfaceCount = ntex.surfaceCount;
-                tex.mipmaps = ntex.mipmaps;
+                tex.surfaces = ntex.surfaces;
                 tex.utype = ntex.utype;
 
                 GL.DeleteTexture(NUT.glTexByHashId[tex.HASHID]);
@@ -804,9 +799,7 @@ namespace Smash_Forge
                             tex.Height = ntex.Height;
                             tex.Width = ntex.Width;
                             tex.type = ntex.type;
-                            tex.mipMapCount = ntex.mipMapCount;
-                            tex.surfaceCount = ntex.surfaceCount;
-                            tex.mipmaps = ntex.mipmaps;
+                            tex.surfaces = ntex.surfaces;
                             tex.utype = ntex.utype;
 
                             GL.DeleteTexture(NUT.glTexByHashId[tex.HASHID]);
