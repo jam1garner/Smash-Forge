@@ -20,6 +20,43 @@ namespace Smash_Forge
     public class NutTexture : TreeNode
     {
         public List<TextureSurface> surfaces = new List<TextureSurface>();
+        //Each texture should contain either 1 or 6 surfaces
+        //Each surface should contain (1 <= n <= 255) mipmaps
+        //Each surface in a texture should have the same amount of mipmaps and dimensions for them
+
+        public byte surfaceCount {
+            get {
+                return (byte)surfaces.Count;
+            }
+        }
+        public byte mipMapsPerSurface {
+            get {
+                return (byte)surfaces[0].mipmaps.Count;
+            }
+        }
+
+        public int HASHID {
+            get {
+                return id;
+            }
+            set {
+                Text = value.ToString("x").ToUpper();
+                id = value;
+            }
+        }
+        private int id;
+        public int Width;
+        public int Height;
+        public PixelInternalFormat type;
+        public OpenTK.Graphics.OpenGL.PixelFormat utype;
+        public PixelType PixelType = PixelType.UnsignedByte;
+
+        public uint ddsCaps2 {
+            get {
+                if (surfaces.Count == 6) return (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES;
+                else                     return (uint)0;
+            }
+        }
 
         //Return a list containing every mipmap from every surface
         public List<byte[]> getAllMipmaps()
@@ -34,41 +71,6 @@ namespace Smash_Forge
             }
             return mipmaps;
         }
-
-        //Each surface must have mipMapCount many mipmaps, which means: mipmaps.Count == (surfaceCount * mipMapCount)
-        //Use mipMapCount, not mipmaps.Count, to check the mipmap amount
-        public byte mipMapCount = 1;
-        //Either 1 (standard textures) or 6 (cubemaps). No other values are explicitly supported
-        public byte surfaceCount = 1;
-
-        public int HASHID
-        {
-            get
-            {
-                return id;
-            }
-            set
-            {
-                Text = value.ToString("x").ToUpper();
-                id = value;
-            }
-        }
-        private int id;
-        public int Width;
-        public int Height;
-        public PixelInternalFormat type;
-        public OpenTK.Graphics.OpenGL.PixelFormat utype;
-        public PixelType PixelType = PixelType.UnsignedByte;
-
-        public uint ddsCaps2
-        {
-            get
-            {
-                if (surfaceCount == 6) return (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES;
-                else                   return (uint)0;
-            }
-        }
-
         //Move channel 0 to channel 3 (ABGR -> BGRA)
         public void swapChannelOrderUp()
         {
@@ -310,15 +312,23 @@ namespace Smash_Forge
 
             foreach (NutTexture texture in Nodes)
             {
-                bool isCubemap = texture.surfaceCount == 6;
+                
+                byte surfaceCount = (byte)texture.surfaces.Count;
+                bool isCubemap = surfaceCount == 6;
+                if (surfaceCount < 1 || surfaceCount > 6)
+                    throw new NotImplementedException($"Unsupported surface amount {surfaceCount} for texture with hash 0x{texture.HASHID:X}. 1 to 6 faces are required.");
+                else if (surfaceCount > 1 && surfaceCount < 6)
+                    throw new NotImplementedException($"Unsupported cubemap face amount for texture with hash 0x{texture.HASHID:X}. Six faces are required.");
+                byte mipMapCount = (byte)texture.surfaces[0].mipmaps.Count;
+
                 ushort headerSize = 0x50;
                 if (isCubemap)
                 {
                     headerSize += 0x10;
                 }
-                if (texture.mipMapCount > 1)
+                if (mipMapCount > 1)
                 {
-                    headerSize += (ushort)(texture.mipMapCount * 4);
+                    headerSize += (ushort)(mipMapCount * 4);
                     while (headerSize % 0x10 != 0)
                         headerSize += 1;
                 }
@@ -329,7 +339,9 @@ namespace Smash_Forge
             // write headers+data
             foreach (NutTexture texture in Nodes)
             {
-                bool isCubemap = texture.surfaceCount == 6;
+                byte surfaceCount = (byte)texture.surfaces.Count;
+                bool isCubemap = surfaceCount == 6;
+                byte mipMapCount = (byte)texture.surfaces[0].mipmaps.Count;
 
                 uint dataSize = 0;
 
@@ -345,9 +357,9 @@ namespace Smash_Forge
                 {
                     headerSize += 0x10;
                 }
-                if (texture.mipMapCount > 1)
+                if (mipMapCount > 1)
                 {
-                    headerSize += (ushort)(texture.mipMapCount * 4);
+                    headerSize += (ushort)(mipMapCount * 4);
                     while (headerSize % 0x10 != 0)
                         headerSize += 1;
                 }
@@ -359,7 +371,7 @@ namespace Smash_Forge
                 o.writeUShort(0);
 
                 o.writeByte(0);
-                o.writeByte(texture.mipMapCount);
+                o.writeByte(mipMapCount);
                 o.writeByte(0);
                 o.writeByte(texture.getNutFormat());
                 o.writeShort(texture.Width);
@@ -386,14 +398,14 @@ namespace Smash_Forge
                     texture.swapChannelOrderDown();
                 }
 
-                for (int surfaceLevel = 0; surfaceLevel < texture.surfaceCount; ++surfaceLevel)
+                for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
                 {
-                    for (int mipLevel = 0; mipLevel < texture.mipMapCount; ++mipLevel)
+                    for (byte mipLevel = 0; mipLevel < mipMapCount; ++mipLevel)
                     {
                         int ds = data.size();
                         data.writeBytes(texture.surfaces[surfaceLevel].mipmaps[mipLevel]);
                         data.align(0x10);
-                        if (texture.mipMapCount > 1 && surfaceLevel == 0)
+                        if (mipMapCount > 1 && surfaceLevel == 0)
                             o.writeInt(data.size() - ds);
                     }
                 }
@@ -472,7 +484,7 @@ namespace Smash_Forge
 
                 //It might seem that mipMapCount and pixelFormat would be shorts, but they're bytes because they stay in the same place regardless of endianness
                 d.skip(1);
-                tex.mipMapCount = d.readByte();
+                byte mipMapCount = d.readByte();
                 d.skip(1);
                 tex.setPixelFormatFromNutFormat(d.readByte());
                 tex.Width = d.readUShort();
@@ -481,14 +493,14 @@ namespace Smash_Forge
                 uint caps2 = d.readUInt();
 
                 bool isCubemap = false;
-                tex.surfaceCount = 1;
+                byte surfaceCount = 1;
                 if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP) == (uint)DDS.DDSCAPS2.CUBEMAP)
                 {
                     //Only supporting all six faces
                     if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES) == (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES)
                     {
                         isCubemap = true;
-                        tex.surfaceCount = 6;
+                        surfaceCount = 6;
                     }
                     else
                     {
@@ -511,8 +523,8 @@ namespace Smash_Forge
                     d.skip(8);
                 }
 
-                int[] mipSizes = new int[tex.mipMapCount];
-                if (tex.mipMapCount == 1)
+                int[] mipSizes = new int[mipMapCount];
+                if (mipMapCount == 1)
                 {
                     if (isCubemap)
                         mipSizes[0] = cmapSize1;
@@ -521,9 +533,9 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    for (int j = 0; j < tex.mipMapCount; j++)
+                    for (byte mipLevel = 0; mipLevel < mipMapCount; ++mipLevel)
                     {
-                        mipSizes[j] = d.readInt();
+                        mipSizes[mipLevel] = d.readInt();
                     }
                     d.align(0x10);
                 }
@@ -538,10 +550,10 @@ namespace Smash_Forge
                 if (Version == 0x100)
                     dataOffset = d.pos();
 
-                for (int surfaceLevel = 0; surfaceLevel < tex.surfaceCount; ++surfaceLevel)
+                for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
                 {
                     TextureSurface surface = new TextureSurface();
-                    for (int mipLevel = 0; mipLevel < tex.mipMapCount; ++mipLevel)
+                    for (byte mipLevel = 0; mipLevel < mipMapCount; ++mipLevel)
                     {
                         byte[] texArray = d.getSection(dataOffset, mipSizes[mipLevel]);
                         surface.mipmaps.Add(texArray);
@@ -594,7 +606,7 @@ namespace Smash_Forge
                 d.skip(2);
 
                 d.skip(1);
-                tex.mipMapCount = d.readByte();
+                byte mipMapCount = d.readByte();
                 d.skip(1);
                 tex.setPixelFormatFromNutFormat(d.readByte());
                 tex.Width = d.readUShort();
@@ -603,14 +615,14 @@ namespace Smash_Forge
                 uint caps2 = d.readUInt();
 
                 bool isCubemap = false;
-                tex.surfaceCount = 1;
+                byte surfaceCount = 1;
                 if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP) == (uint)DDS.DDSCAPS2.CUBEMAP)
                 {
                     //Only supporting all six faces
                     if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES) == (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES)
                     {
                         isCubemap = true;
-                        tex.surfaceCount = 6;
+                        surfaceCount = 6;
                     }
                     else
                     {
@@ -634,7 +646,7 @@ namespace Smash_Forge
 
                 int imageSize = 0; //Total size of first mipmap of every surface
                 int mipSize = 0; //Total size of mipmaps other than the first of every surface
-                if (tex.mipMapCount == 1)
+                if (mipMapCount == 1)
                 {
                     if (isCubemap)
                         imageSize = cmapSize1;
@@ -645,7 +657,7 @@ namespace Smash_Forge
                 {
                     imageSize = d.readInt();
                     mipSize = d.readInt();
-                    d.skip((tex.mipMapCount - 2) * 4);
+                    d.skip((mipMapCount - 2) * 4);
                     d.align(0x10);
                 }
 
@@ -679,35 +691,35 @@ namespace Smash_Forge
                 //mipOffsets[0] is not in this list and is simply the start of the data (dataOffset)
                 //mipOffsets[1] is relative to the start of the data (dataOffset + mipOffsets[1])
                 //Other mipOffsets are relative to mipOffset[1] (dataOffset + mipOffsets[1] + mipOffsets[i])
-                int[] mipOffsets = new int[tex.mipMapCount];
+                int[] mipOffsets = new int[mipMapCount];
                 mipOffsets[0] = 0;
-                for (int mipLevel = 1; mipLevel < tex.mipMapCount; ++mipLevel)
+                for (byte mipLevel = 1; mipLevel < mipMapCount; ++mipLevel)
                 {
                     mipOffsets[mipLevel] = 0;
                     mipOffsets[mipLevel] = mipOffsets[1] + d.readInt();
                 }
 
-                for (int surfaceLevel = 0; surfaceLevel < tex.surfaceCount; ++surfaceLevel)
+                for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
                 {
                     tex.surfaces.Add(new TextureSurface());
                 }
 
                 int w = tex.Width, h = tex.Height;
-                for (int mipLevel = 0; mipLevel < tex.mipMapCount; ++mipLevel)
+                for (byte mipLevel = 0; mipLevel < mipMapCount; ++mipLevel)
                 {
                     int p = gtxHeader.pitch / (gtxHeader.width / w);
 
                     int size;
-                    if (tex.mipMapCount == 1)
+                    if (mipMapCount == 1)
                         size = imageSize;
-                    else if (mipLevel + 1 == tex.mipMapCount)
+                    else if (mipLevel + 1 == mipMapCount)
                         size = (mipSize + mipOffsets[1]) - mipOffsets[mipLevel];
                     else
                         size = mipOffsets[mipLevel + 1] - mipOffsets[mipLevel];
 
-                    size /= tex.surfaceCount;
+                    size /= surfaceCount;
 
-                    for (int surfaceLevel = 0; surfaceLevel < tex.surfaceCount; ++surfaceLevel)
+                    for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
                     {
                         gtxHeader.data = d.getSection(dataOffset + mipOffsets[mipLevel] + (size * surfaceLevel), size);
 

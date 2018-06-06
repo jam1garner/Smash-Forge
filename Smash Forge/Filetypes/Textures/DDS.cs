@@ -222,7 +222,7 @@ namespace Smash_Forge
             header.width = (uint)tex.Width;
             header.height = (uint)tex.Height;
             header.pitchOrLinearSize = (uint)tex.Size;
-            header.mipMapCount = (uint)tex.mipMapCount;
+            header.mipMapCount = (uint)tex.surfaces[0].mipmaps.Count;
             header.caps2 = tex.ddsCaps2;
             bool isCubemap = (header.caps2 & (uint)DDSCAPS2.CUBEMAP) == (uint)DDSCAPS2.CUBEMAP;
             header.caps = (uint)DDSCAPS.TEXTURE;
@@ -283,12 +283,12 @@ namespace Smash_Forge
             tex.HASHID = 0x48415348;
             tex.Height = (int)header.height;
             tex.Width = (int)header.width;
-            tex.surfaceCount = 1;
+            byte surfaceCount = 1;
             bool isCubemap = (header.caps2 & (uint)DDSCAPS2.CUBEMAP) == (uint)DDSCAPS2.CUBEMAP;
             if (isCubemap)
             {
                 if ((header.caps2 & (uint)DDSCAPS2.CUBEMAP_ALLFACES) == (uint)DDSCAPS2.CUBEMAP_ALLFACES)
-                    tex.surfaceCount = 6;
+                    surfaceCount = 6;
                 else
                     throw new NotImplementedException($"Unsupported cubemap face amount for texture. Six faces are required.");
             }
@@ -331,7 +331,7 @@ namespace Smash_Forge
                 header.mipMapCount = 1;
 
             uint off = 0;
-            for (int i = 0; i < tex.surfaceCount; ++i)
+            for (byte i = 0; i < surfaceCount; ++i)
             {
                 TextureSurface surface = new TextureSurface();
                 uint w = header.width, h = header.height;
@@ -360,7 +360,6 @@ namespace Smash_Forge
                 }
                 tex.surfaces.Add(surface);
             }
-            tex.mipMapCount = (byte)(tex.surfaces[0].mipmaps.Count);
 
             return tex;
         }

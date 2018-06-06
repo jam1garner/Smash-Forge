@@ -174,8 +174,8 @@ namespace Smash_Forge
                 heightLabel.Text = "Height:" + tex.Height;
 
                 // Get number of mip maps for current texture.
-                mipLevelTrackBar.Maximum = (tex.mipMapCount) - 1;
-                maxMipLevelLabel.Text = "Total:" + tex.mipMapCount + "";
+                mipLevelTrackBar.Maximum = (tex.surfaces[0].mipmaps.Count) - 1;
+                maxMipLevelLabel.Text = "Total:" + tex.surfaces[0].mipmaps.Count + "";
             }
             else
             {
@@ -331,7 +331,7 @@ namespace Smash_Forge
 
         private void ExportPNG(string filename, NutTexture tex)
         {
-            if (tex.mipMapCount > 1)
+            if (tex.surfaces[0].mipmaps.Count > 1)
                 MessageBox.Show("Note: Textures exported as PNG do not preserve mipmaps.");
 
             switch (tex.utype)
@@ -425,12 +425,10 @@ namespace Smash_Forge
 
             tex.surfaces.Add(new TextureSurface());
             tex.surfaces[0].mipmaps.Add(fromPNG(bmp));
-            tex.mipMapCount = 1;
             for (int i = 1; i < mipcount; i++)
             {
                 if (bmp.Width / (int)Math.Pow(2, i) < 4 || bmp.Height / (int)Math.Pow(2, i) < 4) break;
                 tex.surfaces[0].mipmaps.Add(fromPNG(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
-                ++tex.mipMapCount;
             }
             tex.Width = bmp.Width;
             tex.Height = bmp.Height;
@@ -530,8 +528,6 @@ namespace Smash_Forge
                     texture.Height = newTexture.Height;
                     texture.Width = newTexture.Width;
                     texture.type = newTexture.type;
-                    texture.mipMapCount = newTexture.mipMapCount;
-                    texture.surfaceCount = newTexture.surfaceCount;
                     texture.surfaces = newTexture.surfaces;
                     texture.utype = newTexture.utype;
 
@@ -685,8 +681,6 @@ namespace Smash_Forge
                 tex.Height = ntex.Height;
                 tex.Width = ntex.Width;
                 tex.type = ntex.type;
-                tex.mipMapCount = ntex.mipMapCount;
-                tex.surfaceCount = ntex.surfaceCount;
                 tex.surfaces = ntex.surfaces;
                 tex.utype = ntex.utype;
 
@@ -805,8 +799,6 @@ namespace Smash_Forge
                             tex.Height = ntex.Height;
                             tex.Width = ntex.Width;
                             tex.type = ntex.type;
-                            tex.mipMapCount = ntex.mipMapCount;
-                            tex.surfaceCount = ntex.surfaceCount;
                             tex.surfaces = ntex.surfaces;
                             tex.utype = ntex.utype;
 
