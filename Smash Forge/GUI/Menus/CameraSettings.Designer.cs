@@ -214,6 +214,7 @@
             this.numericZoom.Name = "numericZoom";
             this.numericZoom.Size = new System.Drawing.Size(69, 20);
             this.numericZoom.TabIndex = 2;
+            this.numericZoom.ValueChanged += new System.EventHandler(this.numericZoom_ValueChanged);
             // 
             // numericPositionY
             // 
@@ -222,6 +223,7 @@
             this.numericPositionY.Name = "numericPositionY";
             this.numericPositionY.Size = new System.Drawing.Size(69, 20);
             this.numericPositionY.TabIndex = 3;
+            this.numericPositionY.ValueChanged += new System.EventHandler(this.numericPositionY_ValueChanged);
             // 
             // numericPositionX
             // 
@@ -230,6 +232,7 @@
             this.numericPositionX.Name = "numericPositionX";
             this.numericPositionX.Size = new System.Drawing.Size(69, 20);
             this.numericPositionX.TabIndex = 2;
+            this.numericPositionX.ValueChanged += new System.EventHandler(this.numericPositionX_ValueChanged);
             // 
             // label5
             // 

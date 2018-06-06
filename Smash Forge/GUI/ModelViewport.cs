@@ -572,7 +572,7 @@ namespace Smash_Forge
 
         private Vector3 getScreenPoint(Vector3 pos)
         {
-            Vector4 n = Vector4.Transform(new Vector4(pos, 1), camera.mvpMatrix);
+            Vector4 n = Vector4.Transform(new Vector4(pos, 1), camera.MvpMatrix);
             n.X /= n.W;
             n.Y /= n.W;
             n.Z /= n.W;
@@ -794,7 +794,7 @@ namespace Smash_Forge
                 if (node is ModelContainer)
                 {
                     ModelContainer modelContainer = (ModelContainer)node;
-                    modelContainer.DepthSortModels(camera.position);
+                    modelContainer.DepthSortModels(camera.Position);
                 }
             }
         }
@@ -825,7 +825,7 @@ namespace Smash_Forge
                 }
             }
 
-            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
         }
 
@@ -833,7 +833,7 @@ namespace Smash_Forge
         {
             NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode;
             float[] boundingBox = mesh.boundingBox;
-            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
         }
 
@@ -841,7 +841,7 @@ namespace Smash_Forge
         {
             NUD nud = (NUD)meshList.filesTreeView.SelectedNode;
             float[] boundingBox = nud.boundingBox;
-            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
         }
 
@@ -849,7 +849,7 @@ namespace Smash_Forge
         {
             NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode.Parent;
             float[] boundingBox = mesh.boundingBox;
-            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
         }
 
@@ -887,7 +887,7 @@ namespace Smash_Forge
 
             }
 
-            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
             camera.Update();
         }
 
@@ -1348,7 +1348,7 @@ namespace Smash_Forge
                 {
                     // single vertex
                     // Selects the closest vertex
-                    Ray r = RenderTools.CreateRay(camera.mvpMatrix, GetMouseOnViewport());
+                    Ray r = RenderTools.CreateRay(camera.MvpMatrix, GetMouseOnViewport());
                     Vector3 close = Vector3.Zero;
                     foreach (TreeNode node in draw)
                     {
@@ -1480,21 +1480,12 @@ namespace Smash_Forge
             {
                 camera.Update();
             }
-            try
-            {
-                if (OpenTK.Input.Mouse.GetState() != null)
-                    camera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
-            }
-            catch
-            {
-
-            }
 
             if (cameraPosForm != null)
                 cameraPosForm.ApplyCameraAnimation(camera, animationTrackBar.Value);
 
             if (Runtime.renderFloor)
-                RenderTools.DrawFloor(camera.mvpMatrix);
+                RenderTools.DrawFloor(camera.MvpMatrix);
 
             // Depth testing isn't set by materials.
             SetDepthTesting();
@@ -1537,7 +1528,7 @@ namespace Smash_Forge
 
         private void FixedFunctionRendering()
         {
-            RenderTools.Setup3DFixedFunctionRendering(camera.mvpMatrix);
+            RenderTools.Setup3DFixedFunctionRendering(camera.MvpMatrix);
 
             // Bounding boxes should not render on top.
             if (Runtime.drawAreaLightBoundingBoxes)
@@ -1570,7 +1561,7 @@ namespace Smash_Forge
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
                     if (m is ModelContainer)
-                        ((ModelContainer)m).Render(camera, 0, Matrix4.Zero, camera.mvpMatrix, new Vector2(glViewport.Width, glViewport.Height));
+                        ((ModelContainer)m).Render(camera, 0, Matrix4.Zero, camera.MvpMatrix, new Vector2(glViewport.Width, glViewport.Height));
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)

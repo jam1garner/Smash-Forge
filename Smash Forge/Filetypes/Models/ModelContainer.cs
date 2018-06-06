@@ -251,7 +251,7 @@ namespace Smash_Forge
 
             if (Runtime.cameraLight)
             {
-                GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLightDirection"), Vector3.TransformNormal(new Vector3(0f, 0f, -1f), camera.mvpMatrix.Inverted()).Normalized());
+                GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLightDirection"), Vector3.TransformNormal(new Vector3(0f, 0f, -1f), camera.MvpMatrix.Inverted()).Normalized());
             }
             else
             {
@@ -271,13 +271,13 @@ namespace Smash_Forge
             {
                 foreach (BCH_Model mo in BCH.Models.Nodes)
                 {
-                    mo.Render(camera.mvpMatrix);
+                    mo.Render(camera.MvpMatrix);
                 }
             }
 
             if (DatMelee != null && Runtime.shaders["Dat"].ProgramCreatedSuccessfully())
             {
-                DatMelee.Render(camera.mvpMatrix);
+                DatMelee.Render(camera.MvpMatrix);
             }
 
             if (NUD != null && Runtime.shaders["Nud"].ProgramCreatedSuccessfully() && Runtime.shaders["NudDebug"].ProgramCreatedSuccessfully())
@@ -318,18 +318,18 @@ namespace Smash_Forge
 
         public static void SetCameraMatrixUniforms(Camera camera, Shader shader)
         {
-            Matrix4 mvpMatrix = camera.mvpMatrix;
+            Matrix4 mvpMatrix = camera.MvpMatrix;
             GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("mvpMatrix"), false, ref mvpMatrix);
 
             // Perform the calculations here to reduce render times in shader
-            Matrix4 modelViewMatrix = camera.modelViewMatrix;
+            Matrix4 modelViewMatrix = camera.ModelViewMatrix;
             Matrix4 sphereMapMatrix = modelViewMatrix;
             sphereMapMatrix.Invert();
             sphereMapMatrix.Transpose();
             GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelViewMatrix"), false, ref modelViewMatrix);
             GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("sphereMapMatrix"), false, ref sphereMapMatrix);
 
-            Matrix4 rotationMatrix = camera.rotationMatrix;
+            Matrix4 rotationMatrix = camera.RotationMatrix;
             GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("rotationMatrix"), false, ref rotationMatrix);
         }
 
@@ -450,7 +450,7 @@ namespace Smash_Forge
             if (Runtime.cameraLight) 
             {
                 // Camera light should only affect character lighting.
-                Matrix4 invertedCamera = camera.mvpMatrix.Inverted();
+                Matrix4 invertedCamera = camera.MvpMatrix.Inverted();
                 Vector3 lightDirection = new Vector3(0f, 0f, -1f);
                 GL.Uniform3(shader.GetVertexAttributeUniformLocation("lightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
                 GL.Uniform3(shader.GetVertexAttributeUniformLocation("specLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());

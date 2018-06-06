@@ -591,7 +591,7 @@ namespace Smash_Forge
             shader.SetInt("selectedBoneIndex", Runtime.selectedBoneIndex);
             shader.SetBoolToInt("drawWireFrame", Runtime.renderModelWireframe);
             shader.SetFloat("lineWidth", Runtime.wireframeLineWidth);
-            shader.SetVector3("cameraPosition", camera.position);
+            shader.SetVector3("cameraPosition", camera.Position);
             shader.SetFloat("zBufferOffset", material.zBufferOffset);
             shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
             shader.SetVector3("colorId", ColorTools.Vector4FromColor(Color.FromArgb(id)).Xyz);
@@ -1143,7 +1143,7 @@ namespace Smash_Forge
         {
             Shader shader = Runtime.shaders["Point"];
             GL.UseProgram(shader.programId);
-            Matrix4 mat = camera.mvpMatrix;
+            Matrix4 mat = camera.MvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref mat);
 
             if (type == PrimitiveType.Points)
