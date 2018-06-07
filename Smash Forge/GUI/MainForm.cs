@@ -498,7 +498,7 @@ namespace Smash_Forge
             if (fileName.EndsWith("stprm.bin"))
             {
                 Runtime.stprmParam = new ParamFile(fileName);
-                modelViewport.GetCamera().SetValuesFromStprm(Runtime.stprmParam);
+                Rendering.RenderTools.SetCameraValuesFromParam(modelViewport.GetCamera(), Runtime.stprmParam);
             }
         }
 
@@ -1357,7 +1357,7 @@ namespace Smash_Forge
                     {
                         // should this always replace existing settings?
                         Runtime.stprmParam = new ParamFile(fileName);
-                        mvp.GetCamera().SetValuesFromStprm(Runtime.stprmParam);
+                        Rendering.RenderTools.SetCameraValuesFromParam(mvp.GetCamera(), Runtime.stprmParam);
                     }
 
                 }

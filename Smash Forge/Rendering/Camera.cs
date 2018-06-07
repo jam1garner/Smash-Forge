@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
-using SALT.PARAMS;
-using Smash_Forge.Params;
 
 namespace Smash_Forge.Rendering
 {
@@ -250,15 +248,6 @@ namespace Smash_Forge.Rendering
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
             mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
-        }
-
-        public void SetValuesFromStprm(ParamFile stprm)
-        {
-            if (stprm == null)
-                return;
-            float newFov = (float)ParamTools.GetParamValue(stprm, 0, 0, 6);
-            fovRadians = newFov * ((float)Math.PI / 180.0f); 
-            farClipPlane = (float)ParamTools.GetParamValue(stprm, 0, 0, 77);           
         }
 
         public void ResetToDefaultPosition()

@@ -1690,6 +1690,15 @@ namespace Smash_Forge.Rendering
             return data;
         }
 
+        public static void SetCameraValuesFromParam(Camera camera, ParamFile stprm)
+        {
+            if (stprm == null)
+                return;
+
+            camera.FovDegrees = (float)Params.ParamTools.GetParamValue(stprm, 0, 0, 6);
+            camera.FarClipPlane = (float)Params.ParamTools.GetParamValue(stprm, 0, 0, 77);
+        }
+
         public static void DrawPhotoshoot(GLControl glControl1, float shootX, float shootY, float shootWidth, float shootHeight)
         {
             GL.MatrixMode(MatrixMode.Modelview);
