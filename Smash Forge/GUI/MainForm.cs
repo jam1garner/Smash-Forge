@@ -136,7 +136,7 @@ namespace Smash_Forge
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
                 Rendering.RenderTools.DrawNudMaterialSphere(material);
                 glControl1.SwapBuffers();
-
+                /*
                 // Using the other framebuffer targets doesn't work for some reason.
                 Bitmap image = Rendering.FramebufferTools.ReadFrameBufferPixels(fbo, FramebufferTarget.Framebuffer, width, height, true);
 
@@ -145,9 +145,10 @@ namespace Smash_Forge
                 string presetName = parts[parts.Length - 1];
                 presetName = presetName.Replace(".nmt", ".png");
                 image.Save(MainForm.executableDir + "\\Preview Images\\" + presetName);
-
+             
                 // Cleanup
                 image.Dispose();
+                */
             }
         }
 

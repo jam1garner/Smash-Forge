@@ -19,7 +19,9 @@ namespace Smash_Forge.Rendering
         // To change targets, a new FBO should be created instead.
         public FramebufferTarget FramebufferTarget { get; }
 
-        private int width;
+        public PixelInternalFormat PixelInternalFormat { get; }
+
+        private int width = 1;
         public int Width
         {
             get { return width; }
@@ -30,7 +32,7 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        private int height;
+        private int height = 1;
         public int Height
         {
             get { return height; }
@@ -41,26 +43,29 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        private int rboDepth;
-        private int colorAttachment0Tex;
+        public int ColorAttachment0Tex { get; }
 
-        public Framebuffer(FramebufferTarget target, int width, int height)
+        private int rboDepth;
+
+        public Framebuffer(FramebufferTarget target, int width, int height, PixelInternalFormat pixelInternalFormat = PixelInternalFormat.Rgba)
         {
             Id = GL.GenFramebuffer();
 
             FramebufferTarget = target;
             GL.BindFramebuffer(FramebufferTarget, Id);
 
+            PixelInternalFormat = pixelInternalFormat;
+
             this.width = width;
             this.height = height;
 
             // First color attachment (regular texture).
-            GL.GenTextures(1, out colorAttachment0Tex);
-            GL.BindTexture(TextureTarget.Texture2D, colorAttachment0Tex);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            ColorAttachment0Tex = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, ColorAttachment0Tex);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.FramebufferTexture2D(FramebufferTarget, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, colorAttachment0Tex, 0);
+            GL.FramebufferTexture2D(FramebufferTarget, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, ColorAttachment0Tex, 0);
 
             // Render buffer for the depth attachment, which is necessary for depth testing.
             GL.GenRenderbuffers(1, out rboDepth);
@@ -82,7 +87,8 @@ namespace Smash_Forge.Rendering
             int pixelByteLength = width * height * sizeof(float);
             byte[] pixels = new byte[pixelByteLength];
 
-            // Read the pixels from the framebuffer. PNG uses the BGRA format.
+            // Read the pixels from the framebuffer. PNG uses the BGRA format. 
+            // This probably won't work for HDR textures.
             Bind();
             GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
             byte[] fixedPixels = CopyImagePixels(width, height, saveAlpha, pixelByteLength, pixels);
@@ -125,9 +131,9 @@ namespace Smash_Forge.Rendering
             Bind();
 
             // First color attachment (regular texture).
-            GL.BindTexture(TextureTarget.Texture2D, colorAttachment0Tex);
+            GL.BindTexture(TextureTarget.Texture2D, ColorAttachment0Tex);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.FramebufferTexture2D(FramebufferTarget, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, colorAttachment0Tex, 0);
+            GL.FramebufferTexture2D(FramebufferTarget, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, ColorAttachment0Tex, 0);
 
             // Render buffer for the depth attachment, which is necessary for depth testing.
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rboDepth);

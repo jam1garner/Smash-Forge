@@ -42,12 +42,9 @@ namespace Smash_Forge
         int hdrDepthRbo;
 
         // The texture that will be blurred for bloom.
-        int brightTexSmall;
-        int brightHdrSmallFbo;
-        int brightTexWidth;
-        int brightTexHeight;
+        Framebuffer imageBrightHdrFbo;
 
-        // Screen Render
+        // Used for screen renders and color picking.
         Framebuffer offscreenRenderFbo;
 
         // The viewport dimensions should be used for FBOs visible on screen.
@@ -298,11 +295,15 @@ namespace Smash_Forge
             fboRenderWidth = glViewport.Width;
             fboRenderHeight = glViewport.Height;
 
+            // Render bright and normal images to separate textures.
             FramebufferTools.CreateHdrFboTwoTextures(out colorHdrFbo, out hdrDepthRbo, out colorHdrTex0, out colorHdrTex1, fboRenderWidth, fboRenderHeight);
-            brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
-            brightTexHeight = (int)(glViewport.Height * Runtime.bloomTexScale);
-            FramebufferTools.CreateHdrFboSingleTextureNoDepth(out brightHdrSmallFbo, FramebufferTarget.Framebuffer, out brightTexSmall, brightTexWidth, brightTexHeight);
 
+            // Smaller FBO/texture for the brighter, blurred portions.
+            int brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
+            int brightTexHeight = (int)(glViewport.Height * Runtime.bloomTexScale);
+            imageBrightHdrFbo = new Framebuffer(FramebufferTarget.Framebuffer, brightTexWidth, brightTexHeight, PixelInternalFormat.Rgba16);
+
+            // Screen Rendering
             offscreenRenderFbo = new Framebuffer(FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight);
 
             // Bind the default framebuffer again.
@@ -587,21 +588,14 @@ namespace Smash_Forge
 
         private void ResizeTexturesAndBuffers()
         {
+            // FBOs manage their own resizing.
             ResizeHdrFboRboTwoColorAttachments();
-            ResizeSmallBrightHdrTexture();
 
-            // Offscreen fbo manages its own resizing.
+            imageBrightHdrFbo.Width = (int)(fboRenderWidth * Runtime.bloomTexScale);
+            imageBrightHdrFbo.Height = (int)(fboRenderHeight * Runtime.bloomTexScale);
+
             offscreenRenderFbo.Width = fboRenderWidth;
             offscreenRenderFbo.Height = fboRenderHeight;
-        }
-
-        private void ResizeSmallBrightHdrTexture()
-        {
-            // Small bright texture.
-            GL.BindTexture(TextureTarget.Texture2D, brightTexSmall);
-            brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
-            brightTexHeight = (int)(glViewport.Height * Runtime.bloomTexScale);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, brightTexWidth, brightTexHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
         }
 
         private void ResizeHdrFboRboTwoColorAttachments()
@@ -1477,15 +1471,15 @@ namespace Smash_Forge
             if (Runtime.usePostProcessing)
             {
                 // Draw the texture to the screen into a smaller FBO.
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, brightHdrSmallFbo);
-                GL.Viewport(0, 0, brightTexWidth, brightTexHeight);
-                RenderTools.DrawTexturedQuad(colorHdrTex1, brightTexWidth, brightTexHeight);
+                imageBrightHdrFbo.Bind();
+                GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
+                RenderTools.DrawTexturedQuad(colorHdrTex1, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
 
-                RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, brightTexSmall);
+                RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, imageBrightHdrFbo.ColorAttachment0Tex);
             }
 
             FixedFunctionRendering();
