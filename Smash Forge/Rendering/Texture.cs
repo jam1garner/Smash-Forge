@@ -16,13 +16,15 @@ namespace Smash_Forge.Rendering
 
         private TextureTarget textureTarget = TextureTarget.Texture2D;
 
+        public PixelInternalFormat PixelInternalFormat { get; }
+
         private TextureMinFilter minFilter = TextureMinFilter.Nearest;
         public TextureMinFilter MinFilter
         {
             get { return minFilter; }
             set
             {
-                GL.BindTexture(textureTarget, Id);
+                Bind();
                 minFilter = value;
                 GL.TexParameter(textureTarget, TextureParameterName.TextureMinFilter, (int)value);
             }
@@ -34,7 +36,7 @@ namespace Smash_Forge.Rendering
             get { return magFilter; }
             set
             {
-                GL.BindTexture(textureTarget, Id);
+                Bind();
                 magFilter = value;
                 GL.TexParameter(textureTarget, TextureParameterName.TextureMagFilter, (int)value);
             }
@@ -46,7 +48,7 @@ namespace Smash_Forge.Rendering
             get { return textureWrapS; }
             set
             {
-                GL.BindTexture(textureTarget, Id);
+                Bind();
                 textureWrapS = value;
                 GL.TexParameter(textureTarget, TextureParameterName.TextureWrapS, (int)value);
             }
@@ -58,31 +60,29 @@ namespace Smash_Forge.Rendering
             get { return textureWrapT; }
             set
             {
-                GL.BindTexture(textureTarget, Id);
+                Bind();
                 textureWrapS = value;
                 GL.TexParameter(textureTarget, TextureParameterName.TextureWrapT, (int)value);
             }
         }
 
-        public Texture(TextureTarget target)
+        public Texture(TextureTarget target, int width, int height, PixelInternalFormat pixelInternalFormat = PixelInternalFormat.Rgba)
         {
+            // These should only be set once at object creation.
             Id = GL.GenTexture();
             textureTarget = target;
+            PixelInternalFormat = pixelInternalFormat;
+
+            // Setup the format and mip maps.
+            Bind();
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
-        ~Texture()
+        // TODO: This is gross and needs to be fixed eventually.
+        public Texture(TextureTarget target, Bitmap image) : this(target, 1, 1)
         {
-            // The context probably isn't current here, so any GL function will crash.
-            //GL.GenTexture();
-            Debug.WriteLine("Deleting texture");
-            // Delete the texture's resources.
-            //GL.DeleteTexture(Id);
-        }
-
-        public Texture(TextureTarget target, Bitmap image) : this(target)
-        {
-            GL.BindTexture(textureTarget, Id);
+            Bind();
 
             // Load the image data.
             BitmapData data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
@@ -94,6 +94,20 @@ namespace Smash_Forge.Rendering
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
+        ~Texture()
+        {
+            // The context probably isn't current here, so any GL function will crash.
+            //GL.GenTexture();
+            // Delete the texture's resources.
+            //GL.DeleteTexture(Id);
+        }
+
+        public void Bind()
+        {
+            GL.BindTexture(textureTarget, Id);
+        }
+
+        // TODO: This method is redundant and should be removed.
         public static int CreateGlTextureFromBitmap(Bitmap image)
         {
             int texID = GL.GenTexture();

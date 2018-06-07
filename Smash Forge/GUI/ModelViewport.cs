@@ -301,7 +301,7 @@ namespace Smash_Forge
             // Smaller FBO/texture for the brighter, blurred portions.
             int brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
             int brightTexHeight = (int)(glViewport.Height * Runtime.bloomTexScale);
-            imageBrightHdrFbo = new Framebuffer(FramebufferTarget.Framebuffer, brightTexWidth, brightTexHeight, PixelInternalFormat.Rgba16);
+            imageBrightHdrFbo = new Framebuffer(FramebufferTarget.Framebuffer, brightTexWidth, brightTexHeight, PixelInternalFormat.Rgba16f);
 
             // Screen Rendering
             offscreenRenderFbo = new Framebuffer(FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight);
@@ -1444,6 +1444,7 @@ namespace Smash_Forge
             if (Runtime.renderBackGround && !Runtime.usePostProcessing)
                 DrawViewportBackground();
 
+            // What even is this...
             if (glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
              && glViewport.Focused
              && (currentMode == Mode.Normal || (currentMode == Mode.Photoshoot && !freezeCamera))
