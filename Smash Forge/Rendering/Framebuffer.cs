@@ -43,7 +43,8 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        public int ColorAttachment0Tex { get; }
+        private int colorAttachment0Tex;
+        public int ColorAttachment0Tex { get { return colorAttachment0Tex; } }
 
         private int rboDepth;
 
@@ -58,14 +59,7 @@ namespace Smash_Forge.Rendering
 
             Bind();
 
-            // First color attachment (regular texture).
-            ColorAttachment0Tex = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, ColorAttachment0Tex);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.FramebufferTexture2D(FramebufferTarget, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, ColorAttachment0Tex, 0);
-
+            SetupColorAttachment0(width, height);
             SetupRboDepth(width, height);
 
             // Check if any of the settings were incorrect when creating the fbo.
@@ -74,6 +68,17 @@ namespace Smash_Forge.Rendering
 
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        }
+
+        private void SetupColorAttachment0(int width, int height)
+        {
+            // First color attachment.
+            colorAttachment0Tex = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, ColorAttachment0Tex);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.FramebufferTexture2D(FramebufferTarget, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, ColorAttachment0Tex, 0);
         }
 
         private void SetupRboDepth(int width, int height)
@@ -103,6 +108,15 @@ namespace Smash_Forge.Rendering
             Marshal.Copy(fixedPixels, 0, bmpData.Scan0, fixedPixels.Length);
             bmp.UnlockBits(bmpData);
             return bmp;
+        }
+
+        public Color SamplePixelColor(int x, int y)
+        {
+            Bind();
+            // Only RGBA is supported for now.
+            byte[] rgba = new byte[4];
+            GL.ReadPixels(x, y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, rgba);
+            return Color.FromArgb(rgba[3], rgba[0], rgba[1], rgba[2]);
         }
 
         private static byte[] CopyImagePixels(int width, int height, bool saveAlpha, int pixelByteLength, byte[] pixels)

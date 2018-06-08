@@ -473,7 +473,7 @@ namespace Smash_Forge
             RenderNudColorIdPassToFbo(offscreenRenderFbo.Id);
 
             // Get the color at the mouse's position.
-            Color selectedColor = ColorPickPixelAtMousePosition(offscreenRenderFbo.Id);
+            Color selectedColor = ColorPickPixelAtMousePosition();
             Debug.WriteLine(selectedColor.ToString());
             meshList.filesTreeView.SelectedNode = GetSelectedPolygonFromColor(selectedColor);
         }
@@ -483,7 +483,7 @@ namespace Smash_Forge
             RenderNudColorIdPassToFbo(offscreenRenderFbo.Id);
 
             // Get the color at the mouse's position.
-            Color selectedColor = ColorPickPixelAtMousePosition(offscreenRenderFbo.Id);
+            Color selectedColor = ColorPickPixelAtMousePosition();
             meshList.filesTreeView.SelectedNode = GetSelectedMeshFromColor(selectedColor);
         }
 
@@ -548,16 +548,11 @@ namespace Smash_Forge
             return null;
         }
 
-        private Color ColorPickPixelAtMousePosition(int fbo = 0)
+        private Color ColorPickPixelAtMousePosition()
         {
-            // Make sure the proper FBO is bound.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
-
-            // Colorpick the single pixel from the FBO at the mouse's location.
-            System.Drawing.Point mouse = glViewport.PointToClient(Cursor.Position);
-            byte[] rgba = new byte[4];
-            GL.ReadPixels(mouse.X, glViewport.Height - mouse.Y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, rgba);
-            return Color.FromArgb(rgba[3], rgba[0], rgba[1], rgba[2]);
+            // Colorpick a single pixel from the offscreen FBO at the mouse's location.
+            System.Drawing.Point mousePosition = glViewport.PointToClient(Cursor.Position);
+            return offscreenRenderFbo.SamplePixelColor(mousePosition.X, glViewport.Height - mousePosition.Y);
         }
 
         private Vector3 getScreenPoint(Vector3 pos)
