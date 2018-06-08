@@ -78,7 +78,6 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        // TODO: This is gross and needs to be fixed eventually.
         public Texture(TextureTarget target, int width, int height, PixelInternalFormat pixelInternalFormat = PixelInternalFormat.Rgba)
         {
             // These should only be set once at object creation.
@@ -86,17 +85,20 @@ namespace Smash_Forge.Rendering
             textureTarget = target;
             PixelInternalFormat = pixelInternalFormat;
 
-            // Setup the format and mip maps.
             Bind();
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+
+            // Setup the format and mip maps.
+            GL.TexImage2D(textureTarget, 0, PixelInternalFormat, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
-        // TODO: This is gross and needs to be fixed eventually.
-        public Texture(TextureTarget target, Bitmap image) : this(target, 1, 1)
+        public Texture(TextureTarget target, Bitmap image) : this(target, image.Width, image.Height)
         {
-            Bind();
+            LoadImageDataAutoGenerateMipmaps(image);
+        }
 
+        private void LoadImageDataAutoGenerateMipmaps(Bitmap image)
+        {
             // Load the image data.
             BitmapData data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
                 ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
@@ -110,9 +112,7 @@ namespace Smash_Forge.Rendering
         ~Texture()
         {
             // The context probably isn't current here, so any GL function will crash.
-            //GL.GenTexture();
-            // Delete the texture's resources.
-            //GL.DeleteTexture(Id);
+            // TODO: Manage resources.
         }
 
         public void Bind()
@@ -145,11 +145,10 @@ namespace Smash_Forge.Rendering
         }
 
         // TODO: Cube maps should be a separate class that inherits from Texture.
-        public static int CreateGlCubeMap(Bitmap cubeMapFaces, TextureUnit textureUnit)
+        public static int CreateGlCubeMap(Bitmap cubeMapFaces)
         {
             int id;
             GL.GenTextures(1, out id);
-            GL.ActiveTexture(textureUnit);
             GL.BindTexture(TextureTarget.TextureCubeMap, id);
 
             Bitmap bmp = cubeMapFaces;

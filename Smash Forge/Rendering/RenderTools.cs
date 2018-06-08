@@ -78,10 +78,10 @@ namespace Smash_Forge.Rendering
             dummyTextures.Clear();
 
             // Dummy textures. 
-            stageMapHigh = Texture.CreateGlCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
+            stageMapHigh = Texture.CreateGlCubeMap(Properties.Resources._10102000);
             dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
 
-            stageMapLow = Texture.CreateGlCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
+            stageMapLow = Texture.CreateGlCubeMap(Properties.Resources._10101000);
             dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
 
             Texture dummyRamp = new Texture(TextureTarget.Texture2D, Properties.Resources._10080000);
