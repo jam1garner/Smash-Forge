@@ -78,10 +78,10 @@ namespace Smash_Forge.Rendering
             dummyTextures.Clear();
 
             // Dummy textures. 
-            stageMapHigh = LoadCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
+            stageMapHigh = Texture.CreateGlCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
             dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
 
-            stageMapLow = LoadCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
+            stageMapLow = Texture.CreateGlCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
             dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
 
             Texture dummyRamp = new Texture(TextureTarget.Texture2D, Properties.Resources._10080000);
@@ -1731,47 +1731,6 @@ namespace Smash_Forge.Rendering
             GL.Vertex2(shootX + shootWidth, glControl1.Height);
 
             GL.End();
-        }
-
-        public static int LoadCubeMap(Bitmap b, TextureUnit textureUnit)
-        {
-            int id;
-            GL.GenTextures(1, out id);
-
-            GL.ActiveTexture(textureUnit);
-            
-            GL.BindTexture(TextureTarget.TextureCubeMap, id);
-
-            Bitmap bmp = b;
-
-            Rectangle[] srcRect = new Rectangle[] {
-            new Rectangle(0, 0, 128, 128),
-            new Rectangle(0, 128, 128, 128),
-            new Rectangle(0, 256, 128, 128),
-            new Rectangle(0, 384, 128, 128),
-            new Rectangle(0, 512, 128, 128),
-            new Rectangle(0, 640, 128, 128),
-            }; 
-
-            for(int i = 0; i < 6; i++)
-            {
-                Bitmap image = (Bitmap)bmp.Clone(srcRect[i], bmp.PixelFormat);
-                BitmapData data = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
-                    ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
-                    OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-                image.UnlockBits(data);
-            }
-
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
-
-            GL.BindTexture(TextureTarget.TextureCubeMap, 0);
-
-            return id;
         }
 
         public static Ray CreateRay(Matrix4 v, Vector2 m)
