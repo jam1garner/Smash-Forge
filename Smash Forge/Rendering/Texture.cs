@@ -66,6 +66,19 @@ namespace Smash_Forge.Rendering
             }
         }
 
+        private TextureWrapMode textureWrapR = TextureWrapMode.ClampToEdge;
+        public TextureWrapMode TextureWrapR
+        {
+            get { return textureWrapR; }
+            set
+            {
+                Bind();
+                textureWrapR = value;
+                GL.TexParameter(textureTarget, TextureParameterName.TextureWrapR, (int)value);
+            }
+        }
+
+        // TODO: This is gross and needs to be fixed eventually.
         public Texture(TextureTarget target, int width, int height, PixelInternalFormat pixelInternalFormat = PixelInternalFormat.Rgba)
         {
             // These should only be set once at object creation.

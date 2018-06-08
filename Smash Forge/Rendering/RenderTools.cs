@@ -13,9 +13,9 @@ using System.Collections.Generic;
 
 namespace Smash_Forge.Rendering
 {
-    public class RenderTools
+    class RenderTools
     {
-        public static int defaultTex = -1;
+        public static Texture defaultTex;
         public static int floorTexture;
         public static int backgroundTexture;
 
@@ -33,14 +33,10 @@ namespace Smash_Forge.Rendering
 
         private static int stageMapHigh;
         private static int stageMapLow;
-        private static int dummyRamp;
-        private static int pokemonStadiumDummyTex;
-        private static int punchOutDummyTex;
-        private static int shadowMapDummyTex;
 
-        public static int uvTestPattern;
-        public static int boneWeightGradient;
-        public static int boneWeightGradient2;
+        public static Texture uvTestPattern;
+        public static Texture boneWeightGradient;
+        public static Texture boneWeightGradient2;
 
         // Nud Material Sphere Textures.
         public static int sphereDifTex;
@@ -88,17 +84,17 @@ namespace Smash_Forge.Rendering
             stageMapLow = LoadCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
             dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
 
-            dummyRamp = Texture.CreateGlTextureFromBitmap(Properties.Resources._10080000);
-            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp);
+            Texture dummyRamp = new Texture(TextureTarget.Texture2D, Properties.Resources._10080000);
+            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp.Id);
 
-            pokemonStadiumDummyTex = Texture.CreateGlTextureFromBitmap(Properties.Resources._10040001);
-            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex);
+            Texture pokemonStadiumDummyTex = new Texture(TextureTarget.Texture2D, Properties.Resources._10040001);
+            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex.Id);
 
-            punchOutDummyTex = Texture.CreateGlTextureFromBitmap(Properties.Resources._10040000);
-            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex);
+            Texture punchOutDummyTex = new Texture(TextureTarget.Texture2D, Properties.Resources._10040000);
+            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex.Id);
 
-            shadowMapDummyTex = Texture.CreateGlTextureFromBitmap(Properties.Resources._10100000);
-            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
+            Texture shadowMapDummyTex = new Texture(TextureTarget.Texture2D, Properties.Resources._10100000);
+            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex.Id);
 
             // Sphere Default Textures.
             sphereDifTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.defaultDif);
@@ -110,13 +106,11 @@ namespace Smash_Forge.Rendering
             sphereBitanTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.bitan);
 
             // Helpful textures. 
-            Texture texture = new Texture(TextureTarget.Texture2D, Properties.Resources.UVPattern);
-            uvTestPattern = texture.Id;
+            uvTestPattern = new Texture(TextureTarget.Texture2D, Properties.Resources.UVPattern);
+            boneWeightGradient = new Texture(TextureTarget.Texture2D, Properties.Resources.boneWeightGradient);
+            boneWeightGradient2 = new Texture(TextureTarget.Texture2D, Properties.Resources.boneWeightGradient2);
 
-            boneWeightGradient = Texture.CreateGlTextureFromBitmap(Properties.Resources.boneWeightGradient);
-            boneWeightGradient2 = Texture.CreateGlTextureFromBitmap(Properties.Resources.boneWeightGradient2);
-
-            defaultTex = Texture.CreateGlTextureFromBitmap(Resources.Resources.DefaultTexture);
+            defaultTex = new Texture(TextureTarget.Texture2D, Resources.Resources.DefaultTexture);
 
             try
             {
@@ -929,7 +923,7 @@ namespace Smash_Forge.Rendering
                 if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
                     GL.BindTexture(TextureTarget.Texture2D, floorTexture);
                 else
-                    GL.BindTexture(TextureTarget.Texture2D, defaultTex);
+                    GL.BindTexture(TextureTarget.Texture2D, defaultTex.Id);
 
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)Runtime.floorWrap);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)Runtime.floorWrap);
@@ -1742,7 +1736,7 @@ namespace Smash_Forge.Rendering
         public static int LoadCubeMap(Bitmap b, TextureUnit textureUnit)
         {
             int id;
-            GL.GenBuffers(1, out id);
+            GL.GenTextures(1, out id);
 
             GL.ActiveTexture(textureUnit);
             
