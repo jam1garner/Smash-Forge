@@ -19,27 +19,25 @@ namespace Smash_Forge
 
     public class NutTexture : TreeNode
     {
-        public List<TextureSurface> surfaces = new List<TextureSurface>();
         //Each texture should contain either 1 or 6 surfaces
         //Each surface should contain (1 <= n <= 255) mipmaps
         //Each surface in a texture should have the same amount of mipmaps and dimensions for them
 
-        public byte surfaceCount {
-            get {
-                return (byte)surfaces.Count;
-            }
-        }
-        public byte mipMapsPerSurface {
-            get {
-                return (byte)surfaces[0].mipmaps.Count;
-            }
+        public List<TextureSurface> surfaces = new List<TextureSurface>();
+
+        public byte MipMapsPerSurface
+        {
+            get { return (byte)surfaces[0].mipmaps.Count; }
         }
 
-        public int HASHID {
-            get {
+        public int HASHID
+        {
+            get
+            {
                 return id;
             }
-            set {
+            set
+            {
                 Text = value.ToString("x").ToUpper();
                 id = value;
             }
@@ -51,7 +49,7 @@ namespace Smash_Forge
         public OpenTK.Graphics.OpenGL.PixelFormat utype;
         public PixelType PixelType = PixelType.UnsignedByte;
 
-        public uint ddsCaps2 {
+        public uint DdsCaps2 {
             get {
                 if (surfaces.Count == 6) return (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES;
                 else                     return (uint)0;
@@ -59,7 +57,7 @@ namespace Smash_Forge
         }
 
         //Return a list containing every mipmap from every surface
-        public List<byte[]> getAllMipmaps()
+        public List<byte[]> GetAllMipmaps()
         {
             List<byte[]> mipmaps = new List<byte[]>();
             foreach (TextureSurface surface in surfaces)
@@ -72,9 +70,9 @@ namespace Smash_Forge
             return mipmaps;
         }
         //Move channel 0 to channel 3 (ABGR -> BGRA)
-        public void swapChannelOrderUp()
+        public void SwapChannelOrderUp()
         {
-            foreach (byte[] mip in getAllMipmaps())
+            foreach (byte[] mip in GetAllMipmaps())
             {
                 for (int t = 0; t < mip.Length; t += 4)
                 {
@@ -87,9 +85,9 @@ namespace Smash_Forge
             }
         }
         //Move channel 3 to channel 0 (BGRA -> ABGR)
-        public void swapChannelOrderDown()
+        public void SwapChannelOrderDown()
         {
-            foreach (byte[] mip in getAllMipmaps())
+            foreach (byte[] mip in GetAllMipmaps())
             {
                 for (int t = 0; t < mip.Length; t += 4)
                 {
@@ -345,7 +343,7 @@ namespace Smash_Forge
 
                 uint dataSize = 0;
 
-                foreach (var mip in texture.getAllMipmaps())
+                foreach (var mip in texture.GetAllMipmaps())
                 {
                     dataSize += (uint)mip.Length;
                     while (dataSize % 0x10 != 0)
@@ -377,7 +375,7 @@ namespace Smash_Forge
                 o.writeShort(texture.Width);
                 o.writeShort(texture.Height);
                 o.writeInt(0);
-                o.writeUInt(texture.ddsCaps2);
+                o.writeUInt(texture.DdsCaps2);
 
                 o.writeUInt((uint)(headerLength + data.size()));
                 headerLength -= headerSize;
@@ -395,7 +393,7 @@ namespace Smash_Forge
 
                 if (texture.getNutFormat() == 14 || texture.getNutFormat() == 17)
                 {
-                    texture.swapChannelOrderDown();
+                    texture.SwapChannelOrderDown();
                 }
 
                 for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
@@ -413,7 +411,7 @@ namespace Smash_Forge
 
                 if (texture.getNutFormat() == 14 || texture.getNutFormat() == 17)
                 {
-                    texture.swapChannelOrderUp();
+                    texture.SwapChannelOrderUp();
                 }
 
                 o.writeUInt(0x65587400); // "eXt\0"
@@ -564,7 +562,7 @@ namespace Smash_Forge
 
                 if (tex.getNutFormat() == 14 || tex.getNutFormat() == 17)
                 {
-                    tex.swapChannelOrderUp();
+                    tex.SwapChannelOrderUp();
                 }
 
                 headerPtr += headerSize;
@@ -756,40 +754,6 @@ namespace Smash_Forge
             }
 
             RefreshGlTexturesByHashId();
-
-            //Console.WriteLine("\tMIP: " + size.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + (size == 0 ? ds + dataSize - dataOffset : size));
-
-            //Console.WriteLine(tex.id.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + swizzle);
-            //Console.WriteLine((tex.width >> mipLevel) + " " + (tex.height >> mipLevel));
-
-            //File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\duckhunt\\model\\body\\mip1.bin", bytearray);
-
-            //Console.WriteLine(GL.GetError());
-            /*int j = 0;
-            foreach(byte[] b in textures[0].mipmaps)
-            {
-                if (j == 3)
-                {
-                    for(int w = 3; w < 8; w++)
-                    {
-                        for (int p = 3; p < 6; p++)
-                        {
-                            byte[] deswiz = GTX.swizzleBC(
-                                b,
-                                (int)Math.Pow(2, w),
-                                64,
-                                51,
-                                4,
-                                 (int)Math.Pow(2, p),
-                                197632
-                            );
-                            File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\duckhunt\\model\\body\\chunk_" + (int)Math.Pow(2, p) + "_" + (int)Math.Pow(2, w), deswiz);
-                        }
-                    }
-                    
-                }
-                j++;
-            }*/
         }
 
         public void RefreshGlTexturesByHashId()

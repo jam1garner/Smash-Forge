@@ -33,9 +33,9 @@ namespace Smash_Forge
         private bool renderAlpha = true;
         private bool keepAspectRatio = false;
         private int currentMipLevel = 0;
+        private bool _loaded = false;
 
         private bool dontModify;
-        private bool _loaded = false;
 
         ContextMenu TextureMenu = new ContextMenu();
         ContextMenu NUTMenu = new ContextMenu();
@@ -46,13 +46,25 @@ namespace Smash_Forge
             FilePath = "";
             Text = "New NUT";
 
+            SetupFileSystemWatcher();
+            SetupContextMenus();
+
+            // Make sure the shaders and textures are setup for rendering.
+            Rendering.RenderTools.SetupOpenTkRendering();
+        }
+
+        private void SetupFileSystemWatcher()
+        {
             fw = new FileSystemWatcher();
             fw.Path = Path.GetTempPath();
             fw.NotifyFilter = NotifyFilters.Size | NotifyFilters.LastAccess | NotifyFilters.LastWrite;
             fw.EnableRaisingEvents = false;
             fw.Changed += new FileSystemEventHandler(OnChanged);
             fw.Filter = "";
-            
+        }
+
+        private void SetupContextMenus()
+        {
             // Texture Context Menu
             MenuItem replace = new MenuItem("Replace");
             replace.Click += replaceToolStripMenuItem_Click;
@@ -90,9 +102,6 @@ namespace Smash_Forge
             MenuItem texid = new MenuItem("Set TEXID for NUT");
             texid.Click += texIDToolStripMenuItem_Click;
             NUTMenu.MenuItems.Add(texid);
-
-            // Make sure the shaders and textures are setup for rendering.
-            Rendering.RenderTools.SetupOpenTkRendering();
         }
 
         public NUTEditor(NUT nut) : this()
@@ -170,41 +179,62 @@ namespace Smash_Forge
             if (textureListBox.SelectedIndex >= 0)
             {
                 NutTexture tex = ((NutTexture)textureListBox.SelectedItem);
-                textureIdTB.Text = tex.ToString();
-                formatLabel.Text = "Format: " + (tex.type == PixelInternalFormat.Rgba ? "" + tex.utype : "" + tex.type);
-                widthLabel.Text = "Width: " + tex.Width;
-                heightLabel.Text = "Height:" + tex.Height;
+                SetGeneralAndDimensionsText(tex);
 
                 if (tex.surfaces.Count == 6)
                 {
-                    // Display the current face instead of mip map information.
-                    mipMapGroupBox.Text = "Cube Map Faces";
-                    SetCurrentCubeMapFaceLabel(mipLevelTrackBar.Value);
-                    mipLevelTrackBar.Maximum = tex.surfaces.Count - 1;
-                    minMipLevelLabel.Text = "";
-                    maxMipLevelLabel.Text = "";
+                    SetCubeMapText(tex);
                 }
                 else
                 {
-                    // Display the total mip maps.
-                    mipMapGroupBox.Text = "Mip Maps";
-                    mipLevelLabel.Text = "Mip Level";
-                    mipLevelTrackBar.Maximum = tex.surfaces[0].mipmaps.Count - 1;
-                    minMipLevelLabel.Text = "1";
-                    maxMipLevelLabel.Text = "Total:" + tex.surfaces[0].mipmaps.Count + "";
+                    SetMipMapText(tex);
                 }
             }
             else
             {
-                textureIdTB.Text = "";
-                formatLabel.Text = "Format:";
-                widthLabel.Text = "Width:";
-                heightLabel.Text = "Height:";
+                SetDefaultGeneralAndDimensionsText();
             }
 
+            // Render on index changed rather than every frame.
             glControl1.Invalidate();
             glControl1.Update();
             RenderTexture();
+        }
+
+        private void SetMipMapText(NutTexture tex)
+        {
+            // Display the total mip maps.
+            mipMapGroupBox.Text = "Mip Maps";
+            mipLevelLabel.Text = "Mip Level";
+            mipLevelTrackBar.Maximum = tex.surfaces[0].mipmaps.Count - 1;
+            minMipLevelLabel.Text = "1";
+            maxMipLevelLabel.Text = "Total:" + tex.surfaces[0].mipmaps.Count + "";
+        }
+
+        private void SetCubeMapText(NutTexture tex)
+        {
+            // Display the current face instead of mip map information.
+            mipMapGroupBox.Text = "Cube Map Faces";
+            SetCurrentCubeMapFaceLabel(mipLevelTrackBar.Value);
+            mipLevelTrackBar.Maximum = tex.surfaces.Count - 1;
+            minMipLevelLabel.Text = "";
+            maxMipLevelLabel.Text = "";
+        }
+
+        private void SetDefaultGeneralAndDimensionsText()
+        {
+            textureIdTB.Text = "";
+            formatLabel.Text = "Format:";
+            widthLabel.Text = "Width:";
+            heightLabel.Text = "Height:";
+        }
+
+        private void SetGeneralAndDimensionsText(NutTexture tex)
+        {
+            textureIdTB.Text = tex.ToString();
+            formatLabel.Text = "Format: " + (tex.type == PixelInternalFormat.Rgba ? "" + tex.utype : "" + tex.type);
+            widthLabel.Text = "Width: " + tex.Width;
+            heightLabel.Text = "Height:" + tex.Height;
         }
 
         private void SetCurrentCubeMapFaceLabel(int index)
@@ -509,30 +539,35 @@ namespace Smash_Forge
         {
             if (textureListBox.SelectedItem != null && !textureIdTB.Text.Equals(""))
             {
-                int oldid = ((NutTexture)textureListBox.SelectedItem).HASHID;
-                int newid = -1;
-                int.TryParse(textureIdTB.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out newid);
-                if (newid == -1)
-                    textureIdTB.Text = ((NutTexture)textureListBox.SelectedItem).HASHID.ToString("x");
-                if(oldid!=newid)
-                {
-                    Edited = true;
-                    if (!NUT.glTexByHashId.ContainsKey(newid))
-                    {
-                        ((NutTexture)textureListBox.SelectedItem).HASHID = newid;
-                        NUT.glTexByHashId.Add(newid, NUT.glTexByHashId[oldid]);
-                        NUT.glTexByHashId.Remove(oldid);
-                    }
-                    else
-                    {
-                        textureIdTB.Text = (newid + 1).ToString("x");
-                    }
-                }
-
-                // Weird solution to refresh the listbox item
-                textureListBox.DisplayMember = "test";
-                textureListBox.DisplayMember = "";
+                UpdateSelectedTexId();
             }
+        }
+
+        private void UpdateSelectedTexId()
+        {
+            int oldid = ((NutTexture)textureListBox.SelectedItem).HASHID;
+            int newid = -1;
+            int.TryParse(textureIdTB.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out newid);
+            if (newid == -1)
+                textureIdTB.Text = ((NutTexture)textureListBox.SelectedItem).HASHID.ToString("x");
+            if (oldid != newid)
+            {
+                Edited = true;
+                if (!NUT.glTexByHashId.ContainsKey(newid))
+                {
+                    ((NutTexture)textureListBox.SelectedItem).HASHID = newid;
+                    NUT.glTexByHashId.Add(newid, NUT.glTexByHashId[oldid]);
+                    NUT.glTexByHashId.Remove(oldid);
+                }
+                else
+                {
+                    textureIdTB.Text = (newid + 1).ToString("x");
+                }
+            }
+
+            // Weird solution to refresh the listbox item
+            textureListBox.DisplayMember = "test";
+            textureListBox.DisplayMember = "";
         }
 
         private void replaceToolStripMenuItem_Click(object sender, EventArgs e)

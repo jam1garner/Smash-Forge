@@ -223,7 +223,7 @@ namespace Smash_Forge
             header.height = (uint)tex.Height;
             header.pitchOrLinearSize = (uint)tex.Size;
             header.mipMapCount = (uint)tex.surfaces[0].mipmaps.Count;
-            header.caps2 = tex.ddsCaps2;
+            header.caps2 = tex.DdsCaps2;
             bool isCubemap = (header.caps2 & (uint)DDSCAPS2.CUBEMAP) == (uint)DDSCAPS2.CUBEMAP;
             header.caps = (uint)DDSCAPS.TEXTURE;
             if (header.mipMapCount > 1)
@@ -270,7 +270,7 @@ namespace Smash_Forge
             }
 
             List<byte> d = new List<byte>();
-            foreach (byte[] b in tex.getAllMipmaps())
+            foreach (byte[] b in tex.GetAllMipmaps())
             {
                 d.AddRange(b);
             }
