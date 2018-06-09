@@ -25,6 +25,8 @@ namespace Smash_Forge
         private Dictionary<NutTexture,string> fileFromTexture = new Dictionary<NutTexture, string>();
         private Dictionary<string,NutTexture> textureFromFile = new Dictionary<string, NutTexture>();
 
+        // Rendering Stuff
+        Rendering.Framebuffer pngExportFramebuffer;
         private bool renderR = true;
         private bool renderG = true;
         private bool renderB = true;
@@ -230,29 +232,26 @@ namespace Smash_Forge
             int height = nutTexture.Height;
             int texture = NUT.glTexByHashId[nutTexture.HASHID];
 
-            // Setup
-            int fbo;
-            int rboColor;
-            int rboDepth;
+            // Setup and reuse the same buffer for each image.
             glControl1.MakeCurrent();
             GL.Disable(EnableCap.ScissorTest);
-            Rendering.FramebufferTools.CreateOffscreenRenderFboRbo(out fbo, out rboDepth, out rboColor, FramebufferTarget.Framebuffer, width, height);
+            pngExportFramebuffer.Width = width;
+            pngExportFramebuffer.Height = height;
             GL.Viewport(0, 0, width, height);
 
             // Render the texture to the fbo.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+            pngExportFramebuffer.Bind();
             Rendering.RenderTools.DrawTexturedQuad(texture, width, height, renderR, renderG, renderB, renderAlpha);
 
             // Save the image.
-            Bitmap image = Rendering.FramebufferTools.ReadFrameBufferPixels(fbo, FramebufferTarget.Framebuffer, width, height, true);
+            Bitmap image = pngExportFramebuffer.ReadImagePixels();
             image.Save(outputPath);
 
             // Cleanup
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.Viewport(glControl1.ClientRectangle);
             image.Dispose();
-            GL.DeleteBuffer(fbo);
-            GL.DeleteRenderbuffer(rboColor);
+            GL.DeleteBuffer(pngExportFramebuffer.Id);
         }
 
         private void exportNutAsPngToolStripMenuItem_Click(object sender, EventArgs e)
@@ -913,6 +912,7 @@ namespace Smash_Forge
         private void NUTEditor_Load(object sender, EventArgs e)
         {
             _loaded = true;
+            pngExportFramebuffer = new Rendering.Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)

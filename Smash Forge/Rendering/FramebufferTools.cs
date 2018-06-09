@@ -21,10 +21,7 @@ namespace Smash_Forge.Rendering
 
             // Read the pixels from the framebuffer.
             GL.BindFramebuffer(target, fbo);
-            GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
-            GL.GetError();
             GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
-            Debug.WriteLine(GL.GetError());
             byte[] fixedPixels = CopyImagePixels(width, height, saveAlpha, pixelByteLength, pixels);
 
             // Format and save the data
@@ -53,23 +50,6 @@ namespace Smash_Forge.Rendering
             }
 
             return fixedPixels;
-        }
-
-        public static void CreateHdrFboSingleTextureNoDepth(out int fbo, FramebufferTarget target, out int texture0, int width, int height)
-        {
-            GL.GenFramebuffers(1, out fbo);
-            GL.BindFramebuffer(target, fbo);
-
-            // Create texture color attachment.
-            GL.GenTextures(1, out texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture0);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.FramebufferTexture2D(target, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture0, 0);
-
-            // Bind the default framebuffer again.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
         public static void CreateHdrFboTwoTextures(out int fbo, out int rbo, out int texture0, out int texture1, int textureWidth, int textureHeight)
@@ -103,33 +83,6 @@ namespace Smash_Forge.Rendering
             // Draw to both textures
             DrawBuffersEnum[] buffers = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1 };
             GL.DrawBuffers(2, buffers);
-
-            // Bind the default framebuffer again.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-        }
-
-        public static void CreateOffscreenRenderFboRbo(out int fbo, out int rboDepth, out int texture0, FramebufferTarget target, int width, int height)
-        {
-            // Setup an hdr framebuffer with two color attachments of the given dimensions.
-            GL.GenFramebuffers(1, out fbo);
-            GL.BindFramebuffer(target, fbo);
-
-            // First color attachment (regular texture).
-            GL.GenTextures(1, out texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture0);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.FramebufferTexture2D(target, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture0, 0);
-
-            // Render buffer for the depth attachment, which isn't provided by default.
-            GL.GenRenderbuffers(1, out rboDepth);
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rboDepth);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
-            GL.FramebufferRenderbuffer(target, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, rboDepth);
-
-            // Draw to the texture.
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
 
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);

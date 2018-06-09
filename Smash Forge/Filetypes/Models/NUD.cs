@@ -870,7 +870,7 @@ namespace Smash_Forge
             SetRenderModeTextureUniforms(shader);
 
             // This is necessary to prevent some models from disappearing. 
-            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex);
+            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex.Id);
 
             // The order of the textures in the following section is critical. 
             int textureUnitIndexOffset = 0;
@@ -927,7 +927,7 @@ namespace Smash_Forge
             if (mat.hasDiffuse && textureUnitIndexOffset < mat.textures.Count)
             {
                 GL.ActiveTexture(TextureUnit.Texture3 + textureUnitIndexOffset);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereDifTex);
+                GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereDifTex.Id);
                 GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), 3 + textureUnitIndexOffset); textureUnitIndexOffset++;
             }
 
@@ -943,7 +943,7 @@ namespace Smash_Forge
                 if (mat.hasNormalMap)
                 {
                     GL.ActiveTexture(TextureUnit.Texture3 + textureUnitIndexOffset);
-                    GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereNrmMapTex);
+                    GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereNrmMapTex.Id);
                     GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), 3 + textureUnitIndexOffset);
                     textureUnitIndexOffset++;
                 }
@@ -1011,7 +1011,7 @@ namespace Smash_Forge
                 if (mat.hasNormalMap)
                 {
                     GL.ActiveTexture(TextureUnit.Texture3 + textureUnitIndexOffset);
-                    GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereNrmMapTex);
+                    GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereNrmMapTex.Id);
                     GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), 3 + textureUnitIndexOffset);
                     textureUnitIndexOffset++;
                 }
@@ -1047,15 +1047,15 @@ namespace Smash_Forge
         private static void SetRenderModeTextureUniforms(Shader shader)
         {
             GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern.Id);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("UVTestPattern"), 10);
 
             GL.ActiveTexture(TextureUnit.Texture11);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient.Id);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("weightRamp1"), 11);
 
             GL.ActiveTexture(TextureUnit.Texture12);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient2);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient2.Id);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("weightRamp2"), 12);
         }
 
@@ -1231,7 +1231,7 @@ namespace Smash_Forge
             else
             {
                 GL.ActiveTexture(TextureUnit.Texture3 + loc);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
+                GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex.Id);
             }
 
             foreach (NUT nut in Runtime.TextureContainers)

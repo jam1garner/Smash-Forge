@@ -116,14 +116,14 @@ namespace Smash_Forge
             int rboColor;
             int rboDepth;
             glControl1.MakeCurrent();
-            Rendering.FramebufferTools.CreateOffscreenRenderFboRbo(out fbo, out rboDepth, out rboColor, FramebufferTarget.Framebuffer, width, height);
+            //Rendering.FramebufferTools.CreateOffscreenRenderFboRbo(out fbo, out rboDepth, out rboColor, FramebufferTarget.Framebuffer, width, height);
             GL.Viewport(0, 0, width, height);
 
-            RenderMaterialPresetPreviewsToFiles(width, height, fbo);
+            //RenderMaterialPresetPreviewsToFiles(width, height, fbo);
 
             // Cleanup
-            GL.DeleteBuffer(fbo);
-            GL.DeleteRenderbuffer(rboColor);
+            //GL.DeleteBuffer(fbo);
+            //GL.DeleteRenderbuffer(rboColor);
         }
 
         private void RenderMaterialPresetPreviewsToFiles(int width, int height, int fbo)
@@ -136,7 +136,7 @@ namespace Smash_Forge
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
                 Rendering.RenderTools.DrawNudMaterialSphere(material);
                 glControl1.SwapBuffers();
-
+                /*
                 // Using the other framebuffer targets doesn't work for some reason.
                 Bitmap image = Rendering.FramebufferTools.ReadFrameBufferPixels(fbo, FramebufferTarget.Framebuffer, width, height, true);
 
@@ -145,9 +145,10 @@ namespace Smash_Forge
                 string presetName = parts[parts.Length - 1];
                 presetName = presetName.Replace(".nmt", ".png");
                 image.Save(MainForm.executableDir + "\\Preview Images\\" + presetName);
-
+             
                 // Cleanup
                 image.Dispose();
+                */
             }
         }
 
@@ -497,7 +498,7 @@ namespace Smash_Forge
             if (fileName.EndsWith("stprm.bin"))
             {
                 Runtime.stprmParam = new ParamFile(fileName);
-                modelViewport.GetCamera().SetValuesFromStprm(Runtime.stprmParam);
+                Rendering.RenderTools.SetCameraValuesFromParam(modelViewport.GetCamera(), Runtime.stprmParam);
             }
         }
 
@@ -1356,7 +1357,7 @@ namespace Smash_Forge
                     {
                         // should this always replace existing settings?
                         Runtime.stprmParam = new ParamFile(fileName);
-                        mvp.GetCamera().SetValuesFromStprm(Runtime.stprmParam);
+                        Rendering.RenderTools.SetCameraValuesFromParam(mvp.GetCamera(), Runtime.stprmParam);
                     }
 
                 }

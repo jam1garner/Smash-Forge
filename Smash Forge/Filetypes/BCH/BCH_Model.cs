@@ -429,7 +429,7 @@ namespace Smash_Forge
             GL.Uniform3(shader.GetVertexAttributeUniformLocation("ambLightColor"), Runtime.lightSetParam.characterDiffuse.ambientColor.R, Runtime.lightSetParam.characterDiffuse.ambientColor.G, Runtime.lightSetParam.characterDiffuse.ambientColor.B);
 
             GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern.Id);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("UVTestPattern"), 10);
 
             Matrix4[] f = skeleton.getShaderMatrix();
@@ -472,7 +472,7 @@ namespace Smash_Forge
                 GL.ActiveTexture(TextureUnit.Texture0);
                 BCH_Material material = (BCH_Material)((BCH)Parent.Parent).Materials.Nodes[m.MaterialIndex];
                 BCH_Texture tex = ((BCH)Parent.Parent).GetTexture(material.Text);
-                GL.BindTexture(TextureTarget.Texture2D, tex == null ? RenderTools.defaultTex : tex.display);
+                GL.BindTexture(TextureTarget.Texture2D, tex == null ? RenderTools.defaultTex.Id : tex.display);
                 GL.Uniform1(shader.GetVertexAttributeUniformLocation("tex"), 0);
                 if (!m.Checked) continue;
 

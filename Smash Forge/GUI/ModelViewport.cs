@@ -42,15 +42,10 @@ namespace Smash_Forge
         int hdrDepthRbo;
 
         // The texture that will be blurred for bloom.
-        int brightTexSmall;
-        int brightHdrSmallFbo;
-        int brightTexWidth;
-        int brightTexHeight;
+        Framebuffer imageBrightHdrFbo;
 
-        // Screen Render
-        int screenRenderFbo;
-        int screenRenderTex0;
-        int screenRenderRboDepth;
+        // Used for screen renders and color picking.
+        Framebuffer offscreenRenderFbo;
 
         // The viewport dimensions should be used for FBOs visible on screen.
         // Larger dimensions can be used for higher quality outputs for FBOs.
@@ -300,21 +295,16 @@ namespace Smash_Forge
             fboRenderWidth = glViewport.Width;
             fboRenderHeight = glViewport.Height;
 
+            // Render bright and normal images to separate textures.
             FramebufferTools.CreateHdrFboTwoTextures(out colorHdrFbo, out hdrDepthRbo, out colorHdrTex0, out colorHdrTex1, fboRenderWidth, fboRenderHeight);
-            brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
-            brightTexHeight = (int)(glViewport.Height * Runtime.bloomTexScale);
-            FramebufferTools.CreateHdrFboSingleTextureNoDepth(out brightHdrSmallFbo, FramebufferTarget.Framebuffer, out brightTexSmall, brightTexWidth, brightTexHeight);
 
-            SetupOffScreenFboRbo();
+            // Smaller FBO/texture for the brighter, blurred portions.
+            int brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
+            int brightTexHeight = (int)(glViewport.Height * Runtime.bloomTexScale);
+            imageBrightHdrFbo = new Framebuffer(FramebufferTarget.Framebuffer, brightTexWidth, brightTexHeight, PixelInternalFormat.Rgba16f);
 
-            // Bind the default framebuffer again.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-        }
-
-        private void SetupOffScreenFboRbo()
-        {
-            // Create an FBO/RBO just for saving screen renders.
-            FramebufferTools.CreateOffscreenRenderFboRbo(out screenRenderFbo, out screenRenderRboDepth, out screenRenderTex0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight);
+            // Screen Rendering
+            offscreenRenderFbo = new Framebuffer(FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight);
 
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -480,20 +470,20 @@ namespace Smash_Forge
 
         private void SelectPolygonAtMousePosition()
         {
-            RenderNudColorIdPassToFbo(screenRenderFbo);
+            RenderNudColorIdPassToFbo(offscreenRenderFbo.Id);
 
             // Get the color at the mouse's position.
-            Color selectedColor = ColorPickPixelAtMousePosition(screenRenderFbo);
+            Color selectedColor = ColorPickPixelAtMousePosition();
             Debug.WriteLine(selectedColor.ToString());
             meshList.filesTreeView.SelectedNode = GetSelectedPolygonFromColor(selectedColor);
         }
 
         private void SelectMeshAtMousePosition()
         {
-            RenderNudColorIdPassToFbo(screenRenderFbo);
+            RenderNudColorIdPassToFbo(offscreenRenderFbo.Id);
 
             // Get the color at the mouse's position.
-            Color selectedColor = ColorPickPixelAtMousePosition(screenRenderFbo);
+            Color selectedColor = ColorPickPixelAtMousePosition();
             meshList.filesTreeView.SelectedNode = GetSelectedMeshFromColor(selectedColor);
         }
 
@@ -558,16 +548,11 @@ namespace Smash_Forge
             return null;
         }
 
-        private Color ColorPickPixelAtMousePosition(int fbo = 0)
+        private Color ColorPickPixelAtMousePosition()
         {
-            // Make sure the proper FBO is bound.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
-
-            // Colorpick the single pixel from the FBO at the mouse's location.
-            System.Drawing.Point mouse = glViewport.PointToClient(Cursor.Position);
-            byte[] rgba = new byte[4];
-            GL.ReadPixels(mouse.X, glViewport.Height - mouse.Y, 1, 1, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, rgba);
-            return Color.FromArgb(rgba[3], rgba[0], rgba[1], rgba[2]);
+            // Colorpick a single pixel from the offscreen FBO at the mouse's location.
+            System.Drawing.Point mousePosition = glViewport.PointToClient(Cursor.Position);
+            return offscreenRenderFbo.SamplePixelColor(mousePosition.X, glViewport.Height - mousePosition.Y);
         }
 
         private Vector3 getScreenPoint(Vector3 pos)
@@ -598,33 +583,14 @@ namespace Smash_Forge
 
         private void ResizeTexturesAndBuffers()
         {
+            // FBOs manage their own resizing.
             ResizeHdrFboRboTwoColorAttachments();
-            ResizeSmallBrightHdrTexture();
-            ResizeOffScreenRbo();
-        }
 
-        private void ResizeOffScreenRbo()
-        {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, screenRenderFbo);
+            imageBrightHdrFbo.Width = (int)(fboRenderWidth * Runtime.bloomTexScale);
+            imageBrightHdrFbo.Height = (int)(fboRenderHeight * Runtime.bloomTexScale);
 
-            // First color attachment (regular texture).
-            GL.BindTexture(TextureTarget.Texture2D, screenRenderTex0);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, fboRenderWidth, fboRenderHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, screenRenderTex0, 0);
-
-            // Render buffer for the depth attachment, which isn't provided by default.
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, screenRenderRboDepth);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, fboRenderWidth, fboRenderHeight);
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, screenRenderRboDepth);
-        }
-
-        private void ResizeSmallBrightHdrTexture()
-        {
-            // Small bright texture.
-            GL.BindTexture(TextureTarget.Texture2D, brightTexSmall);
-            brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
-            brightTexHeight = (int)(glViewport.Height * Runtime.bloomTexScale);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, brightTexWidth, brightTexHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            offscreenRenderFbo.Width = fboRenderWidth;
+            offscreenRenderFbo.Height = fboRenderHeight;
         }
 
         private void ResizeHdrFboRboTwoColorAttachments()
@@ -1473,6 +1439,7 @@ namespace Smash_Forge
             if (Runtime.renderBackGround && !Runtime.usePostProcessing)
                 DrawViewportBackground();
 
+            // What even is this...
             if (glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
              && glViewport.Focused
              && (currentMode == Mode.Normal || (currentMode == Mode.Photoshoot && !freezeCamera))
@@ -1500,15 +1467,15 @@ namespace Smash_Forge
             if (Runtime.usePostProcessing)
             {
                 // Draw the texture to the screen into a smaller FBO.
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, brightHdrSmallFbo);
-                GL.Viewport(0, 0, brightTexWidth, brightTexHeight);
-                RenderTools.DrawTexturedQuad(colorHdrTex1, brightTexWidth, brightTexHeight);
+                imageBrightHdrFbo.Bind();
+                GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
+                RenderTools.DrawTexturedQuad(colorHdrTex1, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
 
-                RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, brightTexSmall);
+                RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, imageBrightHdrFbo.ColorAttachment0Tex);
             }
 
             FixedFunctionRendering();
@@ -1766,29 +1733,33 @@ namespace Smash_Forge
 
         public void SaveScreenRender(bool saveAlpha = false)
         {
+            // Set these dimensions back again before normal rendering so the viewport doesn't look glitchy.
             int oldWidth = glViewport.Width;
             int oldHeight = glViewport.Height;
 
-            // Setup the new render dimensions.
+            // The scissor test is causing issues with viewport resizing. Just disable it for now.
             glViewport.MakeCurrent();
             GL.Disable(EnableCap.ScissorTest);
+
+            // Render screenshots in a higher quality.
             fboRenderWidth = oldWidth * 2;
             fboRenderHeight = oldHeight * 2;
+
+            // Make sure the framebuffers and viewport match the new drawing size.
             ResizeTexturesAndBuffers();
             GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
 
-            // Render the viewport.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, screenRenderFbo);
-            Render(null, null, screenRenderFbo);
+            // Render the viewport.       
+            offscreenRenderFbo.Bind();
+            Render(null, null, offscreenRenderFbo.Id);
 
             // Save the render as a PNG.
-            Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(screenRenderFbo, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, saveAlpha);
+            Bitmap screenCapture = offscreenRenderFbo.ReadImagePixels(saveAlpha);
             string outputPath = CalculateUniqueName();
             screenCapture.Save(outputPath);
-            screenCapture.Dispose(); // Manually dispose the bitmap to avoid memory leaks. 
 
             // Cleanup
-            //GL.Enable(EnableCap.ScissorTest);
+            screenCapture.Dispose(); // Manually dispose the bitmap to avoid memory leaks. 
             fboRenderWidth = oldWidth;
             fboRenderHeight = oldHeight;
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);

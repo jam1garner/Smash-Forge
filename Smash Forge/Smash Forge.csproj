@@ -468,6 +468,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Framebuffer.cs" />
     <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
     <Compile Include="Rendering\BatchRenderTools.cs" />
@@ -482,7 +483,9 @@
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\Shader\ShaderLog.cs" />
     <Compile Include="Rendering\Shader\ShaderTools.cs" />
-    <Compile Include="Rendering\Texture.cs" />
+    <Compile Include="Rendering\Textures\Texture.cs" />
+    <Compile Include="Rendering\Textures\Texture2D.cs" />
+    <Compile Include="Rendering\Textures\TextureCubeMap.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">

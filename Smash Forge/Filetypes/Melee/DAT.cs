@@ -391,7 +391,7 @@ namespace Smash_Forge
 
             GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelview"), false, ref modelview);
             GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, Rendering.RenderTools.uvTestPattern);
+            GL.BindTexture(TextureTarget.Texture2D, Rendering.RenderTools.uvTestPattern.Id);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("UVTestPattern"), 10);
 
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
@@ -1350,8 +1350,8 @@ namespace Smash_Forge
                         dat.tobjLinker.Add(imageDataOffset, new object[]{ testOffset, image, imageOffset, imageDataOffset });
                     }
 
-
-                    texid = Rendering.Texture.CreateGlTextureFromBitmap(image);
+                    Rendering.Texture texture = new Rendering.Texture2D(image);
+                    texid = texture.Id;
                 }
             }
         }

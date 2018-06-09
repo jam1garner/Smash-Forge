@@ -13,11 +13,11 @@ using System.Collections.Generic;
 
 namespace Smash_Forge.Rendering
 {
-    public class RenderTools
+    class RenderTools
     {
-        public static int defaultTex = -1;
-        public static int floorTexture;
-        public static int backgroundTexture;
+        public static Texture defaultTex;
+        public static Texture floorTexture;
+        public static Texture backgroundTexture;
 
         // A triangle that extends past the screen.
         // Avoids the need for a second triangle to fill a rectangular screen.
@@ -31,27 +31,23 @@ namespace Smash_Forge.Rendering
 
         public static Dictionary<NUD.DummyTextures, int> dummyTextures = new Dictionary<NUD.DummyTextures, int>(); 
 
-        private static int stageMapHigh;
-        private static int stageMapLow;
-        private static int dummyRamp;
-        private static int pokemonStadiumDummyTex;
-        private static int punchOutDummyTex;
-        private static int shadowMapDummyTex;
+        private static Texture stageMapHigh;
+        private static Texture stageMapLow;
 
-        public static int uvTestPattern;
-        public static int boneWeightGradient;
-        public static int boneWeightGradient2;
+        public static Texture uvTestPattern;
+        public static Texture boneWeightGradient;
+        public static Texture boneWeightGradient2;
 
         // Nud Material Sphere Textures.
-        public static int sphereDifTex;
-        public static int sphereNrmMapTex;
-        public static int sphereSphereMap;
+        public static Texture sphereDifTex;
+        public static Texture sphereNrmMapTex;
+        public static Texture sphereSphereMap;
 
         // Nud Material Sphere Vert Attribute Textures.
-        private static int sphereNrmTex;
-        private static int sphereUvTex;
-        private static int sphereTanTex;
-        private static int sphereBitanTex;
+        private static Texture sphereNrmTex;
+        private static Texture sphereUvTex;
+        private static Texture sphereTanTex;
+        private static Texture sphereBitanTex;
         private static Camera nudSphereCamera = new Camera();
 
         public static void SetupOpenTkRendering()
@@ -82,46 +78,44 @@ namespace Smash_Forge.Rendering
             dummyTextures.Clear();
 
             // Dummy textures. 
-            stageMapHigh = LoadCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
-            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
+            stageMapHigh = new TextureCubeMap(Properties.Resources._10102000, 128);
+            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh.Id);
 
-            stageMapLow = LoadCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
-            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
+            stageMapLow = new TextureCubeMap(Properties.Resources._10101000, 128);
+            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow.Id);
 
-            dummyRamp = Texture.CreateGlTextureFromBitmap(Properties.Resources._10080000);
-            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp);
+            Texture dummyRamp = new Texture2D(Properties.Resources._10080000);
+            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp.Id);
 
-            pokemonStadiumDummyTex = Texture.CreateGlTextureFromBitmap(Properties.Resources._10040001);
-            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex);
+            Texture pokemonStadiumDummyTex = new Texture2D(Properties.Resources._10040001);
+            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex.Id);
 
-            punchOutDummyTex = Texture.CreateGlTextureFromBitmap(Properties.Resources._10040000);
-            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex);
+            Texture punchOutDummyTex = new Texture2D(Properties.Resources._10040000);
+            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex.Id);
 
-            shadowMapDummyTex = Texture.CreateGlTextureFromBitmap(Properties.Resources._10100000);
-            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
+            Texture shadowMapDummyTex = new Texture2D(Properties.Resources._10100000);
+            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex.Id);
 
             // Sphere Default Textures.
-            sphereDifTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.defaultDif);
-            sphereNrmMapTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.nrmMap);
+            sphereDifTex =  new Texture2D(Properties.Resources.defaultDif);
+            sphereNrmMapTex = new Texture2D(Properties.Resources.nrmMap);
             // Sphere Mesh Attributes.
-            sphereNrmTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.nrm);
-            sphereUvTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.uv);
-            sphereTanTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.tan);
-            sphereBitanTex = Texture.CreateGlTextureFromBitmap(Properties.Resources.bitan);
+            sphereNrmTex = new Texture2D(Properties.Resources.nrm);
+            sphereUvTex = new Texture2D(Properties.Resources.uv);
+            sphereTanTex = new Texture2D(Properties.Resources.tan);
+            sphereBitanTex = new Texture2D(Properties.Resources.bitan);
 
             // Helpful textures. 
-            Texture texture = new Texture(TextureTarget.Texture2D, Properties.Resources.UVPattern);
-            uvTestPattern = texture.Id;
+            uvTestPattern = new Texture2D(Properties.Resources.UVPattern);
+            boneWeightGradient = new Texture2D(Properties.Resources.boneWeightGradient);
+            boneWeightGradient2 = new Texture2D(Properties.Resources.boneWeightGradient2);
 
-            boneWeightGradient = Texture.CreateGlTextureFromBitmap(Properties.Resources.boneWeightGradient);
-            boneWeightGradient2 = Texture.CreateGlTextureFromBitmap(Properties.Resources.boneWeightGradient2);
-
-            defaultTex = Texture.CreateGlTextureFromBitmap(Resources.Resources.DefaultTexture);
+            defaultTex = new Texture2D(Resources.Resources.DefaultTexture);
 
             try
             {
-                floorTexture = Texture.CreateGlTextureFromBitmap(new Bitmap(Runtime.floorTexFilePath));
-                backgroundTexture = Texture.CreateGlTextureFromBitmap(new Bitmap(Runtime.backgroundTexFilePath));
+                floorTexture = new Texture2D(new Bitmap(Runtime.floorTexFilePath));
+                backgroundTexture = new Texture2D(new Bitmap(Runtime.backgroundTexFilePath));
             }
             catch (Exception)
             {
@@ -922,14 +916,15 @@ namespace Smash_Forge.Rendering
             GL.Color3(Runtime.floorColor);
             GL.LineWidth(1f);
 
+            // THe user textured mode is currently broken.
             if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
             {
                 GL.Enable(EnableCap.Texture2D);
                 GL.ActiveTexture(TextureUnit.Texture0);
                 if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
-                    GL.BindTexture(TextureTarget.Texture2D, floorTexture);
+                    GL.BindTexture(TextureTarget.Texture2D, floorTexture.Id);
                 else
-                    GL.BindTexture(TextureTarget.Texture2D, defaultTex);
+                    GL.BindTexture(TextureTarget.Texture2D, defaultTex.Id);
 
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)Runtime.floorWrap);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)Runtime.floorWrap);
@@ -1609,25 +1604,25 @@ namespace Smash_Forge.Rendering
 
             // Set texture uniforms for the mesh attributes. 
             GL.ActiveTexture(TextureUnit.Texture15);
-            GL.BindTexture(TextureTarget.Texture2D, sphereNrmTex);
+            GL.BindTexture(TextureTarget.Texture2D, sphereNrmTex.Id);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalTex"), 15);
 
             GL.ActiveTexture(TextureUnit.Texture16);
-            GL.BindTexture(TextureTarget.Texture2D, sphereUvTex);
+            GL.BindTexture(TextureTarget.Texture2D, sphereUvTex.Id);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("uvTex"), 16);
 
             GL.ActiveTexture(TextureUnit.Texture17);
-            GL.BindTexture(TextureTarget.Texture2D, sphereTanTex);
+            GL.BindTexture(TextureTarget.Texture2D, sphereTanTex.Id);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("tanTex"), 17);
 
             GL.ActiveTexture(TextureUnit.Texture18);
-            GL.BindTexture(TextureTarget.Texture2D, sphereBitanTex);
+            GL.BindTexture(TextureTarget.Texture2D, sphereBitanTex.Id);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("bitanTex"), 18);
@@ -1690,6 +1685,15 @@ namespace Smash_Forge.Rendering
             return data;
         }
 
+        public static void SetCameraValuesFromParam(Camera camera, ParamFile stprm)
+        {
+            if (stprm == null)
+                return;
+
+            camera.FovDegrees = (float)Params.ParamTools.GetParamValue(stprm, 0, 0, 6);
+            camera.FarClipPlane = (float)Params.ParamTools.GetParamValue(stprm, 0, 0, 77);
+        }
+
         public static void DrawPhotoshoot(GLControl glControl1, float shootX, float shootY, float shootWidth, float shootHeight)
         {
             GL.MatrixMode(MatrixMode.Modelview);
@@ -1728,47 +1732,6 @@ namespace Smash_Forge.Rendering
             GL.Vertex2(shootX + shootWidth, glControl1.Height);
 
             GL.End();
-        }
-
-        public static int LoadCubeMap(Bitmap b, TextureUnit textureUnit)
-        {
-            int id;
-            GL.GenBuffers(1, out id);
-
-            GL.ActiveTexture(textureUnit);
-            
-            GL.BindTexture(TextureTarget.TextureCubeMap, id);
-
-            Bitmap bmp = b;
-
-            Rectangle[] srcRect = new Rectangle[] {
-            new Rectangle(0, 0, 128, 128),
-            new Rectangle(0, 128, 128, 128),
-            new Rectangle(0, 256, 128, 128),
-            new Rectangle(0, 384, 128, 128),
-            new Rectangle(0, 512, 128, 128),
-            new Rectangle(0, 640, 128, 128),
-            }; 
-
-            for(int i = 0; i < 6; i++)
-            {
-                Bitmap image = (Bitmap)bmp.Clone(srcRect[i], bmp.PixelFormat);
-                BitmapData data = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
-                    ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
-                    OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-                image.UnlockBits(data);
-            }
-
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
-
-            GL.BindTexture(TextureTarget.TextureCubeMap, 0);
-
-            return id;
         }
 
         public static Ray CreateRay(Matrix4 v, Vector2 m)

@@ -863,8 +863,6 @@ namespace Smash_Forge
                 texRgbGlControl.MakeCurrent();
                 GL.Viewport(texRgbGlControl.ClientRectangle);
                 RenderTools.DrawTexturedQuad(displayTexture, 1, 1);
-                Bitmap image = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, texRgbGlControl.Width, texRgbGlControl.Height);
-                image.Save(MainForm.executableDir + "\\image.png");
                 texRgbGlControl.SwapBuffers();
             }
 
