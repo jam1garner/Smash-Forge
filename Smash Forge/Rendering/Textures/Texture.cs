@@ -18,7 +18,7 @@ namespace Smash_Forge.Rendering
 
         public PixelInternalFormat PixelInternalFormat { get; }
 
-        private TextureMinFilter minFilter = TextureMinFilter.Nearest;
+        private TextureMinFilter minFilter;
         public TextureMinFilter MinFilter
         {
             get { return minFilter; }
@@ -30,7 +30,7 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        private TextureMagFilter magFilter = TextureMagFilter.Linear;
+        private TextureMagFilter magFilter;
         public TextureMagFilter MagFilter
         {
             get { return magFilter; }
@@ -42,7 +42,7 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        private TextureWrapMode textureWrapS = TextureWrapMode.ClampToEdge;
+        private TextureWrapMode textureWrapS;
         public TextureWrapMode TextureWrapS
         {
             get { return textureWrapS; }
@@ -54,19 +54,19 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        private TextureWrapMode textureWrapT = TextureWrapMode.ClampToEdge;
+        private TextureWrapMode textureWrapT;
         public TextureWrapMode TextureWrapT
         {
             get { return textureWrapT; }
             set
             {
                 Bind();
-                textureWrapS = value;
+                textureWrapT = value;
                 GL.TexParameter(textureTarget, TextureParameterName.TextureWrapT, (int)value);
             }
         }
 
-        private TextureWrapMode textureWrapR = TextureWrapMode.ClampToEdge;
+        private TextureWrapMode textureWrapR;
         public TextureWrapMode TextureWrapR
         {
             get { return textureWrapR; }
@@ -87,6 +87,13 @@ namespace Smash_Forge.Rendering
 
             Bind();
 
+            // The GL texture needs to be updated in addition to initializing the variables.
+            TextureWrapS = TextureWrapMode.ClampToEdge;
+            TextureWrapT = TextureWrapMode.ClampToEdge;
+            TextureWrapR = TextureWrapMode.ClampToEdge;
+            MinFilter = TextureMinFilter.NearestMipmapLinear;
+            MagFilter = TextureMagFilter.Linear;
+
             // Setup the format and mip maps.
             GL.TexImage2D(textureTarget, 0, PixelInternalFormat, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
@@ -95,46 +102,6 @@ namespace Smash_Forge.Rendering
         public Texture(TextureTarget target, Bitmap image) : this(target, image.Width, image.Height)
         {
             LoadImageDataAutoGenerateMipmaps(image);
-        }
-
-        public Texture(Bitmap cubeMapFaces, int faceResolution = 128)
-        {
-            Id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.TextureCubeMap, Id);
-
-            Bitmap bmp = cubeMapFaces;
-
-            // The cube map resolution is currently hardcoded...
-            // Faces are arranged vertically in the following order from top to bottom:
-            // X+, X-, Y+, Y-, Z+, Z-
-            Rectangle[] cubeMapFaceRegions = new Rectangle[] {
-            new Rectangle(0, 0, 128, 128),
-            new Rectangle(0, 128, 128, 128),
-            new Rectangle(0, 256, 128, 128),
-            new Rectangle(0, 384, 128, 128),
-            new Rectangle(0, 512, 128, 128),
-            new Rectangle(0, 640, 128, 128),
-            };
-
-            const int cubeMapFaceCount = 6;
-            for (int i = 0; i < cubeMapFaceCount; i++)
-            {
-                // Copy the pixels for the appropriate face.
-                Bitmap image = bmp.Clone(cubeMapFaceRegions[i], bmp.PixelFormat);
-
-                // Load the data to the texture.
-                BitmapData data = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
-                    ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
-                    OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-                image.UnlockBits(data);
-            }
-
-            //GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            //GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            //GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            //GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
         }
 
         private static void LoadCubeMapFaces(Bitmap image)

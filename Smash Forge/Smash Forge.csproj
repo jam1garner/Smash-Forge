@@ -483,7 +483,8 @@
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\Shader\ShaderLog.cs" />
     <Compile Include="Rendering\Shader\ShaderTools.cs" />
-    <Compile Include="Rendering\Texture.cs" />
+    <Compile Include="Rendering\Textures\Texture.cs" />
+    <Compile Include="Rendering\Textures\TextureCubeMap.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
