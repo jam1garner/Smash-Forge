@@ -175,9 +175,24 @@ namespace Smash_Forge
                 widthLabel.Text = "Width: " + tex.Width;
                 heightLabel.Text = "Height:" + tex.Height;
 
-                // Get number of mip maps for current texture.
-                mipLevelTrackBar.Maximum = (tex.surfaces[0].mipmaps.Count) - 1;
-                maxMipLevelLabel.Text = "Total:" + tex.surfaces[0].mipmaps.Count + "";
+                if (tex.surfaces.Count == 6)
+                {
+                    // Display the current face instead of mip map information.
+                    mipMapGroupBox.Text = "Cube Map Faces";
+                    SetCurrentCubeMapFaceLabel(mipLevelTrackBar.Value);
+                    mipLevelTrackBar.Maximum = tex.surfaces.Count - 1;
+                    minMipLevelLabel.Text = "";
+                    maxMipLevelLabel.Text = "";
+                }
+                else
+                {
+                    // Display the total mip maps.
+                    mipMapGroupBox.Text = "Mip Maps";
+                    mipLevelLabel.Text = "Mip Level";
+                    mipLevelTrackBar.Maximum = tex.surfaces[0].mipmaps.Count - 1;
+                    minMipLevelLabel.Text = "1";
+                    maxMipLevelLabel.Text = "Total:" + tex.surfaces[0].mipmaps.Count + "";
+                }
             }
             else
             {
@@ -190,6 +205,33 @@ namespace Smash_Forge
             glControl1.Invalidate();
             glControl1.Update();
             RenderTexture();
+        }
+
+        private void SetCurrentCubeMapFaceLabel(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    mipLevelLabel.Text = "Face: X+";
+                    break;
+                case 1:
+                    mipLevelLabel.Text = "Face: X-";
+                    break;
+                case 2:
+                    mipLevelLabel.Text = "Face: Y+";
+                    break;
+                case 3:
+                    mipLevelLabel.Text = "Face: Y-";
+                    break;
+                case 4:
+                    mipLevelLabel.Text = "Face: Z+";
+                    break;
+                case 5:
+                    mipLevelLabel.Text = "Face: Z-";
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void RenderTexture()
@@ -539,44 +581,6 @@ namespace Smash_Forge
                     FillForm();
                 }
             }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            DialogResult dialogResult = MessageBox.Show("Clear all NUTs from the list? You'll lose any unsaved work!", "Clear all NUTs?", MessageBoxButtons.YesNo);
-            if (dialogResult == DialogResult.Yes)
-            {
-                textureListBox.Items.Clear();
-                Runtime.TextureContainers.Clear();
-            }
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            DialogResult dialogResult = MessageBox.Show("Remove this NUT from the list?\nHint: Options -> Don't ask before removing NUTs", "Remove NUTs?", MessageBoxButtons.YesNo);
-            if (dialogResult == DialogResult.No)
-            {
-                return;
-            }
-            deleteSelectedNUTs();
-        }
-
-        //TODO: It doesn't work.
-        private void KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Delete)
-            {
-                deleteSelectedNUTs();
-            }
-        }
-        
-        /// <summary>
-        /// Deletes all selected NUTs.
-        /// Although the function can delete multiple NUTs, the rest of the application has not been updated to support selecting more than one at once...
-        /// </summary>
-        private void deleteSelectedNUTs()
-        {
-            textureListBox.Items.Clear();
         }
 
         public static Process ShowOpenWithDialog(string path)
@@ -948,6 +952,13 @@ namespace Smash_Forge
         private void mipLevelTrackBar_Scroll(object sender, EventArgs e)
         {
             currentMipLevel = mipLevelTrackBar.Value;
+
+            NutTexture tex = ((NutTexture)textureListBox.SelectedItem);
+            if (tex.surfaces.Count == 6)
+            {
+                SetCurrentCubeMapFaceLabel(mipLevelTrackBar.Value);
+            }
+
             glControl1.Invalidate();
         }
 

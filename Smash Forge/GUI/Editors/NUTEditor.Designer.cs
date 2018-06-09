@@ -45,7 +45,7 @@
             this.textureIdTB = new System.Windows.Forms.TextBox();
             this.mipMapGroupBox = new System.Windows.Forms.GroupBox();
             this.mipLevelTrackBar = new System.Windows.Forms.TrackBar();
-            this.label6 = new System.Windows.Forms.Label();
+            this.mipLevelLabel = new System.Windows.Forms.Label();
             this.minMipLevelLabel = new System.Windows.Forms.Label();
             this.maxMipLevelLabel = new System.Windows.Forms.Label();
             this.dimensionsGroupBox = new System.Windows.Forms.GroupBox();
@@ -229,7 +229,7 @@
             // mipMapGroupBox
             // 
             this.mipMapGroupBox.Controls.Add(this.mipLevelTrackBar);
-            this.mipMapGroupBox.Controls.Add(this.label6);
+            this.mipMapGroupBox.Controls.Add(this.mipLevelLabel);
             this.mipMapGroupBox.Controls.Add(this.minMipLevelLabel);
             this.mipMapGroupBox.Controls.Add(this.maxMipLevelLabel);
             this.mipMapGroupBox.Location = new System.Drawing.Point(212, 19);
@@ -247,14 +247,14 @@
             this.mipLevelTrackBar.TabIndex = 22;
             this.mipLevelTrackBar.Scroll += new System.EventHandler(this.mipLevelTrackBar_Scroll);
             // 
-            // label6
+            // mipLevelLabel
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(5, 25);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(53, 13);
-            this.label6.TabIndex = 23;
-            this.label6.Text = "Mip Level";
+            this.mipLevelLabel.AutoSize = true;
+            this.mipLevelLabel.Location = new System.Drawing.Point(5, 25);
+            this.mipLevelLabel.Name = "mipLevelLabel";
+            this.mipLevelLabel.Size = new System.Drawing.Size(53, 13);
+            this.mipLevelLabel.TabIndex = 23;
+            this.mipLevelLabel.Text = "Mip Level";
             // 
             // minMipLevelLabel
             // 
@@ -395,7 +395,7 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private OpenTK.GLControl glControl1;
         private System.Windows.Forms.GroupBox previewGroupBox;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label mipLevelLabel;
         private System.Windows.Forms.TrackBar mipLevelTrackBar;
         private System.Windows.Forms.Label maxMipLevelLabel;
         private System.Windows.Forms.Label minMipLevelLabel;
