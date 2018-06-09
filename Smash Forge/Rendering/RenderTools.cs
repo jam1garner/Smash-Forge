@@ -31,8 +31,8 @@ namespace Smash_Forge.Rendering
 
         public static Dictionary<NUD.DummyTextures, int> dummyTextures = new Dictionary<NUD.DummyTextures, int>(); 
 
-        private static int stageMapHigh;
-        private static int stageMapLow;
+        private static Texture stageMapHigh;
+        private static Texture stageMapLow;
 
         public static Texture uvTestPattern;
         public static Texture boneWeightGradient;
@@ -78,11 +78,11 @@ namespace Smash_Forge.Rendering
             dummyTextures.Clear();
 
             // Dummy textures. 
-            stageMapHigh = Texture.CreateGlCubeMap(Properties.Resources._10102000);
-            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
+            stageMapHigh = new Texture(Properties.Resources._10102000, 128);
+            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh.Id);
 
-            stageMapLow = Texture.CreateGlCubeMap(Properties.Resources._10101000);
-            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
+            stageMapLow = new Texture(Properties.Resources._10101000, 128);
+            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow.Id);
 
             Texture dummyRamp = new Texture(TextureTarget.Texture2D, Properties.Resources._10080000);
             dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp.Id);
