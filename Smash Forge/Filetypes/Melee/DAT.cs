@@ -1350,7 +1350,7 @@ namespace Smash_Forge
                         dat.tobjLinker.Add(imageDataOffset, new object[]{ testOffset, image, imageOffset, imageDataOffset });
                     }
 
-                    Rendering.Texture texture = new Rendering.Texture(TextureTarget.Texture2D, image);
+                    Rendering.Texture texture = new Rendering.Texture2D(image);
                     texid = texture.Id;
                 }
             }

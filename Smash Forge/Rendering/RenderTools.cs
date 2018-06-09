@@ -84,38 +84,38 @@ namespace Smash_Forge.Rendering
             stageMapLow = new TextureCubeMap(Properties.Resources._10101000, 128);
             dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow.Id);
 
-            Texture dummyRamp = new Texture(TextureTarget.Texture2D, Properties.Resources._10080000);
+            Texture dummyRamp = new Texture2D(Properties.Resources._10080000);
             dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp.Id);
 
-            Texture pokemonStadiumDummyTex = new Texture(TextureTarget.Texture2D, Properties.Resources._10040001);
+            Texture pokemonStadiumDummyTex = new Texture2D(Properties.Resources._10040001);
             dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex.Id);
 
-            Texture punchOutDummyTex = new Texture(TextureTarget.Texture2D, Properties.Resources._10040000);
+            Texture punchOutDummyTex = new Texture2D(Properties.Resources._10040000);
             dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex.Id);
 
-            Texture shadowMapDummyTex = new Texture(TextureTarget.Texture2D, Properties.Resources._10100000);
+            Texture shadowMapDummyTex = new Texture2D(Properties.Resources._10100000);
             dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex.Id);
 
             // Sphere Default Textures.
-            sphereDifTex =  new Texture(TextureTarget.Texture2D, Properties.Resources.defaultDif);
-            sphereNrmMapTex = new Texture(TextureTarget.Texture2D, Properties.Resources.nrmMap);
+            sphereDifTex =  new Texture2D(Properties.Resources.defaultDif);
+            sphereNrmMapTex = new Texture2D(Properties.Resources.nrmMap);
             // Sphere Mesh Attributes.
-            sphereNrmTex = new Texture(TextureTarget.Texture2D, Properties.Resources.nrm);
-            sphereUvTex = new Texture(TextureTarget.Texture2D, Properties.Resources.uv);
-            sphereTanTex = new Texture(TextureTarget.Texture2D, Properties.Resources.tan);
-            sphereBitanTex = new Texture(TextureTarget.Texture2D, Properties.Resources.bitan);
+            sphereNrmTex = new Texture2D(Properties.Resources.nrm);
+            sphereUvTex = new Texture2D(Properties.Resources.uv);
+            sphereTanTex = new Texture2D(Properties.Resources.tan);
+            sphereBitanTex = new Texture2D(Properties.Resources.bitan);
 
             // Helpful textures. 
-            uvTestPattern = new Texture(TextureTarget.Texture2D, Properties.Resources.UVPattern);
-            boneWeightGradient = new Texture(TextureTarget.Texture2D, Properties.Resources.boneWeightGradient);
-            boneWeightGradient2 = new Texture(TextureTarget.Texture2D, Properties.Resources.boneWeightGradient2);
+            uvTestPattern = new Texture2D(Properties.Resources.UVPattern);
+            boneWeightGradient = new Texture2D(Properties.Resources.boneWeightGradient);
+            boneWeightGradient2 = new Texture2D(Properties.Resources.boneWeightGradient2);
 
-            defaultTex = new Texture(TextureTarget.Texture2D, Resources.Resources.DefaultTexture);
+            defaultTex = new Texture2D(Resources.Resources.DefaultTexture);
 
             try
             {
-                floorTexture = new Texture(TextureTarget.Texture2D, new Bitmap(Runtime.floorTexFilePath));
-                backgroundTexture = new Texture(TextureTarget.Texture2D, new Bitmap(Runtime.backgroundTexFilePath));
+                floorTexture = new Texture2D(new Bitmap(Runtime.floorTexFilePath));
+                backgroundTexture = new Texture2D(new Bitmap(Runtime.backgroundTexFilePath));
             }
             catch (Exception)
             {

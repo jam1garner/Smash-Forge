@@ -66,7 +66,7 @@ namespace Smash_Forge
                     case "default_texture":
                         if (File.Exists(node.InnerText) && node.InnerText.ToLower().EndsWith(".png"))
                         {
-                            Rendering.RenderTools.defaultTex = new Rendering.Texture(OpenTK.Graphics.OpenGL.TextureTarget.Texture2D, new Bitmap(node.InnerText));
+                            Rendering.RenderTools.defaultTex = new Rendering.Texture2D(new Bitmap(node.InnerText));
                         }
                         break;
                     case "size":

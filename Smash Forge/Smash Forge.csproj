@@ -484,6 +484,7 @@
     <Compile Include="Rendering\Shader\ShaderLog.cs" />
     <Compile Include="Rendering\Shader\ShaderTools.cs" />
     <Compile Include="Rendering\Textures\Texture.cs" />
+    <Compile Include="Rendering\Textures\Texture2D.cs" />
     <Compile Include="Rendering\Textures\TextureCubeMap.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />

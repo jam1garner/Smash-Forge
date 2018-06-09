@@ -913,7 +913,7 @@ namespace Smash_Forge.GUI
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    Rendering.RenderTools.backgroundTexture = new Rendering.Texture(OpenTK.Graphics.OpenGL.TextureTarget.Texture2D, new Bitmap(ofd.FileName));
+                    Rendering.RenderTools.backgroundTexture = new Rendering.Texture2D(new Bitmap(ofd.FileName));
                     Runtime.backgroundTexFilePath = ofd.FileName;
                     backgroundPictureBox.Image = new Bitmap(Runtime.backgroundTexFilePath);
                 }
@@ -930,7 +930,7 @@ namespace Smash_Forge.GUI
                     Runtime.floorTexFilePath = ofd.FileName;
                     floorColorPictureBox.Image = floorImg;
                     floorColorPictureBox.Refresh();
-                    Rendering.RenderTools.floorTexture = new Rendering.Texture(OpenTK.Graphics.OpenGL.TextureTarget.Texture2D, floorImg);
+                    Rendering.RenderTools.floorTexture = new Rendering.Texture2D(floorImg);
                 }
             }
         }

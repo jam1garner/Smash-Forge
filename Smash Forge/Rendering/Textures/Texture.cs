@@ -9,12 +9,12 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge.Rendering
 {
-    class Texture
+    abstract class Texture
     {
         // This should only be set once by GL.GenTexture().
         public int Id { get; }
 
-        private TextureTarget textureTarget = TextureTarget.Texture2D;
+        protected TextureTarget textureTarget = TextureTarget.Texture2D;
 
         public PixelInternalFormat PixelInternalFormat { get; }
 
@@ -96,23 +96,6 @@ namespace Smash_Forge.Rendering
 
             // Setup the format and mip maps.
             GL.TexImage2D(textureTarget, 0, PixelInternalFormat, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-        }
-
-        public Texture(TextureTarget target, Bitmap image) : this(target, image.Width, image.Height)
-        {
-            LoadImageDataAutoGenerateMipmaps(image);
-        }
-
-        private void LoadImageDataAutoGenerateMipmaps(Bitmap image)
-        {
-            // Load the image data.
-            BitmapData data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height),
-                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            GL.TexImage2D(textureTarget, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
-                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-            image.UnlockBits(data);
-
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
