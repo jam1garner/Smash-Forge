@@ -11,30 +11,29 @@ namespace Smash_Forge.Rendering
 {
     class TextureCubeMap : Texture
     {
-        public TextureCubeMap(Bitmap cubeMapFaces, int faceResolution = 128) : base(TextureTarget.TextureCubeMap, faceResolution, faceResolution, PixelInternalFormat.Rgba)
+        public TextureCubeMap(Bitmap cubeMapFaces, int sideLength = 128) : base(TextureTarget.TextureCubeMap, sideLength, sideLength, PixelInternalFormat.Rgba)
         {
             Bind();
-            MinFilter = TextureMinFilter.Linear; // #cubemapthings
 
-            Bitmap bmp = cubeMapFaces;
+            // #cubemapthings
+            MagFilter = TextureMagFilter.Linear;
+            MinFilter = TextureMinFilter.Linear; 
+
+            const int cubeMapFaceCount = 6;
 
             // The cube map resolution is currently hardcoded...
             // Faces are arranged vertically in the following order from top to bottom:
             // X+, X-, Y+, Y-, Z+, Z-
-            Rectangle[] cubeMapFaceRegions = new Rectangle[] {
-            new Rectangle(0, 0, 128, 128),
-            new Rectangle(0, 128, 128, 128),
-            new Rectangle(0, 256, 128, 128),
-            new Rectangle(0, 384, 128, 128),
-            new Rectangle(0, 512, 128, 128),
-            new Rectangle(0, 640, 128, 128),
-            };
+            Rectangle[] cubeMapFaceRegions = new Rectangle[cubeMapFaceCount];
+            for (int i = 0; i < cubeMapFaceRegions.Length; i++)
+            {
+                cubeMapFaceRegions[i] = new Rectangle(0, i * sideLength, sideLength, sideLength);
+            }
 
-            const int cubeMapFaceCount = 6;
             for (int i = 0; i < cubeMapFaceCount; i++)
             {
                 // Copy the pixels for the appropriate face.
-                Bitmap image = bmp.Clone(cubeMapFaceRegions[i], bmp.PixelFormat);
+                Bitmap image = cubeMapFaces.Clone(cubeMapFaceRegions[i], cubeMapFaces.PixelFormat);
 
                 // Load the data to the texture.
                 BitmapData data = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
