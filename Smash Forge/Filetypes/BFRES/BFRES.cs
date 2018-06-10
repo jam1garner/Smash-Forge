@@ -10,8 +10,6 @@ using Syroot.NintenTools.Bfres;
 using Syroot.NintenTools.Bfres.GX2;
 using Syroot.NintenTools.Bfres.Helpers;
 using ResNSW = Syroot.NintenTools.NSW.Bfres;
-using GFXNSW = Syroot.NintenTools.NSW.Bfres.GFX;
-using HelperNSW = Syroot.NintenTools.NSW.Bfres.Helpers;
 
 namespace Smash_Forge
 {

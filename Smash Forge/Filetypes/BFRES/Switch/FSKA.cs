@@ -62,51 +62,9 @@ namespace Smash_Forge
                 foreach (ResNSW.SkeletalAnim ska in b.SkeletalAnims)
                 {
 
-                    if (i == 0)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "0 - 200" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 200)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "200 - 400" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 400)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "400 - 600" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 600)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "600 - 800" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 800)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "800 - 1000" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 1000)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "1000+" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-
+             
                     Animation a = new Animation(ska.Name);
-
-                    if (i >= 0 && i < 200)
-                        ThisAnimation.Nodes[0].Nodes.Add(a);
-                    if (i >= 200 && i < 400)
-                        ThisAnimation.Nodes[1].Nodes.Add(a);
-                    if (i >= 400 && i < 600)
-                        ThisAnimation.Nodes[2].Nodes.Add(a);
-                    if (i >= 600 && i < 800)
-                        ThisAnimation.Nodes[3].Nodes.Add(a);
-                    if (i >= 800 && i < 1000)
-                        ThisAnimation.Nodes[4].Nodes.Add(a);
-                    if (i >= 1000 && i < 2000)
-                        ThisAnimation.Nodes[5].Nodes.Add(a);
+                    ThisAnimation.Nodes.Add(a);
 
                     a.FrameCount = ska.FrameCount;
                     i++;
@@ -186,59 +144,15 @@ namespace Smash_Forge
 
                 TargetWiiUBFRES = new ResFile(filename);
 
-                ThisAnimation = new AnimationGroupNode() { Text = filename };
+                ThisAnimation = new AnimationGroupNode() { Text = "Skeleton Animations" };
 
                 TreeNode dummy = new TreeNode() { Text = "Animation Set" };
 
                 int i = 0;
                 foreach (SkeletalAnim ska in TargetWiiUBFRES.SkeletalAnims.Values)
                 {
-
-                    if (i == 0)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "0 - 200" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 200)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "200 - 400" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 400)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "400 - 600" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 600)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "600 - 800" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 800)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "800 - 1000" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 1000)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "1000+" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-
                     Animation a = new Animation(ska.Name);
-
-                    if (i >= 0 && i < 200)
-                        ThisAnimation.Nodes[0].Nodes.Add(a);
-                    if (i >= 200 && i < 400)
-                        ThisAnimation.Nodes[1].Nodes.Add(a);
-                    if (i >= 400 && i < 600)
-                        ThisAnimation.Nodes[2].Nodes.Add(a);
-                    if (i >= 600 && i < 800)
-                        ThisAnimation.Nodes[3].Nodes.Add(a);
-                    if (i >= 800 && i < 1000)
-                        ThisAnimation.Nodes[4].Nodes.Add(a);
-                    if (i >= 1000 && i < 2000)
-                        ThisAnimation.Nodes[5].Nodes.Add(a);
+                    ThisAnimation.Nodes.Add(a);
 
                     a.FrameCount = ska.FrameCount;
                     i++;
