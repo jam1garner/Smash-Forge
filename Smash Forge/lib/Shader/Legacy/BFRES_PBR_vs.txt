@@ -1,5 +1,4 @@
-﻿#version 400
- 
+﻿#version 120 
 in vec3 vPosition;
 in vec4 vColor;
 in vec3 vNormal;

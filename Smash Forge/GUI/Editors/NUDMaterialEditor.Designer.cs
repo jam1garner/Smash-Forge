@@ -477,6 +477,7 @@
             this.texRgbGlControl.Size = new System.Drawing.Size(130, 130);
             this.texRgbGlControl.TabIndex = 23;
             this.texRgbGlControl.VSync = false;
+            this.texRgbGlControl.Load += new System.EventHandler(this.texRgbGlControl_Load);
             this.texRgbGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texRgbGlControl_Paint);
             // 
             // colorSelect

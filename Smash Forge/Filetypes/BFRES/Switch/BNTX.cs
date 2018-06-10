@@ -276,7 +276,7 @@ namespace Smash_Forge
                         texture.type = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext;
                     }
                     else
-                        throw new Exception("Unsupported data type");
+                        throw new Exception("Unsupported data type for BC1");
 
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC2):
@@ -285,7 +285,7 @@ namespace Smash_Forge
                     else if (DataType == (byte)Formats.BNTXImageTypes.SRGB)
                         texture.type = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
                     else
-                        throw new Exception("Unsupported data type");
+                        throw new Exception("Unsupported data type for BC2");
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC3):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
@@ -297,7 +297,7 @@ namespace Smash_Forge
                         texture.type = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext;
                     }
                     else
-                        throw new Exception("Unsupported data type");
+                        throw new Exception("Unsupported data type for BC3");
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC4):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
@@ -319,7 +319,7 @@ namespace Smash_Forge
                              texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;*/
                     }
                     else
-                        throw new Exception("Unsupported data type");
+                        throw new Exception("Unsupported data type for BC4");
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC5):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
@@ -337,7 +337,7 @@ namespace Smash_Forge
                            texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else
-                        Console.WriteLine("Unsupported data type");
+                        Console.WriteLine("Unsupported data type for BC5");
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC7):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
@@ -354,7 +354,7 @@ namespace Smash_Forge
 
                     }
                     else
-                        Console.WriteLine("Unsupported data type");
+                        Console.WriteLine("Unsupported data type for BC7");
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_R8_G8_B8_A8):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM || DataType == (byte)Formats.BNTXImageTypes.SRGB)
@@ -363,7 +363,7 @@ namespace Smash_Forge
                         texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else
-                        throw new Exception("Unsupported data type");
+                        throw new Exception("Unsupported data type for R8_G8_B8_A8");
                     break;
             }
             texture.display = loadImage(texture);

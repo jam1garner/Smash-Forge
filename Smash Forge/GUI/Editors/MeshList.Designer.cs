@@ -110,22 +110,30 @@
             this.aboveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.texIDNUDNUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.bfresMeshContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.bfres_openMaterialEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bfres_openPolygonEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bfresToolStripMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.bfresSaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
             this.nudContextMenu.SuspendLayout();
             this.ModelContainerContextMenu.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.bfresMeshContextMenu.SuspendLayout();
+            this.bfresToolStripMenu.SuspendLayout();
             this.SuspendLayout();
             // 
-            // treeView1
+            // filesTreeView
             // 
             this.filesTreeView.CheckBoxes = true;
             this.filesTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.filesTreeView.HideSelection = false;
             this.filesTreeView.LabelEdit = true;
             this.filesTreeView.Location = new System.Drawing.Point(3, 16);
-            this.filesTreeView.Name = "treeView1";
+            this.filesTreeView.Name = "filesTreeView";
             this.filesTreeView.Size = new System.Drawing.Size(187, 257);
             this.filesTreeView.TabIndex = 0;
             this.filesTreeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
@@ -261,14 +269,14 @@
             // recalculateToolStripMenuItem1
             // 
             this.recalculateToolStripMenuItem1.Name = "recalculateToolStripMenuItem1";
-            this.recalculateToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.recalculateToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.recalculateToolStripMenuItem1.Text = "Recalculate";
             this.recalculateToolStripMenuItem1.Click += new System.EventHandler(this.recalculateToolStripMenuItem1_Click);
             // 
             // smoothToolStripMenuItem1
             // 
             this.smoothToolStripMenuItem1.Name = "smoothToolStripMenuItem1";
-            this.smoothToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.smoothToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.smoothToolStripMenuItem1.Text = "Smooth";
             this.smoothToolStripMenuItem1.Click += new System.EventHandler(this.smoothToolStripMenuItem1_Click);
             // 
@@ -329,28 +337,28 @@
             // tangentsToolStripMenuItem
             // 
             this.tangentsToolStripMenuItem.Name = "tangentsToolStripMenuItem";
-            this.tangentsToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.tangentsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.tangentsToolStripMenuItem.Text = "Tangents";
             this.tangentsToolStripMenuItem.Click += new System.EventHandler(this.tangentsToolStripMenuItem_Click);
             // 
             // bitangentsToolStripMenuItem
             // 
             this.bitangentsToolStripMenuItem.Name = "bitangentsToolStripMenuItem";
-            this.bitangentsToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.bitangentsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.bitangentsToolStripMenuItem.Text = "Bitangents";
             this.bitangentsToolStripMenuItem.Click += new System.EventHandler(this.bitangentsToolStripMenuItem_Click);
             // 
             // normalsToolStripMenuItem
             // 
             this.normalsToolStripMenuItem.Name = "normalsToolStripMenuItem";
-            this.normalsToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.normalsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.normalsToolStripMenuItem.Text = "Normals";
             this.normalsToolStripMenuItem.Click += new System.EventHandler(this.normalsToolStripMenuItem_Click);
             // 
             // uVsToolStripMenuItem1
             // 
             this.uVsToolStripMenuItem1.Name = "uVsToolStripMenuItem1";
-            this.uVsToolStripMenuItem1.Size = new System.Drawing.Size(130, 22);
+            this.uVsToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.uVsToolStripMenuItem1.Text = "UVs";
             this.uVsToolStripMenuItem1.Click += new System.EventHandler(this.uVsToolStripMenuItem1_Click);
             // 
@@ -381,14 +389,14 @@
             // aboveToolStripMenuItem1
             // 
             this.aboveToolStripMenuItem1.Name = "aboveToolStripMenuItem1";
-            this.aboveToolStripMenuItem1.Size = new System.Drawing.Size(108, 22);
+            this.aboveToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.aboveToolStripMenuItem1.Text = "Above";
             this.aboveToolStripMenuItem1.Click += new System.EventHandler(this.aboveToolStripMenuItem1_Click);
             // 
             // belowToolStripMenuItem1
             // 
             this.belowToolStripMenuItem1.Name = "belowToolStripMenuItem1";
-            this.belowToolStripMenuItem1.Size = new System.Drawing.Size(108, 22);
+            this.belowToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.belowToolStripMenuItem1.Text = "Below";
             this.belowToolStripMenuItem1.Click += new System.EventHandler(this.belowToolStripMenuItem1_Click);
             // 
@@ -435,14 +443,14 @@
             // recalculateToolStripMenuItem
             // 
             this.recalculateToolStripMenuItem.Name = "recalculateToolStripMenuItem";
-            this.recalculateToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.recalculateToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.recalculateToolStripMenuItem.Text = "Recalculate";
             this.recalculateToolStripMenuItem.Click += new System.EventHandler(this.recalculateToolStripMenuItem_Click);
             // 
             // smoothToolStripMenuItem
             // 
             this.smoothToolStripMenuItem.Name = "smoothToolStripMenuItem";
-            this.smoothToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.smoothToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.smoothToolStripMenuItem.Text = "Smooth";
             this.smoothToolStripMenuItem.Click += new System.EventHandler(this.smoothToolStripMenuItem_Click);
             // 
@@ -491,28 +499,28 @@
             // tangentsToolStripMenuItem1
             // 
             this.tangentsToolStripMenuItem1.Name = "tangentsToolStripMenuItem1";
-            this.tangentsToolStripMenuItem1.Size = new System.Drawing.Size(130, 22);
+            this.tangentsToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.tangentsToolStripMenuItem1.Text = "Tangents";
             this.tangentsToolStripMenuItem1.Click += new System.EventHandler(this.tangentsToolStripMenuItem1_Click);
             // 
             // bitangentsToolStripMenuItem1
             // 
             this.bitangentsToolStripMenuItem1.Name = "bitangentsToolStripMenuItem1";
-            this.bitangentsToolStripMenuItem1.Size = new System.Drawing.Size(130, 22);
+            this.bitangentsToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.bitangentsToolStripMenuItem1.Text = "Bitangents";
             this.bitangentsToolStripMenuItem1.Click += new System.EventHandler(this.bitangentsToolStripMenuItem1_Click);
             // 
             // normalsToolStripMenuItem1
             // 
             this.normalsToolStripMenuItem1.Name = "normalsToolStripMenuItem1";
-            this.normalsToolStripMenuItem1.Size = new System.Drawing.Size(130, 22);
+            this.normalsToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.normalsToolStripMenuItem1.Text = "Normals";
             this.normalsToolStripMenuItem1.Click += new System.EventHandler(this.normalsToolStripMenuItem1_Click);
             // 
             // uVsToolStripMenuItem
             // 
             this.uVsToolStripMenuItem.Name = "uVsToolStripMenuItem";
-            this.uVsToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.uVsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.uVsToolStripMenuItem.Text = "UVs";
             this.uVsToolStripMenuItem.Click += new System.EventHandler(this.uVsToolStripMenuItem_Click);
             // 
@@ -530,7 +538,7 @@
             this.openEditToolStripMenuItem,
             this.vertexColorToolStripMenuItem2});
             this.nudContextMenu.Name = "nudContextMenu";
-            this.nudContextMenu.Size = new System.Drawing.Size(210, 230);
+            this.nudContextMenu.Size = new System.Drawing.Size(210, 208);
             // 
             // saveToolStripMenuItem
             // 
@@ -609,14 +617,14 @@
             // recalculateToolStripMenuItem2
             // 
             this.recalculateToolStripMenuItem2.Name = "recalculateToolStripMenuItem2";
-            this.recalculateToolStripMenuItem2.Size = new System.Drawing.Size(134, 22);
+            this.recalculateToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
             this.recalculateToolStripMenuItem2.Text = "Recalculate";
             this.recalculateToolStripMenuItem2.Click += new System.EventHandler(this.recalculateToolStripMenuItem2_Click);
             // 
             // smoothToolStripMenuItem2
             // 
             this.smoothToolStripMenuItem2.Name = "smoothToolStripMenuItem2";
-            this.smoothToolStripMenuItem2.Size = new System.Drawing.Size(134, 22);
+            this.smoothToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
             this.smoothToolStripMenuItem2.Text = "Smooth";
             this.smoothToolStripMenuItem2.Click += new System.EventHandler(this.smoothToolStripMenuItem2_Click);
             // 
@@ -680,28 +688,28 @@
             // tangentsToolStripMenuItem2
             // 
             this.tangentsToolStripMenuItem2.Name = "tangentsToolStripMenuItem2";
-            this.tangentsToolStripMenuItem2.Size = new System.Drawing.Size(130, 22);
+            this.tangentsToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
             this.tangentsToolStripMenuItem2.Text = "Tangents";
             this.tangentsToolStripMenuItem2.Click += new System.EventHandler(this.tangentsToolStripMenuItem2_Click);
             // 
             // bitangentsToolStripMenuItem2
             // 
             this.bitangentsToolStripMenuItem2.Name = "bitangentsToolStripMenuItem2";
-            this.bitangentsToolStripMenuItem2.Size = new System.Drawing.Size(130, 22);
+            this.bitangentsToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
             this.bitangentsToolStripMenuItem2.Text = "Bitangents";
             this.bitangentsToolStripMenuItem2.Click += new System.EventHandler(this.bitangentsToolStripMenuItem2_Click);
             // 
             // normalsToolStripMenuItem2
             // 
             this.normalsToolStripMenuItem2.Name = "normalsToolStripMenuItem2";
-            this.normalsToolStripMenuItem2.Size = new System.Drawing.Size(130, 22);
+            this.normalsToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
             this.normalsToolStripMenuItem2.Text = "Normals";
             this.normalsToolStripMenuItem2.Click += new System.EventHandler(this.normalsToolStripMenuItem2_Click);
             // 
             // uVsToolStripMenuItem2
             // 
             this.uVsToolStripMenuItem2.Name = "uVsToolStripMenuItem2";
-            this.uVsToolStripMenuItem2.Size = new System.Drawing.Size(130, 22);
+            this.uVsToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
             this.uVsToolStripMenuItem2.Text = "UVs";
             this.uVsToolStripMenuItem2.Click += new System.EventHandler(this.uVsToolStripMenuItem2_Click);
             // 
@@ -741,14 +749,14 @@
             // belowToolStripMenuItem
             // 
             this.belowToolStripMenuItem.Name = "belowToolStripMenuItem";
-            this.belowToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.belowToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.belowToolStripMenuItem.Text = "Below";
             this.belowToolStripMenuItem.Click += new System.EventHandler(this.belowToolStripMenuItem_Click_1);
             // 
             // aboveToolStripMenuItem
             // 
             this.aboveToolStripMenuItem.Name = "aboveToolStripMenuItem";
-            this.aboveToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
+            this.aboveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboveToolStripMenuItem.Text = "Above";
             this.aboveToolStripMenuItem.Click += new System.EventHandler(this.aboveToolStripMenuItem_Click_1);
             // 
@@ -772,6 +780,48 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model List";
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening_1);
+            // 
+            // bfresMeshContextMenu
+            // 
+            this.bfresMeshContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.bfres_openMaterialEditorToolStripMenuItem,
+            this.bfres_openPolygonEditorToolStripMenuItem});
+            this.bfresMeshContextMenu.Name = "bfresMeshContextMenu";
+            this.bfresMeshContextMenu.Size = new System.Drawing.Size(185, 48);
+            // 
+            // bfres_openMaterialEditorToolStripMenuItem
+            // 
+            this.bfres_openMaterialEditorToolStripMenuItem.Name = "bfres_openMaterialEditorToolStripMenuItem";
+            this.bfres_openMaterialEditorToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.bfres_openMaterialEditorToolStripMenuItem.Text = "Open Material Editor";
+            this.bfres_openMaterialEditorToolStripMenuItem.Click += new System.EventHandler(this.openMaterialEditorToolStripMenuItem_Click);
+            // 
+            // bfres_openPolygonEditorToolStripMenuItem
+            // 
+            this.bfres_openPolygonEditorToolStripMenuItem.Name = "bfres_openPolygonEditorToolStripMenuItem";
+            this.bfres_openPolygonEditorToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.bfres_openPolygonEditorToolStripMenuItem.Text = "Open Polygon Editor";
+            this.bfres_openPolygonEditorToolStripMenuItem.Click += new System.EventHandler(this.openPolygonEditorToolStripMenuItem_Click);
+            // 
+            // bfresToolStripMenu
+            // 
+            this.bfresToolStripMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.bfresSaveToolStripMenuItem});
+            this.bfresToolStripMenu.Name = "bfresToolStripMenu";
+            this.bfresToolStripMenu.Size = new System.Drawing.Size(153, 48);
+            // 
+            // bfresSaveToolStripMenuItem
+            // 
+            this.bfresSaveToolStripMenuItem.Name = "bfresSaveToolStripMenuItem";
+            this.bfresSaveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bfresSaveToolStripMenuItem.Text = "Save";
+            this.bfresSaveToolStripMenuItem.Click += new System.EventHandler(this.bfresSaveToolStripMenuItem_Click);
+            // 
             // MeshList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -790,6 +840,8 @@
             this.nudContextMenu.ResumeLayout(false);
             this.ModelContainerContextMenu.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
+            this.bfresMeshContextMenu.ResumeLayout(false);
+            this.bfresToolStripMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -878,5 +930,11 @@
         private System.Windows.Forms.ToolStripMenuItem uVsToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem texIDToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem texIDNUDNUTToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ContextMenuStrip bfresMeshContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem bfres_openMaterialEditorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bfres_openPolygonEditorToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip bfresToolStripMenu;
+        private System.Windows.Forms.ToolStripMenuItem bfresSaveToolStripMenuItem;
     }
 }

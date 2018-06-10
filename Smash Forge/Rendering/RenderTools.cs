@@ -950,6 +950,112 @@ namespace Smash_Forge.Rendering
             GL.Enable(EnableCap.DepthTest);
         }
 
+        public static void BFRES_DrawUv(Camera camera, BFRES bfres, int texHash, int divisions, Color uvColor, float lineWidth, Color gridColor)
+        {
+            foreach (BFRES.FMDL_Model m in bfres.models)
+            {
+                foreach (BFRES.Mesh p in m.poly)
+                {
+                    // Draw UVs for all models using this texture.
+                    // TODO: previously selected model or select multiple models.
+                    bool containsTexture = BFRES_MeshContainsTextureHash(texHash, p);
+
+                    if (containsTexture)
+                    {
+                        List<int> f = p.getDisplayFace();
+
+                        for (int i = 0; i < p.displayFaceSize; i += 3)
+                        {
+                            if (Runtime.uvChannel == Runtime.UVChannel.Channel1)
+                            {
+
+                                Vector2 v1 = p.vertices.uv0[f[i]];
+                                Vector2 v2 = p.vertices.uv0[f[i + 1]];
+                                Vector2 v3 = p.vertices.uv0[f[i + 2]];
+
+                                BFRES_DrawUVTriangleAndGrid(v1, v2, v3, divisions, uvColor, lineWidth, gridColor, p.material);
+                            }
+                            else if (Runtime.uvChannel == Runtime.UVChannel.Channel2)
+                            {
+                                Vector2 v1 = p.vertices.uv1[f[i]];
+                                Vector2 v2 = p.vertices.uv1[f[i + 1]];
+                                Vector2 v3 = p.vertices.uv1[f[i + 2]];
+
+                                BFRES_DrawUVTriangleAndGrid(v1, v2, v3, divisions, uvColor, lineWidth, gridColor, p.material);
+                            }
+                            else if (Runtime.uvChannel == Runtime.UVChannel.Channel3)
+                            {
+                                Vector2 v1 = p.vertices.uv2[f[i]];
+                                Vector2 v2 = p.vertices.uv2[f[i + 1]];
+                                Vector2 v3 = p.vertices.uv2[f[i + 2]];
+
+                                BFRES_DrawUVTriangleAndGrid(v1, v2, v3, divisions, uvColor, lineWidth, gridColor, p.material);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private static bool BFRES_MeshContainsTextureHash(int selectedTextureHash, BFRES.Mesh m)
+        {
+            foreach (int matTex in m.texHashs)
+            {
+                if (selectedTextureHash == matTex)
+                    return true;
+            }
+
+
+            return false;
+        }
+
+        private static void DrawUVTriangleAndGrid(NUD.Vertex v1, NUD.Vertex v2, NUD.Vertex v3, int divisions, Color uvColor, float lineWidth, Color gridColor)
+        {
+            // No shaders
+            GL.UseProgram(0);
+
+            float bounds = 1;
+            Vector2 scaleUv = new Vector2(1, 1);
+
+            SetupUvRendering(lineWidth);
+
+            DrawUvTriangle(v1, v2, v3, uvColor, scaleUv);
+
+            // Draw Grid
+            GL.Color3(gridColor);
+            DrawHorizontalGrid(divisions, bounds, scaleUv);
+            DrawVerticalGrid(divisions, bounds, scaleUv);
+        }
+
+        private static void BFRES_DrawUVTriangleAndGrid(Vector2 v1, Vector2 v2, Vector2 v3, int divisions, Color uvColor, float lineWidth, Color gridColor, BFRES.MaterialData mat)
+        {
+            // No shaders
+            GL.UseProgram(0);
+
+            float bounds = 1;
+            Vector2 scaleUv = new Vector2(1, 1);
+            Vector2 transUv = new Vector2(0, 0);
+
+            if (Runtime.uvChannel == Runtime.UVChannel.Channel2)
+            {
+                if (mat.matparam.ContainsKey("gsys_bake_st0"))
+                {
+                    scaleUv = mat.matparam["gsys_bake_st0"].Value_float4.Xy;
+                    transUv = mat.matparam["gsys_bake_st0"].Value_float4.Zw;
+                }
+            }
+            
+
+            SetupUvRendering(lineWidth);
+
+            BFRES_DrawUvTriangle(v1, v2, v3, uvColor, scaleUv, transUv);
+
+            // Draw Grid
+            GL.Color3(gridColor);
+            DrawHorizontalGrid(divisions, bounds, scaleUv);
+            DrawVerticalGrid(divisions, bounds, scaleUv);
+        }
+
         public static void DrawUv(Camera camera, NUD nud, int texHash, int divisions, Color uvColor, float lineWidth, Color gridColor)
         {
             foreach (NUD.Mesh m in nud.Nodes)
@@ -991,24 +1097,6 @@ namespace Smash_Forge.Rendering
             return false;
         }
 
-        private static void DrawUVTriangleAndGrid(NUD.Vertex v1, NUD.Vertex v2, NUD.Vertex v3, int divisions, Color uvColor, float lineWidth, Color gridColor)
-        {
-            // No shaders
-            GL.UseProgram(0);
-
-            float bounds = 1;
-            Vector2 scaleUv = new Vector2(1, 1);
-
-            SetupUvRendering(lineWidth);
-
-            DrawUvTriangle(v1, v2, v3, uvColor, scaleUv);
-
-            // Draw Grid
-            GL.Color3(gridColor);
-            DrawHorizontalGrid(divisions, bounds, scaleUv);
-            DrawVerticalGrid(divisions, bounds, scaleUv);
-        }
-
         private static void SetupUvRendering(float lineWidth)
         {
             // Go to 2D
@@ -1043,6 +1131,25 @@ namespace Smash_Forge.Rendering
             GL.Begin(PrimitiveType.Lines);
             GL.Vertex2(v3.uv[0] * scaleUv);
             GL.Vertex2(v1.uv[0] * scaleUv);
+            GL.End();
+        }
+
+        private static void BFRES_DrawUvTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color uvColor, Vector2 scaleUv, Vector2 transUv)
+        {
+            GL.Color3(uvColor);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(v1 * scaleUv + transUv);
+            GL.Vertex2(v2 * scaleUv + transUv);
+            GL.End();
+
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(v2 * scaleUv + transUv);
+            GL.Vertex2(v3 * scaleUv + transUv);
+            GL.End();
+
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex2(v3 * scaleUv + transUv);
+            GL.Vertex2(v1 * scaleUv + transUv);
             GL.End();
         }
 

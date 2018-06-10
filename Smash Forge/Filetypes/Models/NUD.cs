@@ -1615,8 +1615,7 @@ namespace Smash_Forge
                 tempstring.align(16);
 
                 d.writeInt(m.boneflag); // ID
-                d.writeShort(m.singlebind); // Single Bind 
-                d.writeShort(m.Nodes.Count); // poly count
+                d.writeShort(m.singlebind); // Single Bind                  d.writeShort(m.Nodes.Count); // poly count
                 d.writeInt(obj.size() + 0x30 + Nodes.Count * 0x30); // position start for obj
 
                 // write obj info here...

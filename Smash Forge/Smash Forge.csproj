@@ -59,6 +59,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Syroot.NintenTools.Bfres.dll</HintPath>
     </Reference>
+    <Reference Include="Syroot.NintenTools.NSW.Bfres, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Syroot.NintenTools.NSW.Bfres.dll</HintPath>
+    </Reference>
     <Reference Include="Syroot.NintenTools.Yaz0, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Syroot.NintenTools.Yaz0.dll</HintPath>
@@ -105,7 +109,8 @@
     <Compile Include="Filetypes\BFRES\Switch\BFRES.cs" />
     <Compile Include="Filetypes\BFRES\Switch\BNTX.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FSKA.cs" />
-    <Compile Include="Filetypes\BFRES\Switch\MaterialAnimation.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\FVIS.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\FMAA.cs" />
     <Compile Include="Filetypes\BFRES\Switch\Swizzle.cs" />
     <Compile Include="Filetypes\BFRES\WiiU\BFRES_WiiU.cs" />
     <Compile Include="Filetypes\BFRES\WiiU\FTEX.cs" />
@@ -153,6 +158,18 @@
     </Compile>
     <Compile Include="GUI\Controls\VertexTool.Designer.cs">
       <DependentUpon>VertexTool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES_MaterialEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES_MaterialEditor.Designer.cs">
+      <DependentUpon>BFRES_MaterialEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES_MeshEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES_MeshEditor.Designer.cs">
+      <DependentUpon>BFRES_MeshEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\BNTXEditor.cs">
       <SubType>Form</SubType>
@@ -521,6 +538,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\EditorBase.resx">
       <DependentUpon>EditorBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BFRES_MaterialEditor.resx">
+      <DependentUpon>BFRES_MaterialEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BNTXEditor.resx">
       <DependentUpon>BNTXEditor.cs</DependentUpon>
@@ -1206,6 +1226,9 @@
     </Content>
     <Content Include="lib\Syroot.NintenTools.Bfres.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Syroot.NintenTools.NSW.Bfres.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="lib\Syroot.NintenTools.Yaz0.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

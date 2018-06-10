@@ -609,10 +609,6 @@ namespace Smash_Forge
                 }
                 if (m.BFRES != null)
                 {
-                    if (m.bfres.IsWiiU == false)
-                    {
-
-                    }
                     foreach (var mod in m.bfres.models)
                     {
                         if (mod.skeleton != null)
@@ -1377,12 +1373,12 @@ namespace Smash_Forge
                 }
                 if (MeshList.filesTreeView.SelectedNode is BRTI)
                 {
-                    DrawBNTXTex();
+                    DrawBNTXTexAndUvs();
                     return;
                 }
                 if (MeshList.filesTreeView.SelectedNode is FTEX)
                 {
-                    DrawFTEXTex();
+                    DrawFTEXTexAndUvs();
                     return;
                 }
             }
@@ -1724,6 +1720,29 @@ namespace Smash_Forge
             }
         }
 
+        private void DrawBNTXTexAndUvs()
+        {
+            GL.PopAttrib();
+            BRTI tex = ((BRTI)MeshList.filesTreeView.SelectedNode);
+            switch (tex.format >> 8)
+            {
+                case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC4:
+                    {
+                        RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, false, false);
+                    }
+                    break;
+                default:
+                    RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+                    break;
+            }
+
+            if (Runtime.drawUv)
+                DrawNSWBFRESUvsForSelectedTexture(tex);
+
+            glViewport.SwapBuffers();
+        }
+
+
         private void DrawNutTexAndUvs()
         {
             GL.PopAttrib();
@@ -1760,6 +1779,33 @@ namespace Smash_Forge
             }
             glViewport.SwapBuffers();
         }
+        private void DrawFTEXTexAndUvs()
+        {
+            GL.PopAttrib();
+            FTEX tex = ((FTEX)MeshList.filesTreeView.SelectedNode);
+            switch (tex.format)
+            {
+                case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM:
+                    {
+                        RenderTools.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
+                    }
+                    break;
+                case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM:
+                    {
+                        RenderTools.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
+                    }
+                    break;
+                default:
+                    RenderTools.DrawTexturedQuad(tex.display, tex.width, tex.height);
+                    break;
+            }
+
+            if (Runtime.drawUv)
+                DrawBFRESUvsForSelectedTexture(tex);
+
+            glViewport.SwapBuffers();
+        }
+ 
         private void DrawFTEXTex()
         {
             GL.PopAttrib();
@@ -1802,6 +1848,36 @@ namespace Smash_Forge
             else
             {
                 Runtime.HasNoAnimationBaseValues = false;
+            }
+        }
+
+        private void DrawNSWBFRESUvsForSelectedTexture(BRTI tex)
+        {
+            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            {
+                if (!(node is ModelContainer))
+                    continue;
+
+                ModelContainer m = (ModelContainer)node;
+
+                int textureHash = 0;
+                int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
+                RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.display, 4, Color.Red, 1, Color.White);
+            }
+        }
+
+        private void DrawBFRESUvsForSelectedTexture(FTEX tex)
+        {
+            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            {
+                if (!(node is ModelContainer))
+                    continue;
+
+                ModelContainer m = (ModelContainer)node;
+
+                int textureHash = 0;
+                int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
+                RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.display, 4, Color.Red, 1, Color.White);
             }
         }
 

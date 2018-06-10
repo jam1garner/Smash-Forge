@@ -312,13 +312,13 @@ namespace Smash_Forge
                 }
             }
         }
+            string pathNUT = "";
 
         public ModelViewport OpenNud(string pathNud, string name = "", ModelViewport mvp = null)
         {
             // All the model files will be in the same directory as the model.nud file.
             string[] files = Directory.GetFiles(Path.GetDirectoryName(pathNud));
 
-            string pathNUT = "";
             string pathJTB = "";
             string pathVBN = "";
             string pathMTA = "";
@@ -379,8 +379,6 @@ namespace Smash_Forge
             string[] files = Directory.GetFiles(Path.GetDirectoryName(pathBfres));
 
             //Todo. Support loading bfres texture and animations if seperate and in same directory
-            FileData f = new FileData(pathBfres);
-            int Magic = f.readInt();
 
             if (mvp == null)
             {
@@ -455,7 +453,22 @@ namespace Smash_Forge
                 rot = new Vector3(0, 0f, 0);
             }
 
-                
+            FileData f = new FileData(pathBfres);
+
+            int Magic = f.readInt();
+
+            const string TEMP_FILE = "temp.bfres";
+
+            if (Magic == 0x59617A30) //YAZO compressed
+            {
+                using (FileStream input = new FileStream(pathBfres, System.IO.FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    Syroot.NintenTools.Yaz0.Yaz0Compression.Decompress(pathBfres, TEMP_FILE);
+
+                    pathBfres = TEMP_FILE;
+                }
+            }
+
             modelContainer.BFRES = new BFRES(pathBfres, pos, sca, rot);
 
             if (modelContainer.BFRES.models.Count != 0)
@@ -464,10 +477,35 @@ namespace Smash_Forge
                 resyncTargetVBN();
             }
 
-         
+
+            //Run again for animations to be added. 
+            if (modelContainer.BFRES.FSKACount != 0)
+            {
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    mvp = (ModelViewport)dockPanel1.ActiveContent;
+                    mvp.AnimList.treeView1.Nodes.Add(FSKA.Read(pathBfres, modelContainer.BFRES.TargetWiiUBFRES));
+                }
+            }
+            if (modelContainer.BFRES.FVISCount != 0)
+            {
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    mvp = (ModelViewport)dockPanel1.ActiveContent;
+                    mvp.AnimList.treeView1.Nodes.Add(FVIS.Read(pathBfres, modelContainer.BFRES.TargetWiiUBFRES, modelContainer.BFRES));
+                }
+            }
+            if (modelContainer.BFRES.FMAACount != 0)
+            {
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                  //  mvp = (ModelViewport)dockPanel1.ActiveContent;
+                  //  mvp.AnimList.treeView1.Nodes.Add(FMAA.Read(pathBfres, modelContainer.BFRES));
+                }
+            }
 
             // Reset the camera. 
-        //    mvp.FrameSelectionAndSort();
+            //    mvp.FrameSelectionAndSort();
             return mvp;
         }
 
@@ -657,6 +695,10 @@ namespace Smash_Forge
             (new NUDMaterialEditor(poly) { ShowHint = DockState.DockLeft, Text = name }).Show();
         }
 
+        public void bfresOpenMats(BFRES.Mesh poly, string name)
+        {
+            (new BFRES_MaterialEditor(poly) { Text = name }).Show();
+        }
         private void clearWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ClearWorkSpace();
@@ -1069,6 +1111,7 @@ namespace Smash_Forge
 
             if (filename.EndsWith(".byaml") && Runtime.TargetBYAML != null)
                 Runtime.TargetBYAML.Rebuild(filename);
+
         }
 
         ///<summary>
@@ -1182,56 +1225,21 @@ namespace Smash_Forge
             }
             if (fileName.EndsWith(".bfres") || fileName.EndsWith(".szs") || fileName.EndsWith(".sbfres"))
             {
-
-                Vector3 pos = new Vector3(0, 0, 0);
-                Vector3 sca = new Vector3(1, 1, 1);
-                Vector3 rot = new Vector3(0, 0, 0);
-
-
-                BFRES m = new BFRES(fileName, pos, sca, rot);
-
                 if (dockPanel1.ActiveContent is ModelViewport)
                 {
                     DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
                         OpenBFRES(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name, (ModelViewport)dockPanel1.ActiveContent);
-                        m.Read(fileName);
                     }
                     if (dialogResult == DialogResult.No)
                     {
                         OpenBFRES(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
-                        m.Read(fileName);
                     }
                 }
                 else
                 {
                     OpenBFRES(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
-                }
-       
-      
-
-                //Run again for animations to be added. 
-                if (m.FSKACount != 0)
-                {
-                    if (dockPanel1.ActiveContent is ModelViewport)
-                    {
-                        DialogResult dialogResult = MessageBox.Show("Import Animation Data into active viewport?", "", MessageBoxButtons.YesNo);
-                        if (dialogResult == DialogResult.Yes)
-                        {
-                            mvp = (ModelViewport)dockPanel1.ActiveContent;
-                            mvp.AnimList.treeView1.Nodes.Add(FSKA.Read(fileName));
-                            return;
-                        }
-                        else
-                        {
-
-                        }
-                        {
-                            mvp.AnimList.treeView1.Nodes.Add(FSKA.Read(fileName));
-                        }
-                        AddDockedControl(mvp);
-                    }
                 }
             }
 

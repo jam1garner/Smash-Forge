@@ -9,6 +9,8 @@ using OpenTK.Graphics.OpenGL;
 using Syroot.NintenTools.Bfres;
 using System.IO;
 using Syroot.NintenTools.Yaz0;
+using ResNSW = Syroot.NintenTools.NSW.Bfres;
+
 
 namespace Smash_Forge
 {
@@ -28,31 +30,16 @@ namespace Smash_Forge
 
     public class FSKA
     {
-        private const string TEMP_FILE = "temp.bfres";
+        public static AnimationGroupNode ThisAnimation;
 
-        public static AnimationGroupNode Read(string filename)
+        public static AnimationGroupNode Read(string filename, ResFile TargetWiiUBFRES)
         {
-            string path = filename;
 
             FileData f = new FileData(filename);
 
-            int Magic = f.readInt();
-
-            if (Magic == 0x59617A30) //YAZO compressed
-            {
-                using (FileStream input = new FileStream(path, System.IO.FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    Yaz0Compression.Decompress(path, TEMP_FILE);
-
-                    path = TEMP_FILE;
-                }
-            }
-
-            f = new FileData(path);
-
             f.seek(0);
 
-            f.Endian = System.IO.Endianness.Little;
+            f.Endian = Endianness.Little;
 
             Console.WriteLine("Reading Animations ...");
 
@@ -61,70 +48,43 @@ namespace Smash_Forge
             f.skip(4);
             if (SwitchCheck == 0x20202020)
             {
-                f.seek(56);
-                long FSKAOffset = f.readInt64();
-                f.skip(126);
-                int FSKACount = f.readShort();
+
+                //    SwitchAnim2WiiU(path); //Hacky auto convert switch anims to wii u
 
 
-                AnimationGroupNode ThisAnimation = new AnimationGroupNode() { Text = filename };
+                ResNSW.ResFile b = new ResNSW.ResFile(filename);
+
+                AnimationGroupNode ThisAnimation = new AnimationGroupNode() { Text = "Skeleton Animations" };
 
                 TreeNode dummy = new TreeNode() { Text = "Animation Set" };
 
-                for (int i = 0; i < FSKACount; i++)
+                int i = 0;
+                foreach (ResNSW.SkeletalAnim ska in b.SkeletalAnims)
                 {
-                    f.seek((int)FSKAOffset + (i * 96));
-                    FSKAData anim = new FSKAData(f);
-
 
                     if (i == 0)
                     {
-                        dummy = new TreeNode() { Text = "Animation Set " + "0 - 100" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 100)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "100 - 200" };
+                        dummy = new TreeNode() { Text = "Animation Set " + "0 - 200" };
                         ThisAnimation.Nodes.Add(dummy);
                     }
                     if (i == 200)
                     {
-                        dummy = new TreeNode() { Text = "Animation Set " + "200 - 300" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 300)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "300 - 400" };
+                        dummy = new TreeNode() { Text = "Animation Set " + "200 - 400" };
                         ThisAnimation.Nodes.Add(dummy);
                     }
                     if (i == 400)
                     {
-                        dummy = new TreeNode() { Text = "Animation Set " + "400 - 500" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 500)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "500 - 600" };
+                        dummy = new TreeNode() { Text = "Animation Set " + "400 - 600" };
                         ThisAnimation.Nodes.Add(dummy);
                     }
                     if (i == 600)
                     {
-                        dummy = new TreeNode() { Text = "Animation Set " + "600 - 700" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 700)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "700 - 800" };
+                        dummy = new TreeNode() { Text = "Animation Set " + "600 - 800" };
                         ThisAnimation.Nodes.Add(dummy);
                     }
                     if (i == 800)
                     {
-                        dummy = new TreeNode() { Text = "Animation Set " + "800 - 900" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 900)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "900 - 1000" };
+                        dummy = new TreeNode() { Text = "Animation Set " + "800 - 1000" };
                         ThisAnimation.Nodes.Add(dummy);
                     }
                     if (i == 1000)
@@ -133,53 +93,48 @@ namespace Smash_Forge
                         ThisAnimation.Nodes.Add(dummy);
                     }
 
-                    Animation a = new Animation(anim.Name);
+                    Animation a = new Animation(ska.Name);
 
-                    if (i >= 0 && i < 100)
+                    if (i >= 0 && i < 200)
                         ThisAnimation.Nodes[0].Nodes.Add(a);
-                    if (i >= 100 && i < 200)
+                    if (i >= 200 && i < 400)
                         ThisAnimation.Nodes[1].Nodes.Add(a);
-                    if (i >= 200 && i < 300)
+                    if (i >= 400 && i < 600)
                         ThisAnimation.Nodes[2].Nodes.Add(a);
-                    if (i >= 300 && i < 400)
+                    if (i >= 600 && i < 800)
                         ThisAnimation.Nodes[3].Nodes.Add(a);
-                    if (i >= 400 && i < 500)
+                    if (i >= 800 && i < 1000)
                         ThisAnimation.Nodes[4].Nodes.Add(a);
-                    if (i >= 500 && i < 600)
+                    if (i >= 1000 && i < 2000)
                         ThisAnimation.Nodes[5].Nodes.Add(a);
-                    if (i >= 600 && i < 700)
-                        ThisAnimation.Nodes[6].Nodes.Add(a);
-                    if (i >= 700 && i < 800)
-                        ThisAnimation.Nodes[7].Nodes.Add(a);
-                    if (i >= 800 && i < 900)
-                        ThisAnimation.Nodes[8].Nodes.Add(a);
-                    if (i >= 900 && i < 1000)
-                        ThisAnimation.Nodes[9].Nodes.Add(a);
 
-                    a.FrameCount = anim.frameCount;
-
+                    a.FrameCount = ska.FrameCount;
+                    i++;
                     try
                     {
-                        f.seek((int)anim.BoneAnimArrayOffset);
-                        for (int b = 0; b < anim.boneCount; b++)
+                        foreach (Syroot.NintenTools.NSW.Bfres.BoneAnim bn in ska.BoneAnims)
                         {
-                            FSKANode bonean = new FSKANode(f);
+                            FSKANode bonean = new FSKANode(bn);
 
                             Animation.KeyNode bone = new Animation.KeyNode("");
-                            
                             a.Bones.Add(bone);
-                            bone.RotType = Animation.RotationType.EULER;
+                            if (ska.FlagsRotate == ResNSW.SkeletalAnimFlagsRotate.EulerXYZ)
+                                bone.RotType = Animation.RotationType.EULER;
+                            else
+                                bone.RotType = Animation.RotationType.QUATERNION;
+
                             bone.Text = bonean.Text;
 
-                            for (int Frame = 0; Frame < anim.frameCount; Frame++)
+                            for (int Frame = 0; Frame < ska.FrameCount; Frame++)
                             {
+
                                 //Set base/start values for bones.
                                 //Note. BOTW doesn't use base values as it uses havok engine. Need to add option to disable these
                                 if (Frame == 0 && Runtime.HasNoAnimationBaseValues == false)
                                 {
-                                    bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
-                                    bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
-                                    bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
+                                    bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = 1 });
+                                    bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = 1 });
+                                    bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = 1 });
                                     bone.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
                                     bone.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
                                     bone.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
@@ -187,7 +142,6 @@ namespace Smash_Forge
                                     bone.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
                                     bone.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
                                 }
-
                                 foreach (FSKATrack track in bonean.tracks)
                                 {
                                     Animation.KeyFrame frame = new Animation.KeyFrame();
@@ -198,7 +152,9 @@ namespace Smash_Forge
                                     FSKAKey right = track.GetRight(Frame);
                                     float value;
 
-                                    value = CHR0.interHermite(Frame, left.frame, right.frame, 0, 0, left.unk1, right.unk1);
+
+
+                                    value = Animation.Hermite(Frame, left.frame, right.frame, 0, 0, left.unk1, right.unk1);
 
                                     // interpolate the value and apply
                                     switch (track.flag)
@@ -228,64 +184,39 @@ namespace Smash_Forge
             {
                 f.eof();
 
-                ResFile b = new ResFile(path);
+                TargetWiiUBFRES = new ResFile(filename);
 
-                AnimationGroupNode ThisAnimation = new AnimationGroupNode() { Text = filename };
+                ThisAnimation = new AnimationGroupNode() { Text = filename };
 
                 TreeNode dummy = new TreeNode() { Text = "Animation Set" };
 
                 int i = 0;
-                foreach (SkeletalAnim ska in b.SkeletalAnims.Values)
+                foreach (SkeletalAnim ska in TargetWiiUBFRES.SkeletalAnims.Values)
                 {
 
                     if (i == 0)
                     {
-                        dummy = new TreeNode() { Text = "Animation Set " + "0 - 100" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 100)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "100 - 200" };
+                        dummy = new TreeNode() { Text = "Animation Set " + "0 - 200" };
                         ThisAnimation.Nodes.Add(dummy);
                     }
                     if (i == 200)
                     {
-                        dummy = new TreeNode() { Text = "Animation Set " + "200 - 300" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 300)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "300 - 400" };
+                        dummy = new TreeNode() { Text = "Animation Set " + "200 - 400" };
                         ThisAnimation.Nodes.Add(dummy);
                     }
                     if (i == 400)
                     {
-                        dummy = new TreeNode() { Text = "Animation Set " + "400 - 500" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 500)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "500 - 600" };
+                        dummy = new TreeNode() { Text = "Animation Set " + "400 - 600" };
                         ThisAnimation.Nodes.Add(dummy);
                     }
                     if (i == 600)
                     {
-                        dummy = new TreeNode() { Text = "Animation Set " + "600 - 700" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 700)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "700 - 800" };
+                        dummy = new TreeNode() { Text = "Animation Set " + "600 - 800" };
                         ThisAnimation.Nodes.Add(dummy);
                     }
                     if (i == 800)
                     {
-                        dummy = new TreeNode() { Text = "Animation Set " + "800 - 900" };
-                        ThisAnimation.Nodes.Add(dummy);
-                    }
-                    if (i == 900)
-                    {
-                        dummy = new TreeNode() { Text = "Animation Set " + "900 - 1000" };
+                        dummy = new TreeNode() { Text = "Animation Set " + "800 - 1000" };
                         ThisAnimation.Nodes.Add(dummy);
                     }
                     if (i == 1000)
@@ -296,26 +227,18 @@ namespace Smash_Forge
 
                     Animation a = new Animation(ska.Name);
 
-                    if (i >= 0 && i < 100)
+                    if (i >= 0 && i < 200)
                         ThisAnimation.Nodes[0].Nodes.Add(a);
-                    if (i >= 100 && i < 200)
+                    if (i >= 200 && i < 400)
                         ThisAnimation.Nodes[1].Nodes.Add(a);
-                    if (i >= 200 && i < 300)
+                    if (i >= 400 && i < 600)
                         ThisAnimation.Nodes[2].Nodes.Add(a);
-                    if (i >= 300 && i < 400)
+                    if (i >= 600 && i < 800)
                         ThisAnimation.Nodes[3].Nodes.Add(a);
-                    if (i >= 400 && i < 500)
+                    if (i >= 800 && i < 1000)
                         ThisAnimation.Nodes[4].Nodes.Add(a);
-                    if (i >= 500 && i < 600)
+                    if (i >= 1000 && i < 2000)
                         ThisAnimation.Nodes[5].Nodes.Add(a);
-                    if (i >= 600 && i < 700)
-                        ThisAnimation.Nodes[6].Nodes.Add(a);
-                    if (i >= 700 && i < 800)
-                        ThisAnimation.Nodes[7].Nodes.Add(a);
-                    if (i >= 800 && i < 900)
-                        ThisAnimation.Nodes[8].Nodes.Add(a);
-                    if (i >= 900 && i < 1000)
-                        ThisAnimation.Nodes[9].Nodes.Add(a);
 
                     a.FrameCount = ska.FrameCount;
                     i++;
@@ -327,8 +250,13 @@ namespace Smash_Forge
 
                             Animation.KeyNode bone = new Animation.KeyNode("");
                             a.Bones.Add(bone);
-                            bone.RotType = Animation.RotationType.EULER;
+                            if (ska.FlagsRotate == SkeletalAnimFlagsRotate.EulerXYZ)
+                                bone.RotType = Animation.RotationType.EULER;
+                            else
+                                bone.RotType = Animation.RotationType.QUATERNION;
+
                             bone.Text = bonean.Text;
+
 
                             for (int Frame = 0; Frame < ska.FrameCount; Frame++)
                             {
@@ -357,9 +285,9 @@ namespace Smash_Forge
                                     FSKAKey right = track.GetRight(Frame);
                                     float value;
 
-                  
 
-                                    value = CHR0.interHermite(Frame, left.frame, right.frame, 0, 0, left.unk1, right.unk1);
+
+                                    value = Animation.Hermite(Frame, left.frame, right.frame, 0, 0, left.unk1, right.unk1);
 
                                     // interpolate the value and apply
                                     switch (track.flag)
@@ -380,54 +308,10 @@ namespace Smash_Forge
                     }
                     catch
                     {
-                 
+
                     }
                 }
                 return ThisAnimation;
-            }
-        }
-        public class FSKAData
-        {
-            public int HeaderLength1;
-            public int HeaderLength2;
-
-            public int frameCount;
-            public int boneCount;
-            public int flags;
-            public int curveCount;
-            public int bakeSize;
-            public long BoneAnimArrayOffset;
-            public long SkeletonOffset;
-            public string Name;
-
-            public FSKAData(FileData f)
-            {
-                f.Endian = System.IO.Endianness.Little;
-
-                f.skip(4); //Magic
-                HeaderLength1 = f.readInt();
-                HeaderLength2 = f.readInt();
-                f.skip(4); //padding
-                Name = f.readString(f.readInt() + 2, -1);
-                f.skip(4); //padding
-                long FilePath = f.readInt64();
-                f.skip(8); //padding
-                long unk3 = f.readInt64(); ;
-                BoneAnimArrayOffset = f.readInt64(); // offset to start of base values
-                SkeletonOffset = f.readInt64();
-                f.skip(8); //padding
-                flags = f.readInt();
-                frameCount = f.readInt();
-                curveCount = f.readInt();
-                bakeSize = f.readInt();
-                boneCount = f.readShort();
-                int userDataCount = f.readShort();
-                f.skip(4); //padding
-                f.seek((int)BoneAnimArrayOffset);
-                for (int i = 0; i < boneCount - 1; i++)
-                {
-                    new FSKANode(f);
-                }
             }
         }
 
@@ -447,193 +331,83 @@ namespace Smash_Forge
             public Vector3 sca, rot, pos;
             public List<FSKATrack> tracks = new List<FSKATrack>();
 
-
-            public FSKANode(FileData f)
+            public FSKANode(Syroot.NintenTools.NSW.Bfres.BoneAnim b)
             {
-                Text = f.readString(f.readInt() + 2, -1);
-                f.skip(4); // padding
-                offTrack = f.readInt64();
-                offBase = f.readInt64();
-                flags = f.readInt();
-                BeginRotate = f.readByte();
-                BeginTranslate = f.readByte();
-                trackCount = f.readByte();
-                stride = f.readByte();
-                f.skip(8); // padding
-
-                trackFlag = (flags & 0x0000FF00) >> 8;
-
-                int temp = f.pos();
+                Text = b.Name;
 
                 // offset 1 is base positions
                 //Console.WriteLine(off1.ToString("x"));
-                if (offBase != 0)
+                if (b.BaseData.Scale != new Syroot.Maths.Vector3F(0f, 0f, 0f))
                 {
-                    f.seek((int)offBase);
-                    sca = new Vector3(f.readFloat(), f.readFloat(), f.readFloat());
-                    rot = new Vector3(f.readFloat(), f.readFloat(), f.readFloat());
-                    f.skip(4); // for quaternion, but 1.0 if eul
-                    pos = new Vector3(f.readFloat(), f.readFloat(), f.readFloat());
+                    sca = new Vector3(b.BaseData.Scale.X, b.BaseData.Scale.Y, b.BaseData.Scale.Z);
+                    rot = new Vector3(b.BaseData.Rotate.X, b.BaseData.Rotate.Y, b.BaseData.Rotate.Z);
+                    pos = new Vector3(b.BaseData.Translate.X, b.BaseData.Translate.Y, b.BaseData.Translate.Z);
                 }
                 else
                 {
                     sca = new Vector3(1, 1, 1);
                     rot = new Vector3(0, 0, 0);
-                    f.skip(4); // for quaternion, but 1.0 if eul
                     pos = new Vector3(0, 0, 0);
 
                 }
 
+                //       Console.WriteLine("Name = " + b.Name);
 
-                f.seek((int)offTrack);
-                for (int tr = 0; tr < trackCount; tr++)
+                foreach (Syroot.NintenTools.NSW.Bfres.AnimCurve tr in b.Curves)
                 {
-                    FSKATrack t = (new FSKATrack()
-                    {
-                        offset = f.pos(),
-                        offtolastKeys = f.readInt64(),
-                        offtolastData = f.readInt64(),
-                        type = (short)f.readShort(),
-                        keyCount = (short)f.readShort(),
-                        flag = f.readInt(), //targetOffset
-                        unk2 = f.readInt(), //StartFrame
-                        frameCount = f.readFloat(), //EndFrame
-                        scale = f.readFloat(),
-                        init = f.readFloat(), //union
-                        unkf3 = f.readFloat(), //DataDelta
-                        padding1 = f.readInt(),
 
-                    });
+                    //  Console.WriteLine(tr.AnimDataOffset);
+
+                    FSKATrack t = new FSKATrack();
+                    t.flag = (int)tr.AnimDataOffset;
                     tracks.Add(t);
 
 
 
-                    //    if (t.type != 0x2 && t.type != 0x5 && t.type != 0x6 && t.type != 0x9 && t.type != 0xA)
-                    //   Console.WriteLine(Text + " " + t.type.ToString("x"));
+                    //     Console.WriteLine("Flag = " + (int)tr.AnimDataOffset + " Offset = " + tr.Offset + "  Scale = " + tr.Scale);
 
-                    int tem = f.pos();
-                    // bone section
-                    f.seek((int)t.offtolastKeys);
-                    int[] frames = new int[t.keyCount];
-                    for (int i = 0; i < t.keyCount; i++)
-                        if (t.type == 0x1 || t.type == 0x5 || t.type == 0x9)
-                            frames[i] = f.readShort() >> 5;
-                        else if (t.type == 0x4)
-                            frames[i] = (int)f.readFloat() >> 5;
-                        else
-                            frames[i] = f.readByte();
-                    f.align(4);
 
-                    float tanscale = t.unkf3;
+                    //   Console.WriteLine();
+
+                    float tanscale = tr.Delta;
                     if (tanscale == 0)
                         tanscale = 1;
-                    f.seek((int)t.offtolastData);
-                    for (int i = 0; i < t.keyCount; i++)
-                        switch (t.type)
-                        {
-                            case 0x0:
-                                t.keys.Add(new FSKAKey()
-                                {
-                                    frame = frames[i],
-                                    unk1 = t.init + ((f.readFloat() * t.scale)),
-                                    unk2 = f.readFloat(),
-                                    unk3 = f.readFloat(),
-                                    unk4 = f.readFloat(),
-                                 
-                                });
-                                break;
-                            case 0x1:
-                                t.keys.Add(new FSKAKey()
-                                {
-                                    frame = frames[i],
-                                    unk1 = t.init + ((f.readShort() * t.scale)),
-                                    unk2 = f.readShort(),
-                                    unk3 = f.readShort(),
-                                    unk4 = f.readShort(),
-                                });
-                                break;
-                            case 0x2:
-                                t.keys.Add(new FSKAKey()
-                                {
-                                    frame = frames[i],
-                                    unk1 = t.init + ((f.readFloat() * t.scale)),
-                                    unk2 = f.readFloat(),
-                                    unk3 = f.readFloat(),
-                                    unk4 = f.readFloat(),
-                                });
-                                break;
-                            case 0x4: //Unkown
-                                t.keys.Add(new FSKAKey()
-                                {
-                                    frame = frames[i],
-                                    unk1 = t.init + (((short)f.readShort() * t.scale)),
-                                    unk2 = t.unkf3 + (((short)f.readShort() / (float)0x7FFF)),
-                                    unk3 = t.unkf3 + (((short)f.readShort() / (float)0x7FFF)),
-                                    unk4 = t.unkf3 + (((short)f.readShort() / (float)0x7FFF))
-                                });
-                                break;
-                            case 0x5:
-                                t.keys.Add(new FSKAKey()
-                                {
-                                    frame = frames[i],
-                                    unk1 = t.init + (((short)f.readShort() * t.scale)),
-                                    unk2 = t.unkf3 + (((short)f.readShort() * t.scale)),
-                                    unk3 = t.unkf3 + (((short)f.readShort() * t.scale)),
-                                    unk4 = t.unkf3 + (((short)f.readShort() * t.scale))
-                                });
-                                break;
-                            case 0x6:
-                                t.keys.Add(new FSKAKey()
-                                {
-                                    frame = frames[i],
-                                    unk1 = t.init + (((short)f.readShort() * t.scale)),
-                                    unk2 = t.unkf3 + (((short)f.readShort() / (float)0x7FFF)),
-                                    unk3 = t.unkf3 + (((short)f.readShort() / (float)0x7FFF)),
-                                    unk4 = t.unkf3 + (((short)f.readShort() / (float)0x7FFF))
-                                });
-                                break;
-                            case 0x8: //Unkown
-                                t.keys.Add(new FSKAKey()
-                                {
-                                    frame = frames[i],
-                                    unk1 = t.init + (((sbyte)f.readByte() * t.scale)),
-                                    unk2 = t.unkf3 + (((sbyte)f.readByte() * t.scale)),
-                                    unk3 = t.unkf3 + (((sbyte)f.readByte() * t.scale)),
-                                    unk4 = t.unkf3 + (((sbyte)f.readByte() * t.scale))
-                                });
-                                break;
-                            case 0x9:
-                                t.keys.Add(new FSKAKey()
-                                {
-                                    frame = frames[i],
-                                    unk1 = t.init + (((sbyte)f.readByte() * t.scale)),
-                                    unk2 = t.unkf3 + (((sbyte)f.readByte() * t.scale)),
-                                    unk3 = t.unkf3 + (((sbyte)f.readByte() * t.scale)),
-                                    unk4 = t.unkf3 + (((sbyte)f.readByte() * t.scale))
-                                });
-                                break;
-                            case 0xA:
-                                t.keys.Add(new FSKAKey()
-                                {
-                                    frame = frames[i],
-                                    unk1 = t.init + (((sbyte)f.readByte() * t.scale)),
-                                    unk2 = t.unkf3 + (((sbyte)f.readByte() * t.scale)),
-                                    unk3 = t.unkf3 + (((sbyte)f.readByte() * t.scale)),
-                                    unk4 = t.unkf3 + (((sbyte)f.readByte() * t.scale))
-                                });
-                                break;  
-                            default:
-                                break;
-                        }
 
-                    f.seek(tem);
-                    foreach (FSKAKey key in t.keys)
+                    for (int i = 0; i < (ushort)tr.Frames.Length; i++)
                     {
-                      //  Console.WriteLine(key.unk1);
+                        if (tr.CurveType == Syroot.NintenTools.NSW.Bfres.AnimCurveType.Cubic)
+                        {
+                            int framedata = (int)tr.Frames[i];
+                            float keydata = tr.Offset + ((tr.Keys[i, 0] * tr.Scale));
+                            float keydata2 = tr.Offset + ((tr.Keys[i, 1] * tr.Scale));
+                            float keydata3 = tr.Offset + ((tr.Keys[i, 2] * tr.Scale));
+                            float keydata4 = tr.Offset + ((tr.Keys[i, 3] * tr.Scale));
+                            //    Console.WriteLine($"{framedata} {keydata} {keydata2} {keydata3} {keydata4} ");
+                            //     Console.WriteLine($"Raw Data = " + tr.Keys[i, 0]);
+
+                        }
+                        if (tr.KeyType == ResNSW.AnimCurveKeyType.Int16)
+                        {
+
+                        }
+                        else if(tr.KeyType == ResNSW.AnimCurveKeyType.Single)
+                        {
+
+                        }
+                        else if (tr.KeyType == ResNSW.AnimCurveKeyType.SByte)
+                        {
+
+                        }
+                            t.keys.Add(new FSKAKey()
+                        {
+                            frame = (int)tr.Frames[i],
+                            unk1 = tr.Offset + ((tr.Keys[i, 0] * tr.Scale)),
+                            unk2 = tr.Offset + ((tr.Keys[i, 1] * tr.Scale)),
+                            unk3 = tr.Offset + ((tr.Keys[i, 2] * tr.Scale)),
+                            unk4 = tr.Offset + ((tr.Keys[i, 3] * tr.Scale)),
+                        });
                     }
                 }
-
-                f.seek(temp);
             }
         }
 
@@ -674,12 +448,12 @@ namespace Smash_Forge
 
                 }
 
-         //       Console.WriteLine("Name = " + b.Name);
+                //       Console.WriteLine("Name = " + b.Name);
 
                 foreach (AnimCurve tr in b.Curves)
                 {
 
-                  //  Console.WriteLine(tr.AnimDataOffset);
+                    //  Console.WriteLine(tr.AnimDataOffset);
 
                     FSKATrack t = new FSKATrack();
                     t.flag = (int)tr.AnimDataOffset;
@@ -687,7 +461,7 @@ namespace Smash_Forge
 
 
 
-               //     Console.WriteLine("Flag = " + (int)tr.AnimDataOffset + " Offset = " + tr.Offset + "  Scale = " + tr.Scale);
+                    //     Console.WriteLine("Flag = " + (int)tr.AnimDataOffset + " Offset = " + tr.Offset + "  Scale = " + tr.Scale);
 
 
                     //   Console.WriteLine();
@@ -705,8 +479,8 @@ namespace Smash_Forge
                             float keydata2 = tr.Offset + ((tr.Keys[i, 1] * tr.Scale));
                             float keydata3 = tr.Offset + ((tr.Keys[i, 2] * tr.Scale));
                             float keydata4 = tr.Offset + ((tr.Keys[i, 3] * tr.Scale));
-                        //    Console.WriteLine($"{framedata} {keydata} {keydata2} {keydata3} {keydata4} ");
-                       //     Console.WriteLine($"Raw Data = " + tr.Keys[i, 0]);
+                            //    Console.WriteLine($"{framedata} {keydata} {keydata2} {keydata3} {keydata4} ");
+                            //     Console.WriteLine($"Raw Data = " + tr.Keys[i, 0]);
 
                         }
 
@@ -715,7 +489,7 @@ namespace Smash_Forge
                             frame = (int)tr.Frames[i],
                             unk1 = tr.Offset + ((tr.Keys[i, 0] * tr.Scale)),
                         });
-                    }            
+                    }
                 }
             }
         }

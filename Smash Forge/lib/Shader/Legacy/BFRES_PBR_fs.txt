@@ -1,4 +1,4 @@
-﻿#version 330
+﻿#version 120
 
 in vec2 f_texcoord0;
 in vec2 f_texcoord1;

@@ -1105,5 +1105,10 @@ namespace Smash_Forge
             FillForm();
             UpdateMatComboBox();
         }
+
+        private void texRgbGlControl_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

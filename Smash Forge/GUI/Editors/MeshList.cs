@@ -94,6 +94,11 @@ namespace Smash_Forge
             MainForm.Instance.openMats(poly,name);
         }
 
+        private void bfresShapeSelected(BFRES.Mesh poly, string name)
+        {
+            MainForm.Instance.bfresOpenMats(poly, name);
+        }
+
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             numericUpDown1.Visible = false;
@@ -341,6 +346,15 @@ namespace Smash_Forge
                 if (filesTreeView.SelectedNode is ModelContainer)
                 {
                     ModelContainerContextMenu.Show(this, e.X, e.Y);
+                }
+                else
+                if (filesTreeView.SelectedNode is BFRES.Mesh)
+                {
+                    bfresMeshContextMenu.Show(this, e.X, e.Y);
+                }
+                if (filesTreeView.SelectedNode is BFRES)
+                {
+                    bfresToolStripMenu.Show(this, e.X, e.Y);
                 }
                 else
                 if(filesTreeView.SelectedNode == null)
@@ -1410,5 +1424,41 @@ namespace Smash_Forge
                 }
             }
         }
+
+        private void contextMenuStrip1_Opening_1(object sender, CancelEventArgs e)
+        {
+
+        }
+
+#region BFRES Menus
+
+        private void openMaterialEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            bfresShapeSelected((BFRES.Mesh)filesTreeView.SelectedNode, $"");
+        }
+
+        private void openPolygonEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void bfresSaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string filename = "";
+            SaveFileDialog save = new SaveFileDialog();
+            save.Filter = "Binary caFe RESource|*.bfres|All files(*.*)|*.*";
+            DialogResult result = save.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                filename = save.FileName;
+                if (filename.EndsWith(".bfres"))
+                {
+                    ((BFRES)filesTreeView.SelectedNode).SaveFile(filename);
+                }
+            }
+        }
+
+        #endregion
     }
 }

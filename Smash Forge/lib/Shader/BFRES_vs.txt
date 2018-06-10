@@ -7,16 +7,16 @@ in vec4 vColor;
 in vec3 vNormal;
 in vec2 vUV0;
 in vec2 vUV1;
+in vec2 vUV2;
 in vec4 vBone;
-in vec4 vBone1;
 in vec4 vWeight;
-in vec4 vWeight1;
 in vec3 vTangent;
 in vec3 vBitangent;
 
 out vec2 f_texcoord0;
 out vec2 f_texcoord1;
 out vec2 f_texcoord2;
+out vec2 f_texcoord3;
 out vec3 normal;
 out vec4 color;
 out vec3 tangent;
@@ -33,6 +33,7 @@ uniform mat4 modelLocation;
 uniform int NoSkinning;
 uniform mat4 TransformNoRig;
 
+
 vec3 skinNRM(vec3 nr, ivec4 index)
 {
     vec3 nrmPos = vec3(0);
@@ -48,7 +49,6 @@ vec3 skinNRM(vec3 nr, ivec4 index)
 void main()
 {
     ivec4 index = ivec4(vBone); 
-    ivec4 index1 = ivec4(vBone1); 
 
     vec4 objPos = vec4(vPosition.xyz, 1.0);
 
@@ -63,13 +63,6 @@ void main()
         objPos += bones[boneList[index.z]] * vec4(vPosition, 1.0) * vWeight.z;
         if(vWeight.w < 1)
             objPos += bones[boneList[index.w]] * vec4(vPosition, 1.0) * vWeight.w;
-    }
-    if(vBone1.x != -1){
-        objPos = bones[boneList[index1.x]] * vec4(vPosition, 1.0) * vWeight1.x;
-        objPos += bones[boneList[index1.y]] * vec4(vPosition, 1.0) * vWeight1.y;
-        objPos += bones[boneList[index1.z]] * vec4(vPosition, 1.0) * vWeight1.z;
-        if(vWeight1.w < 1)
-            objPos += bones[boneList[index1.w]] * vec4(vPosition, 1.0) * vWeight1.w;
     }
 
     gl_Position = modelview * vec4(objPos.xyz, 1.0);
@@ -99,6 +92,7 @@ void main()
     f_texcoord0 = vUV0;
     f_texcoord1 = vec2((vUV1 * sampler2.xy) + sampler2.zw);
     f_texcoord2 = vec2((vUV1 * sampler3.xy) + sampler3.zw);
+    f_texcoord3 = vUV2;
 
 
 
