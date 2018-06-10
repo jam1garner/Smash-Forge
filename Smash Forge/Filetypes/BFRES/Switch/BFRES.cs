@@ -62,16 +62,6 @@ namespace Smash_Forge
 
         // gl buffer objects
         int vbo_position;
-        int vbo_color;
-        int vbo_nrm;
-        int vbo_uv0;
-        int vbo_uv1;
-        int vbo_weight;
-        int vbo_weight1;
-        int vbo_bone;
-        int vbo_bone1;
-        int vbo_tan;
-        int vbo_bitan;
         int ibo_elements;
 
         Vector2[] uvdata0, uvdata1;
@@ -86,16 +76,6 @@ namespace Smash_Forge
         public BFRES()
         {
             GL.GenBuffers(1, out vbo_position);
-            GL.GenBuffers(1, out vbo_color);
-            GL.GenBuffers(1, out vbo_nrm);
-            GL.GenBuffers(1, out vbo_uv0);
-            GL.GenBuffers(1, out vbo_uv1);
-            GL.GenBuffers(1, out vbo_bone);
-            GL.GenBuffers(1, out vbo_bone1);
-            GL.GenBuffers(1, out vbo_weight);
-            GL.GenBuffers(1, out vbo_weight1);
-            GL.GenBuffers(1, out vbo_tan);
-            GL.GenBuffers(1, out vbo_bitan);
             GL.GenBuffers(1, out ibo_elements);
 
             if (!Runtime.shaders.ContainsKey("BFRES"))
@@ -529,18 +509,20 @@ namespace Smash_Forge
         }
         private static void SetDefaultTextureAttributes()
         {
+            GL.Uniform1(shader.getAttribute("HasDiffuseLayer"), 0);
+            GL.Uniform1(shader.getAttribute("HasTeamColorMap"), 0);
             GL.Uniform1(shader.getAttribute("HasNormalMap"), 0);
-            GL.Uniform1(shader.getAttribute("HasTransparencyMap"), 0);
+            GL.Uniform1(shader.getAttribute("HasSpecularMap"), 0);
             GL.Uniform1(shader.getAttribute("HasEmissionMap"), 0);
+            GL.Uniform1(shader.getAttribute("HasTransparencyMap"), 0);
             GL.Uniform1(shader.getAttribute("HasShadowMap"), 0);
             GL.Uniform1(shader.getAttribute("HasAOMap"), 0);
             GL.Uniform1(shader.getAttribute("HasLightMap"), 0);
-            GL.Uniform1(shader.getAttribute("HasSpecularMap"), 0);
 
             //Unused atm untill I do PBR shader
             GL.Uniform1(shader.getAttribute("HasMetalnessMap"), 0);
             GL.Uniform1(shader.getAttribute("HasRoughnessMap"), 0);
-        }
+    }
 
         private static void MapTextures(MaterialData mat, Mesh m)
         {
@@ -587,24 +569,6 @@ namespace Smash_Forge
                     GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
                     GL.Uniform1(shader.getAttribute("BakeLightMap"), 3);
                 }
-                else if (tex == "Metalness")
-                {
-                    GL.ActiveTexture(TextureUnit.Texture4);
-                    GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
-                    GL.Uniform1(shader.getAttribute("metallicMap"), 4);
-                }
-                else if (tex == "Roughness")
-                {
-                    GL.ActiveTexture(TextureUnit.Texture5);
-                    GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
-                    GL.Uniform1(shader.getAttribute("roughnessMap"), 5);
-                }
-                else if (tex == "MRA")
-                {
-              //      GL.ActiveTexture(TextureUnit.Texture6);
-              //      GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
-             //       GL.Uniform1(shader.getAttribute("MRA"), 6);
-                }
                 else if (tex == "TransparencyMap")
                 {
                     GL.ActiveTexture(TextureUnit.Texture7);
@@ -625,6 +589,18 @@ namespace Smash_Forge
                     GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
                     GL.Uniform1(shader.getAttribute("SpecularMap"), 9);
                     GL.Uniform1(shader.getAttribute("HasSpecularMap"), 1);
+                }
+                else if (tex == "Metalness")
+                {
+
+                }
+                else if (tex == "Roughness")
+                {
+
+                }
+                else if (tex == "MRA")
+                {
+
                 }
                 else
                 {
