@@ -838,7 +838,7 @@ namespace Smash_Forge
             return "NUT";
         }
 
-        public static Rendering.Texture CreateGlTexture(NutTexture t, bool isDds = false)
+        public static Rendering.Texture CreateGlTexture(NutTexture t, bool isDds = false, int surfaceIndex = 0)
         {
             Rendering.Texture texture = new Rendering.Texture2D(t.Width, t.Height);
             texture.Bind();
@@ -852,7 +852,7 @@ namespace Smash_Forge
             if (compressedFormatWithMipMaps)
             {
                 // Always load the first level.
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.Width, t.Height, 0, t.Size, t.surfaces[0].mipmaps[0]);
+                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.Width, t.Height, 0, t.Size, t.surfaces[surfaceIndex].mipmaps[0]);
 
                 // Reading mip maps past the first level is only supported for DDS currently.
                 if (t.surfaces[0].mipmaps.Count > 1 && isDds)

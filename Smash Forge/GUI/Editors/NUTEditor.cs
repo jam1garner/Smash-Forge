@@ -991,13 +991,19 @@ namespace Smash_Forge
 
         private void mipLevelTrackBar_Scroll(object sender, EventArgs e)
         {
-            currentMipLevel = mipLevelTrackBar.Value;
 
             NutTexture tex = ((NutTexture)textureListBox.SelectedItem);
             if (tex.surfaces.Count == 6)
             {
+                // Create a new texture for the selected surface at the first mip level.
+                currentMipLevel = 0;
                 SetCurrentCubeMapFaceLabel(mipLevelTrackBar.Value);
-                
+                textureToRender = NUT.CreateGlTexture(tex, false, mipLevelTrackBar.Value);
+            }
+            else
+            {
+                // Regular texture.
+                currentMipLevel = mipLevelTrackBar.Value;
             }
 
             glControl1.Invalidate();
