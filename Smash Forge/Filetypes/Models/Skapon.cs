@@ -38,7 +38,7 @@ namespace Smash_Forge
                     NutTexture tex = new DDS(new FileData(b)).toNUT_Texture();
                     nut.Nodes.Add(tex);
                     tex.HASHID = 0x40000000 + randomNumber;
-                    nut.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex));
+                    nut.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex).Id);
                 }
             }
 

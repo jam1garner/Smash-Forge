@@ -155,7 +155,7 @@ namespace Smash_Forge
                                 while (NUT.texIdUsed(tex.HASHID))
                                     tex.HASHID++;
                                 thisNut.Nodes.Add(tex);
-                                thisNut.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex));
+                                thisNut.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex).Id);
                                 existingTextures.Add(img.initref, tex);
                                 tempTex = tex;
                             }

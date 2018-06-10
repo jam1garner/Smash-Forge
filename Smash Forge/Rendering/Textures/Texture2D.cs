@@ -9,8 +9,13 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge.Rendering
 {
-    class Texture2D : Texture
+    public class Texture2D : Texture
     {
+        public Texture2D(int width, int height) : base(TextureTarget.Texture2D, width, height)
+        {
+
+        }
+
         public Texture2D(Bitmap image) : base(TextureTarget.Texture2D, image.Width, image.Height)
         {
             // Load the image data.

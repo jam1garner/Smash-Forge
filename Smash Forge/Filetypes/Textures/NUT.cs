@@ -575,7 +575,7 @@ namespace Smash_Forge
                 if (!glTexByHashId.ContainsKey(tex.HASHID))
                 {
                     Debug.WriteLine(tex.HASHID);
-                    glTexByHashId.Add(tex.HASHID, CreateGlTexture(tex, true));
+                    glTexByHashId.Add(tex.HASHID, CreateGlTexture(tex, true).Id);
                 }
             }
         }
@@ -764,7 +764,7 @@ namespace Smash_Forge
             {
                 if (!glTexByHashId.ContainsKey(tex.HASHID))
                 {
-                    glTexByHashId.Add(tex.HASHID, CreateGlTexture(tex, false));
+                    glTexByHashId.Add(tex.HASHID, CreateGlTexture(tex, false).Id);
                 }
             }
         }
@@ -839,10 +839,10 @@ namespace Smash_Forge
             return "NUT";
         }
 
-        public static int CreateGlTexture(NutTexture t, bool isDds = false)
+        public static Rendering.Texture CreateGlTexture(NutTexture t, bool isDds = false)
         {
-            int texID = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, texID);
+            Rendering.Texture texture = new Rendering.Texture2D(t.Width, t.Height);
+            texture.Bind();
 
             bool compressedFormatWithMipMaps = t.type == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
                 || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
@@ -866,7 +866,7 @@ namespace Smash_Forge
                 AutoGenerateMipMaps(t);
             }
 
-            return texID;
+            return texture;
         }
 
         private static void AutoGenerateMipMaps(NutTexture t)

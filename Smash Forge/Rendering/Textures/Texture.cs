@@ -9,7 +9,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge.Rendering
 {
-    abstract class Texture
+    public abstract class Texture
     {
         private static HashSet<int> texturesToDelete = new HashSet<int>();
 

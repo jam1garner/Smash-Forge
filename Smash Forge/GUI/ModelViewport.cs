@@ -1815,7 +1815,8 @@ namespace Smash_Forge
             Render(sender, e);
 
             // Make sure unused resources get cleaned up.
-            Texture.DeleteUnusedTextures();
+            // TODO: Fix scope of texture objects for NUT.
+            //Texture.DeleteUnusedTextures();
         }
 
         private void glViewport_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
