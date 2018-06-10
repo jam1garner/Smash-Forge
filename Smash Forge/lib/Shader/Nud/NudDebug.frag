@@ -58,7 +58,7 @@ uniform int renderStageLighting;
 uniform int uvChannel;
 uniform int debug1;
 uniform int debug2;
-uniform int drawWireframe;
+uniform int drawWireFrame;
 
 // NU_ Material Properties
 uniform vec4 colorOffset;
@@ -329,7 +329,7 @@ void main() {
     if (alphaOverride == 1)
         fragColor = vec4(resultingColor.aaa, 1);
 
-    if (drawWireframe == 1) {
+    if (drawWireFrame == 1) {
         float minDistance = min(min(edgeDistance.x, edgeDistance.y), edgeDistance.z);
         float smoothedDistance = exp2(-512.0 * minDistance * minDistance);
         vec3 edgeColor = vec3(1);

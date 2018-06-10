@@ -72,7 +72,7 @@ uniform int renderVertColor;
 uniform int renderNormal;
 uniform int useNormalMap;
 // Wireframe Rendering
-uniform int drawWireframe;
+uniform int drawWireFrame;
 uniform float lineWidth;
 
 uniform int drawSelection;
@@ -240,7 +240,7 @@ void main() {
     if (Luminance(fragColor.rgb) > bloomThreshold)
         fragColorBright.rgb = fragColor.rgb;
 
-    if (drawWireframe == 1)
+    if (drawWireFrame == 1)
     {
         vec3 edgeColor = vec3(1);
         float intensity = WireframeIntensity(edgeDistance);
