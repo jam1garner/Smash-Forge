@@ -81,7 +81,6 @@
             this.forgeWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
-            this.glControl1 = new OpenTK.GLControl();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.greenArrowPictureBox = new System.Windows.Forms.PictureBox();
@@ -513,18 +512,6 @@
             this.dockPanel1.Size = new System.Drawing.Size(1217, 741);
             this.dockPanel1.TabIndex = 16;
             // 
-            // glControl1
-            // 
-            this.glControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(1060, 7);
-            this.glControl1.Margin = new System.Windows.Forms.Padding(4);
-            this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(10, 10);
-            this.glControl1.TabIndex = 19;
-            this.glControl1.VSync = false;
-            this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
-            // 
             // checkBox1
             // 
             this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -564,7 +551,6 @@
             this.ClientSize = new System.Drawing.Size(1217, 765);
             this.Controls.Add(this.greenArrowPictureBox);
             this.Controls.Add(this.checkBox1);
-            this.Controls.Add(this.glControl1);
             this.Controls.Add(this.dockPanel1);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -611,7 +597,6 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem clearWorkspaceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem renderSettingsToolStripMenuItem;
-        private OpenTK.GLControl glControl1;
         private System.Windows.Forms.ToolStripMenuItem texturesToolStripMenuItem;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.ToolStripMenuItem openFileToolStripMenuItem;

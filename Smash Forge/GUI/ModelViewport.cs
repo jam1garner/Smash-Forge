@@ -1182,7 +1182,7 @@ namespace Smash_Forge
             ClearModelContainers();
         }
 
-        private void ClearModelContainers()
+        public void ClearModelContainers()
         {
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
@@ -1813,6 +1813,9 @@ namespace Smash_Forge
         private void glViewport_Paint(object sender, PaintEventArgs e)
         {
             Render(sender, e);
+
+            // Make sure unused resources get cleaned up.
+            Texture.DeleteUnusedTextures();
         }
 
         private void glViewport_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)

@@ -11,6 +11,17 @@ namespace Smash_Forge.Rendering
 {
     abstract class Texture
     {
+        private static HashSet<int> texturesToDelete = new HashSet<int>();
+
+        public static void DeleteUnusedTextures()
+        {
+            foreach (int texture in texturesToDelete)
+            {
+                GL.DeleteTexture(texture);
+            }
+            texturesToDelete.Clear();
+        }
+
         // This should only be set once by GL.GenTexture().
         public int Id { get; }
 
@@ -103,6 +114,8 @@ namespace Smash_Forge.Rendering
         {
             // The context probably isn't current here, so any GL function will crash.
             // TODO: Manage resources.
+            if (!texturesToDelete.Contains(Id))
+                texturesToDelete.Add(Id);            
         }
 
         public void Bind()

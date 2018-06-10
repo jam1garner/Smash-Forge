@@ -115,7 +115,7 @@ namespace Smash_Forge
             int fbo;
             int rboColor;
             int rboDepth;
-            glControl1.MakeCurrent();
+            //glControl1.MakeCurrent();
             //Rendering.FramebufferTools.CreateOffscreenRenderFboRbo(out fbo, out rboDepth, out rboColor, FramebufferTarget.Framebuffer, width, height);
             GL.Viewport(0, 0, width, height);
 
@@ -135,7 +135,7 @@ namespace Smash_Forge
 
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
                 Rendering.RenderTools.DrawNudMaterialSphere(material);
-                glControl1.SwapBuffers();
+                //glControl1.SwapBuffers();
                 /*
                 // Using the other framebuffer targets doesn't work for some reason.
                 Bitmap image = Rendering.FramebufferTools.ReadFrameBufferPixels(fbo, FramebufferTarget.Framebuffer, width, height, true);
@@ -1020,7 +1020,6 @@ namespace Smash_Forge
         /// <param name="fileName"> Filename of file to open</param>
         public void openFile(string fileName)
         {
-            glControl1.MakeCurrent();
             DiscordSettings.lastFileOpened = Path.GetFileName(fileName);
 
             // Reassigned if a valid model file is opened. 
@@ -1732,15 +1731,6 @@ namespace Smash_Forge
             NUT nut = new NUT();
             NUTEditor editor = new NUTEditor(nut);
             AddDockedControl(editor);
-        }
-
-        private void glControl1_Paint(object sender, PaintEventArgs e)
-        {
-            // I got tired of looking at it.
-            //glControl1.MakeCurrent();
-            //GL.ClearColor(System.Drawing.Color.FromArgb(255, 250, 250, 250));
-            //GL.Clear(ClearBufferMask.ColorBufferBit);
-            //glControl1.SwapBuffers();
         }
 
         private void modelToolStripMenuItem_Click(object sender, EventArgs e)
