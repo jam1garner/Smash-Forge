@@ -404,54 +404,7 @@ namespace Smash_Forge
                    }
                }*/
 
-            Vector3 pos = new Vector3(0, 0.0f, 0);
-            Vector3 sca = new Vector3(1, 1, 1);
-            Vector3 rot = new Vector3(0, 0, 0);
-
-            Console.WriteLine(pathBfres);
-
-            if (pathBfres.Contains("Mario") && pathBfres.Contains("Face"))
-            {
-                Console.WriteLine("Positioning Face Mesh.....");
-                pos = new Vector3(0, 97.0f, 0);
-                sca = new Vector3(1, 1, 1);
-                rot = new Vector3(0, 0, 0);
-            }
-            if (pathBfres.Contains("Mario") && pathBfres.Contains("Head"))
-            {
-                Console.WriteLine("Positioning Head Mesh.....");
-                pos = new Vector3(0, 97.0f, 0);
-                sca = new Vector3(1, 1, 1);
-                rot = new Vector3(0, 0, 0);
-            }
-            if (pathBfres.Contains("Mario") && pathBfres.Contains("HandL"))
-            {
-                Console.WriteLine("Positioning Face Mesh.....");
-                pos = new Vector3(48.877f, 82.551f, -3.3f);
-                sca = new Vector3(1, 1, 1);
-                rot = new Vector3(0, 90f, 0);
-            }
-            if (pathBfres.Contains("Mario") && pathBfres.Contains("HandR"))
-            {
-                Console.WriteLine("Positioning HandR Mesh.....");
-                pos = new Vector3(-48.877f, 82.551f, -3.3f);
-                sca = new Vector3(1, 1, 1);
-                rot = new Vector3(0, -90f, 0);
-            }
-            if (pathBfres.Contains("Mario") && pathBfres.Contains("Eye"))
-            {
-                Console.WriteLine("Positioning Eye Mesh.....");
-                pos = new Vector3(0, 97.0f, 0);
-                sca = new Vector3(1, 1, 1);
-                rot = new Vector3(0, 0f, 0);
-            }
-            if (pathBfres.Contains("Mario") && pathBfres.Contains("Skirt"))
-            {
-                Console.WriteLine("Positioning Skirt Mesh.....");
-                pos = new Vector3(0, 56.0f, 0);
-                sca = new Vector3(1, 1, 1);
-                rot = new Vector3(0, 0f, 0);
-            }
+      
 
             FileData f = new FileData(pathBfres);
 
@@ -469,7 +422,7 @@ namespace Smash_Forge
                 }
             }
 
-            modelContainer.BFRES = new BFRES(pathBfres, pos, sca, rot);
+            modelContainer.BFRES = new BFRES(pathBfres);
 
             if (modelContainer.BFRES.models.Count != 0)
             {
