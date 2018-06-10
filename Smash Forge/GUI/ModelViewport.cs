@@ -204,7 +204,6 @@ namespace Smash_Forge
         public ModelViewport()
         {
             InitializeComponent();
-            Debug.WriteLine("initialize component");
             camera = new Camera();
             FilePath = "";
             Text = "Model Viewport";
@@ -474,7 +473,6 @@ namespace Smash_Forge
 
             // Get the color at the mouse's position.
             Color selectedColor = ColorPickPixelAtMousePosition();
-            Debug.WriteLine(selectedColor.ToString());
             meshList.filesTreeView.SelectedNode = GetSelectedPolygonFromColor(selectedColor);
         }
 
@@ -1783,7 +1781,7 @@ namespace Smash_Forge
         {
             GL.PopAttrib();
             NutTexture tex = ((NutTexture)meshList.filesTreeView.SelectedNode);
-            RenderTools.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HASHID], tex.Width, tex.Height);
+            RenderTools.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HASHID].Id, tex.Width, tex.Height);
 
             if (Runtime.drawUv)
                 DrawUvsForSelectedTexture(tex);
@@ -1815,8 +1813,7 @@ namespace Smash_Forge
             Render(sender, e);
 
             // Make sure unused resources get cleaned up.
-            // TODO: Fix scope of texture objects for NUT.
-            //Texture.DeleteUnusedTextures();
+            Texture.DeleteUnusedTextures();
         }
 
         private void glViewport_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)

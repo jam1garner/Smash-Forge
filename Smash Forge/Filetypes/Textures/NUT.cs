@@ -211,8 +211,8 @@ namespace Smash_Forge
 
     public class NUT : FileBase
     {
-        // Dictionary<hash ID, OpenTK texture>
-        public Dictionary<int, int> glTexByHashId = new Dictionary<int, int>();
+        // Dictionary<hash ID, Texture>
+        public Dictionary<int, Rendering.Texture> glTexByHashId = new Dictionary<int, Rendering.Texture>();
 
         public ushort Version = 0x200;
 
@@ -574,8 +574,7 @@ namespace Smash_Forge
             {
                 if (!glTexByHashId.ContainsKey(tex.HASHID))
                 {
-                    Debug.WriteLine(tex.HASHID);
-                    glTexByHashId.Add(tex.HASHID, CreateGlTexture(tex, true).Id);
+                    glTexByHashId.Add(tex.HASHID, CreateGlTexture(tex, true));
                 }
             }
         }
@@ -764,7 +763,7 @@ namespace Smash_Forge
             {
                 if (!glTexByHashId.ContainsKey(tex.HASHID))
                 {
-                    glTexByHashId.Add(tex.HASHID, CreateGlTexture(tex, false).Id);
+                    glTexByHashId.Add(tex.HASHID, CreateGlTexture(tex, false));
                 }
             }
         }
@@ -790,7 +789,7 @@ namespace Smash_Forge
 
             foreach (NutTexture tex in Nodes)
             {
-                int originalTexture = glTexByHashId[tex.HASHID];
+                Rendering.Texture originalTexture = glTexByHashId[tex.HASHID];
                 glTexByHashId.Remove(tex.HASHID);
 
                 // Only change the first 3 bytes.
@@ -829,8 +828,8 @@ namespace Smash_Forge
         {
             foreach (var kv in glTexByHashId)
             {
-                if (GL.IsTexture(kv.Value))
-                    GL.DeleteTexture(kv.Value);
+                //if (GL.IsTexture(kv.Value))
+                //    GL.DeleteTexture(kv.Value);
             }
         }
 

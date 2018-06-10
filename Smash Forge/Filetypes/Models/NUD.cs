@@ -1236,10 +1236,10 @@ namespace Smash_Forge
 
             foreach (NUT nut in Runtime.TextureContainers)
             {
-                int texid = 0;
-                if (nut.glTexByHashId.TryGetValue(hash, out texid))
+                Texture texture;
+                if (nut.glTexByHashId.TryGetValue(hash, out texture))
                 {
-                    BindNutTexture(tex, texid);
+                    BindNutTexture(tex, texture.Id);
                     break;
                 }
             }

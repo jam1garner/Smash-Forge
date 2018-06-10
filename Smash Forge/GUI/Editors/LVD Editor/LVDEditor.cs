@@ -314,7 +314,6 @@ namespace Smash_Forge
 
         private void ChangeCollisionVertPos(object sender, EventArgs e)
         {
-            Debug.WriteLine(currentEntry.GetType());
             if (currentEntry is Collision)
             {
                 // Find which vert of the collision is selected.

@@ -844,7 +844,7 @@ namespace Smash_Forge
                         if (n.glTexByHashId.ContainsKey(hash))
                         {
                             n.getTextureByID(hash, out nutTexture);
-                            displayTexture = n.glTexByHashId[hash];
+                            displayTexture = n.glTexByHashId[hash].Id;
                             break;
                         }
                     }

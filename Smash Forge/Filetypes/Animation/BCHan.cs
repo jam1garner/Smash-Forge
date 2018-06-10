@@ -158,7 +158,6 @@ namespace Smash_Forge
                 //Runtime.Animations.Add(skeletalAnimationName, a);
                 //MainForm.animNode.Nodes.Add(skeletalAnimationName);
                 
-                //Debug.WriteLine("Animation Name: " + skeletalAnimationName);
                 Animation a = new Animation(skeletalAnimationName);
                 ThisAnimation.Nodes.Add(a);
 
