@@ -466,9 +466,7 @@ namespace Smash_Forge
 
                 f.seek(f.pos() + 0x14);
                 String textureName = f.readString(f.readInt(), -1);
-                //Debug.WriteLine("gpuCommandOffset: " + header.gpuCommandsOffset.ToString("X"));
                 f.seek(textureCommandsOffset);
-                //Debug.WriteLine("textureCommandOffset: " + textureCommandsOffset.ToString("X"));
                 BCH_Texture tex = new BCH_Texture();
                 textures.Add(textureName, tex);
 
@@ -476,14 +474,13 @@ namespace Smash_Forge
                 tex.Width = f.readUShort();
                 f.skip(12);
                 int doffset = f.readInt();
-                //Debug.WriteLine("doffset: " + doffset.ToString("X"));
                 f.skip(4);
                 tex.type = f.readInt();
                 tex.data = f.getSection(doffset, f.size() - doffset);
 
                 tex.texture = _3DS.DecodeImage(tex.data, tex.Width, tex.Height, (_3DS.Tex_Formats)tex.type);
-                Rendering.Texture texture = new Rendering.Texture2D(tex.texture);
-                tex.display = texture.Id;
+                //Rendering.Texture texture = new Rendering.Texture2D(tex.texture);
+                //tex.display = texture.Id;
             }
 
             // Model data
@@ -511,7 +508,6 @@ namespace Smash_Forge
                 int materialsTableEntries = f.readInt();
                 int materialsNameOffset = f.readInt();
                 int verticesTableOffset = f.readInt();
-                //Debug.WriteLine("Mesh Count: " + f.pos().ToString("X"));
                 int verticesTableEntries = f.readInt();
                 f.skip(0x28);
                 int skeletonOffset = f.readInt();
@@ -541,7 +537,6 @@ namespace Smash_Forge
                     short leftNode = f.readShort();
                     short rightNode = f.readShort();
                     objectName[i] = f.readString(f.readInt(), -1);
-                    //Debug.WriteLine(objectName[i]);
                 }
 
             // Materials
@@ -603,16 +598,13 @@ namespace Smash_Forge
                     f.skip(4); // flagsOffset
                     f.skip(4); // 0?
                     f.readInt(); //bbOffsets[i]
-
-                    //Debug.WriteLine(des.vshAttBufferCommandOffset.ToString("X"));
                 }
 
                 //Skeleton
                 f.seek(skeletonOffset);
                 for (int index = 0; index < skeletonEntries; index++)
                 {
-                    Bone bone = new Smash_Forge.Bone(model.skeleton);
-                    //Bone bone = new Bone(bones);
+                    Bone bone = new Bone(model.skeleton);
                     int boneFlags = f.readInt();
                     bone.parentIndex = f.readShort();
                     short boneSpace = f.readShort();
