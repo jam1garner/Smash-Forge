@@ -238,6 +238,9 @@ namespace Smash_Forge
         public static string openGLVersion = "";
         public static string GLSLVersion = "";
 
+        // Texture creation needs to be delayed until we actually have a context.
+        public static bool glTexturesNeedRefreshing = false;
+
         public enum RenderTypes
         {
             Shaded = 0,

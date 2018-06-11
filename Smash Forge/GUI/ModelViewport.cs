@@ -1178,6 +1178,7 @@ namespace Smash_Forge
         private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
         {
             ClearModelContainers();
+            Texture.ClearTexturesFlaggedForDeletion(); // Resources already freed.
         }
 
         public void ClearModelContainers()
@@ -1397,7 +1398,9 @@ namespace Smash_Forge
 
         private void Render(object sender, PaintEventArgs e, int defaultFbo = 0)
         {
-            if (!readyToRender)
+            // Don't render if the context and resources aren't setup properly.
+            // Watching textures suddenly appear looks weird.
+            if (!readyToRender || Runtime.glTexturesNeedRefreshing)
                 return;
 
             SetupViewport();
@@ -1814,6 +1817,13 @@ namespace Smash_Forge
 
             // Make sure unused resources get cleaned up.
             Texture.DeleteUnusedTextures();
+
+            // Deleting the context will require all the textures to be reloaded.
+            if (Runtime.glTexturesNeedRefreshing)
+            {
+                RefreshGlTextures();
+                Runtime.glTexturesNeedRefreshing = false;
+            }
         }
 
         private void glViewport_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -1850,16 +1860,13 @@ namespace Smash_Forge
             glViewport.MakeCurrent();
             RenderTools.SetupOpenTkRendering();
             SetupBuffersAndTextures();
-
             RefreshGlTextures();
-
             readyToRender = true;
         }
 
         private void RefreshGlTextures()
         {
-            // This should only need to be done once when the viewport is created.
-            // Deleting the context will require all the textures to be reloaded.
+            // Regenerate all the texture objects.
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer))

@@ -491,6 +491,8 @@ namespace Smash_Forge
             NUT nut = new NUT(fileName);
             modelContainer.NUT = nut;
             Runtime.TextureContainers.Add(nut);
+            // Multiple windows was a mistake...
+            Runtime.glTexturesNeedRefreshing = true; 
         }
 
         private static void OpenStprmBin(ModelViewport modelViewport, string fileName)
