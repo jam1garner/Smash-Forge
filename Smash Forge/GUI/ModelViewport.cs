@@ -204,7 +204,6 @@ namespace Smash_Forge
         public ModelViewport()
         {
             InitializeComponent();
-            Debug.WriteLine("initialize component");
             camera = new Camera();
             FilePath = "";
             Text = "Model Viewport";
@@ -474,7 +473,6 @@ namespace Smash_Forge
 
             // Get the color at the mouse's position.
             Color selectedColor = ColorPickPixelAtMousePosition();
-            Debug.WriteLine(selectedColor.ToString());
             meshList.filesTreeView.SelectedNode = GetSelectedPolygonFromColor(selectedColor);
         }
 
@@ -1180,9 +1178,10 @@ namespace Smash_Forge
         private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
         {
             ClearModelContainers();
+            Texture.ClearTexturesFlaggedForDeletion(); // Resources already freed.
         }
 
-        private void ClearModelContainers()
+        public void ClearModelContainers()
         {
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
@@ -1399,7 +1398,9 @@ namespace Smash_Forge
 
         private void Render(object sender, PaintEventArgs e, int defaultFbo = 0)
         {
-            if (!readyToRender)
+            // Don't render if the context and resources aren't setup properly.
+            // Watching textures suddenly appear looks weird.
+            if (!readyToRender || Runtime.glTexturesNeedRefreshing)
                 return;
 
             SetupViewport();
@@ -1783,7 +1784,7 @@ namespace Smash_Forge
         {
             GL.PopAttrib();
             NutTexture tex = ((NutTexture)meshList.filesTreeView.SelectedNode);
-            RenderTools.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HASHID], tex.Width, tex.Height);
+            RenderTools.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HASHID].Id, tex.Width, tex.Height);
 
             if (Runtime.drawUv)
                 DrawUvsForSelectedTexture(tex);
@@ -1813,6 +1814,16 @@ namespace Smash_Forge
         private void glViewport_Paint(object sender, PaintEventArgs e)
         {
             Render(sender, e);
+
+            // Make sure unused resources get cleaned up.
+            Texture.DeleteUnusedTextures();
+
+            // Deleting the context will require all the textures to be reloaded.
+            if (Runtime.glTexturesNeedRefreshing)
+            {
+                RefreshGlTextures();
+                Runtime.glTexturesNeedRefreshing = false;
+            }
         }
 
         private void glViewport_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -1847,18 +1858,18 @@ namespace Smash_Forge
         private void glViewport_Load(object sender, EventArgs e)
         {
             glViewport.MakeCurrent();
-            RenderTools.SetupOpenTkRendering();
-            SetupBuffersAndTextures();
-
-            RefreshGlTextures();
-
-            readyToRender = true;
+            if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
+            {
+                RenderTools.SetupOpenTkRendering();
+                SetupBuffersAndTextures();
+                RefreshGlTextures();
+                readyToRender = true;
+            }
         }
 
         private void RefreshGlTextures()
         {
-            // This should only need to be done once when the viewport is created.
-            // Deleting the context will require all the textures to be reloaded.
+            // Regenerate all the texture objects.
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer))

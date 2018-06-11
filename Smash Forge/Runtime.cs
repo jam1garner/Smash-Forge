@@ -157,7 +157,7 @@ namespace Smash_Forge
         public static float fov = 0.524f; // default 30 degrees from stage param files
         public static float zoomspeed = 1.25f;
         public static float zoomModifierScale = 2.0f;
-        public static bool cameraLight = false;
+        public static bool cameraLight = true;
 
         // Post Processing
         public static bool renderBloom = false;
@@ -237,6 +237,9 @@ namespace Smash_Forge
         public static string renderer = "";
         public static string openGLVersion = "";
         public static string GLSLVersion = "";
+
+        // Texture creation needs to be delayed until we actually have a context.
+        public static bool glTexturesNeedRefreshing = false;
 
         public enum RenderTypes
         {

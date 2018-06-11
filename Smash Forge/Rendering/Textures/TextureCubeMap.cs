@@ -9,7 +9,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge.Rendering
 {
-    class TextureCubeMap : Texture
+    public class TextureCubeMap : Texture
     {
         public TextureCubeMap(Bitmap cubeMapFaces, int sideLength = 128) : base(TextureTarget.TextureCubeMap, sideLength, sideLength, PixelInternalFormat.Rgba)
         {

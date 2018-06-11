@@ -9,8 +9,29 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge.Rendering
 {
-    abstract class Texture
+    public abstract class Texture
     {
+        private static HashSet<int> texturesToDelete = new HashSet<int>();
+
+        public static void DeleteUnusedTextures()
+        {
+            foreach (int texture in texturesToDelete)
+            {
+                GL.DeleteTexture(texture);
+            }
+            texturesToDelete.Clear();
+        }
+
+        public static void ClearTexturesFlaggedForDeletion()
+        {
+            // Avoids the following scenario. Should be called on context destruction.
+            // 1. Texture is created.
+            // 2. Context is destroyed and resources are freed.
+            // 3. A texture with the same Id is made in a new context.
+            // 4. The new texture is deleted because of the shared Id.
+            texturesToDelete.Clear();
+        }
+
         // This should only be set once by GL.GenTexture().
         public int Id { get; }
 
@@ -102,7 +123,9 @@ namespace Smash_Forge.Rendering
         ~Texture()
         {
             // The context probably isn't current here, so any GL function will crash.
-            // TODO: Manage resources.
+            // The texture will need to be cleaned up later. 
+            if (!texturesToDelete.Contains(Id))
+                texturesToDelete.Add(Id);            
         }
 
         public void Bind()
