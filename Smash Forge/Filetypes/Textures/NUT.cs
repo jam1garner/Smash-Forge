@@ -43,16 +43,22 @@ namespace Smash_Forge
             }
         }
         private int id;
+
         public int Width;
         public int Height;
-        public PixelInternalFormat type;
-        public OpenTK.Graphics.OpenGL.PixelFormat utype;
-        public PixelType PixelType = PixelType.UnsignedByte;
 
-        public uint DdsCaps2 {
-            get {
-                if (surfaces.Count == 6) return (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES;
-                else                     return (uint)0;
+        public PixelInternalFormat pixelInternalFormat;
+        public OpenTK.Graphics.OpenGL.PixelFormat pixelFormat;
+        public PixelType pixelType = PixelType.UnsignedByte;
+
+        public uint DdsCaps2
+        {
+            get
+            {
+                if (surfaces.Count == 6)
+                    return (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES;
+                else
+                    return (uint)0;
             }
         }
 
@@ -69,6 +75,7 @@ namespace Smash_Forge
             }
             return mipmaps;
         }
+
         //Move channel 0 to channel 3 (ABGR -> BGRA)
         public void SwapChannelOrderUp()
         {
@@ -84,6 +91,7 @@ namespace Smash_Forge
                 }
             }
         }
+
         //Move channel 3 to channel 0 (BGRA -> ABGR)
         public void SwapChannelOrderDown()
         {
@@ -115,7 +123,7 @@ namespace Smash_Forge
         {
             get
             {
-                switch (type)
+                switch (pixelInternalFormat)
                 {
                     case PixelInternalFormat.CompressedRedRgtc1:
                     case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
@@ -136,7 +144,7 @@ namespace Smash_Forge
 
         public int getNutFormat()
         {
-            switch (type)
+            switch (pixelInternalFormat)
             {
                 case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
                     return 0;
@@ -147,10 +155,10 @@ namespace Smash_Forge
                 case PixelInternalFormat.Rgb16:
                     return 8;
                 case PixelInternalFormat.Rgba:
-                    if (utype == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
+                    if (pixelFormat == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
                         return 14;
                     else
-                    if (utype == OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt)
+                    if (pixelFormat == OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt)
                         return 16;
                     else
                         return 17;
@@ -159,7 +167,7 @@ namespace Smash_Forge
                 case PixelInternalFormat.CompressedRgRgtc2:
                     return 22;
                 default:
-                    throw new NotImplementedException($"Unknown pixel format 0x{type:X}");
+                    throw new NotImplementedException($"Unknown pixel format 0x{pixelInternalFormat:X}");
             }
         }
 
@@ -168,40 +176,40 @@ namespace Smash_Forge
             switch (typet)
             {
                 case 0x0:
-                    type = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                     break;
                 case 0x1:
-                    type = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                    pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
                     break;
                 case 0x2:
-                    type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                     break;
                 case 8:
-                    type = PixelInternalFormat.Rgb16;
-                    utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgb;
-                    PixelType = PixelType.UnsignedShort565Reversed;
+                    pixelInternalFormat = PixelInternalFormat.Rgb16;
+                    pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgb;
+                    pixelType = PixelType.UnsignedShort565Reversed;
                     break;
                 case 12:
-                    type = PixelInternalFormat.Rgba16;
-                    utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    pixelInternalFormat = PixelInternalFormat.Rgba16;
+                    pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 case 14:
-                    type = PixelInternalFormat.Rgba;
-                    utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    pixelInternalFormat = PixelInternalFormat.Rgba;
+                    pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 case 16:
-                    type = PixelInternalFormat.Rgba;
-                    utype = OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt;
+                    pixelInternalFormat = PixelInternalFormat.Rgba;
+                    pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt;
                     break;
                 case 17:
-                    type = PixelInternalFormat.Rgba;
-                    utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    pixelInternalFormat = PixelInternalFormat.Rgba;
+                    pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 case 21:
-                    type = PixelInternalFormat.CompressedRedRgtc1;
+                    pixelInternalFormat = PixelInternalFormat.CompressedRedRgtc1;
                     break;
                 case 22:
-                    type = PixelInternalFormat.CompressedRgRgtc2;
+                    pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
                     break;
                 default:
                     throw new NotImplementedException($"Unknown nut texture format 0x{typet:X}");
@@ -472,7 +480,7 @@ namespace Smash_Forge
                 d.seek(headerPtr);
 
                 NutTexture tex = new NutTexture();
-                tex.type = PixelInternalFormat.Rgba32ui;
+                tex.pixelInternalFormat = PixelInternalFormat.Rgba32ui;
 
                 int totalSize = d.readInt();
                 d.skip(4);
@@ -569,14 +577,6 @@ namespace Smash_Forge
 
                 Nodes.Add(tex);
             }
-
-            foreach (NutTexture tex in Nodes)
-            {
-                if (!glTexByHashId.ContainsKey(tex.HASHID))
-                {
-                    glTexByHashId.Add(tex.HASHID, CreateGlTexture(tex, true));
-                }
-            }
         }
 
         public void ReadNTWU(FileData d)
@@ -594,7 +594,7 @@ namespace Smash_Forge
                 d.seek(headerPtr);
 
                 NutTexture tex = new NutTexture();
-                tex.type = PixelInternalFormat.Rgba32ui;
+                tex.pixelInternalFormat = PixelInternalFormat.Rgba32ui;
 
                 int totalSize = d.readInt();
                 d.skip(4);
@@ -751,8 +751,6 @@ namespace Smash_Forge
 
                 Nodes.Add(tex);
             }
-
-            RefreshGlTexturesByHashId();
         }
 
         public void RefreshGlTexturesByHashId()
@@ -843,16 +841,16 @@ namespace Smash_Forge
             Rendering.Texture texture = new Rendering.Texture2D(t.Width, t.Height);
             texture.Bind();
 
-            bool compressedFormatWithMipMaps = t.type == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
-                || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
-                || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
-                || t.type == PixelInternalFormat.CompressedRedRgtc1
-                || t.type == PixelInternalFormat.CompressedRgRgtc2;
+            bool compressedFormatWithMipMaps = t.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
+                || t.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
+                || t.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
+                || t.pixelInternalFormat == PixelInternalFormat.CompressedRedRgtc1
+                || t.pixelInternalFormat == PixelInternalFormat.CompressedRgRgtc2;
 
             if (compressedFormatWithMipMaps)
             {
                 // Always load the first level.
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.Width, t.Height, 0, t.Size, t.surfaces[surfaceIndex].mipmaps[0]);
+                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.Width, t.Height, 0, t.Size, t.surfaces[surfaceIndex].mipmaps[0]);
 
                 // Reading mip maps past the first level is only supported for DDS currently.
                 if (t.surfaces[0].mipmaps.Count > 1 && isDds)
@@ -874,7 +872,7 @@ namespace Smash_Forge
             {
                 // Only load the first level and generate the other mip maps.
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.surfaces[i].mipmaps.Count);
-                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.Width, t.Height, 0, t.utype, t.PixelType, t.surfaces[i].mipmaps[0]);
+                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.Width, t.Height, 0, t.pixelFormat, t.pixelType, t.surfaces[i].mipmaps[0]);
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             }
         }
@@ -890,7 +888,7 @@ namespace Smash_Forge
                 // Initialize the data for each level.
                 for (int j = 0; j < t.surfaces[i].mipmaps.Count; ++j)
                 {
-                    GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, j, t.type,
+                    GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, j, t.pixelInternalFormat,
                      t.Width / (int)Math.Pow(2, j), t.Height / (int)Math.Pow(2, j), 0, t.surfaces[i].mipmaps[j].Length, t.surfaces[i].mipmaps[j]);
                 }
             }

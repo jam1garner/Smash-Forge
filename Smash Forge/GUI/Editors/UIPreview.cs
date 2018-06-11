@@ -80,7 +80,7 @@ namespace Smash_Forge
             tex.Height = view.shootHeight;
             tex.surfaces.Add(new TextureSurface());
             tex.surfaces[0].mipmaps.Add(FlipDXT5(data, tex.Width, tex.Height));
-            tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+            tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
             tex.HASHID = id;
             n.Nodes.Add(tex);
             n.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex));

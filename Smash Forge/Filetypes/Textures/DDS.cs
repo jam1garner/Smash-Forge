@@ -231,7 +231,7 @@ namespace Smash_Forge
             if (isCubemap)
                 header.caps |= (uint)DDSCAPS.COMPLEX;
 
-            switch (tex.type)
+            switch (tex.pixelInternalFormat)
             {
                 case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
                     header.ddspf.fourCC = 0x31545844;
@@ -255,7 +255,7 @@ namespace Smash_Forge
                     break;
                 case PixelInternalFormat.Rgba:
                     header.ddspf.fourCC = 0x00000000;
-                    if (tex.utype == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
+                    if (tex.pixelFormat == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
                     {
                         header.ddspf.flags = (uint)(DDPF.RGB | DDPF.ALPHAPIXELS);
                         header.ddspf.RGBBitCount = 0x8 * 4;
@@ -266,7 +266,7 @@ namespace Smash_Forge
                     }
                     break;
                 default:
-                    throw new NotImplementedException($"Unknown pixel format 0x{tex.type:X}");
+                    throw new NotImplementedException($"Unknown pixel format 0x{tex.pixelInternalFormat:X}");
             }
 
             List<byte> d = new List<byte>();
@@ -299,25 +299,25 @@ namespace Smash_Forge
             {
                 case 0x00000000: //RGBA
                     isBlock = false;
-                    tex.type = PixelInternalFormat.Rgba;
-                    tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    tex.pixelInternalFormat = PixelInternalFormat.Rgba;
+                    tex.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 case 0x31545844: //DXT1
-                    tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                     break;
                 case 0x33545844: //DXT3
-                    tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                    tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
                     break;
                 case 0x35545844: //DXT5
-                    tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                     break;
                 case 0x31495441: //ATI1
                 case 0x55344342: //BC4U
-                    tex.type = PixelInternalFormat.CompressedRedRgtc1;
+                    tex.pixelInternalFormat = PixelInternalFormat.CompressedRedRgtc1;
                     break;
                 case 0x32495441: //ATI2
                 case 0x55354342: //BC5U
-                    tex.type = PixelInternalFormat.CompressedRgRgtc2;
+                    tex.pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
                     break;
                 default:
                     MessageBox.Show("Unsupported DDS format - 0x" + header.ddspf.fourCC.ToString("x"));
@@ -338,7 +338,7 @@ namespace Smash_Forge
                 for (int j = 0; j < header.mipMapCount; ++j)
                 {
                     //If texture is DXT5 and isn't square, limit the mipmaps to an amount such that width and height are each always >= 4
-                    if (tex.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext && tex.Width != tex.Height && (w < 4 || h < 4))
+                    if (tex.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext && tex.Width != tex.Height && (w < 4 || h < 4))
                         break;
 
                     uint s = (w * h); //Total pixels
