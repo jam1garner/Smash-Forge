@@ -471,7 +471,6 @@
     <Compile Include="Rendering\Framebuffer.cs" />
     <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
-    <Compile Include="Rendering\BatchRenderTools.cs" />
     <Compile Include="Rendering\Camera.cs" />
     <Compile Include="Rendering\ColorTools.cs" />
     <Compile Include="Rendering\Lights\DirectionalLight.cs" />
