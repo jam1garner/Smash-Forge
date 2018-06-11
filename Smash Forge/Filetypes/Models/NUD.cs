@@ -43,8 +43,6 @@ namespace Smash_Forge
 
         public NUD()
         {
-            SetupShaders();
-            GenerateBuffers();
             SetupTreeNode();
         }
 
@@ -63,19 +61,9 @@ namespace Smash_Forge
             GL.GenBuffers(1, out selectVbo);
         }
 
-        private static void SetupShaders()
-        {
-            if (!ShaderTools.hasSetupShaders)
-                ShaderTools.SetupShaders();
-
-            Runtime.shaders["Nud"].DisplayProgramStatus("NUD");
-            Runtime.shaders["NudDebug"].DisplayProgramStatus("NudDebug");
-        }
-
         public NUD(string fname) : this()
         {
             Read(fname);
-            UpdateVertexData();
         }
 
         public void CheckTexIdErrors(NUT nut)

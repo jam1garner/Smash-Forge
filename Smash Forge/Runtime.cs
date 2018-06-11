@@ -157,7 +157,7 @@ namespace Smash_Forge
         public static float fov = 0.524f; // default 30 degrees from stage param files
         public static float zoomspeed = 1.25f;
         public static float zoomModifierScale = 2.0f;
-        public static bool cameraLight = false;
+        public static bool cameraLight = true;
 
         // Post Processing
         public static bool renderBloom = false;

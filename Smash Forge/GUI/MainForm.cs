@@ -678,7 +678,7 @@ namespace Smash_Forge
                             MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Model");
                             MainForm.Instance.Progress.Refresh();
                             // load default model
-                            mvp = OpenNud(s + "\\body\\c00\\model.nud", mvp : mvp);
+                            mvp = OpenNud(s + "\\body\\c00\\model.nud", "", mvp);
 
                             MainForm.Instance.Progress.ProgressValue = 25;
                             MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Expressions");
@@ -698,6 +698,7 @@ namespace Smash_Forge
                             MainForm.Instance.Progress.ProgressValue = 50;
                             MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Animation");
                             string[] anims = Directory.GetFiles(s + "\\body\\");
+                            //Sort files so main.pac is opened first
                             Array.Sort(anims, (a, b) =>
                             {
                                 if (a.Contains("main.pac"))
@@ -706,10 +707,9 @@ namespace Smash_Forge
                                     return 1;
 
                                 return 0;
-                            }); //Sort files so main.pac is opened first
+                            }); 
                             foreach (string a in anims)
                                 mvp.animListPanel.treeView1.Nodes.Add(openAnimation(a));
-
                         }
                         if (s.EndsWith("script"))
                         {
@@ -747,7 +747,6 @@ namespace Smash_Forge
                     MainForm.Instance.Progress.ProgressValue = 100;
                     AddDockedControl(mvp);
                 }
-
             }
         }
 
@@ -1736,6 +1735,11 @@ namespace Smash_Forge
         }
 
         private void modelToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddModelViewport();
+        }
+
+        private void AddModelViewport()
         {
             ModelViewport mvp = new ModelViewport();
             AddDockedControl(mvp);

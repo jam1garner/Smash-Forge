@@ -1858,10 +1858,13 @@ namespace Smash_Forge
         private void glViewport_Load(object sender, EventArgs e)
         {
             glViewport.MakeCurrent();
-            RenderTools.SetupOpenTkRendering();
-            SetupBuffersAndTextures();
-            RefreshGlTextures();
-            readyToRender = true;
+            if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
+            {
+                RenderTools.SetupOpenTkRendering();
+                SetupBuffersAndTextures();
+                RefreshGlTextures();
+                readyToRender = true;
+            }
         }
 
         private void RefreshGlTextures()
