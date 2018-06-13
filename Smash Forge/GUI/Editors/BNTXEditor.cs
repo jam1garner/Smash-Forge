@@ -248,12 +248,12 @@ namespace Smash_Forge
                         break;
                     case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC4:
                         {
-                            label3.Text = "Format: BC4/A2T1";
+                            label3.Text = "Format: BC4/ATI1";
                         }
                         break;
                     case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC5:
                         {
-                            label3.Text = "Format: BC5/A2T";
+                            label3.Text = "Format: BC5/ATI2";
                         }
                         break;
                     case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC6:
