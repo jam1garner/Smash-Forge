@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Smash_Forge.GUI.Menus;
+using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge.GUI
 {
@@ -913,7 +914,7 @@ namespace Smash_Forge.GUI
             {
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    Rendering.RenderTools.backgroundTexture = new Rendering.Texture2D(new Bitmap(ofd.FileName));
+                    Rendering.RenderTools.backgroundTexture = new Texture2D(new Bitmap(ofd.FileName));
                     Runtime.backgroundTexFilePath = ofd.FileName;
                     backgroundPictureBox.Image = new Bitmap(Runtime.backgroundTexFilePath);
                 }
@@ -930,7 +931,7 @@ namespace Smash_Forge.GUI
                     Runtime.floorTexFilePath = ofd.FileName;
                     floorColorPictureBox.Image = floorImg;
                     floorColorPictureBox.Refresh();
-                    Rendering.RenderTools.floorTexture = new Rendering.Texture2D(floorImg);
+                    Rendering.RenderTools.floorTexture = new Texture2D(floorImg);
                 }
             }
         }

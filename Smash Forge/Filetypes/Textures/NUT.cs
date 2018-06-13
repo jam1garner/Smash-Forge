@@ -8,6 +8,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {
@@ -220,7 +221,7 @@ namespace Smash_Forge
     public class NUT : FileBase
     {
         // Dictionary<hash ID, Texture>
-        public Dictionary<int, Rendering.Texture> glTexByHashId = new Dictionary<int, Rendering.Texture>();
+        public Dictionary<int, Texture> glTexByHashId = new Dictionary<int, Texture>();
 
         public ushort Version = 0x200;
 
@@ -787,7 +788,7 @@ namespace Smash_Forge
 
             foreach (NutTexture tex in Nodes)
             {
-                Rendering.Texture originalTexture = glTexByHashId[tex.HASHID];
+                Texture originalTexture = glTexByHashId[tex.HASHID];
                 glTexByHashId.Remove(tex.HASHID);
 
                 // Only change the first 3 bytes.
@@ -836,9 +837,9 @@ namespace Smash_Forge
             return "NUT";
         }
 
-        public static Rendering.Texture CreateGlTexture(NutTexture t, bool isDds = false, int surfaceIndex = 0)
+        public static Texture CreateGlTexture(NutTexture t, bool isDds = false, int surfaceIndex = 0)
         {
-            Rendering.Texture texture = new Rendering.Texture2D(t.Width, t.Height);
+            Texture texture = new Texture2D(t.Width, t.Height);
             texture.Bind();
 
             bool compressedFormatWithMipMaps = t.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext

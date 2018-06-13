@@ -12,6 +12,7 @@ using SALT.Graphics;
 using System.Text;
 using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
+using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {
