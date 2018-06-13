@@ -14,6 +14,8 @@ using SALT.PARAMS;
 using System.Diagnostics;
 using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
+using SFGraphics.Tools;
+
 
 namespace Smash_Forge.GUI.Editors
 {
@@ -33,8 +35,6 @@ namespace Smash_Forge.GUI.Editors
             InitLightMapListBox();
             InitFogListBox();
             InitStageLightListBox();
-
-            RenderTools.SetupOpenTkRendering();
         }
 
         private void InitStageLightListBox()
@@ -187,18 +187,18 @@ namespace Smash_Forge.GUI.Editors
 
         private void UpdateStageButtonColor()
         {
-            int red = ColorTools.ClampInt((int)(selectedStageLight.diffuseColor.R * 255));
-            int green = ColorTools.ClampInt((int)(selectedStageLight.diffuseColor.G * 255));
-            int blue = ColorTools.ClampInt((int)(selectedStageLight.diffuseColor.B * 255));
+            int red = ColorTools.FloatToIntClamp(selectedStageLight.diffuseColor.R);
+            int green = ColorTools.FloatToIntClamp(selectedStageLight.diffuseColor.G);
+            int blue = ColorTools.FloatToIntClamp(selectedStageLight.diffuseColor.B);
             Color stageColor = Color.FromArgb(255, red, green, blue);
             stageDifColorButton.BackColor = stageColor;
         }
 
         private void UpdateFogButtonColor()
         {
-            int red = ColorTools.ClampInt((int)(selectedFogColor.R * 255));
-            int green = ColorTools.ClampInt((int)(selectedFogColor.G * 255));
-            int blue = ColorTools.ClampInt((int)(selectedFogColor.B * 255));
+            int red = ColorTools.FloatToIntClamp(selectedFogColor.R);
+            int green = ColorTools.FloatToIntClamp(selectedFogColor.G);
+            int blue = ColorTools.FloatToIntClamp(selectedFogColor.B);
             Color fogColor = Color.FromArgb(255, red, green, blue);
             fogColorButton.BackColor = fogColor;
         }
@@ -792,6 +792,11 @@ namespace Smash_Forge.GUI.Editors
         private void saveLightsetparamToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveLightSet();
+        }
+
+        private void charDifColorGLControl_Load(object sender, EventArgs e)
+        {
+            RenderTools.SetupOpenTkRendering();
         }
     }
 }

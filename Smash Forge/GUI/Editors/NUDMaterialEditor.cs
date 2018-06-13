@@ -15,6 +15,8 @@ using System.Timers;
 using System.Windows.Input;
 using System.Diagnostics;
 using Smash_Forge.Rendering;
+using SFGraphics.Tools;
+
 
 namespace Smash_Forge
 {

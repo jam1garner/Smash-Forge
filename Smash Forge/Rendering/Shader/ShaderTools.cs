@@ -9,6 +9,8 @@ using System.IO;
 using Smash_Forge.Rendering.Lights;
 using System.Windows.Forms;
 using SFGraphics.GLObjects.Shaders;
+using SFGraphics.Tools;
+
 
 namespace Smash_Forge.Rendering
 {

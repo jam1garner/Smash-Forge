@@ -14,6 +14,8 @@ using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
+using SFGraphics.Tools;
+
 
 namespace Smash_Forge
 {

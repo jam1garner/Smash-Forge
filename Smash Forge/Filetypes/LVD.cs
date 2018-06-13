@@ -8,7 +8,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using System.Drawing;
 using System.Diagnostics;
-
+using SFGraphics.Tools;
 
 
 namespace Smash_Forge

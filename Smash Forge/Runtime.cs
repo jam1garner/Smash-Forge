@@ -9,6 +9,7 @@ using System.Xml;
 using OpenTK.Graphics.OpenGL;
 using SALT.PARAMS;
 using SFGraphics.GLObjects.Shaders;
+using SFGraphics.Tools;
 
 
 namespace Smash_Forge
