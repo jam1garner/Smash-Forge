@@ -5,6 +5,7 @@ using System.Diagnostics;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Windows.Forms;
+using SFGraphics.GLObjects.Shaders;
 
 namespace Smash_Forge
 {
@@ -25,7 +26,7 @@ namespace Smash_Forge
         public List<Vertex> vertices = new List<Vertex>();
         public List<string> nameTable = new List<string>();
 
-        public static Rendering.Shader shader = null;
+        public static Shader shader = null;
 
         public List<Descriptor> descript = new List<Descriptor>(); // Descriptors are used to describe the vertex data...
 
@@ -69,7 +70,7 @@ namespace Smash_Forge
             if (!Rendering.ShaderTools.hasSetupShaders)
                 Rendering.ShaderTools.SetupShaders();
 
-            Runtime.shaders["Mbn"].DisplayProgramStatus("Mbn");
+            //Runtime.shaders["Mbn"].DisplayProgramStatus("Mbn");
         }
 
         public void Destroy()
@@ -150,7 +151,7 @@ namespace Smash_Forge
 
             if (shader == null)
             {
-                shader = new Rendering.Shader();
+                shader = new Shader();
                 shader = Runtime.shaders["Mbn"];
             }
         }

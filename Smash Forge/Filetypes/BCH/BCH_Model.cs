@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Smash_Forge.Rendering;
+using SFGraphics.GLObjects.Shaders;
 
 namespace Smash_Forge
 {
@@ -410,7 +411,7 @@ namespace Smash_Forge
             }
 
             shader = Runtime.shaders["Mbn"];
-            GL.UseProgram(shader.programId);
+            GL.UseProgram(shader.Id);
 
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderType"), (int)Runtime.renderType);
@@ -435,7 +436,7 @@ namespace Smash_Forge
             GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-            var blockIndex = GL.GetUniformBlockIndex(shader.programId, "bones");
+            var blockIndex = GL.GetUniformBlockIndex(shader.Id, "bones");
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, boneVbo);
 
             if (f.Length > 0)

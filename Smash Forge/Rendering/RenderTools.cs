@@ -11,6 +11,7 @@ using SALT.PARAMS;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects.Shaders;
 
 
 namespace Smash_Forge.Rendering
@@ -1505,7 +1506,7 @@ namespace Smash_Forge.Rendering
         {
             // draw RGB and alpha channels of texture to screen quad
             Shader shader = Runtime.shaders["Gradient"];
-            GL.UseProgram(shader.programId);
+            GL.UseProgram(shader.Id);
 
             Setup2DRendering();
 
@@ -1520,7 +1521,7 @@ namespace Smash_Forge.Rendering
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = Runtime.shaders["Texture"];
-            GL.UseProgram(shader.programId);
+            GL.UseProgram(shader.Id);
 
             Setup2DRendering();
 
@@ -1558,7 +1559,7 @@ namespace Smash_Forge.Rendering
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = Runtime.shaders["ScreenQuad"];
-            GL.UseProgram(shader.programId);
+            GL.UseProgram(shader.Id);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture0);
@@ -1586,7 +1587,7 @@ namespace Smash_Forge.Rendering
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = Runtime.shaders["NudSphere"];
-            GL.UseProgram(shader.programId);
+            GL.UseProgram(shader.Id);
 
             // Use the same uniforms as the NUD shader. 
             NUD.SetMaterialPropertyUniforms(shader, material);

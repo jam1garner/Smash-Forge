@@ -8,6 +8,8 @@ using System.Drawing;
 using System.Xml;
 using OpenTK.Graphics.OpenGL;
 using SALT.PARAMS;
+using SFGraphics.GLObjects.Shaders;
+
 
 namespace Smash_Forge
 {
@@ -23,7 +25,7 @@ namespace Smash_Forge
             Animnames = new Dictionary<uint, string>();
         }
 
-        public static Dictionary<string, Rendering.Shader> shaders = new Dictionary<string, Rendering.Shader>();
+        public static Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
 
         public static List<NUT> TextureContainers = new List<NUT>();
         public static List<NUS3BANK> SoundContainers = new List<NUS3BANK>();

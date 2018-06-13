@@ -294,7 +294,7 @@ namespace Smash_Forge
             // This should be somewhere else.
             if (!Runtime.shaders["Texture"].HasCheckedCompilation)
             {
-                Runtime.shaders["Texture"].DisplayProgramStatus("Texture");
+                //Runtime.shaders["Texture"].DisplayProgramStatus("Texture");
             }
         }
 

@@ -868,7 +868,7 @@ namespace Smash_Forge
 
             if (!Runtime.shaders["Texture"].HasCheckedCompilation)
             {
-                Runtime.shaders["Texture"].DisplayProgramStatus("Texture");
+                //Runtime.shaders["Texture"].DisplayProgramStatus("Texture");
             }
         }
 
@@ -883,7 +883,7 @@ namespace Smash_Forge
 
             if (!Runtime.shaders["Texture"].HasCheckedCompilation)
             {
-                Runtime.shaders["Texture"].DisplayProgramStatus("Texture");
+                //Runtime.shaders["Texture"].DisplayProgramStatus("Texture");
             }
         }
 

@@ -8,6 +8,7 @@ using OpenTK.Graphics.OpenGL;
 using System.IO;
 using Smash_Forge.Rendering.Lights;
 using System.Windows.Forms;
+using SFGraphics.GLObjects.Shaders;
 
 namespace Smash_Forge.Rendering
 {
@@ -112,7 +113,7 @@ namespace Smash_Forge.Rendering
                     successfulCompilations -= 1;
                 }
 
-                Runtime.shaders[shaderName].SaveErrorLog(shaderName);
+                //Runtime.shaders[shaderName].SaveErrorLog(shaderName);
             }
 
             // Display how many shaders correctly compiled.

@@ -13,6 +13,7 @@ using System.Text;
 using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects.Shaders;
 
 namespace Smash_Forge
 {
@@ -283,7 +284,7 @@ namespace Smash_Forge
                 shader = Runtime.shaders["NudDebug"];
 
             // Render using the selected shader.
-            GL.UseProgram(shader.programId);
+            GL.UseProgram(shader.Id);
             shader.EnableVertexAttributes();
             LoadBoneAttributes(vbn, shader);
 
@@ -306,7 +307,7 @@ namespace Smash_Forge
                 GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
                 GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-                var blockIndex = GL.GetUniformBlockIndex(shader.programId, "bones");
+                var blockIndex = GL.GetUniformBlockIndex(shader.Id, "bones");
                 GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, bonesUbo);
 
                 if (f.Length > 0)
@@ -1131,7 +1132,7 @@ namespace Smash_Forge
         public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)
         {
             Shader shader = Runtime.shaders["Point"];
-            GL.UseProgram(shader.programId);
+            GL.UseProgram(shader.Id);
             Matrix4 mat = camera.MvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref mat);
 

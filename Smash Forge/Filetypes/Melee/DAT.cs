@@ -11,6 +11,8 @@ using System.Windows.Forms;
 using static Smash_Forge.DAT.POBJ;
 using System.IO;
 using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects.Shaders;
+
 
 namespace Smash_Forge
 {
@@ -54,7 +56,7 @@ namespace Smash_Forge
         int ibo_elements;
         public int testtex;
 
-        public static Rendering.Shader shader = null;
+        public static Shader shader = null;
 
         Dictionary<int, JOBJ> jobjOffsetLinker = new Dictionary<int, JOBJ>();
         public Dictionary<int, Bitmap> texturesLinker = new Dictionary<int, Bitmap>();
@@ -78,7 +80,7 @@ namespace Smash_Forge
                 Rendering.ShaderTools.SetupShaders();
             }
 
-            Runtime.shaders["Dat"].DisplayProgramStatus("DAT");
+            //Runtime.shaders["Dat"].DisplayProgramStatus("DAT");
         }
 
         ~DAT()
@@ -370,7 +372,7 @@ namespace Smash_Forge
 
             if (shader == null)
             {
-                shader = new Rendering.Shader();
+                shader = new Shader();
                 shader = Runtime.shaders["Dat"];
             }
             
@@ -378,7 +380,7 @@ namespace Smash_Forge
             GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-            var blockIndex = GL.GetUniformBlockIndex(shader.programId, "bones");
+            var blockIndex = GL.GetUniformBlockIndex(shader.Id, "bones");
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
         }
 
@@ -388,7 +390,7 @@ namespace Smash_Forge
                 return;
 
             shader = Runtime.shaders["Dat"];
-            GL.UseProgram(shader.programId);
+            GL.UseProgram(shader.Id);
 
             GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelview"), false, ref modelview);
             GL.ActiveTexture(TextureUnit.Texture10);
@@ -408,7 +410,7 @@ namespace Smash_Forge
                 {
                     GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
                     GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
-                    var blockIndex = GL.GetUniformBlockIndex(shader.programId, "bones");
+                    var blockIndex = GL.GetUniformBlockIndex(shader.Id, "bones");
                     GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, ubo_bones);
                 }
             }
