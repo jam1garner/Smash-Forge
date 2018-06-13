@@ -66,3 +66,8 @@ Project:
 - Copyright (c) 2014 - 2016 Sammi Husky <Sammi-Husky@live.com>
 - FITD MIT License: https://github.com/Sammi-Husky/Sm4sh-Tools/blob/master/FITD/LICENSE.txt
 - FITC MIT License: https://github.com/Sammi-Husky/Sm4sh-Tools/blob/master/FITC/LICENSE.txt
+
+Project:
+- [SFGraphics](https://github.com/ScanMountGoat/SFGraphics)
+- Copyright (c) 2018 SMG
+- MIT License: https://github.com/ScanMountGoat/SFGraphics/blob/master/LICENSE.txt
