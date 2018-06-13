@@ -829,6 +829,9 @@ namespace Smash_Forge
             if (!tabControl1.SelectedTab.Text.Equals("Textures"))
                 return;
 
+            if (!Runtime.shaders["Texture"].ProgramCreatedSuccessfully())
+                return;
+
             // Get the selected NUT texture.
             NutTexture nutTexture = null;
             int displayTexture = 0;
@@ -866,11 +869,6 @@ namespace Smash_Forge
                 GL.Viewport(texRgbGlControl.ClientRectangle);
                 RenderTools.DrawTexturedQuad(displayTexture, 1, 1);
                 texRgbGlControl.SwapBuffers();
-            }
-
-            if (!Runtime.shaders["Texture"].HasCheckedCompilation)
-            {
-                //Runtime.shaders["Texture"].DisplayProgramStatus("Texture");
             }
         }
 

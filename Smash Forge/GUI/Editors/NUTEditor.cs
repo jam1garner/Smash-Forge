@@ -276,6 +276,9 @@ namespace Smash_Forge
             if (!readyToRender || glControl1 == null)
                 return;
 
+            if (!Runtime.shaders["Texture"].ProgramCreatedSuccessfully())
+                return;
+
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
 
@@ -292,12 +295,6 @@ namespace Smash_Forge
                 currentMipLevel);
 
             glControl1.SwapBuffers();
-
-            // This should be somewhere else.
-            if (!Runtime.shaders["Texture"].HasCheckedCompilation)
-            {
-                //Runtime.shaders["Texture"].DisplayProgramStatus("Texture");
-            }
         }
 
         private void RenderTextureToPng(NutTexture nutTexture, string outputPath, bool renderR = true, bool renderG = true, bool renderB = true, bool renderAlpha = false)

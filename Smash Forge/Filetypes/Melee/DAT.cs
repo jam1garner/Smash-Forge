@@ -79,8 +79,6 @@ namespace Smash_Forge
             {
                 Rendering.ShaderTools.SetupShaders();
             }
-
-            //Runtime.shaders["Dat"].DisplayProgramStatus("DAT");
         }
 
         ~DAT()

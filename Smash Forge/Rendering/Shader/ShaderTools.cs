@@ -115,7 +115,14 @@ namespace Smash_Forge.Rendering
                     successfulCompilations -= 1;
                 }
 
-                //Runtime.shaders[shaderName].SaveErrorLog(shaderName);
+                // Create the error logs directory if not found.
+                string errorLogDirectory = MainForm.executableDir + "\\Shader Error Logs\\";
+                if (!Directory.Exists(errorLogDirectory))
+                    Directory.CreateDirectory(errorLogDirectory);
+
+                // Export the error log.
+                string logExport = Runtime.shaders[shaderName].GetErrorLog();
+                File.WriteAllText(errorLogDirectory + shaderName + " Error Log.txt", logExport.Replace("\n", Environment.NewLine));
             }
 
             // Display how many shaders correctly compiled.
