@@ -59,7 +59,7 @@ namespace Smash_Forge.Rendering
             // The textures will be invalid once a context is destroyed.
             // There isn't a clean way at the moment to keep track of everything.
 
-            nudSphereCamera.Update(); // Update matrices for shader.
+            nudSphereCamera.UpdateFromMouse(); // Update matrices for shader.
             LoadTextures();
             SetupScreenQuadBuffer();
             GetOpenGLSystemInfo();

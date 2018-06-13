@@ -133,11 +133,16 @@ namespace Smash_Forge.Rendering
         public Matrix4 PerspectiveMatrix { get { return perspectiveMatrix; } }
 
         // Camera control settings. 
-        public float zoomMultiplier = Runtime.zoomModifierScale; 
-        public float zoomSpeed = Runtime.zoomspeed;
         public float mouseTranslateSpeed = 0.5f;
+
+        public float zoomMultiplier = Runtime.zoomModifierScale;
+        public float zoomSpeed = Runtime.zoomspeed;
         public float scrollWheelZoomSpeed = 1.75f;
         public float shiftZoomMultiplier = 2.5f;
+        public float zoomDistanceScale = 0.01f;
+
+        public float rotateYSpeed = 0.0125f;
+        public float rotateXSpeed = 0.005f;
 
         // Previous mouse state.
         private float mouseSLast = 0;
@@ -158,6 +163,7 @@ namespace Smash_Forge.Rendering
             RotationYRadians = rotY;
         }
 
+        // TODO: Remove from camera class.
         public void SetFromBone(Bone b)
         {
             Matrix4 Mat = b.transform.Inverted();
@@ -169,15 +175,28 @@ namespace Smash_Forge.Rendering
             mvpMatrix = modelViewMatrix * perspectiveMatrix;
         }
 
-        public void Update()
+        public void UpdateFromMouse()
         {
             try
             {
-                OpenTK.Input.Mouse.GetState();
+                OpenTK.Input.MouseState mouseState = OpenTK.Input.Mouse.GetState();
+                OpenTK.Input.KeyboardState keyboardState = OpenTK.Input.Keyboard.GetState();
 
-                Pan();
-                Rotate();
-                Zoom();
+                if (OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed)
+                {
+                    float xAmount = OpenTK.Input.Mouse.GetState().X - mouseXLast;
+                    float yAmount = (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                    Pan(xAmount, yAmount, true);
+                }
+
+                if (mouseState.LeftButton == OpenTK.Input.ButtonState.Pressed)
+                {
+                    float xAmount = OpenTK.Input.Mouse.GetState().X - mouseXLast;
+                    float yAmount = (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
+                    Rotate(xAmount, yAmount);
+                }
+
+                Zoom(mouseState, keyboardState);
 
                 UpdateLastMousePosition();
             }
@@ -189,48 +208,52 @@ namespace Smash_Forge.Rendering
             UpdateMatrices();
         }
 
-        private void Rotate()
+        private void Rotate(float xAmount, float yAmount)
         {
-            if ((OpenTK.Input.Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
-            {
-                rotationYRadians += 0.0125f * (OpenTK.Input.Mouse.GetState().X - mouseXLast);
-                rotationXRadians += 0.005f * (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-            }
+            rotationYRadians += rotateYSpeed * xAmount;
+            rotationXRadians += rotateXSpeed * yAmount;
         }
 
-        private void Pan()
+        private void Pan(float xAmount, float yAmount, bool scaleByDistanceToOrigin = true)
         {
-            if ((OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed))
-            {
-                // Find the change in normalized screen coordinates.
-                float deltaYNormalized = (OpenTK.Input.Mouse.GetState().Y - mouseYLast) / renderHeight;
-                float deltaXNormalized = (OpenTK.Input.Mouse.GetState().X - mouseXLast) / renderWidth;
+            // Find the change in normalized screen coordinates.
+            float deltaX = xAmount / renderWidth;
+            float deltaY = yAmount / renderHeight;
 
+            if (scaleByDistanceToOrigin)
+            {
                 // Translate the camera based on the distance from the origin and field of view.
                 // Objects will "follow" the mouse while panning.
-                position.Y += deltaYNormalized * ((float)Math.Sin(fovRadians) * position.Length);
-                position.X += deltaXNormalized * ((float)Math.Sin(fovRadians) * position.Length);
+                position.Y += deltaY * ((float)Math.Sin(fovRadians) * position.Length);
+                position.X += deltaX * ((float)Math.Sin(fovRadians) * position.Length);
             }
+            else
+            {
+                // Regular panning.
+                position.Y += deltaY;
+                position.X += deltaX;
+            }        
         }
 
-        private void Zoom()
+        private void Zoom(OpenTK.Input.MouseState mouseState, OpenTK.Input.KeyboardState keyboardState, bool scaleByDistanceToOrigin = true)
         {
             // Increase zoom speed when zooming out. 
-            float zoomDistanceScale = 0.01f;
-            float zoomscale = zoomSpeed * Math.Abs(position.Z) * zoomDistanceScale;
+            float zoomscale = zoomSpeed;
+            if (scaleByDistanceToOrigin)
+                zoomscale *= Math.Abs(position.Z) * zoomDistanceScale;
 
             // Holding shift changes zoom speed.
-            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
+            if (keyboardState.IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
                 zoomscale *= shiftZoomMultiplier;
 
             // Zooms in or out with arrow keys.
-            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Down))
+            if (keyboardState.IsKeyDown(OpenTK.Input.Key.Down))
                 position.Z -= 1 * zoomscale;
-            if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.Up))
+            if (keyboardState.IsKeyDown(OpenTK.Input.Key.Up))
                 position.Z += 1 * zoomscale;
 
             // Scroll wheel zooms in or out.
-            position.Z += (OpenTK.Input.Mouse.GetState().WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
+            position.Z += (mouseState.WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
         }
 
         private void UpdateMatrices()
