@@ -52,7 +52,7 @@ namespace Smash_Forge
             if(Width > 0 && Height > 0)
             {
                 texture = _3DS.DecodeImage(data, Width, Height, (_3DS.Tex_Formats)type);
-                //Rendering.Texture glTex = new Rendering.Texture2D(texture);
+                //Texture glTex = new Texture2D(texture);
                 //display = glTex.Id;
             }
         }

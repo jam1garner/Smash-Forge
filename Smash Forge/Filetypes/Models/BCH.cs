@@ -479,7 +479,7 @@ namespace Smash_Forge
                 tex.data = f.getSection(doffset, f.size() - doffset);
 
                 tex.texture = _3DS.DecodeImage(tex.data, tex.Width, tex.Height, (_3DS.Tex_Formats)tex.type);
-                //Rendering.Texture texture = new Rendering.Texture2D(tex.texture);
+                //Texture texture = new Texture2D(tex.texture);
                 //tex.display = texture.Id;
             }
 

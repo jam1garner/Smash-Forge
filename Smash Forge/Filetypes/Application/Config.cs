@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
 using System.Xml;
+using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {
@@ -66,7 +67,7 @@ namespace Smash_Forge
                     case "default_texture":
                         if (File.Exists(node.InnerText) && node.InnerText.ToLower().EndsWith(".png"))
                         {
-                            Rendering.RenderTools.defaultTex = new Rendering.Texture2D(new Bitmap(node.InnerText));
+                            Rendering.RenderTools.defaultTex = new Texture2D(new Bitmap(node.InnerText));
                         }
                         break;
                     case "size":

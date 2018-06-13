@@ -23,6 +23,7 @@ using Smash_Forge.Rendering.Lights;
 using OpenTK.Input;
 using Smash_Forge.Rendering;
 using Smash_Forge.Params;
+using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {

@@ -10,6 +10,7 @@ using OpenTK.Graphics.OpenGL;
 using System.Windows.Forms;
 using static Smash_Forge.DAT.POBJ;
 using System.IO;
+using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {
@@ -1350,7 +1351,7 @@ namespace Smash_Forge
                         dat.tobjLinker.Add(imageDataOffset, new object[]{ testOffset, image, imageOffset, imageDataOffset });
                     }
 
-                    Rendering.Texture texture = new Rendering.Texture2D(image);
+                    Texture texture = new Texture2D(image);
                     texid = texture.Id;
                 }
             }

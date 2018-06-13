@@ -15,6 +15,7 @@ using System.Threading;
 using WeifenLuo.WinFormsUI.Docking;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {
@@ -26,7 +27,7 @@ namespace Smash_Forge
         private Dictionary<string, NutTexture> textureFromFile = new Dictionary<string, NutTexture>();
 
         // Rendering Stuff
-        private Rendering.Texture textureToRender = null;
+        private Texture textureToRender = null;
         Rendering.Framebuffer pngExportFramebuffer;
         private bool renderR = true;
         private bool renderG = true;

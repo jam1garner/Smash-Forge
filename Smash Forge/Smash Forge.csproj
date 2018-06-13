@@ -47,6 +47,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\OpenTK.dll</HintPath>
     </Reference>
+    <Reference Include="SFGraphics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\SFGraphics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
@@ -482,9 +486,6 @@
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\Shader\ShaderLog.cs" />
     <Compile Include="Rendering\Shader\ShaderTools.cs" />
-    <Compile Include="Rendering\Textures\Texture.cs" />
-    <Compile Include="Rendering\Textures\Texture2D.cs" />
-    <Compile Include="Rendering\Textures\TextureCubeMap.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
@@ -1105,6 +1106,9 @@
     <None Include="Preview Images\Stage.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="lib\SFGraphics.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\10080000.png" />
     <None Include="Resources\boneWeightGradient.png" />
     <None Include="Resources\Flat Folder icon.png" />
