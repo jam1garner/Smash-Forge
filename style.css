@@ -1,0 +1,85 @@
+@font-face {
+    font-family: "aleo";
+    src: url('./static/aleo-regular-webfont.woff')
+}
+
+h1 {
+    font-size: 70px;
+    text-align: center;
+}
+
+h1,
+h2 {
+    font-family: aleo;
+}
+
+body {
+    background: repeating-linear-gradient( -45deg, white, white 50px, #f7f7f7 50px, #f7f7f7 100px);
+}
+
+.navbar {
+    width: 100%;
+}
+
+.main-content {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 800px;
+}
+
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 50px;
+    width: 100%;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.titlebox {
+    padding-top: 10px;
+}
+
+.content-block {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 100%;
+}
+
+.content-pic-block {
+    align-content: left;
+}
+
+.content-text-block {
+    width: 250px;
+}
+
+.cell-top {
+    vertical-align: top;
+}
+
+.cell-centered {
+    text-align: center;
+}
+
+.content-text-block p {
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    line-height: 1.5;
+    font-size: 16px;
+    font-family: arial;
+}
+
+.navbar tr a:link,
+.navbar tr a:visited,
+.navbar tr a:hover,
+.navbar tr a:active {
+    /* Applies to all unvisited links */
+    text-decoration: none;
+    color: black;
+}
