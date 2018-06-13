@@ -24,6 +24,7 @@ using OpenTK.Input;
 using Smash_Forge.Rendering;
 using Smash_Forge.Params;
 using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects;
 using SFGraphics.Tools;
 
 

@@ -16,6 +16,8 @@ using WeifenLuo.WinFormsUI.Docking;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects;
+
 
 namespace Smash_Forge
 {
@@ -28,7 +30,7 @@ namespace Smash_Forge
 
         // Rendering Stuff
         private Texture textureToRender = null;
-        Rendering.Framebuffer pngExportFramebuffer;
+        Framebuffer pngExportFramebuffer;
         private bool renderR = true;
         private bool renderG = true;
         private bool renderB = true;
@@ -956,7 +958,7 @@ namespace Smash_Forge
         {
             // Make sure the shaders and textures are setup for rendering.
             Rendering.RenderTools.SetupOpenTkRendering();
-            pngExportFramebuffer = new Rendering.Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
+            pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
             currentNut.RefreshGlTexturesByHashId();
             readyToRender = true;
         }
