@@ -30,8 +30,6 @@ namespace Smash_Forge
             ImageKey = "bfres";
             SelectedImageKey = "bfres";
 
-            TargetWiiUBFRES = new ResFile(path);
-
             FSKACount = TargetWiiUBFRES.SkeletalAnims.Count;
 
             textures.Clear();
@@ -516,6 +514,8 @@ namespace Smash_Forge
                         {
                             ShaderParam prm = new ShaderParam();
 
+                            prm.Type = param.Type;
+
                             switch (param.Type)
                             {
                                 case ShaderParamType.Float:
@@ -552,6 +552,11 @@ namespace Smash_Forge
                 models.Add(model);
                 ModelCur++;
             }
+        }
+        public void SaveFile(string FileName)
+        {
+            int t = 0;
+            TargetWiiUBFRES.Save(FileName);
         }
     }
 }

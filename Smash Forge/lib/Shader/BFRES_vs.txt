@@ -24,6 +24,7 @@ out vec3 bitangent;
 
 uniform vec4 gsys_bake_st0;
 uniform vec4 gsys_bake_st1;
+uniform vec4 SamplerUV1;
 uniform mat4 modelview;
 uniform mat4 bones[112];
 uniform mat4 bonesfixed[112];
@@ -52,6 +53,7 @@ void main()
 
     vec4 objPos = vec4(vPosition.xyz, 1.0);
 
+    vec4 sampler1 = SamplerUV1;
     vec4 sampler2 = gsys_bake_st0;
     vec4 sampler3 = gsys_bake_st1;
 
@@ -89,7 +91,7 @@ void main()
 
     //gl_TexCoord[0] = vUV0;
     //gl_TexCoord[1] = vUV1;
-    f_texcoord0 = vUV0;
+    f_texcoord0 = vec2((vUV0 * sampler1.xy) + sampler1.zw);
     f_texcoord1 = vec2((vUV1 * sampler2.xy) + sampler2.zw);
     f_texcoord2 = vec2((vUV1 * sampler3.xy) + sampler3.zw);
     f_texcoord3 = vUV2;

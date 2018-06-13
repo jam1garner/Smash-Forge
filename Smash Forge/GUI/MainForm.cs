@@ -452,8 +452,13 @@ namespace Smash_Forge
             {
                 if (dockPanel1.ActiveContent is ModelViewport)
                 {
-                  //  mvp = (ModelViewport)dockPanel1.ActiveContent;
-                  //  mvp.AnimList.treeView1.Nodes.Add(FMAA.Read(pathBfres, modelContainer.BFRES));
+                 //   FMAA fmaa = new FMAA();
+
+               //     mvp = (ModelViewport)dockPanel1.ActiveContent;
+               //     AnimationGroupNode anim = new AnimationGroupNode();
+
+                 //   fmaa.Read(pathBfres, modelContainer.BFRES, anim, modelContainer);
+                  //  mvp.AnimList.treeView1.Nodes.Add(anim);
                 }
             }
 

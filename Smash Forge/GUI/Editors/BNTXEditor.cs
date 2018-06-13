@@ -226,13 +226,55 @@ namespace Smash_Forge
             {
                 BRTI b = ((BRTI)listBox1.SelectedItem);
 
-                label3.Text = "Width: " + b.texture.width;
-                label4.Text = "Height: " + b.texture.height;
+                label1.Text = "Width: " + b.texture.width;
+                label2.Text = "Height: " + b.texture.height;
+
+                switch (b.format >> 8)
+                {
+                    case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC1:
+                        {
+                            label3.Text = "Format: BC1/DXT1";
+                        }
+                        break;
+                    case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC2:
+                        {
+                            label3.Text = "Format: BC2/DXT2";
+                        }
+                        break;
+                    case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC3:
+                        {
+                            label3.Text = "Format: BC3/DXT5";
+                        }
+                        break;
+                    case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC4:
+                        {
+                            label3.Text = "Format: BC4/A2T1";
+                        }
+                        break;
+                    case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC5:
+                        {
+                            label3.Text = "Format: BC5/A2T";
+                        }
+                        break;
+                    case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC6:
+                        {
+                            label3.Text = "Format: BC6";
+                        }
+                        break;
+                    case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC7:
+                        {
+                            label3.Text = "Format: BC7";
+                        }
+                        break;
+                    default:
+                        label3.Text = "Format: Unsupported format";
+                        break;
+                }
             }
             else
             {
-                label3.Text = "Width: " + "";
-                label4.Text = "Height: " + "";
+                label1.Text = "Width: " + "";
+                label2.Text = "Height: " + "";
             }
             glControl1.Invalidate();
         }
@@ -276,6 +318,41 @@ namespace Smash_Forge
         }
 
         private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void glControl1_Load(object sender, EventArgs e)
+        {
+            // Load RGB channel
+
+
+
+        }
+
+        private void BNTXEditor_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+
+        }
+
+        private void glControl2_Load(object sender, EventArgs e)
+        {
+            //Load Alpha channel
+
+
+        }
+
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label2_Click_1(object sender, EventArgs e)
         {
 
         }

@@ -106,8 +106,8 @@
     <Compile Include="Filetypes\BCH\BCH_Texture.cs" />
     <Compile Include="Filetypes\BCH\PatriciaTree.cs" />
     <Compile Include="Filetypes\BCH\_3DSGPU.cs" />
-    <Compile Include="Filetypes\BFRES\BFRES.cs" />
-    <Compile Include="Filetypes\BFRES\Switch\BFRES_NSW_Read.cs" />
+    <Compile Include="Filetypes\BFRES\BFRES_Main.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\BFRES_NSW.cs" />
     <Compile Include="Filetypes\BFRES\Switch\BNTX.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FSKA.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FVIS.cs" />

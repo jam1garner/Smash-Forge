@@ -454,12 +454,16 @@ namespace Smash_Forge
                         }
                     }
                 }
-                if (child is FMAA) //For BFRES
+                Console.WriteLine("FSKA");
+
+                if (child is BFRES_MTA) //For BFRES
                 {
+                    Console.WriteLine("FMAA");
+
                     {
                         if (((ModelContainer)skeleton.Parent).BFRES != null)
                         {
-                            ((ModelContainer)skeleton.Parent).BFRES.ApplyMta(((FMAA)child), (int)Frame);
+                            ((ModelContainer)skeleton.Parent).BFRES.ApplyMta(((BFRES_MTA)child), (int)Frame);
                         }
                     }
                 }

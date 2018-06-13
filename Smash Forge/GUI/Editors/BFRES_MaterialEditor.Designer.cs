@@ -34,9 +34,9 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabTextureMaps = new System.Windows.Forms.TabPage();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.rgbTexControl = new OpenTK.GLControl();
+            this.label1 = new System.Windows.Forms.Label();
+            this.listBox1 = new System.Windows.Forms.ListBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabTextureMaps.SuspendLayout();
@@ -51,7 +51,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(577, 529);
+            this.tabControl1.Size = new System.Drawing.Size(577, 408);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -61,7 +61,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(776, 503);
+            this.tabPage1.Size = new System.Drawing.Size(569, 382);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Material Info";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -69,6 +69,7 @@
             // 
             // button1
             // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button1.Location = new System.Drawing.Point(490, 357);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
@@ -103,29 +104,11 @@
             this.tabTextureMaps.Location = new System.Drawing.Point(4, 22);
             this.tabTextureMaps.Name = "tabTextureMaps";
             this.tabTextureMaps.Padding = new System.Windows.Forms.Padding(3);
-            this.tabTextureMaps.Size = new System.Drawing.Size(569, 503);
+            this.tabTextureMaps.Size = new System.Drawing.Size(569, 382);
             this.tabTextureMaps.TabIndex = 2;
             this.tabTextureMaps.Text = "Texture Maps";
             this.tabTextureMaps.UseVisualStyleBackColor = true;
             this.tabTextureMaps.Click += new System.EventHandler(this.tabTextureMaps_Click);
-            // 
-            // listBox1
-            // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(401, 257);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(160, 238);
-            this.listBox1.TabIndex = 0;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 6);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(45, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Sampler";
             // 
             // rgbTexControl
             // 
@@ -137,11 +120,29 @@
             this.rgbTexControl.VSync = false;
             this.rgbTexControl.Load += new System.EventHandler(this.glControl1_Load);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(3, 6);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(45, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Sampler";
+            // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(401, 257);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(160, 238);
+            this.listBox1.TabIndex = 0;
+            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            // 
             // BFRES_MaterialEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(577, 529);
+            this.ClientSize = new System.Drawing.Size(577, 408);
             this.Controls.Add(this.tabControl1);
             this.Name = "BFRES_MaterialEditor";
             this.Text = "BFRES_MaterialEditor";

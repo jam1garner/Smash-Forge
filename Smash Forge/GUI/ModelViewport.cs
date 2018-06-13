@@ -120,6 +120,25 @@ namespace Smash_Forge
                 currentFrame.Value = 0;
             }
         }
+        private BFRES_MTA BFRESMaterialAnimation;
+        public BFRES_MTA CurrentBFRESMaterialAnimation
+        {
+            get
+            {
+                return BFRESMaterialAnimation;
+            }
+            set
+            {
+                ResetModels();
+                Animation = null;
+                BFRESMaterialAnimation = value;
+                totalFrame.Value = value.FrameCount;
+                animationTrackBar.TickFrequency = 1;
+                animationTrackBar.SetRange(0, (int)value.FrameCount);
+                currentFrame.Value = 1;
+                currentFrame.Value = 0;
+            }
+        }
 
         // ACMD
         public int scriptId = -1;
@@ -530,7 +549,18 @@ namespace Smash_Forge
                     m.NUD.ApplyMta(MaterialAnimation, frameNum);
                 }
             }
-            
+
+            if (BFRESMaterialAnimation != null)
+            {
+                foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+                {
+                    if (!(node is ModelContainer)) continue;
+                    ModelContainer m = (ModelContainer)node;
+                    m.BFRES.ApplyMta(BFRESMaterialAnimation, frameNum);
+                }
+            }
+
+
             if (Animation == null) return;
 
             // Process script first in case we have to speed up the animation
@@ -1762,23 +1792,6 @@ namespace Smash_Forge
             RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
             glViewport.SwapBuffers();
         }
-        private void DrawBNTXTex()
-        {
-            GL.PopAttrib();
-            BRTI tex = ((BRTI)MeshList.filesTreeView.SelectedNode);
-            switch(tex.format >> 8)
-            {
-                case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC4:
-                    {
-                        RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, false, false);
-                    }
-                    break;
-                default:
-                    RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
-                    break;
-            }
-            glViewport.SwapBuffers();
-        }
         private void DrawFTEXTexAndUvs()
         {
             GL.PopAttrib();
@@ -1803,29 +1816,6 @@ namespace Smash_Forge
             if (Runtime.drawUv)
                 DrawBFRESUvsForSelectedTexture(tex);
 
-            glViewport.SwapBuffers();
-        }
- 
-        private void DrawFTEXTex()
-        {
-            GL.PopAttrib();
-            FTEX tex = ((FTEX)MeshList.filesTreeView.SelectedNode);
-            switch (tex.format)
-            {
-                case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM:
-                    {
-                        RenderTools.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
-                    }
-                    break;
-                case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM:
-                    {
-                        RenderTools.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
-                    }
-                    break;
-                default:
-                    RenderTools.DrawTexturedQuad(tex.display, tex.width, tex.height);
-                    break;
-            }
             glViewport.SwapBuffers();
         }
         private void DrawAreaLightBoundingBoxes()
