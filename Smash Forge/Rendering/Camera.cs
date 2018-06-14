@@ -93,7 +93,6 @@ namespace Smash_Forge.Rendering
             get { return farClipPlane; }
             set
             {
-                // The far clip plane and near clip plane can't be swapped.
                 farClipPlane = value;
                 UpdateMatrices();
             }
@@ -196,7 +195,21 @@ namespace Smash_Forge.Rendering
                     Rotate(xAmount, yAmount);
                 }
 
-                Zoom(mouseState, keyboardState);
+                //Zoom(mouseState, keyboardState);
+                // Holding shift changes zoom speed.
+                float zoomAmount = 1;
+                if (keyboardState.IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
+                    zoomAmount *= shiftZoomMultiplier;
+
+                // Zooms in or out with arrow keys.
+                if (keyboardState.IsKeyDown(OpenTK.Input.Key.Down))
+                    Zoom(-zoomAmount, true);
+                else if (keyboardState.IsKeyDown(OpenTK.Input.Key.Up))
+                    Zoom(zoomAmount, true);
+
+                // Scroll wheel zooms in or out.
+                float scrollZoomAmount = (mouseState.WheelPrecise - mouseSLast) * scrollWheelZoomSpeed;
+                Zoom(scrollZoomAmount, true);
 
                 UpdateLastMousePosition();
             }
@@ -235,25 +248,14 @@ namespace Smash_Forge.Rendering
             }        
         }
 
-        private void Zoom(OpenTK.Input.MouseState mouseState, OpenTK.Input.KeyboardState keyboardState, bool scaleByDistanceToOrigin = true)
+        private void Zoom(float amount, bool scaleByDistanceToOrigin = true)
         {
             // Increase zoom speed when zooming out. 
             float zoomscale = zoomSpeed;
             if (scaleByDistanceToOrigin)
                 zoomscale *= Math.Abs(position.Z) * zoomDistanceScale;
 
-            // Holding shift changes zoom speed.
-            if (keyboardState.IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
-                zoomscale *= shiftZoomMultiplier;
-
-            // Zooms in or out with arrow keys.
-            if (keyboardState.IsKeyDown(OpenTK.Input.Key.Down))
-                position.Z -= 1 * zoomscale;
-            if (keyboardState.IsKeyDown(OpenTK.Input.Key.Up))
-                position.Z += 1 * zoomscale;
-
-            // Scroll wheel zooms in or out.
-            position.Z += (mouseState.WheelPrecise - mouseSLast) * zoomscale * scrollWheelZoomSpeed;
+            position.Z += amount * zoomscale;
         }
 
         private void UpdateMatrices()
