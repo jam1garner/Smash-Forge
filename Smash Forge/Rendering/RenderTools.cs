@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
+using SFGraphics.Cameras;
 
 
 namespace Smash_Forge.Rendering
@@ -51,7 +52,7 @@ namespace Smash_Forge.Rendering
         private static Texture sphereUvTex;
         private static Texture sphereTanTex;
         private static Texture sphereBitanTex;
-        private static Camera nudSphereCamera = new Camera();
+        private static ForgeCamera nudSphereCamera = new ForgeCamera();
 
         public static void SetupOpenTkRendering()
         {
@@ -59,7 +60,7 @@ namespace Smash_Forge.Rendering
             // The textures will be invalid once a context is destroyed.
             // There isn't a clean way at the moment to keep track of everything.
 
-            nudSphereCamera.Update(); // Update matrices for shader.
+            nudSphereCamera.UpdateFromMouse(); // Update matrices for shader.
             LoadTextures();
             SetupScreenQuadBuffer();
             GetOpenGLSystemInfo();

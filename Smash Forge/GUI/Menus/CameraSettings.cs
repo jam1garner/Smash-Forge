@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Smash_Forge.Rendering;
+using SFGraphics.Cameras;
+
 
 namespace Smash_Forge.GUI.Menus
 {
@@ -184,7 +186,7 @@ namespace Smash_Forge.GUI.Menus
             }
         }
 
-        public void ApplyCameraAnimation(Camera Cam, int frame)
+        public void ApplyCameraAnimation(ForgeCamera Cam, int frame)
         {
             if (useCameraAnimation.Checked)
             {

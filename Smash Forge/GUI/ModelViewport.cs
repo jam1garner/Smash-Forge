@@ -26,6 +26,7 @@ using Smash_Forge.Params;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects;
 using SFGraphics.Tools;
+using SFGraphics.Cameras;
 
 
 namespace Smash_Forge
@@ -36,7 +37,7 @@ namespace Smash_Forge
         bool readyToRender = false;
 
         // View controls
-        public Camera camera = new Camera();
+        public ForgeCamera camera = new ForgeCamera();
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
         // Rendering Stuff
@@ -208,7 +209,7 @@ namespace Smash_Forge
         public ModelViewport()
         {
             InitializeComponent();
-            camera = new Camera();
+            camera = new ForgeCamera();
             FilePath = "";
             Text = "Model Viewport";
 
@@ -577,7 +578,7 @@ namespace Smash_Forge
                 camera.renderHeight = glViewport.Height;
                 fboRenderWidth = glViewport.Width;
                 fboRenderHeight = glViewport.Height;
-                camera.Update();
+                camera.UpdateFromMouse();
 
                 ResizeTexturesAndBuffers();
             }
@@ -794,7 +795,7 @@ namespace Smash_Forge
             }
 
             camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-            camera.Update();
+            camera.UpdateFromMouse();
         }
 
         private void FrameSelectedMesh()
@@ -802,7 +803,7 @@ namespace Smash_Forge
             NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode;
             float[] boundingBox = mesh.boundingBox;
             camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-            camera.Update();
+            camera.UpdateFromMouse();
         }
 
         private void FrameSelectedNud()
@@ -810,7 +811,7 @@ namespace Smash_Forge
             NUD nud = (NUD)meshList.filesTreeView.SelectedNode;
             float[] boundingBox = nud.boundingBox;
             camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-            camera.Update();
+            camera.UpdateFromMouse();
         }
 
         private void FrameSelectedPolygon()
@@ -818,7 +819,7 @@ namespace Smash_Forge
             NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode.Parent;
             float[] boundingBox = mesh.boundingBox;
             camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-            camera.Update();
+            camera.UpdateFromMouse();
         }
 
         private void FrameAllModelContainers(float maxBoundingRadius = 400)
@@ -856,7 +857,7 @@ namespace Smash_Forge
             }
 
             camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-            camera.Update();
+            camera.UpdateFromMouse();
         }
 
         #region Moveset
@@ -966,7 +967,7 @@ namespace Smash_Forge
         private void glViewport_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (currentMode != Mode.Selection && !freezeCamera)
-                camera.Update();
+                camera.UpdateFromMouse();
         }
 
         #region Controls
@@ -1450,7 +1451,7 @@ namespace Smash_Forge
              && (currentMode == Mode.Normal || (currentMode == Mode.Photoshoot && !freezeCamera))
              && !transformTool.hit)
             {
-                camera.Update();
+                camera.UpdateFromMouse();
             }
 
             if (cameraPosForm != null)
