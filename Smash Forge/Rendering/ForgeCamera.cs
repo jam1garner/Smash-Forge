@@ -14,6 +14,19 @@ namespace Smash_Forge.Rendering
         private float mouseYLast = 0;
         private float mouseXLast = 0;
 
+        private float zoomMultiplier = Runtime.zoomModifierScale;
+        private float scrollWheelZoomSpeed = 1.75f;
+        private float shiftZoomMultiplier = 2.5f;
+
+        public ForgeCamera()
+        {
+            // Apply Forge's camera settings.
+            zoomSpeed = Runtime.zoomspeed;
+            zoomDistanceScale = 0.01f;
+            rotateYSpeed = 0.0125f;
+            rotateXSpeed = 0.005f;
+        }
+
         public void SetFromBone(Bone b)
         {
             Matrix4 Mat = b.transform.Inverted();

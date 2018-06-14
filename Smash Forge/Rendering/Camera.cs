@@ -129,16 +129,10 @@ namespace Smash_Forge.Rendering
         public Matrix4 PerspectiveMatrix { get { return perspectiveMatrix; } }
 
         // Camera control settings. 
-        public float mouseTranslateSpeed = 0.5f;
-
-        public float zoomMultiplier = Runtime.zoomModifierScale;
-        public float zoomSpeed = Runtime.zoomspeed;
-        public float scrollWheelZoomSpeed = 1.75f;
-        public float shiftZoomMultiplier = 2.5f;
-        public float zoomDistanceScale = 0.01f;
-
-        public float rotateYSpeed = 0.0125f;
-        public float rotateXSpeed = 0.005f;
+        protected float zoomDistanceScale = 1;
+        protected float rotateYSpeed = 1;
+        protected float rotateXSpeed = 1;
+        protected float zoomSpeed = 1;
 
         public Camera()
         {
