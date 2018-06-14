@@ -15,6 +15,7 @@ using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.Tools;
+using SFGraphics.Cameras;
 
 
 namespace Smash_Forge

@@ -26,6 +26,7 @@ using Smash_Forge.Params;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects;
 using SFGraphics.Tools;
+using SFGraphics.Cameras;
 
 
 namespace Smash_Forge

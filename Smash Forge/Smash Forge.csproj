@@ -475,7 +475,6 @@
     <Compile Include="Rendering\ForgeCamera.cs" />
     <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
-    <Compile Include="Rendering\Camera.cs" />
     <Compile Include="Rendering\Lights\DirectionalLight.cs" />
     <Compile Include="Rendering\FrameTimer.cs" />
     <Compile Include="Rendering\Lights\HemisphereFresnel.cs" />

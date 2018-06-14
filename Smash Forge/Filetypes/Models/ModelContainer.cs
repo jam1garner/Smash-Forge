@@ -10,6 +10,7 @@ using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.Tools;
+using SFGraphics.Cameras;
 
 
 namespace Smash_Forge

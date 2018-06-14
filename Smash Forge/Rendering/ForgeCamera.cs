@@ -7,7 +7,7 @@ using OpenTK;
 
 namespace Smash_Forge.Rendering
 {
-    public class ForgeCamera : Camera
+    public class ForgeCamera : SFGraphics.Cameras.Camera
     {
         // Previous mouse state.
         private float mouseSLast = 0;

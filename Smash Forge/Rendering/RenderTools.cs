@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
+using SFGraphics.Cameras;
 
 
 namespace Smash_Forge.Rendering

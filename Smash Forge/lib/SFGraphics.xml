@@ -4,6 +4,160 @@
         <name>SFGraphics</name>
     </assembly>
     <members>
+        <member name="T:SFGraphics.Cameras.Camera">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.Position">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.FovRadians">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.FovDegrees">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.RotationXRadians">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.RotationXDegrees">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.RotationYRadians">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.RotationYDegrees">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.FarClipPlane">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.NearClipPlane">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Cameras.Camera.modelViewMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.ModelViewMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Cameras.Camera.mvpMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.MvpMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Cameras.Camera.rotationMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.RotationMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Cameras.Camera.translationMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.TranslationMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Cameras.Camera.perspectiveMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.PerspectiveMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.#ctor(OpenTK.Vector3,System.Single,System.Single,System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="position"></param>
+            <param name="rotX"></param>
+            <param name="rotY"></param>
+            <param name="renderWidth"></param>
+            <param name="renderHeight"></param>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.Rotate(System.Single,System.Single)">
+            <summary>
+            
+            </summary>
+            <param name="xAmount"></param>
+            <param name="yAmount"></param>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.Pan(System.Single,System.Single,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="xAmount"></param>
+            <param name="yAmount"></param>
+            <param name="scaleByDistanceToOrigin"></param>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.Zoom(System.Single,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="amount"></param>
+            <param name="scaleByDistanceToOrigin"></param>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.UpdateMatrices">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.ResetToDefaultPosition">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.FrameBoundingSphere(OpenTK.Vector3,System.Single)">
+            <summary>
+            
+            </summary>
+            <param name="center">The position of the center of the bounding sphere.</param>
+            <param name="radius">The radius of the bounding sphere.</param>
+        </member>
         <member name="T:SFGraphics.GLObjects.Framebuffer">
             <summary>
             
@@ -261,6 +415,11 @@
         <member name="P:SFGraphics.GLObjects.Textures.Texture.TextureWrapR">
             <summary>
             Binds and updates the TextureParameter when set.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture.Finalize">
+            <summary>
+            The context probably isn't current here, so any GL function will crash. The texture will need to be cleaned up later. 
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture.Bind">

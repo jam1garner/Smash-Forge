@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 using System.Windows.Forms;
+using SFGraphics.Cameras;
+
 
 namespace Smash_Forge.Rendering
 {
