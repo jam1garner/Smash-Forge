@@ -51,7 +51,7 @@ namespace Smash_Forge.Rendering
         private static Texture sphereUvTex;
         private static Texture sphereTanTex;
         private static Texture sphereBitanTex;
-        private static Camera nudSphereCamera = new Camera();
+        private static ForgeCamera nudSphereCamera = new ForgeCamera();
 
         public static void SetupOpenTkRendering()
         {

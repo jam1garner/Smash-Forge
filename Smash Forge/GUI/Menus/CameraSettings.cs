@@ -184,7 +184,7 @@ namespace Smash_Forge.GUI.Menus
             }
         }
 
-        public void ApplyCameraAnimation(Camera Cam, int frame)
+        public void ApplyCameraAnimation(ForgeCamera Cam, int frame)
         {
             if (useCameraAnimation.Checked)
             {

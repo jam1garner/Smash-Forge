@@ -36,7 +36,7 @@ namespace Smash_Forge
         bool readyToRender = false;
 
         // View controls
-        public Camera camera = new Camera();
+        public ForgeCamera camera = new ForgeCamera();
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
         // Rendering Stuff
@@ -208,7 +208,7 @@ namespace Smash_Forge
         public ModelViewport()
         {
             InitializeComponent();
-            camera = new Camera();
+            camera = new ForgeCamera();
             FilePath = "";
             Text = "Model Viewport";
 

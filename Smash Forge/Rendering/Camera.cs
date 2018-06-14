@@ -9,7 +9,6 @@ namespace Smash_Forge.Rendering
 {
     public class Camera
     {
-        // Values from camera controls or stprm.bin.
         private Vector3 position = new Vector3(0, 10, -80);
         public Vector3 Position
         {
@@ -112,23 +111,21 @@ namespace Smash_Forge.Rendering
         public int renderWidth = 1;
         public int renderHeight = 1;
 
-        public Vector3 scale = new Vector3(1);
-
         // Matrices shouldn't be changed directly.
         // To change the rotation matrix, set the rotation values, for example.
-        private Matrix4 modelViewMatrix = Matrix4.Identity;
+        protected Matrix4 modelViewMatrix = Matrix4.Identity;
         public Matrix4 ModelViewMatrix { get { return modelViewMatrix; } }
 
-        private Matrix4 mvpMatrix = Matrix4.Identity;
+        protected Matrix4 mvpMatrix = Matrix4.Identity;
         public Matrix4 MvpMatrix { get { return mvpMatrix; } }
 
-        private Matrix4 rotationMatrix = Matrix4.Identity;
+        protected Matrix4 rotationMatrix = Matrix4.Identity;
         public Matrix4 RotationMatrix { get { return rotationMatrix; } }
 
-        private Matrix4 translationMatrix = Matrix4.Identity;
+        protected Matrix4 translationMatrix = Matrix4.Identity;
         public Matrix4 TranslationMatrix { get { return translationMatrix; } }
 
-        private Matrix4 perspectiveMatrix = Matrix4.Identity;
+        protected Matrix4 perspectiveMatrix = Matrix4.Identity;
         public Matrix4 PerspectiveMatrix { get { return perspectiveMatrix; } }
 
         // Camera control settings. 
@@ -142,11 +139,6 @@ namespace Smash_Forge.Rendering
 
         public float rotateYSpeed = 0.0125f;
         public float rotateXSpeed = 0.005f;
-
-        // Previous mouse state.
-        private float mouseSLast = 0;
-        private float mouseYLast = 0;
-        private float mouseXLast = 0;
 
         public Camera()
         {
@@ -162,72 +154,13 @@ namespace Smash_Forge.Rendering
             RotationYRadians = rotY;
         }
 
-        // TODO: Remove from camera class.
-        public void SetFromBone(Bone b)
-        {
-            Matrix4 Mat = b.transform.Inverted();
-            translationMatrix = Matrix4.CreateTranslation(Mat.ExtractTranslation());
-            rotationMatrix = Matrix4.CreateFromQuaternion(Mat.ExtractRotation());
-            perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(fovRadians, renderWidth / (float)renderHeight, 1.0f, farClipPlane);
-
-            modelViewMatrix = Mat;
-            mvpMatrix = modelViewMatrix * perspectiveMatrix;
-        }
-
-        public void UpdateFromMouse()
-        {
-            try
-            {
-                OpenTK.Input.MouseState mouseState = OpenTK.Input.Mouse.GetState();
-                OpenTK.Input.KeyboardState keyboardState = OpenTK.Input.Keyboard.GetState();
-
-                if (OpenTK.Input.Mouse.GetState().RightButton == OpenTK.Input.ButtonState.Pressed)
-                {
-                    float xAmount = OpenTK.Input.Mouse.GetState().X - mouseXLast;
-                    float yAmount = (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                    Pan(xAmount, yAmount, true);
-                }
-
-                if (mouseState.LeftButton == OpenTK.Input.ButtonState.Pressed)
-                {
-                    float xAmount = OpenTK.Input.Mouse.GetState().X - mouseXLast;
-                    float yAmount = (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
-                    Rotate(xAmount, yAmount);
-                }
-
-                //Zoom(mouseState, keyboardState);
-                // Holding shift changes zoom speed.
-                float zoomAmount = 1;
-                if (keyboardState.IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
-                    zoomAmount *= shiftZoomMultiplier;
-
-                // Zooms in or out with arrow keys.
-                if (keyboardState.IsKeyDown(OpenTK.Input.Key.Down))
-                    Zoom(-zoomAmount, true);
-                else if (keyboardState.IsKeyDown(OpenTK.Input.Key.Up))
-                    Zoom(zoomAmount, true);
-
-                // Scroll wheel zooms in or out.
-                float scrollZoomAmount = (mouseState.WheelPrecise - mouseSLast) * scrollWheelZoomSpeed;
-                Zoom(scrollZoomAmount, true);
-
-                UpdateLastMousePosition();
-            }
-            catch (Exception)
-            {
-                // RIP OpenTK...
-            }
-
-            UpdateMatrices();
-        }
-
-        private void Rotate(float xAmount, float yAmount)
+        public void Rotate(float xAmount, float yAmount)
         {
             rotationYRadians += rotateYSpeed * xAmount;
             rotationXRadians += rotateXSpeed * yAmount;
         }
 
-        private void Pan(float xAmount, float yAmount, bool scaleByDistanceToOrigin = true)
+        public void Pan(float xAmount, float yAmount, bool scaleByDistanceToOrigin = true)
         {
             // Find the change in normalized screen coordinates.
             float deltaX = xAmount / renderWidth;
@@ -248,7 +181,7 @@ namespace Smash_Forge.Rendering
             }        
         }
 
-        private void Zoom(float amount, bool scaleByDistanceToOrigin = true)
+        public void Zoom(float amount, bool scaleByDistanceToOrigin = true)
         {
             // Increase zoom speed when zooming out. 
             float zoomscale = zoomSpeed;
@@ -258,21 +191,14 @@ namespace Smash_Forge.Rendering
             position.Z += amount * zoomscale;
         }
 
-        private void UpdateMatrices()
+        public void UpdateMatrices()
         {
             translationMatrix = Matrix4.CreateTranslation(position.X, -position.Y, position.Z);
             rotationMatrix = Matrix4.CreateRotationY(rotationYRadians) * Matrix4.CreateRotationX(rotationXRadians);
             perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(fovRadians, renderWidth / (float)renderHeight, nearClipPlane, farClipPlane);
 
             modelViewMatrix = rotationMatrix * translationMatrix;
-            mvpMatrix = modelViewMatrix * perspectiveMatrix * Matrix4.CreateScale(scale);
-        }
-
-        private void UpdateLastMousePosition()
-        {
-            mouseXLast = OpenTK.Input.Mouse.GetState().X;
-            mouseYLast = OpenTK.Input.Mouse.GetState().Y;
-            mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
+            mvpMatrix = modelViewMatrix * perspectiveMatrix;
         }
 
         public void ResetToDefaultPosition()
