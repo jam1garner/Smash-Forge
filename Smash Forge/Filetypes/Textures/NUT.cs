@@ -484,6 +484,7 @@ namespace Smash_Forge
                 d.seek(headerPtr);
 
                 NutTexture tex = new NutTexture();
+                tex.isDds = true;
                 tex.pixelInternalFormat = PixelInternalFormat.Rgba32ui;
 
                 int totalSize = d.readInt();
@@ -875,20 +876,22 @@ namespace Smash_Forge
             TextureCubeMap texture = new TextureCubeMap(Properties.Resources._10102000);
             texture.Bind();
 
-            // Generate the mip maps.
+            // The number of mip maps needs to be specified first.
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureBaseLevel, 0);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMaxLevel, t.surfaces[0].mipmaps.Count);
             GL.GenerateMipmap(GenerateMipmapTarget.TextureCubeMap);
-            for (int i = 0; i < t.surfaces.Count; ++i)
+
+            for (int i = 0; i < t.surfaces.Count; i++)
             {
                 GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, 0, t.pixelInternalFormat, t.Width, t.Height, 0, t.Size, t.surfaces[i].mipmaps[0]);
 
                 // Initialize the data for each level.
                 for (int j = 1; j < t.surfaces[i].mipmaps.Count; j++)
                 {
-                    GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, j, t.pixelInternalFormat,
+                    GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, j, t.pixelInternalFormat,
                      t.Width / (int)Math.Pow(2, j), t.Height / (int)Math.Pow(2, j), 0, t.surfaces[i].mipmaps[j].Length, t.surfaces[i].mipmaps[j]);
                 }
             }
-
 
             return texture;
         }
@@ -908,7 +911,7 @@ namespace Smash_Forge
         {
             for (int i = 0; i < t.surfaces.Count; ++i)
             {
-                // Generate the mip maps.
+                // The number of mip maps needs to be specified first.
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.surfaces[i].mipmaps.Count);
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
