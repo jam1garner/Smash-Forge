@@ -28,6 +28,14 @@ namespace Smash_Forge
         int bonesUbo;
         int selectVbo;
 
+        // Default bind location for dummy textures.
+        private static TextureUnit dummyTextureUnit = TextureUnit.Texture20;
+        private static int dummyTextureUnitOffset = 20;
+
+        // Default bind location for NUT textures.
+        private static int nutTextureUnitOffset = 3;
+        private static TextureUnit nutTextureUnit = TextureUnit.Texture3;
+
         public const int SMASH = 0;
         public const int POKKEN = 1;
         public int type = SMASH;
@@ -919,9 +927,9 @@ namespace Smash_Forge
             int textureUnitIndexOffset = 0;
             if (mat.hasDiffuse && textureUnitIndexOffset < mat.textures.Count)
             {
-                GL.ActiveTexture(TextureUnit.Texture3 + textureUnitIndexOffset);
+                GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereDifTex.Id);
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), 3 + textureUnitIndexOffset); textureUnitIndexOffset++;
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), nutTextureUnitOffset + textureUnitIndexOffset); textureUnitIndexOffset++;
             }
 
             // Jigglypuff has weird eyes.
@@ -935,9 +943,9 @@ namespace Smash_Forge
 
                 if (mat.hasNormalMap)
                 {
-                    GL.ActiveTexture(TextureUnit.Texture3 + textureUnitIndexOffset);
+                    GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
                     GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereNrmMapTex.Id);
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), 3 + textureUnitIndexOffset);
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), nutTextureUnitOffset + textureUnitIndexOffset);
                     textureUnitIndexOffset++;
                 }
             }
@@ -1003,9 +1011,9 @@ namespace Smash_Forge
 
                 if (mat.hasNormalMap)
                 {
-                    GL.ActiveTexture(TextureUnit.Texture3 + textureUnitIndexOffset);
+                    GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
                     GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereNrmMapTex.Id);
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), 3 + textureUnitIndexOffset);
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), nutTextureUnitOffset + textureUnitIndexOffset);
                     textureUnitIndexOffset++;
                 }
 
@@ -1219,7 +1227,7 @@ namespace Smash_Forge
             }
             else
             {
-                GL.ActiveTexture(TextureUnit.Texture3 + loc);
+                GL.ActiveTexture(nutTextureUnit + loc);
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex.Id);
             }
 
@@ -1233,14 +1241,14 @@ namespace Smash_Forge
                 }
             }
 
-            return 3 + loc;
+            return nutTextureUnitOffset + loc;
         }
 
         private static int BindDummyTexture(int loc, Texture texture)
         {
-            GL.ActiveTexture(TextureUnit.Texture20 + loc);
+            GL.ActiveTexture(dummyTextureUnit + loc);
             texture.Bind();
-            return 20 + loc;
+            return dummyTextureUnitOffset + loc;
         }
 
         private static void BindNutTexture(MatTexture matTexture, Texture texture)
