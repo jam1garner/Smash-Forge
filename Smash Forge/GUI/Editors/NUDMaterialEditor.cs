@@ -863,7 +863,7 @@ namespace Smash_Forge
 
                 // Display dummy textures from resources. 
                 if (Enum.IsDefined(typeof(NUD.DummyTextures), hash))
-                    displayTexture = RenderTools.dummyTextures[(NUD.DummyTextures)hash];
+                    displayTexture = RenderTools.dummyTextures[(NUD.DummyTextures)hash].Id;
                 else
                 {
                     foreach (NUT n in Runtime.TextureContainers)

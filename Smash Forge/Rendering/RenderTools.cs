@@ -33,7 +33,7 @@ namespace Smash_Forge.Rendering
                  -1f, 3f, 0.0f
             };
 
-        public static Dictionary<NUD.DummyTextures, int> dummyTextures = new Dictionary<NUD.DummyTextures, int>(); 
+        public static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>(); 
 
         private static Texture stageMapHigh;
         private static Texture stageMapLow;
@@ -83,22 +83,22 @@ namespace Smash_Forge.Rendering
 
             // Dummy textures. 
             stageMapHigh = new TextureCubeMap(Properties.Resources._10102000, 128);
-            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh.Id);
+            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
 
             stageMapLow = new TextureCubeMap(Properties.Resources._10101000, 128);
-            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow.Id);
+            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
 
             Texture dummyRamp = new Texture2D(Properties.Resources._10080000);
-            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp.Id);
+            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp);
 
             Texture pokemonStadiumDummyTex = new Texture2D(Properties.Resources._10040001);
-            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex.Id);
+            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex);
 
             Texture punchOutDummyTex = new Texture2D(Properties.Resources._10040000);
-            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex.Id);
+            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex);
 
             Texture shadowMapDummyTex = new Texture2D(Properties.Resources._10100000);
-            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex.Id);
+            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
 
             // Sphere Default Textures.
             sphereDifTex =  new Texture2D(Properties.Resources.defaultDif);

@@ -1217,9 +1217,9 @@ namespace Smash_Forge
             {
                 // Two of the dummy textures are cube maps.
                 if ((hash == (int)DummyTextures.StageMapHigh) || (hash == (int)DummyTextures.StageMapLow))
-                    return BindDummyTexture(loc, RenderTools.dummyTextures[(DummyTextures)hash], TextureTarget.TextureCubeMap);
+                    return BindDummyTexture(loc, RenderTools.dummyTextures[(DummyTextures)hash].Id, TextureTarget.TextureCubeMap);
                 else
-                    return BindDummyTexture(loc, RenderTools.dummyTextures[(DummyTextures)hash], TextureTarget.Texture2D);
+                    return BindDummyTexture(loc, RenderTools.dummyTextures[(DummyTextures)hash].Id, TextureTarget.Texture2D);
             }
             else
             {
