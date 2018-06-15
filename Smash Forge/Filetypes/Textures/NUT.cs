@@ -909,18 +909,15 @@ namespace Smash_Forge
 
         private static void LoadMipMapsCompressed(NutTexture t)
         {
-            for (int i = 0; i < t.surfaces.Count; ++i)
-            {
-                // The number of mip maps needs to be specified first.
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.surfaces[i].mipmaps.Count);
-                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            // The number of mip maps needs to be specified first.
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.surfaces[0].mipmaps.Count);
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-                // Initialize the data for each level.
-                for (int j = 0; j < t.surfaces[i].mipmaps.Count; ++j)
-                {
-                    GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, j, t.pixelInternalFormat,
-                     t.Width / (int)Math.Pow(2, j), t.Height / (int)Math.Pow(2, j), 0, t.surfaces[i].mipmaps[j].Length, t.surfaces[i].mipmaps[j]);
-                }
+            // Initialize the data for each level.
+            for (int mipLevel = 0; mipLevel < t.surfaces[0].mipmaps.Count; mipLevel++)
+            {
+                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, mipLevel, t.pixelInternalFormat,
+                    t.Width / (int)Math.Pow(2, mipLevel), t.Height / (int)Math.Pow(2, mipLevel), 0, t.surfaces[0].mipmaps[mipLevel].Length, t.surfaces[0].mipmaps[mipLevel]);
             }
         }
     }
