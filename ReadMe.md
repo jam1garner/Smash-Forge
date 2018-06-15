@@ -1,6 +1,5 @@
 Smash Forge (BFRES WIP Implementation)
 ===========
-![Preview](https://i.imgur.com/7aGQwF6.png)
 
 ## 
 ## BFRES Features
@@ -12,7 +11,6 @@ Smash Forge (BFRES WIP Implementation)
  
  
  ## Todo
- - Clean up code alot. The switch will be reparsed via a library I'm updating from Wii U.
  - Support BC7 textures.
  - SARC support. 
  - Fix up model exporting (bones have issues, and weights, and materials).
