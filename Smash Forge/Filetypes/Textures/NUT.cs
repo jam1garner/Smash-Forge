@@ -876,6 +876,9 @@ namespace Smash_Forge
             TextureCubeMap texture = new TextureCubeMap(Properties.Resources._10102000);
             texture.Bind();
 
+            // Necessary to access mipmaps past the base level.
+            texture.MinFilter = TextureMinFilter.LinearMipmapLinear; 
+
             // The number of mip maps needs to be specified first.
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureBaseLevel, 0);
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMaxLevel, t.surfaces[0].mipmaps.Count);
