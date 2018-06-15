@@ -465,9 +465,9 @@ namespace Smash_Forge
             {
                 // Display the MeshList context menus in the viewport.
                 // This is faster than right clicking in the treeview.
-                if (meshList.filesTreeView.SelectedNode is NUD.Polygon)
+                if (meshList.filesTreeView.SelectedNode is NUD.Polygon && modePolygon.Checked)
                     meshList.PolyContextMenu.Show(glViewport, e.X, e.Y);
-                else if (meshList.filesTreeView.SelectedNode is NUD.Mesh)
+                else if (meshList.filesTreeView.SelectedNode is NUD.Mesh && modeMesh.Checked)
                     meshList.MeshContextMenu.Show(glViewport, e.X, e.Y);
             }
         }
