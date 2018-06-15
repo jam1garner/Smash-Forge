@@ -222,6 +222,12 @@ namespace Smash_Forge
             SetupHurtBoxList();
             SetupVariableViewer();
 
+            // This selection mode is the last annoying mode for now.
+            // It doesn't really do anything.
+            modeBone.Checked = true;
+            modeMesh.Checked = false;
+            modePolygon.Checked = false;
+
             LVD = new LVD();
 
             ViewComboBox.SelectedIndex = 0;
@@ -451,7 +457,7 @@ namespace Smash_Forge
                     if (modeMesh.Checked)
                     {
                         // Use a color ID render pass for more precision.
-                        //SelectMeshAtMousePosition();
+                        SelectMeshAtMousePosition();
                     }
 
                     if (modePolygon.Checked)
@@ -529,26 +535,13 @@ namespace Smash_Forge
 
         private NUD.Mesh GetSelectedMeshFromColor(Color pixelColor)
         {
-            // Determine what mesh is selected.
-            foreach (TreeNode node in draw)
-            {
-                if (!(node is ModelContainer))
-                    continue;
-                ModelContainer con = (ModelContainer)node;
-
-                foreach (NUD.Mesh mesh in con.NUD.Nodes)
-                {
-                    // The color is the mesh index.
-                    // Convert to Vector3 to ignore the alpha.
-                    Vector3 meshColor = ColorTools.Vector4FromColor(Color.FromArgb(mesh.DisplayId)).Xyz;
-                    Vector3 pickedColor = ColorTools.Vector4FromColor(pixelColor).Xyz;
-
-                    if (meshColor == pickedColor)
-                        return mesh;
-                }
-            }
-
-            return null;
+            // Determine what mesh is selected. 
+            // We can still use the poly ID pass.
+            NUD.Polygon selectedPolygon = GetSelectedPolygonFromColor(pixelColor);
+            if (selectedPolygon != null && selectedPolygon.Parent != null)
+                return (NUD.Mesh)selectedPolygon.Parent;
+            else
+                return null;
         }
 
         private Color ColorPickPixelAtMousePosition()
