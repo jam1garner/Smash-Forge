@@ -1459,6 +1459,120 @@ namespace Smash_Forge
             }
         }
 
+        private void flipUVsVerticalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (filesTreeView.SelectedNode is BFRES.Mesh)
+            {
+                BFRES.Mesh p = (BFRES.Mesh)filesTreeView.SelectedNode;
+
+                for (int i = 0; i < p.vertices.uv0.Count; i++)
+                {
+                    p.vertices.uv0[i] = new OpenTK.Vector2(p.vertices.uv0[i].X, 1 - p.vertices.uv0[i].Y);
+                }
+
+                foreach (TreeNode con in filesTreeView.Nodes)
+                {
+                    if (con is ModelContainer)
+                    {
+                        if (((ModelContainer)con).BFRES != null)
+                            ((ModelContainer)con).BFRES.UpdateVertexData();
+                    }
+                }
+            }
+        }
+
+        private void flipUVsHorizontalToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (filesTreeView.SelectedNode is BFRES.Mesh)
+            {
+                BFRES.Mesh p = (BFRES.Mesh)filesTreeView.SelectedNode;
+
+                for (int i = 0; i < p.vertices.uv0.Count; i++)
+                {
+                    p.vertices.uv0[i] = new OpenTK.Vector2(1 - p.vertices.uv0[i].X, p.vertices.uv0[i].Y);
+                }
+
+                foreach (TreeNode con in filesTreeView.Nodes)
+                {
+                    if (con is ModelContainer)
+                    {
+                        if (((ModelContainer)con).BFRES != null)
+                            ((ModelContainer)con).BFRES.UpdateVertexData();
+                    }
+                }
+            }
+        }
+        private void bfresGenerateTanBitanToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh mesh = (BFRES.Mesh)filesTreeView.SelectedNode;
+
+            BFRESGenerateTanBitanAndFixVertType(mesh);
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).BFRES != null)
+                        ((ModelContainer)con).BFRES.UpdateVertexData();
+                }
+            }
+        }
+
+        private static void BFRESGenerateTanBitanAndFixVertType(BFRES.Mesh mesh)
+        {
+            // This already checks for the appropriate vertex type. 
+            mesh.CalculateTangentBitangent();
+        }
+
         #endregion
+
+        private void smoothNormalsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void bfresRecalculateToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh mesh = (BFRES.Mesh)filesTreeView.SelectedNode;
+            mesh.CalculateNormals();
+
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).BFRES != null)
+                        ((ModelContainer)con).BFRES.UpdateVertexData();
+                }
+            }
+        }
+
+        private void bfresSmoothToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh mesh = (BFRES.Mesh)filesTreeView.SelectedNode;
+            mesh.SmoothNormals();
+
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).BFRES != null)
+                        ((ModelContainer)con).BFRES.UpdateVertexData();
+                }
+            }
+        }
     }
 }

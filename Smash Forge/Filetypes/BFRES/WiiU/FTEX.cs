@@ -16,6 +16,8 @@ namespace Smash_Forge
         public int height;
         public int format;
         public int display;
+        public byte[] reserve;
+
 
         public FTEX_Texture texture = new FTEX_Texture();
         public void ReadFTEX(Texture tex)
@@ -23,11 +25,14 @@ namespace Smash_Forge
             ImageKey = "texture";
             SelectedImageKey = "texture";
 
+            reserve = tex.Data;
+
             texture.width = (int)tex.Width;
             texture.height = (int)tex.Height;
             format = (int)tex.Format;
             int swizzle = (int)tex.Swizzle;
             int pitch = (int)tex.Pitch;
+
             texture.data = GTX.swizzleBC(tex.Data, texture.width, texture.height, format, (int)tex.TileMode, pitch, swizzle);
             Text = tex.Name;
 
@@ -35,6 +40,7 @@ namespace Smash_Forge
 
             width = texture.width;
             height = texture.height;
+
 
             switch (format)
             {

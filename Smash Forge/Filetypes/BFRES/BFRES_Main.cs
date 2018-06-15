@@ -250,7 +250,7 @@ namespace Smash_Forge
 
                     foreach (Mesh.BoundingBox box in m.boundingBoxes)
                     {
-                        if (m.IsSelected)
+                        if (m.Checked)
                         {
                             Rendering.RenderTools.DrawRectangularPrism(box.Center, box.Extent.X, box.Extent.Y, box.Extent.Z, true);
                         }
@@ -876,6 +876,9 @@ namespace Smash_Forge
             public int[] BoneFixNode;
             public int fsklindx;
             public int[] Faces;
+
+            public int BoundingCount;
+
             public MaterialData material = new MaterialData();
 
             public List<float> radius = new List<float>();
@@ -937,14 +940,31 @@ namespace Smash_Forge
                 if (faces.Count <= 3)
                     return displayVertList;
                 Vertex v = vertices;
+
+
+                if (v.bitans.Count == 0)
+                {
+                    for (int p = 0; p < v.pos.Count; p++)
+                    {
+                        v.bitans.Add(new Vector4(0, 0, 0, 1));
+                    }                
+                }
+                if (v.tans.Count == 0)
+                {
+                    for (int p = 0; p < v.pos.Count; p++)
+                    {
+                        v.tans.Add(new Vector4(0, 0, 0, 1));
+                    }
+                }
+
                 for (int p = 0; p < v.pos.Count; p++)
                 {
                     DisplayVertex displayVert = new DisplayVertex()
                     {
                         pos = v.pos.Count > 0 ? v.pos[p] : new Vector3(0, 0, 0),
                         nrm = v.nrm.Count > 0 ? v.nrm[p] : new Vector3(0, 0, 0),
-                        tan = v.tans.Count > 0 ? v.tans[p].Xyz : new Vector3(0, 0, 0),
-                        bit = v.bitans.Count > 0 ? v.bitans[p].Xyz : new Vector3(0, 0, 0),
+                        tan = v.tans[p].Xyz,
+                        bit = v.bitans[p].Xyz,
                         col = v.col.Count > 0 ? v.col[p] : new Vector4(0.9f, 0.9f, 0.9f, 0.9f),
                         uv = v.uv0.Count > 0 ? v.uv0[p] : new Vector2(0, 0),
                         uv2 = v.uv1.Count > 0 ? v.uv1[p] : new Vector2(0, 0),
@@ -975,6 +995,213 @@ namespace Smash_Forge
                 selectedVerts = new int[displayVertList.Count];
                 return displayVertList;
             }
+
+            public void CalculateTangentBitangent()
+            {
+                List<int> f = getDisplayFace();
+                Vector3[] tanArray = new Vector3[vertices.pos.Count];
+                Vector3[] bitanArray = new Vector3[vertices.pos.Count];
+
+                CalculateTanBitanArrays(f, tanArray, bitanArray);
+                ApplyTanBitanArray(tanArray, bitanArray);
+            }
+
+            private void ApplyTanBitanArray(Vector3[] tanArray, Vector3[] bitanArray)
+            {
+                for (int i = 0; i < vertices.pos.Count; i++)
+                {
+                    Vertex v = vertices;
+                    Vector3 newTan = tanArray[i];
+                    Vector3 newBitan = bitanArray[i];
+
+                    Vector3 normal = v.nrm[i];
+
+                    // The tangent and bitangent should be orthogonal to the normal. 
+                    // Bitangents are not calculated with a cross product to prevent flipped shading  with mirrored normal maps.
+                    v.tans[i] = new Vector4(Vector3.Normalize(newTan - normal * Vector3.Dot(normal, newTan)), 1);
+                    v.bitans[i] = new Vector4(Vector3.Normalize(newBitan - normal * Vector3.Dot(normal, newBitan)), 1);
+                    v.bitans[i] *= -1;
+                }
+            }
+
+            private void CalculateTanBitanArrays(List<int> faces, Vector3[] tanArray, Vector3[] bitanArray)
+            {
+                for (int i = 0; i < displayFaceSize; i += 3)
+                {
+
+                    if (vertices.uv0.Count < 3) { MessageBox.Show("No UVs found to calculate"); return;}
+
+                    Vector2 v1 = vertices.uv0[faces[i]];
+                    Vector2 v2 = vertices.uv0[faces[i + 1]];
+                    Vector2 v3 = vertices.uv0[faces[i + 2]];
+
+                    Vector3 vpos1 = vertices.pos[faces[i]];
+                    Vector3 vpos2 = vertices.pos[faces[i + 1]];
+                    Vector3 vpos3 = vertices.pos[faces[i + 2]];
+
+                    float x1 = vpos2.X - vpos1.X;
+                    float x2 = vpos3.X - vpos1.X;
+                    float y1 = vpos2.Y - vpos1.Y;
+                    float y2 = vpos3.Y - vpos1.Y;
+                    float z1 = vpos2.Z - vpos1.Z;
+                    float z2 = vpos3.Z - vpos1.Z;
+
+                    float s1 = v2.X - v1.X;
+                    float s2 = v3.X - v1.X;
+                    float t1 = v2.Y - v1.Y;
+                    float t2 = v3.Y - v1.Y;
+
+                    float div = (s1 * t2 - s2 * t1);
+                    float r = 1.0f / div;
+
+                    // Fix +/- infinity from division by 0.
+                    if (r == float.PositiveInfinity || r == float.NegativeInfinity)
+                        r = 1.0f;
+
+                    float sX = t2 * x1 - t1 * x2;
+                    float sY = t2 * y1 - t1 * y2;
+                    float sZ = t2 * z1 - t1 * z2;
+                    Vector3 s = new Vector3(sX, sY, sZ) * r;
+
+                    float tX = s1 * x2 - s2 * x1;
+                    float tY = s1 * y2 - s2 * y1;
+                    float tZ = s1 * z2 - s2 * z1;
+                    Vector3 t = new Vector3(tX, tY, tZ) * r;
+
+                    // Prevents black tangents or bitangents due to having vertices with the same UV coordinates. 
+                    float delta = 0.00075f;
+                    bool sameU = (Math.Abs(v1.X - v2.X) < delta) && (Math.Abs(v2.X - v3.X) < delta);
+                    bool sameV = (Math.Abs(v1.Y - v2.Y) < delta) && (Math.Abs(v2.Y - v3.Y) < delta);
+                    if (sameU || sameV)
+                    {
+                        // Let's pick some arbitrary tangent vectors.
+                        s = new Vector3(1, 0, 0);
+                        t = new Vector3(0, 1, 0);
+                    }
+
+                    // Average tangents and bitangents.
+                    tanArray[faces[i]] += s;
+                    tanArray[faces[i + 1]] += s;
+                    tanArray[faces[i + 2]] += s;
+
+
+                    bitanArray[faces[i]] += t;
+                    bitanArray[faces[i + 1]] += t;
+                    bitanArray[faces[i + 2]] += t;
+
+                }
+            }
+
+            public void GenerateBoundingBoxes()
+            {
+                //Set center and extent
+                //Each sub mesh has their own bounding + for BOTW/switch has per LOD mesh too
+
+                for (int i = 0; i < BoundingCount; i++)
+                {
+
+                    foreach (Vector3 p in vertices.pos)
+                    {
+
+                    }
+
+
+
+                    boundingBoxes[i].Center = new Vector3(0, 0, 0);
+                    boundingBoxes[i].Extent = new Vector3(0, 0, 0);
+
+                }
+            }
+
+            public void SmoothNormals()
+            {
+                Vector3[] normals = new Vector3[vertices.pos.Count];
+
+                List<int> f = getDisplayFace();
+
+                for (int i = 0; i < displayFaceSize; i += 3)
+                {
+                    Vector3 v1 = vertices.pos[f[i]];
+                    Vector3 v2 = vertices.pos[f[i + 1]];
+                    Vector3 v3 = vertices.pos[f[i + 2]];
+                    Vector3 nrm = CalculateNormal(v1, v2, v3);
+
+                    normals[f[i + 0]] += nrm;
+                    normals[f[i + 1]] += nrm;
+                    normals[f[i + 2]] += nrm;
+                }
+
+                for (int i = 0; i < normals.Length; i++)
+                    vertices.nrm[i] = normals[i].Normalized();
+
+                // Compare each vertex with all the remaining vertices. This might skip some.
+                for (int i = 0; i < vertices.pos.Count; i++)
+                {
+                    Vertex v = vertices;
+
+                    for (int j = i + 1; j < vertices.pos.Count; j++)
+                    {
+                        Vertex v2 = vertices;
+
+                        if (v == v2)
+                            continue;
+                        float dis = (float)Math.Sqrt(Math.Pow(v.pos[i].X - v2.pos[j].X, 2) + Math.Pow(v.pos[i].Y - v2.pos[i].Y, 2) + Math.Pow(v.pos[i].Z - v2.pos[j].Z, 2));
+ 
+                        if (dis <= 0f) // Extra smooth
+                        {
+                            Vector3 nn = ((v2.nrm[j] + v.nrm[j]) / 2).Normalized();
+                            v.nrm[i] = nn;
+                            v2.nrm[j] = nn;
+                        }
+                    }
+                }
+            }
+
+            public void CalculateNormals()
+            {
+                Vector3[] normals = new Vector3[vertices.pos.Count];
+
+                for (int i = 0; i < normals.Length; i++)
+                    normals[i] = new Vector3(0, 0, 0);
+
+                List<int> f = getDisplayFace();
+
+                for (int i = 0; i < displayFaceSize; i += 3)
+                {
+                    Vector3 v1 = vertices.pos[f[i]];
+                    Vector3 v2 = vertices.pos[f[i + 1]];
+                    Vector3 v3 = vertices.pos[f[i + 2]];
+                    Vector3 nrm = CalculateNormal(v1, v2, v3);
+
+                    normals[f[i + 0]] += nrm * (nrm.Length / 2);
+                    normals[f[i + 1]] += nrm * (nrm.Length / 2);
+                    normals[f[i + 2]] += nrm * (nrm.Length / 2);
+                }
+
+                for (int i = 0; i < normals.Length; i++)
+                    vertices.nrm[i] = normals[i].Normalized();
+            }
+
+            private Vector3 CalculateNormal(Vector3 v1, Vector3 v2, Vector3 v3)
+            {
+
+
+                Vector3 U = v2 - v1;
+                Vector3 V = v3 - v1;
+
+                // Don't normalize here, so surface area can be calculated. 
+                return Vector3.Cross(U, V);
+            }
+
+            public void SetVertexColor(Vector4 intColor)
+            {
+                // (127, 127, 127, 255) is white.
+                for (int i = 0; i < vertices.col.Count; i++)
+                {
+                    vertices.col[i] = intColor;
+                }
+            }
+
             public List<int> getDisplayFace()
             {
                 if ((strip >> 4) == 4)

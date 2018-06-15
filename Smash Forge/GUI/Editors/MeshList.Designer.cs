@@ -114,8 +114,14 @@
             this.bfresMeshContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.bfres_openMaterialEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bfres_openPolygonEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bfresFlipUVsVerticalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bfresflipUVsHorizontalToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.bfresGenerateTanBitanToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.bfresToolStripMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.bfresSaveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bfresNormalsToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.bfresRecalculateToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.bfresSmoothToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -265,6 +271,7 @@
             this.smoothNormalsToolStripMenuItem.Name = "smoothNormalsToolStripMenuItem";
             this.smoothNormalsToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.smoothNormalsToolStripMenuItem.Text = "Normals";
+            this.smoothNormalsToolStripMenuItem.Click += new System.EventHandler(this.smoothNormalsToolStripMenuItem_Click);
             // 
             // recalculateToolStripMenuItem1
             // 
@@ -617,14 +624,14 @@
             // recalculateToolStripMenuItem2
             // 
             this.recalculateToolStripMenuItem2.Name = "recalculateToolStripMenuItem2";
-            this.recalculateToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
+            this.recalculateToolStripMenuItem2.Size = new System.Drawing.Size(134, 22);
             this.recalculateToolStripMenuItem2.Text = "Recalculate";
             this.recalculateToolStripMenuItem2.Click += new System.EventHandler(this.recalculateToolStripMenuItem2_Click);
             // 
             // smoothToolStripMenuItem2
             // 
             this.smoothToolStripMenuItem2.Name = "smoothToolStripMenuItem2";
-            this.smoothToolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
+            this.smoothToolStripMenuItem2.Size = new System.Drawing.Size(134, 22);
             this.smoothToolStripMenuItem2.Text = "Smooth";
             this.smoothToolStripMenuItem2.Click += new System.EventHandler(this.smoothToolStripMenuItem2_Click);
             // 
@@ -790,9 +797,13 @@
             // 
             this.bfresMeshContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bfres_openMaterialEditorToolStripMenuItem,
-            this.bfres_openPolygonEditorToolStripMenuItem});
+            this.bfres_openPolygonEditorToolStripMenuItem,
+            this.bfresFlipUVsVerticalToolStripMenuItem,
+            this.bfresflipUVsHorizontalToolStripMenuItem1,
+            this.bfresGenerateTanBitanToolStripMenuItem3,
+            this.bfresNormalsToolStripMenuItem3});
             this.bfresMeshContextMenu.Name = "bfresMeshContextMenu";
-            this.bfresMeshContextMenu.Size = new System.Drawing.Size(185, 48);
+            this.bfresMeshContextMenu.Size = new System.Drawing.Size(185, 158);
             // 
             // bfres_openMaterialEditorToolStripMenuItem
             // 
@@ -808,19 +819,63 @@
             this.bfres_openPolygonEditorToolStripMenuItem.Text = "Open Polygon Editor";
             this.bfres_openPolygonEditorToolStripMenuItem.Click += new System.EventHandler(this.openPolygonEditorToolStripMenuItem_Click);
             // 
+            // bfresFlipUVsVerticalToolStripMenuItem
+            // 
+            this.bfresFlipUVsVerticalToolStripMenuItem.Name = "bfresFlipUVsVerticalToolStripMenuItem";
+            this.bfresFlipUVsVerticalToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.bfresFlipUVsVerticalToolStripMenuItem.Text = "Flip UVs (Vertical)";
+            this.bfresFlipUVsVerticalToolStripMenuItem.Click += new System.EventHandler(this.flipUVsVerticalToolStripMenuItem_Click);
+            // 
+            // bfresflipUVsHorizontalToolStripMenuItem1
+            // 
+            this.bfresflipUVsHorizontalToolStripMenuItem1.Name = "bfresflipUVsHorizontalToolStripMenuItem1";
+            this.bfresflipUVsHorizontalToolStripMenuItem1.Size = new System.Drawing.Size(184, 22);
+            this.bfresflipUVsHorizontalToolStripMenuItem1.Text = "Flip UVs (Horizontal)";
+            this.bfresflipUVsHorizontalToolStripMenuItem1.Click += new System.EventHandler(this.flipUVsHorizontalToolStripMenuItem1_Click);
+            // 
+            // bfresGenerateTanBitanToolStripMenuItem3
+            // 
+            this.bfresGenerateTanBitanToolStripMenuItem3.Name = "bfresGenerateTanBitanToolStripMenuItem3";
+            this.bfresGenerateTanBitanToolStripMenuItem3.Size = new System.Drawing.Size(184, 22);
+            this.bfresGenerateTanBitanToolStripMenuItem3.Text = "Generate Tan/Bitan";
+            this.bfresGenerateTanBitanToolStripMenuItem3.Click += new System.EventHandler(this.bfresGenerateTanBitanToolStripMenuItem3_Click);
+            // 
             // bfresToolStripMenu
             // 
             this.bfresToolStripMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bfresSaveToolStripMenuItem});
             this.bfresToolStripMenu.Name = "bfresToolStripMenu";
-            this.bfresToolStripMenu.Size = new System.Drawing.Size(153, 48);
+            this.bfresToolStripMenu.Size = new System.Drawing.Size(99, 26);
             // 
             // bfresSaveToolStripMenuItem
             // 
             this.bfresSaveToolStripMenuItem.Name = "bfresSaveToolStripMenuItem";
-            this.bfresSaveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bfresSaveToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
             this.bfresSaveToolStripMenuItem.Text = "Save";
             this.bfresSaveToolStripMenuItem.Click += new System.EventHandler(this.bfresSaveToolStripMenuItem_Click);
+            // 
+            // bfresNormalsToolStripMenuItem3
+            // 
+            this.bfresNormalsToolStripMenuItem3.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.bfresRecalculateToolStripMenuItem3,
+            this.bfresSmoothToolStripMenuItem3});
+            this.bfresNormalsToolStripMenuItem3.Name = "bfresNormalsToolStripMenuItem3";
+            this.bfresNormalsToolStripMenuItem3.Size = new System.Drawing.Size(184, 22);
+            this.bfresNormalsToolStripMenuItem3.Text = "Normals";
+            // 
+            // bfresRecalculateToolStripMenuItem3
+            // 
+            this.bfresRecalculateToolStripMenuItem3.Name = "bfresRecalculateToolStripMenuItem3";
+            this.bfresRecalculateToolStripMenuItem3.Size = new System.Drawing.Size(152, 22);
+            this.bfresRecalculateToolStripMenuItem3.Text = "Recalculate";
+            this.bfresRecalculateToolStripMenuItem3.Click += new System.EventHandler(this.bfresRecalculateToolStripMenuItem3_Click);
+            // 
+            // bfresSmoothToolStripMenuItem3
+            // 
+            this.bfresSmoothToolStripMenuItem3.Name = "bfresSmoothToolStripMenuItem3";
+            this.bfresSmoothToolStripMenuItem3.Size = new System.Drawing.Size(152, 22);
+            this.bfresSmoothToolStripMenuItem3.Text = "Smooth";
+            this.bfresSmoothToolStripMenuItem3.Click += new System.EventHandler(this.bfresSmoothToolStripMenuItem3_Click);
             // 
             // MeshList
             // 
@@ -936,5 +991,11 @@
         private System.Windows.Forms.ToolStripMenuItem bfres_openPolygonEditorToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip bfresToolStripMenu;
         private System.Windows.Forms.ToolStripMenuItem bfresSaveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bfresFlipUVsVerticalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bfresflipUVsHorizontalToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem bfresGenerateTanBitanToolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem bfresNormalsToolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem bfresRecalculateToolStripMenuItem3;
+        private System.Windows.Forms.ToolStripMenuItem bfresSmoothToolStripMenuItem3;
     }
 }

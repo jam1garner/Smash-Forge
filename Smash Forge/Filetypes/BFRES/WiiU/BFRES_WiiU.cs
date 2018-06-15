@@ -122,17 +122,7 @@ namespace Smash_Forge
 
                             foreach (Syroot.Maths.Vector4F p in vec4Positions)
                             {
-                                switch (position.Format)
-                                {
-                                    case GX2AttribFormat.Format_32_32_32_32_Single:
-                                    case GX2AttribFormat.Format_32_32_32_Single:
-                                    case GX2AttribFormat.Format_16_16_16_16_Single:
-                                        v.pos.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z });
-                                        break;
-                                    default:
-                                        MessageBox.Show("Position has unsupported Format " + position.Format);
-                                        break;
-                                }
+                                v.pos.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z });
                             }
                         }
                         if (att.Name == "_n0")
@@ -143,21 +133,7 @@ namespace Smash_Forge
 
                             foreach (Syroot.Maths.Vector4F n in vec4Normals)
                             {
-                                switch (normal.Format)
-                                {
-                                    case GX2AttribFormat.Format_10_10_10_2_SNorm:
-                                    case GX2AttribFormat.Format_32_32_32_32_Single:
-                                    case GX2AttribFormat.Format_16_16_16_16_Single:
-                                    case GX2AttribFormat.Format_8_8_8_8_SNorm:
-                                    case GX2AttribFormat.Format_16_16_16_16_SNorm:
-                                    case GX2AttribFormat.Format_32_32_Single:
-                                    case GX2AttribFormat.Format_32_32_32_Single:
-                                        v.nrm.Add(new Vector3 { X = n.X, Y = n.Y, Z = n.Z });
-                                        break;
-                                    default:
-                                        MessageBox.Show("Normals has unsupported Format " + normal.Format);
-                                        break;
-                                }
+                                v.nrm.Add(new Vector3 { X = n.X, Y = n.Y, Z = n.Z });
                             }
                         }
                         if (att.Name == "_u0")
@@ -168,23 +144,7 @@ namespace Smash_Forge
 
                             foreach (Syroot.Maths.Vector4F u in vec4uv0)
                             {
-                                switch (uv0.Format)
-                                {
-                                    case GX2AttribFormat.Format_10_10_10_2_SNorm:
-                                    case GX2AttribFormat.Format_32_32_32_32_UInt:
-                                    case GX2AttribFormat.Format_16_16_UNorm:
-                                    case GX2AttribFormat.Format_8_8_SNorm:
-                                    case GX2AttribFormat.Format_8_8_UNorm:
-                                    case GX2AttribFormat.Format_16_16_SNorm:
-                                    case GX2AttribFormat.Format_16_16_Single:
-                                    case GX2AttribFormat.Format_32_32_Single:
-                                    case GX2AttribFormat.Format_32_Single:
-                                        v.uv0.Add(new Vector2 { X = u.X, Y = u.Y });
-                                        break;
-                                    default:
-                                        MessageBox.Show("UV 0 has unsupported Format " + uv0.Format);
-                                        break;
-                                }
+                                v.uv0.Add(new Vector2 { X = u.X, Y = u.Y });
                             }
                         }
                         if (att.Name == "_u1")
@@ -195,23 +155,7 @@ namespace Smash_Forge
 
                             foreach (Syroot.Maths.Vector4F u in vec4uv1)
                             {
-                                switch (uv1.Format)
-                                {
-                                    case GX2AttribFormat.Format_10_10_10_2_SNorm:
-                                    case GX2AttribFormat.Format_32_32_32_32_UInt:
-                                    case GX2AttribFormat.Format_16_16_UNorm:
-                                    case GX2AttribFormat.Format_8_8_SNorm:
-                                    case GX2AttribFormat.Format_8_8_UNorm:
-                                    case GX2AttribFormat.Format_16_16_SNorm:
-                                    case GX2AttribFormat.Format_16_16_Single:
-                                    case GX2AttribFormat.Format_32_32_Single:
-                                    case GX2AttribFormat.Format_32_Single:
-                                        v.uv1.Add(new Vector2 { X = u.X, Y = u.Y });
-                                        break;
-                                    default:
-                                        MessageBox.Show("UV 1 has unsupported Format " + uv1.Format);
-                                        break;
-                                }
+                                v.uv1.Add(new Vector2 { X = u.X, Y = u.Y });
                             }
                         }
                         if (att.Name == "_u2")
@@ -222,23 +166,7 @@ namespace Smash_Forge
 
                             foreach (Syroot.Maths.Vector4F u in vec4uv2)
                             {
-                                switch (uv2.Format)
-                                {
-                                    case GX2AttribFormat.Format_10_10_10_2_SNorm:
-                                    case GX2AttribFormat.Format_32_32_32_32_UInt:
-                                    case GX2AttribFormat.Format_16_16_UNorm:
-                                    case GX2AttribFormat.Format_8_8_SNorm:
-                                    case GX2AttribFormat.Format_8_8_UNorm:
-                                    case GX2AttribFormat.Format_16_16_SNorm:
-                                    case GX2AttribFormat.Format_16_16_Single:
-                                    case GX2AttribFormat.Format_32_32_Single:
-                                    case GX2AttribFormat.Format_32_Single:
-                                        v.uv2.Add(new Vector2 { X = u.X, Y = u.Y });
-                                        break;
-                                    default:
-                                        MessageBox.Show("UV 2 has unsupported Format " + uv2.Format);
-                                        break;
-                                }
+                                v.uv2.Add(new Vector2 { X = u.X, Y = u.Y });
                             }
                         }
                         if (att.Name == "_c0")
@@ -249,27 +177,7 @@ namespace Smash_Forge
 
                             foreach (Syroot.Maths.Vector4F c in vec4c0)
                             {
-                                switch (c0.Format)
-                                {
-                                    case GX2AttribFormat.Format_32_32_32_32_Single:
-                                    case GX2AttribFormat.Format_10_10_10_2_SNorm:
-                                    case GX2AttribFormat.Format_32_32_32_32_UInt:
-                                    case GX2AttribFormat.Format_16_16_16_16_Single:
-                                    case GX2AttribFormat.Format_16_16_UNorm:
-                                    case GX2AttribFormat.Format_8_8_SNorm:
-                                    case GX2AttribFormat.Format_8_8_UNorm:
-                                    case GX2AttribFormat.Format_16_16_SNorm:
-                                    case GX2AttribFormat.Format_16_16_Single:
-                                    case GX2AttribFormat.Format_32_32_Single:
-                                    case GX2AttribFormat.Format_32_Single:
-                                    case GX2AttribFormat.Format_8_8_8_8_SNorm:
-                                    case GX2AttribFormat.Format_8_8_8_8_UNorm:
-                                        v.col.Add(new Vector4 { X = c.X, Y = c.Y, Z = c.Z, W = c.W });
-                                        break;
-                                    default:
-                                        MessageBox.Show("Color has unsupported Format " + c0.Format);
-                                        break;
-                                }
+                                v.col.Add(new Vector4 { X = c.X, Y = c.Y, Z = c.Z, W = c.W });
                             }
                         }
                         if (att.Name == "_t0")
@@ -280,25 +188,7 @@ namespace Smash_Forge
 
                             foreach (Syroot.Maths.Vector4F u in vec4t0)
                             {
-                                switch (t0.Format)
-                                {
-                                    case GX2AttribFormat.Format_10_10_10_2_SNorm:
-                                    case GX2AttribFormat.Format_32_32_32_32_UInt:
-                                    case GX2AttribFormat.Format_16_16_UNorm:
-                                    case GX2AttribFormat.Format_8_8_SNorm:
-                                    case GX2AttribFormat.Format_8_8_UNorm:
-                                    case GX2AttribFormat.Format_16_16_SNorm:
-                                    case GX2AttribFormat.Format_16_16_Single:
-                                    case GX2AttribFormat.Format_32_32_Single:
-                                    case GX2AttribFormat.Format_32_Single:
-                                    case GX2AttribFormat.Format_8_8_8_8_SNorm:
-                                    case GX2AttribFormat.Format_8_8_8_8_UNorm:
-                                        v.tans.Add(new Vector4 { X = u.X, Y = u.Y, Z = u.Z, W = u.W });
-                                        break;
-                                    default:
-                                        MessageBox.Show("tangents have unsupported Format " + t0.Format);
-                                        break;
-                                }
+                                v.tans.Add(new Vector4 { X = u.X, Y = u.Y, Z = u.Z, W = u.W });
                             }
                         }
                         if (att.Name == "_b0")
@@ -309,25 +199,7 @@ namespace Smash_Forge
 
                             foreach (Syroot.Maths.Vector4F u in vec4b0)
                             {
-                                switch (b0.Format)
-                                {
-                                    case GX2AttribFormat.Format_10_10_10_2_SNorm:
-                                    case GX2AttribFormat.Format_32_32_32_32_UInt:
-                                    case GX2AttribFormat.Format_16_16_UNorm:
-                                    case GX2AttribFormat.Format_8_8_SNorm:
-                                    case GX2AttribFormat.Format_8_8_UNorm:
-                                    case GX2AttribFormat.Format_16_16_SNorm:
-                                    case GX2AttribFormat.Format_16_16_Single:
-                                    case GX2AttribFormat.Format_32_32_Single:
-                                    case GX2AttribFormat.Format_32_Single:
-                                    case GX2AttribFormat.Format_8_8_8_8_SNorm:
-                                    case GX2AttribFormat.Format_8_8_8_8_UNorm:
-                                        v.bitans.Add(new Vector4 { X = u.X, Y = u.Y, Z = u.Z, W = u.W });
-                                        break;
-                                    default:
-                                        MessageBox.Show("binorms has unsupported Format " + b0.Format);
-                                        break;
-                                }
+                                v.bitans.Add(new Vector4 { X = u.X, Y = u.Y, Z = u.Z, W = u.W });
                             }
                         }
                         if (att.Name == "_w0")
@@ -338,28 +210,7 @@ namespace Smash_Forge
 
                             foreach (Syroot.Maths.Vector4F w in vec4w0)
                             {
-                                switch (w0.Format)
-                                {
-                                    case GX2AttribFormat.Format_10_10_10_2_SNorm:
-                                    case GX2AttribFormat.Format_32_32_32_32_UInt:
-                                    case GX2AttribFormat.Format_16_16_UNorm:
-                                    case GX2AttribFormat.Format_8_8_SNorm:
-                                    case GX2AttribFormat.Format_8_8_UNorm:
-                                    case GX2AttribFormat.Format_16_16_SNorm:
-                                    case GX2AttribFormat.Format_16_16_Single:
-                                    case GX2AttribFormat.Format_32_32_Single:
-                                    case GX2AttribFormat.Format_32_Single:
-                                    case GX2AttribFormat.Format_8_8_8_8_SNorm:
-                                    case GX2AttribFormat.Format_8_8_8_8_UNorm:
-                                    case GX2AttribFormat.Format_32_32_32_UInt:
-                                    case GX2AttribFormat.Format_32_32_32_32_Single:
-                                    case GX2AttribFormat.Format_32_32_32_Single:
-                                        v.weights.Add(new Vector4 { X = w.X, Y = w.Y, Z = w.Z, W = w.W });
-                                        break;
-                                    default:
-                                        MessageBox.Show("weights has unsupported Format " + w0.Format);
-                                        break;
-                                }
+                                v.weights.Add(new Vector4 { X = w.X, Y = w.Y, Z = w.Z, W = w.W });
                             }
                         }
                         if (att.Name == "_i0")
@@ -370,31 +221,7 @@ namespace Smash_Forge
 
                             foreach (Syroot.Maths.Vector4F i in vec4i0)
                             {
-                                switch (i0.Format)
-                                {
-                                    case GX2AttribFormat.Format_10_10_10_2_SNorm:
-                                    case GX2AttribFormat.Format_32_32_32_32_UInt:
-                                    case GX2AttribFormat.Format_16_16_UNorm:
-                                    case GX2AttribFormat.Format_8_8_SNorm:
-                                    case GX2AttribFormat.Format_8_8_UNorm:
-                                    case GX2AttribFormat.Format_16_16_SNorm:
-                                    case GX2AttribFormat.Format_16_16_Single:
-                                    case GX2AttribFormat.Format_32_32_Single:
-                                    case GX2AttribFormat.Format_32_Single:
-                                    case GX2AttribFormat.Format_8_8_8_8_UInt:
-                                    case GX2AttribFormat.Format_8_8_8_8_UNorm:
-                                    case GX2AttribFormat.Format_8_UInt:
-                                    case GX2AttribFormat.Format_8_8_UInt:
-                                    case GX2AttribFormat.Format_32_32_UInt:
-                                    case GX2AttribFormat.Format_32_32_32_UInt:
-                                    case GX2AttribFormat.Format_32_UInt:
-                                    case GX2AttribFormat.Format_16_16_UInt:
-                                        v.nodes.Add(new Vector4 { X = i.X, Y = i.Y, Z = i.Z, W = i.W });
-                                        break;
-                                    default:
-                                        MessageBox.Show("indices has unsupported Format " + i0.Format);
-                                        break;
-                                }
+                                v.nodes.Add(new Vector4 { X = i.X, Y = i.Y, Z = i.Z, W = i.W });
                             }
                         }
                     }
@@ -405,9 +232,9 @@ namespace Smash_Forge
                     int LODCount = 0;
 
                     uint FaceCount = FaceCount = shp.Meshes[LODCount].IndexCount;
-
-
                     uint[] indicesArray = shp.Meshes[LODCount].GetIndices().ToArray();
+
+                    poly.BoundingCount = shp.SubMeshBoundings.Count;
 
                     for (int face = 0; face < FaceCount; face++)
                     {
@@ -555,7 +382,50 @@ namespace Smash_Forge
         }
         public void SaveFile(string FileName)
         {
-            int t = 0;
+            int mdl = 0;
+            foreach (Model fmdl in TargetWiiUBFRES.Models.Values)
+            {
+                int s = 0;
+                foreach (Shape shp in fmdl.Shapes.Values)
+                {
+
+                    VertexBufferHelper helper = new VertexBufferHelper(fmdl.VertexBuffers[shp.VertexBufferIndex], TargetWiiUBFRES.ByteOrder);
+
+               
+                    foreach (VertexAttrib att in fmdl.VertexBuffers[shp.VertexBufferIndex].Attributes.Values)
+                    {
+                        switch (att.Name)
+                        {
+                            case "_t0":
+                            {
+                                    VertexBufferHelperAttrib tangents = helper["_t0"]; // Access by name
+                                    int t = 0;
+                                    foreach (Vector4 tan in models[mdl].poly[s].vertices.tans)
+                                    {
+                                        tangents.Data[t] = new Syroot.Maths.Vector4F(tan.X, tan.Y, tan.Z, tan.W);
+                                        t++;
+                                    }
+                                }
+                                break;
+                            case "_b0":
+                                {
+                                    VertexBufferHelperAttrib bitangents = helper["_b0"]; // Access by name
+                                    int b = 0;
+                                    foreach (Vector4 bitan in models[mdl].poly[s].vertices.bitans)
+                                    {
+                                        bitangents.Data[b] = new Syroot.Maths.Vector4F(bitan.X, bitan.Y, bitan.Z, bitan.W);
+                                        b++;
+                                    }
+                                }
+                                break;
+                        }
+                    }         
+                    s++;
+                }
+                mdl++;
+            }
+
+
             TargetWiiUBFRES.Save(FileName);
         }
     }
