@@ -307,10 +307,11 @@ vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintCol
 	vec3 R = reflect(I, N);
 	R.y *= -1.0;
 	vec3 stageCubeColor = texture(stagecube, R).rgb;
+    vec3 cubeColor = texture(cube, R).rgb;
 
     // TODO: Cubemaps from model.nut currently just use the miiverse cubemap.
 	if (hasCube == 1)
-		reflectionPass += diffuseMap.aaa * stageCubeColor * tintColor * reflectionParams.x;
+		reflectionPass += diffuseMap.aaa * cubeColor * tintColor * reflectionParams.x;
 
     // TODO: Stage cubemaps currently just use the miiverse cubemap.
     if (hasStage == 1)

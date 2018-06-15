@@ -766,7 +766,11 @@ namespace Smash_Forge
             {
                 if (!glTexByHashId.ContainsKey(tex.HASHID))
                 {
-                    glTexByHashId.Add(tex.HASHID, CreateTexture2D(tex));
+                    // Check if the texture is a cube map.
+                    if (tex.surfaces.Count == 6)
+                        glTexByHashId.Add(tex.HASHID, CreateTextureCubeMap(tex));
+                    else
+                        glTexByHashId.Add(tex.HASHID, CreateTexture2D(tex));
                 }
             }
         }

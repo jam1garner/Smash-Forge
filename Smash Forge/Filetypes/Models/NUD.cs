@@ -1215,11 +1215,7 @@ namespace Smash_Forge
         {
             if (Enum.IsDefined(typeof(DummyTextures), hash))
             {
-                // Two of the dummy textures are cube maps.
-                if ((hash == (int)DummyTextures.StageMapHigh) || (hash == (int)DummyTextures.StageMapLow))
-                    return BindDummyTexture(loc, RenderTools.dummyTextures[(DummyTextures)hash].Id, TextureTarget.TextureCubeMap);
-                else
-                    return BindDummyTexture(loc, RenderTools.dummyTextures[(DummyTextures)hash].Id, TextureTarget.Texture2D);
+                return BindDummyTexture(loc, RenderTools.dummyTextures[(DummyTextures)hash]);
             }
             else
             {
@@ -1232,7 +1228,7 @@ namespace Smash_Forge
                 Texture texture;
                 if (nut.glTexByHashId.TryGetValue(hash, out texture))
                 {
-                    BindNutTexture(tex, texture.Id);
+                    BindNutTexture(tex, texture);
                     break;
                 }
             }
@@ -1240,22 +1236,25 @@ namespace Smash_Forge
             return 3 + loc;
         }
 
-        private static int BindDummyTexture(int loc, int texture, TextureTarget target)
+        private static int BindDummyTexture(int loc, Texture texture)
         {
             GL.ActiveTexture(TextureUnit.Texture20 + loc);
-            GL.BindTexture(target, texture);
+            texture.Bind();
             return 20 + loc;
         }
 
-        private static void BindNutTexture(MatTexture tex, int texid)
+        private static void BindNutTexture(MatTexture matTexture, Texture texture)
         {
-            GL.BindTexture(TextureTarget.Texture2D, texid);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[tex.wrapModeS]);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[tex.wrapModeT]);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minfilter[tex.minFilter]);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magfilter[tex.magFilter]);
+            // Set the texture's parameters based on the material settings.
+            texture.Bind();
+            texture.TextureWrapS = wrapmode[matTexture.wrapModeS];
+            texture.TextureWrapT = wrapmode[matTexture.wrapModeT];
+            texture.MinFilter = minfilter[matTexture.minFilter];
+            texture.MagFilter = magfilter[matTexture.magFilter];
+
+            // TODO: These aren't controlled by the Texture class yet.
             GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 0.0f);
-            if (tex.mipDetail == 0x4 || tex.mipDetail == 0x6)
+            if (matTexture.mipDetail == 0x4 || matTexture.mipDetail == 0x6)
                 GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 4.0f);
         }
 
