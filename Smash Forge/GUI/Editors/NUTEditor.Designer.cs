@@ -43,7 +43,7 @@
             this.generalGroupBox = new System.Windows.Forms.GroupBox();
             this.textureIdLabel = new System.Windows.Forms.Label();
             this.textureIdTB = new System.Windows.Forms.TextBox();
-            this.mipMapGroupBox = new System.Windows.Forms.GroupBox();
+            this.mipmapGroupBox = new System.Windows.Forms.GroupBox();
             this.mipLevelTrackBar = new System.Windows.Forms.TrackBar();
             this.mipLevelLabel = new System.Windows.Forms.Label();
             this.minMipLevelLabel = new System.Windows.Forms.Label();
@@ -57,7 +57,7 @@
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.generalGroupBox.SuspendLayout();
-            this.mipMapGroupBox.SuspendLayout();
+            this.mipmapGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mipLevelTrackBar)).BeginInit();
             this.dimensionsGroupBox.SuspendLayout();
             this.previewGroupBox.SuspendLayout();
@@ -181,7 +181,7 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.generalGroupBox);
-            this.groupBox1.Controls.Add(this.mipMapGroupBox);
+            this.groupBox1.Controls.Add(this.mipmapGroupBox);
             this.groupBox1.Controls.Add(this.dimensionsGroupBox);
             this.groupBox1.Location = new System.Drawing.Point(107, 27);
             this.groupBox1.Name = "groupBox1";
@@ -226,18 +226,18 @@
             this.textureIdTB.TabIndex = 3;
             this.textureIdTB.TextChanged += new System.EventHandler(this.textureIdTB_TextChanged);
             // 
-            // mipMapGroupBox
+            // mipmapGroupBox
             // 
-            this.mipMapGroupBox.Controls.Add(this.mipLevelTrackBar);
-            this.mipMapGroupBox.Controls.Add(this.mipLevelLabel);
-            this.mipMapGroupBox.Controls.Add(this.minMipLevelLabel);
-            this.mipMapGroupBox.Controls.Add(this.maxMipLevelLabel);
-            this.mipMapGroupBox.Location = new System.Drawing.Point(212, 19);
-            this.mipMapGroupBox.Name = "mipMapGroupBox";
-            this.mipMapGroupBox.Size = new System.Drawing.Size(210, 94);
-            this.mipMapGroupBox.TabIndex = 28;
-            this.mipMapGroupBox.TabStop = false;
-            this.mipMapGroupBox.Text = "Mip Maps";
+            this.mipmapGroupBox.Controls.Add(this.mipLevelTrackBar);
+            this.mipmapGroupBox.Controls.Add(this.mipLevelLabel);
+            this.mipmapGroupBox.Controls.Add(this.minMipLevelLabel);
+            this.mipmapGroupBox.Controls.Add(this.maxMipLevelLabel);
+            this.mipmapGroupBox.Location = new System.Drawing.Point(212, 19);
+            this.mipmapGroupBox.Name = "mipmapGroupBox";
+            this.mipmapGroupBox.Size = new System.Drawing.Size(210, 94);
+            this.mipmapGroupBox.TabIndex = 28;
+            this.mipmapGroupBox.TabStop = false;
+            this.mipmapGroupBox.Text = "Mipmaps";
             // 
             // mipLevelTrackBar
             // 
@@ -369,8 +369,8 @@
             this.groupBox1.ResumeLayout(false);
             this.generalGroupBox.ResumeLayout(false);
             this.generalGroupBox.PerformLayout();
-            this.mipMapGroupBox.ResumeLayout(false);
-            this.mipMapGroupBox.PerformLayout();
+            this.mipmapGroupBox.ResumeLayout(false);
+            this.mipmapGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mipLevelTrackBar)).EndInit();
             this.dimensionsGroupBox.ResumeLayout(false);
             this.dimensionsGroupBox.PerformLayout();
@@ -406,7 +406,7 @@
         private System.Windows.Forms.Label widthLabel;
         private System.Windows.Forms.Label heightLabel;
         private System.Windows.Forms.GroupBox dimensionsGroupBox;
-        private System.Windows.Forms.GroupBox mipMapGroupBox;
+        private System.Windows.Forms.GroupBox mipmapGroupBox;
         private System.Windows.Forms.GroupBox generalGroupBox;
     }
 }

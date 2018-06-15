@@ -329,16 +329,16 @@ namespace Smash_Forge
                     throw new NotImplementedException($"Unsupported surface amount {surfaceCount} for texture with hash 0x{texture.HASHID:X}. 1 to 6 faces are required.");
                 else if (surfaceCount > 1 && surfaceCount < 6)
                     throw new NotImplementedException($"Unsupported cubemap face amount for texture with hash 0x{texture.HASHID:X}. Six faces are required.");
-                byte mipMapCount = (byte)texture.surfaces[0].mipmaps.Count;
+                byte mipmapCount = (byte)texture.surfaces[0].mipmaps.Count;
 
                 ushort headerSize = 0x50;
                 if (isCubemap)
                 {
                     headerSize += 0x10;
                 }
-                if (mipMapCount > 1)
+                if (mipmapCount > 1)
                 {
-                    headerSize += (ushort)(mipMapCount * 4);
+                    headerSize += (ushort)(mipmapCount * 4);
                     while (headerSize % 0x10 != 0)
                         headerSize += 1;
                 }
@@ -351,7 +351,7 @@ namespace Smash_Forge
             {
                 byte surfaceCount = (byte)texture.surfaces.Count;
                 bool isCubemap = surfaceCount == 6;
-                byte mipMapCount = (byte)texture.surfaces[0].mipmaps.Count;
+                byte mipmapCount = (byte)texture.surfaces[0].mipmaps.Count;
 
                 uint dataSize = 0;
 
@@ -367,9 +367,9 @@ namespace Smash_Forge
                 {
                     headerSize += 0x10;
                 }
-                if (mipMapCount > 1)
+                if (mipmapCount > 1)
                 {
-                    headerSize += (ushort)(mipMapCount * 4);
+                    headerSize += (ushort)(mipmapCount * 4);
                     while (headerSize % 0x10 != 0)
                         headerSize += 1;
                 }
@@ -381,7 +381,7 @@ namespace Smash_Forge
                 o.writeUShort(0);
 
                 o.writeByte(0);
-                o.writeByte(mipMapCount);
+                o.writeByte(mipmapCount);
                 o.writeByte(0);
                 o.writeByte(texture.getNutFormat());
                 o.writeShort(texture.Width);
@@ -410,12 +410,12 @@ namespace Smash_Forge
 
                 for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
                 {
-                    for (byte mipLevel = 0; mipLevel < mipMapCount; ++mipLevel)
+                    for (byte mipLevel = 0; mipLevel < mipmapCount; ++mipLevel)
                     {
                         int ds = data.size();
                         data.writeBytes(texture.surfaces[surfaceLevel].mipmaps[mipLevel]);
                         data.align(0x10);
-                        if (mipMapCount > 1 && surfaceLevel == 0)
+                        if (mipmapCount > 1 && surfaceLevel == 0)
                             o.writeInt(data.size() - ds);
                     }
                 }
@@ -493,9 +493,9 @@ namespace Smash_Forge
                 int headerSize = d.readUShort();
                 d.skip(2);
 
-                //It might seem that mipMapCount and pixelFormat would be shorts, but they're bytes because they stay in the same place regardless of endianness
+                //It might seem that mipmapCount and pixelFormat would be shorts, but they're bytes because they stay in the same place regardless of endianness
                 d.skip(1);
-                byte mipMapCount = d.readByte();
+                byte mipmapCount = d.readByte();
                 d.skip(1);
                 tex.setPixelFormatFromNutFormat(d.readByte());
                 tex.Width = d.readUShort();
@@ -534,8 +534,8 @@ namespace Smash_Forge
                     d.skip(8);
                 }
 
-                int[] mipSizes = new int[mipMapCount];
-                if (mipMapCount == 1)
+                int[] mipSizes = new int[mipmapCount];
+                if (mipmapCount == 1)
                 {
                     if (isCubemap)
                         mipSizes[0] = cmapSize1;
@@ -544,7 +544,7 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    for (byte mipLevel = 0; mipLevel < mipMapCount; ++mipLevel)
+                    for (byte mipLevel = 0; mipLevel < mipmapCount; ++mipLevel)
                     {
                         mipSizes[mipLevel] = d.readInt();
                     }
@@ -564,7 +564,7 @@ namespace Smash_Forge
                 for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
                 {
                     TextureSurface surface = new TextureSurface();
-                    for (byte mipLevel = 0; mipLevel < mipMapCount; ++mipLevel)
+                    for (byte mipLevel = 0; mipLevel < mipmapCount; ++mipLevel)
                     {
                         byte[] texArray = d.getSection(dataOffset, mipSizes[mipLevel]);
                         surface.mipmaps.Add(texArray);
@@ -608,7 +608,7 @@ namespace Smash_Forge
                 d.skip(2);
 
                 d.skip(1);
-                byte mipMapCount = d.readByte();
+                byte mipmapCount = d.readByte();
                 d.skip(1);
                 tex.setPixelFormatFromNutFormat(d.readByte());
                 tex.Width = d.readUShort();
@@ -648,7 +648,7 @@ namespace Smash_Forge
 
                 int imageSize = 0; //Total size of first mipmap of every surface
                 int mipSize = 0; //Total size of mipmaps other than the first of every surface
-                if (mipMapCount == 1)
+                if (mipmapCount == 1)
                 {
                     if (isCubemap)
                         imageSize = cmapSize1;
@@ -659,7 +659,7 @@ namespace Smash_Forge
                 {
                     imageSize = d.readInt();
                     mipSize = d.readInt();
-                    d.skip((mipMapCount - 2) * 4);
+                    d.skip((mipmapCount - 2) * 4);
                     d.align(0x10);
                 }
 
@@ -693,9 +693,9 @@ namespace Smash_Forge
                 //mipOffsets[0] is not in this list and is simply the start of the data (dataOffset)
                 //mipOffsets[1] is relative to the start of the data (dataOffset + mipOffsets[1])
                 //Other mipOffsets are relative to mipOffset[1] (dataOffset + mipOffsets[1] + mipOffsets[i])
-                int[] mipOffsets = new int[mipMapCount];
+                int[] mipOffsets = new int[mipmapCount];
                 mipOffsets[0] = 0;
-                for (byte mipLevel = 1; mipLevel < mipMapCount; ++mipLevel)
+                for (byte mipLevel = 1; mipLevel < mipmapCount; ++mipLevel)
                 {
                     mipOffsets[mipLevel] = 0;
                     mipOffsets[mipLevel] = mipOffsets[1] + d.readInt();
@@ -707,14 +707,14 @@ namespace Smash_Forge
                 }
 
                 int w = tex.Width, h = tex.Height;
-                for (byte mipLevel = 0; mipLevel < mipMapCount; ++mipLevel)
+                for (byte mipLevel = 0; mipLevel < mipmapCount; ++mipLevel)
                 {
                     int p = gtxHeader.pitch / (gtxHeader.width / w);
 
                     int size;
-                    if (mipMapCount == 1)
+                    if (mipmapCount == 1)
                         size = imageSize;
-                    else if (mipLevel + 1 == mipMapCount)
+                    else if (mipLevel + 1 == mipmapCount)
                         size = (mipSize + mipOffsets[1]) - mipOffsets[mipLevel];
                     else
                         size = mipOffsets[mipLevel + 1] - mipOffsets[mipLevel];
@@ -843,9 +843,6 @@ namespace Smash_Forge
 
         public static Texture2D CreateTexture2D(NutTexture nutTexture, int surfaceIndex = 0)
         {
-            Texture2D texture = new Texture2D(nutTexture.Width, nutTexture.Height);
-            texture.Bind();
-
             bool compressedFormatWithMipMaps = nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
                 || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
                 || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
@@ -854,21 +851,24 @@ namespace Smash_Forge
 
             if (compressedFormatWithMipMaps)
             {
-                // Always load the first level.
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, nutTexture.pixelInternalFormat, nutTexture.Width, nutTexture.Height, 0, nutTexture.Size, nutTexture.surfaces[surfaceIndex].mipmaps[0]);
-
-                // Reading mip maps past the first level is only supported for DDS currently.
                 if (nutTexture.surfaces[0].mipmaps.Count > 1 && nutTexture.isDds)
-                    LoadMipMapsCompressed(nutTexture);
+                {
+                    // Reading mip maps past the first level is only supported for DDS currently.
+                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[0].mipmaps, nutTexture.pixelInternalFormat);
+                }
                 else
-                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                {
+                    // Only load the first level.
+                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[0].mipmaps[0], nutTexture.pixelInternalFormat);
+                }
             }
             else
             {
+                Texture2D texture = new Texture2D(nutTexture.Width, nutTexture.Height);
+                texture.Bind();
                 AutoGenerateMipMaps(nutTexture);
+                return texture;
             }
-
-            return texture;
         }
 
         public static TextureCubeMap CreateTextureCubeMap(NutTexture t)

@@ -105,7 +105,7 @@ namespace Smash_Forge
             public uint width = 0;
             public uint pitchOrLinearSize = 0;
             public uint depth = 0;
-            public uint mipMapCount = 0;
+            public uint mipmapCount = 0;
             public uint[] reserved1 = new uint[11];
             public DDS_PixelFormat ddspf = new DDS_PixelFormat();
             public class DDS_PixelFormat
@@ -149,7 +149,7 @@ namespace Smash_Forge
             header.width = d.readUInt();
             header.pitchOrLinearSize = d.readUInt();
             header.depth = d.readUInt();
-            header.mipMapCount = d.readUInt();
+            header.mipmapCount = d.readUInt();
             header.reserved1 = new uint[11];
             for (int i = 0; i < 11; ++i)
                 header.reserved1[i] = d.readUInt();
@@ -191,7 +191,7 @@ namespace Smash_Forge
             f.writeUInt(header.width);
             f.writeUInt(header.pitchOrLinearSize);
             f.writeUInt(header.depth);
-            f.writeUInt(header.mipMapCount);
+            f.writeUInt(header.mipmapCount);
             for (int i = 0; i < 11; ++i)
                 f.writeUInt(header.reserved1[i]);
 
@@ -222,11 +222,11 @@ namespace Smash_Forge
             header.width = (uint)tex.Width;
             header.height = (uint)tex.Height;
             header.pitchOrLinearSize = (uint)tex.Size;
-            header.mipMapCount = (uint)tex.surfaces[0].mipmaps.Count;
+            header.mipmapCount = (uint)tex.surfaces[0].mipmaps.Count;
             header.caps2 = tex.DdsCaps2;
             bool isCubemap = (header.caps2 & (uint)DDSCAPS2.CUBEMAP) == (uint)DDSCAPS2.CUBEMAP;
             header.caps = (uint)DDSCAPS.TEXTURE;
-            if (header.mipMapCount > 1)
+            if (header.mipmapCount > 1)
                 header.caps |= (uint)(DDSCAPS.COMPLEX | DDSCAPS.MIPMAP);
             if (isCubemap)
                 header.caps |= (uint)DDSCAPS.COMPLEX;
@@ -328,15 +328,15 @@ namespace Smash_Forge
             uint formatSize = getFormatSize(header.ddspf.fourCC);
 
             FileData d = new FileData(bdata);
-            if (header.mipMapCount == 0)
-                header.mipMapCount = 1;
+            if (header.mipmapCount == 0)
+                header.mipmapCount = 1;
 
             uint off = 0;
             for (byte i = 0; i < surfaceCount; ++i)
             {
                 TextureSurface surface = new TextureSurface();
                 uint w = header.width, h = header.height;
-                for (int j = 0; j < header.mipMapCount; ++j)
+                for (int j = 0; j < header.mipmapCount; ++j)
                 {
                     //If texture is DXT5 and isn't square, limit the mipmaps to an amount such that width and height are each always >= 4
                     if (tex.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext && tex.Width != tex.Height && (w < 4 || h < 4))

@@ -212,7 +212,7 @@ namespace Smash_Forge
         private void SetMipMapText(NutTexture tex)
         {
             // Display the total mip maps.
-            mipMapGroupBox.Text = "Mip Maps";
+            mipmapGroupBox.Text = "Mipmaps";
             mipLevelLabel.Text = "Mip Level";
             mipLevelTrackBar.Maximum = tex.surfaces[0].mipmaps.Count - 1;
             minMipLevelLabel.Text = "1";
@@ -222,7 +222,7 @@ namespace Smash_Forge
         private void SetCubeMapText(NutTexture tex)
         {
             // Display the current face instead of mip map information.
-            mipMapGroupBox.Text = "Cube Map Faces";
+            mipmapGroupBox.Text = "Cube Map Faces";
             SetCurrentCubeMapFaceLabel(mipLevelTrackBar.Value);
             mipLevelTrackBar.Maximum = tex.surfaces.Count - 1;
             minMipLevelLabel.Text = "";
