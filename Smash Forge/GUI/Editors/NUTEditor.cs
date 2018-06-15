@@ -954,11 +954,14 @@ namespace Smash_Forge
 
         private void NUTEditor_Load(object sender, EventArgs e)
         {
-            // Make sure the shaders and textures are setup for rendering.
-            Rendering.RenderTools.SetupOpenTkRendering();
-            pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
-            currentNut.RefreshGlTexturesByHashId();
-            readyToRender = true;
+            if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
+            {
+                // Make sure the shaders and textures are setup for rendering.
+                Rendering.RenderTools.SetupOpenTkRendering();
+                pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
+                currentNut.RefreshGlTexturesByHashId();
+                readyToRender = true;
+            }
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)

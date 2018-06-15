@@ -423,7 +423,7 @@ namespace Smash_Forge
             GL.Uniform3(shader.GetVertexAttributeUniformLocation("ambLightColor"), Runtime.lightSetParam.characterDiffuse.ambientColor.R, Runtime.lightSetParam.characterDiffuse.ambientColor.G, Runtime.lightSetParam.characterDiffuse.ambientColor.B);
 
             GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern.Id);
+            RenderTools.uvTestPattern.Bind();
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("UVTestPattern"), 10);
 
             Matrix4[] f = skeleton.getShaderMatrix();

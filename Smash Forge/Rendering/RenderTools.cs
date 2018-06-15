@@ -926,9 +926,9 @@ namespace Smash_Forge.Rendering
                 GL.Enable(EnableCap.Texture2D);
                 GL.ActiveTexture(TextureUnit.Texture0);
                 if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
-                    GL.BindTexture(TextureTarget.Texture2D, floorTexture.Id);
+                    floorTexture.Bind();
                 else
-                    GL.BindTexture(TextureTarget.Texture2D, defaultTex.Id);
+                    defaultTex.Bind();
 
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)Runtime.floorWrap);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)Runtime.floorWrap);
@@ -1608,27 +1608,19 @@ namespace Smash_Forge.Rendering
 
             // Set texture uniforms for the mesh attributes. 
             GL.ActiveTexture(TextureUnit.Texture15);
-            GL.BindTexture(TextureTarget.Texture2D, sphereNrmTex.Id);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            sphereNrmTex.Bind();
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalTex"), 15);
 
             GL.ActiveTexture(TextureUnit.Texture16);
-            GL.BindTexture(TextureTarget.Texture2D, sphereUvTex.Id);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            sphereUvTex.Bind();
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("uvTex"), 16);
 
             GL.ActiveTexture(TextureUnit.Texture17);
-            GL.BindTexture(TextureTarget.Texture2D, sphereTanTex.Id);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            sphereTanTex.Bind();
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("tanTex"), 17);
 
             GL.ActiveTexture(TextureUnit.Texture18);
-            GL.BindTexture(TextureTarget.Texture2D, sphereBitanTex.Id);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
+            sphereBitanTex.Bind();
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("bitanTex"), 18);
 
             // Draw full screen "quad" (big triangle)

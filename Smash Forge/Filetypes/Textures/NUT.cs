@@ -827,17 +827,7 @@ namespace Smash_Forge
 
         public void Destroy()
         {
-            DeleteGlTextures();
             Nodes.Clear();
-        }
-
-        private void DeleteGlTextures()
-        {
-            foreach (var kv in glTexByHashId)
-            {
-                //if (GL.IsTexture(kv.Value))
-                //    GL.DeleteTexture(kv.Value);
-            }
         }
 
         public override string ToString()
