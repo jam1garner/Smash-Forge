@@ -537,7 +537,7 @@ namespace Smash_Forge
 
         private void SetPropertyLabelText(string propertyName)
         {
-            propertyNameLabel.Text = "Property: " + propertyName;
+            propertyNameLabel.Text = propertyName;
         }
 
         private void propertiesListView_SelectedIndexChanged(object sender, EventArgs e)
@@ -713,11 +713,33 @@ namespace Smash_Forge
 
         private void addMatPropertyButton_Click(object sender, EventArgs e)
         {
+            AddPropertyFromComboBox();
+        }
+
+        private void deleteMatPropertyButton_Click(object sender, EventArgs e)
+        {
+            RemoveSelectedProperty();
+        }
+
+        private void AddPropertyFromComboBox()
+        {
             if (!matPropertyComboBox.Text.Equals(""))
             {
                 currentMaterialList[currentMatIndex].entries.Add(matPropertyComboBox.Text, new float[] { 0, 0, 0, 0 });
                 FillForm();
                 addMatPropertyButton.Enabled = false;
+            }
+        }
+
+        private void RemoveSelectedProperty()
+        {
+            // Check if the property exists first.
+            string propertyName = propertiesListView.SelectedItems[0].Text;
+            if (currentMaterialList[currentMatIndex].entries.ContainsKey(propertyName))
+            {
+                currentMaterialList[currentMatIndex].entries.Remove(propertyName);
+                FillForm();
+                addMatPropertyButton.Enabled = true; // The property can be added again.
             }
         }
 

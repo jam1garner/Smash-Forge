@@ -116,6 +116,7 @@
             this.deleteMaterialButton = new System.Windows.Forms.Button();
             this.addMaterialButton = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.deleteMatPropertyButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -400,6 +401,7 @@
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.deleteMatPropertyButton);
             this.panel2.Controls.Add(this.addMatPropertyButton);
             this.panel2.Controls.Add(this.matPropertyComboBox);
             this.panel2.Controls.Add(this.colorSelect);
@@ -660,7 +662,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 69);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(339, 422);
+            this.tabControl1.Size = new System.Drawing.Size(334, 422);
             this.tabControl1.TabIndex = 19;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -670,7 +672,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(331, 396);
+            this.tabPage1.Size = new System.Drawing.Size(326, 396);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Material Flags";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -686,7 +688,7 @@
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(3, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(325, 390);
+            this.groupBox3.Size = new System.Drawing.Size(320, 390);
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Material";
@@ -698,7 +700,7 @@
             this.groupBox10.Controls.Add(this.tableLayoutPanel5);
             this.groupBox10.Location = new System.Drawing.Point(6, 122);
             this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(314, 108);
+            this.groupBox10.Size = new System.Drawing.Size(309, 108);
             this.groupBox10.TabIndex = 24;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "Alpha Testing";
@@ -724,7 +726,7 @@
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(308, 89);
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(303, 89);
             this.tableLayoutPanel5.TabIndex = 22;
             // 
             // alphaTestTB
@@ -749,7 +751,7 @@
             // 
             this.refAlphaTB.Location = new System.Drawing.Point(128, 57);
             this.refAlphaTB.Name = "refAlphaTB";
-            this.refAlphaTB.Size = new System.Drawing.Size(137, 20);
+            this.refAlphaTB.Size = new System.Drawing.Size(170, 20);
             this.refAlphaTB.TabIndex = 15;
             this.refAlphaTB.TextChanged += new System.EventHandler(this.refAlphaTB_TextChanged);
             // 
@@ -758,7 +760,7 @@
             this.AlphaFuncComboBox.FormattingEnabled = true;
             this.AlphaFuncComboBox.Location = new System.Drawing.Point(128, 30);
             this.AlphaFuncComboBox.Name = "AlphaFuncComboBox";
-            this.AlphaFuncComboBox.Size = new System.Drawing.Size(137, 21);
+            this.AlphaFuncComboBox.Size = new System.Drawing.Size(170, 21);
             this.AlphaFuncComboBox.TabIndex = 19;
             this.AlphaFuncComboBox.SelectedIndexChanged += new System.EventHandler(this.AlphaFuncCB_SelectedIndexChanged);
             // 
@@ -785,7 +787,7 @@
             this.alphaTestComboBox.FormattingEnabled = true;
             this.alphaTestComboBox.Location = new System.Drawing.Point(128, 3);
             this.alphaTestComboBox.Name = "alphaTestComboBox";
-            this.alphaTestComboBox.Size = new System.Drawing.Size(137, 21);
+            this.alphaTestComboBox.Size = new System.Drawing.Size(170, 21);
             this.alphaTestComboBox.TabIndex = 16;
             this.alphaTestComboBox.SelectedIndexChanged += new System.EventHandler(this.alphaTestComboBox_SelectedIndexChanged);
             // 
@@ -805,7 +807,7 @@
             this.groupBox9.Controls.Add(this.tableLayoutPanel3);
             this.groupBox9.Location = new System.Drawing.Point(5, 236);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(314, 75);
+            this.groupBox9.Size = new System.Drawing.Size(309, 75);
             this.groupBox9.TabIndex = 23;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Misc";
@@ -827,7 +829,7 @@
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(308, 56);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(303, 56);
             this.tableLayoutPanel3.TabIndex = 22;
             // 
             // label7
@@ -843,7 +845,7 @@
             // 
             this.zBufferTB.Location = new System.Drawing.Point(144, 30);
             this.zBufferTB.Name = "zBufferTB";
-            this.zBufferTB.Size = new System.Drawing.Size(121, 20);
+            this.zBufferTB.Size = new System.Drawing.Size(155, 20);
             this.zBufferTB.TabIndex = 15;
             this.zBufferTB.TextChanged += new System.EventHandler(this.zBufferTB_TextChanged);
             // 
@@ -869,7 +871,7 @@
             this.cullModeComboBox.FormattingEnabled = true;
             this.cullModeComboBox.Location = new System.Drawing.Point(144, 3);
             this.cullModeComboBox.Name = "cullModeComboBox";
-            this.cullModeComboBox.Size = new System.Drawing.Size(121, 21);
+            this.cullModeComboBox.Size = new System.Drawing.Size(155, 21);
             this.cullModeComboBox.TabIndex = 18;
             this.cullModeComboBox.SelectionChangeCommitted += new System.EventHandler(this.cullModeComboBox_SelectionChangeCommitted);
             // 
@@ -880,7 +882,7 @@
             this.groupBox6.Controls.Add(this.tableLayoutPanel1);
             this.groupBox6.Location = new System.Drawing.Point(3, 39);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(317, 77);
+            this.groupBox6.Size = new System.Drawing.Size(312, 77);
             this.groupBox6.TabIndex = 21;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Alpha Blending";
@@ -904,7 +906,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(311, 58);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(306, 58);
             this.tableLayoutPanel1.TabIndex = 8;
             // 
             // dstTB
@@ -928,7 +930,7 @@
             this.srcComboBox.FormattingEnabled = true;
             this.srcComboBox.Location = new System.Drawing.Point(123, 3);
             this.srcComboBox.Name = "srcComboBox";
-            this.srcComboBox.Size = new System.Drawing.Size(137, 21);
+            this.srcComboBox.Size = new System.Drawing.Size(178, 21);
             this.srcComboBox.TabIndex = 15;
             this.srcComboBox.SelectedIndexChanged += new System.EventHandler(this.srcComboBox_SelectedIndexChanged);
             // 
@@ -955,7 +957,7 @@
             this.dstComboBox.FormattingEnabled = true;
             this.dstComboBox.Location = new System.Drawing.Point(123, 30);
             this.dstComboBox.Name = "dstComboBox";
-            this.dstComboBox.Size = new System.Drawing.Size(137, 21);
+            this.dstComboBox.Size = new System.Drawing.Size(178, 21);
             this.dstComboBox.TabIndex = 15;
             this.dstComboBox.SelectedIndexChanged += new System.EventHandler(this.dstComboBox_SelectedIndexChanged);
             // 
@@ -967,7 +969,7 @@
             this.groupBox5.Controls.Add(this.GlowCB);
             this.groupBox5.Location = new System.Drawing.Point(5, 317);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(315, 68);
+            this.groupBox5.Size = new System.Drawing.Size(310, 68);
             this.groupBox5.TabIndex = 20;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Effects";
@@ -1043,7 +1045,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(339, 69);
+            this.panel1.Size = new System.Drawing.Size(334, 69);
             this.panel1.TabIndex = 26;
             // 
             // deleteMaterialButton
@@ -1066,12 +1068,22 @@
             this.addMaterialButton.UseVisualStyleBackColor = true;
             this.addMaterialButton.Click += new System.EventHandler(this.addMaterialButton_Click);
             // 
+            // deleteMatPropertyButton
+            // 
+            this.deleteMatPropertyButton.Location = new System.Drawing.Point(253, 5);
+            this.deleteMatPropertyButton.Name = "deleteMatPropertyButton";
+            this.deleteMatPropertyButton.Size = new System.Drawing.Size(29, 21);
+            this.deleteMatPropertyButton.TabIndex = 25;
+            this.deleteMatPropertyButton.Text = "x";
+            this.deleteMatPropertyButton.UseVisualStyleBackColor = true;
+            this.deleteMatPropertyButton.Click += new System.EventHandler(this.deleteMatPropertyButton_Click);
+            // 
             // NUDMaterialEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
-            this.ClientSize = new System.Drawing.Size(339, 491);
+            this.ClientSize = new System.Drawing.Size(334, 491);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1207,5 +1219,6 @@
         private System.Windows.Forms.Label param2Label;
         private System.Windows.Forms.TrackBar param1TrackBar;
         private System.Windows.Forms.Label propertyNameLabel;
+        private System.Windows.Forms.Button deleteMatPropertyButton;
     }
 }

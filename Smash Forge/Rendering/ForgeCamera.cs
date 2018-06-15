@@ -62,7 +62,6 @@ namespace Smash_Forge.Rendering
                     Rotate(xAmount * rotateXSpeed, yAmount * rotateYSpeed);
                 }
 
-                //Zoom(mouseState, keyboardState);
                 // Holding shift changes zoom speed.
                 float zoomAmount = zoomSpeed * zoomDistanceScale;
                 if (keyboardState.IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
