@@ -400,7 +400,7 @@ namespace Smash_Forge
         private void ExportDDS(string filename, NutTexture tex)
         {
             DDS dds = new DDS();
-            dds.fromNUT_Texture(tex);
+            dds.FromNutTexture(tex);
             dds.Save(filename);
         }
 
@@ -465,7 +465,7 @@ namespace Smash_Forge
                     if (extension == ".dds")
                     {
                         DDS dds = new DDS(new FileData(ofd.FileName));
-                        tex = dds.toNUT_Texture();
+                        tex = dds.ToNutTexture();
                     }
                     else if (extension == ".png")
                     {
@@ -594,7 +594,7 @@ namespace Smash_Forge
                     if (extension == ".dds")
                     {
                         DDS dds = new DDS(new FileData(ofd.FileName));
-                        newTexture = dds.toNUT_Texture();
+                        newTexture = dds.ToNutTexture();
                     }
                     else if (extension == ".png")
                     {
@@ -657,7 +657,7 @@ namespace Smash_Forge
             }
 
             DDS dds = new DDS();
-            dds.fromNUT_Texture((NutTexture)(textureListBox.SelectedItem));
+            dds.FromNutTexture((NutTexture)(textureListBox.SelectedItem));
             dds.Save(tempFileName);
             System.Diagnostics.Process.Start(tempFileName);
             if (setupFileModifying)
@@ -693,7 +693,7 @@ namespace Smash_Forge
             }
 
             DDS dds = new DDS();
-            dds.fromNUT_Texture((NutTexture)(textureListBox.SelectedItem));
+            dds.FromNutTexture((NutTexture)(textureListBox.SelectedItem));
             dds.Save(tempFileName);
             ShowOpenWithDialog(tempFileName);
             if (setupFileModifying)
@@ -718,7 +718,7 @@ namespace Smash_Forge
             try
             {
                 DDS dds = new DDS(new FileData(filename));
-                NutTexture ntex = dds.toNUT_Texture();
+                NutTexture ntex = dds.ToNutTexture();
 
                 tex.Height = ntex.Height;
                 tex.Width = ntex.Width;
@@ -763,7 +763,7 @@ namespace Smash_Forge
                         {
                             string filename = Path.Combine(f.SelectedPath, $"{tex.HASHID.ToString("X")}.dds");
                             DDS dds = new DDS();
-                            dds.fromNUT_Texture(tex);
+                            dds.FromNutTexture(tex);
                             dds.Save(filename);
                         }
                     }
@@ -807,7 +807,7 @@ namespace Smash_Forge
                             if (extension == ".dds")
                             {
                                 DDS dds = new DDS(new FileData(texPath));
-                                tex = dds.toNUT_Texture();
+                                tex = dds.ToNutTexture();
                             }
                             else if (extension == ".png")
                             {
@@ -831,7 +831,7 @@ namespace Smash_Forge
                             if (extension == ".dds")
                             {
                                 DDS dds = new DDS(new FileData(texPath));
-                                ntex = dds.toNUT_Texture();
+                                ntex = dds.ToNutTexture();
                             }
                             else if (extension == ".png")
                             {
@@ -1000,7 +1000,7 @@ namespace Smash_Forge
                 // Create a new texture for the selected surface at the first mip level.
                 currentMipLevel = 0;
                 SetCurrentCubeMapFaceLabel(mipLevelTrackBar.Value);
-                textureToRender = NUT.CreateTexture2D(tex, false, mipLevelTrackBar.Value);
+                textureToRender = NUT.CreateTexture2D(tex, mipLevelTrackBar.Value);
             }
             else
             {

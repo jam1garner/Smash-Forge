@@ -175,7 +175,7 @@ namespace Smash_Forge
 
         public DDS(NutTexture tex)
         {
-            fromNUT_Texture(tex);
+            FromNutTexture(tex);
         }
 
         public void Save(string fname)
@@ -215,7 +215,7 @@ namespace Smash_Forge
             f.save(fname);
         }
 
-        public void fromNUT_Texture(NutTexture tex)
+        public void FromNutTexture(NutTexture tex)
         {
             header = new Header();
             header.flags = (uint)(DDSD.CAPS | DDSD.HEIGHT | DDSD.WIDTH | DDSD.PIXELFORMAT | DDSD.MIPMAPCOUNT | DDSD.LINEARSIZE);
@@ -277,9 +277,10 @@ namespace Smash_Forge
             bdata = d.ToArray();
         }
 
-        public NutTexture toNUT_Texture()
+        public NutTexture ToNutTexture()
         {
             NutTexture tex = new NutTexture();
+            tex.isDds = true;
             tex.HASHID = 0x48415348;
             tex.Height = (int)header.height;
             tex.Width = (int)header.width;

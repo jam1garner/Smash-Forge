@@ -45,6 +45,9 @@ namespace Smash_Forge
         }
         private int id;
 
+        // Loading mip maps is only supported for DDS currently.
+        public bool isDds = false;
+
         public int Width;
         public int Height;
 
@@ -762,7 +765,7 @@ namespace Smash_Forge
             {
                 if (!glTexByHashId.ContainsKey(tex.HASHID))
                 {
-                    glTexByHashId.Add(tex.HASHID, CreateTexture2D(tex, false));
+                    glTexByHashId.Add(tex.HASHID, CreateTexture2D(tex));
                 }
             }
         }
@@ -837,31 +840,31 @@ namespace Smash_Forge
             return "NUT";
         }
 
-        public static Texture2D CreateTexture2D(NutTexture t, bool isDds = false, int surfaceIndex = 0)
+        public static Texture2D CreateTexture2D(NutTexture nutTexture, int surfaceIndex = 0)
         {
-            Texture2D texture = new Texture2D(t.Width, t.Height);
+            Texture2D texture = new Texture2D(nutTexture.Width, nutTexture.Height);
             texture.Bind();
 
-            bool compressedFormatWithMipMaps = t.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
-                || t.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
-                || t.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
-                || t.pixelInternalFormat == PixelInternalFormat.CompressedRedRgtc1
-                || t.pixelInternalFormat == PixelInternalFormat.CompressedRgRgtc2;
+            bool compressedFormatWithMipMaps = nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
+                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
+                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
+                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRedRgtc1
+                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgRgtc2;
 
             if (compressedFormatWithMipMaps)
             {
                 // Always load the first level.
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.Width, t.Height, 0, t.Size, t.surfaces[surfaceIndex].mipmaps[0]);
+                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, nutTexture.pixelInternalFormat, nutTexture.Width, nutTexture.Height, 0, nutTexture.Size, nutTexture.surfaces[surfaceIndex].mipmaps[0]);
 
                 // Reading mip maps past the first level is only supported for DDS currently.
-                if (t.surfaces[0].mipmaps.Count > 1 && isDds)
-                    LoadMipMapsCompressed(t);
+                if (nutTexture.surfaces[0].mipmaps.Count > 1 && nutTexture.isDds)
+                    LoadMipMapsCompressed(nutTexture);
                 else
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             }
             else
             {
-                AutoGenerateMipMaps(t);
+                AutoGenerateMipMaps(nutTexture);
             }
 
             return texture;

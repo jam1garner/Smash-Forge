@@ -142,7 +142,7 @@ namespace Smash_Forge
                                 if (img.initref.ToLower().EndsWith(".dds"))
                                 {
                                     DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))));
-                                    tex = dds.toNUT_Texture();
+                                    tex = dds.ToNutTexture();
                                 }
                                 if (img.initref.ToLower().EndsWith(".png"))
                                 {

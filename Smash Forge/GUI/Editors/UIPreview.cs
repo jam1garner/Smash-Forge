@@ -221,19 +221,19 @@ namespace Smash_Forge
                         DDS dds = new DDS(new FileData(filePath));
                         if(sender == chr_13_renderer)
                         {
-                            chr_13 = ReplaceTexture(dds.toNUT_Texture(), 416, 416, chr_13);
+                            chr_13 = ReplaceTexture(dds.ToNutTexture(), 416, 416, chr_13);
                             if (chr_13_loc != null)
                                 chr_13.Save(chr_13_loc);
                         }
                         if (sender == chr_00_renderer)
                         {
-                            chr_00 = ReplaceTexture(dds.toNUT_Texture(), 128, 128, chr_00);
+                            chr_00 = ReplaceTexture(dds.ToNutTexture(), 128, 128, chr_00);
                             if (chr_00_loc != null)
                                 chr_00.Save(chr_00_loc);
                         }
                         if (sender == chr_11_renderer)
                         {
-                            chr_11 = ReplaceTexture(dds.toNUT_Texture(), 384, 384, chr_13);
+                            chr_11 = ReplaceTexture(dds.ToNutTexture(), 384, 384, chr_13);
                             if (chr_11_loc != null)
                                 chr_11.Save(chr_11_loc);
                         }

@@ -1945,9 +1945,9 @@ namespace Smash_Forge
                         Process cmd = Process.Start(cmdsi);
                         cmd.WaitForExit();
 
-                        NutTexture tex = new DDS(new FileData("TexConv/temp.dds")).toNUT_Texture();
+                        NutTexture tex = new DDS(new FileData("TexConv/temp.dds")).ToNutTexture();
                         tex.HASHID = fileNum;
-                        n.glTexByHashId.Add(fileNum, NUT.CreateTexture2D(tex, true));
+                        n.glTexByHashId.Add(fileNum, NUT.CreateTexture2D(tex));
                         n.Nodes.Add(tex);
                     }
                 }
