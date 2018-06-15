@@ -83,7 +83,7 @@ namespace Smash_Forge
             tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
             tex.HASHID = id;
             n.Nodes.Add(tex);
-            n.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex));
+            n.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
             ((MenuItem)sender).GetContextMenu().SourceControl.Invalidate();
 
             if (((MenuItem)sender).GetContextMenu().SourceControl == stock_90_renderer)
@@ -267,7 +267,7 @@ namespace Smash_Forge
                 nut.Nodes.Clear();
                 nut.glTexByHashId.Clear();
                 nut.Nodes.Add(tex);
-                nut.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex));
+                nut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
             }
             else
             {

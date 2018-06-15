@@ -667,7 +667,7 @@ namespace Smash_Forge
                 tex.pixelInternalFormat = PixelInternalFormat.Rgba;
                 tex.pixelFormat = PixelFormat.Bgra;
                 nut.Nodes.Add(tex);
-                nut.glTexByHashId.Add(0x40545400 + texid, NUT.CreateGlTexture(tex));
+                nut.glTexByHashId.Add(0x40545400 + texid, NUT.CreateTexture2D(tex));
                 texid++;
             }
             

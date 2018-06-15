@@ -762,7 +762,7 @@ namespace Smash_Forge
             {
                 if (!glTexByHashId.ContainsKey(tex.HASHID))
                 {
-                    glTexByHashId.Add(tex.HASHID, CreateGlTexture(tex, false));
+                    glTexByHashId.Add(tex.HASHID, CreateTexture2D(tex, false));
                 }
             }
         }
@@ -837,9 +837,9 @@ namespace Smash_Forge
             return "NUT";
         }
 
-        public static Texture CreateGlTexture(NutTexture t, bool isDds = false, int surfaceIndex = 0)
+        public static Texture2D CreateTexture2D(NutTexture t, bool isDds = false, int surfaceIndex = 0)
         {
-            Texture texture = new Texture2D(t.Width, t.Height);
+            Texture2D texture = new Texture2D(t.Width, t.Height);
             texture.Bind();
 
             bool compressedFormatWithMipMaps = t.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
@@ -863,6 +863,29 @@ namespace Smash_Forge
             {
                 AutoGenerateMipMaps(t);
             }
+
+            return texture;
+        }
+
+        public static TextureCubeMap CreateTextureCubeMap(NutTexture t)
+        {
+            TextureCubeMap texture = new TextureCubeMap(Properties.Resources._10102000);
+            texture.Bind();
+
+            // Generate the mip maps.
+            GL.GenerateMipmap(GenerateMipmapTarget.TextureCubeMap);
+            for (int i = 0; i < t.surfaces.Count; ++i)
+            {
+                GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, 0, t.pixelInternalFormat, t.Width, t.Height, 0, t.Size, t.surfaces[i].mipmaps[0]);
+
+                // Initialize the data for each level.
+                for (int j = 1; j < t.surfaces[i].mipmaps.Count; j++)
+                {
+                    GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, j, t.pixelInternalFormat,
+                     t.Width / (int)Math.Pow(2, j), t.Height / (int)Math.Pow(2, j), 0, t.surfaces[i].mipmaps[j].Length, t.surfaces[i].mipmaps[j]);
+                }
+            }
+
 
             return texture;
         }

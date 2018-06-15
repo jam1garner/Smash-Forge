@@ -191,6 +191,7 @@ namespace Smash_Forge
                 if (tex.surfaces.Count == 6)
                 {
                     SetCubeMapText(tex);
+                    Rendering.RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh] = NUT.CreateTextureCubeMap(tex);
                 }
                 else
                 {
@@ -486,7 +487,7 @@ namespace Smash_Forge
                         currentNut.glTexByHashId.Remove(tex.HASHID);
 
                     currentNut.Nodes.Add(tex);
-                    currentNut.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex));
+                    currentNut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
                     FillForm();
                 }
             }
@@ -614,7 +615,7 @@ namespace Smash_Forge
                     
                     //GL.DeleteTexture(NUT.glTexByHashId[texture.HASHID]);
                     currentNut.glTexByHashId.Remove(texture.HASHID);
-                    currentNut.glTexByHashId.Add(texture.HASHID, NUT.CreateGlTexture(texture));
+                    currentNut.glTexByHashId.Add(texture.HASHID, NUT.CreateTexture2D(texture));
 
                     FillForm();
                 }
@@ -727,7 +728,7 @@ namespace Smash_Forge
 
                 //GL.DeleteTexture(NUT.glTexByHashId[tex.HASHID]);
                 currentNut.glTexByHashId.Remove(tex.HASHID);
-                currentNut.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex));
+                currentNut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
 
                 FillForm();
                 textureListBox.SelectedItem = tex;
@@ -818,7 +819,7 @@ namespace Smash_Forge
                             else
                                 tex.HASHID = nut.Nodes.Count;
                             nut.Nodes.Add(tex);
-                            currentNut.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex));
+                            currentNut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
                             FillForm();
                         }
                         else
@@ -845,7 +846,7 @@ namespace Smash_Forge
 
                             //GL.DeleteTexture(NUT.glTexByHashId[tex.HASHID]);
                             currentNut.glTexByHashId.Remove(tex.HASHID);
-                            currentNut.glTexByHashId.Add(tex.HASHID, NUT.CreateGlTexture(tex));
+                            currentNut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
                             FillForm();
                         }
                     }
@@ -999,7 +1000,7 @@ namespace Smash_Forge
                 // Create a new texture for the selected surface at the first mip level.
                 currentMipLevel = 0;
                 SetCurrentCubeMapFaceLabel(mipLevelTrackBar.Value);
-                textureToRender = NUT.CreateGlTexture(tex, false, mipLevelTrackBar.Value);
+                textureToRender = NUT.CreateTexture2D(tex, false, mipLevelTrackBar.Value);
             }
             else
             {
