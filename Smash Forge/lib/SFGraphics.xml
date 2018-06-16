@@ -406,17 +406,8 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture.DeleteUnusedTextures">
             <summary>
-            Calls GL.DeleteTexture on all texture IDs still flagged for deletion.
-            All textures are assumed to be deleted successfully, and the list of IDs to delete is cleared.
-            </summary>
-        </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Texture.ClearTexturesFlaggedForDeletion">
-            <summary>
-            Avoids the following scenario. Should be called on context destruction.
-            <para>1. A texture is created.</para>
-            <para>2. The context is destroyed and all resources are freed.</para>
-            <para>3. A texture with the same Id is made in a new context.</para>
-            <para>4. The new texture is deleted because the Id is still flagged for deletion when deleting unused textures.</para>
+            Texture IDs will not be deleted while there is still a reference to texture with that ID.
+            There is no guarantee of when a texture will finally be deleted.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Textures.Texture.Id">
@@ -458,6 +449,15 @@
             <summary>
             Binds and updates the TextureParameter when set.
             </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture.#ctor(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
+            <summary>
+            
+            </summary>
+            <param name="target"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="pixelInternalFormat"></param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture.Finalize">
             <summary>

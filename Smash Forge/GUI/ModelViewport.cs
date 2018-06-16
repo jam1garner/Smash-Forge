@@ -1176,7 +1176,7 @@ namespace Smash_Forge
         private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
         {
             ClearModelContainers();
-            Texture.ClearTexturesFlaggedForDeletion(); // Resources already freed.
+            GC.Collect();
         }
 
         public void ClearModelContainers()
@@ -1192,7 +1192,6 @@ namespace Smash_Forge
             }
 
             draw.Clear();
-            GC.Collect();
         }
 
         private void beginButton_Click(object sender, EventArgs e)
@@ -1812,7 +1811,6 @@ namespace Smash_Forge
         private void glViewport_Paint(object sender, PaintEventArgs e)
         {
             Render(sender, e);
-
             // Make sure unused resources get cleaned up.
             Texture.DeleteUnusedTextures();
 
@@ -1860,7 +1858,6 @@ namespace Smash_Forge
             {
                 RenderTools.SetupOpenTkRendering();
                 SetupBuffersAndTextures();
-                RefreshGlTextures();
                 readyToRender = true;
             }
         }
