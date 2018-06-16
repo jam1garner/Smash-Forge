@@ -1812,7 +1812,7 @@ namespace Smash_Forge
         {
             Render(sender, e);
             // Make sure unused resources get cleaned up.
-            Texture.DeleteUnusedTextures();
+            GLObjectManager.DeleteUnusedGLObjects();
 
             // Deleting the context will require all the textures to be reloaded.
             if (Runtime.glTexturesNeedRefreshing)
