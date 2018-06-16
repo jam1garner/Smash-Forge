@@ -1832,10 +1832,11 @@ namespace Smash_Forge
 
         private void glViewport_Paint(object sender, PaintEventArgs e)
         {
-            //Render(sender, e, glViewport.Width, glViewport.Height);
-            RenderMaterialPresetPreviewsToFiles();
+            Render(sender, e, glViewport.Width, glViewport.Height);
+            // RenderMaterialPresetPreviewsToFiles(); // doesn't work yet
+
             // Make sure unused resources get cleaned up.
-            Texture.DeleteUnusedTextures();
+            GLObjectManager.DeleteUnusedGLObjects();
 
             // Deleting the context will require all the textures to be reloaded.
             if (Runtime.glTexturesNeedRefreshing)

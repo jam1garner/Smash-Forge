@@ -14,6 +14,7 @@ using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
+using SFGraphics.GLObjects;
 using SFGraphics.Tools;
 using SFGraphics.Cameras;
 
@@ -23,10 +24,10 @@ namespace Smash_Forge
     public class NUD : FileBase, IDisposable
     {
         // OpenGL Buffers
-        int positionVbo;
-        int elementsIbo;
-        int bonesUbo;
-        int selectVbo;
+        BufferObject positionVbo;
+        BufferObject elementsIbo;
+        BufferObject bonesUbo;
+        BufferObject selectVbo;
 
         // Default bind location for dummy textures.
         private static TextureUnit dummyTextureUnit = TextureUnit.Texture20;
@@ -68,10 +69,10 @@ namespace Smash_Forge
 
         private void GenerateBuffers()
         {
-            GL.GenBuffers(1, out positionVbo);
-            GL.GenBuffers(1, out elementsIbo);
-            GL.GenBuffers(1, out bonesUbo);
-            GL.GenBuffers(1, out selectVbo);
+            positionVbo = new BufferObject(BufferTarget.ArrayBuffer);
+            elementsIbo = new BufferObject(BufferTarget.ElementArrayBuffer);
+            bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
+            selectVbo = new BufferObject(BufferTarget.ArrayBuffer);
         }
 
         public NUD(string fname) : this()
@@ -145,11 +146,6 @@ namespace Smash_Forge
 
         public void Destroy()
         {
-            GL.DeleteBuffer(positionVbo);
-            GL.DeleteBuffer(elementsIbo);
-            GL.DeleteBuffer(bonesUbo);
-            GL.DeleteBuffer(selectVbo);
-
             Nodes.Clear();
         }
 
@@ -268,17 +264,17 @@ namespace Smash_Forge
             Faces = Ds.ToArray();
 
             // Bind only once!
-            GL.BindBuffer(BufferTarget.ArrayBuffer, positionVbo);
-            GL.BufferData<DisplayVertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
+            positionVbo.Bind();
+            GL.BufferData<DisplayVertex>(positionVbo.BufferTarget, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
 
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementsIbo);
-            GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
+            elementsIbo.Bind();
+            GL.BufferData<int>(elementsIbo.BufferTarget, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
         }
 
         public void Render(VBN vbn, Camera camera, bool drawPolyIds = false)
         {
             // Binding 0 to a buffer target will crash. This also means the NUD buffers weren't generated yet.
-            bool buffersWereInitialized = elementsIbo != 0 && positionVbo != 0 && bonesUbo != 0 && selectVbo != 0;
+            bool buffersWereInitialized = elementsIbo != null && positionVbo != null && bonesUbo != null && selectVbo != null;
             if (!buffersWereInitialized)
             {
                 GenerateBuffers();
@@ -314,17 +310,17 @@ namespace Smash_Forge
                 int boneCount = vbn.bones.Count;
                 int dataSize = boneCount * Vector4.SizeInBytes * 4;
 
-                GL.BindBuffer(BufferTarget.UniformBuffer, bonesUbo);
-                GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
+                bonesUbo.Bind();
+                GL.BufferData(bonesUbo.BufferTarget, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
                 GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
                 var blockIndex = GL.GetUniformBlockIndex(shader.Id, "bones");
-                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, bonesUbo);
+                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, bonesUbo.Id);
 
                 if (f.Length > 0)
                 {
-                    GL.BindBuffer(BufferTarget.UniformBuffer, bonesUbo);
-                    GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
+                    bonesUbo.Bind();
+                    GL.BufferSubData(bonesUbo.BufferTarget, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
                 }
             }
         }
@@ -573,7 +569,7 @@ namespace Smash_Forge
             SetFaceCulling(material);
 
             // Draw the model normally.
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementsIbo);
+            elementsIbo.Bind();
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
         }
 
@@ -749,7 +745,7 @@ namespace Smash_Forge
 
         private void SetVertexAttributes(Polygon p, Shader shader)
         {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, positionVbo);
+            positionVbo.Bind();
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
@@ -1163,17 +1159,17 @@ namespace Smash_Forge
             {
                 foreach (Polygon p in m.Nodes)
                 {
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, positionVbo);
+                    positionVbo.Bind();
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 72);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
 
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, selectVbo);
+                    selectVbo.Bind();
                     if (p.selectedVerts == null) return;
-                    GL.BufferData<int>(BufferTarget.ArrayBuffer, (IntPtr)(p.selectedVerts.Length * sizeof(int)), p.selectedVerts, BufferUsageHint.StaticDraw);
+                    GL.BufferData<int>(selectVbo.BufferTarget, (IntPtr)(p.selectedVerts.Length * sizeof(int)), p.selectedVerts, BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementsIbo);
+                    elementsIbo.Bind();
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                     
                     GL.PointSize(6f);
@@ -3475,13 +3471,6 @@ namespace Smash_Forge
 
         public void Dispose()
         {
-            if (GL.IsBuffer(elementsIbo))
-            {
-                GL.DeleteBuffer(elementsIbo);
-                GL.DeleteBuffer(positionVbo);
-                GL.DeleteBuffer(bonesUbo);
-                GL.DeleteBuffer(selectVbo);
-            }
             Nodes.Clear();
         }
     }
