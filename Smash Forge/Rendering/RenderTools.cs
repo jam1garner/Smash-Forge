@@ -45,7 +45,6 @@ namespace Smash_Forge.Rendering
         // Nud Material Sphere Textures.
         public static Texture sphereDifTex;
         public static Texture sphereNrmMapTex;
-        public static Texture sphereSphereMap;
 
         // Nud Material Sphere Vert Attribute Textures.
         private static Texture sphereNrmTex;

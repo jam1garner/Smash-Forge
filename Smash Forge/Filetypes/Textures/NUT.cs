@@ -255,11 +255,6 @@ namespace Smash_Forge
             Read(d);
         }
 
-        /*~NUT()
-        {
-            //Destroy();
-        }*/
-
         public bool getTextureByID(int hash, out NutTexture suc)
         {
             suc = null;

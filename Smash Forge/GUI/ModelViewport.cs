@@ -66,8 +66,6 @@ namespace Smash_Forge
         }
         public Mode currentMode = Mode.Normal;
 
-        FrameTimer frameTime = new FrameTimer();
-
         VertexTool vertexTool = new VertexTool();
         TransformTool transformTool = new TransformTool();
 
@@ -495,6 +493,39 @@ namespace Smash_Forge
             Runtime.drawNudColorIdPass = true;
             Render(null, null, fboRenderWidth, fboRenderHeight, fbo);
             Runtime.drawNudColorIdPass = false;
+        }
+
+        private void RenderMaterialPresetPreviewsToFiles()
+        {
+            int width = glViewport.Width;
+            int height = glViewport.Height;
+
+            Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
+            // Render all the material previews.
+            //foreach (string file in Directory.GetFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
+            {
+               // NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
+
+                glViewport.MakeCurrent();
+                GL.Viewport(0, 0, width, height);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                //framebuffer.Bind();
+                RenderTools.DrawQuadGradient(ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz, ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz);
+                RenderTools.DrawNudMaterialSphere(new NUD.Material());
+
+                // Using the other framebuffer targets doesn't work for some reason.
+                /*Bitmap image = framebuffer.ReadImagePixels(true);
+
+                // Save the image file using the name of the preset.
+                string[] parts = file.Split('\\');
+                string presetName = parts[parts.Length - 1];
+                presetName = presetName.Replace(".nmt", ".png");
+                image.Save(MainForm.executableDir + "\\Preview Images\\" + presetName);
+
+                // Cleanup
+                image.Dispose();*/
+                glViewport.SwapBuffers();
+            }
         }
 
         private NUD.Polygon GetSelectedPolygonFromColor(Color pixelColor)
@@ -1801,7 +1832,8 @@ namespace Smash_Forge
 
         private void glViewport_Paint(object sender, PaintEventArgs e)
         {
-            Render(sender, e, glViewport.Width, glViewport.Height);
+            //Render(sender, e, glViewport.Width, glViewport.Height);
+            RenderMaterialPresetPreviewsToFiles();
             // Make sure unused resources get cleaned up.
             Texture.DeleteUnusedTextures();
 
