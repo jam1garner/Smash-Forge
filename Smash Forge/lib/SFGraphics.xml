@@ -248,13 +248,14 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget)">
             <summary>
-            Generates an empty framebuffer bound to the specified target.
+            Generates an empty framebuffer bound to the specified target. Binds the framebuffer.
             </summary>
             <param name="framebufferTarget"></param>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget,System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
             <summary>
             Generates a framebuffer with a color attachment of the specified pixel format and dimensions. A render buffer of the same dimensions as the color attachment is generated for the depth component.
+            Binds the framebuffer.
             </summary>
             <param name="framebufferTarget"></param>
             <param name="width"></param>

@@ -292,6 +292,8 @@ namespace Smash_Forge
             int width = ((NutTexture)textureListBox.SelectedItem).Width;
             int height = ((NutTexture)textureListBox.SelectedItem).Height;
 
+            // Draw the texture to the screen.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             Rendering.RenderTools.DrawTexturedQuad(textureToRender.Id, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio,
                 currentMipLevel);
 
