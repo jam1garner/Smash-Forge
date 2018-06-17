@@ -30,20 +30,22 @@ namespace Smash_Forge
         BufferObject selectVbo;
 
         // Default bind location for dummy textures.
-        private static TextureUnit dummyTextureUnit = TextureUnit.Texture20;
-        private static int dummyTextureUnitOffset = 20;
+        private static readonly TextureUnit dummyTextureUnit = TextureUnit.Texture20;
+        private static readonly int dummyTextureUnitOffset = 20;
 
         // Default bind location for NUT textures.
-        private static int nutTextureUnitOffset = 3;
-        private static TextureUnit nutTextureUnit = TextureUnit.Texture3;
+        private static readonly int nutTextureUnitOffset = 3;
+        private static readonly TextureUnit nutTextureUnit = TextureUnit.Texture3;
 
         public const int SMASH = 0;
         public const int POKKEN = 1;
         public int type = SMASH;
         public int boneCount = 0;
         public bool hasBones = false;
-        List<Mesh> depthSortedMeshes = new List<Mesh>();
         public float[] boundingBox = new float[4];
+
+        // Just used for rendering.
+        List<Mesh> depthSortedMeshes = new List<Mesh>();
 
         // xmb stuff
         public int lightSetNumber = 0;
@@ -55,9 +57,104 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
+        Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
+                    { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
+                    { 0x02, BlendingFactorDest.One},
+                    { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
+                    { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
+                    { 0x05, BlendingFactorDest.ConstantAlpha},
+        };
+
+        static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
+                    { 0x01, BlendingFactorSrc.SrcAlpha},
+                    { 0x02, BlendingFactorSrc.SrcAlpha},
+                    { 0x03, BlendingFactorSrc.SrcAlpha},
+                    { 0x04, BlendingFactorSrc.SrcAlpha},
+                    { 0x0a, BlendingFactorSrc.Zero}
+        };
+
+        static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
+        {
+                    { 0x01, TextureWrapMode.Repeat},
+                    { 0x02, TextureWrapMode.MirroredRepeat},
+                    { 0x03, TextureWrapMode.ClampToEdge}
+        };
+
+        static Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
+        {
+                    { 0x00, TextureMinFilter.LinearMipmapLinear},
+                    { 0x01, TextureMinFilter.Nearest},
+                    { 0x02, TextureMinFilter.Linear},
+                    { 0x03, TextureMinFilter.NearestMipmapLinear},
+        };
+
+        static Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
+        {
+                    { 0x00, TextureMagFilter.Linear},
+                    { 0x01, TextureMagFilter.Nearest},
+                    { 0x02, TextureMagFilter.Linear}
+        };
+
+        public enum TextureFlags
+        {
+            Glow = 0x00000080,
+            Shadow = 0x00000040,
+            DummyRamp = 0x00000020,
+            SphereMap = 0x00000010,
+            StageAOMap = 0x00000008,
+            RampCubeMap = 0x00000004,
+            NormalMap = 0x00000002,
+            DiffuseMap = 0x00000001
+        }
+
+        public enum DummyTextures
+        {
+            StageMapLow = 0x10101000,
+            StageMapHigh = 0x10102000,
+            PokemonStadium = 0x10040001,
+            PunchOut = 0x10040000,
+            DummyRamp = 0x10080000,
+            ShadowMap = 0x10100000
+        }
+
+        public static readonly Dictionary<int, Color> lightSetColorByIndex = new Dictionary<int, Color>()
+        {
+            { 0, Color.Red },
+            { 1, Color.Blue },
+            { 2, Color.Green },
+            { 3, Color.Black },
+            { 4, Color.Orange },
+            { 5, Color.Cyan },
+            { 6, Color.Yellow },
+            { 7, Color.Magenta },
+            { 8, Color.Purple },
+            { 9, Color.Gray },
+            { 10, Color.White },
+            { 11, Color.Navy },
+            { 12, Color.Lavender },
+            { 13, Color.Brown },
+            { 14, Color.Olive },
+            { 15, Color.Pink },
+        };
+
+        public enum SrcFactors
+        {
+            Nothing = 0x0,
+            SourceAlpha = 0x1,
+            One = 0x2,
+            InverseSourceAlpha = 0x3,
+            SourceColor = 0x4,
+            Zero = 0xA
+        }
+
         public NUD()
         {
             SetupTreeNode();
+        }
+
+        public NUD(string fname) : this()
+        {
+            Read(fname);
         }
 
         private void SetupTreeNode()
@@ -73,11 +170,6 @@ namespace Smash_Forge
             elementsIbo = new BufferObject(BufferTarget.ElementArrayBuffer);
             bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
             selectVbo = new BufferObject(BufferTarget.ArrayBuffer);
-        }
-
-        public NUD(string fname) : this()
-        {
-            Read(fname);
         }
 
         public void CheckTexIdErrors(NUT nut)
@@ -147,58 +239,6 @@ namespace Smash_Forge
         public void Destroy()
         {
             Nodes.Clear();
-        }
-
-        public enum TextureFlags
-        {
-            Glow = 0x00000080,
-            Shadow = 0x00000040,
-            DummyRamp = 0x00000020,
-            SphereMap = 0x00000010,
-            StageAOMap = 0x00000008,
-            RampCubeMap = 0x00000004,
-            NormalMap = 0x00000002,
-            DiffuseMap = 0x00000001
-        }
-
-        public enum DummyTextures
-        {
-            StageMapLow = 0x10101000,
-            StageMapHigh = 0x10102000,
-            PokemonStadium = 0x10040001,
-            PunchOut = 0x10040000,
-            DummyRamp = 0x10080000,
-            ShadowMap = 0x10100000
-        }
-
-        public static readonly Dictionary<int, Color> lightSetColorByIndex = new Dictionary<int, Color>()
-        {
-            { 0, Color.Red },
-            { 1, Color.Blue },
-            { 2, Color.Green },
-            { 3, Color.Black },
-            { 4, Color.Orange },
-            { 5, Color.Cyan },
-            { 6, Color.Yellow },
-            { 7, Color.Magenta },
-            { 8, Color.Purple },
-            { 9, Color.Gray },
-            { 10, Color.White },
-            { 11, Color.Navy },
-            { 12, Color.Lavender },
-            { 13, Color.Brown },
-            { 14, Color.Olive },
-            { 15, Color.Pink },
-        };
-
-        public enum SrcFactors
-        {
-            Nothing = 0x0,
-            SourceAlpha = 0x1,
-            One = 0x2,
-            InverseSourceAlpha = 0x3,
-            SourceColor = 0x4,
-            Zero = 0xA
         }
 
         public void DepthSortMeshes(Vector3 cameraPosition)
@@ -913,7 +953,7 @@ namespace Smash_Forge
             SetRenderModeTextureUniforms(shader);
 
             // This is necessary to prevent some models from disappearing. 
-            //SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex);
+            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex.Id);
 
             // The material shader just uses predefined textures from the Resources folder.
             MatTexture diffuse = new MatTexture((int)DummyTextures.DummyRamp);
@@ -1097,13 +1137,21 @@ namespace Smash_Forge
                 Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
 
-        private static void SetTextureUniformAndSetTexId(Shader shader, Material mat, bool hasTex, string name, ref int textureIndex, ref int matTexId)
+        private static void SetTextureUniformAndSetTexId(Shader shader, Material mat, bool hasTex, string name, ref int textureIndex, ref int texIdForCurrentTextureType)
         {
             // Bind the texture and create the uniform if the material has the right textures and flags. 
             if (hasTex && textureIndex < mat.textures.Count)
             {
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation(name), BindTexture(mat.textures[textureIndex], mat.textures[textureIndex].hash, textureIndex));
-                matTexId = mat.textures[textureIndex].hash;
+                // Find the index for the shader uniform.
+                // Bind the texture to a texture unit and then find where it was bound.
+                int uniformLocation = shader.GetVertexAttributeUniformLocation(name);
+                int textureUnit = BindTexture(mat.textures[textureIndex], mat.textures[textureIndex].hash, textureIndex);
+                GL.Uniform1(uniformLocation, textureUnit);
+
+                // We won't know what type a texture is used for until we iterate through the textures.
+                texIdForCurrentTextureType = mat.textures[textureIndex].hash;
+
+                // Move on to the next texture.
                 textureIndex++;
             }
         }
@@ -1180,42 +1228,7 @@ namespace Smash_Forge
             shader.DisableVertexAttributes();
         }
 
-        Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
-                    { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
-                    { 0x02, BlendingFactorDest.One},
-                    { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
-                    { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
-                    { 0x05, BlendingFactorDest.ConstantAlpha},
-        };
-
-        static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
-                    { 0x01, BlendingFactorSrc.SrcAlpha},
-                    { 0x02, BlendingFactorSrc.SrcAlpha},
-                    { 0x03, BlendingFactorSrc.SrcAlpha},
-                    { 0x04, BlendingFactorSrc.SrcAlpha},
-                    { 0x0a, BlendingFactorSrc.Zero}
-        };
-
-        static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
-                    { 0x01, TextureWrapMode.Repeat},
-                    { 0x02, TextureWrapMode.MirroredRepeat},
-                    { 0x03, TextureWrapMode.ClampToEdge}
-        };
-
-        static Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>(){
-                    { 0x00, TextureMinFilter.LinearMipmapLinear},
-                    { 0x01, TextureMinFilter.Nearest},
-                    { 0x02, TextureMinFilter.Linear},
-                    { 0x03, TextureMinFilter.NearestMipmapLinear},
-        };
-
-        static Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>(){
-                    { 0x00, TextureMagFilter.Linear},
-                    { 0x01, TextureMagFilter.Nearest},
-                    { 0x02, TextureMagFilter.Linear}
-        };
-
-        public static int BindTexture(MatTexture tex, int hash, int loc)
+        public static int BindTexture(MatTexture matTexture, int hash, int loc)
         {
             if (Enum.IsDefined(typeof(DummyTextures), hash))
             {
@@ -1227,12 +1240,13 @@ namespace Smash_Forge
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex.Id);
             }
 
+            // Look through all loaded textures and not just the current modelcontainer.
             foreach (NUT nut in Runtime.TextureContainers)
             {
                 Texture texture;
                 if (nut.glTexByHashId.TryGetValue(hash, out texture))
                 {
-                    BindNutTexture(tex, texture);
+                    BindNutTexture(matTexture, texture);
                     break;
                 }
             }
