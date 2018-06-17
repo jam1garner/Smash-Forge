@@ -205,8 +205,6 @@ namespace Smash_Forge
 
             // Render on index changed rather than every frame.
             glControl1.Invalidate();
-            glControl1.Update();
-            RenderTexture();
         }
 
         private void SetMipMapText(NutTexture tex)
@@ -969,6 +967,7 @@ namespace Smash_Forge
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             RenderTexture();
+            GLObjectManager.DeleteUnusedGLObjects();
         }
 
         private void listBox2_MouseDown(object sender, MouseEventArgs e)
@@ -1025,9 +1024,7 @@ namespace Smash_Forge
         private void glControl1_Resize(object sender, EventArgs e)
         {
             // Update the display again.
-            glControl1.MakeCurrent();
-            RenderTexture();
-            glControl1.SwapBuffers();
+            glControl1.Invalidate();
         }
 
         private void glControl1_Load(object sender, EventArgs e)
