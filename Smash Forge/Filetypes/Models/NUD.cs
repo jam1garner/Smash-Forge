@@ -2872,10 +2872,10 @@ namespace Smash_Forge
                     Vector3 newTan = tanArray[i];
                     Vector3 newBitan = bitanArray[i];
 
-                    // The tangent and bitangent should be orthogonal to the normal. 
-                    // Bitangents are not calculated with a cross product to prevent flipped shading  with mirrored normal maps.
-                    v.tan = new Vector4(Vector3.Normalize(newTan - v.nrm * Vector3.Dot(v.nrm, newTan)), 1);
-                    v.bitan = new Vector4(Vector3.Normalize(newBitan - v.nrm * Vector3.Dot(v.nrm, newBitan)), 1);
+                    // The tangent and bitangent should be orthogonal to the normal but not each other. 
+                    // Bitangents are not calculated with a cross product to prevent flipped shading with mirrored normal maps.
+                    v.tan = new Vector4(VectorTools.Orthogonalize(newTan, v.nrm), 1);
+                    v.bitan = new Vector4(VectorTools.Orthogonalize(newBitan, v.nrm), 1);
                     v.bitan *= -1;
                 }
             }
@@ -2888,15 +2888,15 @@ namespace Smash_Forge
                     Vertex v2 = vertices[faces[i + 1]];
                     Vertex v3 = vertices[faces[i + 2]];
 
+                    if (v2.uv.Count < 1)
+                        break;
+
                     float x1 = v2.pos.X - v1.pos.X;
                     float x2 = v3.pos.X - v1.pos.X;
                     float y1 = v2.pos.Y - v1.pos.Y;
                     float y2 = v3.pos.Y - v1.pos.Y;
                     float z1 = v2.pos.Z - v1.pos.Z;
                     float z2 = v3.pos.Z - v1.pos.Z;
-
-                    if (v2.uv.Count < 1)
-                        break;
 
                     float s1 = v2.uv[0].X - v1.uv[0].X;
                     float s2 = v3.uv[0].X - v1.uv[0].X;
