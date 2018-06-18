@@ -724,5 +724,25 @@
             <param name="source">The vector to normalize against</param>
             <returns></returns>
         </member>
+        <member name="M:SFGraphics.Tools.VectorTools.GenerateTangentBitangent(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector3@,OpenTK.Vector3@)">
+            <summary>
+            Generates a tangent vector <paramref name="s"/> and a bitangent vector
+            <paramref name="t"/> for a triangle face. 
+            <para>
+            <para></para>
+            <paramref name="s"/> and <paramref name="t"/> should be added to the existing tangent
+            and bitangent value for each vertex in the triangle. Normalizing the final sum 
+            averages the tangents and bitangents for smoother results.
+            </para>
+            </summary>
+            <param name="v1">The position of the first vertex</param>
+            <param name="v2">The position of the second vertex</param>
+            <param name="v3">The position of the third vertex</param>
+            <param name="uv1">The UV coordinates of the first vertex</param>
+            <param name="uv2">The UV coordinates of the second vertex</param>
+            <param name="uv3">The UV coordinates of the third vertex</param>
+            <param name="s">The generated tangent vector</param>
+            <param name="t">The generated bitangent vector</param>
+        </member>
     </members>
 </doc>

@@ -2882,54 +2882,20 @@ namespace Smash_Forge
 
             private void CalculateTanBitanArrays(List<int> faces, Vector3[] tanArray, Vector3[] bitanArray)
             {
+                // Three verts per face.
                 for (int i = 0; i < displayFaceSize; i += 3)
                 {
                     Vertex v1 = vertices[faces[i]];
                     Vertex v2 = vertices[faces[i + 1]];
                     Vertex v3 = vertices[faces[i + 2]];
 
-                    if (v2.uv.Count < 1)
-                        break;
+                    // Check for index out of range errors and just skip this face.
+                    if (v1.uv.Count < 1 || v2.uv.Count < 1 || v3.uv.Count < 1)
+                        continue;
 
-                    float x1 = v2.pos.X - v1.pos.X;
-                    float x2 = v3.pos.X - v1.pos.X;
-                    float y1 = v2.pos.Y - v1.pos.Y;
-                    float y2 = v3.pos.Y - v1.pos.Y;
-                    float z1 = v2.pos.Z - v1.pos.Z;
-                    float z2 = v3.pos.Z - v1.pos.Z;
-
-                    float s1 = v2.uv[0].X - v1.uv[0].X;
-                    float s2 = v3.uv[0].X - v1.uv[0].X;
-                    float t1 = v2.uv[0].Y - v1.uv[0].Y;
-                    float t2 = v3.uv[0].Y - v1.uv[0].Y;
-
-                    float div = (s1 * t2 - s2 * t1);
-                    float r = 1.0f / div;
-
-                    // Fix +/- infinity from division by 0.
-                    if (r == float.PositiveInfinity || r == float.NegativeInfinity)
-                        r = 1.0f;
-
-                    float sX = t2 * x1 - t1 * x2;
-                    float sY = t2 * y1 - t1 * y2;
-                    float sZ = t2 * z1 - t1 * z2;
-                    Vector3 s = new Vector3(sX, sY, sZ) * r;
-
-                    float tX = s1 * x2 - s2 * x1;
-                    float tY = s1 * y2 - s2 * y1;
-                    float tZ = s1 * z2 - s2 * z1;
-                    Vector3 t = new Vector3(tX, tY, tZ) * r;
-
-                    // Prevents black tangents or bitangents due to having vertices with the same UV coordinates. 
-                    float delta = 0.00075f;
-                    bool sameU = (Math.Abs(v1.uv[0].X - v2.uv[0].X) < delta) && (Math.Abs(v2.uv[0].X - v3.uv[0].X) < delta);
-                    bool sameV = (Math.Abs(v1.uv[0].Y - v2.uv[0].Y) < delta) && (Math.Abs(v2.uv[0].Y - v3.uv[0].Y) < delta);
-                    if (sameU || sameV)
-                    {
-                        // Let's pick some arbitrary tangent vectors.
-                        s = new Vector3(1,0,0);
-                        t = new Vector3(0,1,0);
-                    }
+                    Vector3 s = new Vector3();
+                    Vector3 t = new Vector3();
+                    VectorTools.GenerateTangentBitangent(v1.pos, v2.pos, v3.pos, v1.uv[0], v2.uv[0], v3.uv[0], out s, out t);
 
                     // Average tangents and bitangents.
                     tanArray[faces[i]] += s;
