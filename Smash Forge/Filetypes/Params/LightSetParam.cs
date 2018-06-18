@@ -170,7 +170,7 @@ namespace Smash_Forge.Params
 
         public static DirectionalLight CreateDirectionalLightFromLightSet(ParamFile lightSet, int lightIndex, string name)
         {
-            bool enabled = (uint)ParamTools.GetParamValue(lightSet, 1, lightIndex, 1) == 1;
+            bool enabled = (int)ParamTools.GetParamValue(lightSet, 1, lightIndex, 1) == 1;
             Vector3 hsv = new Vector3(0);
             hsv.X = (float)ParamTools.GetParamValue(lightSet, 1, lightIndex, 2);
             hsv.Y = (float)ParamTools.GetParamValue(lightSet, 1, lightIndex, 3);

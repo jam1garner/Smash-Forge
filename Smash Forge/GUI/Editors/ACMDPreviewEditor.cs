@@ -33,22 +33,22 @@ namespace Smash_Forge
             bool changed = false;
             if (cb_section.Text.Equals("GAME") && Owner.MovesetManager.Game.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("SOUND") && Owner.MovesetManager.Sound.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Sound.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Sound.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("EXPRESSION") && Owner.MovesetManager.Expression.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Expression.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Expression.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("EFFECT") && Owner.MovesetManager.Effect.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Effect.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Effect.Scripts[crc]);
                 changed = true;
             }
 
@@ -91,22 +91,22 @@ namespace Smash_Forge
             bool changed = false;
             if (cb_section.Text.Equals("GAME") && Owner.MovesetManager.Game.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("SOUND") && Owner.MovesetManager.Sound.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Sound.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Sound.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("EXPRESSION") && Owner.MovesetManager.Expression.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Expression.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Expression.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("EFFECT") && Owner.MovesetManager.Effect.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Effect.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Effect.Scripts[crc]);
                 changed = true;
             }
             if (changed)
