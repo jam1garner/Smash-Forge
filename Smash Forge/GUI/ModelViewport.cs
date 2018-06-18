@@ -1069,6 +1069,8 @@ namespace Smash_Forge
 
                                 // Cleanup the models and nodes but keep the same viewport.
                                 ClearModelContainers();
+                                // Make sure the reference counts get updated for all the GLObjects so we can clean up next frame.
+                                GC.WaitForPendingFinalizers();
                             }
                         }
                     }
@@ -1106,7 +1108,7 @@ namespace Smash_Forge
 
         private void BatchRenderViewportToFile(string nudFileName, string sourcePath, string outputPath)
         {
-            SetupNextRender();
+            SetupAndRenderViewport();
             string renderName = ConvertDirSeparatorsToUnderscore(nudFileName, sourcePath);
             // Manually dispose the bitmap to avoid memory leaks. 
             Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, true);
@@ -1114,12 +1116,13 @@ namespace Smash_Forge
             screenCapture.Dispose();
         }
 
-        private void SetupNextRender()
+        private void SetupAndRenderViewport()
         {
             // Setup before rendering the model. Use a large max radius to show skybox models.
             FrameAllModelContainers();
-            Render(null, null, glViewport.Width, glViewport.Height);
-            glViewport.SwapBuffers();
+            // We need to manually call the paint event twice so the textures are refreshed and the screen updates properly.
+            glViewport_Paint(null, null);
+            glViewport_Paint(null, null);
         }
 
         public static string ConvertDirSeparatorsToUnderscore(string fullPath, string sourceDirPath)
