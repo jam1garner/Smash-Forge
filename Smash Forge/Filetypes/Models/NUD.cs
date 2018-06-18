@@ -2919,7 +2919,7 @@ namespace Smash_Forge
                     Vertex v1 = vertices[f[i]];
                     Vertex v2 = vertices[f[i+1]];
                     Vertex v3 = vertices[f[i+2]];
-                    Vector3 nrm = CalculateNormal(v1,v2,v3);
+                    Vector3 nrm = VectorTools.CalculateNormal(v1.pos, v2.pos, v3.pos);
 
                     normals[f[i + 0]] += nrm;
                     normals[f[i + 1]] += nrm;
@@ -2965,7 +2965,7 @@ namespace Smash_Forge
                     Vertex v1 = vertices[f[i]];
                     Vertex v2 = vertices[f[i + 1]];
                     Vertex v3 = vertices[f[i + 2]];
-                    Vector3 nrm = CalculateNormal(v1, v2, v3);
+                    Vector3 nrm = VectorTools.CalculateNormal(v1.pos, v2.pos, v3.pos);
 
                     normals[f[i + 0]] += nrm * (nrm.Length / 2);
                     normals[f[i + 1]] += nrm * (nrm.Length / 2);
@@ -2974,15 +2974,6 @@ namespace Smash_Forge
 
                 for (int i = 0; i < normals.Length; i++)
                     vertices[i].nrm = normals[i].Normalized();
-            }
-
-            private Vector3 CalculateNormal(Vertex v1, Vertex v2, Vertex v3)
-            {
-                Vector3 U = v2.pos - v1.pos;
-                Vector3 V = v3.pos - v1.pos;
-
-                // Don't normalize here, so surface area can be calculated. 
-                return Vector3.Cross(U, V);
             }
 
             public void AddDefaultMaterial()

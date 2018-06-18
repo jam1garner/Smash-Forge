@@ -715,14 +715,15 @@
         <member name="M:SFGraphics.Tools.VectorTools.Orthogonalize(OpenTK.Vector3,OpenTK.Vector3)">
             <summary>
             Uses the Gran-Schmidt method for orthogonalizing a vector to another vector.
-            The resulting vector is normalized.        
+            The resulting vector is normalized.    
+            <para></para>
             <para>
             Ex: <c>Vector3 tanOrthoToNrm = Orthogonalize(tan, nrm);</c>
             </para>
             </summary>
             <param name="target">The vector to normalize</param>
             <param name="source">The vector to normalize against</param>
-            <returns></returns>
+            <returns><paramref name="target"/> orthogonalized to <paramref name="source"/></returns>
         </member>
         <member name="M:SFGraphics.Tools.VectorTools.GenerateTangentBitangent(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector3@,OpenTK.Vector3@)">
             <summary>
@@ -743,6 +744,15 @@
             <param name="uv3">The UV coordinates of the third vertex</param>
             <param name="s">The generated tangent vector</param>
             <param name="t">The generated bitangent vector</param>
+        </member>
+        <member name="M:SFGraphics.Tools.VectorTools.CalculateNormal(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3)">
+            <summary>
+            Calculates the face normal of a triangle. The result is not normalized.
+            </summary>
+            <param name="v1">The position of the first vertex</param>
+            <param name="v2">The position of the second vertex</param>
+            <param name="v3">The position of the third vertex</param>
+            <returns>The calculated face normal</returns>
         </member>
     </members>
 </doc>
