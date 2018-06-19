@@ -356,7 +356,7 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.Finalize">
             <summary>
-            
+            Decrement the reference count for this ID. The context probably isn't current, so the data is deleted later by GLObjectManager.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetFloat(System.String,System.Single)">
