@@ -476,7 +476,6 @@
     <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
     <Compile Include="Rendering\Lights\DirectionalLight.cs" />
-    <Compile Include="Rendering\FrameTimer.cs" />
     <Compile Include="Rendering\Lights\HemisphereFresnel.cs" />
     <Compile Include="Rendering\Lights\LightColor.cs" />
     <Compile Include="Rendering\Lights\LightMap.cs" />

@@ -14,35 +14,38 @@ using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
+using SFGraphics.GLObjects;
 using SFGraphics.Tools;
 using SFGraphics.Cameras;
 
 
 namespace Smash_Forge
 {
-    public class NUD : FileBase, IDisposable
+    public class NUD : FileBase
     {
         // OpenGL Buffers
-        int positionVbo;
-        int elementsIbo;
-        int bonesUbo;
-        int selectVbo;
+        BufferObject positionVbo;
+        BufferObject elementsIbo;
+        BufferObject bonesUbo;
+        BufferObject selectVbo;
 
         // Default bind location for dummy textures.
-        private static TextureUnit dummyTextureUnit = TextureUnit.Texture20;
-        private static int dummyTextureUnitOffset = 20;
+        private static readonly TextureUnit dummyTextureUnit = TextureUnit.Texture20;
+        private static readonly int dummyTextureUnitOffset = 20;
 
         // Default bind location for NUT textures.
-        private static int nutTextureUnitOffset = 3;
-        private static TextureUnit nutTextureUnit = TextureUnit.Texture3;
+        private static readonly int nutTextureUnitOffset = 3;
+        private static readonly TextureUnit nutTextureUnit = TextureUnit.Texture3;
 
         public const int SMASH = 0;
         public const int POKKEN = 1;
         public int type = SMASH;
         public int boneCount = 0;
         public bool hasBones = false;
-        List<Mesh> depthSortedMeshes = new List<Mesh>();
         public float[] boundingBox = new float[4];
+
+        // Just used for rendering.
+        List<Mesh> depthSortedMeshes = new List<Mesh>();
 
         // xmb stuff
         public int lightSetNumber = 0;
@@ -54,9 +57,104 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
+        Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
+                    { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
+                    { 0x02, BlendingFactorDest.One},
+                    { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
+                    { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
+                    { 0x05, BlendingFactorDest.ConstantAlpha},
+        };
+
+        static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
+                    { 0x01, BlendingFactorSrc.SrcAlpha},
+                    { 0x02, BlendingFactorSrc.SrcAlpha},
+                    { 0x03, BlendingFactorSrc.SrcAlpha},
+                    { 0x04, BlendingFactorSrc.SrcAlpha},
+                    { 0x0a, BlendingFactorSrc.Zero}
+        };
+
+        static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
+        {
+                    { 0x01, TextureWrapMode.Repeat},
+                    { 0x02, TextureWrapMode.MirroredRepeat},
+                    { 0x03, TextureWrapMode.ClampToEdge}
+        };
+
+        static Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
+        {
+                    { 0x00, TextureMinFilter.LinearMipmapLinear},
+                    { 0x01, TextureMinFilter.Nearest},
+                    { 0x02, TextureMinFilter.Linear},
+                    { 0x03, TextureMinFilter.NearestMipmapLinear},
+        };
+
+        static Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
+        {
+                    { 0x00, TextureMagFilter.Linear},
+                    { 0x01, TextureMagFilter.Nearest},
+                    { 0x02, TextureMagFilter.Linear}
+        };
+
+        public enum TextureFlags
+        {
+            Glow = 0x00000080,
+            Shadow = 0x00000040,
+            DummyRamp = 0x00000020,
+            SphereMap = 0x00000010,
+            StageAOMap = 0x00000008,
+            RampCubeMap = 0x00000004,
+            NormalMap = 0x00000002,
+            DiffuseMap = 0x00000001
+        }
+
+        public enum DummyTextures
+        {
+            StageMapLow = 0x10101000,
+            StageMapHigh = 0x10102000,
+            PokemonStadium = 0x10040001,
+            PunchOut = 0x10040000,
+            DummyRamp = 0x10080000,
+            ShadowMap = 0x10100000
+        }
+
+        public static readonly Dictionary<int, Color> lightSetColorByIndex = new Dictionary<int, Color>()
+        {
+            { 0, Color.Red },
+            { 1, Color.Blue },
+            { 2, Color.Green },
+            { 3, Color.Black },
+            { 4, Color.Orange },
+            { 5, Color.Cyan },
+            { 6, Color.Yellow },
+            { 7, Color.Magenta },
+            { 8, Color.Purple },
+            { 9, Color.Gray },
+            { 10, Color.White },
+            { 11, Color.Navy },
+            { 12, Color.Lavender },
+            { 13, Color.Brown },
+            { 14, Color.Olive },
+            { 15, Color.Pink },
+        };
+
+        public enum SrcFactors
+        {
+            Nothing = 0x0,
+            SourceAlpha = 0x1,
+            One = 0x2,
+            InverseSourceAlpha = 0x3,
+            SourceColor = 0x4,
+            Zero = 0xA
+        }
+
         public NUD()
         {
             SetupTreeNode();
+        }
+
+        public NUD(string fname) : this()
+        {
+            Read(fname);
         }
 
         private void SetupTreeNode()
@@ -68,15 +166,10 @@ namespace Smash_Forge
 
         private void GenerateBuffers()
         {
-            GL.GenBuffers(1, out positionVbo);
-            GL.GenBuffers(1, out elementsIbo);
-            GL.GenBuffers(1, out bonesUbo);
-            GL.GenBuffers(1, out selectVbo);
-        }
-
-        public NUD(string fname) : this()
-        {
-            Read(fname);
+            positionVbo = new BufferObject(BufferTarget.ArrayBuffer);
+            elementsIbo = new BufferObject(BufferTarget.ElementArrayBuffer);
+            bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
+            selectVbo = new BufferObject(BufferTarget.ArrayBuffer);
         }
 
         public void CheckTexIdErrors(NUT nut)
@@ -143,68 +236,6 @@ namespace Smash_Forge
             return incorrectTextureIds.ToString();
         }
 
-        public void Destroy()
-        {
-            GL.DeleteBuffer(positionVbo);
-            GL.DeleteBuffer(elementsIbo);
-            GL.DeleteBuffer(bonesUbo);
-            GL.DeleteBuffer(selectVbo);
-
-            Nodes.Clear();
-        }
-
-        public enum TextureFlags
-        {
-            Glow = 0x00000080,
-            Shadow = 0x00000040,
-            DummyRamp = 0x00000020,
-            SphereMap = 0x00000010,
-            StageAOMap = 0x00000008,
-            RampCubeMap = 0x00000004,
-            NormalMap = 0x00000002,
-            DiffuseMap = 0x00000001
-        }
-
-        public enum DummyTextures
-        {
-            StageMapLow = 0x10101000,
-            StageMapHigh = 0x10102000,
-            PokemonStadium = 0x10040001,
-            PunchOut = 0x10040000,
-            DummyRamp = 0x10080000,
-            ShadowMap = 0x10100000
-        }
-
-        public static readonly Dictionary<int, Color> lightSetColorByIndex = new Dictionary<int, Color>()
-        {
-            { 0, Color.Red },
-            { 1, Color.Blue },
-            { 2, Color.Green },
-            { 3, Color.Black },
-            { 4, Color.Orange },
-            { 5, Color.Cyan },
-            { 6, Color.Yellow },
-            { 7, Color.Magenta },
-            { 8, Color.Purple },
-            { 9, Color.Gray },
-            { 10, Color.White },
-            { 11, Color.Navy },
-            { 12, Color.Lavender },
-            { 13, Color.Brown },
-            { 14, Color.Olive },
-            { 15, Color.Pink },
-        };
-
-        public enum SrcFactors
-        {
-            Nothing = 0x0,
-            SourceAlpha = 0x1,
-            One = 0x2,
-            InverseSourceAlpha = 0x3,
-            SourceColor = 0x4,
-            Zero = 0xA
-        }
-
         public void DepthSortMeshes(Vector3 cameraPosition)
         {
             // Meshes can be rendered in the order they appear in the NUD, by bounding spheres, and offsets. 
@@ -268,17 +299,17 @@ namespace Smash_Forge
             Faces = Ds.ToArray();
 
             // Bind only once!
-            GL.BindBuffer(BufferTarget.ArrayBuffer, positionVbo);
-            GL.BufferData<DisplayVertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
+            positionVbo.Bind();
+            GL.BufferData<DisplayVertex>(positionVbo.BufferTarget, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
 
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementsIbo);
-            GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
+            elementsIbo.Bind();
+            GL.BufferData<int>(elementsIbo.BufferTarget, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
         }
 
         public void Render(VBN vbn, Camera camera, bool drawPolyIds = false)
         {
             // Binding 0 to a buffer target will crash. This also means the NUD buffers weren't generated yet.
-            bool buffersWereInitialized = elementsIbo != 0 && positionVbo != 0 && bonesUbo != 0 && selectVbo != 0;
+            bool buffersWereInitialized = elementsIbo != null && positionVbo != null && bonesUbo != null && selectVbo != null;
             if (!buffersWereInitialized)
             {
                 GenerateBuffers();
@@ -314,17 +345,17 @@ namespace Smash_Forge
                 int boneCount = vbn.bones.Count;
                 int dataSize = boneCount * Vector4.SizeInBytes * 4;
 
-                GL.BindBuffer(BufferTarget.UniformBuffer, bonesUbo);
-                GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
+                bonesUbo.Bind();
+                GL.BufferData(bonesUbo.BufferTarget, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
                 GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
                 var blockIndex = GL.GetUniformBlockIndex(shader.Id, "bones");
-                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, bonesUbo);
+                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, bonesUbo.Id);
 
                 if (f.Length > 0)
                 {
-                    GL.BindBuffer(BufferTarget.UniformBuffer, bonesUbo);
-                    GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
+                    bonesUbo.Bind();
+                    GL.BufferSubData(bonesUbo.BufferTarget, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
                 }
             }
         }
@@ -573,7 +604,7 @@ namespace Smash_Forge
             SetFaceCulling(material);
 
             // Draw the model normally.
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementsIbo);
+            elementsIbo.Bind();
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
         }
 
@@ -749,7 +780,7 @@ namespace Smash_Forge
 
         private void SetVertexAttributes(Polygon p, Shader shader)
         {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, positionVbo);
+            positionVbo.Bind();
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
@@ -917,7 +948,7 @@ namespace Smash_Forge
             SetRenderModeTextureUniforms(shader);
 
             // This is necessary to prevent some models from disappearing. 
-            //SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex);
+            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex.Id);
 
             // The material shader just uses predefined textures from the Resources folder.
             MatTexture diffuse = new MatTexture((int)DummyTextures.DummyRamp);
@@ -1101,13 +1132,21 @@ namespace Smash_Forge
                 Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
 
-        private static void SetTextureUniformAndSetTexId(Shader shader, Material mat, bool hasTex, string name, ref int textureIndex, ref int matTexId)
+        private static void SetTextureUniformAndSetTexId(Shader shader, Material mat, bool hasTex, string name, ref int textureIndex, ref int texIdForCurrentTextureType)
         {
             // Bind the texture and create the uniform if the material has the right textures and flags. 
             if (hasTex && textureIndex < mat.textures.Count)
             {
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation(name), BindTexture(mat.textures[textureIndex], mat.textures[textureIndex].hash, textureIndex));
-                matTexId = mat.textures[textureIndex].hash;
+                // Find the index for the shader uniform.
+                // Bind the texture to a texture unit and then find where it was bound.
+                int uniformLocation = shader.GetVertexAttributeUniformLocation(name);
+                int textureUnit = BindTexture(mat.textures[textureIndex], mat.textures[textureIndex].hash, textureIndex);
+                GL.Uniform1(uniformLocation, textureUnit);
+
+                // We won't know what type a texture is used for until we iterate through the textures.
+                texIdForCurrentTextureType = mat.textures[textureIndex].hash;
+
+                // Move on to the next texture.
                 textureIndex++;
             }
         }
@@ -1163,17 +1202,17 @@ namespace Smash_Forge
             {
                 foreach (Polygon p in m.Nodes)
                 {
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, positionVbo);
+                    positionVbo.Bind();
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 72);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
 
-                    GL.BindBuffer(BufferTarget.ArrayBuffer, selectVbo);
+                    selectVbo.Bind();
                     if (p.selectedVerts == null) return;
-                    GL.BufferData<int>(BufferTarget.ArrayBuffer, (IntPtr)(p.selectedVerts.Length * sizeof(int)), p.selectedVerts, BufferUsageHint.StaticDraw);
+                    GL.BufferData<int>(selectVbo.BufferTarget, (IntPtr)(p.selectedVerts.Length * sizeof(int)), p.selectedVerts, BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, elementsIbo);
+                    elementsIbo.Bind();
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                     
                     GL.PointSize(6f);
@@ -1184,42 +1223,7 @@ namespace Smash_Forge
             shader.DisableVertexAttributes();
         }
 
-        Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
-                    { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
-                    { 0x02, BlendingFactorDest.One},
-                    { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
-                    { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
-                    { 0x05, BlendingFactorDest.ConstantAlpha},
-        };
-
-        static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
-                    { 0x01, BlendingFactorSrc.SrcAlpha},
-                    { 0x02, BlendingFactorSrc.SrcAlpha},
-                    { 0x03, BlendingFactorSrc.SrcAlpha},
-                    { 0x04, BlendingFactorSrc.SrcAlpha},
-                    { 0x0a, BlendingFactorSrc.Zero}
-        };
-
-        static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
-                    { 0x01, TextureWrapMode.Repeat},
-                    { 0x02, TextureWrapMode.MirroredRepeat},
-                    { 0x03, TextureWrapMode.ClampToEdge}
-        };
-
-        static Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>(){
-                    { 0x00, TextureMinFilter.LinearMipmapLinear},
-                    { 0x01, TextureMinFilter.Nearest},
-                    { 0x02, TextureMinFilter.Linear},
-                    { 0x03, TextureMinFilter.NearestMipmapLinear},
-        };
-
-        static Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>(){
-                    { 0x00, TextureMagFilter.Linear},
-                    { 0x01, TextureMagFilter.Nearest},
-                    { 0x02, TextureMagFilter.Linear}
-        };
-
-        public static int BindTexture(MatTexture tex, int hash, int loc)
+        public static int BindTexture(MatTexture matTexture, int hash, int loc)
         {
             if (Enum.IsDefined(typeof(DummyTextures), hash))
             {
@@ -1231,12 +1235,13 @@ namespace Smash_Forge
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex.Id);
             }
 
+            // Look through all loaded textures and not just the current modelcontainer.
             foreach (NUT nut in Runtime.TextureContainers)
             {
                 Texture texture;
                 if (nut.glTexByHashId.TryGetValue(hash, out texture))
                 {
-                    BindNutTexture(tex, texture);
+                    BindNutTexture(matTexture, texture);
                     break;
                 }
             }
@@ -2862,64 +2867,30 @@ namespace Smash_Forge
                     Vector3 newTan = tanArray[i];
                     Vector3 newBitan = bitanArray[i];
 
-                    // The tangent and bitangent should be orthogonal to the normal. 
-                    // Bitangents are not calculated with a cross product to prevent flipped shading  with mirrored normal maps.
-                    v.tan = new Vector4(Vector3.Normalize(newTan - v.nrm * Vector3.Dot(v.nrm, newTan)), 1);
-                    v.bitan = new Vector4(Vector3.Normalize(newBitan - v.nrm * Vector3.Dot(v.nrm, newBitan)), 1);
+                    // The tangent and bitangent should be orthogonal to the normal but not each other. 
+                    // Bitangents are not calculated with a cross product to prevent flipped shading with mirrored normal maps.
+                    v.tan = new Vector4(VectorTools.Orthogonalize(newTan, v.nrm), 1);
+                    v.bitan = new Vector4(VectorTools.Orthogonalize(newBitan, v.nrm), 1);
                     v.bitan *= -1;
                 }
             }
 
             private void CalculateTanBitanArrays(List<int> faces, Vector3[] tanArray, Vector3[] bitanArray)
             {
+                // Three verts per face.
                 for (int i = 0; i < displayFaceSize; i += 3)
                 {
                     Vertex v1 = vertices[faces[i]];
                     Vertex v2 = vertices[faces[i + 1]];
                     Vertex v3 = vertices[faces[i + 2]];
 
-                    float x1 = v2.pos.X - v1.pos.X;
-                    float x2 = v3.pos.X - v1.pos.X;
-                    float y1 = v2.pos.Y - v1.pos.Y;
-                    float y2 = v3.pos.Y - v1.pos.Y;
-                    float z1 = v2.pos.Z - v1.pos.Z;
-                    float z2 = v3.pos.Z - v1.pos.Z;
+                    // Check for index out of range errors and just skip this face.
+                    if (v1.uv.Count < 1 || v2.uv.Count < 1 || v3.uv.Count < 1)
+                        continue;
 
-                    if (v2.uv.Count < 1)
-                        break;
-
-                    float s1 = v2.uv[0].X - v1.uv[0].X;
-                    float s2 = v3.uv[0].X - v1.uv[0].X;
-                    float t1 = v2.uv[0].Y - v1.uv[0].Y;
-                    float t2 = v3.uv[0].Y - v1.uv[0].Y;
-
-                    float div = (s1 * t2 - s2 * t1);
-                    float r = 1.0f / div;
-
-                    // Fix +/- infinity from division by 0.
-                    if (r == float.PositiveInfinity || r == float.NegativeInfinity)
-                        r = 1.0f;
-
-                    float sX = t2 * x1 - t1 * x2;
-                    float sY = t2 * y1 - t1 * y2;
-                    float sZ = t2 * z1 - t1 * z2;
-                    Vector3 s = new Vector3(sX, sY, sZ) * r;
-
-                    float tX = s1 * x2 - s2 * x1;
-                    float tY = s1 * y2 - s2 * y1;
-                    float tZ = s1 * z2 - s2 * z1;
-                    Vector3 t = new Vector3(tX, tY, tZ) * r;
-
-                    // Prevents black tangents or bitangents due to having vertices with the same UV coordinates. 
-                    float delta = 0.00075f;
-                    bool sameU = (Math.Abs(v1.uv[0].X - v2.uv[0].X) < delta) && (Math.Abs(v2.uv[0].X - v3.uv[0].X) < delta);
-                    bool sameV = (Math.Abs(v1.uv[0].Y - v2.uv[0].Y) < delta) && (Math.Abs(v2.uv[0].Y - v3.uv[0].Y) < delta);
-                    if (sameU || sameV)
-                    {
-                        // Let's pick some arbitrary tangent vectors.
-                        s = new Vector3(1,0,0);
-                        t = new Vector3(0,1,0);
-                    }
+                    Vector3 s = new Vector3();
+                    Vector3 t = new Vector3();
+                    VectorTools.GenerateTangentBitangent(v1.pos, v2.pos, v3.pos, v1.uv[0], v2.uv[0], v3.uv[0], out s, out t);
 
                     // Average tangents and bitangents.
                     tanArray[faces[i]] += s;
@@ -2943,7 +2914,7 @@ namespace Smash_Forge
                     Vertex v1 = vertices[f[i]];
                     Vertex v2 = vertices[f[i+1]];
                     Vertex v3 = vertices[f[i+2]];
-                    Vector3 nrm = CalculateNormal(v1,v2,v3);
+                    Vector3 nrm = VectorTools.CalculateNormal(v1.pos, v2.pos, v3.pos);
 
                     normals[f[i + 0]] += nrm;
                     normals[f[i + 1]] += nrm;
@@ -2989,7 +2960,7 @@ namespace Smash_Forge
                     Vertex v1 = vertices[f[i]];
                     Vertex v2 = vertices[f[i + 1]];
                     Vertex v3 = vertices[f[i + 2]];
-                    Vector3 nrm = CalculateNormal(v1, v2, v3);
+                    Vector3 nrm = VectorTools.CalculateNormal(v1.pos, v2.pos, v3.pos);
 
                     normals[f[i + 0]] += nrm * (nrm.Length / 2);
                     normals[f[i + 1]] += nrm * (nrm.Length / 2);
@@ -2998,15 +2969,6 @@ namespace Smash_Forge
 
                 for (int i = 0; i < normals.Length; i++)
                     vertices[i].nrm = normals[i].Normalized();
-            }
-
-            private Vector3 CalculateNormal(Vertex v1, Vertex v2, Vertex v3)
-            {
-                Vector3 U = v2.pos - v1.pos;
-                Vector3 V = v3.pos - v1.pos;
-
-                // Don't normalize here, so surface area can be calculated. 
-                return Vector3.Cross(U, V);
             }
 
             public void AddDefaultMaterial()
@@ -3471,18 +3433,6 @@ namespace Smash_Forge
                         if(!texIds.Contains(mat.displayTexId))
                             texIds.Add(mat.displayTexId);
             return texIds;
-        }
-
-        public void Dispose()
-        {
-            if (GL.IsBuffer(elementsIbo))
-            {
-                GL.DeleteBuffer(elementsIbo);
-                GL.DeleteBuffer(positionVbo);
-                GL.DeleteBuffer(bonesUbo);
-                GL.DeleteBuffer(selectVbo);
-            }
-            Nodes.Clear();
         }
     }
 }

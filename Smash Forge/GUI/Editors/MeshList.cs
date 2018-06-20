@@ -467,7 +467,6 @@ namespace Smash_Forge
 
             // Remove the original nodes.
             originalModelContainer.NUD.Nodes.Clear();
-            originalModelContainer.NUD.Destroy();
 
             newModelContainer.NUD.UpdateVertexData();
 

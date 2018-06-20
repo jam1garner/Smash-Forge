@@ -66,8 +66,6 @@ namespace Smash_Forge
         }
         public Mode currentMode = Mode.Normal;
 
-        FrameTimer frameTime = new FrameTimer();
-
         VertexTool vertexTool = new VertexTool();
         TransformTool transformTool = new TransformTool();
 
@@ -306,7 +304,7 @@ namespace Smash_Forge
             fboRenderHeight = glViewport.Height;
 
             // Render bright and normal images to separate textures.
-            FramebufferTools.CreateHdrFboTwoTextures(out colorHdrFbo, out hdrDepthRbo, out colorHdrTex0, out colorHdrTex1, fboRenderWidth, fboRenderHeight);
+            FramebufferTools.CreateHdrFboTwoTextures(out colorHdrFbo, out hdrDepthRbo, out colorHdrTex0, out colorHdrTex1, glViewport.Width, glViewport.Height);
 
             // Smaller FBO/texture for the brighter, blurred portions.
             int brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
@@ -318,15 +316,6 @@ namespace Smash_Forge
 
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-        }
-
-        public ModelViewport(string filename) : this()
-        {
-
-        }
-
-        ~ModelViewport()
-        {
         }
 
         public Camera GetCamera()
@@ -502,8 +491,41 @@ namespace Smash_Forge
             glViewport.MakeCurrent();
             GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
             Runtime.drawNudColorIdPass = true;
-            Render(null, null, fbo);
+            Render(null, null, fboRenderWidth, fboRenderHeight, fbo);
             Runtime.drawNudColorIdPass = false;
+        }
+
+        private void RenderMaterialPresetPreviewsToFiles()
+        {
+            int width = glViewport.Width;
+            int height = glViewport.Height;
+
+            Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
+            // Render all the material previews.
+            //foreach (string file in Directory.GetFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
+            {
+               // NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
+
+                glViewport.MakeCurrent();
+                GL.Viewport(0, 0, width, height);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                //framebuffer.Bind();
+                RenderTools.DrawQuadGradient(ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz, ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz);
+                RenderTools.DrawNudMaterialSphere(new NUD.Material());
+
+                // Using the other framebuffer targets doesn't work for some reason.
+                /*Bitmap image = framebuffer.ReadImagePixels(true);
+
+                // Save the image file using the name of the preset.
+                string[] parts = file.Split('\\');
+                string presetName = parts[parts.Length - 1];
+                presetName = presetName.Replace(".nmt", ".png");
+                image.Save(MainForm.executableDir + "\\Preview Images\\" + presetName);
+
+                // Cleanup
+                image.Dispose();*/
+                glViewport.SwapBuffers();
+            }
         }
 
         private NUD.Polygon GetSelectedPolygonFromColor(Color pixelColor)
@@ -565,7 +587,7 @@ namespace Smash_Forge
             if (readyToRender && currentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
             {
                 GL.LoadIdentity();
-                GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
+                GL.Viewport(0, 0, glViewport.Width, glViewport.Height);
 
                 camera.renderWidth = glViewport.Width;
                 camera.renderHeight = glViewport.Height;
@@ -594,8 +616,8 @@ namespace Smash_Forge
             // Resize the textures and buffers everytime the dimensions change.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
 
-            int textureWidth = fboRenderWidth;
-            int textureHeight = fboRenderHeight;
+            int textureWidth = glViewport.Width;
+            int textureHeight = glViewport.Height;
 
             // First color attachment.
             GL.BindTexture(TextureTarget.Texture2D, colorHdrTex0);
@@ -1047,6 +1069,8 @@ namespace Smash_Forge
 
                                 // Cleanup the models and nodes but keep the same viewport.
                                 ClearModelContainers();
+                                // Make sure the reference counts get updated for all the GLObjects so we can clean up next frame.
+                                GC.WaitForPendingFinalizers();
                             }
                         }
                     }
@@ -1084,7 +1108,7 @@ namespace Smash_Forge
 
         private void BatchRenderViewportToFile(string nudFileName, string sourcePath, string outputPath)
         {
-            SetupNextRender();
+            SetupAndRenderViewport();
             string renderName = ConvertDirSeparatorsToUnderscore(nudFileName, sourcePath);
             // Manually dispose the bitmap to avoid memory leaks. 
             Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, true);
@@ -1092,12 +1116,13 @@ namespace Smash_Forge
             screenCapture.Dispose();
         }
 
-        private void SetupNextRender()
+        private void SetupAndRenderViewport()
         {
             // Setup before rendering the model. Use a large max radius to show skybox models.
             FrameAllModelContainers();
-            Render(null, null);
-            glViewport.SwapBuffers();
+            // We need to manually call the paint event twice so the textures are refreshed and the screen updates properly.
+            glViewport_Paint(null, null);
+            glViewport_Paint(null, null);
         }
 
         public static string ConvertDirSeparatorsToUnderscore(string fullPath, string sourceDirPath)
@@ -1140,7 +1165,7 @@ namespace Smash_Forge
             {
                 currentFrame.Value = i;
                 currentFrame.Refresh(); //Refresh the frame counter control
-                Render(null, null);
+                Render(null, null, glViewport.Width, glViewport.Height);
 
                 if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
                 {
@@ -1186,8 +1211,6 @@ namespace Smash_Forge
                 if (node is ModelContainer)
                 {
                     Runtime.TextureContainers.Remove(((ModelContainer)node).NUT);
-                    ((ModelContainer)node).NUT.Destroy();
-                    ((ModelContainer)node).NUD.Destroy();
                 }
             }
 
@@ -1234,14 +1257,7 @@ namespace Smash_Forge
 
         private void ModelViewport_FormClosing(object sender, FormClosingEventArgs e)
         {
-            foreach(TreeNode n in meshList.filesTreeView.Nodes)
-            {
-                if(n is ModelContainer)
-                {
-                    ((ModelContainer)n).NUD.Dispose();
-                    ((ModelContainer)n).NUT.Destroy();
-                }
-            }
+
         }
 
         private void toolStripSaveRenderAlphaButton_Click(object sender, EventArgs e)
@@ -1393,14 +1409,14 @@ namespace Smash_Forge
             //vertexTool.Show();
         }
 
-        private void Render(object sender, PaintEventArgs e, int defaultFbo = 0)
+        private void Render(object sender, PaintEventArgs e, int width, int height, int defaultFbo = 0)
         {
             // Don't render if the context and resources aren't setup properly.
             // Watching textures suddenly appear looks weird.
             if (!readyToRender || Runtime.glTexturesNeedRefreshing)
                 return;
 
-            SetupViewport();
+            SetupViewport(width, height);
 
             // Bind the default framebuffer in case it was set elsewhere.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
@@ -1471,7 +1487,7 @@ namespace Smash_Forge
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
-                GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
+                GL.Viewport(0, 0, width, height);
 
                 RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, imageBrightHdrFbo.ColorAttachment0Tex);
             }
@@ -1514,11 +1530,11 @@ namespace Smash_Forge
                 RenderTools.DrawQuadGradient(topColor, bottomColor);
         }
 
-        private void SetupViewport()
+        private void SetupViewport(int width, int height)
         {
             glViewport.MakeCurrent();
             GL.LoadIdentity();
-            GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
+            GL.Viewport(0, 0, width, height);
         }
 
         private void DrawModels()
@@ -1749,7 +1765,7 @@ namespace Smash_Forge
 
             // Render the viewport.       
             offscreenRenderFbo.Bind();
-            Render(null, null, offscreenRenderFbo.Id);
+            Render(null, null, fboRenderWidth, fboRenderHeight, offscreenRenderFbo.Id);
 
             // Save the render as a PNG.
             Bitmap screenCapture = offscreenRenderFbo.ReadImagePixels(saveAlpha);
@@ -1810,7 +1826,9 @@ namespace Smash_Forge
 
         private void glViewport_Paint(object sender, PaintEventArgs e)
         {
-            Render(sender, e);
+            Render(sender, e, glViewport.Width, glViewport.Height);
+            // RenderMaterialPresetPreviewsToFiles(); // doesn't work yet
+
             // Make sure unused resources get cleaned up.
             GLObjectManager.DeleteUnusedGLObjects();
 
