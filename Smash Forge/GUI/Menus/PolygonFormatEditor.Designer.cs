@@ -34,6 +34,8 @@
             this.weightTypeComboBox = new System.Windows.Forms.ComboBox();
             this.normalTypeComboBox = new System.Windows.Forms.ComboBox();
             this.vertexColorCB = new System.Windows.Forms.CheckBox();
+            this.uvCountLabel = new System.Windows.Forms.Label();
+            this.uvCountUpDown = new System.Windows.Forms.NumericUpDown();
             this.applyButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -43,7 +45,6 @@
             this.weightTypeLabel.Location = new System.Drawing.Point(6, 6);
             this.weightTypeLabel.Name = "weightTypeLabel";
             this.weightTypeLabel.Size = new System.Drawing.Size(141, 25);
-            this.weightTypeLabel.TabIndex = 1;
             this.weightTypeLabel.Text = "Weight Type";
             // 
             // normalTypeLabel
@@ -52,7 +53,6 @@
             this.normalTypeLabel.Location = new System.Drawing.Point(153, 6);
             this.normalTypeLabel.Name = "normalTypeLabel";
             this.normalTypeLabel.Size = new System.Drawing.Size(141, 25);
-            this.normalTypeLabel.TabIndex = 1;
             this.normalTypeLabel.Text = "Normal Type";
             // 
             // weightTypeComboBox
@@ -83,30 +83,51 @@
             this.vertexColorCB.Margin = new System.Windows.Forms.Padding(2);
             this.vertexColorCB.Name = "vertexColorCB";
             this.vertexColorCB.Size = new System.Drawing.Size(110, 17);
-            this.vertexColorCB.TabIndex = 2;
             this.vertexColorCB.Text = "Has Vertex Color";
             this.vertexColorCB.UseVisualStyleBackColor = true;
+            this.vertexColorCB.TabIndex = 2;
+            // 
+            // uvCountLabel
+            // 
+            this.uvCountLabel.AutoSize = true;
+            this.uvCountLabel.Location = new System.Drawing.Point(153, 59);
+            this.uvCountLabel.Name = "uvCountLabel";
+            this.uvCountLabel.Size = new System.Drawing.Size(70, 25);
+            this.uvCountLabel.Text = "UV channels: ";
+            // 
+            // uvCountUpDown
+            // 
+            this.uvCountUpDown.Location = new System.Drawing.Point(225, 59);
+            this.uvCountUpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.uvCountUpDown.DecimalPlaces = 0;
+            this.uvCountUpDown.Minimum = 0x0;
+            this.uvCountUpDown.Maximum = 0xF;
+            this.uvCountUpDown.Value = 0;
+            this.uvCountUpDown.Name = "uvCountUpDown";
+            this.uvCountUpDown.Size = new System.Drawing.Size(70, 17);
+            this.uvCountUpDown.TabIndex = 3;
             // 
             // applyButton
             // 
-            this.applyButton.Location = new System.Drawing.Point(100, 76);
+            this.applyButton.Location = new System.Drawing.Point(100, 86);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(100, 23);
-            this.applyButton.TabIndex = 3;
             this.applyButton.Text = "Apply";
             this.applyButton.UseVisualStyleBackColor = true;
+            this.applyButton.TabIndex = 4;
             this.applyButton.Click += new System.EventHandler(this.applyButton_Click);
             // 
             // PolygonFormatEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(300, 110);
+            this.ClientSize = new System.Drawing.Size(300, 120);
             this.Controls.Add(this.weightTypeLabel);
             this.Controls.Add(this.normalTypeLabel);
             this.Controls.Add(this.weightTypeComboBox);
             this.Controls.Add(this.normalTypeComboBox);
             this.Controls.Add(this.vertexColorCB);
+            this.Controls.Add(this.uvCountUpDown);
             this.Controls.Add(this.applyButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "PolygonFormatEditor";
@@ -123,6 +144,8 @@
         private System.Windows.Forms.ComboBox weightTypeComboBox;
         private System.Windows.Forms.ComboBox normalTypeComboBox;
         private System.Windows.Forms.CheckBox vertexColorCB;
+        private System.Windows.Forms.Label uvCountLabel;
+        private System.Windows.Forms.NumericUpDown uvCountUpDown;
         private System.Windows.Forms.Button applyButton;
     }
 }
