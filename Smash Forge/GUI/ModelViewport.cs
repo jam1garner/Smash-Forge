@@ -1211,8 +1211,6 @@ namespace Smash_Forge
                 if (node is ModelContainer)
                 {
                     Runtime.TextureContainers.Remove(((ModelContainer)node).NUT);
-                    ((ModelContainer)node).NUT.Destroy();
-                    ((ModelContainer)node).NUD.Destroy();
                 }
             }
 
@@ -1259,14 +1257,7 @@ namespace Smash_Forge
 
         private void ModelViewport_FormClosing(object sender, FormClosingEventArgs e)
         {
-            foreach(TreeNode n in meshList.filesTreeView.Nodes)
-            {
-                if(n is ModelContainer)
-                {
-                    ((ModelContainer)n).NUD.Dispose();
-                    ((ModelContainer)n).NUT.Destroy();
-                }
-            }
+
         }
 
         private void toolStripSaveRenderAlphaButton_Click(object sender, EventArgs e)

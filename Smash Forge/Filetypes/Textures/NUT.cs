@@ -820,11 +820,6 @@ namespace Smash_Forge
             return false;
         }
 
-        public void Destroy()
-        {
-            Nodes.Clear();
-        }
-
         public override string ToString()
         {
             return "NUT";

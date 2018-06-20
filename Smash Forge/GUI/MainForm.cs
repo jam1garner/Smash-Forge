@@ -194,9 +194,6 @@ namespace Smash_Forge
 
         private void MainForm_Close(object sender, EventArgs e)
         {
-            if (Runtime.TargetNUD != null)
-                Runtime.TargetNUD.Destroy();
-
             DiscordRpc.Shutdown();
         }
 

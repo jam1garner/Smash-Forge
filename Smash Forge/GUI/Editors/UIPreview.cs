@@ -71,7 +71,6 @@ namespace Smash_Forge
 
             byte[] data = RenderTools.DXT5ScreenShot(view.glViewport, view.shootX, view.shootY, view.shootWidth, view.shootHeight);
             int id = n.Nodes.Count > 0 ? ((NutTexture)n.Nodes[0]).HASHID : 0x280052B7;
-            n.Destroy();
             n.Nodes.Clear();
             n.glTexByHashId.Clear();
 
@@ -260,7 +259,6 @@ namespace Smash_Forge
                 if (nut != null && nut.Nodes.Count > 0)
                 {
                     tex.HASHID = ((NutTexture)nut.Nodes[0]).HASHID;
-                    nut.Destroy();
                 }
                 if(nut == null)
                     nut = new NUT();

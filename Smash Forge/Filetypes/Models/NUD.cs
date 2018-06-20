@@ -21,7 +21,7 @@ using SFGraphics.Cameras;
 
 namespace Smash_Forge
 {
-    public class NUD : FileBase, IDisposable
+    public class NUD : FileBase
     {
         // OpenGL Buffers
         BufferObject positionVbo;
@@ -234,11 +234,6 @@ namespace Smash_Forge
                 incorrectTextureIds.AppendLine("...");
 
             return incorrectTextureIds.ToString();
-        }
-
-        public void Destroy()
-        {
-            Nodes.Clear();
         }
 
         public void DepthSortMeshes(Vector3 cameraPosition)
@@ -3438,11 +3433,6 @@ namespace Smash_Forge
                         if(!texIds.Contains(mat.displayTexId))
                             texIds.Add(mat.displayTexId);
             return texIds;
-        }
-
-        public void Dispose()
-        {
-            Nodes.Clear();
         }
     }
 }
