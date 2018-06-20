@@ -123,6 +123,19 @@ namespace Smash_Forge
             RenderTools.SetupOpenTkRendering();
         }
 
+        private static void UpdateMaterialThumbnails()
+        {
+            // Update the material thumbnails.
+            if (!Runtime.hasRefreshedMatThumbnails && Runtime.shaders["NudSphere"].ProgramCreatedSuccessfully())
+            {
+                ModelViewport mvp = (ModelViewport)MainForm.Instance.GetActiveModelViewport();
+                if (mvp != null)
+                    mvp.RenderMaterialPresetPreviewsToFiles();
+                // If it didn't work the first time, it probably won't work again.
+                Runtime.hasRefreshedMatThumbnails = true;
+            }
+        }
+
         public void InitMaterialParamList()
         {
             materialParamList = Params.MaterialParamTools.GetMatParamsFromFile();
@@ -806,9 +819,11 @@ namespace Smash_Forge
             }
         }
 
-        // Loading Mat
         private void loadPresetButton_Click(object sender, EventArgs e)
         {
+            // Only happens once.
+            UpdateMaterialThumbnails();
+
             MaterialSelector matSelector = new MaterialSelector();
             matSelector.ShowDialog();
             if (matSelector.exitStatus == MaterialSelector.Opened)

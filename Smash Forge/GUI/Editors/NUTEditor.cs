@@ -902,7 +902,6 @@ namespace Smash_Forge
             renderR = !renderR;
             renderChannelR.ForeColor = renderR ? Color.Red : Color.DarkGray;
 
-            // Uniforms need to be udpated.
             glControl1.Invalidate();
         }
 
@@ -911,7 +910,6 @@ namespace Smash_Forge
             renderG = !renderG;
             renderChannelG.ForeColor = renderG ? Color.Green : Color.DarkGray;
 
-            // Uniforms need to be udpated.
             glControl1.Invalidate();
         }
 
@@ -920,7 +918,6 @@ namespace Smash_Forge
             renderB = !renderB;
             renderChannelB.ForeColor = renderB ? Color.Blue : Color.DarkGray;
 
-            // Uniforms need to be udpated.
             glControl1.Invalidate();            
         }
 
@@ -929,7 +926,6 @@ namespace Smash_Forge
             renderAlpha = !renderAlpha;
             renderChannelA.ForeColor = renderAlpha ? Color.Black : Color.DarkGray;
 
-            // Uniforms need to be udpated.
             glControl1.Invalidate();           
         }
 

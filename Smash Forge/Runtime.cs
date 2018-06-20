@@ -273,6 +273,9 @@ namespace Smash_Forge
         // Texture creation needs to be delayed until we actually have a context.
         public static bool glTexturesNeedRefreshing = false;
 
+        // This should only be done once for performance reasons.
+        public static bool hasRefreshedMatThumbnails = false;
+
         public enum RenderTypes
         {
             Shaded = 0,

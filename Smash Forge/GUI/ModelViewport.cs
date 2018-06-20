@@ -495,26 +495,26 @@ namespace Smash_Forge
             Runtime.drawNudColorIdPass = false;
         }
 
-        private void RenderMaterialPresetPreviewsToFiles()
+        public void RenderMaterialPresetPreviewsToFiles()
         {
             int width = glViewport.Width;
             int height = glViewport.Height;
 
             Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
             // Render all the material previews.
-            //foreach (string file in Directory.GetFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
+            foreach (string file in Directory.GetFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
             {
-               // NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
+                NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
 
                 glViewport.MakeCurrent();
                 GL.Viewport(0, 0, width, height);
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                //framebuffer.Bind();
-                RenderTools.DrawQuadGradient(ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz, ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz);
-                RenderTools.DrawNudMaterialSphere(new NUD.Material());
+                framebuffer.Bind();
+                //RenderTools.DrawQuadGradient(ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz, ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz);
+                RenderTools.DrawNudMaterialSphere(material);
 
                 // Using the other framebuffer targets doesn't work for some reason.
-                /*Bitmap image = framebuffer.ReadImagePixels(true);
+                Bitmap image = framebuffer.ReadImagePixels(true);
 
                 // Save the image file using the name of the preset.
                 string[] parts = file.Split('\\');
@@ -523,7 +523,7 @@ namespace Smash_Forge
                 image.Save(MainForm.executableDir + "\\Preview Images\\" + presetName);
 
                 // Cleanup
-                image.Dispose();*/
+                image.Dispose();
                 glViewport.SwapBuffers();
             }
         }
@@ -1827,7 +1827,6 @@ namespace Smash_Forge
         private void glViewport_Paint(object sender, PaintEventArgs e)
         {
             Render(sender, e, glViewport.Width, glViewport.Height);
-            // RenderMaterialPresetPreviewsToFiles(); // doesn't work yet
 
             // Make sure unused resources get cleaned up.
             GLObjectManager.DeleteUnusedGLObjects();
