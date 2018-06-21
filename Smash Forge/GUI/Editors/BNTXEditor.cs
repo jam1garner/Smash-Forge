@@ -183,9 +183,15 @@ namespace Smash_Forge
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
+                    BRTI.BRTI_Texture newTexture = null;
                     if (Path.GetExtension(ofd.FileName).ToLower().Equals(".png"))
                     {
                         OpenPNG(ofd.FileName);
+                    }
+                    if (Path.GetExtension(ofd.FileName).ToLower().Equals(".dds"))
+                    {
+                        DDS dds = new DDS(new FileData(ofd.FileName));
+                        newTexture = dds.toBRTITexture();
                     }
                     if (Path.GetExtension(ofd.FileName).ToLower().Equals(".tex"))
                     {

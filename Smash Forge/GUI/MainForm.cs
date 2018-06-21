@@ -391,20 +391,9 @@ namespace Smash_Forge
             modelContainer.Text = name;
             mvp.Text = name;
 
-            /*   foreach (string file in files)
-               {
-                   if (file.EndsWith(".sbfres"))
-                   {
-                       string t = pathBfres.Replace(".sbfres", "");
-                       if (file.Contains(t) && file.Contains("Tex"))
-                       {
-                           modelContainer.BFRES = new BFRES(file);
-                           Console.WriteLine("Reading " + file);
-                       }
-                   }
-               }*/
 
-      
+         
+
 
             FileData f = new FileData(pathBfres);
 
@@ -440,6 +429,34 @@ namespace Smash_Forge
                     mvp.AnimList.treeView1.Nodes.Add(FSKA.Read(pathBfres, modelContainer.BFRES.TargetWiiUBFRES));
                 }
             }
+            
+            if (modelContainer.BFRES.FTXPCount != 0)
+            {
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    FTXP ftxp = new FTXP();
+
+                    mvp = (ModelViewport)dockPanel1.ActiveContent;
+                    AnimationGroupNode anim = new AnimationGroupNode();
+
+                    ftxp.Read(pathBfres, modelContainer.BFRES, anim, modelContainer);
+                    mvp.AnimList.treeView1.Nodes.Add(anim);
+                }
+            }
+            if (modelContainer.BFRES.FSHACount != 0)
+            {
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    FSHA fsha = new FSHA();
+
+                    mvp = (ModelViewport)dockPanel1.ActiveContent;
+                    AnimationGroupNode anim = new AnimationGroupNode();
+
+                    fsha.Read(pathBfres, modelContainer.BFRES, anim, modelContainer);
+                    mvp.AnimList.treeView1.Nodes.Add(anim);
+                }
+            }
+            
             if (modelContainer.BFRES.FVISCount != 0)
             {
                 if (dockPanel1.ActiveContent is ModelViewport)
@@ -452,18 +469,21 @@ namespace Smash_Forge
             {
                 if (dockPanel1.ActiveContent is ModelViewport)
                 {
-                 //   FMAA fmaa = new FMAA();
+                    FMAA fmaa = new FMAA();
 
-               //     mvp = (ModelViewport)dockPanel1.ActiveContent;
-               //     AnimationGroupNode anim = new AnimationGroupNode();
+                    mvp = (ModelViewport)dockPanel1.ActiveContent;
+                    AnimationGroupNode anim = new AnimationGroupNode();
 
-                 //   fmaa.Read(pathBfres, modelContainer.BFRES, anim, modelContainer);
-                  //  mvp.AnimList.treeView1.Nodes.Add(anim);
+                    fmaa.Read(pathBfres, modelContainer.BFRES, anim, modelContainer);
+                    mvp.AnimList.treeView1.Nodes.Add(anim);
                 }
             }
 
             // Reset the camera. 
             //    mvp.FrameSelectionAndSort();
+
+      
+
             return mvp;
         }
 

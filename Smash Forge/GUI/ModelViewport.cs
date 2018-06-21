@@ -120,8 +120,8 @@ namespace Smash_Forge
                 currentFrame.Value = 0;
             }
         }
-        private BFRES_MTA BFRESMaterialAnimation;
-        public BFRES_MTA CurrentBFRESMaterialAnimation
+        private BFRES.MTA BFRESMaterialAnimation;
+        public BFRES.MTA CurrentBFRESMaterialAnimation
         {
             get
             {

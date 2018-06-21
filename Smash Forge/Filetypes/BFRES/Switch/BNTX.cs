@@ -109,6 +109,14 @@ namespace Smash_Forge
         }
     }
 
+    static class Extensions
+    {
+        public static void AddSafe(this Dictionary<int, string> dictionary, int key, string value)
+        {
+            if (!dictionary.ContainsKey(key))
+                dictionary.Add(key, value);
+        }
+    }
 
     public class BNTX : TreeNode
     {
@@ -118,6 +126,9 @@ namespace Smash_Forge
         int BRTIOffset;
 
         public static int temp; //This variable is so we can get offsets from start of BNTX file
+        public static byte[] BNTXFile;
+
+
 
         public void ReadBNTXFile(string FileName) //For single BNTX files
         {
@@ -127,13 +138,16 @@ namespace Smash_Forge
             ReadBNTX(f);
         }
 
+ 
+
         public void ReadBNTX(FileData f)
         {
-            ImageKey = "UVPattern";
-            SelectedImageKey = "UVPattern";
+            ImageKey = "nut";
+            SelectedImageKey = "nut";
 
             textures.Clear();
-            textured.Clear();
+
+            BFRES b = new BFRES();
 
             temp = f.pos();
 
@@ -153,6 +167,12 @@ namespace Smash_Forge
             int DictOffset = f.readInt();
             int strDictSize = f.readInt();
 
+            Text = Text + ".bntx";
+
+            BNTXFile = f.getSection(temp, FileSize);
+
+
+
             for (int i = 0; i < TexturesCount; i++)
             {
                 f.seek(InfoPtrsOffset + temp + i * 8);
@@ -164,7 +184,11 @@ namespace Smash_Forge
                 //  textures.Add(new BRTI(f));
                 BRTI texture = new BRTI(f);
 
-                textured.Add(texture.Text, texture);
+                if (!textured.ContainsKey(texture.Text))
+                {
+                    textured.Add(texture.Text, texture);
+                }
+
                 textures.Add(texture);
 
             }
@@ -175,7 +199,7 @@ namespace Smash_Forge
 
     public class BRTI : TreeNode
     {
-        Swizzle.Surface surf;
+        public Swizzle.Surface surf;
 
         public BRTI_Texture texture = new BRTI_Texture();
         public byte DataType;
@@ -184,6 +208,7 @@ namespace Smash_Forge
         public int Width, Height, display;
         public uint format;
         public static List<BRTI_Texture> RenderableTex = new List<BRTI_Texture>();
+        public uint blkWidth, blkHeight, bpp;
 
 
         public BRTI(FileData f) //Docs thanks to gdkchan!!
@@ -233,10 +258,10 @@ namespace Smash_Forge
             //Console.WriteLine(surf.data.Length + " " + dataOff.ToString("x") + " " + surf.imageSize);
 
             uint blk_dim = Formats.blk_dims(surf.format >> 8);
-            uint blkWidth = blk_dim >> 4;
-            uint blkHeight = blk_dim & 0xF;
+            blkWidth = blk_dim >> 4;
+            blkHeight = blk_dim & 0xF;
 
-            uint bpp = Formats.bpps(surf.format >> 8);
+            bpp = Formats.bpps(surf.format >> 8);
 
             //     Console.WriteLine($"{Name} Height {surf.height}wdith = {surf.width}allignment = {surf.alignment}blkwidth = {blkWidth}blkheight = {blkHeight}blkdims = {blk_dim} format = {surf.format} datatype = {DataType} dataoffset = {dataOff}");
 
@@ -255,6 +280,9 @@ namespace Smash_Forge
 
             Array.Copy(result, 0, result_, 0, width * height * bpp);
 
+            byte[] Swizzled = Swizzle.swizzle((uint)surf.width, (uint)surf.height, blkWidth, blkHeight, bpp, (uint)surf.tileMode, (uint)surf.alignment, surf.sizeRange, surf.data, 1);
+
+
             texture.data = result_;
             texture.width = surf.width;
             texture.height = surf.height;
@@ -263,6 +291,7 @@ namespace Smash_Forge
             Height = surf.height;
 
             texture.mipmaps.Add(result_);
+
 
             switch (surf.format >> 8)
             {
@@ -304,10 +333,10 @@ namespace Smash_Forge
                     {
                         texture.type = PixelInternalFormat.CompressedRedRgtc1;
 
-                    /*    byte[] fixBC4 = DecompressBC4(texture.data, texture.width, texture.height, false);
-                        texture.data = fixBC4;
-                        texture.type = PixelInternalFormat.Rgba;
-                        texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;*/
+                        /*    byte[] fixBC4 = DecompressBC4(texture.data, texture.width, texture.height, false);
+                            texture.data = fixBC4;
+                            texture.type = PixelInternalFormat.Rgba;
+                            texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;*/
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
                     {
@@ -324,17 +353,17 @@ namespace Smash_Forge
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC5):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
                     {
-                  //      byte[] fixBC5 = DecompressBC5(texture.data, texture.width, texture.height, false);
-                    //    texture.data = fixBC5;
+                        //      byte[] fixBC5 = DecompressBC5(texture.data, texture.width, texture.height, false);
+                        //    texture.data = fixBC5;
                         texture.type = PixelInternalFormat.CompressedRgRgtc2;
-                    //    texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                        //    texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
                     {
-                           byte[] fixBC5 = DecompressBC5(texture.data, texture.width, texture.height, true);
-                           texture.data = fixBC5;
-                           texture.type = PixelInternalFormat.Rgba;
-                           texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                        byte[] fixBC5 = DecompressBC5(texture.data, texture.width, texture.height, true);
+                        texture.data = fixBC5;
+                        texture.type = PixelInternalFormat.Rgba;
+                        texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else
                         Console.WriteLine("Unsupported data type for BC5");
@@ -342,12 +371,12 @@ namespace Smash_Forge
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC7):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
                     {
-               /*         ProcessStartInfo startInfo = new ProcessStartInfo();
-                        startInfo.CreateNoWindow = false;
-                        startInfo.UseShellExecute = false;
-                        startInfo.FileName = "lib\texconv.exe";
-                        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                        startInfo.Arguments = "-ft png -f R10G10B10A2_UNORM -y";*/
+                        /*         ProcessStartInfo startInfo = new ProcessStartInfo();
+                                 startInfo.CreateNoWindow = false;
+                                 startInfo.UseShellExecute = false;
+                                 startInfo.FileName = "lib\texconv.exe";
+                                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                                 startInfo.Arguments = "-ft png -f R10G10B10A2_UNORM -y";*/
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
                     {
@@ -370,11 +399,13 @@ namespace Smash_Forge
             display = texture.display;
 
             RenderableTex.Add(texture);
+
         }
 
 
+
         //Huge thanks to gdkchan and AbooodXD for the method of decomp BC5/BC4.
-        
+
         //Todo. Add these to DDS code and add in methods to compress and decode more formats
         //BC7 also needs to be decompressed properly since OpenTK can't decompress those
 
@@ -426,7 +457,7 @@ namespace Smash_Forge
                     }
                 }
             }
-        
+
             return Output;
         }
 
@@ -515,7 +546,7 @@ namespace Smash_Forge
                             {
 
                                 int Shift = TY * 12 + TX * 3;
-                                int OOffset = ((Y * 4 + TY) *width + (X * 4 + TX)) * 4;
+                                int OOffset = ((Y * 4 + TY) * width + (X * 4 + TX)) * 4;
 
                                 byte RedPx = Red[(RedCh >> Shift) & 7];
                                 byte GreenPx = Green[(GreenCh >> Shift) & 7];
@@ -695,7 +726,7 @@ namespace Smash_Forge
             return texID;
         }
 
-        public unsafe void ExportAsImage(BRTI_Texture t, int id , string path)
+        public unsafe void ExportAsImage(BRTI_Texture t, int id, string path)
         {
             Bitmap bitmap = new Bitmap(t.width, t.height);
             System.Drawing.Imaging.BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, t.width, t.height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
@@ -706,5 +737,5 @@ namespace Smash_Forge
             bitmap.Save(path);
         }
     }
-}
 
+}

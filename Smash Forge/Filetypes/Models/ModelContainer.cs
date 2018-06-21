@@ -75,7 +75,7 @@ namespace Smash_Forge
             }
         }
         public MTA mta;
-        public BFRES_MTA BFRES_MTA
+        public BFRES.MTA BFRES_MTA
         {
             get
             {
@@ -87,7 +87,7 @@ namespace Smash_Forge
                 Refresh();
             }
         }
-        public BFRES_MTA bfres_mta;
+        public BFRES.MTA bfres_mta;
         public MOI MOI
         {
             get

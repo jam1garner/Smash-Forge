@@ -109,7 +109,10 @@ namespace Smash_Forge
             return _swizzle(width, height, blkWidth, blkHeight, bpp, tileMode, alignment, size_range, data, 0);
         }
 
-
+        public static byte[] swizzle(uint width, uint height, uint blkWidth, uint blkHeight, uint bpp, uint tileMode, uint alignment, int size_range, byte[] data, int ToSwizzle)
+        {
+            return _swizzle(width, height, blkWidth, blkHeight, bpp, tileMode, alignment, size_range, data, 1);
+        }
 
         static uint getAddrBlockLinear(uint x, uint y, uint width, uint bytes_per_pixel, uint base_address, uint block_height)
         {

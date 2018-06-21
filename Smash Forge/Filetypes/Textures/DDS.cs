@@ -233,8 +233,70 @@ namespace Smash_Forge
 
             return tex;
         }
-       
-		public Bitmap toBitmap(){
+
+        //For bfres / bntx
+        public BRTI.BRTI_Texture toBRTITexture()
+        {
+            BRTI.BRTI_Texture tex = new BRTI.BRTI_Texture();
+            tex.height = header.height;
+            tex.width = header.width;
+            float size = 1;
+            int mips = header.mipmapCount;
+            /*if (mips > header.mipmapCount)
+            {
+                mips = header.mipmapCount;
+                MessageBox.Show("Possible texture error: Only one mipmap");
+            }*/
+
+            switch (header.dwFourCC)
+            {
+                case 0x0:
+                    size = 4f;
+                    tex.type = PixelInternalFormat.SrgbAlpha;
+                    tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    break;
+                case 0x31545844:
+                    size = 1 / 2f;
+                    tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    break;
+                case 0x35545844:
+                    size = 1f;
+                    tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    break;
+                case 0x32495441:
+                    size = 1 / 2f;
+                    tex.type = PixelInternalFormat.CompressedRedRgtc1;
+                    break;
+                case 0x31495441:
+                    size = 1f;
+                    tex.type = PixelInternalFormat.CompressedRgRgtc2;
+                    break;
+                default:
+                    MessageBox.Show("Unsupported DDS format - 0x" + header.dwFourCC.ToString("x"));
+                    break;
+            }
+
+            // now for mipmap data...
+            FileData d = new FileData(data);
+            int off = 0, w = header.width, h = header.height;
+
+            if (header.mipmapCount == 0) header.mipmapCount = 1;
+            for (int i = 0; i < header.mipmapCount; i++)
+            {
+                int s = (int)((w * h) * size);
+                if (s < 0x8) s = 0x8;
+                //Console.WriteLine(off.ToString("x") + " " + s.ToString("x"));
+                w /= 2;
+                h /= 2;
+                tex.mipmaps.Add(d.getSection(off, s));
+                off += s;
+            }
+            Console.WriteLine(off.ToString("x"));
+
+            return tex;
+        }
+
+        public Bitmap toBitmap(){
 
 			byte[] pixels = new byte[header.width * header.height * 4];
 

@@ -960,6 +960,8 @@ namespace Smash_Forge.Rendering
                     // TODO: previously selected model or select multiple models.
                     bool containsTexture = BFRES_MeshContainsTextureHash(texHash, p);
 
+                    
+
                     if (containsTexture)
                     {
                         List<int> f = p.getDisplayFace();
@@ -999,9 +1001,9 @@ namespace Smash_Forge.Rendering
 
         private static bool BFRES_MeshContainsTextureHash(int selectedTextureHash, BFRES.Mesh m)
         {
-            foreach (int matTex in m.texHashs)
+            foreach (BFRES.MatTexture matTex in m.material.textures)
             {
-                if (selectedTextureHash == matTex)
+                if (selectedTextureHash == matTex.hash)
                     return true;
             }
 

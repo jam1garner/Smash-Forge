@@ -14,7 +14,7 @@ using Syroot.NintenTools.Yaz0;
 namespace Smash_Forge
 {
 
-    public class FMAA
+    public class FSHA
     {
         public static AnimationGroupNode ThisAnimation;
         public static int FrameCount;
@@ -25,33 +25,31 @@ namespace Smash_Forge
 
         public void Read(string filename, BFRES bfres, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
         {
-            Console.WriteLine("Reading Material Animations ...");
+            Console.WriteLine("Reading Shape Animations ...");
 
             ResFile b = new ResFile(filename);
 
-            ThisAnimation.Text = "Material Animations" ;
+            ThisAnimation.Text = "Shape Animations";
 
-    
+
 
             TreeNode dummy = new TreeNode() { Text = "Animation Set" };
 
             int i = 0;
-            foreach (MaterialAnim vis in b.MaterialAnims)
+            foreach (ShapeAnim fsha in b.ShapeAnims)
             {
                 modelContainer.BFRES_MTA = new BFRES.MTA();
 
-                PerMatAnim perAnim = new PerMatAnim(modelContainer.BFRES_MTA, vis);
+                PerShapeAnim perAnim = new PerShapeAnim(modelContainer.BFRES_MTA, fsha);
 
                 ThisAnimation.Nodes.Add(modelContainer.BFRES_MTA);
             }
         }
     }
 
-    public class PerMatAnim
+    public class PerShapeAnim
     {
-
-
-        public PerMatAnim(BFRES.MTA mta, MaterialAnim vis)
+        public PerShapeAnim(BFRES.MTA mta, ShapeAnim vis)
         {
 
             mta.Text = vis.Name;
@@ -59,92 +57,32 @@ namespace Smash_Forge
             mta.FrameCount = (uint)vis.FrameCount;
 
 
-            if (vis.TextureNames != null)
-            {
-                foreach (string tex in vis.TextureNames)
-                {
-                    mta.Pat0.Add(tex);
-                }
-            }
-
-            foreach (MaterialAnimData matanim in vis.MaterialAnimDataList)
+            foreach (VertexShapeAnim vtxanim in vis.VertexShapeAnims)
             {
                 BFRES.MatAnimEntry mat = new BFRES.MatAnimEntry();
 
-                mat.Text = matanim.Name;
-
-                if (matanim.Curves.Count == 0)
-                {
-                    int CurTex = 0;
-                    foreach (TexturePatternAnimInfo inf in matanim.TexturePatternAnimInfos)
-                    {
-
-                        if (vis.TextureNames != null)
-                        {
-                            BFRES.MatAnimData md = new BFRES.MatAnimData();
-
-                            md.Pat0Tex = mta.Pat0[CurTex];
-                            md.SamplerName = inf.Name;
-                            md.Frame = 0;
-
-                            mat.matCurves.Add(md);
-                        }
-                        CurTex++;
-                    }
-                }
+                mat.Text = vtxanim.Name;
 
                 int CurCurve = 0;
-                foreach (AnimCurve cr in matanim.Curves)
+                foreach (AnimCurve cr in vtxanim.Curves)
                 {
                     for (int i = 0; i < (ushort)cr.Frames.Length; i++)
                     {
                         BFRES.MatAnimData md = new BFRES.MatAnimData();
 
-                        foreach (TexturePatternAnimInfo inf in matanim.TexturePatternAnimInfos)
-                        {
-                            if (inf.CurveIndex == CurCurve)
-                            {
-                                md.SamplerName = inf.Name;
-                            }
-                        }
+
                         
-
-                        if (vis.TextureNames != null)
-                        {
-                            if (cr.KeyType == AnimCurveKeyType.SByte)
-                            {
-                                md.CurveIndex = CurCurve;
-
-                                if (cr.Scale != 0)
-                                {
-                                    int test = (int)cr.Keys[i, 0];
-                                    float key = cr.Offset + test * cr.Scale;
-                                    md.Pat0Tex = (mta.Pat0[(int)key]);
-                                    md.Frame = (int)cr.Frames[i];
-                                    
-                                }
-                                else
-                                {
-                                    int test = (int)cr.Keys[i, 0];
-                                    int key = cr.Offset + test;
-                                    md.Pat0Tex = (mta.Pat0[(int)key]);
-                                    md.Frame = (int)cr.Frames[i];
-                                  
-                                }
-                            }
-                        }
                         mat.matCurves.Add(md);
                     }
                     CurCurve++;
                 }
 
                 mta.matEntries.Add(mat);
-
             }
         }
 
 
-        public class FMAANode
+        public class FSHANode
         {
             public int flags;
             public int flags2;
@@ -158,9 +96,9 @@ namespace Smash_Forge
             public string Text;
 
             public Vector3 sca, rot, pos;
-            public List<FMAATrack> tracks = new List<FMAATrack>();
+            public List<FSHATrack> tracks = new List<FSHATrack>();
 
-            public FMAANode(MaterialAnimData md)
+            public FSHANode(MaterialAnimData md)
             {
                 Text = md.Name;
 
@@ -168,7 +106,7 @@ namespace Smash_Forge
 
                 foreach (AnimCurve tr in md.Curves)
                 {
-                    FMAATrack t = new FMAATrack();
+                    FSHATrack t = new FSHATrack();
                     t.flag = (int)tr.AnimDataOffset;
                     tracks.Add(t);
 
@@ -208,7 +146,7 @@ namespace Smash_Forge
                         {
 
                         }
-                        t.keys.Add(new FMAAKey()
+                        t.keys.Add(new FSHAKey()
                         {
                             frame = (int)tr.Frames[i],
                             unk1 = tr.Offset + ((tr.Keys[i, 0] * tr.Scale)),
@@ -220,7 +158,7 @@ namespace Smash_Forge
                 }
             }
         }
-        public class FMAATrack
+        public class FSHATrack
         {
             public short type;
             public short keyCount;
@@ -232,17 +170,17 @@ namespace Smash_Forge
             public float frameCount;
             public float scale, init, unkf3;
             public long offtolastKeys, offtolastData;
-            public List<FMAAKey> keys = new List<FMAAKey>();
+            public List<FSHAKey> keys = new List<FSHAKey>();
 
             public int offset;
 
-            public FMAAKey GetLeft(int frame)
+            public FSHAKey GetLeft(int frame)
             {
-                FMAAKey prev = keys[0];
+                FSHAKey prev = keys[0];
 
                 for (int i = 0; i < keys.Count - 1; i++)
                 {
-                    FMAAKey key = keys[i];
+                    FSHAKey key = keys[i];
                     if (key.frame > frame && prev.frame <= frame)
                         break;
                     prev = key;
@@ -250,14 +188,14 @@ namespace Smash_Forge
 
                 return prev;
             }
-            public FMAAKey GetRight(int frame)
+            public FSHAKey GetRight(int frame)
             {
-                FMAAKey cur = keys[0];
-                FMAAKey prev = keys[0];
+                FSHAKey cur = keys[0];
+                FSHAKey prev = keys[0];
 
                 for (int i = 1; i < keys.Count; i++)
                 {
-                    FMAAKey key = keys[i];
+                    FSHAKey key = keys[i];
                     cur = key;
                     if (key.frame > frame && prev.frame <= frame)
                         break;
@@ -267,7 +205,7 @@ namespace Smash_Forge
                 return cur;
             }
         }
-        public class FMAAKey
+        public class FSHAKey
         {
             public int frame;
             public float unk1, unk2, unk3, unk4;

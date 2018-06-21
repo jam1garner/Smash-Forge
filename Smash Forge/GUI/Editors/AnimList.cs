@@ -232,9 +232,9 @@ namespace Smash_Forge
                 }
 
             }
-            if (e.Node is BFRES_MTA) //For BFRES
+            if (e.Node is BFRES.MTA) //For BFRES
             {
-                ((ModelViewport)Parent).CurrentBFRESMaterialAnimation = (BFRES_MTA)e.Node;
+                ((ModelViewport)Parent).CurrentBFRESMaterialAnimation = (BFRES.MTA)e.Node;
 
                 Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
                 foreach (TreeNode n in treeView1.Nodes)
@@ -284,9 +284,9 @@ namespace Smash_Forge
             {
                 ((MTA)treeView1.SelectedNode).ExpandNodes();
             }
-            if (treeView1.SelectedNode is BFRES_MTA)
+            if (treeView1.SelectedNode is BFRES.MTA)
             {
-                ((BFRES_MTA)treeView1.SelectedNode).ExpandNodes();
+                ((BFRES.MTA)treeView1.SelectedNode).ExpandNodes();
             }
         }
 

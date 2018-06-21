@@ -454,12 +454,12 @@ namespace Smash_Forge
                         }
                     }
                 }
-                if (child is BFRES_MTA) //For BFRES
+                if (child is BFRES.MTA) //For BFRES
                 {
                     {
                         if (((ModelContainer)skeleton.Parent).BFRES != null)
                         {
-                            ((ModelContainer)skeleton.Parent).BFRES.ApplyMta(((BFRES_MTA)child), (int)Frame);
+                            ((ModelContainer)skeleton.Parent).BFRES.ApplyMta(((BFRES.MTA)child), (int)Frame);
                         }
                     }
                 }

@@ -55,6 +55,7 @@ namespace Smash_Forge
                 RefreshNodes();
             };
             MainContextMenu.MenuItems.Add(newMC);
+
         }
 
         bool changingValue = false;
@@ -352,9 +353,20 @@ namespace Smash_Forge
                 {
                     bfresMeshContextMenu.Show(this, e.X, e.Y);
                 }
+                else
                 if (filesTreeView.SelectedNode is BFRES)
                 {
                     bfresToolStripMenu.Show(this, e.X, e.Y);
+                }
+                else
+                if (filesTreeView.SelectedNode is BNTX)
+                {
+                    bfresBntxContextMenuStrip2.Show(this, e.X, e.Y);
+                }
+                else
+                if (filesTreeView.SelectedNode is BFRES.FMDL_Model)
+                {
+                    bfresFmdlcontextMenuStrip1.Show(this, e.X, e.Y);
                 }
                 else
                 if(filesTreeView.SelectedNode == null)
@@ -1430,6 +1442,7 @@ namespace Smash_Forge
 
         }
 
+
 #region BFRES Menus
 
         private void openMaterialEditorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1454,7 +1467,16 @@ namespace Smash_Forge
                 filename = save.FileName;
                 if (filename.EndsWith(".bfres"))
                 {
-                    ((BFRES)filesTreeView.SelectedNode).SaveFile(filename);
+                    if (((BFRES)filesTreeView.SelectedNode).TargetSwitchBFRES != null)
+                    {
+                        ((BFRES)filesTreeView.SelectedNode).InjectToFile(filename);
+                    }
+                    else
+                    {
+                        ((BFRES)filesTreeView.SelectedNode).InjectToWiiUBFRES(filename);
+                    }
+
+              
                 }
             }
         }
@@ -1528,8 +1550,6 @@ namespace Smash_Forge
             mesh.CalculateTangentBitangent();
         }
 
-        #endregion
-
         private void smoothNormalsToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
@@ -1571,6 +1591,194 @@ namespace Smash_Forge
                 {
                     if (((ModelContainer)con).BFRES != null)
                         ((ModelContainer)con).BFRES.UpdateVertexData();
+                }
+            }
+        }
+
+        private void bfresNormalsToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void bfresSetVertexColors_Click(object sender, EventArgs e)
+        {
+      
+        }
+
+        private void setColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh mesh = (BFRES.Mesh)filesTreeView.SelectedNode;
+
+            ColorDialog colorDialog1 = new ColorDialog();
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {               
+                mesh.SetVertexColor(new OpenTK.Vector4(
+                    colorDialog1.Color.R / 255.0f,
+                    colorDialog1.Color.G / 255.0f,
+                    colorDialog1.Color.B / 255.0f,
+                    colorDialog1.Color.A / 255.0f));
+            }
+
+
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).BFRES != null)
+                        ((ModelContainer)con).BFRES.UpdateVertexData();
+                }
+            }
+        }
+
+        private void bfresMeshContextMenu_Opening(object sender, CancelEventArgs e)
+        {
+
+        }
+
+        private void bfresSetWhiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh mesh = (BFRES.Mesh)filesTreeView.SelectedNode;
+
+            mesh.SetVertexColor(new OpenTK.Vector4(
+                127.0f / 255.0f,
+                127.0f / 255.0f,
+                127.0f / 255.0f,
+                127.0f / 255.0f));
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).BFRES != null)
+                        ((ModelContainer)con).BFRES.UpdateVertexData();
+                }
+            }
+
+        }
+
+        private void toolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BNTX))
+                return;
+
+            BNTX bn = (BNTX)filesTreeView.SelectedNode;
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.FileName = "textures.bntx";
+
+            sfd.Filter =
+                    "Supported Formats|*.bntx;|" +
+                    "All files(*.*)|*.*";
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllBytes(sfd.FileName, BNTX.BNTXFile);
+            }
+        }
+
+        public void UpdateBFRESMeshList()
+        {
+            Console.WriteLine(filesTreeView.Nodes.Count);
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).BFRES != null)
+                    {
+                        foreach (BFRES.FMDL_Model mdl in ((ModelContainer)con).BFRES.models)
+                        {
+                            foreach (BFRES.Mesh m in mdl.poly)
+                            {
+                                Console.WriteLine("Updating mesh " + m.Text);
+                                m.UpdateTexIDs();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BNTX))
+                return;
+
+            BNTX bn = (BNTX)filesTreeView.SelectedNode;
+
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter =
+                    "Supported Formats|*.bntx;|" +
+                    "All files(*.*)|*.*";
+
+
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                byte[] newBntx = File.ReadAllBytes(ofd.FileName);
+
+
+                if (newBntx.Length == BNTX.BNTXFile.Length)
+                {
+                    FileData f = new FileData(newBntx);
+                    f.Endian = Endianness.Little;
+
+                    BNTX.textured.Clear();
+
+                    bn.Nodes.Clear();
+                    bn.ReadBNTX(f);
+                }
+                else
+                {
+                    MessageBox.Show("Your BNTX is too big or small! Must be original size!!!");
+                }
+            }
+
+            // Update the data for rendering.
+            UpdateBFRESMeshList();
+        }
+
+        #endregion
+
+        private void bfresFmdlreplaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.FMDL_Model))
+                return;
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).BFRES != null)
+                    {
+                        OpenFileDialog ofd = new OpenFileDialog();
+                        ofd.Filter =
+                                "Supported Formats|*.dae;*.bfres;|" +
+                                "All files(*.*)|*.*";
+
+                        if (ofd.ShowDialog() == DialogResult.OK)
+                        {
+                            if (ofd.FileName.EndsWith(".bfres"))
+                            {
+                                
+                            }
+                            if (ofd.FileName.EndsWith(".dae"))
+                            {
+                                Collada.DaetoBfresReplace(ofd.FileName, ((ModelContainer)con), filesTreeView.SelectedNode.Index);
+                            }
+                        }
+                    }
                 }
             }
         }

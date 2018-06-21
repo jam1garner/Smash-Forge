@@ -109,7 +109,6 @@ namespace Smash_Forge
                             {
                                 Syroot.NintenTools.NSW.Bfres.AnimCurve cr = vis.Curves[boneindx];
 
-                                Console.WriteLine($"{vis.Name} {vis.Names[boneindx]}");
 
                                 int frm = 0;
                                 foreach (bool bn in cr.KeyStepBoolData)
@@ -119,8 +118,6 @@ namespace Smash_Forge
                                     frame.Frame = cr.Frames[frm];
 
 
-
-                                    Console.WriteLine(vis.Name + " " + vis.Names[boneindx] + " " + bn);
 
                                     switch (bn)
                                     {

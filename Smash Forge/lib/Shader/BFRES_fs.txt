@@ -41,7 +41,7 @@ uniform float emission_intensity;
 
 
 //Shader Options via BFRES
-uniform int uking_texture2_texcoord;
+uniform float uking_texture2_texcoord;
 
 // Channel Toggles
 uniform int renderR;
@@ -58,6 +58,7 @@ uniform int HasTransparencyMap;
 uniform int HasEmissionMap;
 uniform int HasDiffuseLayer;
 
+uniform int bake_shadow_type;
 
 out vec4 FragColor;
 
@@ -264,8 +265,13 @@ void main()
     }
 	else if (renderType == 4) //Display Normal
 	{
-        FragColor =  vec4(texture(nrm, displayTexCoord).rg, 1, 1);
+		if (uking_texture2_texcoord == 1)
+        FragColor = vec4(texture(nrm, f_texcoord1).rg, 1, 1);
+    else
+        FragColor = vec4(texture(nrm, displayTexCoord).rg, 1, 1);
 	}
+	else if (renderType == 3) //DiffuseColor
+	    FragColor = vec4(texture(tex0, displayTexCoord).rgb, 1);
     else if (renderType == 5) // vertexColor
         FragColor = color;
 	else if (renderType == 6) //Display Ambient Occlusion

@@ -10,6 +10,7 @@ using Syroot.NintenTools.Bfres;
 using Syroot.NintenTools.Bfres.GX2;
 using Syroot.NintenTools.Bfres.Helpers;
 using ResNSW = Syroot.NintenTools.NSW.Bfres;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {
@@ -25,12 +26,20 @@ namespace Smash_Forge
 
         public Matrix4[] sb;
 
-        public Dictionary<string, FTEX> textures = new Dictionary<string, FTEX>();
-        public int FSKACount;
-        public int FVISCount;
-        public int FMAACount;
+        public byte[] BFRESFile;
+
+        public static Dictionary<string, FTEX> FTEXtextures = new Dictionary<string, FTEX>();
+        public int FSKACount; //Skeleton animations
+        public int FVISCount; //Bone Visual animations
+        public int FMAACount; //Material animations
+        public int FSHACount; //Shape/Vertex animations
+        public int FSCNCount; //Scene animations
+
+        //Wii U seperates it's material anims into different sections
+        public int FTXPCount; //Texture patterns
 
         public ResNSW.ResFile TargetSwitchBFRES;
+        public static bool IsSwitchBFRES;
 
         //Switch TreeNodes
         public TreeNode TModels = new TreeNode() { Text = "Models", Checked = true };
@@ -89,34 +98,51 @@ namespace Smash_Forge
             Runtime.shaders["BFRES"].DisplayCompilationWarning("BFRES");
         }
 
+
+
         public BFRES(string fname) : this()
         {
             Text = Path.GetFileName(fname);
 
             SetMarioPosition(fname);
 
+
             FileData f = new FileData(fname);
+
+            BFRESFile = f.getSection(0, f.eof());
 
             f.seek(4);
 
             int SwitchCheck = f.readInt();
             if (SwitchCheck == 0x20202020)
             {
+                IsSwitchBFRES = true;
+
                 TargetSwitchBFRES = new ResNSW.ResFile(fname);
                 path = Text;
                 Read(TargetSwitchBFRES, f); //Temp add FileData for now till I parse BNTX with lib
-                UpdateTextureMaps();
                 UpdateVertexData();
                 SetupShader();
+
             }
             else
             {
+                IsSwitchBFRES = false;
+
                 TargetWiiUBFRES = new ResFile(fname);
                 path = Text;
                 Read(TargetWiiUBFRES);
                 UpdateTextureMaps();
                 UpdateVertexData();
                 SetupShader();
+
+                foreach (FMDL_Model mdl in models)
+                {
+                    foreach (Mesh m in mdl.poly)
+                    {
+                        m.UpdateTexIDs();
+                    }
+                }
             }
         }
 
@@ -312,15 +338,11 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
             GL.Uniform1(shader.getAttribute("uvChannel"), (int)Runtime.uvChannel);
-            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
             GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.renderNormalMap ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderR"), Runtime.renderR ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderG"), Runtime.renderG ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderB"), Runtime.renderB ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
-
-            GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, Rendering.RenderTools.uvTestPattern);
         }
         private void DrawMesh(Mesh m, Shader shader, MaterialData mat, bool drawSelection = false)
         {
@@ -329,7 +351,7 @@ namespace Smash_Forge
 
             SetVertexAttributes(m, shader);
             RenderUniformParams(mat, shader);
-            MapTextures(mat, m);
+            SetTextureUniforms(mat, m);
 
 
 
@@ -447,9 +469,6 @@ namespace Smash_Forge
             Vertices = Vs.ToArray();
             Faces = Ds.ToArray();
 
-
-
-
             // Bind only once!
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
             GL.BufferData<DisplayVertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
@@ -483,7 +502,9 @@ namespace Smash_Forge
             GL.Uniform4(shader.getAttribute("gsys_bake_st1"), new Vector4(1, 1, 0, 0));
 
             //This uniform is set so I can do SRT anims.
-            SetUnifromData(mat, shader, "SamplerUV1");
+            SetUnifromData(mat, shader, "tex_mtx0");
+        //    SetUnifromData(mat, shader, "tex_mtx1");
+       //     SetUnifromData(mat, shader, "tex_mtx2");
 
             //This uniform variable shifts first bake map coords (MK8, Spatoon 1/2, ect)
             SetUnifromData(mat, shader, "gsys_bake_st0");
@@ -491,11 +512,29 @@ namespace Smash_Forge
             SetUnifromData(mat, shader, "gsys_bake_st1");
             SetUnifromData(mat, shader, "normal_map_weight");
             SetUnifromData(mat, shader, "ao_density");
+
+            //   Shader option data
+
+            //This uniform sets normal maps for BOTW to use second UV channel
+            SetUnifromData(mat, shader, "uking_texture2_texcoord");
+            //Sets shadow type
+            //0 = Ambient occusion bake map
+            //1 = Shadow 
+            //2 = Shadow + Ambient occusion map
+            SetUnifromData(mat, shader, "bake_shadow_type"); 
+
         }
 
         private static void SetUnifromData(MaterialData mat, Shader shader, string propertyName)
         {
             //Note uniform data has so many types so it's messy atm
+
+            if (mat.shaderassign.ContainsKey(propertyName))
+            {
+                float value = float.Parse(mat.shaderassign[propertyName]);
+
+                GL.Uniform1(shader.getAttribute(propertyName), value);
+            }
 
             if (mat.matparam.ContainsKey(propertyName))
             {
@@ -523,16 +562,18 @@ namespace Smash_Forge
            
                     GL.Uniform4(shader.getAttribute(propertyName), mat.matparam[propertyName].Value_float4);
                 }
-      
-            }
-            if (mat.anims.ContainsKey("SamplerUV1"))
-            {
-                Vector4 Value_float4 = new Vector4(
-                    mat.anims["SamplerUV1"][0], mat.anims["SamplerUV1"][1],
-                    mat.anims["SamplerUV1"][2], mat.anims["SamplerUV1"][3]);
+                if (mat.matparam[propertyName].Type == ShaderParamType.TexSrt)
+                {
+                    // Vector 2 Scale
+                    // 1 roation float
+                    // Vector2 translate
+                    ShaderParam.TextureSRT texSRT = mat.matparam[propertyName].Value_TexSrt;
 
-                GL.Uniform4(shader.getAttribute("SamplerUV1"), Value_float4);
-            }
+                    GL.Uniform2(shader.getAttribute("SRT_Scale"), texSRT.scale);
+                    GL.Uniform1(shader.getAttribute("SRT_Rotate"), texSRT.rotate);
+                    GL.Uniform2(shader.getAttribute("SRT_Translate"), texSRT.translate);
+                }
+            }         
         }
 
 
@@ -663,113 +704,120 @@ namespace Smash_Forge
                     break;
             }
         }
-        private static void SetDefaultTextureAttributes()
+        private static void SetDefaultTextureAttributes(MaterialData mat)
         {
-            GL.Uniform1(shader.getAttribute("HasDiffuseLayer"), 0);
-            GL.Uniform1(shader.getAttribute("HasTeamColorMap"), 0);
-            GL.Uniform1(shader.getAttribute("HasNormalMap"), 0);
-            GL.Uniform1(shader.getAttribute("HasSpecularMap"), 0);
-            GL.Uniform1(shader.getAttribute("HasEmissionMap"), 0);
-            GL.Uniform1(shader.getAttribute("HasTransparencyMap"), 0);
-            GL.Uniform1(shader.getAttribute("HasShadowMap"), 0);
-            GL.Uniform1(shader.getAttribute("HasAOMap"), 0);
-            GL.Uniform1(shader.getAttribute("HasLightMap"), 0);
+            ShaderTools.BoolToIntShaderUniform(shader, mat.HasDiffuseMap, "HasDiffuseLayer");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.HasDiffuseLayer, "HasDiffuseLayer");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.HasNormalMap, "HasNormalMap");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.HasEmissionMap, "HasEmissionMap");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.HasLightMap, "HasLightMap");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.HasShadowMap, "HasShadowMap");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.HasSpecularMap, "HasSpecularMap");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.HasTeamColorMap, "HasTeamColorMap");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.HasTransparencyMap, "hasDummyRamp");
 
             //Unused atm untill I do PBR shader
-            GL.Uniform1(shader.getAttribute("HasMetalnessMap"), 0);
-            GL.Uniform1(shader.getAttribute("HasRoughnessMap"), 0);
+            ShaderTools.BoolToIntShaderUniform(shader, mat.HasMetalnessMap, "HasMetalnessMap");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.HasRoughnessMap, "HasRoughnessMap");
         }
 
-        private static void MapTextures(MaterialData mat, Mesh m)
+        private static void SetTextureUniforms(MaterialData mat, Mesh m)
         {
-            //Todo. Redo this part to have changable textures and updatable when a new mesh is loaded
-            SetDefaultTextureAttributes();
+            SetDefaultTextureAttributes(mat);
 
-            int id = 0;
-            foreach (string tex in m.TextureMapTypes)
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
+
+            GL.ActiveTexture(TextureUnit.Texture10);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern);
+            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+
+            GL.ActiveTexture(TextureUnit.Texture11);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient);
+            GL.Uniform1(shader.getAttribute("weightRamp1"), 11);
+
+            GL.ActiveTexture(TextureUnit.Texture12);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient2);
+            GL.Uniform1(shader.getAttribute("weightRamp2"), 12);
+
+            int texid = 0;
+
+            GL.Uniform1(shader.getAttribute("nrm"), 0);
+            GL.Uniform1(shader.getAttribute("BakeShadowMap"), 0);
+
+            //So this loops through each type and maps by tex hash. This is done because there is no particular order in the list
+
+            foreach (MatTexture matex in mat.textures)
             {
-                SamplerInfo smp = mat.samplerinfo[id];
-                if (tex == "Diffuse")
-                {
-                    GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
-                    GL.Uniform1(shader.getAttribute("tex0"), 0);
-                }
-                else if (tex == "Diffuse_Layer")
-                {
-                    GL.ActiveTexture(TextureUnit.Texture6);
-                    GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
-                    GL.Uniform1(shader.getAttribute("DiffuseLayer"), 6);
-                    GL.Uniform1(shader.getAttribute("HasDiffuseLayer"), 1);
-                }
-                else if (tex == "Normal")
-                {
-                    GL.ActiveTexture(TextureUnit.Texture1);
-                    GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
-                    GL.Uniform1(shader.getAttribute("nrm"), 1);
-                    GL.Uniform1(shader.getAttribute("HasNormalMap"), 1);
-                }
-                else if (tex == "Bake1")
-                {
-                    GL.ActiveTexture(TextureUnit.Texture2);
-                    GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
-                    GL.Uniform1(shader.getAttribute("BakeShadowMap"), 2);
-                    GL.Uniform1(shader.getAttribute("HasShadowMap"), 1);
-                }
-                else if (tex == "Bake2")
-                {
-                    GL.ActiveTexture(TextureUnit.Texture3);
-                    GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
-                    GL.Uniform1(shader.getAttribute("BakeLightMap"), 3);
-                }
-                else if (tex == "TransparencyMap")
-                {
-                    GL.ActiveTexture(TextureUnit.Texture7);
-                    GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
-                    GL.Uniform1(shader.getAttribute("TransparencyMap"), 7);
-                    GL.Uniform1(shader.getAttribute("HasTransparencyMap"), 1);
-                }
-                else if (tex == "EmissionMap")
-                {
-                    GL.ActiveTexture(TextureUnit.Texture8);
-                    GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
-                    GL.Uniform1(shader.getAttribute("EmissionMap"), 8);
-                    GL.Uniform1(shader.getAttribute("HasEmissionMap"), 1);
-                }
-                else if (tex == "SpecularMap")
-                {
-                    GL.ActiveTexture(TextureUnit.Texture9);
-                    GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
-                    GL.Uniform1(shader.getAttribute("SpecularMap"), 9);
-                    GL.Uniform1(shader.getAttribute("HasSpecularMap"), 1);
-                }
-                else if (tex == "Metalness")
-                {
-
-                }
-                else if (tex == "Roughness")
-                {
-
-                }
-                else if (tex == "MRA")
-                {
-
-                }
-                else
-                {
-                    GL.ActiveTexture(TextureUnit.Texture10);
-                    GL.BindTexture(TextureTarget.Texture2D, m.texHashs[id]);
-                }
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[smp.WrapModeU]);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[smp.WrapModeV]);
-
-                id++;
+                if (matex.Type == MatTexture.TextureType.Diffuse)    
+                    TextureUniform(shader, mat, mat.HasDiffuseMap, "tex0", matex);              
+                else if (matex.Type == MatTexture.TextureType.Normal)          
+                    TextureUniform(shader, mat, mat.HasNormalMap, "nrm", matex);
+                else if (matex.Type == MatTexture.TextureType.Emission)
+                    TextureUniform(shader, mat, mat.HasEmissionMap, "EmissionMap", matex);
+                else if (matex.Type == MatTexture.TextureType.Specular)
+                    TextureUniform(shader, mat, mat.HasSpecularMap, "SpecularMap", matex);
+                else if (matex.Type == MatTexture.TextureType.Shadow)
+                    TextureUniform(shader, mat, mat.HasShadowMap, "BakeShadowMap", matex);
+                else if (matex.Type == MatTexture.TextureType.Light)
+                    TextureUniform(shader, mat, mat.HasLightMap, "BakeLightMap", matex);
+                else if (matex.Type == MatTexture.TextureType.Metalness)
+                    TextureUniform(shader, mat, mat.HasMetalnessMap, "MetalnessMap", matex);
+                else if (matex.Type == MatTexture.TextureType.Roughness)
+                    TextureUniform(shader, mat, mat.HasRoughnessMap, "RoughnessMap", matex);
+                else if (matex.Type == MatTexture.TextureType.TeamColor)
+                    TextureUniform(shader, mat, mat.HasTeamColorMap, "TeamColorMap", matex);
+                else if (matex.Type == MatTexture.TextureType.Transparency)
+                    TextureUniform(shader, mat, mat.HasTransparencyMap, "TransparencyMap", matex);
+                else if (matex.Type == MatTexture.TextureType.DiffuseLayer2)
+                    TextureUniform(shader, mat, mat.HasDiffuseLayer, "DiffuseLayer", matex);
             }
         }
 
-        public void ApplyMta(BFRES_MTA m, int frame)
+        private static void TextureUniform(Shader shader, MaterialData mat, bool hasTex, string name, MatTexture mattex)
         {
-            foreach (BFRES_MTA.MatAnimEntry matEntry in m.matEntries)
+            // Bind the texture and create the uniform if the material has the right textures. 
+            if (hasTex)
+            {
+                GL.Uniform1(shader.getAttribute(name), BindTexture(mattex));
+            }
+        }
+
+        public static int BindTexture(MatTexture tex)
+        {
+            GL.ActiveTexture(TextureUnit.Texture0 + tex.hash + 1);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
+
+            if (IsSwitchBFRES == true)
+            {
+                if (BNTX.textured.ContainsKey(tex.Name))
+                {
+                    BindBRTTexture(tex, BNTX.textured[tex.Name].texture.display);
+                }
+            }
+            else
+            {
+                if (FTEXtextures.ContainsKey(tex.Name))
+                {
+                    BindBRTTexture(tex, FTEXtextures[tex.Name].texture.display);
+                }
+            }
+         
+            return tex.hash + 1;
+        }
+
+        private static void BindBRTTexture(MatTexture tex, int texid)
+        {
+         //   GL.ActiveTexture(TextureUnit.Texture0 + texid);
+            GL.BindTexture(TextureTarget.Texture2D, texid);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[tex.wrapModeS]);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[tex.wrapModeT]);
+            GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 0.0f);
+        }
+
+        public void ApplyMta(MTA m, int frame)
+        {
+            foreach (MatAnimEntry matEntry in m.matEntries)
             {
                 foreach (FMDL_Model mdl in models)
                 {
@@ -783,23 +831,34 @@ namespace Smash_Forge
                             // - Single uniform data
                             // - Texture maps to switch
                             // - SRT constants
-                            // - 
-                            foreach (BFRES_MTA.MatAnimData md in matEntry.matCurves)
+                            // - Vis mat anims
+
+                         
+
+                            int FrameRate = 60;
+                            int frm = (int)((frame * 60 / FrameRate) % (m.FrameCount));
+
+                            if (matEntry.matCurves != null)
                             {
-                                if (md.keys.Count > 0)
+                                foreach (MatAnimData md in matEntry.matCurves)
                                 {
-                                    foreach (float k in md.keys)
+                                    if (frm == md.Frame)
                                     {
+                                   
+                                        //If it's a texture pattern one set the texture by the frame
+                                        if (md.Pat0Tex != null)
+                                        {
+                                            foreach (string Sampler in mesh.material.Samplers.Keys)
+                                            {
+                                                if (md.SamplerName == Sampler)
+                                                {
+                                               ///      .WriteLine(mesh.material.textures[mesh.material.Samplers[md.SamplerName]].Name + " " + md.SamplerName + " " + mesh.material.Samplers[md.SamplerName] + " " + md.Pat0Tex);
 
+                                                    mesh.material.textures[mesh.material.Samplers[md.SamplerName]].Name = md.Pat0Tex;
+                                                }
+                                            }
+                                        }
                                     }
-
-                                   /* float[] test = new float[4];
-                                    test[0] = frame;
-                                    test[1] = 1;
-                                    test[2] = 0;
-                                    test[3] = 0;
-
-                                    material.anims["SamplerUV1"] = test;*/
                                 }
                             }
                         }
@@ -1028,12 +1087,26 @@ namespace Smash_Forge
             {
                 for (int i = 0; i < displayFaceSize; i += 3)
                 {
+                    List<Vector2> UV_Input = vertices.uv0;
 
-                    if (vertices.uv0.Count < 3) { MessageBox.Show("No UVs found to calculate"); return;}
+                    //for BOTW if it uses UV layer 2 for normal maps use second UV map
+                    if (material.shaderassign.ContainsKey("uking_texture2_texcoord"))
+                    {
+                        float value = float.Parse(material.shaderassign["uking_texture2_texcoord"]);
 
-                    Vector2 v1 = vertices.uv0[faces[i]];
-                    Vector2 v2 = vertices.uv0[faces[i + 1]];
-                    Vector2 v3 = vertices.uv0[faces[i + 2]];
+                        if (value == 1)
+                        {
+                            UV_Input = vertices.uv1;
+                        }
+                    }
+
+
+
+                    if (UV_Input.Count < 3) { MessageBox.Show("No UVs found to calculate"); return;}
+
+                    Vector2 v1 = UV_Input[faces[i]];
+                    Vector2 v2 = UV_Input[faces[i + 1]];
+                    Vector2 v3 = UV_Input[faces[i + 2]];
 
                     Vector3 vpos1 = vertices.pos[faces[i]];
                     Vector3 vpos2 = vertices.pos[faces[i + 1]];
@@ -1202,6 +1275,22 @@ namespace Smash_Forge
                 }
             }
 
+            public void UpdateTexIDs()
+            {
+                texHashs.Clear();
+                foreach (var tex in material.textures)
+                {
+                    try
+                    {
+                        texHashs.Add(BNTX.textured[tex.Name].texture.display);
+                    }
+                    catch
+                    {
+                        texHashs.Add(0);
+                    }
+                }
+            }
+
             public List<int> getDisplayFace()
             {
                 if ((strip >> 4) == 4)
@@ -1262,14 +1351,15 @@ namespace Smash_Forge
             public string Name;
 
             public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
-
+            public Dictionary<string, int> Samplers = new Dictionary<string, int>();
             public List<MatTexture> textures = new List<MatTexture>();
             public List<RenderInfoData> renderinfo = new List<RenderInfoData>();
             public List<SamplerInfo> samplerinfo = new List<SamplerInfo>();
-            public Dictionary<string, string[]> shaderassign = new Dictionary<string, string[]>();
+            public Dictionary<string, string> shaderassign = new Dictionary<string, string>();
             public Dictionary<string, ShaderParam> matparam = new Dictionary<string, ShaderParam>();
 
             // Texture Maps
+            public bool HasDiffuseMap = false;
             public bool HasNormalMap = false;
             public bool HasSpecularMap = false;
             public bool HasEmissionMap = false;
@@ -1327,7 +1417,26 @@ namespace Smash_Forge
             public int mipDetail = 6;
             public int unknown = 0;
             public string Name;
-            public string Type;
+
+            public TextureType Type;
+
+            public enum TextureType
+            {
+                Diffuse = 1,
+                Normal = 2,
+                Specular = 3,
+                Emission = 4,
+                DiffuseLayer2 = 5,
+                TeamColor = 6,
+                Transparency = 7,
+                Shadow = 8,
+                AO = 9,
+                Light = 10,
+                Roughness = 11,
+                Metalness = 12,
+                MRA = 13, //Combined pbr texture HAL uses for KSA
+        }
+
 
             public MatTexture()
             {
@@ -1374,6 +1483,16 @@ namespace Smash_Forge
             public Vector2 Value_float2;
             public float Value_float;
             public bool Value_bool;
+            public TextureSRT Value_TexSrt;
+
+            public class TextureSRT
+            {
+                public Vector2 translate;
+                public Vector2 scale;
+                public float rotate;
+                public float Mode;
+            }
+
         }
 
         public class RenderInfoData
@@ -1436,9 +1555,68 @@ namespace Smash_Forge
 
         }
 
-        public void readFSKA()
+        public class MTA : TreeNode
         {
+            public uint FrameCount;
 
+            public List<MatAnimEntry> matEntries = new List<MatAnimEntry>();
+
+            public List<string> Pat0 = new List<string>();
+          
+
+            public List<TexPatInfo> TexPat0Info = new List<TexPatInfo>();
+
+            public MTA()
+            {
+                ImageKey = "image";
+                SelectedImageKey = "image";
+            }
+
+            public void ExpandNodes()
+            {
+                Nodes.Clear();
+                TreeNode mat = new TreeNode();
+                foreach (MatAnimEntry e in matEntries)
+                {
+                    mat.Text = e.Name;
+                    mat.Nodes.Add(e);
+                }
+                Nodes.Add(mat);
+            }
+        }
+        public class TexPatInfo
+        {
+            public string SamplerName;
+            public int CurveIndex;
+        }
+
+        public class MatAnimEntry : TreeNode
+        {
+            public MatAnimEntry()
+            {
+                ImageKey = "image";
+                SelectedImageKey = "image";
+            }
+
+            public List<MatAnimData> matCurves = new List<MatAnimData>();
+
+        }
+        public class MatAnimData
+        {
+            public class frame
+            {
+                //public int size;
+                public float[] values;
+            }
+            public int Frame;
+            public int CurveIndex;
+            public int ConstIndex;
+
+            public List<float> keys = new List<float>();
+
+            //Pat0 data
+            public string Pat0Tex;
+            public string SamplerName;
         }
 
 

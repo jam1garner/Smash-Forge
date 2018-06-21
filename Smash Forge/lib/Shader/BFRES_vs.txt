@@ -34,6 +34,11 @@ uniform mat4 modelLocation;
 uniform int NoSkinning;
 uniform mat4 TransformNoRig;
 
+//SRT Animation uniforms
+uniform vec2 SRT_Scale;
+uniform vec2 SRT_Translate;
+uniform float SRT_Rotate;
+
 
 vec3 skinNRM(vec3 nr, ivec4 index)
 {
@@ -45,6 +50,15 @@ vec3 skinNRM(vec3 nr, ivec4 index)
     if(vWeight.w < 1) nrmPos += mat3(bones[boneList[index.w]]) * nr * vWeight.w;
 
     return nrmPos;
+}
+
+vec2 rotateUV(vec2 uv, float rotation)
+{
+    float mid = 0.5;
+    return vec2(
+        cos(rotation) * (uv.x - mid) + sin(rotation) * (uv.y - mid) + mid,
+        cos(rotation) * (uv.y - mid) - sin(rotation) * (uv.x - mid) + mid
+    );
 }
 
 void main()
@@ -91,13 +105,23 @@ void main()
 
     //gl_TexCoord[0] = vUV0;
     //gl_TexCoord[1] = vUV1;
-    f_texcoord0 = vec2((vUV0 * sampler1.xy) + sampler1.zw);
-    f_texcoord1 = vec2((vUV1 * sampler2.xy) + sampler2.zw);
+
+	if (sampler2.x + sampler2.y != 0) //BOTW has scale values to 0 if unused so set them to 1
+        f_texcoord1 = vec2((vUV1 * sampler2.xy) + sampler2.zw);
+     else
+        f_texcoord1 = vec2((vUV1 * vec2(1)) + sampler2.zw);
+
     f_texcoord2 = vec2((vUV1 * sampler3.xy) + sampler3.zw);
     f_texcoord3 = vUV2;
 
+	f_texcoord0 = vec2(vUV0);
+
+	//Set SRT values43
+	if (SRT_Scale.x + SRT_Scale.y != 0)
+	    f_texcoord0 = vec2((vUV0 * SRT_Scale) + SRT_Translate);
 
 
+	f_texcoord0 = rotateUV(f_texcoord0, SRT_Rotate);
 
 	tangent = vTangent;
 	bitangent = vBitangent;
