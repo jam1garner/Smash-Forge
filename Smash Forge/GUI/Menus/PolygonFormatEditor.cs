@@ -42,6 +42,7 @@ namespace Smash_Forge
             weightTypeComboBox.EndUpdate();
             normalTypeComboBox.EndUpdate();
 
+            uvCountUpDown.Value = 0;
             vertexColorCB.Checked = true;
         }
 
@@ -71,6 +72,7 @@ namespace Smash_Forge
 
             int uvCount = poly.UVSize >> 4;
             int colorType = poly.UVSize & 0x0F;
+            uvCountUpDown.Value = uvCount;
             vertexColorCB.Checked = colorType != 0;
         }
 
@@ -104,26 +106,49 @@ namespace Smash_Forge
                 }
             }
 
-            int uvFlag = poly.UVSize;
+            int uvCount = poly.UVSize >> 4;
+            int colorType = poly.UVSize & 0x0F;
+
+            while (uvCountUpDown.Value > uvCount)
+            {
+                foreach (NUD.Vertex v in poly.vertices)
+                {
+                    if (uvCount > 0)
+                        v.uv.Add(new OpenTK.Vector2(v.uv[0].X, v.uv[0].Y));
+                    else
+                        v.uv.Add(new OpenTK.Vector2(0, 0));
+                }
+                ++uvCount;
+            }
+            while (uvCountUpDown.Value < uvCount)
+            {
+                foreach (NUD.Vertex v in poly.vertices)
+                {
+                    v.uv.RemoveAt(uvCount - 1);
+                }
+                --uvCount;
+            }
+
             if (vertexColorCB.Checked)
             {
-                if ((uvFlag & 0x0F) == 0)
+                if (colorType == 0x0)
                 {
-                    uvFlag = 0x02 | uvFlag;
+                    colorType = 0x2;
                     foreach (NUD.Vertex v in poly.vertices)
                         v.color = new OpenTK.Vector4(127, 127, 127, 127);
                 }
             }
             else
             {
-                if ((uvFlag & 0x0F) != 0)
+                if (colorType != 0x0)
                 {
-                    uvFlag &= 0xF0;
+                    colorType = 0x0;
                     foreach (NUD.Vertex v in poly.vertices)
                         v.color = new OpenTK.Vector4(127, 127, 127, 127);
                 }
             }
-            poly.UVSize = uvFlag;
+
+            poly.UVSize = ((uvCount & 0xF) << 4) | (colorType & 0xF);
 
             Close();
         }

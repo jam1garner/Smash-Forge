@@ -1123,8 +1123,10 @@ namespace Smash_Forge
             if (!(filesTreeView.SelectedNode is NUD.Polygon))
                 return;
 
-            PolygonFormatEditor pfe = new PolygonFormatEditor((NUD.Polygon)filesTreeView.SelectedNode);
+            NUD.Polygon poly = (NUD.Polygon)filesTreeView.SelectedNode;
+            PolygonFormatEditor pfe = new PolygonFormatEditor(poly);
             pfe.ShowDialog();
+            ((NUD)poly.Parent.Parent).UpdateVertexData();
         }
 
         private void setToWhiteToolStripMenuItem1_Click(object sender, EventArgs e)
