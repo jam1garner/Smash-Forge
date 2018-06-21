@@ -40,7 +40,7 @@ namespace Smash_Forge
 
         public WorkspaceManager Workspace { get; set; }
         public String[] filesToOpen = null;
-        public ProgessAlert Progress = new ProgessAlert();
+        public ProgressAlert Progress = new ProgressAlert();
 
         // Lists
         public AnimListPanel animList = new AnimListPanel() { ShowHint = DockState.DockRight };
@@ -610,7 +610,7 @@ namespace Smash_Forge
                 ofd.Title = "Character Folder";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    MainForm.Instance.Progress = new ProgessAlert();
+                    MainForm.Instance.Progress = new ProgressAlert();
                     MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
                     MainForm.Instance.Progress.ProgressValue = 0;
                     MainForm.Instance.Progress.ControlBox = false;
@@ -752,7 +752,7 @@ namespace Smash_Forge
 
         public void OpenStageFolder(string stagePath, ModelViewport mvp = null)
         {
-            MainForm.Instance.Progress = new ProgessAlert();
+            MainForm.Instance.Progress = new ProgressAlert();
             MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
             MainForm.Instance.Progress.ProgressValue = 0;
             MainForm.Instance.Progress.ControlBox = false;

@@ -826,7 +826,7 @@ namespace Smash_Forge
 
             MaterialSelector matSelector = new MaterialSelector();
             matSelector.ShowDialog();
-            if (matSelector.exitStatus == MaterialSelector.Opened)
+            if (matSelector.exitStatus == MaterialSelector.ExitStatus.Opened)
             {
                 List<NUD.Material> presetMaterials = ReadMaterialListFromPreset(matSelector.path);
 

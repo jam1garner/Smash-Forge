@@ -497,35 +497,61 @@ namespace Smash_Forge
 
         public void RenderMaterialPresetPreviewsToFiles()
         {
-            int width = glViewport.Width;
-            int height = glViewport.Height;
+            // Save on file size.
+            int width = 256;
+            int height = 256;
 
-            Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
+            // This takes a few seconds, so use a progress bar.
+            ProgressAlert progressAlert = new ProgressAlert();
+            progressAlert.Message = "Rendering Material Presets";
+            progressAlert.Show();
+
             // Render all the material previews.
-            foreach (string file in Directory.GetFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
+            Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
+            string[] files = Directory.GetFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories);
+            for (int i = 0; i < files.Length; i++)
             {
-                NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
-
-                glViewport.MakeCurrent();
-                GL.Viewport(0, 0, width, height);
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                framebuffer.Bind();
-                //RenderTools.DrawQuadGradient(ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz, ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz);
-                RenderTools.DrawNudMaterialSphere(material);
-
-                // Using the other framebuffer targets doesn't work for some reason.
-                Bitmap image = framebuffer.ReadImagePixels(true);
-
-                // Save the image file using the name of the preset.
-                string[] parts = file.Split('\\');
-                string presetName = parts[parts.Length - 1];
-                presetName = presetName.Replace(".nmt", ".png");
-                image.Save(MainForm.executableDir + "\\Preview Images\\" + presetName);
-
-                // Cleanup
-                image.Dispose();
-                glViewport.SwapBuffers();
+                RenderMaterialPresetToFile(width, height, framebuffer, files[i]);
+                UpdateMatPreviewProgressPercentage(progressAlert, files[i], i, files.Length);
             }
+
+            // Finished.
+            progressAlert.ProgressValue = 100; 
+            progressAlert.Refresh();
+        }
+
+        private static void UpdateMatPreviewProgressPercentage(ProgressAlert progressAlert, string filePath, int index, int fileCount)
+        {
+            // Update progress percentage.
+            double percent = (double)index / fileCount;
+            progressAlert.Message = Path.GetFileNameWithoutExtension(filePath);
+            progressAlert.ProgressValue = (int)(percent * 100);
+            progressAlert.Refresh();
+        }
+
+        private void RenderMaterialPresetToFile(int width, int height, Framebuffer framebuffer, string file)
+        {
+            NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
+
+            // Setup new dimensions.
+            glViewport.MakeCurrent();
+            GL.Viewport(0, 0, width, height);
+
+            // Draw the material to a textured quad.
+            framebuffer.Bind();
+            RenderTools.DrawNudMaterialSphere(material);
+
+            // Save the image file using the name of the preset.
+            string[] parts = file.Split('\\');
+            string presetName = parts[parts.Length - 1];
+            presetName = presetName.Replace(".nmt", ".png");
+
+            Bitmap image = framebuffer.ReadImagePixels(true);
+            image.Save(MainForm.executableDir + "\\Preview Images\\" + presetName);
+
+            // Cleanup
+            image.Dispose();
+            glViewport.SwapBuffers();
         }
 
         private NUD.Polygon GetSelectedPolygonFromColor(Color pixelColor)

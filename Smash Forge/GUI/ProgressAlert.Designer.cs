@@ -1,6 +1,6 @@
 ﻿namespace Smash_Forge
 {
-    partial class ProgessAlert
+    partial class ProgressAlert
     {
         /// <summary>
         /// Required designer variable.

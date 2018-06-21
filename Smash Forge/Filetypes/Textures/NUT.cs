@@ -893,19 +893,5 @@ namespace Smash_Forge
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             }
         }
-
-        private static void LoadMipMapsCompressed(NutTexture t)
-        {
-            // The number of mip maps needs to be specified first.
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.surfaces[0].mipmaps.Count);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-            // Initialize the data for each level.
-            for (int mipLevel = 0; mipLevel < t.surfaces[0].mipmaps.Count; mipLevel++)
-            {
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, mipLevel, t.pixelInternalFormat,
-                    t.Width / (int)Math.Pow(2, mipLevel), t.Height / (int)Math.Pow(2, mipLevel), 0, t.surfaces[0].mipmaps[mipLevel].Length, t.surfaces[0].mipmaps[mipLevel]);
-            }
-        }
     }
 }
