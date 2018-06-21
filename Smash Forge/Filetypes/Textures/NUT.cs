@@ -255,11 +255,6 @@ namespace Smash_Forge
             Read(d);
         }
 
-        /*~NUT()
-        {
-            //Destroy();
-        }*/
-
         public bool getTextureByID(int hash, out NutTexture suc)
         {
             suc = null;
@@ -825,11 +820,6 @@ namespace Smash_Forge
             return false;
         }
 
-        public void Destroy()
-        {
-            Nodes.Clear();
-        }
-
         public override string ToString()
         {
             return "NUT";
@@ -848,12 +838,12 @@ namespace Smash_Forge
                 if (nutTexture.surfaces[0].mipmaps.Count > 1 && nutTexture.isDds)
                 {
                     // Reading mip maps past the first level is only supported for DDS currently.
-                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps, nutTexture.pixelInternalFormat);
+                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps, nutTexture.surfaces[surfaceIndex].mipmaps[0].Length, true, nutTexture.pixelInternalFormat);
                 }
                 else
                 {
-                    // Only load the first level.
-                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps[0], nutTexture.pixelInternalFormat);
+                    // Only load the first level and generate the rest.
+                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps, nutTexture.Size, false, nutTexture.pixelInternalFormat);
                 }
             }
             else
@@ -901,20 +891,6 @@ namespace Smash_Forge
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.surfaces[i].mipmaps.Count);
                 GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.Width, t.Height, 0, t.pixelFormat, t.pixelType, t.surfaces[i].mipmaps[0]);
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-            }
-        }
-
-        private static void LoadMipMapsCompressed(NutTexture t)
-        {
-            // The number of mip maps needs to be specified first.
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.surfaces[0].mipmaps.Count);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-            // Initialize the data for each level.
-            for (int mipLevel = 0; mipLevel < t.surfaces[0].mipmaps.Count; mipLevel++)
-            {
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, mipLevel, t.pixelInternalFormat,
-                    t.Width / (int)Math.Pow(2, mipLevel), t.Height / (int)Math.Pow(2, mipLevel), 0, t.surfaces[0].mipmaps[mipLevel].Length, t.surfaces[0].mipmaps[mipLevel]);
             }
         }
     }

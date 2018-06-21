@@ -40,7 +40,7 @@ namespace Smash_Forge
 
         public WorkspaceManager Workspace { get; set; }
         public String[] filesToOpen = null;
-        public ProgessAlert Progress = new ProgessAlert();
+        public ProgressAlert Progress = new ProgressAlert();
 
         // Lists
         public AnimListPanel animList = new AnimListPanel() { ShowHint = DockState.DockRight };
@@ -105,51 +105,6 @@ namespace Smash_Forge
             DiscordSettings.Update();
 
             openFiles();
-        }
-
-        public void SaveMaterialThumbnailPreviews()
-        {
-            // Setup
-            int width = 128;
-            int height = 128;
-            int fbo;
-            int rboColor;
-            int rboDepth;
-            //glControl1.MakeCurrent();
-            //Rendering.FramebufferTools.CreateOffscreenRenderFboRbo(out fbo, out rboDepth, out rboColor, FramebufferTarget.Framebuffer, width, height);
-            GL.Viewport(0, 0, width, height);
-
-            //RenderMaterialPresetPreviewsToFiles(width, height, fbo);
-
-            // Cleanup
-            //GL.DeleteBuffer(fbo);
-            //GL.DeleteRenderbuffer(rboColor);
-        }
-
-        private void RenderMaterialPresetPreviewsToFiles(int width, int height, int fbo)
-        {
-            // Render all the material previews.
-            foreach (string file in Directory.GetFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
-            {
-                NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
-
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
-                Rendering.RenderTools.DrawNudMaterialSphere(material);
-                //glControl1.SwapBuffers();
-                /*
-                // Using the other framebuffer targets doesn't work for some reason.
-                Bitmap image = Rendering.FramebufferTools.ReadFrameBufferPixels(fbo, FramebufferTarget.Framebuffer, width, height, true);
-
-                // Save the image file using the name of the preset.
-                string[] parts = file.Split('\\');
-                string presetName = parts[parts.Length - 1];
-                presetName = presetName.Replace(".nmt", ".png");
-                image.Save(MainForm.executableDir + "\\Preview Images\\" + presetName);
-             
-                // Cleanup
-                image.Dispose();
-                */
-            }
         }
 
         public void openFiles()
@@ -239,9 +194,6 @@ namespace Smash_Forge
 
         private void MainForm_Close(object sender, EventArgs e)
         {
-            if (Runtime.TargetNUD != null)
-                Runtime.TargetNUD.Destroy();
-
             DiscordRpc.Shutdown();
         }
 
@@ -658,7 +610,7 @@ namespace Smash_Forge
                 ofd.Title = "Character Folder";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    MainForm.Instance.Progress = new ProgessAlert();
+                    MainForm.Instance.Progress = new ProgressAlert();
                     MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
                     MainForm.Instance.Progress.ProgressValue = 0;
                     MainForm.Instance.Progress.ControlBox = false;
@@ -800,7 +752,7 @@ namespace Smash_Forge
 
         public void OpenStageFolder(string stagePath, ModelViewport mvp = null)
         {
-            MainForm.Instance.Progress = new ProgessAlert();
+            MainForm.Instance.Progress = new ProgressAlert();
             MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
             MainForm.Instance.Progress.ProgressValue = 0;
             MainForm.Instance.Progress.ControlBox = false;

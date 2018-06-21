@@ -207,18 +207,6 @@ namespace Smash_Forge
             }
         }
 
-        /*
-         * This method is for clearing all the GL stuff
-         * Don't want wasted buffers :>
-         * */
-        public void Destroy()
-        {
-            if (NUD != null)
-                NUD.Destroy();
-            if (NUT != null)
-                NUT.Destroy();
-        }
-
         public VBN GetVBN()
         {
             if (BCH != null && BCH.Models.Nodes.Count > 0)

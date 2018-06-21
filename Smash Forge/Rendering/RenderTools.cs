@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
+using SFGraphics.GLObjects;
 using SFGraphics.Cameras;
 
 
@@ -25,7 +26,7 @@ namespace Smash_Forge.Rendering
 
         // A triangle that extends past the screen.
         // Avoids the need for a second triangle to fill a rectangular screen.
-        private static int screenQuadVbo;
+        private static BufferObject screenQuadVbo;
         private static float[] screenQuadVertices = 
             {
                 -1f, -1f, 0.0f,
@@ -45,7 +46,6 @@ namespace Smash_Forge.Rendering
         // Nud Material Sphere Textures.
         public static Texture sphereDifTex;
         public static Texture sphereNrmMapTex;
-        public static Texture sphereSphereMap;
 
         // Nud Material Sphere Vert Attribute Textures.
         private static Texture sphereNrmTex;
@@ -71,9 +71,9 @@ namespace Smash_Forge.Rendering
         private static void SetupScreenQuadBuffer()
         {
             // Create buffer for vertex positions. The data won't change, so only initialize once.
-            GL.GenBuffers(1, out screenQuadVbo);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, screenQuadVbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * screenQuadVertices.Length), 
+            screenQuadVbo = new BufferObject(BufferTarget.ArrayBuffer);
+            screenQuadVbo.Bind();
+            GL.BufferData(screenQuadVbo.BufferTarget, (IntPtr)(sizeof(float) * screenQuadVertices.Length), 
                 screenQuadVertices, BufferUsageHint.StaticDraw);
         }
 
@@ -1646,7 +1646,7 @@ namespace Smash_Forge.Rendering
         private static void DrawScreenTriangle(Shader shader)
         {
             shader.EnableVertexAttributes();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, screenQuadVbo);
+            screenQuadVbo.Bind();
 
             // Set everytime because multiple shaders use this for drawing.
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);

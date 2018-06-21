@@ -205,8 +205,6 @@ namespace Smash_Forge
 
             // Render on index changed rather than every frame.
             glControl1.Invalidate();
-            glControl1.Update();
-            RenderTexture();
         }
 
         private void SetMipMapText(NutTexture tex)
@@ -292,6 +290,8 @@ namespace Smash_Forge
             int width = ((NutTexture)textureListBox.SelectedItem).Width;
             int height = ((NutTexture)textureListBox.SelectedItem).Height;
 
+            // Draw the texture to the screen.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             Rendering.RenderTools.DrawTexturedQuad(textureToRender.Id, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio,
                 currentMipLevel);
 
@@ -902,7 +902,6 @@ namespace Smash_Forge
             renderR = !renderR;
             renderChannelR.ForeColor = renderR ? Color.Red : Color.DarkGray;
 
-            // Uniforms need to be udpated.
             glControl1.Invalidate();
         }
 
@@ -911,7 +910,6 @@ namespace Smash_Forge
             renderG = !renderG;
             renderChannelG.ForeColor = renderG ? Color.Green : Color.DarkGray;
 
-            // Uniforms need to be udpated.
             glControl1.Invalidate();
         }
 
@@ -920,7 +918,6 @@ namespace Smash_Forge
             renderB = !renderB;
             renderChannelB.ForeColor = renderB ? Color.Blue : Color.DarkGray;
 
-            // Uniforms need to be udpated.
             glControl1.Invalidate();            
         }
 
@@ -929,7 +926,6 @@ namespace Smash_Forge
             renderAlpha = !renderAlpha;
             renderChannelA.ForeColor = renderAlpha ? Color.Black : Color.DarkGray;
 
-            // Uniforms need to be udpated.
             glControl1.Invalidate();           
         }
 
@@ -967,6 +963,7 @@ namespace Smash_Forge
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             RenderTexture();
+            GLObjectManager.DeleteUnusedGLObjects();
         }
 
         private void listBox2_MouseDown(object sender, MouseEventArgs e)
@@ -1023,9 +1020,7 @@ namespace Smash_Forge
         private void glControl1_Resize(object sender, EventArgs e)
         {
             // Update the display again.
-            glControl1.MakeCurrent();
-            RenderTexture();
-            glControl1.SwapBuffers();
+            glControl1.Invalidate();
         }
 
         private void glControl1_Load(object sender, EventArgs e)

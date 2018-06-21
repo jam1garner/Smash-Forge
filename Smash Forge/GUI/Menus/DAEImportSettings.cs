@@ -165,8 +165,6 @@ namespace Smash_Forge
                     }
                 }
             }
-
-            nud.UpdateVertexData();
         }
 
         public VBN getVBN()
