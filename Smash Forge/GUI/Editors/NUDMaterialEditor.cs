@@ -917,11 +917,6 @@ namespace Smash_Forge
             GL.Viewport(texAlphaGlControl.ClientRectangle);
             RenderTools.DrawNudMaterialSphere(material);
             texRgbGlControl.SwapBuffers();
-
-            if (!Runtime.shaders["Texture"].HasCheckedCompilation)
-            {
-                //Runtime.shaders["Texture"].DisplayProgramStatus("Texture");
-            }
         }
 
         private void listView1_KeyPress(object sender, KeyPressEventArgs e)
