@@ -16,8 +16,6 @@ namespace Smash_Forge.Rendering
 {
     class ShaderTools
     {
-        public static bool hasSetupShaders = false;
-
         public static void SetupShaders()
         {
             // Reset the shaders first so that shaders can be replaced.
@@ -26,8 +24,6 @@ namespace Smash_Forge.Rendering
             SetupScreenShaders();
             SetupNudShaders();
             SetupMiscShaders();
-
-            hasSetupShaders = true;
         }
 
         private static void SetupMiscShaders()

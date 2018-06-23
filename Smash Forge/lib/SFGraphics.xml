@@ -397,6 +397,21 @@
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform. True = 1. False = 0.</param>
         </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector2(System.String,OpenTK.Vector2)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector2(System.String,System.Single,System.Single)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="x"></param>        
+            <param name="y"></param>
+        </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector3(System.String,OpenTK.Vector3)">
             <summary>
             Names not present in the shader are ignored and saved to the error log.
