@@ -283,15 +283,15 @@ namespace Smash_Forge
                 SetRenderSettingsUniforms(shader);
                 SetLightingUniforms(shader, camera);
 
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderType"), renderType);
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation("debugOption"), (int)Runtime.uvChannel);
+                shader.SetInt("renderType", renderType);
+                shader.SetInt("debugOption", (int)Runtime.uvChannel);
 
                 // Used for wireframe shader.
-                GL.Uniform2(shader.GetVertexAttributeUniformLocation("windowSize"), screenDimensions);
+                shader.SetVector2("windowSize", screenDimensions);
 
                 SetElapsedDirectUvTime(shader);
 
-                GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelMatrix"), false, ref modelMatrix);
+                shader.SetMatrix4x4("modelMatrix", ref modelMatrix);
 
                 if (specialWireFrame)
                 {

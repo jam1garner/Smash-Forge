@@ -74,11 +74,6 @@ namespace Smash_Forge
             GL.GenBuffers(1, out vbo_bone);
             GL.GenBuffers(1, out vbo_weight);
             GL.GenBuffers(1, out ibo_elements);
-
-            if (!Rendering.ShaderTools.hasSetupShaders)
-            {
-                Rendering.ShaderTools.SetupShaders();
-            }
         }
 
         ~DAT()

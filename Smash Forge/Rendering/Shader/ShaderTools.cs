@@ -16,8 +16,6 @@ namespace Smash_Forge.Rendering
 {
     class ShaderTools
     {
-        public static bool hasSetupShaders = false;
-
         public static void SetupShaders()
         {
             // Reset the shaders first so that shaders can be replaced.
@@ -26,15 +24,13 @@ namespace Smash_Forge.Rendering
             SetupScreenShaders();
             SetupNudShaders();
             SetupMiscShaders();
-
-            hasSetupShaders = true;
         }
 
         private static void SetupMiscShaders()
         {
-            CreateShader("Mbn", "\\lib\\Shader\\3ds");
-            CreateShader("Dat", "\\lib\\Shader\\Melee");
-            CreateShader("Point", "\\lib\\Shader");
+            CreateAndAddShader("Mbn", "\\lib\\Shader\\3ds");
+            CreateAndAddShader("Dat", "\\lib\\Shader\\Melee");
+            CreateAndAddShader("Point", "\\lib\\Shader");
         }
 
         private static void SetupNudShaders()
@@ -42,55 +38,82 @@ namespace Smash_Forge.Rendering
             // Wii U NUD Shaders.
             List<String> nudShaders = new List<string>() { "Nud\\StageLighting.frag", "Nud\\Bayo.frag", "Nud\\SmashShader.frag", "Utility\\Wireframe.frag",
                                                            "Utility\\Utility.frag", "Nud\\EdgeDistance.geom"};
-            CreateShader("Nud", "\\lib\\Shader\\Nud", nudShaders);
-            CreateShader("NudDebug", "\\lib\\Shader\\Nud\\", nudShaders);
+            CreateAndAddShader("Nud", "\\lib\\Shader\\Nud", nudShaders);
+            CreateAndAddShader("NudDebug", "\\lib\\Shader\\Nud\\", nudShaders);
 
             // Wii U NUD Material Preview Shaders.
             List<String> nudMatShaders = new List<string>() { "Nud\\StageLighting.frag", "Nud\\Bayo.frag",  "Nud\\SmashShader.frag", "Utility\\Utility.frag" };
-            CreateShader("NudSphere", "\\lib\\Shader\\Nud", nudMatShaders);
+            CreateAndAddShader("NudSphere", "\\lib\\Shader\\Nud", nudMatShaders);
         }
 
         private static void SetupScreenShaders()
         {
             // Screen Shaders. A single vertex shader is shared to calculate UVs for all these shaders.
-            CreateShader("Texture", "\\lib\\Shader", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
-            CreateShader("ScreenQuad", "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
-            CreateShader("Gradient", "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
+            CreateAndAddShader("Texture", "\\lib\\Shader", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
+            CreateAndAddShader("ScreenQuad", "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
+            CreateAndAddShader("Gradient", "\\lib\\Shader\\PostProcessing", new List<string>() { "PostProcessing\\ScreenTexCoordMain.vert" });
         }
 
-        private static void CreateShader(string shaderName, string shaderFolder, List<String> additionalShaderFiles = null)
+        private static void CreateAndAddShader(string shaderProgramName, string shaderFolder, List<String> additionalShaderFiles = null)
         {
             // All shaders should be named shaderName.frag, shaderName.vert, etc.
-            if (!Runtime.shaders.ContainsKey(shaderName))
+            if (!Runtime.shaders.ContainsKey(shaderProgramName))
             {
-                Shader shader = new Shader();
-
-                // Additional shaders for utility functions. These should be loaded first.
-                // The order in which shaders are loaded is important.
-                if (additionalShaderFiles != null)
-                {
-                    foreach (string file in additionalShaderFiles)
-                        shader.LoadShader(MainForm.executableDir + "\\lib\\Shader\\" + file);
-                }
-
-                string shaderFileName = MainForm.executableDir + shaderFolder + "\\" + shaderName;
-
-                // Required shaders. These files can be omitted and specified in the additionalShaderFiles list.
-                if (File.Exists(shaderFileName + ".vert"))
-                    shader.LoadShader(shaderFileName + ".vert");
-                if (File.Exists(shaderFileName + ".frag"))
-                    shader.LoadShader(shaderFileName + ".frag");
-
-                // Geometry shaders are optional.
-                if (File.Exists(shaderFileName + ".geom"))
-                    shader.LoadShader(shaderFileName + ".geom");
-
-
-
-                Runtime.shaders.Add(shaderName, shader);
+                Shader shader = CreateShader(shaderProgramName, shaderFolder, additionalShaderFiles);
+                Runtime.shaders.Add(shaderProgramName, shader);
             }
         }
-        
+
+        private static Shader CreateShader(string shaderProgramName, string shaderFolder, List<string> additionalShaderFiles)
+        {
+            Shader shader = new Shader();
+
+            // Additional shaders for utility functions. These should be loaded first.
+            // The order in which shaders are loaded is important.
+            if (additionalShaderFiles != null)
+                LoadAdditionalShaderFiles(additionalShaderFiles, shader);
+
+            string shaderPath = MainForm.executableDir + shaderFolder + "\\" + shaderProgramName;
+            string shaderName = Path.GetFileNameWithoutExtension(shaderPath);
+
+            // Required shaders. These files can be omitted and specified in the additionalShaderFiles list.
+            if (File.Exists(shaderPath + ".vert"))
+            {
+                string shaderSource = File.ReadAllText(shaderPath + ".vert");
+                shader.LoadShader(shaderSource, ShaderType.VertexShader, shaderName);
+            }
+            if (File.Exists(shaderPath + ".frag"))
+            {
+                string shaderSource = File.ReadAllText(shaderPath + ".frag");
+                shader.LoadShader(shaderSource, ShaderType.FragmentShader, shaderName);
+            }
+            // Geometry shaders are optional.
+            if (File.Exists(shaderPath + ".geom"))
+            {
+                string shaderSource = File.ReadAllText(shaderPath + ".geom");
+                shader.LoadShader(shaderSource, ShaderType.GeometryShader, shaderName);
+            }
+
+            return shader;
+        }
+
+        private static void LoadAdditionalShaderFiles(List<string> additionalShaderFiles, Shader shader)
+        {
+            foreach (string file in additionalShaderFiles)
+            {
+                string shaderPath = MainForm.executableDir + "\\lib\\Shader\\" + file;
+                string shaderName = Path.GetFileNameWithoutExtension(shaderPath);
+                string shaderSource = File.ReadAllText(shaderPath);
+
+                if (file.EndsWith(".vert"))
+                    shader.LoadShader(shaderSource, ShaderType.VertexShader, shaderName);
+                else if (file.EndsWith(".frag"))
+                    shader.LoadShader(shaderSource, ShaderType.FragmentShader, shaderName);
+                else if (file.EndsWith(".geom"))
+                    shader.LoadShader(shaderSource, ShaderType.GeometryShader, shaderName);
+            }
+        }
+
         public static void LightColorVector3Uniform(Shader shader, LightColor color, string name)
         {
             // Not declared in the Shader class to make the Shader class more portable.

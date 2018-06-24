@@ -65,7 +65,6 @@ namespace Smash_Forge.Rendering
             SetupScreenQuadBuffer();
             GetOpenGLSystemInfo();
             ShaderTools.SetupShaders();
-            ShaderTools.hasSetupShaders = true;
         }
 
         private static void SetupScreenQuadBuffer()
