@@ -915,31 +915,15 @@ namespace Smash_Forge
                 textureUnitIndexOffset++;
             }
 
-            // Jigglypuff has weird eyes.
-            if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
-            {
-                SetTextureUniformAndSetTexId(shader, mat, true, "dif2", ref textureUnitIndexOffset, ref mat.diffuse2ID);
-                SetTextureUniformAndSetTexId(shader, mat, true, "normalMap", ref textureUnitIndexOffset, ref mat.normalID);
-            }
-            else if ((mat.Flags & 0xFFFFFFFF) == 0x92F01101)
-            {
-                // Final smash mats and Mega Man's eyes.
-                SetTextureUniformAndSetTexId(shader, mat, true, "dif2", ref textureUnitIndexOffset, ref mat.diffuse2ID);
-                SetTextureUniformAndSetTexId(shader, mat, true, "ramp", ref textureUnitIndexOffset, ref mat.rampID);
-                SetTextureUniformAndSetTexId(shader, mat, true, "dummyRamp", ref textureUnitIndexOffset, ref mat.dummyRampID);
-            }
-            else
-            {
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasSphereMap, "spheremap", ref textureUnitIndexOffset, ref mat.sphereMapID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse2, "dif2", ref textureUnitIndexOffset, ref mat.diffuse2ID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse3, "dif3", ref textureUnitIndexOffset, ref mat.diffuse3ID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasStageMap, "stagecube", ref textureUnitIndexOffset, ref mat.stageMapID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasCubeMap, "cube", ref textureUnitIndexOffset, ref mat.cubeMapID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasAoMap, "ao", ref textureUnitIndexOffset, ref mat.aoMapID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasNormalMap, "normalMap", ref textureUnitIndexOffset, ref mat.normalID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasRamp, "ramp", ref textureUnitIndexOffset, ref mat.rampID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasDummyRamp, "dummyRamp", ref textureUnitIndexOffset, ref mat.dummyRampID);
-            }
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasSphereMap, "spheremap", ref textureUnitIndexOffset, ref mat.sphereMapID);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse2, "dif2", ref textureUnitIndexOffset, ref mat.diffuse2ID);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse3, "dif3", ref textureUnitIndexOffset, ref mat.diffuse3ID);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasStageMap, "stagecube", ref textureUnitIndexOffset, ref mat.stageMapID);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasCubeMap, "cube", ref textureUnitIndexOffset, ref mat.cubeMapID);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasAoMap, "ao", ref textureUnitIndexOffset, ref mat.aoMapID);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasNormalMap, "normalMap", ref textureUnitIndexOffset, ref mat.normalID);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasRamp, "ramp", ref textureUnitIndexOffset, ref mat.rampID);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasDummyRamp, "dummyRamp", ref textureUnitIndexOffset, ref mat.dummyRampID);
         }
 
         public static void SetTextureUniformsNudMatSphere(Shader shader, Material mat)
@@ -2707,6 +2691,21 @@ namespace Smash_Forge
 
                 hasDiffuse2 = hasRampCubeMap && ((matFlags & (int)TextureFlags.NormalMap) == 0)
                     && (hasDummyRamp || hasDiffuse3);
+
+                // Jigglypuff has weird eyes, so just hardcode it.
+                if ((matFlags & 0xFFFFFFFF) == 0x9AE11163)
+                {
+                    hasDiffuse2 = true;
+                    hasNormalMap = true;
+                }
+
+                // Mega Man also has strange eyes.
+                if ((matFlags & 0xFFFFFFFF) == 0x92F01101)
+                {
+                    hasDiffuse2 = true;
+                    hasRamp = true;
+                    hasDummyRamp = true;
+                }
             }
         }
 

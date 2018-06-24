@@ -367,7 +367,8 @@ vec3 SpecularPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor
         specColorTotal *= specularColorGain.rgb;
 
     // TODO: Not sure how this works. Specular works differently for eye mats.
-    if ((flags & 0x00E10000u) == 0x00E10000u)
+    // Check for eye mats and Mega Man/final smash eyes.
+    if (((flags & 0x00E10000u) == 0x00E10000u) || ((flags & 0xFFFFFFFFu) == 0x92F01125u))
         specColorTotal *= diffuseMap.rgb;
 
     specularPass += specColorTotal;
@@ -524,8 +525,7 @@ vec4 DiffuseMapTotal(VertexAttributes vert) {
     vec2 offsetTexCoord = DistortedUvCoords(vert, normalMap, normalParams, useNormalMap);
 
     // Blends all of the different diffuse textures together.
-    if (hasDif == 1)
-    {
+    if (hasDif == 1) {
         vec4 diffuse1 = texture(dif, offsetTexCoord) * finalColorGain.rgba;
         diffuseMapTotal = diffuse1;
 
