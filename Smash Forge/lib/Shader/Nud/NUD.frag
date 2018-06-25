@@ -263,6 +263,7 @@ void main() {
     projectionCoords = projectionCoords * 0.5 + 0.5;
     float closestDepth = texture(depthMap, projectionCoords.xy).r;
     float currentDepth = projectionCoords.z;
-    if (currentDepth > closestDepth)
-        fragColor.rgb = vec3(0);
+    float shadowBias = 0.0001;
+    if ((currentDepth - shadowBias) > closestDepth)
+        fragColor.rgb *= vec3(0.25);
 }
