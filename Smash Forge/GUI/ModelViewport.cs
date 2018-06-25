@@ -55,6 +55,8 @@ namespace Smash_Forge
         // Shadow Mapping
         Framebuffer depthMapFbo;
         Texture2D depthMap;
+        int shadowWidth = 2048;
+        int shadowHeight = 2048;
         Matrix4 lightMatrix = Matrix4.Identity;
 
         // The viewport dimensions should be used for FBOs visible on screen.
@@ -341,7 +343,7 @@ namespace Smash_Forge
         private void ResizeDepthMap()
         {
             depthMap.Bind();
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, glViewport.Width, glViewport.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, shadowWidth, shadowHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
             depthMap.MagFilter = TextureMagFilter.Nearest;
             depthMap.MinFilter = TextureMinFilter.Nearest;
             // Use white for values outside shadow map.
@@ -1545,6 +1547,7 @@ namespace Smash_Forge
 
             // This is inefficient but works for now.
             depthMapFbo.Bind();
+            GL.Viewport(0, 0, shadowWidth, shadowHeight);
             GL.Clear(ClearBufferMask.DepthBufferBit);
             camera.Position = new Vector3(0, 6, -60);
             camera.RotationXDegrees = 45;
@@ -1554,6 +1557,7 @@ namespace Smash_Forge
 
             // Draw the models normally.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
+            GL.Viewport(0, 0, width, height);
             // Reset transformations.
             camera.RotationXDegrees = rotX;
             camera.RotationYDegrees = rotY;
