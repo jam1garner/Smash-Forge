@@ -21,7 +21,7 @@ Smash Forge (BFRES WIP Implementation)
  - Full decoding and compression of all texture types for editing.
  - Merge to master forge branch (code is too messy and not complete atm)
 
-# Current libs used by this branch
+## Current libs used by this branch
 Gericom's [EveryFileExplorer (Yaz0 decomp/comp)](https://github.com/Syroot/NintenTools.Bfres)
 masterf0x's [RedCarpet (Sarc loading)](https://github.com/Gericom/EveryFileExplorer)
 Syroot's [bfres library (Wii U)](https://github.com/Syroot/NintenTools.Bfres)
