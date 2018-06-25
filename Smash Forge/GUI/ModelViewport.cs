@@ -765,13 +765,29 @@ namespace Smash_Forge
             Console.WriteLine("BFRES selected");
             BFRES bfres = (BFRES)MeshList.filesTreeView.SelectedNode;
 
+            List<float> X = new List<float>();
+            List<float> Y = new List<float>();
+            List<float> Z = new List<float>();
+            List<float> Radius = new List<float>();
+
             foreach (BFRES.FMDL_Model mdl in bfres.models)
             {
                 foreach (BFRES.Mesh msh in mdl.poly)
                 {
-                    camera.FrameSelection(new Vector3(msh.boundingBoxes[0].Center.X, msh.boundingBoxes[0].Center.Y, msh.boundingBoxes[0].Extent.X), msh.radius[0]);
+                    X.Add(msh.boundingBoxes[0].Center.X);
+                    Y.Add(msh.boundingBoxes[0].Center.Y);
+                    Z.Add(msh.boundingBoxes[0].Center.Z);
+
+                    Radius.Add(msh.radius[0]);
                 }
             }
+
+            X.Sort();
+            Y.Sort();
+            Z.Sort();
+            Radius.Sort();
+
+            camera.FrameSelection(new Vector3(X[ X.Count - 1], Y[Y.Count - 1], Z[Z.Count - 1]), Radius[ Radius.Count - 1]);
             camera.Update();
         }
 
