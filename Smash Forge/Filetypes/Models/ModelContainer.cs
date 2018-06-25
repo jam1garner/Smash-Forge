@@ -221,7 +221,7 @@ namespace Smash_Forge
             return null;
         }
 
-        public void Render(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix, Vector2 screenDimensions, bool specialWireFrame = false)
+        public void Render(Camera camera, int depthMap, Matrix4 lightMatrix, Matrix4 modelMatrix, Vector2 screenDimensions, bool specialWireFrame = false)
         {
             if (!Checked)
                 return;
@@ -235,6 +235,9 @@ namespace Smash_Forge
 
             int renderType = (int)Runtime.renderType;
 
+            // Matrices.
+            Matrix4 lightMatrixRef = lightMatrix;
+            shader.SetMatrix4x4("lightMatrix", ref lightMatrixRef);
             SetCameraMatrixUniforms(camera, shader);
 
             shader = Runtime.shaders["Mbn"];
@@ -284,6 +287,10 @@ namespace Smash_Forge
 
                 shader.SetInt("renderType", renderType);
                 shader.SetInt("debugOption", (int)Runtime.uvChannel);
+
+                GL.ActiveTexture(TextureUnit.Texture14);
+                GL.BindTexture(TextureTarget.Texture2D, depthMap);
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("depthMap"), 14);
 
                 // Used for wireframe shader.
                 shader.SetVector2("windowSize", screenDimensions);

@@ -52,8 +52,10 @@ namespace Smash_Forge
         // Used for screen renders and color picking.
         Framebuffer offscreenRenderFbo;
 
+        // Shadow Mapping
         Framebuffer depthMapFbo;
         Texture2D depthMap;
+        Matrix4 lightMatrix = Matrix4.Identity;
 
         // The viewport dimensions should be used for FBOs visible on screen.
         // Larger dimensions can be used for higher quality outputs for FBOs.
@@ -339,11 +341,11 @@ namespace Smash_Forge
         private void ResizeDepthMap()
         {
             depthMap.Bind();
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, glViewport.Width, glViewport.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, glViewport.Width, glViewport.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
             depthMap.MagFilter = TextureMagFilter.Nearest;
             depthMap.MinFilter = TextureMinFilter.Nearest;
-            depthMap.TextureWrapS = TextureWrapMode.Repeat;
-            depthMap.TextureWrapT = TextureWrapMode.Repeat;
+            depthMap.TextureWrapS = TextureWrapMode.ClampToEdge;
+            depthMap.TextureWrapT = TextureWrapMode.ClampToEdge;
 
             // Attach the depth map to the fbo.
             depthMapFbo.Bind();
@@ -1534,11 +1536,27 @@ namespace Smash_Forge
             if (Runtime.drawNudColorIdPass)
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
+            // Keep track of preview transforms.
+            float rotX = camera.RotationXDegrees;
+            float rotY = camera.RotationYDegrees;
+            Vector3 position = camera.Position;
+
+            // This is inefficient but works for now.
             depthMapFbo.Bind();
             GL.Clear(ClearBufferMask.DepthBufferBit);
+            camera.Position = new Vector3(0, 6, -60);
+            camera.RotationXDegrees = 45;
+            camera.RotationYDegrees = 0;
+            lightMatrix = camera.MvpMatrix;
             DrawModels();
 
+            // Draw the models normally.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
+            // Reset transformations.
+            camera.RotationXDegrees = rotX;
+            camera.RotationYDegrees = rotY;
+            camera.Position = position;
+            DrawModels();
 
             if (Runtime.usePostProcessing)
             {
@@ -1552,9 +1570,8 @@ namespace Smash_Forge
                 GL.Viewport(0, 0, width, height);
 
                 RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, imageBrightHdrFbo.ColorAttachment0Tex);
+                RenderTools.DrawTexturedQuad(depthMap.Id, 1, 1);
             }
-            RenderTools.DrawTexturedQuad(depthMap.Id, 1, 1);
-
 
             FixedFunctionRendering();
 
@@ -1606,7 +1623,7 @@ namespace Smash_Forge
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
                     if (m is ModelContainer)
-                        ((ModelContainer)m).Render(camera, 0, Matrix4.Zero, camera.MvpMatrix, new Vector2(glViewport.Width, glViewport.Height));
+                        ((ModelContainer)m).Render(camera, depthMap.Id, lightMatrix, camera.MvpMatrix, new Vector2(glViewport.Width, glViewport.Height));
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)
