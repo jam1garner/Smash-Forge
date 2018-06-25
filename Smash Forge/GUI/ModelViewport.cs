@@ -415,7 +415,7 @@ namespace Smash_Forge
         private void ModelViewport_Load(object sender, EventArgs e)
         {
             var timer = new Timer();
-            timer.Interval = 1000 / 120;
+            timer.Interval = 50;
             timer.Tick += new EventHandler(Application_Idle);
             timer.Start();
 
@@ -1553,7 +1553,7 @@ namespace Smash_Forge
             camera.RotationXDegrees = 45;
             camera.RotationYDegrees = 0;
             lightMatrix = camera.MvpMatrix;
-            DrawModels();
+            DrawModels(true);
 
             // Draw the models normally.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
@@ -1624,12 +1624,12 @@ namespace Smash_Forge
             GL.Viewport(0, 0, width, height);
         }
 
-        private void DrawModels()
+        private void DrawModels(bool drawShadow = false)
         {
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
                     if (m is ModelContainer)
-                        ((ModelContainer)m).Render(camera, depthMap.Id, lightMatrix, camera.MvpMatrix, new Vector2(glViewport.Width, glViewport.Height));
+                        ((ModelContainer)m).Render(camera, depthMap.Id, lightMatrix, new Vector2(glViewport.Width, glViewport.Height), drawShadow);
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)
