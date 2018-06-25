@@ -22,10 +22,10 @@ Smash Forge (BFRES WIP Implementation)
  - Merge to master forge branch (code is too messy and not complete atm)
 
 ## Current libs used by this branch
-Gericom's [EveryFileExplorer (Yaz0 decomp/comp)](https://github.com/Syroot/NintenTools.Bfres)
-masterf0x's [RedCarpet (Sarc loading)](https://github.com/Gericom/EveryFileExplorer)
-Syroot's [bfres library (Wii U)](https://github.com/Syroot/NintenTools.Bfres)
-Syroot's bfres library (Wii U)  as a base for switch. 
+- Gericom's [EveryFileExplorer (Yaz0 decomp/comp)](https://github.com/Syroot/NintenTools.Bfres)
+- masterf0x's [RedCarpet (Sarc loading)](https://github.com/Gericom/EveryFileExplorer)
+- Syroot's [bfres library (Wii U)](https://github.com/Syroot/NintenTools.Bfres)
+- Syroot's bfres library (Wii U)  as a base for switch. 
 
 [Bug Tracker](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Request a feature](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [![Build status](https://ci.appveyor.com/api/projects/status/o73kaah41uewf1kx/branch/master?svg=true)](https://ci.appveyor.com/project/Sammi-Husky/smash-4-bone-animator/branch/master)
 ## Features
