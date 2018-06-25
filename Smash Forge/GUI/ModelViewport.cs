@@ -52,6 +52,9 @@ namespace Smash_Forge
         // Used for screen renders and color picking.
         Framebuffer offscreenRenderFbo;
 
+        Framebuffer depthMapFbo;
+        Texture2D depthMap;
+
         // The viewport dimensions should be used for FBOs visible on screen.
         // Larger dimensions can be used for higher quality outputs for FBOs.
         int fboRenderWidth;
@@ -316,6 +319,35 @@ namespace Smash_Forge
 
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            SetupDepthMap();
+        }
+
+        private void SetupDepthMap()
+        {
+            // Set up the depth map fbo.
+            depthMapFbo = new Framebuffer(FramebufferTarget.Framebuffer);
+            depthMapFbo.Bind();
+
+            // Set up the depth map texture.
+            depthMap = new Texture2D(glViewport.Width, glViewport.Height);
+            ResizeDepthMap();
+            GL.DrawBuffer(DrawBufferMode.None);
+            GL.ReadBuffer(ReadBufferMode.None);
+        }
+
+        private void ResizeDepthMap()
+        {
+            depthMap.Bind();
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent, glViewport.Width, glViewport.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+            depthMap.MagFilter = TextureMagFilter.Nearest;
+            depthMap.MinFilter = TextureMinFilter.Nearest;
+            depthMap.TextureWrapS = TextureWrapMode.Repeat;
+            depthMap.TextureWrapT = TextureWrapMode.Repeat;
+
+            // Attach the depth map to the fbo.
+            depthMapFbo.Bind();
+            GL.FramebufferTexture2D(depthMapFbo.FramebufferTarget, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthMap.Id, 0);
         }
 
         public Camera GetCamera()
@@ -628,13 +660,15 @@ namespace Smash_Forge
         private void ResizeTexturesAndBuffers()
         {
             // FBOs manage their own resizing.
-            ResizeHdrFboRboTwoColorAttachments();
-
             imageBrightHdrFbo.Width = (int)(fboRenderWidth * Runtime.bloomTexScale);
             imageBrightHdrFbo.Height = (int)(fboRenderHeight * Runtime.bloomTexScale);
 
             offscreenRenderFbo.Width = fboRenderWidth;
             offscreenRenderFbo.Height = fboRenderHeight;
+
+            // Resize manually created fbos.
+            ResizeDepthMap();
+            ResizeHdrFboRboTwoColorAttachments();
         }
 
         private void ResizeHdrFboRboTwoColorAttachments()
@@ -1500,6 +1534,8 @@ namespace Smash_Forge
             if (Runtime.drawNudColorIdPass)
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
+            depthMapFbo.Bind();
+            GL.Clear(ClearBufferMask.DepthBufferBit);
             DrawModels();
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
@@ -1517,6 +1553,8 @@ namespace Smash_Forge
 
                 RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, imageBrightHdrFbo.ColorAttachment0Tex);
             }
+            RenderTools.DrawTexturedQuad(depthMap.Id, 1, 1);
+
 
             FixedFunctionRendering();
 
