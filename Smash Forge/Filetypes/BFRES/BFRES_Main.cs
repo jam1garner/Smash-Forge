@@ -64,13 +64,15 @@ namespace Smash_Forge
         //Kirby star allies makes it impossible to texture map without decompiling the shaders so i'll do them by texture list
         public List<string> HackyTextureList = new List<string>(new string[] {
             "Alb", "alb", "Base", "base", "bonbon.167300917","Eye.00","EyeIce.00", "FaceDummy", "Eye01.17", "Dee.00",
-            "rainbow.758540574", "Mucus._1700670200", "Eye.11", "CapTail00","eye.0"
+            "rainbow.758540574", "Mucus._1700670200", "Eye.11", "CapTail00","eye.0","pallet_texture","Mark.930799313","InEye.1767598300","Face.00",
+            "ThunderHair_Thunder_BaseColor.1751853236","FireHair_Thunder_BaseColor._162539711","IceHair_Thunder_BaseColor.674061150","BodyEnemy.1866226988"
 
         });
 
         // gl buffer objects
         int vbo_position;
         int ibo_elements;
+
 
         public string path = "";
         public static Vector3 position = new Vector3(0, 0, 0);
@@ -86,11 +88,11 @@ namespace Smash_Forge
 
             if (!Runtime.shaders.ContainsKey("BFRES"))
             {
-                Rendering.ShaderTools.CreateShader("BFRES", "/lib/Shader/Legacy/", "/lib/Shader/");
+               ShaderTools.CreateShader("BFRES", "/lib/Shader/Legacy/", "/lib/Shader/");
             }
             if (!Runtime.shaders.ContainsKey("BFRES_PBR"))
             {
-                Rendering.ShaderTools.CreateShader("BFRES_PBR", "/lib/Shader/Legacy/", "/lib/Shader/");
+                ShaderTools.CreateShader("BFRES_PBR", "/lib/Shader/Legacy/", "/lib/Shader/");
             }
 
 
@@ -100,16 +102,16 @@ namespace Smash_Forge
 
 
 
-        public BFRES(string fname) : this()
+        public BFRES(string fname, byte[] file_data) : this()
         {
             Text = Path.GetFileName(fname);
 
             SetMarioPosition(fname);
 
 
-            FileData f = new FileData(fname);
+            FileData f = new FileData(file_data);
 
-            BFRESFile = f.getSection(0, f.eof());
+            BFRESFile = file_data;
 
             f.seek(4);
 
@@ -118,7 +120,7 @@ namespace Smash_Forge
             {
                 IsSwitchBFRES = true;
 
-                TargetSwitchBFRES = new ResNSW.ResFile(fname);
+                TargetSwitchBFRES = new ResNSW.ResFile(new MemoryStream(file_data));
                 path = Text;
                 Read(TargetSwitchBFRES, f); //Temp add FileData for now till I parse BNTX with lib
                 UpdateVertexData();
@@ -129,10 +131,9 @@ namespace Smash_Forge
             {
                 IsSwitchBFRES = false;
 
-                TargetWiiUBFRES = new ResFile(fname);
+                TargetWiiUBFRES = new ResFile(new MemoryStream(file_data));
                 path = Text;
                 Read(TargetWiiUBFRES);
-                UpdateTextureMaps();
                 UpdateVertexData();
                 SetupShader();
 
@@ -217,6 +218,17 @@ namespace Smash_Forge
         public Matrix4 BonePosExtra;
         public Matrix4 BonePosFix;
 
+        //Transform function for single binded meshes
+        //Thanks GDKchan for the function
+        public static Vector3 transform_position(Vector3 input, Matrix4 matrix)
+        {
+            Vector3 output = new Vector3();
+            output.X = input.X * matrix.M11 + input.Y * matrix.M21 + input.Z * matrix.M31 + matrix.M41;
+            output.Y = input.X * matrix.M12 + input.Y * matrix.M22 + input.Z * matrix.M32 + matrix.M42;
+            output.Z = input.X * matrix.M13 + input.Y * matrix.M23 + input.Z * matrix.M33 + matrix.M43;
+            return output;
+        }
+
         public void RenderTest()
         {
             shader.enableAttrib();
@@ -237,6 +249,27 @@ namespace Smash_Forge
                     b.transform = b.transform * BonePosExtra;
                 }
             }
+        }
+
+        public void DepthSortMeshes(Vector3 cameraPosition)
+        {
+            foreach (FMDL_Model fmdl in models)
+            {
+                List<Mesh> unsortedMeshes = new List<Mesh>();
+
+                foreach (Mesh m in fmdl.Nodes)
+                {
+                    m.sortingDistance = m.CalculateSortingDistance(cameraPosition);
+                    Console.WriteLine(m.sortingDistance);
+                    unsortedMeshes.Add(m);
+                }
+
+                fmdl.depthSortedMeshes = unsortedMeshes.OrderBy(o => (o.sortingDistance)).ToList();
+            }
+
+
+            // Order by the distance from the camera to the closest point on the bounding sphere. 
+            // Positive values are usually closer to camera. Negative values are usually farther away. 
         }
 
         private void DrawBoundingRadius()
@@ -278,7 +311,7 @@ namespace Smash_Forge
                     {
                         if (m.Checked)
                         {
-                            Rendering.RenderTools.DrawRectangularPrism(box.Center, box.Extent.X, box.Extent.Y, box.Extent.Z, true);
+                            RenderTools.DrawRectangularPrism(box.Center, box.Extent.X, box.Extent.Y, box.Extent.Z, true);
                         }
                     }
                 }
@@ -303,12 +336,12 @@ namespace Smash_Forge
 
             GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref view);
 
-            // For proper alpha blending, draw in reverse order and draw opaque objects first. 
-            List<Mesh> opaque = new List<Mesh>();
-            List<Mesh> transparent = new List<Mesh>();
-
             foreach (FMDL_Model fmdl in models)
             {
+                // For proper alpha blending, draw in reverse order and draw opaque objects first. 
+                List<Mesh> opaque = new List<Mesh>();
+                List<Mesh> transparent = new List<Mesh>();
+
 
                 //Render Skeleton
                 Matrix4[] f = fmdl.skeleton.getShaderMatrix();
@@ -321,18 +354,43 @@ namespace Smash_Forge
                 sb = fmdl.skeleton.getShaderMatrixSingleBinded();
                 GL.UniformMatrix4(shader.getAttribute("bonesfixed"), sb.Length, false, ref sb[0].Row0.X);
 
-                //Render meshes
-                foreach (Mesh m in fmdl.poly)
+                foreach (Mesh m in fmdl.depthSortedMeshes)
                 {
-                    if (fmdl.Parent != null && (m.Parent).Checked)
+                    if (m.isTransparent)
                     {
-                        ApplyTransformFix(fmdl, m);
+                        transparent.Add(m);
+                    }
+                    else
+                        opaque.Add(m);
+                }
+
+                foreach (Mesh m in opaque)
+                {
+                    ApplyTransformFix(fmdl, m);
+
+                    if (m.Parent != null && (m.Parent).Checked)
+                        DrawMesh(m, shader, m.material);
+                }
+
+                foreach (Mesh m in transparent)
+                {
+                    ApplyTransformFix(fmdl, m);
+
+                    if (((FMDL_Model)m.Parent).Checked)
+                    {
                         DrawMesh(m, shader, m.material);
                     }
                 }
             }
+
+      
             shader.disableAttrib();
         }
+        private void BindSkeleton(Shader shader)
+        {
+
+        }
+
         private void SetRenderSettings(Shader shader)
         {
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
@@ -350,10 +408,10 @@ namespace Smash_Forge
                 return;
 
             SetVertexAttributes(m, shader);
-            RenderUniformParams(mat, shader);
+            RenderUniformParams(mat, shader, m);
             SetTextureUniforms(mat, m);
-
-
+            SetAlphaBlending(mat);
+            SetAlphaTesting(mat);
 
             foreach (RenderInfoData r in mat.renderinfo)
             {
@@ -426,6 +484,8 @@ namespace Smash_Forge
             GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
             GL.VertexAttribPointer(shader.getAttribute("vUV1"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
             GL.VertexAttribPointer(shader.getAttribute("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
+            GL.VertexAttribPointer(shader.getAttribute("vPosition2"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 124);
+            GL.VertexAttribPointer(shader.getAttribute("vPosition3"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 136);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
 
             // Disabled these untill I fix transform stuff manually without shaders
@@ -434,10 +494,26 @@ namespace Smash_Forge
 
         }
 
-        public void UpdateTextureMaps()
-        {
+        //Here I'll use the same enums as NUDs does. BFRES for switch is inconsistent with the strings and data though multiple games and wii u uses flags so it's best to have them all in one
+        Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
+                    { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
+                    { 0x02, BlendingFactorDest.One},
+                    { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
+                    { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
+                    { 0x05, BlendingFactorDest.ConstantAlpha},
+                    { 0x06, BlendingFactorDest.Zero},
+        };
 
-        }
+        static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
+                    { 0x01, BlendingFactorSrc.SrcAlpha},
+                    { 0x02, BlendingFactorSrc.Zero}
+        };
+
+        static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
+                    { 0x00, TextureWrapMode.Repeat},
+                    { 0x01, TextureWrapMode.MirroredRepeat},
+                    { 0x02, TextureWrapMode.ClampToEdge},
+        };
 
         public void UpdateVertexData()
         {
@@ -495,7 +571,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void RenderUniformParams(MaterialData mat, Shader shader)
+        private static void RenderUniformParams(MaterialData mat, Shader shader, Mesh m)
         {
             GL.Uniform4(shader.getAttribute("SamplerUV1"), new Vector4(1, 1, 0, 0));
             GL.Uniform4(shader.getAttribute("gsys_bake_st0"), new Vector4(1, 1, 0, 0));
@@ -521,8 +597,10 @@ namespace Smash_Forge
             //0 = Ambient occusion bake map
             //1 = Shadow 
             //2 = Shadow + Ambient occusion map
-            SetUnifromData(mat, shader, "bake_shadow_type"); 
+            SetUnifromData(mat, shader, "bake_shadow_type");
 
+
+            ShaderTools.BoolToIntShaderUniform(shader, m.isTransparent, "isTransparent");
         }
 
         private static void SetUnifromData(MaterialData mat, Shader shader, string propertyName)
@@ -576,7 +654,40 @@ namespace Smash_Forge
             }         
         }
 
+        private void SetAlphaBlending(MaterialData material)
+        {
+            GL.Enable(EnableCap.Blend);
+            BlendingFactorSrc blendSrc = srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha;
+            BlendingFactorDest blendDst = dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha;
+            GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
+            GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
+            if (material.srcFactor == 0 && material.dstFactor == 0)
+            {
+                GL.Disable(EnableCap.Blend);
+            }
+        }
 
+        private static void SetAlphaTesting(MaterialData material)
+        {
+            GL.Enable(EnableCap.AlphaTest);
+            if (material.alphaTest == 0)
+                GL.Disable(EnableCap.AlphaTest);
+
+            float refAlpha = material.RefAlpha / 255f;
+            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
+            switch (material.alphaFunction)
+            {
+                case 0x0:
+                    GL.AlphaFunc(AlphaFunction.Never, refAlpha);
+                    break;
+                case 0x4:
+                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
+                    break;
+                case 0x6:
+                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
+                    break;
+            }
+        }
 
         private static void SetFaceCulling(MaterialData mat, RenderInfoData r)
         {
@@ -603,107 +714,7 @@ namespace Smash_Forge
                     break;
             }
         }
-        private void SetAlphaBlending(MaterialData mat, RenderInfoData r)
-        {
-
-            switch (r.Name)
-            {
-                case "gsys_color_blend_rgb_src_func":
-                    if (r.Value_String == "src_alpha")
-                    {
-                    }
-                    break;
-                case "gsys_color_blend_rgb_dst_func":
-                    if (r.Value_String == "one_minus_src_alpha")
-                    {
-                    }
-                    break;
-                case "gsys_color_blend_rgb_op":
-                    if (r.Value_String == "add")
-                    {
-
-                    }
-                    break;
-                case "gsys_color_blend_alpha_op":
-                    if (r.Value_String == "add")
-                    {
-                    }
-                    break;
-                case "gsys_color_blend_alpha_src_func":
-                    if (r.Value_String == "one")
-                    {
-
-                    }
-                    break;
-                case "gsys_color_blend_alpha_dst_func":
-                    if (r.Value_String == "zero")
-                    {
-                    }
-                    break;
-                case "gsys_alpha_test_func":
-                    break;
-                case "gsys_alpha_test_value":
-                    break;
-                default:
-                    break;
-            }
-        }
-        private static void SetAlphaTesting(MaterialData mat, RenderInfoData r)
-        {
-            switch (r.Name)
-            {
-                case "gsys_alpha_test_enable":
-                    if (r.Value_String == "true")
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
-                    break;
-                case "gsys_alpha_test_func":
-                    if (r.Value_String == "lequal")
-                    {
-
-                    }
-                    else if (r.Value_String == "gequal")
-                    {
-
-                    }
-                    break;
-                case "gsys_alpha_test_value":
-                    break;
-                default:
-                    break;
-            }
-        }
-        private static void SetDepthTesting(MaterialData mat, RenderInfoData r)
-        {
-            switch (r.Name)
-            {
-                case "gsys_depth_test_enable":
-                    if (r.Value_String == "true")
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
-                    break;
-                case "gsys_depth_test_func":
-                    if (r.Value_String == "lequal")
-                    {
-
-                    }
-                    break;
-                case "gsys_depth_test_write":
-                    break;
-                default:
-                    break;
-            }
-        }
+ 
         private static void SetDefaultTextureAttributes(MaterialData mat)
         {
             ShaderTools.BoolToIntShaderUniform(shader, mat.HasDiffuseMap, "HasDiffuseLayer");
@@ -815,6 +826,8 @@ namespace Smash_Forge
             GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 0.0f);
         }
 
+
+        //This mta function is pretty much for all animations in a bfres besides skeleton animations. 
         public void ApplyMta(MTA m, int frame)
         {
             foreach (MatAnimEntry matEntry in m.matEntries)
@@ -843,8 +856,7 @@ namespace Smash_Forge
                                 foreach (MatAnimData md in matEntry.matCurves)
                                 {
                                     if (frm == md.Frame)
-                                    {
-                                   
+                                    { 
                                         //If it's a texture pattern one set the texture by the frame
                                         if (md.Pat0Tex != null)
                                         {
@@ -852,9 +864,96 @@ namespace Smash_Forge
                                             {
                                                 if (md.SamplerName == Sampler)
                                                 {
-                                               ///      .WriteLine(mesh.material.textures[mesh.material.Samplers[md.SamplerName]].Name + " " + md.SamplerName + " " + mesh.material.Samplers[md.SamplerName] + " " + md.Pat0Tex);
-
                                                     mesh.material.textures[mesh.material.Samplers[md.SamplerName]].Name = md.Pat0Tex;
+                                                }
+                                            }
+                                        }
+                                        //Set key data used by uniform and SRT data
+                                        if (md.keys != null)
+                                        {
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        //For this do shape/morph animations
+                        if (mesh.Text == matEntry.Text)
+                        {
+
+                            int FrameRate = 60;
+                            int frm = (int)((frame * 60 / FrameRate) % (m.FrameCount));
+
+                            if (matEntry.matCurves != null)
+                            {
+                                foreach (MatAnimData md in matEntry.matCurves)
+                                {
+                                    Console.WriteLine(mesh.Text);
+                                    foreach (int f in md.Frames)
+                                    {
+                                        if (frm == f)
+                                        {
+                                            if (md.keys != null)
+                                            {
+                                                Console.WriteLine(md.Value);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        //Find a matching bone if the matEntry uses bones instead of materials
+                        //For visual anims simply get the mesh that is linked to the material and hide it
+                        if (mdl.skeleton.bones[mesh.fsklindx].Text == matEntry.Text)
+                        {
+                            int FrameRate = 60;
+                            int frm = (int)((frame * 60 / FrameRate) % (m.FrameCount));
+
+                            if (matEntry.matCurves != null)
+                            {
+                                foreach (MatAnimData md in matEntry.matCurves)
+                                {
+                                    if (frm == md.Frame)
+                                    {
+                                        if (frm == md.Frame)
+                                        {
+                                            if (md.VIS_State == false)
+                                            {
+                                                mesh.Checked = false;
+                                            }
+                                            if (md.VIS_State == true)
+                                            {
+                                                mesh.Checked = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foreach (string name in mesh.BoneIndexList.Keys)
+                            {
+                                if (name == matEntry.Text)
+                                {
+                                    int FrameRate = 60;
+                                    int frm = (int)((frame * 60 / FrameRate) % (m.FrameCount));
+
+                                    if (matEntry.matCurves != null)
+                                    {
+                                        foreach (MatAnimData md in matEntry.matCurves)
+                                        {
+                                            if (frm == md.Frame)
+                                            {
+                                                if (md.VIS_State == false)
+                                                {
+                                                    mesh.Checked = false;
+                                                }
+                                                if (md.VIS_State == true)
+                                                {
+                                                    mesh.Checked = true;
                                                 }
                                             }
                                         }
@@ -903,6 +1002,10 @@ namespace Smash_Forge
             public List<Vector4> weights = new List<Vector4>();
             public List<Vector4> nodes1 = new List<Vector4>();
             public List<Vector4> weights1 = new List<Vector4>();
+
+            //For vertex morphing 
+            public List<Vector3> pos1 = new List<Vector3>();
+            public List<Vector3> pos2 = new List<Vector3>();
         }
 
         public struct DisplayVertex
@@ -918,8 +1021,12 @@ namespace Smash_Forge
             public Vector4 weight;
             public Vector2 uv2;
             public Vector2 uv3;
+            public Vector3 pos1;
+            public Vector3 pos2;
 
-            public static int Size = 4 * (3 + 3 + 3 + 3 + 2 + 4 + 4 + 4 + 2 + 2);
+
+
+            public static int Size = 4 * (3 + 3 + 3 + 3 + 2 + 4 + 4 + 4 + 2 + 2 + 3 + 3);
         }
 
         public class Mesh : TreeNode
@@ -938,11 +1045,15 @@ namespace Smash_Forge
 
             public int BoundingCount;
 
+            public bool isTransparent = false;
+
             public MaterialData material = new MaterialData();
 
             public List<float> radius = new List<float>();
 
             public List<BoundingBox> boundingBoxes = new List<BoundingBox>();
+
+            public Dictionary<string, int> BoneIndexList = new Dictionary<string, int>();
 
             public class BoundingBox
             {
@@ -950,7 +1061,6 @@ namespace Smash_Forge
                 public Vector3 Extent;
             }
 
-            List<Mesh> depthSortedMeshes = new List<Mesh>();
             public float sortingDistance = 0;
 
             public int strip = 0x40;
@@ -964,29 +1074,17 @@ namespace Smash_Forge
                 SelectedImageKey = "mesh";
             }
             // for drawing
-            public bool isTransparent = false;
             public int[] display;
             public int[] selectedVerts;
             public int Offset; // For Rendering
 
-            public void DepthSortMeshes(Vector3 cameraPosition)
-            {
-                List<Mesh> unsortedMeshes = new List<Mesh>();
-                foreach (Mesh m in Nodes)
-                {
-                    m.sortingDistance = m.CalculateSortingDistance(cameraPosition);
-                    unsortedMeshes.Add(m);
-                }
-
-                // Order by the distance from the camera to the closest point on the bounding sphere. 
-                // Positive values are usually closer to camera. Negative values are usually farther away. 
-                depthSortedMeshes = unsortedMeshes.OrderBy(o => (o.sortingDistance)).ToList();
-            }
-
             public float CalculateSortingDistance(Vector3 cameraPosition)
             {
-          
-                return 0;
+                BoundingBox box = new BoundingBox();
+
+                Vector3 distanceVector = new Vector3(cameraPosition - box.Center);
+                Console.WriteLine(distanceVector.Length + " " + Text);
+                return distanceVector.Length + radius[0];
             }
 
             public List<DisplayVertex> CreateDisplayVertices()
@@ -1030,6 +1128,8 @@ namespace Smash_Forge
                         uv3 = v.uv2.Count > 0 ? v.uv2[p] : new Vector2(0, 0),
                         node = v.nodes.Count > 0 ? v.nodes[p] : new Vector4(-1, 0, 0, 0),
                         weight = v.weights.Count > 0 ? v.weights[p] : new Vector4(0, 0, 0, 0),
+                        pos1 = v.pos1.Count > 0 ? v.pos1[p] : new Vector3(0, 0, 0),
+                        pos2 = v.pos2.Count > 0 ? v.pos2[p] : new Vector3(0, 0, 0),
                     };
 
 
@@ -1350,6 +1450,13 @@ namespace Smash_Forge
         {
             public string Name;
 
+            public enum AlphaFunction
+            {
+                Never = 0x0,
+                GequalRefAlpha1 = 0x4,
+                GequalRefAlpha2 = 0x6
+            }
+
             public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
             public Dictionary<string, int> Samplers = new Dictionary<string, int>();
             public List<MatTexture> textures = new List<MatTexture>();
@@ -1357,6 +1464,18 @@ namespace Smash_Forge
             public List<SamplerInfo> samplerinfo = new List<SamplerInfo>();
             public Dictionary<string, string> shaderassign = new Dictionary<string, string>();
             public Dictionary<string, ShaderParam> matparam = new Dictionary<string, ShaderParam>();
+
+
+
+            public int blendMode = 0;
+            public int dstFactor = 0;
+            public int srcFactor = 0;
+            public int alphaTest = 0;
+            public int alphaFunction = 0;
+
+            public int RefAlpha = 0;
+            public int cullMode = 0;
+
 
             // Texture Maps
             public bool HasDiffuseMap = false;
@@ -1516,11 +1635,7 @@ namespace Smash_Forge
             public int WrapModeW;
 
         }
-        static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
-                    { 0x00, TextureWrapMode.Repeat},
-                    { 0x01, TextureWrapMode.MirroredRepeat},
-                    { 0x02, TextureWrapMode.ClampToEdge}
-        };
+
         private static VBN vbn()
         {
 
@@ -1553,6 +1668,7 @@ namespace Smash_Forge
             public bool isVisible = true;
             public int[] Node_Array;
 
+            public List<Mesh> depthSortedMeshes = new List<Mesh>();
         }
 
         public class MTA : TreeNode
@@ -1597,28 +1713,113 @@ namespace Smash_Forge
                 ImageKey = "image";
                 SelectedImageKey = "image";
             }
+            
 
             public List<MatAnimData> matCurves = new List<MatAnimData>();
 
+            public void Interpolate(ResNSW.AnimCurve cr)
+            {
+                MatAnimData md = new MatAnimData();
+
+                md.Frames = new int[cr.Frames.Length];
+
+                for (int i = 0; i < (ushort)cr.Frames.Length; i++)
+                {
+                    md.Frames[i] = i;
+
+                    if (cr.CurveType == ResNSW.AnimCurveType.Cubic)
+                    {
+                        md.keys.Add(new AnimKey()
+                        {
+                            frame = (int)cr.Frames[i],
+                            unk1 = cr.Offset + ((cr.Keys[i, 0] * cr.Scale)),
+                            unk2 = cr.Offset + ((cr.Keys[i, 1] * cr.Scale)),
+                            unk3 = cr.Offset + ((cr.Keys[i, 2] * cr.Scale)),
+                            unk4 = cr.Offset + ((cr.Keys[i, 3] * cr.Scale)),
+                        });
+                    }
+                    if (cr.CurveType == ResNSW.AnimCurveType.Linear)
+                    {
+                        md.keys.Add(new AnimKey()
+                        {
+                            frame = (int)cr.Frames[i],
+                            unk1 = cr.Offset + ((cr.Keys[i, 0] * cr.Scale)),
+                            unk2 = cr.Offset + ((cr.Keys[i, 1] * cr.Scale)),
+                        });
+                    }
+                    else if (cr.CurveType == ResNSW.AnimCurveType.StepInt)
+                    {
+                        md.keys.Add(new AnimKey()
+                        {
+                            frame = (int)cr.Frames[i],
+                            unk1 = cr.Offset + ((cr.Keys[i, 0] * cr.Scale)),
+                        });
+                    }
+                    else if (cr.CurveType == ResNSW.AnimCurveType.StepBool)
+                    {
+
+                    }
+                }
+                matCurves.Add(md);
+            }
         }
         public class MatAnimData
         {
-            public class frame
-            {
-                //public int size;
-                public float[] values;
-            }
             public int Frame;
             public int CurveIndex;
             public int ConstIndex;
+            public int[] Frames;
 
-            public List<float> keys = new List<float>();
+            //VIS data
+            public bool VIS_State;
+            public string MaterialName;
 
             //Pat0 data
             public string Pat0Tex;
             public string SamplerName;
+
+            public float Value;
+
+            public List<AnimKey> keys = new List<AnimKey>();
+
+            //For interpolation. 
+            public AnimKey GetLeft(int frame)
+            {
+                AnimKey prev = keys[0];
+
+                for (int i = 0; i < keys.Count - 1; i++)
+                {
+                    AnimKey key = keys[i];
+                    if (key.frame > frame && prev.frame <= frame)
+                        break;
+                    prev = key;
+                }
+
+                return prev;
+            }
+            public AnimKey GetRight(int frame)
+            {
+                AnimKey cur = keys[0];
+                AnimKey prev = keys[0];
+
+                for (int i = 1; i < keys.Count; i++)
+                {
+                    AnimKey key = keys[i];
+                    cur = key;
+                    if (key.frame > frame && prev.frame <= frame)
+                        break;
+                    prev = key;
+                }
+
+                return cur;
+            }
         }
+        public class AnimKey
+        {
+            public int frame;
+            public float unk1, unk2, unk3, unk4;
 
-
+            public int offset;
+        }
     }
 }

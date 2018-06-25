@@ -23,11 +23,9 @@ namespace Smash_Forge
 
 
 
-        public void Read(string filename, BFRES bfres, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
+        public void Read(ResFile b, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
         {
             Console.WriteLine("Reading Material Animations ...");
-
-            ResFile b = new ResFile(filename);
 
             ThisAnimation.Text = "Material Animations" ;
 
@@ -73,6 +71,8 @@ namespace Smash_Forge
 
                 mat.Text = matanim.Name;
 
+
+
                 if (matanim.Curves.Count == 0)
                 {
                     int CurTex = 0;
@@ -83,7 +83,18 @@ namespace Smash_Forge
                         {
                             BFRES.MatAnimData md = new BFRES.MatAnimData();
 
-                            md.Pat0Tex = mta.Pat0[CurTex];
+
+                            //Switch doesn't have base values? I can't find any like wii u did so i'll just have this look though each texture map.
+                            //Some have multiple maps but one texture (Yoshi in Odyssey) so this checks the texture count
+                            if (CurTex + 1 <= vis.TextureNames.Count)
+                            {
+                                md.Pat0Tex = mta.Pat0[CurTex];
+                            }
+                            else
+                            {
+                                md.Pat0Tex = mta.Pat0[0];
+                            }              
+
                             md.SamplerName = inf.Name;
                             md.Frame = 0;
 
@@ -108,7 +119,7 @@ namespace Smash_Forge
                             }
                         }
                         
-
+                        //Set pat0 data if texture list exists
                         if (vis.TextureNames != null)
                         {
                             if (cr.KeyType == AnimCurveKeyType.SByte)

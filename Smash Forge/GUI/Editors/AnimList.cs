@@ -338,10 +338,15 @@ namespace Smash_Forge
 
                     foreach (TreeNode v in treeView1.Nodes)
                     {
-                        foreach (TreeNode a in v.Nodes)
+                        foreach (TreeNode f in v.Nodes)
                         {
-                            if (a is Animation)
-                                SMD.Save(((Animation)a), Runtime.TargetVBN, path + "\\" + a.Text + ".smd");
+                            foreach (TreeNode a in f.Nodes)
+                            {
+                                if (a is Animation)
+                                {
+                                    SMD.Save(((Animation)a), Runtime.TargetVBN, path + "\\" + a.Text + ".smd");
+                                }
+                            }
                         }
                     }
                 }
@@ -359,11 +364,14 @@ namespace Smash_Forge
 
                     foreach (TreeNode v in treeView1.Nodes)
                     {
-                        foreach (TreeNode a in v.Nodes)
+                        foreach (TreeNode f in v.Nodes)
                         {
-                            if (a is Animation)
-                                ANIM.CreateANIM(path + "\\" + a.Text + ".anim", ((Animation)a), Runtime.TargetVBN);
-                        }
+                            foreach (TreeNode a in f.Nodes)
+                            {
+                                if (a is Animation)
+                                    ANIM.CreateANIM(path + "\\" + a.Text + ".anim", ((Animation)a), Runtime.TargetVBN);
+                            }
+                        }           
                     }
                 }
             }

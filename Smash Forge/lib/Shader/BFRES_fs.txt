@@ -43,6 +43,9 @@ uniform float emission_intensity;
 //Shader Options via BFRES
 uniform float uking_texture2_texcoord;
 
+// Check if src, dst, alpha function are non zero.
+uniform int isTransparent;
+
 // Channel Toggles
 uniform int renderR;
 uniform int renderG;
@@ -333,6 +336,6 @@ void main()
     else if (renderB == 1 && renderR == 0 && renderG == 0)
         FragColor.rgb = FragColor.bbb;
 
-    if (renderAlpha != 1)
+    if (renderAlpha != 1 || isTransparent != 1)
         FragColor.a = 1;
 }

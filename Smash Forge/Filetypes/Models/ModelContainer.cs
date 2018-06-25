@@ -523,6 +523,8 @@ namespace Smash_Forge
         {
             if (NUD != null)
                 NUD.DepthSortMeshes(cameraPosition);
+            if (BFRES != null)
+                BFRES.DepthSortMeshes(cameraPosition);
         }
 
         #region Editing Tools

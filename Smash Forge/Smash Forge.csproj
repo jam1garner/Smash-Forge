@@ -143,6 +143,7 @@
     <Compile Include="Filetypes\Sounds\WAVE.cs" />
     <Compile Include="Filetypes\Textures\3DSTex.cs" />
     <Compile Include="Filetypes\Textures\RG_ETC1.cs" />
+    <Compile Include="Filetypes\Yaz0.cs" />
     <Compile Include="GUI\BFRES_Loaders\OdysseyCostumeLoader.cs">
       <SubType>Form</SubType>
     </Compile>

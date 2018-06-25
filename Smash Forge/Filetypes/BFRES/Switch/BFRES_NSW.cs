@@ -82,6 +82,15 @@ namespace Smash_Forge
                     poly.matrFlag = shp.VertexSkinCount;
                     poly.fsklindx = shp.BoneIndex;
 
+                    if (model.Node_Array != null)
+                        Console.WriteLine(model.skeleton.bones[poly.fsklindx].Text);
+
+                    foreach (int bn in shp.SkinBoneIndices)
+                    {
+                        Console.WriteLine(model.skeleton.bones[bn].Text);
+                        poly.BoneIndexList.Add(model.skeleton.bones[bn].Text, bn);
+                    }
+
                     TModels.Nodes[ModelCur].Nodes.Add(poly);
 
 
@@ -305,6 +314,32 @@ namespace Smash_Forge
                         v.nodes.Add(new Vector4 { X = i.X, Y = i.Y, Z = i.Z, W = i.W });
                     }
                 }
+
+                //Set these for morphing
+                //This is a test. I may put this in it's own VBO since it's not offten used
+
+                if (att.Name == "_p1")
+                {
+                    VertexBufferHelperAttrib p1 = helper["_p1"];
+                    Syroot.Maths.Vector4F[] vec4p1 = p1.Data;
+
+                    foreach (Syroot.Maths.Vector4F p in vec4p1)
+                    {
+                        v.pos1.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z});
+                    }
+                }
+
+                if (att.Name == "_p2")
+                {
+                    VertexBufferHelperAttrib p2 = helper["_p2"];
+                    Syroot.Maths.Vector4F[] vec4p2 = p2.Data;
+
+                    foreach (Syroot.Maths.Vector4F p in vec4p2)
+                    {
+                        v.pos2.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z });
+                    }
+                }
+
             }
             poly.vertices = v;
         }
@@ -423,8 +458,152 @@ namespace Smash_Forge
                 }
 
                 poly.material.renderinfo.Add(r);
+
+                SetAlphaBlending(poly.material, r);
+                SetRenderMode(poly.material, r, poly);
             }
         }
+
+        private void SetRenderMode(MaterialData mat, RenderInfoData r, Mesh m)
+        {
+            switch (r.Name)
+            {
+                case "gsys_render_state_mode":
+                    if (r.Value_String == "transparent")
+                    {
+                        m.isTransparent = true;
+                    }
+                    if (r.Value_String == "alpha")
+                    {
+                        m.isTransparent = true;
+                    }
+                    if (r.Value_String == "mask")
+                    {
+                        m.isTransparent = true;
+                    }               
+                    break;
+                case "mode":
+                    if (r.Value_Int == 1)
+                    {
+                        m.isTransparent = true;
+                    }
+                    if (r.Value_Int == 2)
+                    {
+                        m.isTransparent = true;
+                    }
+                    break;
+            }
+        }
+
+            private void SetAlphaBlending(MaterialData mat, RenderInfoData r)
+        {
+            switch (r.Name)
+            {
+                case "gsys_color_blend_rgb_src_func":
+                    if (r.Value_String == "src_alpha")
+                    {
+                        mat.srcFactor = 1;
+                    }
+                    break;
+                case "gsys_color_blend_rgb_dst_func":
+                    if (r.Value_String == "one_minus_src_alpha")
+                    {
+                        mat.dstFactor = 1;
+                    }
+                    break;
+                case "gsys_color_blend_rgb_op":
+                    if (r.Value_String == "add")
+                    {
+
+                    }
+                    break;
+                case "gsys_color_blend_alpha_op":
+                    if (r.Value_String == "add")
+                    {
+                    }
+                    break;
+                case "gsys_color_blend_alpha_src_func":
+                    if (r.Value_String == "one")
+                    {
+
+                    }
+                    break;
+                case "gsys_color_blend_alpha_dst_func":
+                    if (r.Value_String == "zero")
+                    {
+                    }
+                    break;
+                case "gsys_alpha_test_func":
+                    break;
+                case "gsys_alpha_test_value":
+                    break;
+                case "sourceColorBlendFactor":
+                    if (r.Value_String == "sourceAlpha")
+                    {
+                        mat.srcFactor = 1;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        private static void SetAlphaTesting(MaterialData mat, RenderInfoData r)
+        {
+            switch (r.Name)
+            {
+                case "gsys_alpha_test_enable":
+                    if (r.Value_String == "true")
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+                    break;
+                case "gsys_alpha_test_func":
+                    if (r.Value_String == "lequal")
+                    {
+
+                    }
+                    else if (r.Value_String == "gequal")
+                    {
+
+                    }
+                    break;
+                case "gsys_alpha_test_value":
+                    break;
+                default:
+                    break;
+            }
+        }
+        private static void SetDepthTesting(MaterialData mat, RenderInfoData r)
+        {
+            switch (r.Name)
+            {
+                case "gsys_depth_test_enable":
+                    if (r.Value_String == "true")
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+                    break;
+                case "gsys_depth_test_func":
+                    if (r.Value_String == "lequal")
+                    {
+
+                    }
+                    break;
+                case "gsys_depth_test_write":
+                    break;
+                default:
+                    break;
+            }
+        }
+
         private void ReadShaderParams(Material mat, Mesh poly)
         {
             using (Syroot.BinaryData.BinaryDataReader reader = new Syroot.BinaryData.BinaryDataReader(new MemoryStream(mat.ShaderParamData)))
@@ -500,6 +679,12 @@ namespace Smash_Forge
                     foreach (Shape shp in fmdl.Shapes)
                     {
                         Vertex v = models[mdl].poly[s].vertices;
+
+                        writer.Seek(shp.Meshes[0].DataOffset);
+
+                        int[] Faces = models[mdl].poly[s].getDisplayFace().ToArray();
+
+                        writer.Write(Faces);
 
                         foreach (VertexAttrib att in fmdl.VertexBuffers[shp.VertexBufferIndex].Attributes)
                         {

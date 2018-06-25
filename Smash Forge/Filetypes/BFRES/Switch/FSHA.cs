@@ -23,11 +23,10 @@ namespace Smash_Forge
 
 
 
-        public void Read(string filename, BFRES bfres, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
+        public void Read(ResFile b, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
         {
             Console.WriteLine("Reading Shape Animations ...");
 
-            ResFile b = new ResFile(filename);
 
             ThisAnimation.Text = "Shape Animations";
 
@@ -53,6 +52,8 @@ namespace Smash_Forge
         {
 
             mta.Text = vis.Name;
+            mta.ImageKey = "mesh";
+            mta.SelectedImageKey = "mesh";
 
             mta.FrameCount = (uint)vis.FrameCount;
 
@@ -61,156 +62,32 @@ namespace Smash_Forge
             {
                 BFRES.MatAnimEntry mat = new BFRES.MatAnimEntry();
 
-                mat.Text = vtxanim.Name;
+                mat.ImageKey = "bone";
+                mat.SelectedImageKey = "bone";
 
-                int CurCurve = 0;
+
+                //First set the data then iterpolate
+                mat.Text = vtxanim.Name;
                 foreach (AnimCurve cr in vtxanim.Curves)
                 {
-                    for (int i = 0; i < (ushort)cr.Frames.Length; i++)
-                    {
-                        BFRES.MatAnimData md = new BFRES.MatAnimData();
-
-
-                        
-                        mat.matCurves.Add(md);
-                    }
-                    CurCurve++;
+                    mat.Interpolate(cr);
                 }
-
                 mta.matEntries.Add(mat);
-            }
-        }
 
-
-        public class FSHANode
-        {
-            public int flags;
-            public int flags2;
-            public int stride;
-            public int BeginRotate;
-            public int BeginTranslate;
-            public long offBase;
-            public int trackCount;
-            public int trackFlag;
-            public long offTrack;
-            public string Text;
-
-            public Vector3 sca, rot, pos;
-            public List<FSHATrack> tracks = new List<FSHATrack>();
-
-            public FSHANode(MaterialAnimData md)
-            {
-                Text = md.Name;
-
-
-
-                foreach (AnimCurve tr in md.Curves)
+                for (int Frame = 0; Frame < vis.FrameCount; Frame++)
                 {
-                    FSHATrack t = new FSHATrack();
-                    t.flag = (int)tr.AnimDataOffset;
-                    tracks.Add(t);
-
-
-
-                    //     Console.WriteLine("Flag = " + (int)tr.AnimDataOffset + " Offset = " + tr.Offset + "  Scale = " + tr.Scale);
-
-
-                    //   Console.WriteLine();
-
-                    float tanscale = tr.Delta;
-                    if (tanscale == 0)
-                        tanscale = 1;
-
-                    for (int i = 0; i < (ushort)tr.Frames.Length; i++)
+                    foreach (BFRES.MatAnimData track in mat.matCurves)
                     {
-                        if (tr.CurveType == Syroot.NintenTools.NSW.Bfres.AnimCurveType.Cubic)
-                        {
-                            int framedata = (int)tr.Frames[i];
-                            float keydata = tr.Offset + ((tr.Keys[i, 0] * tr.Scale));
-                            float keydata2 = tr.Offset + ((tr.Keys[i, 1] * tr.Scale));
-                            float keydata3 = tr.Offset + ((tr.Keys[i, 2] * tr.Scale));
-                            float keydata4 = tr.Offset + ((tr.Keys[i, 3] * tr.Scale));
-                            //    Console.WriteLine($"{framedata} {keydata} {keydata2} {keydata3} {keydata4} ");
-                            //     Console.WriteLine($"Raw Data = " + tr.Keys[i, 0]);
 
-                        }
-                        if (tr.KeyType == AnimCurveKeyType.Int16)
-                        {
+                        BFRES.AnimKey left = track.GetLeft(Frame);
+                        BFRES.AnimKey right = track.GetRight(Frame);
 
-                        }
-                        else if (tr.KeyType == AnimCurveKeyType.Single)
-                        {
 
-                        }
-                        else if (tr.KeyType == AnimCurveKeyType.SByte)
-                        {
 
-                        }
-                        t.keys.Add(new FSHAKey()
-                        {
-                            frame = (int)tr.Frames[i],
-                            unk1 = tr.Offset + ((tr.Keys[i, 0] * tr.Scale)),
-                            unk2 = tr.Offset + ((tr.Keys[i, 1] * tr.Scale)),
-                            unk3 = tr.Offset + ((tr.Keys[i, 2] * tr.Scale)),
-                            unk4 = tr.Offset + ((tr.Keys[i, 3] * tr.Scale)),
-                        });
+                        track.Value = Animation.Hermite(Frame, left.frame, right.frame, 0, 0, left.unk1, right.unk1);
                     }
                 }
             }
-        }
-        public class FSHATrack
-        {
-            public short type;
-            public short keyCount;
-            public int flag;
-            public int unk2;
-            public int padding1;
-            public int padding2;
-            public int padding3;
-            public float frameCount;
-            public float scale, init, unkf3;
-            public long offtolastKeys, offtolastData;
-            public List<FSHAKey> keys = new List<FSHAKey>();
-
-            public int offset;
-
-            public FSHAKey GetLeft(int frame)
-            {
-                FSHAKey prev = keys[0];
-
-                for (int i = 0; i < keys.Count - 1; i++)
-                {
-                    FSHAKey key = keys[i];
-                    if (key.frame > frame && prev.frame <= frame)
-                        break;
-                    prev = key;
-                }
-
-                return prev;
-            }
-            public FSHAKey GetRight(int frame)
-            {
-                FSHAKey cur = keys[0];
-                FSHAKey prev = keys[0];
-
-                for (int i = 1; i < keys.Count; i++)
-                {
-                    FSHAKey key = keys[i];
-                    cur = key;
-                    if (key.frame > frame && prev.frame <= frame)
-                        break;
-                    prev = key;
-                }
-
-                return cur;
-            }
-        }
-        public class FSHAKey
-        {
-            public int frame;
-            public float unk1, unk2, unk3, unk4;
-
-            public int offset;
         }
     }
 }

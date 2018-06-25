@@ -694,6 +694,10 @@ namespace Smash_Forge
             {
                 FrameSelectedModelContainer();
             }
+            else if (MeshList.filesTreeView.SelectedNode is BFRES)
+            {
+                FrameSelectedBfres();
+            }
             else
             {
                 FrameAllModelContainers();
@@ -753,6 +757,21 @@ namespace Smash_Forge
             NUD nud = (NUD)MeshList.filesTreeView.SelectedNode;
             float[] boundingBox = nud.boundingBox;
             camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.Update();
+        }
+
+        private void FrameSelectedBfres()
+        {
+            Console.WriteLine("BFRES selected");
+            BFRES bfres = (BFRES)MeshList.filesTreeView.SelectedNode;
+
+            foreach (BFRES.FMDL_Model mdl in bfres.models)
+            {
+                foreach (BFRES.Mesh msh in mdl.poly)
+                {
+                    camera.FrameSelection(new Vector3(msh.boundingBoxes[0].Center.X, msh.boundingBoxes[0].Center.Y, msh.boundingBoxes[0].Extent.X), msh.radius[0]);
+                }
+            }
             camera.Update();
         }
 

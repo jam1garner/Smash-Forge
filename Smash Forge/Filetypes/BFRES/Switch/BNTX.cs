@@ -369,21 +369,10 @@ namespace Smash_Forge
                         Console.WriteLine("Unsupported data type for BC5");
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC7):
-                    if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
+                    if (DataType == (byte)Formats.BNTXImageTypes.UNORM || DataType == (byte)Formats.BNTXImageTypes.SRGB)
                     {
-                        /*         ProcessStartInfo startInfo = new ProcessStartInfo();
-                                 startInfo.CreateNoWindow = false;
-                                 startInfo.UseShellExecute = false;
-                                 startInfo.FileName = "lib\texconv.exe";
-                                 startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                                 startInfo.Arguments = "-ft png -f R10G10B10A2_UNORM -y";*/
+                        texture.type = PixelInternalFormat.CompressedRgbaBptcUnorm;
                     }
-                    else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
-                    {
-
-                    }
-                    else
-                        Console.WriteLine("Unsupported data type for BC7");
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_R8_G8_B8_A8):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM || DataType == (byte)Formats.BNTXImageTypes.SRGB)

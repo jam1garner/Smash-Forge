@@ -21,13 +21,9 @@ namespace Smash_Forge
 
         public List<BFRES.MTA> matanims = new List<BFRES.MTA>();
 
-
-
-        public void Read(string filename, BFRES bfres, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
+        public void Read(ResFile b, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
         {
             Console.WriteLine("Reading Textue Pattern Animations ...");
-
-            ResFile b = new ResFile(filename);
 
             ThisAnimation.Text = "Textue Pattern Animations";
 

@@ -1771,7 +1771,7 @@ namespace Smash_Forge
                         {
                             if (ofd.FileName.EndsWith(".bfres"))
                             {
-                                
+                                BFRES.WiiU2Switch(ofd.FileName, filesTreeView.SelectedNode.Index, ((ModelContainer)con).BFRES);
                             }
                             if (ofd.FileName.EndsWith(".dae"))
                             {

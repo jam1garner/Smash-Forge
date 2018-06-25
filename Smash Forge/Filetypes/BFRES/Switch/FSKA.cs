@@ -32,28 +32,12 @@ namespace Smash_Forge
     {
         public static AnimationGroupNode ThisAnimation;
 
-        public static AnimationGroupNode Read(string filename, ResFile TargetWiiUBFRES)
+        public static AnimationGroupNode Read(byte[] file_data, ResFile TargetWiiUBFRES, ResNSW.ResFile b)
         {
-
-            FileData f = new FileData(filename);
-
-            f.seek(0);
-
-            f.Endian = Endianness.Little;
-
             Console.WriteLine("Reading Animations ...");
 
-            f.seek(4); // magic check
-            int SwitchCheck = f.readInt(); //Switch version only has padded magic
-            f.skip(4);
-            if (SwitchCheck == 0x20202020)
+            if (b != null)
             {
-
-                //    SwitchAnim2WiiU(path); //Hacky auto convert switch anims to wii u
-
-
-                ResNSW.ResFile b = new ResNSW.ResFile(filename);
-
                 AnimationGroupNode ThisAnimation = new AnimationGroupNode() { Text = "Skeleton Animations" };
 
                 TreeNode dummy = new TreeNode() { Text = "Animation Set" };
@@ -61,8 +45,6 @@ namespace Smash_Forge
                 int i = 0;
                 foreach (ResNSW.SkeletalAnim ska in b.SkeletalAnims)
                 {
-
-
                     if (i == 0)
                     {
                         dummy = new TreeNode() { Text = "Animation Set " + "0 - 100" };
@@ -217,10 +199,6 @@ namespace Smash_Forge
             }
             else
             {
-                f.eof();
-
-                TargetWiiUBFRES = new ResFile(filename);
-
                 ThisAnimation = new AnimationGroupNode() { Text = "Skeleton Animations" };
 
                 TreeNode dummy = new TreeNode() { Text = "Animation Set" };

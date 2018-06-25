@@ -218,6 +218,32 @@ namespace Smash_Forge
                                 v.nodes.Add(new Vector4 { X = i.X, Y = i.Y, Z = i.Z, W = i.W });
                             }
                         }
+
+                        //Set these for morphing
+                        //This is a test. I may put this in it's own VBO since it's not offten used
+
+                        if (att.Name == "_p1")
+                        {
+                            VertexBufferHelperAttrib p1 = helper["_p1"];
+                            Syroot.Maths.Vector4F[] vec4p1 = p1.Data;
+
+                            foreach (Syroot.Maths.Vector4F p in vec4p1)
+                            {
+                                v.pos1.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z });
+                            }
+                        }
+
+                        if (att.Name == "_p2")
+                        {
+                            VertexBufferHelperAttrib p2 = helper["_p2"];
+                            Syroot.Maths.Vector4F[] vec4p2 = p2.Data;
+
+                            foreach (Syroot.Maths.Vector4F p in vec4p2)
+                            {
+                                v.pos2.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z });
+                            }
+                        }
+
                     }
                     poly.vertices = v;
 
@@ -233,6 +259,21 @@ namespace Smash_Forge
                     for (int face = 0; face < FaceCount; face++)
                     {
                         poly.faces.Add((int)indicesArray[face] + (int)shp.Meshes[LODCount].FirstVertex);
+                    }
+
+                    foreach (Bounding bnd in shp.SubMeshBoundings)
+                    {
+
+                        Mesh.BoundingBox box = new Mesh.BoundingBox();
+                        box.Center = new Vector3(bnd.Center.X, bnd.Center.Y, bnd.Center.Z);
+                        box.Extent = new Vector3(bnd.Extent.X, bnd.Extent.Y, bnd.Extent.Z);
+
+                        poly.boundingBoxes.Add(box); //Each box is by LOD mesh. This will be in a seperate class later so only one will be added
+
+                    }
+                    foreach (float r in shp.RadiusArray)
+                    {
+                        poly.radius.Add(r);
                     }
 
                     int AlbedoCount = 0;
@@ -635,10 +676,271 @@ namespace Smash_Forge
                         s++;
                     }
                     mdl++;
-                }              
+                }
+               
+            }
+        }
+
+#endregion
+
+        public void SaveFile(string FileName)
+        {
+            int mdl = 0;
+            foreach (Model fmdl in TargetWiiUBFRES.Models.Values)
+            {
+                int s = 0;
+                foreach (Shape shp in fmdl.Shapes.Values)
+                {
+
+                    VertexBufferHelper helper = new VertexBufferHelper(fmdl.VertexBuffers[shp.VertexBufferIndex], TargetWiiUBFRES.ByteOrder);
+
+               
+                    foreach (VertexAttrib att in fmdl.VertexBuffers[shp.VertexBufferIndex].Attributes.Values)
+                    {
+                        switch (att.Name)
+                        {
+                            case "_n0":
+                                {
+                                    VertexBufferHelperAttrib tangents = helper["_n0"]; // Access by name
+                                    int t = 0;
+                                    foreach (Vector3 n in models[mdl].poly[s].vertices.nrm)
+                                    {
+                                        tangents.Data[t] = new Syroot.Maths.Vector4F(n.X, n.Y, n.Z, 0);
+                                        t++;
+                                    }
+                                }
+                                break;
+                            case "_t0":
+                            {
+                                    VertexBufferHelperAttrib tangents = helper["_t0"]; // Access by name
+                                    int t = 0;
+                                    foreach (Vector4 tan in models[mdl].poly[s].vertices.tans)
+                                    {
+                                        tangents.Data[t] = new Syroot.Maths.Vector4F(tan.X, tan.Y, tan.Z, tan.W);
+                                        t++;
+                                    }
+                                }
+                                break;
+                            case "_b0":
+                                {
+                                    VertexBufferHelperAttrib bitangents = helper["_b0"]; // Access by name
+                                    int b = 0;
+                                    foreach (Vector4 bitan in models[mdl].poly[s].vertices.bitans)
+                                    {
+                                        bitangents.Data[b] = new Syroot.Maths.Vector4F(bitan.X, bitan.Y, bitan.Z, bitan.W);
+                                        b++;
+                                    }
+                                }
+                                break;
+                        }
+                        fmdl.VertexBuffers[shp.VertexBufferIndex] = helper.ToVertexBuffer();
+                    }
+                    s++;
+                }
+                mdl++;
             }
 
+
+            TargetWiiUBFRES.Save(FileName);
         }
-#endregion
+        public static void WiiU2Switch(string FileName, int CurModel, BFRES b)
+        {
+            ResFile TargetWiiUBFRES = new ResFile(FileName);
+
+
+            Model mdl = TargetWiiUBFRES.Models[CurModel];
+
+            int CurShape = 0;
+
+            foreach (Shape shp in mdl.Shapes.Values)
+            {
+                Mesh poly = b.models[CurModel].poly[CurShape];
+
+                //Create a buffer instance which stores all the buffer data
+                VertexBufferHelper helper = new VertexBufferHelper(mdl.VertexBuffers[shp.VertexBufferIndex], TargetWiiUBFRES.ByteOrder);
+
+                // VertexBufferHelperAttrib uv1 = helper["_u1"];
+
+                int TotalCount = poly.vertices.pos.Count;
+
+                int LODCount = 0;
+
+                uint FaceCount = FaceCount = shp.Meshes[LODCount].IndexCount;
+                uint[] indicesArray = shp.Meshes[LODCount].GetIndices().ToArray();
+
+
+                int TotalFaceCount = poly.faces.Count;
+
+                poly.Faces = new int[0];
+                poly.faces.Clear();
+
+                for (int face = 0; face < FaceCount; face++)
+                {
+                    poly.faces.Add((int)indicesArray[face] + (int)shp.Meshes[LODCount].FirstVertex);
+                }
+
+                if (TotalFaceCount != poly.faces.Count)
+                {
+                    MessageBox.Show("Error F");
+                }
+
+                Vertex v = poly.vertices;
+                v.pos.Clear();
+                v.nrm.Clear();
+                v.tans.Clear();
+                v.uv0.Clear();
+                v.uv1.Clear();
+                v.bitans.Clear();
+                v.weights.Clear();
+                v.nodes.Clear();
+                foreach (VertexAttrib att in mdl.VertexBuffers[shp.VertexBufferIndex].Attributes.Values)
+                {
+                    if (att.Name == "_p0")
+                    {
+                        VertexBufferHelperAttrib position = helper["_p0"];
+                        Syroot.Maths.Vector4F[] vec4Positions = position.Data;
+
+                        foreach (Syroot.Maths.Vector4F p in vec4Positions)
+                        {
+                            v.pos.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z });
+                        }
+                        for (int i = 0; i < TotalCount - v.pos.Count; i++)
+                        {
+                            v.pos.Add(new Vector3 { X = 0, Y = 0, Z = 0 });
+                        }
+                    }
+                    if (att.Name == "_n0")
+                    {
+                        VertexBufferHelperAttrib normal = helper["_n0"];
+                        Syroot.Maths.Vector4F[] vec4Normals = normal.Data;
+
+                        foreach (Syroot.Maths.Vector4F n in vec4Normals)
+                        {
+                            v.nrm.Add(new Vector3 { X = n.X, Y = n.Y, Z = n.Z });
+                        }
+                        for (int i = 0; i < TotalCount - v.nrm.Count; i++)
+                        {
+                            v.nrm.Add(new Vector3 { X = 0, Y = 0, Z = 0 });
+                        }
+                    }
+                    if (att.Name == "_u0")
+                    {
+                        VertexBufferHelperAttrib uv0 = helper["_u0"];
+                        Syroot.Maths.Vector4F[] vec4uv0 = uv0.Data;
+
+                        foreach (Syroot.Maths.Vector4F u in vec4uv0)
+                        {
+                            v.uv0.Add(new Vector2 { X = u.X, Y = u.Y });
+                        }
+                        for (int i = 0; i < TotalCount - v.uv0.Count; i++)
+                        {
+                            v.uv0.Add(new Vector2 { X = 0, Y = 0 });
+                        }
+                    }
+                    if (att.Name == "_u1")
+                    {
+                        VertexBufferHelperAttrib uv1 = helper["_u1"];
+                        Syroot.Maths.Vector4F[] vec4uv1 = uv1.Data;
+
+                        foreach (Syroot.Maths.Vector4F u in vec4uv1)
+                        {
+                            v.uv1.Add(new Vector2 { X = u.X, Y = u.Y });
+                        }
+                        for (int i = 0; i < TotalCount - v.uv1.Count; i++)
+                        {
+                            v.uv1.Add(new Vector2 { X = 0, Y = 0 });
+                        }
+                    }
+                    if (att.Name == "_u2")
+                    {
+                        VertexBufferHelperAttrib uv2 = helper["_u2"];
+                        Syroot.Maths.Vector4F[] vec4uv2 = uv2.Data;
+
+                        foreach (Syroot.Maths.Vector4F u in vec4uv2)
+                        {
+                            v.uv2.Add(new Vector2 { X = u.X, Y = u.Y });
+                        }
+                        for (int i = 0; i < TotalCount - v.uv2.Count; i++)
+                        {
+                            v.uv2.Add(new Vector2 { X = 0, Y = 0 });
+
+                        }
+                    }
+                    if (att.Name == "_c0")
+                    {
+                        VertexBufferHelperAttrib c0 = helper["_c0"];
+                        Syroot.Maths.Vector4F[] vec4c0 = c0.Data;
+
+                        foreach (Syroot.Maths.Vector4F c in vec4c0)
+                        {
+                            v.col.Add(new Vector4 { X = c.X, Y = c.Y, Z = c.Z, W = c.W });
+                        }
+                        for (int i = 0; i < TotalCount - v.col.Count; i++)
+                        {
+                            v.col.Add(new Vector4 { X = 0, Y = 0, Z = 0, W = 0 });
+                        }
+                    }
+                    if (att.Name == "_t0")
+                    {
+                        VertexBufferHelperAttrib t0 = helper["_t0"];
+                        Syroot.Maths.Vector4F[] vec4t0 = t0.Data;
+
+                        foreach (Syroot.Maths.Vector4F u in vec4t0)
+                        {
+                            v.tans.Add(new Vector4 { X = u.X, Y = u.Y, Z = u.Z, W = u.W });
+                        }
+                        for (int i = 0; i < TotalCount - v.tans.Count; i++)
+                        {
+                            v.tans.Add(new Vector4 { X = 0, Y = 0, Z = 0, W = 0 });
+                        }
+                    }
+                    if (att.Name == "_b0")
+                    {
+                        VertexBufferHelperAttrib b0 = helper["_b0"];
+                        Syroot.Maths.Vector4F[] vec4b0 = b0.Data;
+
+                        foreach (Syroot.Maths.Vector4F u in vec4b0)
+                        {
+                            v.bitans.Add(new Vector4 { X = u.X, Y = u.Y, Z = u.Z, W = u.W });
+                        }
+                        for (int i = 0; i < TotalCount - v.tans.Count; i++)
+                        {
+                            v.tans.Add(new Vector4 { X = 0, Y = 0, Z = 0, W = 0 });
+                        }
+                    }
+                    if (att.Name == "_w0")
+                    {
+                        VertexBufferHelperAttrib w0 = helper["_w0"];
+                        Syroot.Maths.Vector4F[] vec4w0 = w0.Data;
+
+                        foreach (Syroot.Maths.Vector4F w in vec4w0)
+                        {
+                            v.weights.Add(new Vector4 { X = w.X, Y = w.Y, Z = w.Z, W = w.W });
+                        }
+                        for (int i = 0; i < TotalCount - v.weights.Count; i++)
+                        {
+                            v.weights.Add(new Vector4 { X = 0, Y = 0, Z = 0, W = 0 });
+                        }
+                    }
+                    if (att.Name == "_i0")
+                    {
+                        VertexBufferHelperAttrib i0 = helper["_i0"];
+                        Syroot.Maths.Vector4F[] vec4i0 = i0.Data;
+
+                        foreach (Syroot.Maths.Vector4F i in vec4i0)
+                        {
+                            v.nodes.Add(new Vector4 { X = i.X, Y = i.Y, Z = i.Z, W = i.W });
+                        }
+                        for (int i = 0; i < TotalCount - v.nodes.Count; i++)
+                        {
+                            v.nodes.Add(new Vector4 { X = 0, Y = 0, Z = 0, W = 0 });
+                        }
+                    }
+                }
+                CurShape++;
+
+            }
+            b.UpdateVertexData();
+        }
     }
 }
