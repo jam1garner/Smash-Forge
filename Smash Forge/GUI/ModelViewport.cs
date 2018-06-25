@@ -1545,7 +1545,7 @@ namespace Smash_Forge
             depthMapFbo.Bind();
             GL.Clear(ClearBufferMask.DepthBufferBit);
             camera.Position = new Vector3(0, 6, -60);
-            camera.RotationXDegrees = 45;
+            camera.RotationXDegrees = 0;
             camera.RotationYDegrees = 0;
             lightMatrix = camera.MvpMatrix;
             DrawModels();
