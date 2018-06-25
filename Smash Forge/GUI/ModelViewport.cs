@@ -344,8 +344,10 @@ namespace Smash_Forge
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, glViewport.Width, glViewport.Height, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
             depthMap.MagFilter = TextureMagFilter.Nearest;
             depthMap.MinFilter = TextureMinFilter.Nearest;
-            depthMap.TextureWrapS = TextureWrapMode.ClampToEdge;
-            depthMap.TextureWrapT = TextureWrapMode.ClampToEdge;
+            // Use white for values outside shadow map.
+            depthMap.TextureWrapS = TextureWrapMode.ClampToBorder;
+            depthMap.TextureWrapT = TextureWrapMode.ClampToBorder;
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, new float[] { 1, 1, 1, 1 });
 
             // Attach the depth map to the fbo.
             depthMapFbo.Bind();
