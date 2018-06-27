@@ -564,7 +564,7 @@ namespace Smash_Forge
                             poly.AddVertex(vert);
                         }
 
-                        poly.faces.Add(indexSim.IndexOf(v));
+                        poly.vertexIndices.Add(indexSim.IndexOf(v));
                     }
                 }
             }

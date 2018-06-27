@@ -27,8 +27,8 @@ namespace Smash_Forge
             Collada dae = new Collada();
             dae.Read(fileName);
 
-            NUD n = new NUD();
-            container.NUD = n;
+            NUD nud = new NUD();
+            container.NUD = nud;
 
             NUT thisNut = new NUT();
             container.NUT = thisNut;
@@ -53,8 +53,9 @@ namespace Smash_Forge
             Dictionary<string, NutTexture> existingTextures = new Dictionary<string, NutTexture>();
 
             // controllers
-            Dictionary<string, List<NUD.Vertex>> vertices = new Dictionary<string, List<NUD.Vertex>>();
-            Dictionary<string, Matrix4> bindMatrix = new Dictionary<string, Matrix4>();
+            // just used for vertex skinning
+            Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource = new Dictionary<string, List<NUD.Vertex>>();
+            Dictionary<string, Matrix4> bindMatrixBySkinSource = new Dictionary<string, Matrix4>();
             foreach (ColladaController control in dae.library_controllers)
             {
                 ColladaSkin skin = control.skin;
@@ -66,15 +67,16 @@ namespace Smash_Forge
                 }
 
                 List<NUD.Vertex> verts = new List<NUD.Vertex>();
-                vertices.Add(skin.source, verts);
-                bindMatrix.Add(skin.source, skin.mat);
+                vertexListBySkinSource.Add(skin.source, verts);
+                bindMatrixBySkinSource.Add(skin.source, skin.mat);
 
+                // Sets the bones and weights for the vertex list.
                 SkinVerts(container, skin, sources, verts);
             }
 
 
             Dictionary<string, NutTexture> texturemap = new Dictionary<string, NutTexture>();
-            Dictionary<string, NUD.Mesh> geometries = new Dictionary<string, NUD.Mesh>();
+            Dictionary<string, NUD.Mesh> nudMeshByGeometryId = new Dictionary<string, NUD.Mesh>();
             foreach (ColladaGeometry geom in dae.library_geometries)
             {
                 ColladaMesh mesh = geom.mesh;
@@ -88,7 +90,7 @@ namespace Smash_Forge
                     sources.Add("#" + s.id, s);
                 }
 
-                NUD.Mesh nmesh = new NUD.Mesh();
+                NUD.Mesh nudMesh = new NUD.Mesh();
                 Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
                 ColladaNode cnode = null;
                 foreach (ColladaNode node in dae.scene.nodes)
@@ -101,12 +103,12 @@ namespace Smash_Forge
                     }
                 }
 
-                geometries.Add("#" + geom.id, nmesh);
-                n.Nodes.Add(nmesh);
-                nmesh.Text = geom.name;
+                nudMeshByGeometryId.Add("#" + geom.id, nudMesh);
+                nud.Nodes.Add(nudMesh);
+                nudMesh.Text = geom.name;
                 NUD.Polygon npoly = new NUD.Polygon();
                 npoly.AddDefaultMaterial();
-                nmesh.Nodes.Add(npoly);
+                nudMesh.Nodes.Add(npoly);
 
                 for (int i = 0; i < colladaPoly.p.Length; i++)
                 {
@@ -135,8 +137,7 @@ namespace Smash_Forge
                             {
                                 tempTex = texturemap[img.initref];
                             }
-                            else
-                            if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))))
+                            else if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))))
                             {
                                 NutTexture tex = null;
                                 if (img.initref.ToLower().EndsWith(".dds"))
@@ -171,17 +172,19 @@ namespace Smash_Forge
                     foreach (ColladaInput input in colladaPoly.inputs)
                         if (input.offset > maxoffset) maxoffset = input.offset;
                     maxoffset += 1;
-                    if (i * maxoffset >= colladaPoly.p.Length) break;
+                    if (i * maxoffset >= colladaPoly.p.Length)
+                        break;
+
                     foreach (ColladaInput input in colladaPoly.inputs)
                     {
                         if (input.semantic == SemanticType.POSITION)
                         {
                             if (dae.library_controllers.Count > 0)
                             {
-                                if (vertices.ContainsKey("#" + geom.id))
+                                if (vertexListBySkinSource.ContainsKey("#" + geom.id))
                                 {
-                                    v.boneIds.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
-                                    v.boneWeights.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
+                                    v.boneIds.AddRange(vertexListBySkinSource["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
+                                    v.boneWeights.AddRange(vertexListBySkinSource["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
                                 }
                             }
                             else
@@ -194,18 +197,21 @@ namespace Smash_Forge
                         {
                             v = new NUD.Vertex();
 
+                            // Duplicates a lot of vertices.
+                            // The indices and duplicates get fixed at the end.
                             npoly.vertices.Add(v);
-                            npoly.faces.Add(npoly.vertices.IndexOf(v));
+                            npoly.vertexIndices.Add(npoly.vertices.IndexOf(v));
+
                             foreach (ColladaInput vinput in mesh.vertices.inputs)
                             {
                                 if (vinput.semantic == SemanticType.POSITION)
                                 {
                                     if (dae.library_controllers.Count > 0)
                                     {
-                                        if (vertices.ContainsKey("#" + geom.id))
+                                        if (vertexListBySkinSource.ContainsKey("#" + geom.id))
                                         {
-                                            v.boneIds.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
-                                            v.boneWeights.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
+                                            v.boneIds.AddRange(vertexListBySkinSource["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
+                                            v.boneWeights.AddRange(vertexListBySkinSource["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
                                         }
                                     }
                                     else
@@ -227,19 +233,20 @@ namespace Smash_Forge
 
                     if (dae.library_controllers.Count > 0)
                     {
-                        if (!bindMatrix.ContainsKey("#" + geom.id))
+                        if (!bindMatrixBySkinSource.ContainsKey("#" + geom.id))
                             continue;
-                        v.pos = Vector3.TransformPosition(v.pos, bindMatrix["#" + geom.id]);
+                        v.pos = Vector3.TransformPosition(v.pos, bindMatrixBySkinSource["#" + geom.id]);
                         if (v.nrm != null)
-                            v.nrm = Vector3.TransformNormal(v.nrm, bindMatrix["#" + geom.id]);
+                            v.nrm = Vector3.TransformNormal(v.nrm, bindMatrixBySkinSource["#" + geom.id]);
                     }
                 }
 
                 AddMaterialsForEachUvChannel(npoly);
             }
 
-            // RIP 22mb NUD files. This step is slow though...
-            n.OptimizeFileSize();
+            // Remove duplicate verts and calculate vertex indices.
+            // The indices aren't read from the DAE initially.
+            nud.OptimizeFileSize();
         }
 
         private static void AddMaterialsForEachUvChannel(NUD.Polygon npoly)
@@ -892,8 +899,6 @@ namespace Smash_Forge
                         List<string> d = new List<string>();
                         if (con.VBN != null)
                         {
-
-
                             foreach (Bone b in con.VBN.bones)
                             {
                                 d.Add(b.invert.M11 + " " + b.invert.M21 + " " + b.invert.M31 + " " + b.invert.M41 + " "
