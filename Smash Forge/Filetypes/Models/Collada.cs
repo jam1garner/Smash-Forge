@@ -27,14 +27,26 @@ namespace Smash_Forge
             Collada dae = new Collada();
             dae.Read(fileName);
 
-            NUD nud = new NUD();
+            NUD nud;
+            NUT thisNut;
+            // The filename is just used to get the file directory.
+            CreateNudNutFromDae(fileName, container, importTexture, dae, out nud, out thisNut);
+
+            // Remove duplicate verts and calculate vertex indices.
+            // The indices aren't read from the DAE initially.
+            nud.OptimizeFileSize();
+
+            // Modify model container.
             container.NUD = nud;
-
-            NUT thisNut = new NUT();
             container.NUT = thisNut;
-            Runtime.TextureContainers.Add(thisNut);
-
             CreateBones(container, dae);
+        }
+
+        private static void CreateNudNutFromDae(string fileName, ModelContainer container, bool importTexture, Collada dae, out NUD nud, out NUT thisNut)
+        {
+            nud = new NUD();
+            thisNut = new NUT();
+            Runtime.TextureContainers.Add(thisNut);
 
             //grab all that material data so we can apply images later
             Dictionary<string, ColladaImages> images = new Dictionary<string, ColladaImages>();
@@ -74,7 +86,6 @@ namespace Smash_Forge
                 SkinVerts(container, skin, sources, verts);
             }
 
-
             Dictionary<string, NutTexture> texturemap = new Dictionary<string, NutTexture>();
             Dictionary<string, NUD.Mesh> nudMeshByGeometryId = new Dictionary<string, NUD.Mesh>();
             foreach (ColladaGeometry geom in dae.library_geometries)
@@ -92,12 +103,12 @@ namespace Smash_Forge
 
                 NUD.Mesh nudMesh = new NUD.Mesh();
                 Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
-                ColladaNode cnode = null;
+                ColladaNode colladaNode = null;
                 foreach (ColladaNode node in dae.scene.nodes)
                 {
                     if (node.geom_id.Equals(geom.id))
                     {
-                        cnode = node;
+                        colladaNode = node;
                         nodeTrans = node.mat;
                         break;
                     }
@@ -220,11 +231,15 @@ namespace Smash_Forge
                                         v.boneWeights.Add(1);
                                     }
                                 }
+                                // Read position, normals, texcoord, or vert color.
                                 ReadSemantic(vinput, v, colladaPoly.p[maxoffset * i], sources);
                             }
                         }
                         else
+                        {
+                            // Read position, normals, texcoord, or vert color.
                             ReadSemantic(input, v, colladaPoly.p[(maxoffset * i) + input.offset], sources);
+                        }
                     }
 
                     v.pos = Vector3.TransformPosition(v.pos, nodeTrans);
@@ -243,10 +258,6 @@ namespace Smash_Forge
 
                 AddMaterialsForEachUvChannel(npoly);
             }
-
-            // Remove duplicate verts and calculate vertex indices.
-            // The indices aren't read from the DAE initially.
-            nud.OptimizeFileSize();
         }
 
         private static void AddMaterialsForEachUvChannel(NUD.Polygon npoly)
@@ -326,8 +337,6 @@ namespace Smash_Forge
                         foreach (ColladaNode child in bo.children)
                             nodes.Enqueue(child);
 
-                        Console.WriteLine(bo.name);
-
                         Bone bone = new Bone(vbn);
                         vbn.bones.Add(bone);
                         bone.Text = bo.name;
@@ -354,31 +363,33 @@ namespace Smash_Forge
 
         private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int p, Dictionary<string, ColladaSource> sources)
         {
+            ColladaSource colladaSource = sources[input.source];
+
             switch (input.semantic)
             {
                 case SemanticType.POSITION:
-                    v.pos.X = float.Parse(sources[input.source].data[p * 3 + 0]);
-                    v.pos.Y = float.Parse(sources[input.source].data[p * 3 + 1]);
-                    v.pos.Z = float.Parse(sources[input.source].data[p * 3 + 2]);
+                    v.pos.X = float.Parse(colladaSource.data[p * 3 + 0]);
+                    v.pos.Y = float.Parse(colladaSource.data[p * 3 + 1]);
+                    v.pos.Z = float.Parse(colladaSource.data[p * 3 + 2]);
                     break;
                 case SemanticType.NORMAL:
-                    v.nrm.X = float.Parse(sources[input.source].data[p * 3 + 0]);
-                    v.nrm.Y = float.Parse(sources[input.source].data[p * 3 + 1]);
-                    v.nrm.Z = float.Parse(sources[input.source].data[p * 3 + 2]);
+                    v.nrm.X = float.Parse(colladaSource.data[p * 3 + 0]);
+                    v.nrm.Y = float.Parse(colladaSource.data[p * 3 + 1]);
+                    v.nrm.Z = float.Parse(colladaSource.data[p * 3 + 2]);
                     break;
                 case SemanticType.TEXCOORD:
                     Vector2 tx = new Vector2();
-                    tx.X = float.Parse(sources[input.source].data[p * 2 + 0]);
-                    tx.Y = float.Parse(sources[input.source].data[p * 2 + 1]);
+                    tx.X = float.Parse(colladaSource.data[p * 2 + 0]);
+                    tx.Y = float.Parse(colladaSource.data[p * 2 + 1]);
                     v.uv.Add(tx);
                     break;
                 case SemanticType.COLOR:
                     // Vertex colors are stored as integers [0,255]. (127,127,127) is white.
-                    v.color.X = float.Parse(sources[input.source].data[p * sources[input.source].stride + 0]) * 255;
-                    v.color.Y = float.Parse(sources[input.source].data[p * sources[input.source].stride + 1]) * 255;
-                    v.color.Z = float.Parse(sources[input.source].data[p * sources[input.source].stride + 2]) * 255;
-                    if(sources[input.source].stride > 3)
-                        v.color.W = float.Parse(sources[input.source].data[p * sources[input.source].stride + 3]) * 127;
+                    v.color.X = float.Parse(colladaSource.data[p * colladaSource.stride + 0]) * 255;
+                    v.color.Y = float.Parse(colladaSource.data[p * colladaSource.stride + 1]) * 255;
+                    v.color.Z = float.Parse(colladaSource.data[p * colladaSource.stride + 2]) * 255;
+                    if(colladaSource.stride > 3)
+                        v.color.W = float.Parse(colladaSource.data[p * colladaSource.stride + 3]) * 127;
                     break;
             }
         }
