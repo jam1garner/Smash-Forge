@@ -3297,7 +3297,11 @@ namespace Smash_Forge
         {
             // Remove Duplicates
             MergePoly();
+
+            // Generate proper indices.
             MergeDuplicateVertices();
+
+            // This is pretty broken right now.
             OptimizeSingleBind(false);
         }
 
@@ -3314,7 +3318,7 @@ namespace Smash_Forge
                     List<Vertex> newVertices = new List<Vertex>();
                     List<int> newFaces = new List<int>();
 
-                    List<Vertex> vbank = new List<Vertex>(); // only check oast 50 verts - may miss far apart ones but is faster
+                    List<Vertex> vbank = new List<Vertex>(); // only check last 50 verts - may miss far apart ones but is faster
                     foreach (int f in p.vertexIndices)
                     {
                         int newFaceIndex = -1; 

@@ -22,15 +22,19 @@ namespace Smash_Forge
 
         }
 
+        public Collada(string fileName)
+        {
+            Read(fileName);
+        }
+
         public static void DaetoNud(string fileName, ModelContainer container, bool importTexture = false)
         {
-            Collada dae = new Collada();
-            dae.Read(fileName);
+            Collada dae = new Collada(fileName);
 
             NUD nud;
-            NUT thisNut;
+            NUT nut;
             // The filename is just used to get the file directory.
-            CreateNudNutFromDae(fileName, container, importTexture, dae, out nud, out thisNut);
+            CreateNudNutFromDae(fileName, container, importTexture, dae, out nud, out nut);
 
             // Remove duplicate verts and calculate vertex indices.
             // The indices aren't read from the DAE initially.
@@ -38,7 +42,7 @@ namespace Smash_Forge
 
             // Modify model container.
             container.NUD = nud;
-            container.NUT = thisNut;
+            container.NUT = nut;
             CreateBones(container, dae);
         }
 
@@ -977,8 +981,8 @@ namespace Smash_Forge
             doc.AppendChild(doc.CreateXmlDeclaration("1.0", "utf-8", null));
 
             XmlNode colladaNode = doc.CreateElement("COLLADA");
-            colladaNode.Attributes.Append(createAttribute(doc, "xmlns", "http://www.collada.org/2005/11/COLLADASchema"));
-            colladaNode.Attributes.Append(createAttribute(doc, "version", "1.4.1"));
+            colladaNode.Attributes.Append(CreateAttribute(doc, "xmlns", "http://www.collada.org/2005/11/COLLADASchema"));
+            colladaNode.Attributes.Append(CreateAttribute(doc, "version", "1.4.1"));
 
             // asset
 
@@ -1036,7 +1040,7 @@ namespace Smash_Forge
             // scene
             XmlNode scene = doc.CreateElement("scene");
             XmlNode vs = doc.CreateElement("instance_visual_scene");
-            vs.Attributes.Append(createAttribute(doc, "url", "#VisualSceneNode"));
+            vs.Attributes.Append(CreateAttribute(doc, "url", "#VisualSceneNode"));
             scene.AppendChild(vs);
             colladaNode.AppendChild(scene);
             
@@ -1044,11 +1048,11 @@ namespace Smash_Forge
             doc.Save(fname);
         }
 
-        public static XmlAttribute createAttribute(XmlDocument doc, string att, string value)
+        public static XmlAttribute CreateAttribute(XmlDocument doc, string attributeText, string value)
         {
-            XmlAttribute at = doc.CreateAttribute(att);
-            at.Value = value;
-            return at;
+            XmlAttribute attribute = doc.CreateAttribute(attributeText);
+            attribute.Value = value;
+            return attribute;
         }
 
         // collada containers
@@ -1063,10 +1067,10 @@ namespace Smash_Forge
         ColladaVisualScene scene = new ColladaVisualScene();
         public int v1, v2, v3;
 
-        public void Read(string fname)
+        public void Read(string fileName)
         {
             XmlDocument doc = new XmlDocument();
-            doc.Load(fname);
+            doc.Load(fileName);
             XmlNode colnode = doc.ChildNodes[1];
             if(colnode == null)
                 colnode = doc.ChildNodes[0];
@@ -1177,8 +1181,8 @@ namespace Smash_Forge
             public void Write(XmlDocument doc, XmlNode parent)
             {
                 XmlNode node = doc.CreateElement("geometry");
-                node.Attributes.Append(createAttribute(doc, "id", id));
-                node.Attributes.Append(createAttribute(doc, "name", name));
+                node.Attributes.Append(CreateAttribute(doc, "id", id));
+                node.Attributes.Append(CreateAttribute(doc, "name", name));
 
                 // write mesh
                 mesh.Write(doc, node);
@@ -1284,13 +1288,13 @@ namespace Smash_Forge
             {
                 XmlNode node = doc.CreateElement("source");
 
-                node.Attributes.Append(createAttribute(doc, "id", id));
+                node.Attributes.Append(CreateAttribute(doc, "id", id));
                 //node.Attributes.Append(createAttribute(doc, "count", count));
 
                 XmlNode arr = doc.CreateElement(type + "");
                 node.AppendChild(arr);
-                arr.Attributes.Append(createAttribute(doc, "id", id + "-array"));
-                arr.Attributes.Append(createAttribute(doc, "count", count + ""));
+                arr.Attributes.Append(CreateAttribute(doc, "id", id + "-array"));
+                arr.Attributes.Append(CreateAttribute(doc, "count", count + ""));
                 string aa = "";
                 foreach (string s in data) aa += s + " ";
                 arr.InnerText = aa;
@@ -1298,23 +1302,23 @@ namespace Smash_Forge
                 XmlNode tc = doc.CreateElement("technique_common");
                 node.AppendChild(tc);
                 XmlNode accessor = doc.CreateElement("accessor");
-                accessor.Attributes.Append(createAttribute(doc, "source", "#" + id + "-array"));
-                accessor.Attributes.Append(createAttribute(doc, "count", (count / this.accessor.Count) + ""));
+                accessor.Attributes.Append(CreateAttribute(doc, "source", "#" + id + "-array"));
+                accessor.Attributes.Append(CreateAttribute(doc, "count", (count / this.accessor.Count) + ""));
                 if(this.accessor.Count > 0 && this.accessor[0].Equals("TRANSFORM"))
-                    accessor.Attributes.Append(createAttribute(doc, "stride", 16 + ""));
+                    accessor.Attributes.Append(CreateAttribute(doc, "stride", 16 + ""));
                 else
-                    accessor.Attributes.Append(createAttribute(doc, "stride", this.accessor.Count + ""));
+                    accessor.Attributes.Append(CreateAttribute(doc, "stride", this.accessor.Count + ""));
                 tc.AppendChild(accessor);
 
                 foreach (string param in this.accessor)
                 {
                     XmlNode pa = doc.CreateElement("param");
                     accessor.AppendChild(pa);
-                    pa.Attributes.Append(createAttribute(doc, "name", param));
+                    pa.Attributes.Append(CreateAttribute(doc, "name", param));
                     if(param.Equals("TRANSFORM"))
-                        pa.Attributes.Append(createAttribute(doc, "type", "float4x4"));
+                        pa.Attributes.Append(CreateAttribute(doc, "type", "float4x4"));
                     else
-                        pa.Attributes.Append(createAttribute(doc, "type", type.ToString().Replace("_array", "")));
+                        pa.Attributes.Append(CreateAttribute(doc, "type", type.ToString().Replace("_array", "")));
                 }
 
                 parent.AppendChild(node);
@@ -1345,7 +1349,7 @@ namespace Smash_Forge
             {
                 XmlNode node = doc.CreateElement("vertices");
 
-                node.Attributes.Append(createAttribute(doc, "id", id));
+                node.Attributes.Append(CreateAttribute(doc, "id", id));
 
                 foreach (ColladaInput input in inputs)
                 {
@@ -1394,8 +1398,8 @@ namespace Smash_Forge
             {
                 XmlNode node = doc.CreateElement(type.ToString());
 
-                node.Attributes.Append(createAttribute(doc, "material", materialid));
-                node.Attributes.Append(createAttribute(doc, "count", count+""));
+                node.Attributes.Append(CreateAttribute(doc, "material", materialid));
+                node.Attributes.Append(CreateAttribute(doc, "count", count+""));
 
                 foreach (ColladaInput input in inputs)
                 {
@@ -1434,12 +1438,12 @@ namespace Smash_Forge
             {
                 XmlNode node = doc.CreateElement("input");
 
-                node.Attributes.Append(createAttribute(doc, "semantic", semantic.ToString()));
-                node.Attributes.Append(createAttribute(doc, "source", source));
+                node.Attributes.Append(CreateAttribute(doc, "semantic", semantic.ToString()));
+                node.Attributes.Append(CreateAttribute(doc, "source", source));
                 if (set != -99)
-                    node.Attributes.Append(createAttribute(doc, "set", set + ""));
+                    node.Attributes.Append(CreateAttribute(doc, "set", set + ""));
                 if (offset != -99)
-                    node.Attributes.Append(createAttribute(doc, "offset", offset+""));
+                    node.Attributes.Append(CreateAttribute(doc, "offset", offset+""));
 
                 parent.AppendChild(node);
 
@@ -1502,8 +1506,8 @@ namespace Smash_Forge
             public void Write(XmlDocument doc, XmlNode parent)
             {
                 XmlNode node = doc.CreateElement("image");
-                node.Attributes.Append(createAttribute(doc, "id", id));
-                node.Attributes.Append(createAttribute(doc, "name", name));
+                node.Attributes.Append(CreateAttribute(doc, "id", id));
+                node.Attributes.Append(CreateAttribute(doc, "name", name));
 
                 XmlNode init = doc.CreateElement("init_from");
                 init.InnerText=initref;
@@ -1527,10 +1531,10 @@ namespace Smash_Forge
             public void Write(XmlDocument doc, XmlNode parent)
             {
                 XmlNode node = doc.CreateElement("material");
-                node.Attributes.Append(createAttribute(doc, "id", id));
+                node.Attributes.Append(CreateAttribute(doc, "id", id));
                 
                 XmlNode init = doc.CreateElement("instance_effect");
-                init.Attributes.Append(createAttribute(doc, "url", effecturl));
+                init.Attributes.Append(CreateAttribute(doc, "url", effecturl));
                 node.AppendChild(init);
 
                 parent.AppendChild(node);
@@ -1614,34 +1618,34 @@ namespace Smash_Forge
             public void Write(XmlDocument doc, XmlNode parent)
             {
                 XmlNode node = doc.CreateElement("effect");
-                node.Attributes.Append(createAttribute(doc, "id", id));
-                node.Attributes.Append(createAttribute(doc, "name", name));
+                node.Attributes.Append(CreateAttribute(doc, "id", id));
+                node.Attributes.Append(CreateAttribute(doc, "name", name));
 
                 XmlNode prof = doc.CreateElement("profile_COMMON");
                 node.AppendChild(prof);
                 {
                     XmlNode np = doc.CreateElement("newparam");
                     prof.AppendChild(np);
-                    np.Attributes.Append(createAttribute(doc, "sid", id + "-surface"));
+                    np.Attributes.Append(CreateAttribute(doc, "sid", id + "-surface"));
                     
                     XmlNode sur = doc.CreateElement("surface");
                     np.AppendChild(sur);
                     XmlNode init = doc.CreateElement("init_from");
                     sur.AppendChild(init);
                     init.InnerText = source.Replace("#", "");
-                    sur.Attributes.Append(createAttribute(doc, "type", "2D"));
+                    sur.Attributes.Append(CreateAttribute(doc, "type", "2D"));
                 }
                 {
                     XmlNode np = doc.CreateElement("newparam");
                     prof.AppendChild(np);
-                    np.Attributes.Append(createAttribute(doc, "sid", id + "-sampler"));
+                    np.Attributes.Append(CreateAttribute(doc, "sid", id + "-sampler"));
                     sampler.source = id + "-surface";
                     sampler.Write(doc, np);
                 }
                 {
                     XmlNode tech = doc.CreateElement("technique");
                     prof.AppendChild(tech);
-                    tech.Attributes.Append(createAttribute(doc, "sid", "COMMON"));
+                    tech.Attributes.Append(CreateAttribute(doc, "sid", "COMMON"));
 
                     XmlNode sur = doc.CreateElement("phong");
                     tech.AppendChild(sur);
@@ -1649,8 +1653,8 @@ namespace Smash_Forge
                     sur.AppendChild(init);
                     XmlNode reff = doc.CreateElement("texture");
                     init.AppendChild(reff);
-                    reff.Attributes.Append(createAttribute(doc, "texture", id + "-sampler"));
-                    reff.Attributes.Append(createAttribute(doc, "texcoord", ""));
+                    reff.Attributes.Append(CreateAttribute(doc, "texture", id + "-sampler"));
+                    reff.Attributes.Append(CreateAttribute(doc, "texcoord", ""));
                 }
 
                 parent.AppendChild(node);
@@ -1735,7 +1739,7 @@ namespace Smash_Forge
             public void Write(XmlDocument doc, XmlNode parent)
             {
                 XmlNode node = doc.CreateElement("controller");
-                node.Attributes.Append(createAttribute(doc, "id", id));
+                node.Attributes.Append(CreateAttribute(doc, "id", id));
 
                 skin.Write(doc, node);
 
@@ -1785,7 +1789,7 @@ namespace Smash_Forge
             public void Write(XmlDocument doc, XmlNode parent)
             {
                 XmlNode node = doc.CreateElement("skin");
-                node.Attributes.Append(createAttribute(doc, "source", source));
+                node.Attributes.Append(CreateAttribute(doc, "source", source));
 
                 XmlNode matrix = doc.CreateElement("matrix");
                 node.AppendChild(matrix);
@@ -1873,7 +1877,7 @@ namespace Smash_Forge
             public void Write(XmlDocument doc, XmlNode parent)
             {
                 XmlNode node = doc.CreateElement("vertex_weights");
-                node.Attributes.Append(createAttribute(doc, "count", vcount.Length.ToString()));
+                node.Attributes.Append(CreateAttribute(doc, "count", vcount.Length.ToString()));
 
                 foreach (ColladaInput input in inputs)
                 {
@@ -1935,8 +1939,8 @@ namespace Smash_Forge
             {
                 XmlNode node = doc.CreateElement("library_visual_scenes");
                 XmlNode vs = doc.CreateElement("visual_scene");
-                vs.Attributes.Append(createAttribute(doc, "id", "VisualSceneNode"));
-                vs.Attributes.Append(createAttribute(doc, "name", "rdmscene"));
+                vs.Attributes.Append(CreateAttribute(doc, "id", "VisualSceneNode"));
+                vs.Attributes.Append(CreateAttribute(doc, "name", "rdmscene"));
                 node.AppendChild(vs);
 
                 foreach(ColladaNode no in nodes)
@@ -2054,11 +2058,11 @@ namespace Smash_Forge
             public void Write(XmlDocument doc, XmlNode parent)
             {
                 XmlNode node = doc.CreateElement("node");
-                node.Attributes.Append(createAttribute(doc, "id", id));
-                node.Attributes.Append(createAttribute(doc, "name", name));
-                node.Attributes.Append(createAttribute(doc, "type", type));
+                node.Attributes.Append(CreateAttribute(doc, "id", id));
+                node.Attributes.Append(CreateAttribute(doc, "name", name));
+                node.Attributes.Append(CreateAttribute(doc, "type", type));
                 if(type.Equals("JOINT"))
-                    node.Attributes.Append(createAttribute(doc, "sid", name));
+                    node.Attributes.Append(CreateAttribute(doc, "sid", name));
 
                 // transform matrix
 
@@ -2073,7 +2077,7 @@ namespace Smash_Forge
                 if (!instance.Equals(""))
                 {
                     XmlNode inst = doc.CreateElement(instance);
-                    inst.Attributes.Append(createAttribute(doc, "url", geomid));
+                    inst.Attributes.Append(CreateAttribute(doc, "url", geomid));
                     node.AppendChild(inst);
                     if (instance.Equals("instance_controller"))
                     {
@@ -2089,8 +2093,8 @@ namespace Smash_Forge
                         bn.AppendChild(tc);
                         XmlNode im = doc.CreateElement("instance_material");
                         tc.AppendChild(im);
-                        im.Attributes.Append(createAttribute(doc, "symbol", materialSymbol));
-                        im.Attributes.Append(createAttribute(doc, "target", materialTarget));
+                        im.Attributes.Append(CreateAttribute(doc, "symbol", materialSymbol));
+                        im.Attributes.Append(CreateAttribute(doc, "target", materialTarget));
 
                     }
                 }
