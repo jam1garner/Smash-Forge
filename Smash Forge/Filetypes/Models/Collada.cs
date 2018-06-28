@@ -182,7 +182,6 @@ namespace Smash_Forge
                         }
                     }
 
-                    NUD.Vertex v = new NUD.Vertex();
                     int maxoffset = 0;
                     foreach (ColladaInput input in colladaPoly.inputs)
                         if (input.offset > maxoffset) maxoffset = input.offset;
@@ -190,23 +189,12 @@ namespace Smash_Forge
                     if (i * maxoffset >= colladaPoly.p.Length)
                         break;
 
+                    NUD.Vertex v = new NUD.Vertex();
                     foreach (ColladaInput input in colladaPoly.inputs)
                     {
                         if (input.semantic == SemanticType.POSITION)
                         {
-                            if (dae.library_controllers.Count > 0)
-                            {
-                                if (vertexListBySkinSource.ContainsKey("#" + geom.id))
-                                {
-                                    v.boneIds.AddRange(vertexListBySkinSource["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
-                                    v.boneWeights.AddRange(vertexListBySkinSource["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
-                                }
-                            }
-                            else
-                            {
-                                v.boneIds.Add(-1);
-                                v.boneWeights.Add(1);
-                            }
+                            AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, i, maxoffset, v);
                         }
                         if (input.semantic == SemanticType.VERTEX)
                         {
@@ -219,33 +207,23 @@ namespace Smash_Forge
 
                             foreach (ColladaInput vinput in mesh.vertices.inputs)
                             {
+                                // Read the position semantic, but we aren't actually using the position?
                                 if (vinput.semantic == SemanticType.POSITION)
                                 {
-                                    if (dae.library_controllers.Count > 0)
-                                    {
-                                        if (vertexListBySkinSource.ContainsKey("#" + geom.id))
-                                        {
-                                            v.boneIds.AddRange(vertexListBySkinSource["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
-                                            v.boneWeights.AddRange(vertexListBySkinSource["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        v.boneIds.Add(-1);
-                                        v.boneWeights.Add(1);
-                                    }
+                                    AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, i, maxoffset, v);
                                 }
-                                // Read position, normals, texcoord, or vert color.
+                                // Read position, normals, texcoord, or vert color semantic.
                                 ReadSemantic(vinput, v, colladaPoly.p[maxoffset * i], sources);
                             }
                         }
                         else
                         {
-                            // Read position, normals, texcoord, or vert color.
+                            // Read position, normals, texcoord, or vert color semantic.
                             ReadSemantic(input, v, colladaPoly.p[(maxoffset * i) + input.offset], sources);
                         }
                     }
 
+                    // Transform some vectors.
                     v.pos = Vector3.TransformPosition(v.pos, nodeTrans);
                     if (v.nrm != null)
                         v.nrm = Vector3.TransformNormal(v.nrm, nodeTrans);
@@ -261,6 +239,23 @@ namespace Smash_Forge
                 }
 
                 AddMaterialsForEachUvChannel(npoly);
+            }
+        }
+
+        private static void AddBoneIdsAndWeights(Collada dae, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, ColladaGeometry geom, ColladaPolygons colladaPoly, int i, int maxoffset, NUD.Vertex v)
+        {
+            if (dae.library_controllers.Count > 0)
+            {
+                if (vertexListBySkinSource.ContainsKey("#" + geom.id))
+                {
+                    v.boneIds.AddRange(vertexListBySkinSource["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
+                    v.boneWeights.AddRange(vertexListBySkinSource["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
+                }
+            }
+            else
+            {
+                v.boneIds.Add(-1);
+                v.boneWeights.Add(1);
             }
         }
 
@@ -365,35 +360,35 @@ namespace Smash_Forge
             }
         }
 
-        private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int p, Dictionary<string, ColladaSource> sources)
+        private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int pIndex, Dictionary<string, ColladaSource> sources)
         {
             ColladaSource colladaSource = sources[input.source];
 
             switch (input.semantic)
             {
                 case SemanticType.POSITION:
-                    v.pos.X = float.Parse(colladaSource.data[p * 3 + 0]);
-                    v.pos.Y = float.Parse(colladaSource.data[p * 3 + 1]);
-                    v.pos.Z = float.Parse(colladaSource.data[p * 3 + 2]);
+                    v.pos.X = float.Parse(colladaSource.data[pIndex * 3 + 0]);
+                    v.pos.Y = float.Parse(colladaSource.data[pIndex * 3 + 1]);
+                    v.pos.Z = float.Parse(colladaSource.data[pIndex * 3 + 2]);
                     break;
                 case SemanticType.NORMAL:
-                    v.nrm.X = float.Parse(colladaSource.data[p * 3 + 0]);
-                    v.nrm.Y = float.Parse(colladaSource.data[p * 3 + 1]);
-                    v.nrm.Z = float.Parse(colladaSource.data[p * 3 + 2]);
+                    v.nrm.X = float.Parse(colladaSource.data[pIndex * 3 + 0]);
+                    v.nrm.Y = float.Parse(colladaSource.data[pIndex * 3 + 1]);
+                    v.nrm.Z = float.Parse(colladaSource.data[pIndex * 3 + 2]);
                     break;
                 case SemanticType.TEXCOORD:
                     Vector2 tx = new Vector2();
-                    tx.X = float.Parse(colladaSource.data[p * 2 + 0]);
-                    tx.Y = float.Parse(colladaSource.data[p * 2 + 1]);
+                    tx.X = float.Parse(colladaSource.data[pIndex * 2 + 0]);
+                    tx.Y = float.Parse(colladaSource.data[pIndex * 2 + 1]);
                     v.uv.Add(tx);
                     break;
                 case SemanticType.COLOR:
                     // Vertex colors are stored as integers [0,255]. (127,127,127) is white.
-                    v.color.X = float.Parse(colladaSource.data[p * colladaSource.stride + 0]) * 255;
-                    v.color.Y = float.Parse(colladaSource.data[p * colladaSource.stride + 1]) * 255;
-                    v.color.Z = float.Parse(colladaSource.data[p * colladaSource.stride + 2]) * 255;
+                    v.color.X = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 0]) * 255;
+                    v.color.Y = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 1]) * 255;
+                    v.color.Z = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 2]) * 255;
                     if(colladaSource.stride > 3)
-                        v.color.W = float.Parse(colladaSource.data[p * colladaSource.stride + 3]) * 127;
+                        v.color.W = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 3]) * 127;
                     break;
             }
         }
