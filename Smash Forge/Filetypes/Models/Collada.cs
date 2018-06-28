@@ -46,11 +46,11 @@ namespace Smash_Forge
             CreateBones(container, dae);
         }
 
-        private static void CreateNudNutFromDae(string fileName, ModelContainer container, bool importTexture, Collada dae, out NUD nud, out NUT thisNut)
+        private static void CreateNudNutFromDae(string fileName, ModelContainer container, bool importTexture, Collada dae, out NUD nud, out NUT nut)
         {
             nud = new NUD();
-            thisNut = new NUT();
-            Runtime.TextureContainers.Add(thisNut);
+            nut = new NUT();
+            Runtime.TextureContainers.Add(nut);
 
             //grab all that material data so we can apply images later
             Dictionary<string, ColladaImages> images = new Dictionary<string, ColladaImages>();
@@ -170,8 +170,8 @@ namespace Smash_Forge
                                 tex.HASHID = 0x40FFFF00;
                                 while (NUT.texIdUsed(tex.HASHID))
                                     tex.HASHID++;
-                                thisNut.Nodes.Add(tex);
-                                thisNut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
+                                nut.Nodes.Add(tex);
+                                nut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
                                 existingTextures.Add(img.initref, tex);
                                 tempTex = tex;
                             }
@@ -192,11 +192,12 @@ namespace Smash_Forge
                     NUD.Vertex v = new NUD.Vertex();
                     foreach (ColladaInput input in colladaPoly.inputs)
                     {
-                        if (input.semantic == SemanticType.POSITION)
+                        // The SemanticType for input is always SemanticType.Vertex.
+                        if (input.semanticType == SemanticType.POSITION)
                         {
                             AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, i, maxoffset, v);
                         }
-                        if (input.semantic == SemanticType.VERTEX)
+                        if (input.semanticType == SemanticType.VERTEX)
                         {
                             v = new NUD.Vertex();
 
@@ -208,7 +209,7 @@ namespace Smash_Forge
                             foreach (ColladaInput vinput in mesh.vertices.inputs)
                             {
                                 // Read the position semantic, but we aren't actually using the position?
-                                if (vinput.semantic == SemanticType.POSITION)
+                                if (vinput.semanticType == SemanticType.POSITION)
                                 {
                                     AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, i, maxoffset, v);
                                 }
@@ -223,22 +224,28 @@ namespace Smash_Forge
                         }
                     }
 
-                    // Transform some vectors.
-                    v.pos = Vector3.TransformPosition(v.pos, nodeTrans);
-                    if (v.nrm != null)
-                        v.nrm = Vector3.TransformNormal(v.nrm, nodeTrans);
-
-                    if (dae.library_controllers.Count > 0)
-                    {
-                        if (!bindMatrixBySkinSource.ContainsKey("#" + geom.id))
-                            continue;
-                        v.pos = Vector3.TransformPosition(v.pos, bindMatrixBySkinSource["#" + geom.id]);
-                        if (v.nrm != null)
-                            v.nrm = Vector3.TransformNormal(v.nrm, bindMatrixBySkinSource["#" + geom.id]);
-                    }
+                    TransformVertexNormalAndPosition(dae, bindMatrixBySkinSource, geom, nodeTrans, v);
                 }
 
                 AddMaterialsForEachUvChannel(npoly);
+            }
+        }
+
+        private static void TransformVertexNormalAndPosition(Collada dae, Dictionary<string, Matrix4> bindMatrixBySkinSource, ColladaGeometry geom, Matrix4 nodeTrans, NUD.Vertex v)
+        {
+            // Transform some vectors.
+            v.pos = Vector3.TransformPosition(v.pos, nodeTrans);
+            if (v.nrm != null)
+                v.nrm = Vector3.TransformNormal(v.nrm, nodeTrans);
+
+            if (dae.library_controllers.Count > 0)
+            {
+                if (bindMatrixBySkinSource.ContainsKey("#" + geom.id))
+                {
+                    v.pos = Vector3.TransformPosition(v.pos, bindMatrixBySkinSource["#" + geom.id]);
+                    if (v.nrm != null)
+                        v.nrm = Vector3.TransformNormal(v.nrm, bindMatrixBySkinSource["#" + geom.id]);
+                }
             }
         }
 
@@ -289,7 +296,7 @@ namespace Smash_Forge
                 {
                     foreach (ColladaInput input in skin.weights.inputs)
                     {
-                        switch (input.semantic)
+                        switch (input.semanticType)
                         {
                             case SemanticType.JOINT:
                                 string bname = sources[input.source].data[skin.weights.v[v]];
@@ -364,7 +371,7 @@ namespace Smash_Forge
         {
             ColladaSource colladaSource = sources[input.source];
 
-            switch (input.semantic)
+            switch (input.semanticType)
             {
                 case SemanticType.POSITION:
                     v.pos.X = float.Parse(colladaSource.data[pIndex * 3 + 0]);
@@ -496,7 +503,7 @@ namespace Smash_Forge
                 ColladaPolygons p = new ColladaPolygons();
                 ColladaInput inv = new ColladaInput();
                 inv.offset = 0;
-                inv.semantic = SemanticType.VERTEX;
+                inv.semanticType = SemanticType.VERTEX;
                 inv.source = "#" + "Mesh_" + dat.displayList.IndexOf(da) + "_verts";
                 List<DAT.Vertex> usedVertices = new List<DAT.Vertex>();
                 List<int> faces = new List<int>();
@@ -531,7 +538,7 @@ namespace Smash_Forge
                     ColladaSource src = new ColladaSource();
                     geom.mesh.sources.Add(src);
                     src.id = geom.name + "_pos";
-                    vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.POSITION });
+                    vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.POSITION });
                     List<string> d = new List<string>();
                     foreach (DAT.Vertex v in usedVertices)
                     {
@@ -548,7 +555,7 @@ namespace Smash_Forge
                     ColladaSource src = new ColladaSource();
                     geom.mesh.sources.Add(src);
                     src.id = geom.name + "_nrm";
-                    vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.NORMAL });
+                    vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.NORMAL });
                     List<string> d = new List<string>();
                     foreach (DAT.Vertex v in usedVertices)
                     {
@@ -566,7 +573,7 @@ namespace Smash_Forge
                     geom.mesh.sources.Add(src);
                     src.id = geom.name + "_tx0";
                     //src.name = mesh.name + "src1";
-                    vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.TEXCOORD });
+                    vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.TEXCOORD });
                     List<string> d = new List<string>();
                     foreach (DAT.Vertex v in usedVertices)
                     {
@@ -583,7 +590,7 @@ namespace Smash_Forge
                     geom.mesh.sources.Add(src);
                     src.id = geom.name + "_clr";
                     //src.name = mesh.name + "src1";
-                    vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.COLOR });
+                    vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.COLOR });
                     List<string> d = new List<string>();
                     foreach (DAT.Vertex v in usedVertices)
                     {
@@ -618,8 +625,8 @@ namespace Smash_Forge
                     src.id = control.id + "_joints";
                     src.type = ArrayType.Name_array;
                     //src.name = mesh.name + "src1";
-                    skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT });
-                    weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT, offset = 0 });
+                    skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.JOINT });
+                    weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.JOINT, offset = 0 });
                     List<string> d = new List<string>();
                     foreach (Bone b in dat.bones.bones)
                         d.Add(b.Text);
@@ -632,7 +639,7 @@ namespace Smash_Forge
                     ColladaSource src = new ColladaSource();
                     skin.sources.Add(src);
                     src.id = control.id + "_trans";
-                    skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.INV_BIND_MATRIX });
+                    skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.INV_BIND_MATRIX });
                     List<string> d = new List<string>();
                     foreach (Bone b in dat.bones.bones)
                     {
@@ -650,7 +657,7 @@ namespace Smash_Forge
                     ColladaSource src = new ColladaSource();
                     skin.sources.Add(src);
                     src.id = control.id + "_weights";
-                    weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.WEIGHT, offset = 1 });
+                    weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.WEIGHT, offset = 1 });
                     List<string> d = new List<string>();
                     List<int> vcount = new List<int>();
                     List<int> vert = new List<int>();
@@ -784,7 +791,7 @@ namespace Smash_Forge
                         geom.mesh.sources.Add(src);
                         src.id = mesh.Text + mesh.Nodes.IndexOf(poly) + "_pos";
                         //src.name = mesh.name + "src1";
-                        vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.POSITION });
+                        vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.POSITION });
                         List<string> d = new List<string>();
                         foreach (NUD.Vertex v in poly.vertices)
                         {
@@ -802,7 +809,7 @@ namespace Smash_Forge
                         geom.mesh.sources.Add(src);
                         src.id = mesh.Text + mesh.Nodes.IndexOf(poly) + "_nrm";
                         //src.name = mesh.name + "src1";
-                        vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.NORMAL });
+                        vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.NORMAL });
                         List<string> d = new List<string>();
                         foreach (NUD.Vertex v in poly.vertices)
                         {
@@ -820,7 +827,7 @@ namespace Smash_Forge
                         geom.mesh.sources.Add(src);
                         src.id = mesh.Text + mesh.Nodes.IndexOf(poly) + "_tx0";
                         //src.name = mesh.name + "src1";
-                        vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.TEXCOORD });
+                        vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.TEXCOORD });
                         List<string> d = new List<string>();
                         foreach (NUD.Vertex v in poly.vertices)
                         {
@@ -837,7 +844,7 @@ namespace Smash_Forge
                         geom.mesh.sources.Add(src);
                         src.id = mesh.Text + mesh.Nodes.IndexOf(poly) + "_clr";
                         //src.name = mesh.name + "src1";
-                        vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.COLOR });
+                        vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.COLOR });
                         List<string> d = new List<string>();
                         foreach (NUD.Vertex v in poly.vertices)
                         {
@@ -855,7 +862,7 @@ namespace Smash_Forge
                     ColladaPolygons p = new ColladaPolygons();
                     ColladaInput inv = new ColladaInput();
                     inv.offset = 0;
-                    inv.semantic = SemanticType.VERTEX;
+                    inv.semanticType = SemanticType.VERTEX;
                     inv.source = "#" + mesh.Text + mesh.Nodes.IndexOf(poly) + "_verts";
                     p.inputs.Add(inv);
                     p.count = poly.displayFaceSize;
@@ -884,8 +891,8 @@ namespace Smash_Forge
                         src.id = control.id + "_joints";
                         src.type = ArrayType.Name_array;
                         //src.name = mesh.name + "src1";
-                        skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT });
-                        weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT, offset = 0 });
+                        skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.JOINT });
+                        weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.JOINT, offset = 0 });
                         List<string> d = new List<string>();
                         if (con.VBN != null) { 
                             foreach (Bone b in con.VBN.bones)
@@ -905,7 +912,7 @@ namespace Smash_Forge
                         ColladaSource src = new ColladaSource();
                         skin.sources.Add(src);
                         src.id = control.id + "_trans";
-                        skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.INV_BIND_MATRIX });
+                        skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.INV_BIND_MATRIX });
                         List<string> d = new List<string>();
                         if (con.VBN != null)
                         {
@@ -936,7 +943,7 @@ namespace Smash_Forge
                         ColladaSource src = new ColladaSource();
                         skin.sources.Add(src);
                         src.id = control.id + "_weights";
-                        weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.WEIGHT, offset=1 });
+                        weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.WEIGHT, offset=1 });
                         List<string> d = new List<string>();
                         List<int> vcount = new List<int>();
                         List<int> vert = new List<int>();
@@ -1415,13 +1422,14 @@ namespace Smash_Forge
 
         public class ColladaInput
         {
-            public SemanticType semantic;
+            public SemanticType semanticType;
             public string source;
-            public int set = -99, offset = 0;
+            public int set = -99;
+            public int offset = 0;
 
             public void Read(XmlNode root)
             {
-                semantic = (SemanticType)Enum.Parse(typeof(SemanticType), (string)root.Attributes["semantic"].Value);
+                semanticType = (SemanticType)Enum.Parse(typeof(SemanticType), (string)root.Attributes["semantic"].Value);
                 source = (string)root.Attributes["source"].Value;
                 if (root.Attributes["set"] != null)
                     int.TryParse((string)root.Attributes["set"].Value, out set);
@@ -1433,7 +1441,7 @@ namespace Smash_Forge
             {
                 XmlNode node = doc.CreateElement("input");
 
-                node.Attributes.Append(CreateAttribute(doc, "semantic", semantic.ToString()));
+                node.Attributes.Append(CreateAttribute(doc, "semantic", semanticType.ToString()));
                 node.Attributes.Append(CreateAttribute(doc, "source", source));
                 if (set != -99)
                     node.Attributes.Append(CreateAttribute(doc, "set", set + ""));
