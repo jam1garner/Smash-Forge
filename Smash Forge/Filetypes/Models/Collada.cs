@@ -195,6 +195,7 @@ namespace Smash_Forge
                         // The SemanticType for input is always SemanticType.Vertex.
                         if (input.semanticType == SemanticType.POSITION)
                         {
+                            // Probably won't be reached.
                             AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, i, maxoffset, v);
                         }
                         if (input.semanticType == SemanticType.VERTEX)
@@ -206,21 +207,22 @@ namespace Smash_Forge
                             npoly.vertices.Add(v);
                             npoly.vertexIndices.Add(npoly.vertices.IndexOf(v));
 
+                            // Read the position, normals, texcoord, and vert color semantics.
                             foreach (ColladaInput vinput in mesh.vertices.inputs)
                             {
-                                // Read the position semantic, but we aren't actually using the position?
+                                // If there is a position semantic, try and find the bone weights and IDs.
                                 if (vinput.semanticType == SemanticType.POSITION)
                                 {
                                     AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, i, maxoffset, v);
                                 }
                                 // Read position, normals, texcoord, or vert color semantic.
-                                ReadSemantic(vinput, v, colladaPoly.p[maxoffset * i], sources);
+                                ReadSemantic(v, vinput, colladaPoly.p[maxoffset * i], sources);
                             }
                         }
                         else
                         {
                             // Read position, normals, texcoord, or vert color semantic.
-                            ReadSemantic(input, v, colladaPoly.p[(maxoffset * i) + input.offset], sources);
+                            ReadSemantic(v, input, colladaPoly.p[(maxoffset * i) + input.offset], sources);
                         }
                     }
 
@@ -367,35 +369,35 @@ namespace Smash_Forge
             }
         }
 
-        private static void ReadSemantic(ColladaInput input, NUD.Vertex v, int pIndex, Dictionary<string, ColladaSource> sources)
+        private static void ReadSemantic(NUD.Vertex targetVert, ColladaInput input, int pIndex, Dictionary<string, ColladaSource> sources)
         {
             ColladaSource colladaSource = sources[input.source];
 
             switch (input.semanticType)
             {
                 case SemanticType.POSITION:
-                    v.pos.X = float.Parse(colladaSource.data[pIndex * 3 + 0]);
-                    v.pos.Y = float.Parse(colladaSource.data[pIndex * 3 + 1]);
-                    v.pos.Z = float.Parse(colladaSource.data[pIndex * 3 + 2]);
+                    targetVert.pos.X = float.Parse(colladaSource.data[pIndex * 3 + 0]);
+                    targetVert.pos.Y = float.Parse(colladaSource.data[pIndex * 3 + 1]);
+                    targetVert.pos.Z = float.Parse(colladaSource.data[pIndex * 3 + 2]);
                     break;
                 case SemanticType.NORMAL:
-                    v.nrm.X = float.Parse(colladaSource.data[pIndex * 3 + 0]);
-                    v.nrm.Y = float.Parse(colladaSource.data[pIndex * 3 + 1]);
-                    v.nrm.Z = float.Parse(colladaSource.data[pIndex * 3 + 2]);
+                    targetVert.nrm.X = float.Parse(colladaSource.data[pIndex * 3 + 0]);
+                    targetVert.nrm.Y = float.Parse(colladaSource.data[pIndex * 3 + 1]);
+                    targetVert.nrm.Z = float.Parse(colladaSource.data[pIndex * 3 + 2]);
                     break;
                 case SemanticType.TEXCOORD:
                     Vector2 tx = new Vector2();
                     tx.X = float.Parse(colladaSource.data[pIndex * 2 + 0]);
                     tx.Y = float.Parse(colladaSource.data[pIndex * 2 + 1]);
-                    v.uv.Add(tx);
+                    targetVert.uv.Add(tx);
                     break;
                 case SemanticType.COLOR:
                     // Vertex colors are stored as integers [0,255]. (127,127,127) is white.
-                    v.color.X = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 0]) * 255;
-                    v.color.Y = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 1]) * 255;
-                    v.color.Z = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 2]) * 255;
+                    targetVert.color.X = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 0]) * 255;
+                    targetVert.color.Y = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 1]) * 255;
+                    targetVert.color.Z = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 2]) * 255;
                     if(colladaSource.stride > 3)
-                        v.color.W = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 3]) * 127;
+                        targetVert.color.W = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 3]) * 127;
                     break;
             }
         }
