@@ -1218,7 +1218,6 @@ namespace Smash_Forge
                     
                     // apply settings
                     daeImport.Apply(modelContainer.NUD);
-                    modelContainer.NUD.MergePoly();
 
                     if (CheckCurrentViewport(out mvp))
                     {

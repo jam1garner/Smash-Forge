@@ -115,16 +115,22 @@ namespace Smash_Forge
                 }
 
                 // Check if the mesh already exists first.
+                // Remove the initial numbers so that the names aren't unique.
                 NUD.Mesh nudMesh;
-                if (nudMeshByGeometryName.ContainsKey(geom.name))
-                    nudMesh = nudMeshByGeometryName[geom.id];
+                string nameWithoutNumber = RemoveInitialUnderscoreId(geom.name);
+
+                if (nudMeshByGeometryName.ContainsKey(nameWithoutNumber))
+                    nudMesh = nudMeshByGeometryName[nameWithoutNumber];
                 else
                 {
+                    Debug.WriteLine(geom.name);
                     nudMesh = new NUD.Mesh();
                     nudMesh.Text = geom.name;
-                    nudMeshByGeometryName.Add(geom.name, nudMesh);
+                    nud.Nodes.Add(nudMesh);
+                    nudMeshByGeometryName.Add(nameWithoutNumber, nudMesh);
                 }
-                nud.Nodes.Add(nudMesh);
+
+                // Always add the polygon.
                 NUD.Polygon npoly = new NUD.Polygon();
                 npoly.AddDefaultMaterial();
                 nudMesh.Nodes.Add(npoly);
@@ -148,6 +154,30 @@ namespace Smash_Forge
 
                 AddMaterialsForEachUvChannel(npoly);
             }
+        }
+
+        public static string RemoveInitialUnderscoreId(string geometryName)
+        {
+            bool hasId = HasInitialUnderscoreId(geometryName);
+            if (hasId)
+                geometryName = geometryName.Substring(5);
+
+            return geometryName;
+        }
+
+        public static bool HasInitialUnderscoreId(string geometryName)
+        {
+            // Some geometry names start with a number "_XXX_" to avoid name clashes.
+            bool hasId = false;
+            if (geometryName.Length > 5)
+            {
+                string sub = geometryName.Substring(0, 5);
+                int a = 0;
+                if (sub.StartsWith("_") && sub.EndsWith("_") && int.TryParse(sub.Substring(1, 3), out a))
+                    hasId = true;
+            }
+
+            return hasId;
         }
 
         private static Dictionary<string, ColladaSource> GetVertexDataSources(ColladaMesh mesh)
