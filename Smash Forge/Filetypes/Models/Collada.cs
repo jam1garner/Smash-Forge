@@ -32,12 +32,12 @@ namespace Smash_Forge
             Collada dae = new Collada(fileName);
 
             NUD nud;
-            NUT nut;
+            NUT nut; 
             // The filename is just used to get the file directory.
             CreateNudNutFromDae(fileName, container, importTexture, dae, out nud, out nut);
 
             // Remove duplicate verts and calculate vertex indices.
-            // The indices aren't read from the DAE initially.
+            // The indices aren't read from the DAE initially for some reason ¯\_(ツ)_/¯.
             nud.OptimizeFileSize();
 
             // Modify model container.
@@ -68,8 +68,7 @@ namespace Smash_Forge
 
             Dictionary<string, NutTexture> existingTextures = new Dictionary<string, NutTexture>();
 
-            // controllers
-            // just used for vertex skinning
+            // Controllers used for vertex skinning.
             Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource = new Dictionary<string, List<NUD.Vertex>>();
             Dictionary<string, Matrix4> bindMatrixBySkinSource = new Dictionary<string, Matrix4>();
             foreach (ColladaController control in dae.library_controllers)
@@ -97,15 +96,9 @@ namespace Smash_Forge
                 ColladaMesh mesh = geom.mesh;
                 ColladaPolygons colladaPoly = mesh.polygons[0];
 
-                // first create vertices?
+                Dictionary<string, ColladaSource> sources = GetVertexDataSources(mesh);
 
-                Dictionary<string, ColladaSource> sources = new Dictionary<string, ColladaSource>();
-                foreach (ColladaSource s in mesh.sources)
-                {
-                    sources.Add("#" + s.id, s);
-                }
-
-                NUD.Mesh nudMesh = new NUD.Mesh();
+                // Find the appropriate collada node and associated matrix.
                 Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
                 ColladaNode colladaNode = null;
                 foreach (ColladaNode node in dae.scene.nodes)
@@ -118,6 +111,7 @@ namespace Smash_Forge
                     }
                 }
 
+                NUD.Mesh nudMesh = new NUD.Mesh();
                 nudMeshByGeometryId.Add("#" + geom.id, nudMesh);
                 nud.Nodes.Add(nudMesh);
                 nudMesh.Text = geom.name;
@@ -127,110 +121,141 @@ namespace Smash_Forge
 
                 for (int i = 0; i < colladaPoly.p.Length; i++)
                 {
-                    if (importTexture)
+                    if (importTexture && colladaPoly.type == ColladaPrimitiveType.triangles)
                     {
-                        if (colladaPoly.type == ColladaPrimitiveType.triangles)
-                        {
-                            NutTexture tempTex = null;
-                            ColladaMaterials mat = null;
-                            ColladaEffects eff = null;
-                            ColladaImages img = null;
-                            string matId = null;
-
-                            dae.scene.MaterialIds.TryGetValue(colladaPoly.materialid, out matId);
-
-                            if (matId != null && matId[0] == '#')
-                                materials.TryGetValue(matId.Substring(1, matId.Length - 1), out mat);
-                            if (mat != null && mat.effecturl[0] == '#')
-                                effects.TryGetValue(mat.effecturl.Substring(1, mat.effecturl.Length - 1), out eff);
-                            if (eff != null && eff.source[0] == '#')
-                                images.TryGetValue(eff.source.Substring(1, eff.source.Length - 1), out img);
-                            if (img != null)
-                                existingTextures.TryGetValue(img.initref, out tempTex);
-
-                            if (texturemap.ContainsKey(img.initref))
-                            {
-                                tempTex = texturemap[img.initref];
-                            }
-                            else if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))))
-                            {
-                                NutTexture tex = null;
-                                if (img.initref.ToLower().EndsWith(".dds"))
-                                {
-                                    DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))));
-                                    tex = dds.ToNutTexture();
-                                }
-                                if (img.initref.ToLower().EndsWith(".png"))
-                                {
-                                    tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref)), 1);
-                                }
-                                if (tex == null)
-                                    continue;
-                                texturemap.Add(img.initref, tex);
-                                tex.HASHID = 0x40FFFF00;
-                                while (NUT.texIdUsed(tex.HASHID))
-                                    tex.HASHID++;
-                                nut.Nodes.Add(tex);
-                                nut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
-                                existingTextures.Add(img.initref, tex);
-                                tempTex = tex;
-                            }
-                            if (tempTex != null)
-                            {
-                                npoly.materials[0].textures[0].hash = tempTex.HASHID;
-                            }
-                        }
+                        // This may or may not still work.
+                        TryReadTexture(fileName, dae, nut, images, effects, materials, existingTextures, texturemap, colladaPoly, npoly);
                     }
 
-                    int maxoffset = 0;
-                    foreach (ColladaInput input in colladaPoly.inputs)
-                        if (input.offset > maxoffset) maxoffset = input.offset;
-                    maxoffset += 1;
-                    if (i * maxoffset >= colladaPoly.p.Length)
+                    int maxOffset = CalculateMaxOffset(colladaPoly);
+                    if (i * maxOffset >= colladaPoly.p.Length)
                         break;
 
-                    NUD.Vertex v = new NUD.Vertex();
-                    foreach (ColladaInput input in colladaPoly.inputs)
-                    {
-                        // The SemanticType for input is always SemanticType.Vertex.
-                        if (input.semanticType == SemanticType.POSITION)
-                        {
-                            // Probably won't be reached.
-                            AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, i, maxoffset, v);
-                        }
-                        if (input.semanticType == SemanticType.VERTEX)
-                        {
-                            v = new NUD.Vertex();
-
-                            // Duplicates a lot of vertices.
-                            // The indices and duplicates get fixed at the end.
-                            npoly.vertices.Add(v);
-                            npoly.vertexIndices.Add(npoly.vertices.IndexOf(v));
-
-                            // Read the position, normals, texcoord, and vert color semantics.
-                            foreach (ColladaInput vinput in mesh.vertices.inputs)
-                            {
-                                // If there is a position semantic, try and find the bone weights and IDs.
-                                if (vinput.semanticType == SemanticType.POSITION)
-                                {
-                                    AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, i, maxoffset, v);
-                                }
-                                // Read position, normals, texcoord, or vert color semantic.
-                                ReadSemantic(v, vinput, colladaPoly.p[maxoffset * i], sources);
-                            }
-                        }
-                        else
-                        {
-                            // Read position, normals, texcoord, or vert color semantic.
-                            ReadSemantic(v, input, colladaPoly.p[(maxoffset * i) + input.offset], sources);
-                        }
-                    }
+                    NUD.Vertex v = ReadVertexSemantics(dae, vertexListBySkinSource, geom, mesh, colladaPoly, sources, npoly, i, maxOffset);
 
                     TransformVertexNormalAndPosition(dae, bindMatrixBySkinSource, geom, nodeTrans, v);
                 }
 
                 AddMaterialsForEachUvChannel(npoly);
             }
+        }
+
+        private static Dictionary<string, ColladaSource> GetVertexDataSources(ColladaMesh mesh)
+        {
+            Dictionary<string, ColladaSource> sources = new Dictionary<string, ColladaSource>();
+            foreach (ColladaSource s in mesh.sources)
+            {
+                sources.Add("#" + s.id, s);
+            }
+
+            return sources;
+        }
+
+        private static void TryReadTexture(string fileName, Collada dae, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, NutTexture> existingTextures, Dictionary<string, NutTexture> texturemap, ColladaPolygons colladaPoly, NUD.Polygon npoly)
+        {
+            NutTexture tempTex = null;
+            ColladaMaterials mat = null;
+            ColladaEffects eff = null;
+            ColladaImages img = null;
+            string matId = null;
+
+            dae.scene.MaterialIds.TryGetValue(colladaPoly.materialid, out matId);
+
+            if (matId != null && matId[0] == '#')
+                materials.TryGetValue(matId.Substring(1, matId.Length - 1), out mat);
+            if (mat != null && mat.effecturl[0] == '#')
+                effects.TryGetValue(mat.effecturl.Substring(1, mat.effecturl.Length - 1), out eff);
+            if (eff != null && eff.source[0] == '#')
+                images.TryGetValue(eff.source.Substring(1, eff.source.Length - 1), out img);
+            if (img != null)
+                existingTextures.TryGetValue(img.initref, out tempTex);
+
+            if (texturemap.ContainsKey(img.initref))
+            {
+                tempTex = texturemap[img.initref];
+            }
+            else if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))))
+            {
+                NutTexture tex = null;
+                if (img.initref.ToLower().EndsWith(".dds"))
+                {
+                    DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))));
+                    tex = dds.ToNutTexture();
+                }
+                if (img.initref.ToLower().EndsWith(".png"))
+                {
+                    tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref)), 1);
+                }
+                if (tex == null)
+                    //continue;
+                    texturemap.Add(img.initref, tex);
+                tex.HASHID = 0x40FFFF00;
+                while (NUT.texIdUsed(tex.HASHID))
+                    tex.HASHID++;
+                nut.Nodes.Add(tex);
+                nut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
+                existingTextures.Add(img.initref, tex);
+                tempTex = tex;
+            }
+            if (tempTex != null)
+            {
+                npoly.materials[0].textures[0].hash = tempTex.HASHID;
+            }
+        }
+
+        private static int CalculateMaxOffset(ColladaPolygons colladaPoly)
+        {
+            // It calculates something...
+            int maxOffset = 0;
+            foreach (ColladaInput input in colladaPoly.inputs)
+            {
+                if (input.offset > maxOffset)
+                    maxOffset = input.offset;
+            }
+            maxOffset += 1;
+            return maxOffset;
+        }
+
+        private static NUD.Vertex ReadVertexSemantics(Collada dae, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, ColladaGeometry geom, ColladaMesh mesh, ColladaPolygons colladaPoly, Dictionary<string, ColladaSource> sources, NUD.Polygon npoly, int i, int maxoffset)
+        {
+            NUD.Vertex v = new NUD.Vertex();
+            foreach (ColladaInput input in colladaPoly.inputs)
+            {
+                // The SemanticType for input is always SemanticType.Vertex.
+                if (input.semanticType == SemanticType.POSITION)
+                {
+                    // Probably won't be reached.
+                    AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, i, maxoffset, v);
+                }
+                if (input.semanticType == SemanticType.VERTEX)
+                {
+                    v = new NUD.Vertex();
+
+                    // Duplicates a lot of vertices.
+                    // The indices and duplicates get fixed at the end.
+                    npoly.vertices.Add(v);
+                    npoly.vertexIndices.Add(npoly.vertices.IndexOf(v));
+
+                    // Read the position, normals, texcoord, and vert color semantics.
+                    foreach (ColladaInput vinput in mesh.vertices.inputs)
+                    {
+                        // If there is a position semantic, try and find the bone weights and IDs.
+                        if (vinput.semanticType == SemanticType.POSITION)
+                        {
+                            AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, i, maxoffset, v);
+                        }
+                        // Read position, normals, texcoord, or vert color semantic.
+                        ReadSemantic(v, vinput, colladaPoly.p[maxoffset * i], sources);
+                    }
+                }
+                else
+                {
+                    // Read position, normals, texcoord, or vert color semantic.
+                    ReadSemantic(v, input, colladaPoly.p[(maxoffset * i) + input.offset], sources);
+                }
+            }
+
+            return v;
         }
 
         private static void TransformVertexNormalAndPosition(Collada dae, Dictionary<string, Matrix4> bindMatrixBySkinSource, ColladaGeometry geom, Matrix4 nodeTrans, NUD.Vertex v)
