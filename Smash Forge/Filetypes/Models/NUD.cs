@@ -3295,9 +3295,6 @@ namespace Smash_Forge
 
         public void OptimizeFileSize(bool singleBind = false)
         {
-            // Remove Duplicates
-            MergePoly();
-
             // Generate proper indices.
             MergeDuplicateVertices();
 

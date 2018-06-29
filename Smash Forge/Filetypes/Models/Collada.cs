@@ -90,7 +90,10 @@ namespace Smash_Forge
             }
 
             Dictionary<string, NutTexture> texturemap = new Dictionary<string, NutTexture>();
-            Dictionary<string, NUD.Mesh> nudMeshByGeometryId = new Dictionary<string, NUD.Mesh>();
+
+            // Don't add duplicate meshes if they share a name.
+            Dictionary<string, NUD.Mesh> nudMeshByGeometryName = new Dictionary<string, NUD.Mesh>();
+
             foreach (ColladaGeometry geom in dae.library_geometries)
             {
                 ColladaMesh mesh = geom.mesh;
@@ -111,10 +114,17 @@ namespace Smash_Forge
                     }
                 }
 
-                NUD.Mesh nudMesh = new NUD.Mesh();
-                nudMeshByGeometryId.Add("#" + geom.id, nudMesh);
+                // Check if the mesh already exists first.
+                NUD.Mesh nudMesh;
+                if (nudMeshByGeometryName.ContainsKey(geom.name))
+                    nudMesh = nudMeshByGeometryName[geom.id];
+                else
+                {
+                    nudMesh = new NUD.Mesh();
+                    nudMesh.Text = geom.name;
+                    nudMeshByGeometryName.Add(geom.name, nudMesh);
+                }
                 nud.Nodes.Add(nudMesh);
-                nudMesh.Text = geom.name;
                 NUD.Polygon npoly = new NUD.Polygon();
                 npoly.AddDefaultMaterial();
                 nudMesh.Nodes.Add(npoly);
