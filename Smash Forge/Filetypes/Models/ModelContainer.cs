@@ -221,41 +221,22 @@ namespace Smash_Forge
             return null;
         }
 
-        public void Render(Camera camera, int depthmap, Matrix4 lightMatrix, Matrix4 modelMatrix, Vector2 screenDimensions, bool specialWireFrame = false)
+        public void Render(Camera camera, int depthMap, Matrix4 lightMatrix, Vector2 screenDimensions, bool drawShadow = false)
         {
             if (!Checked)
                 return;
 
             Shader shader;
-            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                shader = Runtime.shaders["NudDebug"];
-            else
-                shader = Runtime.shaders["Nud"];
-            GL.UseProgram(shader.Id);
 
-            int renderType = (int)Runtime.renderType;
-
-            SetCameraMatrixUniforms(camera, shader);
-
+            // 3DS MBN
             shader = Runtime.shaders["Mbn"];
             GL.UseProgram(shader.Id);
+            SetMbnUniforms(camera, shader);
 
-            if (Runtime.cameraLight)
-            {
-                shader.SetVector3("difLightDirection", Vector3.TransformNormal(new Vector3(0f, 0f, -1f), camera.MvpMatrix.Inverted()).Normalized());
-            }
-            else
-            {
-                shader.SetVector3("difLightDirection", Runtime.lightSetParam.characterDiffuse.direction);
-            }
-
+            // Melee DAT
             shader = Runtime.shaders["Dat"];
             GL.UseProgram(shader.Id);
-
-            LightColor diffuseColor = Runtime.lightSetParam.characterDiffuse.diffuseColor;
-            LightColor ambientColor = Runtime.lightSetParam.characterDiffuse.ambientColor;
-            shader.SetVector3("difLightColor", diffuseColor.R, diffuseColor.G, diffuseColor.B);
-            shader.SetVector3("ambLightColor", ambientColor.R, ambientColor.G, ambientColor.B);
+            SetDatUniforms(shader);
 
             if (BCH != null)
             {
@@ -272,33 +253,58 @@ namespace Smash_Forge
 
             if (NUD != null && Runtime.shaders["Nud"].ProgramCreatedSuccessfully() && Runtime.shaders["NudDebug"].ProgramCreatedSuccessfully())
             {
-                if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+                // Choose the appropriate shader.
+                if (drawShadow)
+                    shader = Runtime.shaders["Shadow"];
+                else if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                     shader = Runtime.shaders["NudDebug"];
                 else
                     shader = Runtime.shaders["Nud"];
 
                 GL.UseProgram(shader.Id);
 
+                // Matrices.
+                Matrix4 lightMatrixRef = lightMatrix;
+                shader.SetMatrix4x4("lightMatrix", ref lightMatrixRef);
+                SetCameraMatrixUniforms(camera, shader);
+
                 SetRenderSettingsUniforms(shader);
                 SetLightingUniforms(shader, camera);
 
-                shader.SetInt("renderType", renderType);
+                shader.SetInt("renderType", (int)Runtime.renderType);
                 shader.SetInt("debugOption", (int)Runtime.uvChannel);
+                shader.SetBoolToInt("drawShadow", Runtime.drawModelShadow);
+
+                GL.ActiveTexture(TextureUnit.Texture14);
+                GL.BindTexture(TextureTarget.Texture2D, depthMap);
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("depthMap"), 14);
 
                 // Used for wireframe shader.
                 shader.SetVector2("windowSize", screenDimensions);
 
                 SetElapsedDirectUvTime(shader);
 
-                shader.SetMatrix4x4("modelMatrix", ref modelMatrix);
+                NUD.Render(VBN, camera, drawShadow, Runtime.drawNudColorIdPass);
+            }
+        }
 
-                if (specialWireFrame)
-                {
-                    Runtime.renderModelWireframe = true;
-                    Runtime.renderModel = false;
-                }
+        private static void SetDatUniforms(Shader shader)
+        {
+            LightColor diffuseColor = Runtime.lightSetParam.characterDiffuse.diffuseColor;
+            LightColor ambientColor = Runtime.lightSetParam.characterDiffuse.ambientColor;
+            shader.SetVector3("difLightColor", diffuseColor.R, diffuseColor.G, diffuseColor.B);
+            shader.SetVector3("ambLightColor", ambientColor.R, ambientColor.G, ambientColor.B);
+        }
 
-                NUD.Render(VBN, camera, Runtime.drawNudColorIdPass);
+        private static void SetMbnUniforms(Camera camera, Shader shader)
+        {
+            if (Runtime.cameraLight)
+            {
+                shader.SetVector3("difLightDirection", Vector3.TransformNormal(new Vector3(0f, 0f, -1f), camera.MvpMatrix.Inverted()).Normalized());
+            }
+            else
+            {
+                shader.SetVector3("difLightDirection", Runtime.lightSetParam.characterDiffuse.direction);
             }
         }
 

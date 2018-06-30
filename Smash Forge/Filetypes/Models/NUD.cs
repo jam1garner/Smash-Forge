@@ -306,7 +306,7 @@ namespace Smash_Forge
             GL.BufferData<int>(elementsIbo.BufferTarget, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
         }
 
-        public void Render(VBN vbn, Camera camera, bool drawPolyIds = false)
+        public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)
         {
             // Binding 0 to a buffer target will crash. This also means the NUD buffers weren't generated yet.
             bool buffersWereInitialized = elementsIbo != null && positionVbo != null && bonesUbo != null && selectVbo != null;
@@ -321,9 +321,13 @@ namespace Smash_Forge
                 DrawBoundingBoxes();
 
             // Choose the correct shader.
-            Shader shader = Runtime.shaders["Nud"];
-            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+            Shader shader;
+            if (drawShadow)
+                shader = Runtime.shaders["Shadow"];
+            else if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NudDebug"];
+            else
+                shader = Runtime.shaders["Nud"];
 
             // Render using the selected shader.
             GL.UseProgram(shader.Id);

@@ -10,7 +10,8 @@ in vec3 geomNormal[];
 in vec3 geomViewNormal[];
 in vec3 geomTangent[];
 in vec3 geomBitangent[];
-in vec3 geomFragpos[];
+in vec4 geomFragPos[];
+in vec4 geomFragPosLightSpace[];
 in vec3 geomViewPosition[];
 in vec3 geomObjectPosition[];
 
@@ -33,6 +34,8 @@ out vec3 normal;
 out vec3 viewNormal;
 out vec3 tangent;
 out vec3 bitangent;
+out vec4 fragPos;
+out vec4 fragPosLightSpace;
 noperspective out vec3 edgeDistance;
 
 // Defined in EdgeDistance.geom.
@@ -55,6 +58,8 @@ void main() {
         viewNormal = geomViewNormal[i];
         tangent = geomTangent[i];
         bitangent = geomBitangent[i];
+        fragPos = geomFragPos[i];
+        fragPosLightSpace = geomFragPosLightSpace[i];
 
         // The distance from a point to each of the edges.
         // This benefits from interpolation.

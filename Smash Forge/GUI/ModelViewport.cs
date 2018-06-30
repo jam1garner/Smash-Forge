@@ -52,6 +52,13 @@ namespace Smash_Forge
         // Used for screen renders and color picking.
         Framebuffer offscreenRenderFbo;
 
+        // Shadow Mapping
+        Framebuffer depthMapFbo;
+        Texture2D depthMap;
+        int shadowWidth = 2048;
+        int shadowHeight = 2048;
+        Matrix4 lightMatrix = Matrix4.Identity;
+
         // The viewport dimensions should be used for FBOs visible on screen.
         // Larger dimensions can be used for higher quality outputs for FBOs.
         int fboRenderWidth;
@@ -316,6 +323,37 @@ namespace Smash_Forge
 
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            SetupDepthMap();
+        }
+
+        private void SetupDepthMap()
+        {
+            // Set up the depth map fbo.
+            depthMapFbo = new Framebuffer(FramebufferTarget.Framebuffer);
+            depthMapFbo.Bind();
+
+            // Set up the depth map texture.
+            depthMap = new Texture2D(glViewport.Width, glViewport.Height);
+            ResizeDepthMap();
+            GL.DrawBuffer(DrawBufferMode.None);
+            GL.ReadBuffer(ReadBufferMode.None);
+        }
+
+        private void ResizeDepthMap()
+        {
+            depthMap.Bind();
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, shadowWidth, shadowHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+            depthMap.MagFilter = TextureMagFilter.Nearest;
+            depthMap.MinFilter = TextureMinFilter.Nearest;
+            // Use white for values outside shadow map.
+            depthMap.TextureWrapS = TextureWrapMode.ClampToBorder;
+            depthMap.TextureWrapT = TextureWrapMode.ClampToBorder;
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, new float[] { 1, 1, 1, 1 });
+
+            // Attach the depth map to the fbo.
+            depthMapFbo.Bind();
+            GL.FramebufferTexture2D(depthMapFbo.FramebufferTarget, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthMap.Id, 0);
         }
 
         public Camera GetCamera()
@@ -376,17 +414,11 @@ namespace Smash_Forge
 
         private void ModelViewport_Load(object sender, EventArgs e)
         {
+            // Frame time hacks...
             var timer = new Timer();
-            timer.Interval = 1000 / 120;
+            timer.Interval = 8;
             timer.Tick += new EventHandler(Application_Idle);
             timer.Start();
-
-            InitializeLights();
-        }
-
-        private static void InitializeLights()
-        {
-            // TODO: Initialize Lights
         }
 
         private void Application_Idle(object sender, EventArgs e)
@@ -628,13 +660,15 @@ namespace Smash_Forge
         private void ResizeTexturesAndBuffers()
         {
             // FBOs manage their own resizing.
-            ResizeHdrFboRboTwoColorAttachments();
-
             imageBrightHdrFbo.Width = (int)(fboRenderWidth * Runtime.bloomTexScale);
             imageBrightHdrFbo.Height = (int)(fboRenderHeight * Runtime.bloomTexScale);
 
             offscreenRenderFbo.Width = fboRenderWidth;
             offscreenRenderFbo.Height = fboRenderHeight;
+
+            // Resize manually created fbos.
+            ResizeDepthMap();
+            ResizeHdrFboRboTwoColorAttachments();
         }
 
         private void ResizeHdrFboRboTwoColorAttachments()
@@ -1500,9 +1534,16 @@ namespace Smash_Forge
             if (Runtime.drawNudColorIdPass)
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-            DrawModels();
+            // Keep track of previous transforms.
+            // TODO: Use a proper orthographic matrix.
+            float rotX = camera.RotationXDegrees;
+            float rotY = camera.RotationYDegrees;
+            Vector3 position = camera.Position;
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
+            if (Runtime.drawModelShadow)
+                DrawModelsIntoShadowMap();
+
+            DrawModelsNormally(width, height, defaultFbo, rotX, rotY, position);
 
             if (Runtime.usePostProcessing)
             {
@@ -1522,6 +1563,31 @@ namespace Smash_Forge
 
             GL.PopAttrib();
             glViewport.SwapBuffers();
+        }
+
+        private void DrawModelsNormally(int width, int height, int defaultFbo, float rotX, float rotY, Vector3 position)
+        {
+            // Draw the models normally.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
+            GL.Viewport(0, 0, width, height);
+            // Reset transformations.
+            camera.RotationXDegrees = rotX;
+            camera.RotationYDegrees = rotY;
+            camera.Position = position;
+            DrawModels();
+        }
+
+        private void DrawModelsIntoShadowMap()
+        {
+            // Draw the models into the shadow map.
+            depthMapFbo.Bind();
+            GL.Viewport(0, 0, shadowWidth, shadowHeight);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+            camera.Position = new Vector3(0, 6, -60);
+            camera.RotationXDegrees = 45;
+            camera.RotationYDegrees = 0;
+            lightMatrix = camera.MvpMatrix;
+            DrawModels(true);
         }
 
         private static void SetDepthTesting()
@@ -1563,12 +1629,12 @@ namespace Smash_Forge
             GL.Viewport(0, 0, width, height);
         }
 
-        private void DrawModels()
+        private void DrawModels(bool drawShadow = false)
         {
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
                     if (m is ModelContainer)
-                        ((ModelContainer)m).Render(camera, 0, Matrix4.Zero, camera.MvpMatrix, new Vector2(glViewport.Width, glViewport.Height));
+                        ((ModelContainer)m).Render(camera, depthMap.Id, lightMatrix, new Vector2(glViewport.Width, glViewport.Height), drawShadow);
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)

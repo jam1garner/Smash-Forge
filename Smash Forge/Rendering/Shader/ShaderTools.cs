@@ -31,6 +31,7 @@ namespace Smash_Forge.Rendering
             CreateAndAddShader("Mbn", "\\lib\\Shader\\3ds");
             CreateAndAddShader("Dat", "\\lib\\Shader\\Melee");
             CreateAndAddShader("Point", "\\lib\\Shader");
+            CreateAndAddShader("Shadow", "\\lib\\Shader");
         }
 
         private static void SetupNudShaders()
