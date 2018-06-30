@@ -952,8 +952,8 @@ namespace Smash_Forge
         {
             if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
             {
-                // Make sure the shaders and textures are setup for rendering.
-                Rendering.RenderTools.SetupOpenTkRendering();
+                // Make sure the shaders and textures are ready for rendering.
+                Rendering.RenderTools.SetUpOpenTkRendering();
                 pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
                 currentNut.RefreshGlTexturesByHashId();
                 readyToRender = true;

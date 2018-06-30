@@ -107,7 +107,7 @@ namespace Smash_Forge
         public NUDMaterialEditor()
         {
             InitializeComponent();
-            RenderTools.SetupOpenTkRendering();
+            RenderTools.SetUpOpenTkRendering();
         }
 
         public NUDMaterialEditor(NUD.Polygon p)
@@ -120,7 +120,7 @@ namespace Smash_Forge
             matsComboBox.SelectedIndex = 0;
 
             // The dummy textures will be used later. 
-            RenderTools.SetupOpenTkRendering();
+            RenderTools.SetUpOpenTkRendering();
         }
 
         private static void UpdateMaterialThumbnails()

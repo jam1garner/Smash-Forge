@@ -1471,7 +1471,7 @@ namespace Smash_Forge
 
         private void Render(object sender, PaintEventArgs e, int width, int height, int defaultFbo = 0)
         {
-            // Don't render if the context and resources aren't setup properly.
+            // Don't render if the context and resources aren't set up properly.
             // Watching textures suddenly appear looks weird.
             if (!readyToRender || Runtime.glTexturesNeedRefreshing)
                 return;
@@ -1601,7 +1601,7 @@ namespace Smash_Forge
 
         private void FixedFunctionRendering()
         {
-            RenderTools.Setup3DFixedFunctionRendering(camera.MvpMatrix);
+            RenderTools.SetUp3DFixedFunctionRendering(camera.MvpMatrix);
 
             // Bounding boxes should not render on top.
             if (Runtime.drawAreaLightBoundingBoxes)
@@ -1965,7 +1965,7 @@ namespace Smash_Forge
             glViewport.MakeCurrent();
             if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
             {
-                RenderTools.SetupOpenTkRendering();
+                RenderTools.SetUpOpenTkRendering();
                 SetupBuffersAndTextures();
                 readyToRender = true;
             }

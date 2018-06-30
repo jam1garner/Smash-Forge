@@ -796,7 +796,7 @@ namespace Smash_Forge.GUI.Editors
 
         private void charDifColorGLControl_Load(object sender, EventArgs e)
         {
-            RenderTools.SetupOpenTkRendering();
+            RenderTools.SetUpOpenTkRendering();
         }
     }
 }

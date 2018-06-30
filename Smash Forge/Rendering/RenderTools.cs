@@ -54,17 +54,33 @@ namespace Smash_Forge.Rendering
         private static Texture sphereBitanTex;
         private static ForgeCamera nudSphereCamera = new ForgeCamera();
 
-        public static void SetupOpenTkRendering()
+        // Keep a context around to avoid setting up after making each context.
+        public static GameWindow dummyResourceWindow;
+        private static bool hasSetUpOpenTK = false;
+
+        public static void SetUpOpenTkRendering()
         {
-            // This method will need to be called more than once during the lifetime of the program.
-            // The textures will be invalid once a context is destroyed.
-            // There isn't a clean way at the moment to keep track of everything.
+            if (hasSetUpOpenTK)
+                return;
+
+            // Make a dummy context so shaders, textures, etc don't become unloaded.
+            SetUpDummyResourceContext();
 
             nudSphereCamera.UpdateFromMouse(); // Update matrices for shader.
             LoadTextures();
             SetupScreenQuadBuffer();
             GetOpenGLSystemInfo();
             ShaderTools.SetupShaders();
+
+            hasSetUpOpenTK = true;
+        }
+
+        private static void SetUpDummyResourceContext()
+        {
+            GraphicsMode mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
+            dummyResourceWindow = new GameWindow(640, 480, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 3, GraphicsContextFlags.Default);
+            dummyResourceWindow.Visible = false;
+            dummyResourceWindow.MakeCurrent();
         }
 
         private static void SetupScreenQuadBuffer()
@@ -1403,11 +1419,11 @@ namespace Smash_Forge.Rendering
             GL.End();
         }
 
-        public static void Setup3DFixedFunctionRendering(Matrix4 mvpMatrix)
+        public static void SetUp3DFixedFunctionRendering(Matrix4 mvpMatrix)
         {
             GL.UseProgram(0);
 
-            // Manually setup the matrix for immediate mode.
+            // Manually set up the matrix for immediate mode.
             Matrix4 matrix = mvpMatrix;
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref matrix);
@@ -1508,7 +1524,7 @@ namespace Smash_Forge.Rendering
             Shader shader = Runtime.shaders["Gradient"];
             GL.UseProgram(shader.Id);
 
-            Setup2DRendering();
+            SetUp2DRendering();
 
             shader.SetVector3("topColor", topColor);
             shader.SetVector3("bottomColor", bottomColor);
@@ -1523,7 +1539,7 @@ namespace Smash_Forge.Rendering
             Shader shader = Runtime.shaders["Texture"];
             GL.UseProgram(shader.Id);
 
-            Setup2DRendering();
+            SetUp2DRendering();
 
             // Single texture uniform.
             GL.ActiveTexture(TextureUnit.Texture0);
@@ -1626,9 +1642,9 @@ namespace Smash_Forge.Rendering
             DrawScreenTriangle(shader);
         }
 
-        public static void Setup2DRendering()
+        public static void SetUp2DRendering()
         {
-            // Setup OpenGL settings for basic 2D rendering.
+            // Set up OpenGL settings for basic 2D rendering.
             GL.ClearColor(Color.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
