@@ -115,6 +115,7 @@ namespace Smash_Forge.GUI
             reflectionCB.Checked = Runtime.renderReflection;
             renderFogCB.Checked = Runtime.renderFog;
             stageLightingCB.Checked = Runtime.renderStageLighting;
+            drawShadowCB.Checked = Runtime.drawModelShadow;
 
             ambTB.Text = Runtime.ambItensity + "";
             difTB.Text = Runtime.difIntensity + "";
@@ -1006,6 +1007,11 @@ namespace Smash_Forge.GUI
         private void backgroundPictureBox_Click(object sender, EventArgs e)
         {
             OpenBackgroundTexture();
+        }
+
+        private void drawShadowCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.drawModelShadow = drawShadowCB.Checked;
         }
     }
 }

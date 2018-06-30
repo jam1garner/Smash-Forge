@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -186,6 +186,7 @@
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.defaultRadioButton = new System.Windows.Forms.RadioButton();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.drawShadowCB = new System.Windows.Forms.CheckBox();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -711,8 +712,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem9,
-            listViewItem10});
+            listViewItem1,
+            listViewItem2});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -1248,6 +1249,7 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.drawShadowCB);
             this.groupBox5.Controls.Add(this.stageLightingCB);
             this.groupBox5.Controls.Add(this.renderFogCB);
             this.groupBox5.Controls.Add(this.tableLayoutPanel1);
@@ -1974,6 +1976,17 @@
             this.defaultRadioButton.UseVisualStyleBackColor = true;
             this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
+            // drawShadowCB
+            // 
+            this.drawShadowCB.AutoSize = true;
+            this.drawShadowCB.Location = new System.Drawing.Point(156, 116);
+            this.drawShadowCB.Name = "drawShadowCB";
+            this.drawShadowCB.Size = new System.Drawing.Size(177, 17);
+            this.drawShadowCB.TabIndex = 35;
+            this.drawShadowCB.Text = "Render Shadows (Experimental)";
+            this.drawShadowCB.UseVisualStyleBackColor = true;
+            this.drawShadowCB.CheckedChanged += new System.EventHandler(this.drawShadowCB_CheckedChanged);
+            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2199,5 +2212,6 @@
         private System.Windows.Forms.PictureBox floorColorPictureBox;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.PictureBox backgroundPictureBox;
+        private System.Windows.Forms.CheckBox drawShadowCB;
     }
 }
