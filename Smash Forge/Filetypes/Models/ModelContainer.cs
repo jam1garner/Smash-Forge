@@ -273,6 +273,7 @@ namespace Smash_Forge
 
                 shader.SetInt("renderType", (int)Runtime.renderType);
                 shader.SetInt("debugOption", (int)Runtime.uvChannel);
+                shader.SetBoolToInt("drawShadow", Runtime.drawModelShadow);
 
                 GL.ActiveTexture(TextureUnit.Texture14);
                 GL.BindTexture(TextureTarget.Texture2D, depthMap);

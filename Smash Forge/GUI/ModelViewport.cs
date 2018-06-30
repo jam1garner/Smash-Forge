@@ -1540,29 +1540,16 @@ namespace Smash_Forge
             if (Runtime.drawNudColorIdPass)
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-            // Keep track of preview transforms.
+            // Keep track of previous transforms.
+            // TODO: Use a proper orthographic matrix.
             float rotX = camera.RotationXDegrees;
             float rotY = camera.RotationYDegrees;
             Vector3 position = camera.Position;
 
-            // This is inefficient but works for now.
-            depthMapFbo.Bind();
-            GL.Viewport(0, 0, shadowWidth, shadowHeight);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-            camera.Position = new Vector3(0, 6, -60);
-            camera.RotationXDegrees = 45;
-            camera.RotationYDegrees = 0;
-            lightMatrix = camera.MvpMatrix;
-            DrawModels(true);
+            if (Runtime.drawModelShadow)
+                DrawModelsIntoShadowMap();
 
-            // Draw the models normally.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
-            GL.Viewport(0, 0, width, height);
-            // Reset transformations.
-            camera.RotationXDegrees = rotX;
-            camera.RotationYDegrees = rotY;
-            camera.Position = position;
-            DrawModels();
+            DrawModelsNormally(width, height, defaultFbo, rotX, rotY, position);
 
             if (Runtime.usePostProcessing)
             {
@@ -1576,13 +1563,37 @@ namespace Smash_Forge
                 GL.Viewport(0, 0, width, height);
 
                 RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, imageBrightHdrFbo.ColorAttachment0Tex);
-                RenderTools.DrawTexturedQuad(depthMap.Id, 1, 1);
             }
 
             FixedFunctionRendering();
 
             GL.PopAttrib();
             glViewport.SwapBuffers();
+        }
+
+        private void DrawModelsNormally(int width, int height, int defaultFbo, float rotX, float rotY, Vector3 position)
+        {
+            // Draw the models normally.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
+            GL.Viewport(0, 0, width, height);
+            // Reset transformations.
+            camera.RotationXDegrees = rotX;
+            camera.RotationYDegrees = rotY;
+            camera.Position = position;
+            DrawModels();
+        }
+
+        private void DrawModelsIntoShadowMap()
+        {
+            // Draw the models into the shadow map.
+            depthMapFbo.Bind();
+            GL.Viewport(0, 0, shadowWidth, shadowHeight);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+            camera.Position = new Vector3(0, 6, -60);
+            camera.RotationXDegrees = 45;
+            camera.RotationYDegrees = 0;
+            lightMatrix = camera.MvpMatrix;
+            DrawModels(true);
         }
 
         private static void SetDepthTesting()

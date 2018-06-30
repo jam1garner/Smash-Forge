@@ -189,6 +189,7 @@ uniform vec4 customSoftLightParams;
 uniform vec4 effUniverseParam;
 
 // Shadow Mapping
+uniform int drawShadow;
 uniform sampler2D depthMap;
 mat4 lightMatrix;
 
@@ -218,6 +219,20 @@ struct VertexAttributes {
 float WireframeIntensity(vec3 distanceToEdges);
 float Luminance(vec3 rgb);
 vec4 SmashShader(VertexAttributes vert);
+
+float CalculateShadow(float shadowBrightness)
+{
+    // Shadow calculations
+    vec3 projectionCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projectionCoords = projectionCoords * 0.5 + 0.5;
+    float closestDepth = texture(depthMap, projectionCoords.xy).r;
+    float currentDepth = projectionCoords.z;
+    float shadowBias = 0.0001;
+    if ((currentDepth - shadowBias) > closestDepth)
+        return shadowBrightness;
+    else
+        return 1.0;
+}
 
 void main() {
     if (drawSelection == 1) {
@@ -259,11 +274,6 @@ void main() {
     }
 
     // Shadow calculations
-    vec3 projectionCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projectionCoords = projectionCoords * 0.5 + 0.5;
-    float closestDepth = texture(depthMap, projectionCoords.xy).r;
-    float currentDepth = projectionCoords.z;
-    float shadowBias = 0.0001;
-    if ((currentDepth - shadowBias) > closestDepth)
-        fragColor.rgb *= vec3(0.25);
+    if (drawShadow == 1)
+        fragColor.rgb *= CalculateShadow(0.25);
 }
