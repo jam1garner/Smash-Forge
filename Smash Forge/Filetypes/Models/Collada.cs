@@ -135,7 +135,12 @@ namespace Smash_Forge
                 npoly.AddDefaultMaterial();
                 nudMesh.Nodes.Add(npoly);
 
-                for (int i = 0; i < colladaPoly.p.Length; i++)
+                // Many vertices share the same vertex data.
+                // If there aren't any sources, we can't do anything meaningful anyway.
+                int vertexDataLength = sources.First().Value.data.Length / sources.First().Value.stride;
+                NUD.Vertex[] vertexDataSource = new NUD.Vertex[vertexDataLength];
+
+                for (int pIndex = 0; pIndex < colladaPoly.p.Length; pIndex++)
                 {
                     if (importTexture && colladaPoly.type == ColladaPrimitiveType.triangles)
                     {
@@ -144,13 +149,28 @@ namespace Smash_Forge
                     }
 
                     int maxOffset = CalculateMaxOffset(colladaPoly);
-                    if (i * maxOffset >= colladaPoly.p.Length)
+                    if (pIndex * maxOffset >= colladaPoly.p.Length)
                         break;
 
-                    NUD.Vertex v = ReadVertexSemantics(dae, vertexListBySkinSource, geom, mesh, colladaPoly, sources, npoly, i, maxOffset);
+                    // TODO: Does this result in redundant vertex reads?
+                    NUD.Vertex v = ReadVertexSemantics(dae, vertexListBySkinSource, geom, mesh, colladaPoly, sources, npoly, pIndex, maxOffset);
+
+                    int vertexSourceIndex = colladaPoly.p[pIndex];
+                    if (vertexDataSource[vertexSourceIndex] == null)
+                    {
+                        vertexDataSource[vertexSourceIndex] = v;
+                    }
+
+                    // Duplicates a lot of vertices.
+                    // The indices and duplicates get fixed at the end.
+                    //npoly.vertices.Add(v);
+                    //npoly.vertexIndices.Add(npoly.vertices.IndexOf(v));
 
                     TransformVertexNormalAndPosition(dae, bindMatrixBySkinSource, geom, nodeTrans, v);
                 }
+
+                npoly.vertices = vertexDataSource.ToList();
+                npoly.vertexIndices = colladaPoly.p.ToList();
 
                 AddMaterialsForEachUvChannel(npoly);
             }
@@ -256,7 +276,7 @@ namespace Smash_Forge
             return maxOffset;
         }
 
-        private static NUD.Vertex ReadVertexSemantics(Collada dae, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, ColladaGeometry geom, ColladaMesh mesh, ColladaPolygons colladaPoly, Dictionary<string, ColladaSource> sources, NUD.Polygon npoly, int i, int maxoffset)
+        private static NUD.Vertex ReadVertexSemantics(Collada dae, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, ColladaGeometry geom, ColladaMesh mesh, ColladaPolygons colladaPoly, Dictionary<string, ColladaSource> sources, NUD.Polygon npoly, int pIndex, int maxoffset)
         {
             NUD.Vertex v = new NUD.Vertex();
             foreach (ColladaInput input in colladaPoly.inputs)
@@ -265,16 +285,11 @@ namespace Smash_Forge
                 if (input.semanticType == SemanticType.POSITION)
                 {
                     // Probably won't be reached.
-                    AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, i, maxoffset, v);
+                    AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, pIndex, maxoffset, v);
                 }
                 if (input.semanticType == SemanticType.VERTEX)
                 {
                     v = new NUD.Vertex();
-
-                    // Duplicates a lot of vertices.
-                    // The indices and duplicates get fixed at the end.
-                    npoly.vertices.Add(v);
-                    npoly.vertexIndices.Add(npoly.vertices.IndexOf(v));
 
                     // Read the position, normals, texcoord, and vert color semantics.
                     foreach (ColladaInput vinput in mesh.vertices.inputs)
@@ -282,16 +297,16 @@ namespace Smash_Forge
                         // If there is a position semantic, try and find the bone weights and IDs.
                         if (vinput.semanticType == SemanticType.POSITION)
                         {
-                            AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, i, maxoffset, v);
+                            AddBoneIdsAndWeights(dae, vertexListBySkinSource, geom, colladaPoly, pIndex, maxoffset, v);
                         }
                         // Read position, normals, texcoord, or vert color semantic.
-                        ReadSemantic(v, vinput, colladaPoly.p[maxoffset * i], sources);
+                        ReadSemantic(v, vinput, colladaPoly.p[maxoffset * pIndex], sources);
                     }
                 }
                 else
                 {
                     // Read position, normals, texcoord, or vert color semantic.
-                    ReadSemantic(v, input, colladaPoly.p[(maxoffset * i) + input.offset], sources);
+                    ReadSemantic(v, input, colladaPoly.p[(maxoffset * pIndex) + input.offset], sources);
                 }
             }
 

@@ -3296,10 +3296,10 @@ namespace Smash_Forge
         public void OptimizeFileSize(bool singleBind = false)
         {
             // Generate proper indices.
-            MergeDuplicateVertices();
+            //MergeDuplicateVertices();
 
             // This is pretty broken right now.
-            OptimizeSingleBind(false);
+            //OptimizeSingleBind(false);
         }
 
         private void MergeDuplicateVertices()
