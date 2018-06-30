@@ -36,10 +36,6 @@ namespace Smash_Forge
             // The filename is just used to get the file directory.
             CreateNudNutFromDae(fileName, container, importTexture, dae, out nud, out nut);
 
-            // Remove duplicate verts and calculate vertex indices.
-            // The indices aren't read from the DAE initially for some reason ¯\_(ツ)_/¯.
-            nud.OptimizeFileSize();
-
             // Modify model container.
             container.NUD = nud;
             container.NUT = nut;
@@ -120,10 +116,11 @@ namespace Smash_Forge
                 string nameWithoutNumber = RemoveInitialUnderscoreId(geom.name);
 
                 if (nudMeshByGeometryName.ContainsKey(nameWithoutNumber))
+                {
                     nudMesh = nudMeshByGeometryName[nameWithoutNumber];
+                }
                 else
                 {
-                    Debug.WriteLine(geom.name);
                     nudMesh = new NUD.Mesh();
                     nudMesh.Text = geom.name;
                     nud.Nodes.Add(nudMesh);
@@ -131,9 +128,9 @@ namespace Smash_Forge
                 }
 
                 // Always add the polygon.
-                NUD.Polygon npoly = new NUD.Polygon();
-                npoly.AddDefaultMaterial();
-                nudMesh.Nodes.Add(npoly);
+                NUD.Polygon nudPolygon = new NUD.Polygon();
+                nudPolygon.AddDefaultMaterial();
+                nudMesh.Nodes.Add(nudPolygon);
 
                 // Many vertices share the same vertex data.
                 // If there aren't any sources, we can't do anything meaningful anyway.
@@ -145,34 +142,28 @@ namespace Smash_Forge
                     if (importTexture && colladaPoly.type == ColladaPrimitiveType.triangles)
                     {
                         // This may or may not still work.
-                        TryReadTexture(fileName, dae, nut, images, effects, materials, existingTextures, texturemap, colladaPoly, npoly);
+                        TryReadTexture(fileName, dae, nut, images, effects, materials, existingTextures, texturemap, colladaPoly, nudPolygon);
                     }
 
                     int maxOffset = CalculateMaxOffset(colladaPoly);
                     if (pIndex * maxOffset >= colladaPoly.p.Length)
                         break;
 
-                    // TODO: Does this result in redundant vertex reads?
-                    NUD.Vertex v = ReadVertexSemantics(dae, vertexListBySkinSource, geom, mesh, colladaPoly, sources, npoly, pIndex, maxOffset);
-
+                    // Initialize the vertex for the given index.
                     int vertexSourceIndex = colladaPoly.p[pIndex];
                     if (vertexDataSource[vertexSourceIndex] == null)
                     {
+                        NUD.Vertex v = ReadVertexSemantics(dae, vertexListBySkinSource, geom, mesh, colladaPoly, sources, nudPolygon, pIndex, maxOffset);
                         vertexDataSource[vertexSourceIndex] = v;
+                        TransformVertexNormalAndPosition(dae, bindMatrixBySkinSource, geom, nodeTrans, v);
                     }
-
-                    // Duplicates a lot of vertices.
-                    // The indices and duplicates get fixed at the end.
-                    //npoly.vertices.Add(v);
-                    //npoly.vertexIndices.Add(npoly.vertices.IndexOf(v));
-
-                    TransformVertexNormalAndPosition(dae, bindMatrixBySkinSource, geom, nodeTrans, v);
                 }
 
-                npoly.vertices = vertexDataSource.ToList();
-                npoly.vertexIndices = colladaPoly.p.ToList();
+                // Add the vertices and indices to the polygon.
+                nudPolygon.vertices = vertexDataSource.ToList();
+                nudPolygon.vertexIndices = colladaPoly.p.ToList();
 
-                AddMaterialsForEachUvChannel(npoly);
+                AddMaterialsForEachUvChannel(nudPolygon);
             }
         }
 

@@ -1205,20 +1205,22 @@ namespace Smash_Forge
 
             if (fileName.ToLower().EndsWith(".dae"))
             {
-                DAEImportSettings daeImport = new DAEImportSettings();
-                daeImport.ShowDialog();
-                if (daeImport.exitStatus == DAEImportSettings.ExitStatus.Opened)
+                DAEImportSettings daeImportSettings = new DAEImportSettings();
+                daeImportSettings.ShowDialog();
+                if (daeImportSettings.exitStatus == DAEImportSettings.ExitStatus.Opened)
                 {
                     ModelContainer modelContainer = new ModelContainer();
 
                     // load vbn
-                    modelContainer.VBN = daeImport.getVBN();
+                    modelContainer.VBN = daeImportSettings.getVBN();
 
-                    Collada.DaetoNud(fileName, modelContainer, daeImport.importTexCB.Checked);
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+                    Collada.DaetoNud(fileName, modelContainer, daeImportSettings.importTexCB.Checked);
                     
                     // apply settings
-                    daeImport.Apply(modelContainer.NUD);
-
+                    daeImportSettings.Apply(modelContainer.NUD);
+                    Debug.WriteLine(stopwatch.ElapsedMilliseconds);
                     if (CheckCurrentViewport(out mvp))
                     {
                         mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
