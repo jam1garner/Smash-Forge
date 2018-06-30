@@ -414,17 +414,11 @@ namespace Smash_Forge
 
         private void ModelViewport_Load(object sender, EventArgs e)
         {
+            // Frame time hacks...
             var timer = new Timer();
-            timer.Interval = 50;
+            timer.Interval = 8;
             timer.Tick += new EventHandler(Application_Idle);
             timer.Start();
-
-            InitializeLights();
-        }
-
-        private static void InitializeLights()
-        {
-            // TODO: Initialize Lights
         }
 
         private void Application_Idle(object sender, EventArgs e)
