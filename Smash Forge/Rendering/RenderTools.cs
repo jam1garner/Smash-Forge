@@ -28,11 +28,11 @@ namespace Smash_Forge.Rendering
         // Avoids the need for a second triangle to fill a rectangular screen.
         private static BufferObject screenQuadVbo;
         private static float[] screenQuadVertices = 
-            {
-                -1f, -1f, 0.0f,
-                 3f, -1f, 0.0f,
-                 -1f, 3f, 0.0f
-            };
+        {
+            -1f, -1f, 0.0f,
+                3f, -1f, 0.0f,
+                -1f, 3f, 0.0f
+        };
 
         public static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>(); 
 
@@ -1025,29 +1025,53 @@ namespace Smash_Forge.Rendering
 
         public static void DrawUv(Camera camera, NUD nud, int texHash, int divisions, Color uvColor, float lineWidth, Color gridColor)
         {
+            // Set up the buffer.
+            List<Vector2> uvs = GenerateUVBuffer(nud);
+
+            BufferObject uvPositionVBO = new BufferObject(BufferTarget.ArrayBuffer);
+            uvPositionVBO.Bind();
+            Vector2[] uvArray = uvs.ToArray();
+            GL.BufferData(uvPositionVBO.BufferTarget, (IntPtr)(sizeof(float) * 2 * uvArray.Length), uvArray, BufferUsageHint.StaticDraw);
+
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            // Draw the uvs.
+            Shader shader = Runtime.shaders["UV"];
+            GL.UseProgram(shader.Id);
+            shader.EnableVertexAttributes();
+            uvPositionVBO.Bind();
+
+            Matrix4 matrix = Matrix4.Identity;
+            shader.SetMatrix4x4("mvpMatrix", ref matrix);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("position"), 2, VertexAttribPointerType.Float, false, sizeof(float) * 2, 0);
+
+            GL.DrawArrays(PrimitiveType.LineStrip, 0, uvArray.Length);
+            shader.DisableVertexAttributes();
+        }
+
+        private static List<Vector2> GenerateUVBuffer(NUD nud)
+        {
+            List<Vector2> uvs = new List<Vector2>();
+            int uvIndex = 0;
+
             foreach (NUD.Mesh m in nud.Nodes)
             {
                 foreach (NUD.Polygon p in m.Nodes)
                 {
-                    // Draw UVs for all models using this texture.
-                    // TODO: previously selected model or select multiple models.
-                    bool containsTexture = PolyContainsTextureHash(texHash, p);
-
-                    if (containsTexture)
+                    // TODO: Don't duplicate vertices.
+                    foreach (int vertIndex in p.vertexIndices)
                     {
-                        List<int> f = p.getDisplayFace();
-
-                        for (int i = 0; i < p.displayFaceSize; i += 3)
-                        {
-                            NUD.Vertex v1 = p.vertices[f[i]];
-                            NUD.Vertex v2 = p.vertices[f[i + 1]];
-                            NUD.Vertex v3 = p.vertices[f[i + 2]];
-
-                            DrawUVTriangleAndGrid(v1, v2, v3, divisions, uvColor, lineWidth, gridColor);
-                        }
+                        // Not sure why some of the indices are incorrect.
+                        if (p.vertices.Count > vertIndex)
+                            uvs.Add(p.vertices[vertIndex].uv[uvIndex]);
                     }
                 }
             }
+
+            return uvs;
         }
 
         private static bool PolyContainsTextureHash(int selectedTextureHash, NUD.Polygon poly)
@@ -1074,8 +1098,6 @@ namespace Smash_Forge.Rendering
 
             SetupUvRendering(lineWidth);
 
-            DrawUvTriangle(v1, v2, v3, uvColor, scaleUv);
-
             // Draw Grid
             GL.Color3(gridColor);
             DrawHorizontalGrid(divisions, bounds, scaleUv);
@@ -1098,25 +1120,6 @@ namespace Smash_Forge.Rendering
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
             GL.Clear(ClearBufferMask.DepthBufferBit);
-        }
-
-        private static void DrawUvTriangle(NUD.Vertex v1, NUD.Vertex v2, NUD.Vertex v3, Color uvColor, Vector2 scaleUv)
-        {
-            GL.Color3(uvColor);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex2(v1.uv[0] * scaleUv);
-            GL.Vertex2(v2.uv[0] * scaleUv);
-            GL.End();
-
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex2(v2.uv[0] * scaleUv);
-            GL.Vertex2(v3.uv[0] * scaleUv);
-            GL.End();
-
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex2(v3.uv[0] * scaleUv);
-            GL.Vertex2(v1.uv[0] * scaleUv);
-            GL.End();
         }
 
         private static void DrawVerticalGrid(int divisions, float bounds, Vector2 scaleUv)
