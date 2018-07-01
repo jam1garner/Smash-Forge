@@ -1991,7 +1991,8 @@ namespace Smash_Forge
 
                 int textureHash = 0;
                 int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
-                RenderTools.DrawUv(camera, m.NUD, textureHash, 4, Color.Red, 1, Color.White);
+                RenderTools.InitializeUVBufferData(m.NUD);
+                RenderTools.DrawUv(camera);
             }
         }
     }

@@ -34,6 +34,9 @@ namespace Smash_Forge.Rendering
                 -1f, 3f, 0.0f
         };
 
+        private static BufferObject uvPositionVBO;
+        private static int uvCount = 0;
+
         public static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>(); 
 
         private static Texture stageMapHigh;
@@ -1023,36 +1026,24 @@ namespace Smash_Forge.Rendering
             GL.Enable(EnableCap.DepthTest);
         }
 
-        public static void DrawUv(Camera camera, NUD nud, int texHash, int divisions, Color uvColor, float lineWidth, Color gridColor)
+        public static void InitializeUVBufferData(NUD nud)
         {
-            // Set up the buffer.
-            List<Vector2> uvs = GenerateUVBuffer(nud);
+            // The previous object's data will be cleaned up by GLOBjectManager.
+            uvPositionVBO = new BufferObject(BufferTarget.ArrayBuffer);
+            List<Vector2> uvs = GenerateUVList(nud);
+            InitializeUVBufferData(uvPositionVBO, uvs);
+            uvCount = uvs.Count;
+        }
 
-            BufferObject uvPositionVBO = new BufferObject(BufferTarget.ArrayBuffer);
+        private static void InitializeUVBufferData(BufferObject uvPositionVBO, List<Vector2> uvs)
+        {
+            // Set up the buffer data.
             uvPositionVBO.Bind();
             Vector2[] uvArray = uvs.ToArray();
             GL.BufferData(uvPositionVBO.BufferTarget, (IntPtr)(sizeof(float) * 2 * uvArray.Length), uvArray, BufferUsageHint.StaticDraw);
-
-
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-
-            // Draw the uvs.
-            Shader shader = Runtime.shaders["UV"];
-            GL.UseProgram(shader.Id);
-            shader.EnableVertexAttributes();
-            uvPositionVBO.Bind();
-
-            Matrix4 matrix = Matrix4.Identity;
-            shader.SetMatrix4x4("mvpMatrix", ref matrix);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("position"), 2, VertexAttribPointerType.Float, false, sizeof(float) * 2, 0);
-
-            GL.DrawArrays(PrimitiveType.LineStrip, 0, uvArray.Length);
-            shader.DisableVertexAttributes();
         }
 
-        private static List<Vector2> GenerateUVBuffer(NUD nud)
+        private static List<Vector2> GenerateUVList(NUD nud)
         {
             List<Vector2> uvs = new List<Vector2>();
             int uvIndex = 0;
@@ -1072,6 +1063,26 @@ namespace Smash_Forge.Rendering
             }
 
             return uvs;
+        }
+
+        public static void DrawUv(Camera camera)
+        {
+            GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            // Draw the uvs.
+            Shader shader = Runtime.shaders["UV"];
+            GL.UseProgram(shader.Id);
+            shader.EnableVertexAttributes();
+            uvPositionVBO.Bind();
+
+            Matrix4 matrix = Matrix4.Identity;
+            shader.SetMatrix4x4("mvpMatrix", ref matrix);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("position"), 2, VertexAttribPointerType.Float, false, sizeof(float) * 2, 0);
+
+            GL.DrawArrays(PrimitiveType.LineStrip, 0, uvCount);
+            shader.DisableVertexAttributes();
         }
 
         private static bool PolyContainsTextureHash(int selectedTextureHash, NUD.Polygon poly)
@@ -1096,7 +1107,7 @@ namespace Smash_Forge.Rendering
             float bounds = 1;
             Vector2 scaleUv = new Vector2(1, 1);
 
-            SetupUvRendering(lineWidth);
+            SetUpUvRendering(lineWidth);
 
             // Draw Grid
             GL.Color3(gridColor);
@@ -1104,7 +1115,7 @@ namespace Smash_Forge.Rendering
             DrawVerticalGrid(divisions, bounds, scaleUv);
         }
 
-        private static void SetupUvRendering(float lineWidth)
+        private static void SetUpUvRendering(float lineWidth)
         {
             // Go to 2D
             GL.MatrixMode(MatrixMode.Projection);
