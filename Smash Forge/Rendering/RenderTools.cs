@@ -1571,6 +1571,11 @@ namespace Smash_Forge.Rendering
             DrawScreenTriangle(shader);
         }
 
+        public static void DrawTexturedQuad(int texture)
+        {
+            DrawTexturedQuad(texture, 1, 1);
+        }
+
         public static void DrawScreenQuadPostProcessing(int texture0, int texture1)
         {
             // Draws RGB and alpha channels of texture to screen quad.

@@ -227,7 +227,7 @@ float CalculateShadow(float shadowBrightness)
     projectionCoords = projectionCoords * 0.5 + 0.5;
     float closestDepth = texture(depthMap, projectionCoords.xy).r;
     float currentDepth = projectionCoords.z;
-    float shadowBias = 0.0001;
+    float shadowBias = 0.00085;
     if ((currentDepth - shadowBias) > closestDepth)
         return shadowBrightness;
     else
@@ -275,5 +275,5 @@ void main() {
 
     // Shadow calculations
     if (drawShadow == 1)
-        fragColor.rgb *= CalculateShadow(0.25);
+        fragColor.rgb *= CalculateShadow(0.5);
 }

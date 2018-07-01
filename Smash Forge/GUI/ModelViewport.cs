@@ -1534,16 +1534,10 @@ namespace Smash_Forge
             if (Runtime.drawNudColorIdPass)
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-            // Keep track of previous transforms.
-            // TODO: Use a proper orthographic matrix.
-            float rotX = camera.RotationXDegrees;
-            float rotY = camera.RotationYDegrees;
-            Vector3 position = camera.Position;
-
             if (Runtime.drawModelShadow)
                 DrawModelsIntoShadowMap();
 
-            DrawModelsNormally(width, height, defaultFbo, rotX, rotY, position);
+            DrawModelsNormally(width, height, defaultFbo);
 
             if (Runtime.usePostProcessing)
             {
@@ -1565,15 +1559,11 @@ namespace Smash_Forge
             glViewport.SwapBuffers();
         }
 
-        private void DrawModelsNormally(int width, int height, int defaultFbo, float rotX, float rotY, Vector3 position)
+        private void DrawModelsNormally(int width, int height, int defaultFbo)
         {
             // Draw the models normally.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
             GL.Viewport(0, 0, width, height);
-            // Reset transformations.
-            camera.RotationXDegrees = rotX;
-            camera.RotationYDegrees = rotY;
-            camera.Position = position;
             DrawModels();
         }
 
@@ -1583,10 +1573,8 @@ namespace Smash_Forge
             depthMapFbo.Bind();
             GL.Viewport(0, 0, shadowWidth, shadowHeight);
             GL.Clear(ClearBufferMask.DepthBufferBit);
-            camera.Position = new Vector3(0, 6, -60);
-            camera.RotationXDegrees = 45;
-            camera.RotationYDegrees = 0;
-            lightMatrix = camera.MvpMatrix;
+            Matrix4 modelView = Matrix4.CreateRotationY(0) * Matrix4.CreateRotationX(45) * Matrix4.CreateTranslation(new Vector3(0, -6, -500));
+            lightMatrix = modelView * Matrix4.CreateOrthographicOffCenter(-75, 75, -75, 75, 1, 1000) * Matrix4.CreateScale(5);
             DrawModels(true);
         }
 
