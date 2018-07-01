@@ -876,7 +876,6 @@ namespace Smash_Forge
 
                         // apply settings
                         daeImport.Apply(con.NUD);
-                        con.NUD.MergePoly();
                     }
                 }
             }

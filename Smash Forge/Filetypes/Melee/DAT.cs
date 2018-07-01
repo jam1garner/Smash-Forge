@@ -715,7 +715,7 @@ namespace Smash_Forge
                         {
                             if (!usedVertices.Contains(vertBank[index]))
                                 usedVertices.Add(vertBank[index]);
-                            polygon.faces.Add(usedVertices.IndexOf(vertBank[index]));
+                            polygon.vertexIndices.Add(usedVertices.IndexOf(vertBank[index]));
                         }
                     }
                 }

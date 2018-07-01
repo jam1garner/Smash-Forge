@@ -119,9 +119,9 @@ namespace Smash_Forge
                         v.uv.Add(new Vector2(float.Parse(args[1]), float.Parse(args[2])));
                         break;
                     case "f":
-                        poly.faces.Add(int.Parse(args[1].Split('/')[0]) - 1);
-                        poly.faces.Add(int.Parse(args[2].Split('/')[0]) - 1);
-                        poly.faces.Add(int.Parse(args[3].Split('/')[0]) - 1);
+                        poly.vertexIndices.Add(int.Parse(args[1].Split('/')[0]) - 1);
+                        poly.vertexIndices.Add(int.Parse(args[2].Split('/')[0]) - 1);
+                        poly.vertexIndices.Add(int.Parse(args[3].Split('/')[0]) - 1);
                         break;
                 }
             }

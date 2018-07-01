@@ -593,7 +593,7 @@ namespace Smash_Forge
 
         private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, bool drawId = false)
         {
-            if (p.faces.Count <= 3)
+            if (p.vertexIndices.Count <= 3)
                 return;
 
             Material material = p.materials[0];
@@ -1558,7 +1558,7 @@ namespace Smash_Forge
 
             for (int x = 0; x < p.polyCount; x++)
             {
-                m.faces.Add(d.readUShort());
+                m.vertexIndices.Add(d.readUShort());
             }
 
             return m;
@@ -1834,7 +1834,7 @@ namespace Smash_Forge
                     obj.writeInt(texoff[2] > 0 ? texoff[2] + 0x30 + Nodes.Count * 0x30 + polyCount * 0x30 : 0);
                     obj.writeInt(texoff[3] > 0 ? texoff[3] + 0x30 + Nodes.Count * 0x30 + polyCount * 0x30 : 0);
 
-                    obj.writeShort(p.faces.Count); // polyamt
+                    obj.writeShort(p.vertexIndices.Count); // polyamt
                     obj.writeByte(p.strip); // polysize 0x04 is strips and 0x40 is easy
                     // :D
                     obj.writeByte(p.polflag); // polyflag
@@ -1844,7 +1844,7 @@ namespace Smash_Forge
                     obj.writeInt(0);
 
                     // Write the poly...
-                    foreach (int face in p.faces)
+                    foreach (int face in p.vertexIndices)
                         poly.writeShort(face);
 
                     // Write the vertex....
@@ -2729,8 +2729,9 @@ namespace Smash_Forge
             public int DisplayId { get { return displayId; } }
             private int displayId = 0;
 
+            // The number of vertices is vertexIndices.Count because many vertices are shared.
             public List<Vertex> vertices = new List<Vertex>();
-            public List<int> faces = new List<int>();
+            public List<int> vertexIndices = new List<int>();
             public int displayFaceSize = 0;
 
             public List<Material> materials = new List<Material>();
@@ -2795,7 +2796,7 @@ namespace Smash_Forge
 
                 List<DisplayVertex> displayVertList = new List<DisplayVertex>();
 
-                if (faces.Count <= 3)
+                if (vertexIndices.Count <= 3)
                     return displayVertList;
                 foreach (Vertex v in vertices)
                 {
@@ -2977,8 +2978,8 @@ namespace Smash_Forge
             {
                 if ((strip >> 4) == 4)
                 {
-                    displayFaceSize = faces.Count;
-                    return faces;
+                    displayFaceSize = vertexIndices.Count;
+                    return vertexIndices;
                 }
                 else
                 {
@@ -2986,17 +2987,17 @@ namespace Smash_Forge
 
                     int startDirection = 1;
                     int p = 0;
-                    int f1 = faces[p++];
-                    int f2 = faces[p++];
+                    int f1 = vertexIndices[p++];
+                    int f2 = vertexIndices[p++];
                     int faceDirection = startDirection;
                     int f3;
                     do
                     {
-                        f3 = faces[p++];
+                        f3 = vertexIndices[p++];
                         if (f3 == 0xFFFF)
                         {
-                            f1 = faces[p++];
-                            f2 = faces[p++];
+                            f1 = vertexIndices[p++];
+                            f2 = vertexIndices[p++];
                             faceDirection = startDirection;
                         }
                         else
@@ -3020,7 +3021,7 @@ namespace Smash_Forge
                             f1 = f2;
                             f2 = f3;
                         }
-                    } while (p < faces.Count);
+                    } while (p < vertexIndices.Count);
 
                     displayFaceSize = f.Count;
                     return f;
@@ -3275,7 +3276,7 @@ namespace Smash_Forge
                     // polygons
                     List<int> fac = new List<int>();
                     nmesh.faces.Add(fac);
-                    foreach (int i in p.faces)
+                    foreach (int i in p.vertexIndices)
                         fac.Add(i + fadd);
                     pi++;
                 }
@@ -3289,10 +3290,11 @@ namespace Smash_Forge
 
         public void OptimizeFileSize(bool singleBind = false)
         {
-            // Remove Duplicates
-            MergePoly();
+            // Generate proper indices.
             MergeDuplicateVertices();
-            OptimizeSingleBind(false);
+
+            // This is pretty broken right now.
+            //OptimizeSingleBind(false);
         }
 
         private void MergeDuplicateVertices()
@@ -3308,8 +3310,8 @@ namespace Smash_Forge
                     List<Vertex> newVertices = new List<Vertex>();
                     List<int> newFaces = new List<int>();
 
-                    List<Vertex> vbank = new List<Vertex>(); // only check oast 50 verts - may miss far apart ones but is faster
-                    foreach (int f in p.faces)
+                    List<Vertex> vbank = new List<Vertex>(); // only check last 50 verts - may miss far apart ones but is faster
+                    foreach (int f in p.vertexIndices)
                     {
                         int newFaceIndex = -1; 
                         int i = 0;
@@ -3345,7 +3347,7 @@ namespace Smash_Forge
                     newVertices.AddRange(vbank);
 
                     p.vertices = newVertices;
-                    p.faces = newFaces;
+                    p.vertexIndices = newFaces;
                     p.displayFaceSize = 0;
                 }
             }
