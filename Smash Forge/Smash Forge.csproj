@@ -129,6 +129,12 @@
     <Compile Include="GUI\Controls\VertexTool.Designer.cs">
       <DependentUpon>VertexTool.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\UvViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\UvViewer.Designer.cs">
+      <DependentUpon>UvViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="lib\DiscordController.cs" />
     <Compile Include="lib\DiscordRpc.cs" />
     <Compile Include="GUI\EditorBase.cs">
@@ -631,6 +637,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\ROM_Injector.resx">
       <DependentUpon>ROM_Injector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\UvViewer.resx">
+      <DependentUpon>UvViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\ModelViewport.resx">
       <DependentUpon>ModelViewport.cs</DependentUpon>

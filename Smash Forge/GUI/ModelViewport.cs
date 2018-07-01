@@ -1991,8 +1991,18 @@ namespace Smash_Forge
 
                 int textureHash = 0;
                 int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
-                RenderTools.InitializeUVBufferData(m.NUD);
-                RenderTools.DrawUv(camera);
+
+                List<NUD.Polygon> polygonsToRender = new List<NUD.Polygon>();
+                foreach (NUD.Mesh mesh in m.NUD.Nodes)
+                {
+                    foreach (NUD.Polygon p in mesh.Nodes)
+                    {
+                        if (RenderTools.PolyContainsTextureHash(textureHash, p))
+                            polygonsToRender.Add(p);
+                    }
+                }
+                RenderTools.InitializeUVBufferData(polygonsToRender);
+                RenderTools.DrawUv();
             }
         }
     }
