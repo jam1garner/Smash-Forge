@@ -471,8 +471,7 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert) {
 
     if (hasColorGainOffset == 1) {
         diffuseColorFinal = ColorOffsetGain(diffuseMap.rgb, hasBayoHair, colorOffset, colorGain, alphaBlendParams);
-    }
-    else {
+    } else {
         vec3 aoBlend = vec3(1);
         if (hasNrm == 1)
             aoBlend = DiffuseAOBlend(texture(normalMap, vert.texCoord).a, aoMinGain);

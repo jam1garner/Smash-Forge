@@ -695,8 +695,8 @@ namespace Smash_Forge
         {
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
             {
-                // Disable face culling for debug shading.
-                GL.Disable(EnableCap.CullFace);
+                GL.Enable(EnableCap.CullFace);
+                GL.CullFace(CullFaceMode.Back);
                 return;
             }
 

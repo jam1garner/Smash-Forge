@@ -1573,8 +1573,14 @@ namespace Smash_Forge
             depthMapFbo.Bind();
             GL.Viewport(0, 0, shadowWidth, shadowHeight);
             GL.Clear(ClearBufferMask.DepthBufferBit);
-            Matrix4 modelView = Matrix4.CreateRotationY(0) * Matrix4.CreateRotationX(45) * Matrix4.CreateTranslation(new Vector3(0, -6, -500));
+
+            // Use the direction of the main character diffuse light.
+            float directionScale = 550;
+            Matrix4 modelView = Matrix4.LookAt(Vector3.Normalize(Runtime.lightSetParam.characterDiffuse.direction) * directionScale, new Vector3(0), new Vector3(0, 1, 0));
+            if (Runtime.cameraLight)
+                modelView = Matrix4.LookAt(new Vector3(0, 0, 1).Normalized() * directionScale, new Vector3(0), new Vector3(0, 1, 0));
             lightMatrix = modelView * Matrix4.CreateOrthographicOffCenter(-75, 75, -75, 75, 1, 1000) * Matrix4.CreateScale(5);
+
             DrawModels(true);
         }
 
