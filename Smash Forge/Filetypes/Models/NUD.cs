@@ -948,7 +948,8 @@ namespace Smash_Forge
             {
                 GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereDifTex.Id);
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), nutTextureUnitOffset + textureUnitIndexOffset); textureUnitIndexOffset++;
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), nutTextureUnitOffset + textureUnitIndexOffset);
+                textureUnitIndexOffset++;
             }
 
             // Jigglypuff has weird eyes.
@@ -1052,31 +1053,21 @@ namespace Smash_Forge
 
         private static void SetTextureUniformsToDefaultTexture(Shader shader, int texture)
         {
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("cube"), 2);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("stagecube"), 2);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("spheremap"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("ao"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), 0);
+            shader.SetTexture("dif", texture, TextureTarget.Texture2D, 0);
+            shader.SetTexture("dif2", texture, TextureTarget.Texture2D, 0);
+            shader.SetTexture("normalMap", texture, TextureTarget.Texture2D, 0);
+            shader.SetTexture("cube", texture, TextureTarget.Texture2D, 2);
+            shader.SetTexture("stagecube", texture, TextureTarget.Texture2D, 2);
+            shader.SetTexture("spheremap", texture, TextureTarget.Texture2D, 0);
+            shader.SetTexture("ao", texture, TextureTarget.Texture2D, 0);
+            shader.SetTexture("ramp", texture, TextureTarget.Texture2D, 0);
         }
 
         private static void SetRenderModeTextureUniforms(Shader shader)
         {
-            GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern.Id);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("UVTestPattern"), 10);
-
-            GL.ActiveTexture(TextureUnit.Texture11);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient.Id);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("weightRamp1"), 11);
-
-            GL.ActiveTexture(TextureUnit.Texture12);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient2.Id);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("weightRamp2"), 12);
+            shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 10);
+            shader.SetTexture("weightRamp1", RenderTools.boneWeightGradient.Id, TextureTarget.Texture2D, 11);
+            shader.SetTexture("weightRamp2", RenderTools.boneWeightGradient2.Id, TextureTarget.Texture2D, 12);
         }
 
         private static void SetHasTextureUniforms(Shader shader, Material mat)

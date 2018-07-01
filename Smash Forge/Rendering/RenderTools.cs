@@ -1546,7 +1546,7 @@ namespace Smash_Forge.Rendering
             GL.BindTexture(TextureTarget.Texture2D, texture);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("image"), 0);
+            shader.SetTexture("image", texture, TextureTarget.Texture2D, 0);
 
             // Channel toggle uniforms. 
             shader.SetBoolToInt("renderR",     renderR);
@@ -1581,13 +1581,14 @@ namespace Smash_Forge.Rendering
             GL.BindTexture(TextureTarget.Texture2D, texture0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("image0"), 0);
+            shader.SetTexture("image0", texture0, TextureTarget.Texture2D, 0);
+
 
             GL.ActiveTexture(TextureUnit.Texture1);
             GL.BindTexture(TextureTarget.Texture2D, texture1);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("image1"), 1);
+            shader.SetTexture("image1", texture1, TextureTarget.Texture2D, 1);
 
             shader.SetBoolToInt("renderBloom", Runtime.renderBloom);
             shader.SetFloat("bloomIntensity", Runtime.bloomIntensity);
@@ -1622,21 +1623,10 @@ namespace Smash_Forge.Rendering
             shader.SetBoolToInt("isTransparent", isTransparent);
 
             // Set texture uniforms for the mesh attributes. 
-            GL.ActiveTexture(TextureUnit.Texture15);
-            sphereNrmTex.Bind();
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalTex"), 15);
-
-            GL.ActiveTexture(TextureUnit.Texture16);
-            sphereUvTex.Bind();
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("uvTex"), 16);
-
-            GL.ActiveTexture(TextureUnit.Texture17);
-            sphereTanTex.Bind();
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("tanTex"), 17);
-
-            GL.ActiveTexture(TextureUnit.Texture18);
-            sphereBitanTex.Bind();
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("bitanTex"), 18);
+            shader.SetTexture("normalTex", sphereNrmTex.Id, TextureTarget.Texture2D, 15);
+            shader.SetTexture("uvTex", sphereUvTex.Id, TextureTarget.Texture2D, 16);
+            shader.SetTexture("tanTex", sphereTanTex.Id, TextureTarget.Texture2D, 17);
+            shader.SetTexture("bitanTex", sphereBitanTex.Id, TextureTarget.Texture2D, 18);
 
             // Draw full screen "quad" (big triangle)
             DrawScreenTriangle(shader);
