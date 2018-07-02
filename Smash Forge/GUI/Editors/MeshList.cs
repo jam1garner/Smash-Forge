@@ -1421,5 +1421,15 @@ namespace Smash_Forge
                 }
             }
         }
+
+        private void uvViewerMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon poly = (NUD.Polygon)filesTreeView.SelectedNode;
+            UvViewer uvViewer = new UvViewer(new List<NUD.Polygon>() { poly });
+            uvViewer.Show();
+        }
     }
 }

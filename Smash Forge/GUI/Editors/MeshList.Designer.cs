@@ -111,6 +111,8 @@
             this.aboveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.texIDNUDNUTToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.uvViewerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.polyContextMenu.SuspendLayout();
             this.meshContextMenu.SuspendLayout();
@@ -119,14 +121,14 @@
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // treeView1
+            // filesTreeView
             // 
             this.filesTreeView.CheckBoxes = true;
             this.filesTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.filesTreeView.HideSelection = false;
             this.filesTreeView.LabelEdit = true;
             this.filesTreeView.Location = new System.Drawing.Point(3, 16);
-            this.filesTreeView.Name = "treeView1";
+            this.filesTreeView.Name = "filesTreeView";
             this.filesTreeView.Size = new System.Drawing.Size(187, 257);
             this.filesTreeView.TabIndex = 0;
             this.filesTreeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
@@ -181,6 +183,8 @@
             this.toolStripSeparator2,
             this.flipUVsToolStripMenuItem,
             this.flipUVsHorizontalToolStripMenuItem,
+            this.uvViewerMenuItem,
+            this.toolStripSeparator7,
             this.smoothNormalsToolStripMenuItem,
             this.generateTanBitanToolStripMenuItem1,
             this.toolStripSeparator3,
@@ -188,7 +192,7 @@
             this.vertexColorToolStripMenuItem,
             this.polyFormatToolStripMenuItem});
             this.polyContextMenu.Name = "polyContextMenu";
-            this.polyContextMenu.Size = new System.Drawing.Size(183, 264);
+            this.polyContextMenu.Size = new System.Drawing.Size(183, 336);
             this.polyContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // editMaterialToolStripMenuItem
@@ -359,7 +363,7 @@
             // polyFormatToolStripMenuItem
             // 
             this.polyFormatToolStripMenuItem.Name = "polyFormatToolStripMenuItem";
-            this.polyFormatToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.polyFormatToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.polyFormatToolStripMenuItem.Text = "Change Format...";
             this.polyFormatToolStripMenuItem.Click += new System.EventHandler(this.polyFormatToolStripMenuItem_Click);
             // 
@@ -539,7 +543,7 @@
             this.openEditToolStripMenuItem,
             this.vertexColorToolStripMenuItem2});
             this.nudContextMenu.Name = "nudContextMenu";
-            this.nudContextMenu.Size = new System.Drawing.Size(210, 230);
+            this.nudContextMenu.Size = new System.Drawing.Size(210, 208);
             // 
             // saveToolStripMenuItem
             // 
@@ -781,6 +785,18 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model List";
             // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(179, 6);
+            // 
+            // uvViewerMenuItem
+            // 
+            this.uvViewerMenuItem.Name = "uvViewerMenuItem";
+            this.uvViewerMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.uvViewerMenuItem.Text = "Open UV Viewer";
+            this.uvViewerMenuItem.Click += new System.EventHandler(this.uvViewerMenuItem_Click);
+            // 
             // MeshList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -888,5 +904,7 @@
         private System.Windows.Forms.ToolStripMenuItem uVsToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem texIDToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem texIDNUDNUTToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uvViewerMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
     }
 }
