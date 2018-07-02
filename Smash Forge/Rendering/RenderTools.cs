@@ -96,7 +96,7 @@ namespace Smash_Forge.Rendering
                 screenQuadVertices, BufferUsageHint.StaticDraw);
         }
 
-        private static void LoadTextures()
+        public static void LoadTextures()
         {
             dummyTextures.Clear();
 
@@ -119,14 +119,7 @@ namespace Smash_Forge.Rendering
             Texture shadowMapDummyTex = new Texture2D(Properties.Resources._10100000);
             dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
 
-            // Sphere Default Textures.
-            sphereDifTex =  new Texture2D(Properties.Resources.defaultDif);
-            sphereNrmMapTex = new Texture2D(Properties.Resources.nrmMap);
-            // Sphere Mesh Attributes.
-            sphereNrmTex = new Texture2D(Properties.Resources.nrm);
-            sphereUvTex = new Texture2D(Properties.Resources.uv);
-            sphereTanTex = new Texture2D(Properties.Resources.tan);
-            sphereBitanTex = new Texture2D(Properties.Resources.bitan);
+            LoadMaterialSphereTextures();
 
             // Helpful textures. 
             uvTestPattern = new Texture2D(Properties.Resources.UVPattern);
@@ -144,6 +137,18 @@ namespace Smash_Forge.Rendering
             {
                 // File paths are incorrect or never set. 
             }
+        }
+
+        public static void LoadMaterialSphereTextures()
+        {
+            // Sphere Default Textures.
+            sphereDifTex = new Texture2D(Properties.Resources.defaultDif);
+            sphereNrmMapTex = new Texture2D(Properties.Resources.nrmMap);
+            // Sphere Mesh Attributes.
+            sphereNrmTex = new Texture2D(Properties.Resources.nrm);
+            sphereUvTex = new Texture2D(Properties.Resources.uv);
+            sphereTanTex = new Texture2D(Properties.Resources.tan);
+            sphereBitanTex = new Texture2D(Properties.Resources.bitan);
         }
 
         private static void GetOpenGLSystemInfo()

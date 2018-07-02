@@ -125,6 +125,7 @@ namespace Smash_Forge
 
         private static void UpdateMaterialThumbnails()
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
             // Update the material thumbnails.
             if (!Runtime.hasRefreshedMatThumbnails && Runtime.shaders["NudSphere"].ProgramCreatedSuccessfully())
             {
@@ -134,6 +135,7 @@ namespace Smash_Forge
                 // If it didn't work the first time, it probably won't work again.
                 Runtime.hasRefreshedMatThumbnails = true;
             }
+            Debug.WriteLine(stopwatch.ElapsedMilliseconds);
         }
 
         public void InitMaterialParamList()
