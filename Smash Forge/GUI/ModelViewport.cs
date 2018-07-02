@@ -8,12 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
-
 using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
-
 using System.Security.Cryptography;
 using SALT.Moveset.AnimCMD;
 using System.IO;
@@ -27,7 +24,6 @@ using System.Threading;
 using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
 using Smash_Forge.Params;
-
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects;
 using SFGraphics.Tools;
@@ -530,119 +526,6 @@ namespace Smash_Forge
             Runtime.drawNudColorIdPass = true;
             Render(null, null, fboRenderWidth, fboRenderHeight, fbo);
             Runtime.drawNudColorIdPass = false;
-        }
-
-        public void RenderMaterialPresetPreviewsToFiles()
-        {
-            // Save on file size.
-            int width = 256;
-            int height = 256;
-
-            // This takes a few seconds, so use a progress bar.
-            ProgressAlert progressAlert = new ProgressAlert();
-            progressAlert.Message = "Rendering Material Presets";
-            progressAlert.Show();
-
-            // Render all the material previews.
-            Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
-            string[] files = Directory.GetFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories);
-            for (int i = 0; i < files.Length; i++)
-            {
-                RenderMaterialPresetToFile(width, height, framebuffer, files[i]);
-                UpdateMatPreviewProgressPercentage(progressAlert, files[i], i, files.Length);
-            }
-
-            // Finished.
-            progressAlert.ProgressValue = 100;
-            progressAlert.Refresh();
-        }
-
-        private static void UpdateMatPreviewProgressPercentage(ProgressAlert progressAlert, string filePath, int index, int fileCount)
-        {
-            // Update progress percentage.
-            double percent = (double)index / fileCount;
-            progressAlert.Message = Path.GetFileNameWithoutExtension(filePath);
-            progressAlert.ProgressValue = (int)(percent * 100);
-            progressAlert.Refresh();
-        }
-
-        private void RenderMaterialPresetToFile(int width, int height, Framebuffer framebuffer, string file)
-        {
-            NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
-
-            // Setup new dimensions.
-            glViewport.MakeCurrent();
-            GL.Viewport(0, 0, width, height);
-
-            // Draw the material to a textured quad.
-            framebuffer.Bind();
-            RenderTools.DrawNudMaterialSphere(material);
-
-            // Save the image file using the name of the preset.
-            string[] parts = file.Split('\\');
-            string presetName = parts[parts.Length - 1];
-            presetName = presetName.Replace(".nmt", ".png");
-
-            Bitmap image = framebuffer.ReadImagePixels(true);
-            image.Save(MainForm.executableDir + "\\Preview Images\\" + presetName);
-
-            // Cleanup
-            image.Dispose();
-            glViewport.SwapBuffers();
-        }
-
-        public void RenderMaterialPresetPreviewsToFilesThreaded()
-        {
-            // Save on file size.
-            int width = 256;
-            int height = 256;
-
-            // Render each material preview on a separate thread and save to a file.
-            string[] files = Directory.GetFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories);
-
-            List<Task> tasks = new List<Task>();
-            for (int i = 0; i < files.Length; i++)
-            {
-                NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(files[i])[0];
-                tasks.Add(RenderMaterialPresetToFileThreaded(width, height, files[i], material));
-            }
-            //Task.WhenAll(tasks).Wait();
-        }
-
-        private Task RenderMaterialPresetToFileThreaded(int width, int height, string file, NUD.Material material)
-        {
-            // Save the image file using the name of the preset.
-            string[] parts = file.Split('\\');
-            string presetName = parts[parts.Length - 1];
-            presetName = presetName.Replace(".nmt", ".png");
-
-            var t = Task.Run(() => 
-            {
-                // Set up a context for this thread.
-                var mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
-                var win = new OpenTK.GameWindow(width, height, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
-                win.Visible = false;
-                win.MakeCurrent();
-
-                // Setup new dimensions.
-                GL.Viewport(0, 0, width, height);
-
-                // Draw the material to a textured quad.
-                Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
-                framebuffer.Bind();
-                RenderTools.DrawNudMaterialSphere(material);
-
-                Bitmap image = framebuffer.ReadImagePixels(true);
-                return image;
-            });
-            t.ContinueWith((t1) =>
-            {
-                Bitmap image = t.Result;
-                image.Save(MainForm.executableDir + "\\Preview Images\\" + presetName);
-                // Cleanup
-                image.Dispose();
-            });
-            return t;
         }
 
         private NUD.Polygon GetSelectedPolygonFromColor(Color pixelColor)

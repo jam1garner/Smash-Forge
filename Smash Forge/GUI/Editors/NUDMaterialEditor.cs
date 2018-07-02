@@ -107,12 +107,10 @@ namespace Smash_Forge
         public NUDMaterialEditor()
         {
             InitializeComponent();
-            RenderTools.SetUpOpenTkRendering();
         }
 
-        public NUDMaterialEditor(NUD.Polygon p)
+        public NUDMaterialEditor(NUD.Polygon p) : this()
         {
-            InitializeComponent();
             currentPolygon = p;
             currentMaterialList = p.materials;
             Init();
@@ -121,21 +119,19 @@ namespace Smash_Forge
 
             // The dummy textures will be used later. 
             RenderTools.SetUpOpenTkRendering();
+
+            // Only happens once.
+            UpdateMaterialThumbnails();
         }
 
         private static void UpdateMaterialThumbnails()
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
             // Update the material thumbnails.
             if (!Runtime.hasRefreshedMatThumbnails && Runtime.shaders["NudSphere"].ProgramCreatedSuccessfully())
             {
-                ModelViewport mvp = (ModelViewport)MainForm.Instance.GetActiveModelViewport();
-                if (mvp != null)
-                    mvp.RenderMaterialPresetPreviewsToFiles();
                 // If it didn't work the first time, it probably won't work again.
-                Runtime.hasRefreshedMatThumbnails = true;
+                MaterialPreviewRendering.RenderMaterialPresetPreviewsToFilesThreaded();
             }
-            Debug.WriteLine(stopwatch.ElapsedMilliseconds);
         }
 
         public void InitMaterialParamList()
@@ -823,9 +819,6 @@ namespace Smash_Forge
 
         private void loadPresetButton_Click(object sender, EventArgs e)
         {
-            // Only happens once.
-            UpdateMaterialThumbnails();
-
             MaterialSelector matSelector = new MaterialSelector();
             matSelector.ShowDialog();
             if (matSelector.exitStatus == MaterialSelector.ExitStatus.Opened)
