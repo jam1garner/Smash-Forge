@@ -8,8 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
+
 using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
+
 using System.Security.Cryptography;
 using SALT.Moveset.AnimCMD;
 using System.IO;
@@ -19,10 +23,11 @@ using Gif.Components;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Threading;
 using Smash_Forge.Rendering.Lights;
-using OpenTK.Input;
 using Smash_Forge.Rendering;
 using Smash_Forge.Params;
+
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects;
 using SFGraphics.Tools;
@@ -414,8 +419,8 @@ namespace Smash_Forge
 
         private void ModelViewport_Load(object sender, EventArgs e)
         {
-            // Frame time hacks...
-            var timer = new Timer();
+            // HACK: Frame time control.
+            var timer = new System.Windows.Forms.Timer();
             timer.Interval = 8;
             timer.Tick += new EventHandler(Application_Idle);
             timer.Start();
@@ -533,36 +538,23 @@ namespace Smash_Forge
             int width = 256;
             int height = 256;
 
-            // This takes a few seconds, so use a progress bar.
-            ProgressAlert progressAlert = new ProgressAlert();
-            progressAlert.Message = "Rendering Material Presets";
-            progressAlert.Show();
-
-            // Render all the material previews.
+            // Render each material preview on a separate thread and save to a file.
             Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
             string[] files = Directory.GetFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories);
             for (int i = 0; i < files.Length; i++)
             {
-                RenderMaterialPresetToFile(width, height, framebuffer, files[i]);
-                UpdateMatPreviewProgressPercentage(progressAlert, files[i], i, files.Length);
+                var t = Task.Run(() => RenderMaterialPresetToFile(width, height, framebuffer, files[i]));
             }
-
-            // Finished.
-            progressAlert.ProgressValue = 100; 
-            progressAlert.Refresh();
-        }
-
-        private static void UpdateMatPreviewProgressPercentage(ProgressAlert progressAlert, string filePath, int index, int fileCount)
-        {
-            // Update progress percentage.
-            double percent = (double)index / fileCount;
-            progressAlert.Message = Path.GetFileNameWithoutExtension(filePath);
-            progressAlert.ProgressValue = (int)(percent * 100);
-            progressAlert.Refresh();
         }
 
         private void RenderMaterialPresetToFile(int width, int height, Framebuffer framebuffer, string file)
         {
+            // Set up a context for this thread.
+            var mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
+            var win = new OpenTK.GameWindow(width, height, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
+            win.Visible = false;
+            win.MakeCurrent();
+
             NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
 
             // Setup new dimensions.
@@ -583,7 +575,6 @@ namespace Smash_Forge
 
             // Cleanup
             image.Dispose();
-            glViewport.SwapBuffers();
         }
 
         private NUD.Polygon GetSelectedPolygonFromColor(Color pixelColor)
