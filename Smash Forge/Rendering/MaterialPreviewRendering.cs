@@ -23,26 +23,31 @@ namespace Smash_Forge.Rendering
             int width = 256;
             int height = 256;
 
-            // Render each material preview on a separate thread and save to a file.
-            string[] files = Directory.GetFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories);
-
-            renderingCompleted = Task.Run(() => {
-                // Set up a context for this thread.
-                GraphicsMode mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
-                GameWindow window = new GameWindow(width, height, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
-                window.Visible = false;
-                window.MakeCurrent();
+            renderingCompleted = Task.Run(() =>
+            {
+                SetUpContextWindow(width, height);
                 BufferObject screenVbo = RenderTools.CreateScreenQuadBuffer();
 
-                for (int i = 0; i < files.Length; i++)
+                // TODO: Set up the material sphere textures and dummy textures for this thread.
+
+                foreach (string file in Directory.EnumerateFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
                 {
-                    NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(files[i])[0];
-                    RenderMaterialPresetToFileThreaded(width, height, files[i], material, screenVbo);
+                    NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
+                    RenderMaterialPresetToFile(width, height, file, material, screenVbo);
                 }
             });
         }
 
-        private static void RenderMaterialPresetToFileThreaded(int width, int height, string file, NUD.Material material, BufferObject screenVbo)
+        private static void SetUpContextWindow(int width, int height)
+        {
+            // Set up a context for this thread.
+            GraphicsMode mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
+            GameWindow window = new GameWindow(width, height, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
+            window.Visible = false;
+            window.MakeCurrent();
+        }
+
+        private static void RenderMaterialPresetToFile(int width, int height, string file, NUD.Material material, BufferObject screenVbo)
         {
             // Save the image file using the name of the preset.
             string[] parts = file.Split('\\');
@@ -55,11 +60,8 @@ namespace Smash_Forge.Rendering
             // Draw the material to a textured quad.
             Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
             framebuffer.Bind();
-            GL.ClearColor(1, 0, 0, 1);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            // TODO: Fix access violation. Context is still current.
-            // Probably a buffer or something...
+            // TODO: Doesn't work on Intel.
             RenderTools.DrawNudMaterialSphere(material, screenVbo);
 
             using (Bitmap image = framebuffer.ReadImagePixels(true))
@@ -68,6 +70,5 @@ namespace Smash_Forge.Rendering
                 image.Save(outputPath);
             }
         }
-
     }
 }

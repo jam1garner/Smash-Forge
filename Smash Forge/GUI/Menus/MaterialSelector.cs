@@ -32,7 +32,7 @@ namespace Smash_Forge
             matPresetRenders.ColorDepth = ColorDepth.Depth32Bit;
             AddPresetImagesFromFiles();
 
-            treeView1.ImageList = matPresetRenders;
+            materialPresetTreeView.ImageList = matPresetRenders;
         }
 
         public void PopulateTreeNodes()
@@ -73,14 +73,15 @@ namespace Smash_Forge
                         }
                     }
                     if (dir.Name != "Preview Images")
-                        treeView1.Nodes.Add(folderNode);
+                        materialPresetTreeView.Nodes.Add(folderNode);
                 }
             }
-            treeView1.Refresh();
+            materialPresetTreeView.Refresh();
         }
 
         public void AddPresetImagesFromFiles()
         {
+            // Wait for thumbnail generation to finish to avoid file concurrency issues.
             if (Rendering.MaterialPreviewRendering.RenderingCompleted != null)
                 Rendering.MaterialPreviewRendering.RenderingCompleted.Wait();
 
@@ -109,9 +110,9 @@ namespace Smash_Forge
 
         private void OpenButton()
         {
-            if (treeView1.SelectedNode != null && ((string)treeView1.SelectedNode.Tag).EndsWith(".nmt"))
+            if (materialPresetTreeView.SelectedNode != null && ((string)materialPresetTreeView.SelectedNode.Tag).EndsWith(".nmt"))
             {
-                path = ((string)treeView1.SelectedNode.Tag);
+                path = ((string)materialPresetTreeView.SelectedNode.Tag);
                 exitStatus = ExitStatus.Opened;
                 Close();
             }
@@ -133,7 +134,7 @@ namespace Smash_Forge
             PopulateTreeNodes();
         }
 
-        private void treeView1_KeyDown(object sender, KeyEventArgs e)
+        private void materialPresetTreeView_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
