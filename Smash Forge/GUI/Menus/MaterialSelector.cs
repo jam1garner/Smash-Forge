@@ -35,8 +35,7 @@ namespace Smash_Forge
             treeView1.ImageList = matPresetRenders;
         }
 
-
-        public void populateTreeNodes()
+        public void PopulateTreeNodes()
         {
             if (Directory.Exists(MainForm.executableDir + "\\materials"))
             {
@@ -108,7 +107,7 @@ namespace Smash_Forge
             }
         }
 
-        private void openButton()
+        private void OpenButton()
         {
             if (treeView1.SelectedNode != null && ((string)treeView1.SelectedNode.Tag).EndsWith(".nmt"))
             {
@@ -120,7 +119,7 @@ namespace Smash_Forge
 
         private void openButton(object sender, EventArgs e)
         {
-            openButton();
+            OpenButton();
         }
 
         private void closeButton(object sender, EventArgs e)
@@ -131,14 +130,14 @@ namespace Smash_Forge
 
         private void MaterialSelector_Load(object sender, EventArgs e)
         {
-            populateTreeNodes();
+            PopulateTreeNodes();
         }
 
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
-                openButton();
+                OpenButton();
                 e.Handled = true;
             }
         }

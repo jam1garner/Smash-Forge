@@ -904,16 +904,6 @@ namespace Smash_Forge
             }
         }
 
-        private void RenderMaterialPreview(NUD.Material material)
-        {
-            if (!tabControl1.SelectedTab.Text.Equals("Textures"))
-                return;
-
-            GL.Viewport(texAlphaGlControl.ClientRectangle);
-            RenderTools.DrawNudMaterialSphere(material);
-            texRgbGlControl.SwapBuffers();
-        }
-
         private void listView1_KeyPress(object sender, KeyPressEventArgs e)
         {
             if(e.KeyChar == 'd' && texturesListView.SelectedIndices.Count > 0)

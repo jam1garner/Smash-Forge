@@ -32,17 +32,17 @@ namespace Smash_Forge.Rendering
                 GameWindow window = new GameWindow(width, height, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
                 window.Visible = false;
                 window.MakeCurrent();
+                BufferObject screenVbo = RenderTools.CreateScreenQuadBuffer();
 
                 for (int i = 0; i < files.Length; i++)
                 {
-                    int index = i;
                     NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(files[i])[0];
-                    RenderMaterialPresetToFileThreaded(width, height, files[index], material);
+                    RenderMaterialPresetToFileThreaded(width, height, files[i], material, screenVbo);
                 }
             });
         }
 
-        private static void RenderMaterialPresetToFileThreaded(int width, int height, string file, NUD.Material material)
+        private static void RenderMaterialPresetToFileThreaded(int width, int height, string file, NUD.Material material, BufferObject screenVbo)
         {
             // Save the image file using the name of the preset.
             string[] parts = file.Split('\\');
@@ -60,7 +60,7 @@ namespace Smash_Forge.Rendering
 
             // TODO: Fix access violation. Context is still current.
             // Probably a buffer or something...
-            //RenderTools.DrawNudMaterialSphere(material);
+            RenderTools.DrawNudMaterialSphere(material, screenVbo);
 
             using (Bitmap image = framebuffer.ReadImagePixels(true))
             {

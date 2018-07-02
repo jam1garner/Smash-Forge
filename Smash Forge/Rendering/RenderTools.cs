@@ -26,12 +26,12 @@ namespace Smash_Forge.Rendering
 
         // A triangle that extends past the screen.
         // Avoids the need for a second triangle to fill a rectangular screen.
-        private static BufferObject screenQuadVbo;
+        public static BufferObject screenQuadVbo;
         private static float[] screenQuadVertices = 
         {
             -1f, -1f, 0.0f,
-                3f, -1f, 0.0f,
-                -1f, 3f, 0.0f
+             3f, -1f, 0.0f,
+            -1f,  3f, 0.0f
         };
 
         // Used for UV drawing.
@@ -72,7 +72,7 @@ namespace Smash_Forge.Rendering
 
             nudSphereCamera.UpdateFromMouse(); // Update matrices for shader.
             LoadTextures();
-            SetupScreenQuadBuffer();
+            screenQuadVbo = CreateScreenQuadBuffer();
             GetOpenGLSystemInfo();
             ShaderTools.SetupShaders();
 
@@ -87,13 +87,14 @@ namespace Smash_Forge.Rendering
             dummyResourceWindow.MakeCurrent();
         }
 
-        private static void SetupScreenQuadBuffer()
+        public static BufferObject CreateScreenQuadBuffer()
         {
             // Create buffer for vertex positions. The data won't change, so only initialize once.
-            screenQuadVbo = new BufferObject(BufferTarget.ArrayBuffer);
-            screenQuadVbo.Bind();
-            GL.BufferData(screenQuadVbo.BufferTarget, (IntPtr)(sizeof(float) * screenQuadVertices.Length), 
+            BufferObject screenQuad = new BufferObject(BufferTarget.ArrayBuffer);
+            screenQuad.Bind();
+            GL.BufferData(screenQuad.BufferTarget, (IntPtr)(sizeof(float) * screenQuadVertices.Length), 
                 screenQuadVertices, BufferUsageHint.StaticDraw);
+            return screenQuad;
         }
 
         public static void LoadTextures()
@@ -1553,7 +1554,7 @@ namespace Smash_Forge.Rendering
             shader.SetVector3("topColor", topColor);
             shader.SetVector3("bottomColor", bottomColor);
 
-            DrawScreenTriangle(shader);          
+            DrawScreenTriangle(shader, screenQuadVbo);          
         }
 
         public static void DrawTexturedQuad(int texture, int width, int height, bool renderR = true, bool renderG = true, bool renderB = true,
@@ -1592,7 +1593,7 @@ namespace Smash_Forge.Rendering
             shader.SetInt("currentMipLevel", currentMipLevel);
 
             // Draw full screen "quad" (big triangle)
-            DrawScreenTriangle(shader);
+            DrawScreenTriangle(shader, screenQuadVbo);
         }
 
         public static void DrawTexturedQuad(int texture)
@@ -1626,10 +1627,10 @@ namespace Smash_Forge.Rendering
             ShaderTools.SystemColorVector3Uniform(shader, Runtime.backgroundGradientTop, "backgroundTopColor");
 
             // Draw full screen "quad" (big triangle)
-            DrawScreenTriangle(shader);
+            DrawScreenTriangle(shader, screenQuadVbo);
         }
 
-        public static void DrawNudMaterialSphere(NUD.Material material)
+        public static void DrawNudMaterialSphere(NUD.Material material, BufferObject screenVbo)
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = Runtime.shaders["NudSphere"];
@@ -1658,7 +1659,7 @@ namespace Smash_Forge.Rendering
             shader.SetTexture("bitanTex", sphereBitanTex.Id, TextureTarget.Texture2D, 18);
 
             // Draw full screen "quad" (big triangle)
-            DrawScreenTriangle(shader);
+            DrawScreenTriangle(shader, screenVbo);
         }
 
         public static void SetUp2DRendering()
@@ -1677,10 +1678,10 @@ namespace Smash_Forge.Rendering
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
         }
 
-        private static void DrawScreenTriangle(Shader shader)
+        private static void DrawScreenTriangle(Shader shader, BufferObject vbo)
         {
             shader.EnableVertexAttributes();
-            screenQuadVbo.Bind();
+            vbo.Bind();
 
             // Set everytime because multiple shaders use this for drawing.
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
