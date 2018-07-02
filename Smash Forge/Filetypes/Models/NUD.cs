@@ -738,7 +738,7 @@ namespace Smash_Forge
             shader.SetBoolToInt(uniformBoolName, Runtime.lightSetParam.stageDiffuseLights[index].enabled);
 
             string uniformColorName = "stageLight" + (lightIndex + 1) + "Color";
-            ShaderTools.LightColorVector3Uniform(shader, stageLight.diffuseColor, uniformBoolName);
+            ShaderTools.LightColorVector3Uniform(shader, stageLight.diffuseColor, uniformColorName);
 
             string uniformDirectionName = "stageLight" + (lightIndex + 1) + "Direction";
             shader.SetVector3(uniformDirectionName, stageLight.direction);
