@@ -40,9 +40,6 @@ namespace Smash_Forge.Rendering
 
         public static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>(); 
 
-        private static Texture stageMapHigh;
-        private static Texture stageMapLow;
-
         public static Texture uvTestPattern;
         public static Texture boneWeightGradient;
         public static Texture boneWeightGradient2;
@@ -100,26 +97,7 @@ namespace Smash_Forge.Rendering
 
         public static void LoadTextures()
         {
-            dummyTextures.Clear();
-
-            // Dummy textures. 
-            stageMapHigh = new TextureCubeMap(Properties.Resources._10102000, 128);
-            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
-
-            stageMapLow = new TextureCubeMap(Properties.Resources._10101000, 128);
-            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
-
-            Texture dummyRamp = new Texture2D(Properties.Resources._10080000);
-            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp);
-
-            Texture pokemonStadiumDummyTex = new Texture2D(Properties.Resources._10040001);
-            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex);
-
-            Texture punchOutDummyTex = new Texture2D(Properties.Resources._10040000);
-            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex);
-
-            Texture shadowMapDummyTex = new Texture2D(Properties.Resources._10100000);
-            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
+            dummyTextures = CreateNudDummyTextures();
 
             LoadMaterialSphereTextures();
 
@@ -139,6 +117,32 @@ namespace Smash_Forge.Rendering
             {
                 // File paths are incorrect or never set. 
             }
+        }
+
+        public static Dictionary<NUD.DummyTextures, Texture> CreateNudDummyTextures()
+        {
+            Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
+
+            // Dummy textures. 
+            Texture stageMapHigh = new TextureCubeMap(Properties.Resources._10102000, 128);
+            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
+
+            Texture stageMapLow = new TextureCubeMap(Properties.Resources._10101000, 128);
+            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
+
+            Texture dummyRamp = new Texture2D(Properties.Resources._10080000);
+            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp);
+
+            Texture pokemonStadiumDummyTex = new Texture2D(Properties.Resources._10040001);
+            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex);
+
+            Texture punchOutDummyTex = new Texture2D(Properties.Resources._10040000);
+            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex);
+
+            Texture shadowMapDummyTex = new Texture2D(Properties.Resources._10100000);
+            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
+
+            return dummyTextures;
         }
 
         public static void LoadMaterialSphereTextures()
@@ -1631,7 +1635,7 @@ namespace Smash_Forge.Rendering
             DrawScreenTriangle(shader, screenQuadVbo);
         }
 
-        public static void DrawNudMaterialSphere(NUD.Material material, BufferObject screenVbo)
+        public static void DrawNudMaterialSphere(NUD.Material material, BufferObject screenVbo, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
         {
             if (!Runtime.shaders["NudSphere"].ProgramCreatedSuccessfully())
                 return;
@@ -1647,7 +1651,7 @@ namespace Smash_Forge.Rendering
             ModelContainer.SetCameraMatrixUniforms(nudSphereCamera, shader);
 
             // Use default textures rather than textures from the NUT.
-            NUD.SetTextureUniformsNudMatSphere(shader, material);
+            NUD.SetTextureUniformsNudMatSphere(shader, material, dummyTextures);
 
             // These values aren't needed in the shader currently.
             shader.SetVector3("cameraPosition", 0, 0, 0);

@@ -578,7 +578,7 @@ namespace Smash_Forge
             {
                 if (p.Parent != null && ((Mesh)p.Parent).Checked && p.Checked)
                 {
-                    DrawPolygonShaded(p, shader, camera, drawPolyIds);
+                    DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, drawPolyIds);
                 }
             }
 
@@ -586,12 +586,12 @@ namespace Smash_Forge
             {
                 if (((Mesh)p.Parent).Checked && p.Checked)
                 {
-                    DrawPolygonShaded(p, shader, camera, drawPolyIds);
+                    DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, drawPolyIds);
                 }
             }
         }
 
-        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, bool drawId = false)
+        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<DummyTextures, Texture> dummyTextures, bool drawId = false)
         {
             if (p.vertexIndices.Count <= 3)
                 return;
@@ -599,7 +599,7 @@ namespace Smash_Forge
             Material material = p.materials[0];
 
             // Set Shader Values.
-            SetShaderUniforms(p, shader, camera, material, p.DisplayId, drawId);
+            SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
             SetVertexAttributes(p, shader);
 
             // Set OpenTK Render Options.
@@ -612,12 +612,12 @@ namespace Smash_Forge
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
         }
 
-        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, int id = 0, bool drawId = false)
+        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<DummyTextures, Texture> dummyTextures, int id = 0, bool drawId = false)
         {
             // Shader Uniforms
             shader.SetUint("flags", material.Flags);
             shader.SetBoolToInt("renderVertColor", Runtime.renderVertColor && material.useVertexColor);
-            SetTextureUniforms(shader, material);
+            SetTextureUniforms(shader, material, dummyTextures);
             SetMaterialPropertyUniforms(shader, material);
             SetStageLightingUniforms(shader, lightSetNumber);
             SetXMBUniforms(shader, p);
@@ -900,7 +900,7 @@ namespace Smash_Forge
             HasMatPropertyShaderUniform(shader, mat, "NU_effUniverseParam",       "hasUniverseParam");
         }
 
-        public static void SetTextureUniforms(Shader shader, Material mat)
+        public static void SetTextureUniforms(Shader shader, Material mat, Dictionary<DummyTextures, Texture> dummyTextures)
         {
             SetHasTextureUniforms(shader, mat);
             SetRenderModeTextureUniforms(shader);
@@ -914,23 +914,23 @@ namespace Smash_Forge
             {
                 int hash = mat.textures[textureUnitIndexOffset].hash;
                 if (mat.displayTexId != -1) hash = mat.displayTexId;
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), BindTexture(mat.textures[textureUnitIndexOffset], hash, textureUnitIndexOffset));
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), BindTexture(mat.textures[textureUnitIndexOffset], hash, textureUnitIndexOffset, RenderTools.dummyTextures));
                 mat.diffuse1ID = mat.textures[textureUnitIndexOffset].hash;
                 textureUnitIndexOffset++;
             }
 
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasSphereMap, "spheremap", ref textureUnitIndexOffset, ref mat.sphereMapID);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse2, "dif2", ref textureUnitIndexOffset, ref mat.diffuse2ID);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse3, "dif3", ref textureUnitIndexOffset, ref mat.diffuse3ID);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasStageMap, "stagecube", ref textureUnitIndexOffset, ref mat.stageMapID);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasCubeMap, "cube", ref textureUnitIndexOffset, ref mat.cubeMapID);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasAoMap, "ao", ref textureUnitIndexOffset, ref mat.aoMapID);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasNormalMap, "normalMap", ref textureUnitIndexOffset, ref mat.normalID);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasRamp, "ramp", ref textureUnitIndexOffset, ref mat.rampID);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasDummyRamp, "dummyRamp", ref textureUnitIndexOffset, ref mat.dummyRampID);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasSphereMap, "spheremap", ref textureUnitIndexOffset, ref mat.sphereMapID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse2, "dif2", ref textureUnitIndexOffset, ref mat.diffuse2ID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse3, "dif3", ref textureUnitIndexOffset, ref mat.diffuse3ID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasStageMap, "stagecube", ref textureUnitIndexOffset, ref mat.stageMapID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasCubeMap, "cube", ref textureUnitIndexOffset, ref mat.cubeMapID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasAoMap, "ao", ref textureUnitIndexOffset, ref mat.aoMapID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasNormalMap, "normalMap", ref textureUnitIndexOffset, ref mat.normalID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasRamp, "ramp", ref textureUnitIndexOffset, ref mat.rampID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasDummyRamp, "dummyRamp", ref textureUnitIndexOffset, ref mat.dummyRampID, dummyTextures);
         }
 
-        public static void SetTextureUniformsNudMatSphere(Shader shader, Material mat)
+        public static void SetTextureUniformsNudMatSphere(Shader shader, Material mat, Dictionary<DummyTextures, Texture> dummyTextures)
         {
             SetHasTextureUniforms(shader, mat);
             SetRenderModeTextureUniforms(shader);
@@ -957,7 +957,7 @@ namespace Smash_Forge
             {
                 if (mat.hasDiffuse2)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
@@ -974,19 +974,19 @@ namespace Smash_Forge
                 // Final smash mats and Mega Man's eyes.
                 if (mat.hasDiffuse2)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasRamp)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasDummyRamp)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
             }
@@ -994,38 +994,38 @@ namespace Smash_Forge
             {
                 if (mat.hasSphereMap)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("spheremap"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("spheremap"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasDiffuse2)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasDiffuse3)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif3"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif3"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 // The stage cube maps already use the appropriate dummy texture.
                 if (mat.hasStageMap)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("stagecube"), BindTexture(mat.textures[textureUnitIndexOffset], mat.stageMapID, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("stagecube"), BindTexture(mat.textures[textureUnitIndexOffset], mat.stageMapID, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasCubeMap)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("cube"), BindTexture(cubeMapHigh, cubeMapHigh.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("cube"), BindTexture(cubeMapHigh, cubeMapHigh.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasAoMap)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ao"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ao"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
@@ -1039,13 +1039,13 @@ namespace Smash_Forge
 
                 if (mat.hasRamp)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, RenderTools.dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasDummyRamp)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, RenderTools.dummyTextures));
                     textureUnitIndexOffset++;
                 }
             }
@@ -1111,7 +1111,7 @@ namespace Smash_Forge
                 Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
 
-        private static void SetTextureUniformAndSetTexId(Shader shader, Material mat, bool hasTex, string name, ref int textureIndex, ref int texIdForCurrentTextureType)
+        private static void SetTextureUniformAndSetTexId(Shader shader, Material mat, bool hasTex, string name, ref int textureIndex, ref int texIdForCurrentTextureType, Dictionary<DummyTextures, Texture> dummyTextures)
         {
             // Bind the texture and create the uniform if the material has the right textures and flags. 
             if (hasTex && textureIndex < mat.textures.Count)
@@ -1119,7 +1119,7 @@ namespace Smash_Forge
                 // Find the index for the shader uniform.
                 // Bind the texture to a texture unit and then find where it was bound.
                 int uniformLocation = shader.GetVertexAttributeUniformLocation(name);
-                int textureUnit = BindTexture(mat.textures[textureIndex], mat.textures[textureIndex].hash, textureIndex);
+                int textureUnit = BindTexture(mat.textures[textureIndex], mat.textures[textureIndex].hash, textureIndex, dummyTextures);
                 GL.Uniform1(uniformLocation, textureUnit);
 
                 // We won't know what type a texture is used for until we iterate through the textures.
@@ -1202,11 +1202,11 @@ namespace Smash_Forge
             shader.DisableVertexAttributes();
         }
 
-        public static int BindTexture(MatTexture matTexture, int hash, int loc)
+        public static int BindTexture(MatTexture matTexture, int hash, int loc, Dictionary<DummyTextures, Texture> dummyTextures)
         {
             if (Enum.IsDefined(typeof(DummyTextures), hash))
             {
-                return BindDummyTexture(loc, RenderTools.dummyTextures[(DummyTextures)hash]);
+                return BindDummyTexture(loc, dummyTextures[(DummyTextures)hash]);
             }
             else
             {

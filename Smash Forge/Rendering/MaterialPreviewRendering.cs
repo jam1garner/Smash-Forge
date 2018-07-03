@@ -9,6 +9,8 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.Textures;
+
 
 namespace Smash_Forge.Rendering
 {
@@ -28,8 +30,9 @@ namespace Smash_Forge.Rendering
                 SetUpContextWindow(width, height);
                 BufferObject screenVbo = RenderTools.CreateScreenQuadBuffer();
 
-                // TODO: Set up the material sphere textures and dummy textures for this thread.
-                // They don't really need to be static.
+                // HACK: This isn't a very clean way to pass resources around.
+                RenderTools.LoadMaterialSphereTextures();
+                Dictionary<NUD.DummyTextures, Texture> dummyTextures = RenderTools.CreateNudDummyTextures();
 
                 // HACK: Recreating static resources is dumb. 
                 // Don't add this to the main shaders to begin with.
@@ -48,7 +51,7 @@ namespace Smash_Forge.Rendering
                 foreach (string file in Directory.EnumerateFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
                 {
                     NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
-                    RenderMaterialPresetToFile(width, height, file, material, screenVbo);
+                    RenderMaterialPresetToFile(width, height, file, material, screenVbo, dummyTextures);
                 }
             });
         }
@@ -62,7 +65,7 @@ namespace Smash_Forge.Rendering
             window.MakeCurrent();
         }
 
-        private static void RenderMaterialPresetToFile(int width, int height, string file, NUD.Material material, BufferObject screenVbo)
+        private static void RenderMaterialPresetToFile(int width, int height, string file, NUD.Material material, BufferObject screenVbo, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
         {
             // Save the image file using the name of the preset.
             string[] parts = file.Split('\\');
@@ -76,7 +79,7 @@ namespace Smash_Forge.Rendering
             Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
             framebuffer.Bind();
 
-            RenderTools.DrawNudMaterialSphere(material, screenVbo);
+            RenderTools.DrawNudMaterialSphere(material, screenVbo, dummyTextures);
 
             using (Bitmap image = framebuffer.ReadImagePixels(true))
             {
