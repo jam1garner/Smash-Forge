@@ -12,7 +12,7 @@ using SFGraphics.GLObjects;
 
 namespace Smash_Forge.Rendering
 {
-    class MaterialPreviewRendering
+    static class MaterialPreviewRendering
     {
         public static Task RenderingCompleted { get { return renderingCompleted; } }
         private static Task renderingCompleted;
@@ -29,6 +29,21 @@ namespace Smash_Forge.Rendering
                 BufferObject screenVbo = RenderTools.CreateScreenQuadBuffer();
 
                 // TODO: Set up the material sphere textures and dummy textures for this thread.
+                // They don't really need to be static.
+
+                // HACK: Recreating static resources is dumb. 
+                // Don't add this to the main shaders to begin with.
+                string[] nudMatShaders = new string[]
+                {
+                    "Nud\\NudSphere.frag",
+                    "Nud\\NudSphere.vert",
+                    "Nud\\StageLighting.frag",
+                    "Nud\\Bayo.frag",
+                    "Nud\\SmashShader.frag",
+                    "Utility\\Utility.frag"
+                };
+                Runtime.shaders.Remove("NudSphere");
+                ShaderTools.CreateAndAddShader("NudSphere", nudMatShaders);
 
                 foreach (string file in Directory.EnumerateFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
                 {
@@ -61,7 +76,6 @@ namespace Smash_Forge.Rendering
             Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
             framebuffer.Bind();
 
-            // TODO: Doesn't work on Intel.
             RenderTools.DrawNudMaterialSphere(material, screenVbo);
 
             using (Bitmap image = framebuffer.ReadImagePixels(true))

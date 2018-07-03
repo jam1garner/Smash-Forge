@@ -68,6 +68,7 @@ namespace Smash_Forge.Rendering
                 return;
 
             // Make a dummy context so shaders, textures, etc don't become unloaded.
+            GraphicsContext.ShareContexts = true;
             SetUpDummyResourceContext();
 
             nudSphereCamera.UpdateFromMouse(); // Update matrices for shader.
@@ -1543,7 +1544,7 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        public static void DrawQuadGradient(Vector3 topColor, Vector3 bottomColor)
+        public static void DrawQuadGradient(Vector3 topColor, Vector3 bottomColor, BufferObject screenVbo)
         {
             // draw RGB and alpha channels of texture to screen quad
             Shader shader = Runtime.shaders["Gradient"];
@@ -1554,7 +1555,7 @@ namespace Smash_Forge.Rendering
             shader.SetVector3("topColor", topColor);
             shader.SetVector3("bottomColor", bottomColor);
 
-            DrawScreenTriangle(shader, screenQuadVbo);          
+            DrawScreenTriangle(shader, screenVbo);          
         }
 
         public static void DrawTexturedQuad(int texture, int width, int height, bool renderR = true, bool renderG = true, bool renderB = true,
@@ -1632,17 +1633,21 @@ namespace Smash_Forge.Rendering
 
         public static void DrawNudMaterialSphere(NUD.Material material, BufferObject screenVbo)
         {
-            // Draws RGB and alpha channels of texture to screen quad.
+            if (!Runtime.shaders["NudSphere"].ProgramCreatedSuccessfully())
+                return;
+
             Shader shader = Runtime.shaders["NudSphere"];
             GL.UseProgram(shader.Id);
 
             // Use the same uniforms as the NUD shader. 
             NUD.SetMaterialPropertyUniforms(shader, material);
-            NUD.SetTextureUniformsNudMatSphere(shader, material);
             NUD.SetStageLightingUniforms(shader, 0);
             ModelContainer.SetRenderSettingsUniforms(shader);
             ModelContainer.SetLightingUniforms(shader, nudSphereCamera);
             ModelContainer.SetCameraMatrixUniforms(nudSphereCamera, shader);
+
+            // Use default textures rather than textures from the NUT.
+            NUD.SetTextureUniformsNudMatSphere(shader, material);
 
             // These values aren't needed in the shader currently.
             shader.SetVector3("cameraPosition", 0, 0, 0);

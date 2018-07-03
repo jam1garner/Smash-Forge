@@ -93,8 +93,8 @@ namespace Smash_Forge.Rendering
             CreateAndAddShader("ScreenQuad", "PostProcessing\\ScreenQuad.frag", "PostProcessing\\ScreenTexCoordMain.vert");
             CreateAndAddShader("Gradient", "PostProcessing\\Gradient.frag", "PostProcessing\\ScreenTexCoordMain.vert");
         }
-
-        private static void CreateAndAddShader(string shaderProgramName, params string[] shaderRelativePaths)
+        
+        public static void CreateAndAddShader(string shaderProgramName, params string[] shaderRelativePaths)
         {
             if (!Runtime.shaders.ContainsKey(shaderProgramName))
             {

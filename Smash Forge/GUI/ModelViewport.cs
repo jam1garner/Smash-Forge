@@ -1112,10 +1112,10 @@ namespace Smash_Forge
         {
             SetupAndRenderViewport();
             string renderName = ConvertDirSeparatorsToUnderscore(nudFileName, sourcePath);
-            // Manually dispose the bitmap to avoid memory leaks. 
-            Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, true);
-            screenCapture.Save(outputPath + "\\" + renderName + ".png");
-            screenCapture.Dispose();
+            using (Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, true))
+            {
+                screenCapture.Save(outputPath + "\\" + renderName + ".png");
+            }
         }
 
         private void SetupAndRenderViewport()
@@ -1171,9 +1171,10 @@ namespace Smash_Forge
 
                 if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
                 {
-                    Bitmap cs = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderWidth);
-                    images.Add(new Bitmap(cs, new Size((int)(cs.Width / ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
-                    cs.Dispose();
+                    using (Bitmap cs = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderWidth))
+                    {
+                        images.Add(new Bitmap(cs, new Size((int)(cs.Width / ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
+                    }
                 }
             }
 
@@ -1553,9 +1554,9 @@ namespace Smash_Forge
 
             // Only use the top color for solid color rendering.
             if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
-                RenderTools.DrawQuadGradient(topColor, topColor);
+                RenderTools.DrawQuadGradient(topColor, topColor, RenderTools.screenQuadVbo);
             else
-                RenderTools.DrawQuadGradient(topColor, bottomColor);
+                RenderTools.DrawQuadGradient(topColor, bottomColor, RenderTools.screenQuadVbo);
         }
 
         private void SetupViewport(int width, int height)
@@ -1796,12 +1797,13 @@ namespace Smash_Forge
             Render(null, null, fboRenderWidth, fboRenderHeight, offscreenRenderFbo.Id);
 
             // Save the render as a PNG.
-            Bitmap screenCapture = offscreenRenderFbo.ReadImagePixels(saveAlpha);
-            string outputPath = CalculateUniqueName();
-            screenCapture.Save(outputPath);
+            using (Bitmap screenCapture = offscreenRenderFbo.ReadImagePixels(saveAlpha))
+            {
+                string outputPath = CalculateUniqueName();
+                screenCapture.Save(outputPath);
+            }
 
             // Cleanup
-            screenCapture.Dispose(); // Manually dispose the bitmap to avoid memory leaks. 
             fboRenderWidth = oldWidth;
             fboRenderHeight = oldHeight;
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);

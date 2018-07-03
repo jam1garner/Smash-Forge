@@ -483,15 +483,33 @@
             </summary>
             <returns>A String of all detected errors</returns>
         </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.CreateGlShader(System.String,OpenTK.Graphics.OpenGL.ShaderType)">
+            <summary>
+            Returns the integer ID created by GL.CreateShader(). Compiles the shader.
+            This method can reduce load times by avoiding redundant shader compilations when used
+            in conjunction with <see cref="M:SFGraphics.GLObjects.Shaders.Shader.AttachShader(System.Int32,OpenTK.Graphics.OpenGL.ShaderType)"/>
+            </summary>
+            <param name="shaderSource">A string containing the shader source text</param>
+            <param name="shaderType">Supported types are ShaderType.FragmentShader, ShaderType.VertexShader, or ShaderType.GeometryShader</param>
+            <returns></returns>
+        </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.LoadShader(System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String)">
             <summary>
             Attempts to compile and attach the shader. 
             The value returned by <see cref="M:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully"/> is updated.
             Supported shader types are fragment, vertex , and geometry.
             </summary>
-            <param name="shaderSource">A string containing the shader text</param>
+            <param name="shaderSource">A string containing the shader source text</param>
             <param name="shaderType">Supported types are ShaderType.FragmentShader, ShaderType.VertexShader, or ShaderType.GeometryShader</param>
             <param name="shaderName">The title used for the compilation errors section of the error log</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.AttachShader(System.Int32,OpenTK.Graphics.OpenGL.ShaderType)">
+            <summary>
+            Attaches <paramref name="shaderId"/> and links the program. 
+            The value returned by <see cref="M:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully"/> is updated.
+            </summary>
+            <param name="shaderId">The integer ID returned by <see cref="M:SFGraphics.GLObjects.Shaders.Shader.CreateGlShader(System.String,OpenTK.Graphics.OpenGL.ShaderType)"/></param>
+            <param name="shaderType">Supported types are ShaderType.FragmentShader, ShaderType.VertexShader, or ShaderType.GeometryShader</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully">
             <summary>
