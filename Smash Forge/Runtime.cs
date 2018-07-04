@@ -153,22 +153,22 @@ namespace Smash_Forge
         public static List<Color> hitboxKnockbackColors = new List<Color>();
         public static readonly List<Color> defaultHitboxKnockbackColors = new List<Color>()
         {
-            ColorTools.ColorFromUint((uint)DistinctColors.VividGreen),
-            ColorTools.ColorFromUint((uint)DistinctColors.VividYellow),
-            ColorTools.ColorFromUint((uint)DistinctColors.VividOrange),
-            ColorTools.ColorFromUint((uint)DistinctColors.VividRed)     
+            Color.FromArgb(unchecked((int)DistinctColors.VividGreen)),
+            Color.FromArgb(unchecked((int)DistinctColors.VividYellow)),
+            Color.FromArgb(unchecked((int)DistinctColors.VividOrange)),
+            Color.FromArgb(unchecked((int)DistinctColors.VividRed))     
         };
 
         public static List<Color> hitboxIdColors = new List<Color>();
         public static readonly List<Color> defaultHitboxIdColors = new List<Color>()
         {
-            ColorTools.ColorFromUint((uint)DistinctColors.VividYellow), 
-            ColorTools.ColorFromUint((uint)DistinctColors.StrongPurple), 
-            ColorTools.ColorFromUint((uint)DistinctColors.VividRed),
-            ColorTools.ColorFromUint((uint)DistinctColors.GrayishYellow), 
-            ColorTools.ColorFromUint((uint)DistinctColors.MediumGray), 
-            ColorTools.ColorFromUint((uint)DistinctColors.StrongBlue), 
-            ColorTools.ColorFromUint((uint)DistinctColors.DeepYellowishBrown)
+            Color.FromArgb(unchecked((int)DistinctColors.VividYellow)), 
+            Color.FromArgb(unchecked((int)DistinctColors.StrongPurple)), 
+            Color.FromArgb(unchecked((int)DistinctColors.VividRed)),
+            Color.FromArgb(unchecked((int)DistinctColors.GrayishYellow)), 
+            Color.FromArgb(unchecked((int)DistinctColors.MediumGray)), 
+            Color.FromArgb(unchecked((int)DistinctColors.StrongBlue)), 
+            Color.FromArgb(unchecked((int)DistinctColors.DeepYellowishBrown))
         };
 
         // Floor Grid

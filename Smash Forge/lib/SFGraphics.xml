@@ -647,13 +647,6 @@
             Conversion methods for HSV, RGB, color temperature, and system Colors using floats or OpenTK vectors.
             </summary>
         </member>
-        <member name="M:SFGraphics.Tools.ColorTools.ColorFromUint(System.UInt32)">
-            <summary>
-            Converts an ARGB hex color to a system color.
-            </summary>
-            <param name="hexColor">ARGB color</param>
-            <returns></returns>
-        </member>
         <member name="M:SFGraphics.Tools.ColorTools.Vector4FromColor(System.Drawing.Color)">
             <summary>
             Converts the byte channel values of the input color [0,255] to float [0.0,1.0]. XYZW = RGBA.
