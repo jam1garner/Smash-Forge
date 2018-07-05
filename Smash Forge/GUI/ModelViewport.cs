@@ -1946,7 +1946,7 @@ namespace Smash_Forge
                     }
                 }
                 RenderTools.InitializeUVBufferData(polygonsToRender);
-                RenderTools.DrawUv();
+                //RenderTools.DrawUv();
             }
         }
     }

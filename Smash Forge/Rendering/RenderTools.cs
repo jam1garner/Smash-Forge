@@ -1059,11 +1059,11 @@ namespace Smash_Forge.Rendering
         {
             List<Vector2> uvs = new List<Vector2>();
             int uvIndex = 0;
+            
 
             foreach (NUD.Polygon p in polygons)
             {
-                // TODO: Don't duplicate vertices.
-                foreach (int vertIndex in p.vertexIndices)
+                foreach (int vertIndex in p.GetRenderingVertexIndices())
                 {
                     // TODO: Not sure why some of the indices are incorrect.
                     if (p.vertices.Count > vertIndex)

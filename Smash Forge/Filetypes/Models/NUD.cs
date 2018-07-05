@@ -266,44 +266,50 @@ namespace Smash_Forge
             }
         }
 
-        public void UpdateVertexData()
+        public void UpdateVertexBuffersData()
         {
-            DisplayVertex[] Vertices;
-            int[] Faces;
+            DisplayVertex[] displayVerticesArray;
+            int[] vertexIndicesArray;
 
-            int poffset = 0;
-            int voffset = 0;
-            List<DisplayVertex> Vs = new List<DisplayVertex>();
-            List<int> Ds = new List<int>();
-            for (int mes = Nodes.Count - 1; mes >= 0; mes--)
+            int polygonOffset = 0;
+            int vertexOffset = 0;
+
+            // Store all of the polygon vert data in one buffer.
+            List<DisplayVertex> displayVerticesList = new List<DisplayVertex>();
+            List<int> vertexIndicesList = new List<int>();
+
+            // Loop backwards?
+            for (int meshIndex = Nodes.Count - 1; meshIndex >= 0; meshIndex--)
             {
-                Mesh m = (Mesh)Nodes[mes];
-                for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
+                Mesh m = (Mesh)Nodes[meshIndex];
+
+                for (int polyIndex = m.Nodes.Count - 1; polyIndex >= 0; polyIndex--)
                 {
-                    Polygon p = (NUD.Polygon)m.Nodes[pol];
-                    p.Offset = poffset * 4;
-                    List<DisplayVertex> pv = p.CreateDisplayVertices();
-                    Vs.AddRange(pv);
+                    Polygon p = (Polygon)m.Nodes[polyIndex];
+                    p.Offset = polygonOffset * sizeof(float);
+
+                    List<DisplayVertex> polygonDisplayVertices = p.CreateDisplayVertices();
+                    displayVerticesList.AddRange(polygonDisplayVertices);
 
                     for (int i = 0; i < p.displayFaceSize; i++)
                     {
-                        Ds.Add(p.display[i] + voffset);
+                        vertexIndicesList.Add(p.display[i] + vertexOffset);
                     }
-                    poffset += p.displayFaceSize;
-                    voffset += pv.Count;
+
+                    polygonOffset += p.displayFaceSize;
+                    vertexOffset += polygonDisplayVertices.Count;
                 }
             }
 
-            // Binds
-            Vertices = Vs.ToArray();
-            Faces = Ds.ToArray();
+            // Initialize the buffers.
+            displayVerticesArray = displayVerticesList.ToArray();
+            vertexIndicesArray = vertexIndicesList.ToArray();
 
-            // Bind only once!
             positionVbo.Bind();
-            GL.BufferData<DisplayVertex>(positionVbo.BufferTarget, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData<DisplayVertex>(positionVbo.BufferTarget, (IntPtr)(displayVerticesArray.Length * DisplayVertex.Size), displayVerticesArray, BufferUsageHint.StaticDraw);
 
             elementsIbo.Bind();
-            GL.BufferData<int>(elementsIbo.BufferTarget, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
+            GL.BufferData<int>(elementsIbo.BufferTarget, (IntPtr)(vertexIndicesArray.Length * sizeof(int)), vertexIndicesArray, BufferUsageHint.StaticDraw);
         }
 
         public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)
@@ -313,7 +319,7 @@ namespace Smash_Forge
             if (!buffersWereInitialized)
             {
                 GenerateBuffers();
-                UpdateVertexData();
+                UpdateVertexBuffersData();
             }
 
             // Main function for NUD rendering.
@@ -2792,7 +2798,7 @@ namespace Smash_Forge
             public List<DisplayVertex> CreateDisplayVertices()
             {
                 // rearrange faces
-                display = getDisplayFace().ToArray();
+                display = GetRenderingVertexIndices().ToArray();
 
                 List<DisplayVertex> displayVertList = new List<DisplayVertex>();
 
@@ -2836,7 +2842,7 @@ namespace Smash_Forge
                 if (!(vertType == 3 || vertType == 7))
                     return;
 
-                List<int> f = getDisplayFace();
+                List<int> f = GetRenderingVertexIndices();
                 Vector3[] tanArray = new Vector3[vertices.Count];
                 Vector3[] bitanArray = new Vector3[vertices.Count];
 
@@ -2902,7 +2908,7 @@ namespace Smash_Forge
             {
                 Vector3[] normals = new Vector3[vertices.Count];
 
-                List<int> f = getDisplayFace();
+                List<int> f = GetRenderingVertexIndices();
 
                 for (int i = 0; i < displayFaceSize; i += 3)
                 {
@@ -2948,7 +2954,7 @@ namespace Smash_Forge
                 for (int i = 0; i < normals.Length; i++)
                     normals[i] = new Vector3(0, 0, 0);
 
-                List<int> f = getDisplayFace();
+                List<int> f = GetRenderingVertexIndices();
 
                 for (int i = 0; i < displayFaceSize; i += 3)
                 {
@@ -2974,7 +2980,7 @@ namespace Smash_Forge
                 mat.textures.Add(MatTexture.GetDefault());
             }
 
-            public List<int> getDisplayFace()
+            public List<int> GetRenderingVertexIndices()
             {
                 if ((strip >> 4) == 4)
                 {
@@ -2983,21 +2989,21 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    List<int> f = new List<int>();
+                    List<int> vertexIndices = new List<int>();
 
                     int startDirection = 1;
                     int p = 0;
-                    int f1 = vertexIndices[p++];
-                    int f2 = vertexIndices[p++];
+                    int f1 = this.vertexIndices[p++];
+                    int f2 = this.vertexIndices[p++];
                     int faceDirection = startDirection;
                     int f3;
                     do
                     {
-                        f3 = vertexIndices[p++];
+                        f3 = this.vertexIndices[p++];
                         if (f3 == 0xFFFF)
                         {
-                            f1 = vertexIndices[p++];
-                            f2 = vertexIndices[p++];
+                            f1 = this.vertexIndices[p++];
+                            f2 = this.vertexIndices[p++];
                             faceDirection = startDirection;
                         }
                         else
@@ -3007,24 +3013,24 @@ namespace Smash_Forge
                             {
                                 if (faceDirection > 0)
                                 {
-                                    f.Add(f3);
-                                    f.Add(f2);
-                                    f.Add(f1);
+                                    vertexIndices.Add(f3);
+                                    vertexIndices.Add(f2);
+                                    vertexIndices.Add(f1);
                                 }
                                 else
                                 {
-                                    f.Add(f2);
-                                    f.Add(f3);
-                                    f.Add(f1);
+                                    vertexIndices.Add(f2);
+                                    vertexIndices.Add(f3);
+                                    vertexIndices.Add(f1);
                                 }
                             }
                             f1 = f2;
                             f2 = f3;
                         }
-                    } while (p < vertexIndices.Count);
+                    } while (p < this.vertexIndices.Count);
 
-                    displayFaceSize = f.Count;
-                    return f;
+                    displayFaceSize = vertexIndices.Count;
+                    return vertexIndices;
                 }
             }
         }

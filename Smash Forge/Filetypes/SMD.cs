@@ -232,7 +232,7 @@ namespace Smash_Forge
             }
 
             nud.OptimizeFileSize();
-            nud.UpdateVertexData();
+            nud.UpdateVertexBuffersData();
             return nud;
         }
 

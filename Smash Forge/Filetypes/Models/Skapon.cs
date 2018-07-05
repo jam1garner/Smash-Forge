@@ -59,7 +59,7 @@ namespace Smash_Forge
                 p.materials[0].textures[0].hash = 0x40000000 + randomNumber;
             }
 
-            nud.UpdateVertexData();
+            nud.UpdateVertexBuffersData();
 
             return nud;
         }
@@ -233,7 +233,7 @@ namespace Smash_Forge
 
 
             removeLowPolyNr(nud);
-            nud.UpdateVertexData();
+            nud.UpdateVertexBuffersData();
 
             //Runtime.ModelContainers.Add(converted);
             //-------------------------------------------------
@@ -363,7 +363,7 @@ namespace Smash_Forge
                     }
                 }
             }
-            nud.UpdateVertexData();
+            nud.UpdateVertexBuffersData();
         }
 
         public static void ArrangeBones(VBN vbn, NUD nud)
@@ -418,7 +418,7 @@ namespace Smash_Forge
                     }
                 }
             }
-            nud.UpdateVertexData();
+            nud.UpdateVertexBuffersData();
         }
 
         public static void BoneNameFix(VBN vbn)
