@@ -13,12 +13,11 @@ using SFGraphics.GLObjects;
 
 namespace Smash_Forge.Rendering
 {
-    static class UvRendering
+    static class NudUvRendering
     {
         // Used for UV drawing.
         private static BufferObject uvPositionVbo;
         private static BufferObject uvElementsIbo;
-        private static int uvCount = 0;
 
         public static void DrawUv(NUD nud)
         {

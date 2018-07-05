@@ -40,7 +40,7 @@ namespace Smash_Forge.Rendering
             CreateAndAddShader("Dat", "Melee\\Dat.frag", "Melee\\Dat.vert");
             CreateAndAddShader("Point", "Point.frag", "Point.vert");
             CreateAndAddShader("Shadow", "Shadow.frag", "Shadow.vert");
-            CreateAndAddShader("UV", "UV.frag", "UV.vert");
+            //CreateAndAddShader("UV", "NUD\\UV.frag", "NUD\\UV.vert", "NUD\\UV.geom", "NUD\\EdgeDistance.geom", "Utility\\Utility.frag");
         }
 
         private static void SetupNudShaders()

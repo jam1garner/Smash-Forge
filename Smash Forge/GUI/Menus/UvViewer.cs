@@ -27,7 +27,7 @@ namespace Smash_Forge.GUI.Menus
             RenderTools.SetUpOpenTkRendering();
             if (nud != null)
             {
-                UvRendering.InitializeUVBufferData(nud);
+                NudUvRendering.InitializeUVBufferData(nud);
             }
         }
 
@@ -36,7 +36,7 @@ namespace Smash_Forge.GUI.Menus
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
             RenderTools.DrawTexturedQuad(RenderTools.uvTestPattern.Id);
-            UvRendering.DrawUv(nud);
+            NudUvRendering.DrawUv(nud);
             glControl1.SwapBuffers();
         }
 
