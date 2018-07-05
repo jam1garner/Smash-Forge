@@ -1,5 +1,7 @@
 #version 330
 
+noperspective in vec3 edgeDistance;
+
 out vec4 fragColor;
 
 void main() {

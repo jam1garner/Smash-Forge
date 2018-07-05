@@ -49,6 +49,9 @@ namespace Smash_Forge.Rendering
             Matrix4 matrix = Matrix4.CreateOrthographicOffCenter(0, 1, 1, 0, -1, 1);
             shader.SetMatrix4x4("mvpMatrix", ref matrix);
 
+            // TODO: Window size.
+            shader.SetVector2("windowSize", new Vector2(1));
+
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 0);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 12);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vTangent"), 3, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 24);

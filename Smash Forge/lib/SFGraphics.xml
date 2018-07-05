@@ -773,12 +773,12 @@
         </member>
         <member name="M:SFGraphics.Tools.VectorTools.GenerateTangentBitangent(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector3@,OpenTK.Vector3@)">
             <summary>
-            Generates a tangent vector <paramref name="s"/> and a bitangent vector
-            <paramref name="t"/> for a triangle face. 
-            If the three vertices have the same UVs or position, <paramref name="s"/> is set to (1, 0, 0)
-            and <paramref name="t"/> is set to (0, 1, 0). This prevents black shading artifacts.
+            Generates a tangent vector <paramref name="tangent"/> and a bitangent vector
+            <paramref name="bitangent"/> for a triangle face. 
+            If the three vertices have the same UVs or position, <paramref name="tangent"/> is set to (1, 0, 0)
+            and <paramref name="bitangent"/> is set to (0, 1, 0). This prevents black shading artifacts.
             <para></para><para></para>
-            <paramref name="s"/> and <paramref name="t"/> should be added to the existing tangent
+            <paramref name="tangent"/> and <paramref name="bitangent"/> should be added to the existing tangent
             and bitangent value for each vertex in the triangle. Normalizing the final sum 
             averages the tangents and bitangents for smoother results.
             </summary>
@@ -788,8 +788,8 @@
             <param name="uv1">The UV coordinates of the first vertex</param>
             <param name="uv2">The UV coordinates of the second vertex</param>
             <param name="uv3">The UV coordinates of the third vertex</param>
-            <param name="s">The generated tangent vector</param>
-            <param name="t">The generated bitangent vector</param>
+            <param name="tangent">The generated tangent vector</param>
+            <param name="bitangent">The generated bitangent vector</param>
         </member>
         <member name="M:SFGraphics.Tools.VectorTools.CalculateNormal(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3)">
             <summary>
