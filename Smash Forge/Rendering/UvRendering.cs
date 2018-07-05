@@ -20,11 +20,22 @@ namespace Smash_Forge.Rendering
         private static BufferObject uvElementsIbo;
         private static int uvCount = 0;
 
-        public static void DrawUv()
+        public static void DrawUv(NUD nud)
         {
             if (uvPositionVbo == null)
                 return;
 
+            foreach (NUD.Mesh mesh in nud.Nodes)
+            {
+                foreach (NUD.Polygon poly in mesh.Nodes)
+                {
+                    DrawPolygonUv(poly);
+                }
+            }
+        }
+
+        private static void DrawPolygonUv(NUD.Polygon p)
+        {
             Shader shader = Runtime.shaders["UV"];
             GL.UseProgram(shader.Id);
             shader.EnableVertexAttributes();
@@ -38,22 +49,35 @@ namespace Smash_Forge.Rendering
             // Scale to 0 to 1 UV space and flip vertically.
             Matrix4 matrix = Matrix4.CreateOrthographicOffCenter(0, 1, 1, 0, -1, 1);
             shader.SetMatrix4x4("mvpMatrix", ref matrix);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("position"), 2, VertexAttribPointerType.Float, false, sizeof(float) * 2, 0);
+
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 0);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 12);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vTangent"), 3, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 24);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBiTangent"), 3, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 36);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV"), 2, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 48);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vColor"), 4, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 56);
+            GL.VertexAttribIPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribIntegerType.Int, NUD.DisplayVertex.Size, new IntPtr(72));
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 88);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV2"), 2, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 104);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV3"), 2, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 112);
 
             // Draw the uvs.
             GL.LineWidth(1.5f);
             GL.Enable(EnableCap.LineSmooth);
-            GL.DrawArrays(PrimitiveType.LineStrip, 0, uvCount);
+
+            uvElementsIbo.Bind();
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+
             shader.DisableVertexAttributes();
         }
 
-        public static void InitializeUVBufferData(List<NUD.Polygon> polygons)
+        public static void InitializeUVBufferData(NUD nud)
         {
             // The previous object's data will be cleaned up by GLOBjectManager.
             uvPositionVbo = new BufferObject(BufferTarget.ArrayBuffer);
-            List<Vector2> uvs = GenerateUVList(polygons);
-            InitializeUVBufferData(uvPositionVbo, uvs);
-            uvCount = uvs.Count;
+            uvElementsIbo = new BufferObject(BufferTarget.ElementArrayBuffer);
+
+            nud.UpdateVertexBuffers(uvPositionVbo, uvElementsIbo);
         }
 
         private static void InitializeUVBufferData(BufferObject uvPositionVBO, List<Vector2> uvs)

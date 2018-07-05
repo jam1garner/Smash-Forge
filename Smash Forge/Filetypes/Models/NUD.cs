@@ -613,7 +613,7 @@ namespace Smash_Forge
 
             // Set Shader Values.
             SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
-            SetVertexAttributes(p, shader);
+            SetVertexAttributes(shader);
 
             // Set OpenTK Render Options.
             SetAlphaBlending(material);
@@ -795,7 +795,7 @@ namespace Smash_Forge
             }
         }
 
-        private void SetVertexAttributes(Polygon p, Shader shader)
+        private void SetVertexAttributes(Shader shader)
         {
             positionVbo.Bind();
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
