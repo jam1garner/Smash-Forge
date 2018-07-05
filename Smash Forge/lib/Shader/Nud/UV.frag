@@ -11,5 +11,5 @@ void main() {
     vec3 edgeColor = vec3(1);
     float intensity = WireframeIntensity(edgeDistance);
     fragColor.rgb = edgeColor;
-    fragColor.a = pow(intensity, 256);
+    fragColor.a = pow(intensity, 128);
 }

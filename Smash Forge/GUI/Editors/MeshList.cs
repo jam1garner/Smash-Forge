@@ -1429,7 +1429,7 @@ namespace Smash_Forge
 
             NUD.Polygon poly = (NUD.Polygon)filesTreeView.SelectedNode;
             NUD nud = (NUD)poly.Parent.Parent;
-            UvViewer uvViewer = new UvViewer(nud);
+            UvViewer uvViewer = new UvViewer(nud, poly);
             uvViewer.Show();
         }
     }

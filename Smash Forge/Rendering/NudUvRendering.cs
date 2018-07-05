@@ -19,18 +19,12 @@ namespace Smash_Forge.Rendering
         private static BufferObject uvPositionVbo;
         private static BufferObject uvElementsIbo;
 
-        public static void DrawUv(NUD nud, int windowWidth, int windowHeight)
+        public static void DrawUv(NUD.Polygon polygon, int windowWidth, int windowHeight)
         {
             if (uvPositionVbo == null)
                 return;
 
-            foreach (NUD.Mesh mesh in nud.Nodes)
-            {
-                foreach (NUD.Polygon poly in mesh.Nodes)
-                {
-                    DrawPolygonUv(poly, windowWidth, windowHeight);
-                }
-            }
+            DrawPolygonUv(polygon, windowWidth, windowHeight);
         }
 
         private static void DrawPolygonUv(NUD.Polygon p, int windowWidth, int windowHeight)
