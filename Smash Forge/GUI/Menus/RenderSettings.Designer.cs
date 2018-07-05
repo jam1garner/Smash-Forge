@@ -110,7 +110,6 @@
             this.depthTestCB = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.swagYCB = new System.Windows.Forms.CheckBox();
-            this.drawUvCB = new System.Windows.Forms.CheckBox();
             this.areaLightBoundingBoxCB = new System.Windows.Forms.CheckBox();
             this.renderModelCB = new System.Windows.Forms.CheckBox();
             this.wireframeCB = new System.Windows.Forms.CheckBox();
@@ -122,6 +121,7 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.drawShadowCB = new System.Windows.Forms.CheckBox();
             this.stageLightingCB = new System.Windows.Forms.CheckBox();
             this.renderFogCB = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -186,7 +186,6 @@
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.defaultRadioButton = new System.Windows.Forms.RadioButton();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.drawShadowCB = new System.Windows.Forms.CheckBox();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -1094,7 +1093,6 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.swagYCB);
-            this.groupBox2.Controls.Add(this.drawUvCB);
             this.groupBox2.Controls.Add(this.areaLightBoundingBoxCB);
             this.groupBox2.Controls.Add(this.renderModelCB);
             this.groupBox2.Controls.Add(this.wireframeCB);
@@ -1120,17 +1118,6 @@
             this.swagYCB.Text = "Animate Swing Y";
             this.swagYCB.UseVisualStyleBackColor = true;
             this.swagYCB.CheckedChanged += new System.EventHandler(this.swagYCB_CheckedChanged);
-            // 
-            // drawUvCB
-            // 
-            this.drawUvCB.AutoSize = true;
-            this.drawUvCB.Location = new System.Drawing.Point(9, 206);
-            this.drawUvCB.Name = "drawUvCB";
-            this.drawUvCB.Size = new System.Drawing.Size(143, 17);
-            this.drawUvCB.TabIndex = 28;
-            this.drawUvCB.Text = "Draw UVs (Experimental)";
-            this.drawUvCB.UseVisualStyleBackColor = true;
-            this.drawUvCB.CheckedChanged += new System.EventHandler(this.drawUvCB_CheckedChanged);
             // 
             // areaLightBoundingBoxCB
             // 
@@ -1268,6 +1255,17 @@
             this.groupBox5.TabIndex = 36;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Material Lighting";
+            // 
+            // drawShadowCB
+            // 
+            this.drawShadowCB.AutoSize = true;
+            this.drawShadowCB.Location = new System.Drawing.Point(156, 116);
+            this.drawShadowCB.Name = "drawShadowCB";
+            this.drawShadowCB.Size = new System.Drawing.Size(177, 17);
+            this.drawShadowCB.TabIndex = 35;
+            this.drawShadowCB.Text = "Render Shadows (Experimental)";
+            this.drawShadowCB.UseVisualStyleBackColor = true;
+            this.drawShadowCB.CheckedChanged += new System.EventHandler(this.drawShadowCB_CheckedChanged);
             // 
             // stageLightingCB
             // 
@@ -1976,17 +1974,6 @@
             this.defaultRadioButton.UseVisualStyleBackColor = true;
             this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
-            // drawShadowCB
-            // 
-            this.drawShadowCB.AutoSize = true;
-            this.drawShadowCB.Location = new System.Drawing.Point(156, 116);
-            this.drawShadowCB.Name = "drawShadowCB";
-            this.drawShadowCB.Size = new System.Drawing.Size(177, 17);
-            this.drawShadowCB.TabIndex = 35;
-            this.drawShadowCB.Text = "Render Shadows (Experimental)";
-            this.drawShadowCB.UseVisualStyleBackColor = true;
-            this.drawShadowCB.CheckedChanged += new System.EventHandler(this.drawShadowCB_CheckedChanged);
-            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2136,7 +2123,6 @@
         private System.Windows.Forms.CheckBox hitboxAnglesCB;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pbHitboxAnglesColor;
-        private System.Windows.Forms.CheckBox drawUvCB;
         private System.Windows.Forms.CheckBox swagYCB;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.GroupBox groupBox7;

@@ -215,9 +215,13 @@ struct VertexAttributes {
     vec3 bitangent;
 };
 
-// Function declarations.
+// Defined in Wireframe.frag.
 float WireframeIntensity(vec3 distanceToEdges);
+
+// Defined in Utility.frag.
 float Luminance(vec3 rgb);
+
+// Defined in SmashShader.frag.
 vec4 SmashShader(VertexAttributes vert);
 
 float CalculateShadow(float shadowBrightness)

@@ -222,8 +222,6 @@ namespace Smash_Forge
         // Polygon ID Maps
         public static bool drawNudColorIdPass = false;
 
-        public static bool drawUv = false;
-
         public static float specularHue = 360.0f;
         public static float specularSaturation = 0.0f;
         public static float specularIntensity = 0.65f;

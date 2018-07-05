@@ -14,20 +14,23 @@ namespace Smash_Forge.GUI.Menus
 {
     public partial class UvViewer : Form
     {
-        private List<NUD.Polygon> polygons;
+        private NUD sourceNud;
+        private NUD.Polygon polygonToRender;
 
-        public UvViewer(List<NUD.Polygon> polygons)
+        public UvViewer(NUD sourceNud, NUD.Polygon polygonToRender)
         {
+            // We need the nud to generate buffers due to the way nud rendering works.
             InitializeComponent();
-            this.polygons = polygons;
+            this.sourceNud = sourceNud;
+            this.polygonToRender = polygonToRender;
         }
 
         private void glControl1_Load(object sender, EventArgs e)
         {
             RenderTools.SetUpOpenTkRendering();
-            if (polygons != null)
+            if (sourceNud != null)
             {
-                RenderTools.InitializeUVBufferData(polygons);
+                NudUvRendering.InitializeUVBufferData(sourceNud);
             }
         }
 
@@ -36,7 +39,7 @@ namespace Smash_Forge.GUI.Menus
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
             RenderTools.DrawTexturedQuad(RenderTools.uvTestPattern.Id);
-            RenderTools.DrawUv();
+            NudUvRendering.DrawUv(polygonToRender, glControl1.Width, glControl1.Height);
             glControl1.SwapBuffers();
         }
 

@@ -24,10 +24,10 @@ namespace Smash_Forge
     public class NUD : FileBase
     {
         // OpenGL Buffers
-        BufferObject positionVbo;
-        BufferObject elementsIbo;
-        BufferObject bonesUbo;
-        BufferObject selectVbo;
+        private BufferObject positionVbo;
+        private BufferObject elementsIbo;
+        private BufferObject bonesUbo;
+        private BufferObject selectVbo;
 
         // Default bind location for dummy textures.
         private static readonly TextureUnit dummyTextureUnit = TextureUnit.Texture20;
@@ -45,7 +45,7 @@ namespace Smash_Forge
         public float[] boundingBox = new float[4];
 
         // Just used for rendering.
-        List<Mesh> depthSortedMeshes = new List<Mesh>();
+        private List<Mesh> depthSortedMeshes = new List<Mesh>();
 
         // xmb stuff
         public int lightSetNumber = 0;
@@ -57,42 +57,44 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
-        Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
-                    { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
-                    { 0x02, BlendingFactorDest.One},
-                    { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
-                    { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
-                    { 0x05, BlendingFactorDest.ConstantAlpha},
-        };
-
-        static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
-                    { 0x01, BlendingFactorSrc.SrcAlpha},
-                    { 0x02, BlendingFactorSrc.SrcAlpha},
-                    { 0x03, BlendingFactorSrc.SrcAlpha},
-                    { 0x04, BlendingFactorSrc.SrcAlpha},
-                    { 0x0a, BlendingFactorSrc.Zero}
-        };
-
-        static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
+        private static readonly Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>()
         {
-                    { 0x01, TextureWrapMode.Repeat},
-                    { 0x02, TextureWrapMode.MirroredRepeat},
-                    { 0x03, TextureWrapMode.ClampToEdge}
+            { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
+            { 0x02, BlendingFactorDest.One},
+            { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
+            { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
+            { 0x05, BlendingFactorDest.ConstantAlpha},
         };
 
-        static Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
+        private static readonly Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>()
         {
-                    { 0x00, TextureMinFilter.LinearMipmapLinear},
-                    { 0x01, TextureMinFilter.Nearest},
-                    { 0x02, TextureMinFilter.Linear},
-                    { 0x03, TextureMinFilter.NearestMipmapLinear},
+            { 0x01, BlendingFactorSrc.SrcAlpha},
+            { 0x02, BlendingFactorSrc.SrcAlpha},
+            { 0x03, BlendingFactorSrc.SrcAlpha},
+            { 0x04, BlendingFactorSrc.SrcAlpha},
+            { 0x0a, BlendingFactorSrc.Zero}
         };
 
-        static Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
+        private static readonly Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
         {
-                    { 0x00, TextureMagFilter.Linear},
-                    { 0x01, TextureMagFilter.Nearest},
-                    { 0x02, TextureMagFilter.Linear}
+            { 0x01, TextureWrapMode.Repeat},
+            { 0x02, TextureWrapMode.MirroredRepeat},
+            { 0x03, TextureWrapMode.ClampToEdge}
+        };
+
+        private static readonly Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
+        {
+            { 0x00, TextureMinFilter.LinearMipmapLinear},
+            { 0x01, TextureMinFilter.Nearest},
+            { 0x02, TextureMinFilter.Linear},
+            { 0x03, TextureMinFilter.NearestMipmapLinear},
+        };
+
+        static readonly Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
+        {
+            { 0x00, TextureMagFilter.Linear},
+            { 0x01, TextureMagFilter.Nearest},
+            { 0x02, TextureMagFilter.Linear}
         };
 
         public enum TextureFlags
@@ -266,44 +268,55 @@ namespace Smash_Forge
             }
         }
 
-        public void UpdateVertexData()
+        public void UpdateVertexBuffers(BufferObject positionVbo, BufferObject elementsIbo)
         {
-            DisplayVertex[] Vertices;
-            int[] Faces;
+            DisplayVertex[] displayVerticesArray;
+            int[] vertexIndicesArray;
 
-            int poffset = 0;
-            int voffset = 0;
-            List<DisplayVertex> Vs = new List<DisplayVertex>();
-            List<int> Ds = new List<int>();
-            for (int mes = Nodes.Count - 1; mes >= 0; mes--)
+            int polygonOffset = 0;
+            int vertexOffset = 0;
+
+            // Store all of the polygon vert data in one buffer.
+            List<DisplayVertex> displayVerticesList = new List<DisplayVertex>();
+            List<int> vertexIndicesList = new List<int>();
+
+            // Loop backwards?
+            for (int meshIndex = Nodes.Count - 1; meshIndex >= 0; meshIndex--)
             {
-                Mesh m = (Mesh)Nodes[mes];
-                for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
+                Mesh m = (Mesh)Nodes[meshIndex];
+
+                for (int polyIndex = m.Nodes.Count - 1; polyIndex >= 0; polyIndex--)
                 {
-                    Polygon p = (NUD.Polygon)m.Nodes[pol];
-                    p.Offset = poffset * 4;
-                    List<DisplayVertex> pv = p.CreateDisplayVertices();
-                    Vs.AddRange(pv);
+                    Polygon p = (Polygon)m.Nodes[polyIndex];
+                    p.Offset = polygonOffset * sizeof(float);
+
+                    List<DisplayVertex> polygonDisplayVertices = p.CreateDisplayVertices();
+                    displayVerticesList.AddRange(polygonDisplayVertices);
 
                     for (int i = 0; i < p.displayFaceSize; i++)
                     {
-                        Ds.Add(p.display[i] + voffset);
+                        vertexIndicesList.Add(p.display[i] + vertexOffset);
                     }
-                    poffset += p.displayFaceSize;
-                    voffset += pv.Count;
+
+                    polygonOffset += p.displayFaceSize;
+                    vertexOffset += polygonDisplayVertices.Count;
                 }
             }
 
-            // Binds
-            Vertices = Vs.ToArray();
-            Faces = Ds.ToArray();
+            // Initialize the buffers.
+            displayVerticesArray = displayVerticesList.ToArray();
+            vertexIndicesArray = vertexIndicesList.ToArray();
 
-            // Bind only once!
             positionVbo.Bind();
-            GL.BufferData<DisplayVertex>(positionVbo.BufferTarget, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData<DisplayVertex>(positionVbo.BufferTarget, (IntPtr)(displayVerticesArray.Length * DisplayVertex.Size), displayVerticesArray, BufferUsageHint.StaticDraw);
 
             elementsIbo.Bind();
-            GL.BufferData<int>(elementsIbo.BufferTarget, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
+            GL.BufferData<int>(elementsIbo.BufferTarget, (IntPtr)(vertexIndicesArray.Length * sizeof(int)), vertexIndicesArray, BufferUsageHint.StaticDraw);
+        }
+
+        public void UpdateVertexBuffers()
+        {
+            UpdateVertexBuffers(positionVbo, elementsIbo);
         }
 
         public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)
@@ -313,7 +326,7 @@ namespace Smash_Forge
             if (!buffersWereInitialized)
             {
                 GenerateBuffers();
-                UpdateVertexData();
+                UpdateVertexBuffers(positionVbo, elementsIbo);
             }
 
             // Main function for NUD rendering.
@@ -332,14 +345,14 @@ namespace Smash_Forge
             // Render using the selected shader.
             GL.UseProgram(shader.Id);
             shader.EnableVertexAttributes();
-            LoadBoneAttributes(vbn, shader);
+            UpdateBonesBuffer(vbn, shader, bonesUbo);
 
             DrawAllPolygons(shader, camera, drawPolyIds);
 
             shader.DisableVertexAttributes();
         }
 
-        private void LoadBoneAttributes(VBN vbn, Shader shader)
+        private void UpdateBonesBuffer(VBN vbn, Shader shader, BufferObject bonesUbo)
         {
             if (vbn != null)
             {
@@ -347,7 +360,7 @@ namespace Smash_Forge
 
                 int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
                 int boneCount = vbn.bones.Count;
-                int dataSize = boneCount * Vector4.SizeInBytes * 4;
+                int dataSize = boneCount * Vector4.SizeInBytes * sizeof(float);
 
                 bonesUbo.Bind();
                 GL.BufferData(bonesUbo.BufferTarget, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
@@ -359,7 +372,7 @@ namespace Smash_Forge
                 if (f.Length > 0)
                 {
                     bonesUbo.Bind();
-                    GL.BufferSubData(bonesUbo.BufferTarget, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
+                    GL.BufferSubData(bonesUbo.BufferTarget, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * sizeof(float)), f);
                 }
             }
         }
@@ -600,7 +613,7 @@ namespace Smash_Forge
 
             // Set Shader Values.
             SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
-            SetVertexAttributes(p, shader);
+            SetVertexAttributes(shader);
 
             // Set OpenTK Render Options.
             SetAlphaBlending(material);
@@ -782,7 +795,7 @@ namespace Smash_Forge
             }
         }
 
-        private void SetVertexAttributes(Polygon p, Shader shader)
+        private void SetVertexAttributes(Shader shader)
         {
             positionVbo.Bind();
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
@@ -2792,7 +2805,7 @@ namespace Smash_Forge
             public List<DisplayVertex> CreateDisplayVertices()
             {
                 // rearrange faces
-                display = getDisplayFace().ToArray();
+                display = GetRenderingVertexIndices().ToArray();
 
                 List<DisplayVertex> displayVertList = new List<DisplayVertex>();
 
@@ -2836,7 +2849,7 @@ namespace Smash_Forge
                 if (!(vertType == 3 || vertType == 7))
                     return;
 
-                List<int> f = getDisplayFace();
+                List<int> f = GetRenderingVertexIndices();
                 Vector3[] tanArray = new Vector3[vertices.Count];
                 Vector3[] bitanArray = new Vector3[vertices.Count];
 
@@ -2902,7 +2915,7 @@ namespace Smash_Forge
             {
                 Vector3[] normals = new Vector3[vertices.Count];
 
-                List<int> f = getDisplayFace();
+                List<int> f = GetRenderingVertexIndices();
 
                 for (int i = 0; i < displayFaceSize; i += 3)
                 {
@@ -2948,7 +2961,7 @@ namespace Smash_Forge
                 for (int i = 0; i < normals.Length; i++)
                     normals[i] = new Vector3(0, 0, 0);
 
-                List<int> f = getDisplayFace();
+                List<int> f = GetRenderingVertexIndices();
 
                 for (int i = 0; i < displayFaceSize; i += 3)
                 {
@@ -2974,7 +2987,7 @@ namespace Smash_Forge
                 mat.textures.Add(MatTexture.GetDefault());
             }
 
-            public List<int> getDisplayFace()
+            public List<int> GetRenderingVertexIndices()
             {
                 if ((strip >> 4) == 4)
                 {
@@ -2983,21 +2996,21 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    List<int> f = new List<int>();
+                    List<int> vertexIndices = new List<int>();
 
                     int startDirection = 1;
                     int p = 0;
-                    int f1 = vertexIndices[p++];
-                    int f2 = vertexIndices[p++];
+                    int f1 = this.vertexIndices[p++];
+                    int f2 = this.vertexIndices[p++];
                     int faceDirection = startDirection;
                     int f3;
                     do
                     {
-                        f3 = vertexIndices[p++];
+                        f3 = this.vertexIndices[p++];
                         if (f3 == 0xFFFF)
                         {
-                            f1 = vertexIndices[p++];
-                            f2 = vertexIndices[p++];
+                            f1 = this.vertexIndices[p++];
+                            f2 = this.vertexIndices[p++];
                             faceDirection = startDirection;
                         }
                         else
@@ -3007,24 +3020,24 @@ namespace Smash_Forge
                             {
                                 if (faceDirection > 0)
                                 {
-                                    f.Add(f3);
-                                    f.Add(f2);
-                                    f.Add(f1);
+                                    vertexIndices.Add(f3);
+                                    vertexIndices.Add(f2);
+                                    vertexIndices.Add(f1);
                                 }
                                 else
                                 {
-                                    f.Add(f2);
-                                    f.Add(f3);
-                                    f.Add(f1);
+                                    vertexIndices.Add(f2);
+                                    vertexIndices.Add(f3);
+                                    vertexIndices.Add(f1);
                                 }
                             }
                             f1 = f2;
                             f2 = f3;
                         }
-                    } while (p < vertexIndices.Count);
+                    } while (p < this.vertexIndices.Count);
 
-                    displayFaceSize = f.Count;
-                    return f;
+                    displayFaceSize = vertexIndices.Count;
+                    return vertexIndices;
                 }
             }
         }

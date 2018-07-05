@@ -939,7 +939,7 @@ namespace Smash_Forge
                     inv.source = "#" + mesh.Text + mesh.Nodes.IndexOf(poly) + "_verts";
                     p.inputs.Add(inv);
                     p.count = poly.displayFaceSize;
-                    p.p = poly.getDisplayFace().ToArray();
+                    p.p = poly.GetRenderingVertexIndices().ToArray();
                     geom.mesh.polygons.Add(p);
 
                     // create controllers too
