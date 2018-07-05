@@ -43,9 +43,21 @@ namespace Smash_Forge.Rendering
             Matrix4 matrix = Matrix4.CreateOrthographicOffCenter(0, 1, 1, 0, -1, 1);
             shader.SetMatrix4x4("mvpMatrix", ref matrix);
 
-            // TODO: Window size.
-            shader.SetVector2("windowSize", new Vector2(windowWidth, windowHeight));
+            SetVertexAttributes(shader);
 
+            // Draw the uvs.
+            GL.LineWidth(1.5f);
+            GL.Enable(EnableCap.LineSmooth);
+
+            uvElementsIbo.Bind();
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+
+            shader.DisableVertexAttributes();
+        }
+
+        private static void SetVertexAttributes(Shader shader)
+        {
+            // Set the nud vertex attributes.
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 0);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 12);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vTangent"), 3, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 24);
@@ -56,15 +68,6 @@ namespace Smash_Forge.Rendering
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 88);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV2"), 2, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 104);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV3"), 2, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 112);
-
-            // Draw the uvs.
-            GL.LineWidth(1.5f);
-            GL.Enable(EnableCap.LineSmooth);
-
-            uvElementsIbo.Bind();
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
-
-            shader.DisableVertexAttributes();
         }
 
         public static void InitializeUVBufferData(NUD nud)

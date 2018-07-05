@@ -15,11 +15,13 @@ uniform int width;
 uniform int height;
 uniform int currentMipLevel;
 
+uniform float intensity;
+
 out vec4 fragColor;
 
 void main() {
     fragColor = vec4(0,0,0,1);
-    vec4 textureColor = vec4(1);
+
     bool fill = false;
     // Perform texture aspect ratio scaling.
     float xCoord = texCoord.x;
@@ -40,7 +42,7 @@ void main() {
         }
     }
 
-    textureColor = textureLod(image, vec2(xCoord, yCoord), currentMipLevel).rgba;
+    vec4 textureColor = textureLod(image, vec2(xCoord, yCoord), currentMipLevel).rgba;
 
     // Toggles rendering of individual color channels for all render modes.
     fragColor.rgb = textureColor.rgb * vec3(renderR, renderG, renderB);
@@ -57,4 +59,6 @@ void main() {
         fragColor = vec4(textureColor.aaa, 1);
     if (fill)
         fragColor = vec4(1);
+
+    fragColor.rgb *= intensity;
 }

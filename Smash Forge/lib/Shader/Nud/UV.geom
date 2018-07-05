@@ -3,8 +3,6 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
-uniform vec2 windowSize;
-
 // Outputs to fragment shader.
 noperspective out vec3 edgeDistance;
 

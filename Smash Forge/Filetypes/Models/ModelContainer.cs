@@ -275,12 +275,7 @@ namespace Smash_Forge
                 shader.SetInt("debugOption", (int)Runtime.uvChannel);
                 shader.SetBoolToInt("drawShadow", Runtime.drawModelShadow);
 
-                GL.ActiveTexture(TextureUnit.Texture14);
-                GL.BindTexture(TextureTarget.Texture2D, depthMap);
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation("depthMap"), 14);
-
-                // Used for wireframe shader.
-                shader.SetVector2("windowSize", screenDimensions);
+                shader.SetTexture("depthMap", depthMap, TextureTarget.Texture2D, 14);
 
                 SetElapsedDirectUvTime(shader);
 

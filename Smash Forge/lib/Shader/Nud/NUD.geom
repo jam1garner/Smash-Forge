@@ -3,8 +3,6 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
-uniform vec2 windowSize;
-
 // Attributes from vertex shader.
 in vec3 geomNormal[];
 in vec3 geomViewNormal[];

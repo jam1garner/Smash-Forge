@@ -1496,7 +1496,7 @@ namespace Smash_Forge.Rendering
         }
 
         public static void DrawTexturedQuad(int texture, int width, int height, bool renderR = true, bool renderG = true, bool renderB = true,
-            bool renderA = false, bool keepAspectRatio = false, int currentMipLevel = 0)
+            bool renderA = false, bool keepAspectRatio = false, float intensity = 1, int currentMipLevel = 0)
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = Runtime.shaders["Texture"];
@@ -1517,6 +1517,8 @@ namespace Smash_Forge.Rendering
             shader.SetBoolToInt("renderB",     renderB);
             shader.SetBoolToInt("renderAlpha", renderA);
 
+            shader.SetFloat("intensity", intensity);
+
             bool alphaOverride = renderA && !renderR && !renderG && !renderB;
             shader.SetBoolToInt("alphaOverride", alphaOverride);
 
@@ -1534,9 +1536,9 @@ namespace Smash_Forge.Rendering
             DrawScreenTriangle(shader, screenQuadVbo);
         }
 
-        public static void DrawTexturedQuad(int texture)
+        public static void DrawTexturedQuad(int texture, float intensity)
         {
-            DrawTexturedQuad(texture, 1, 1);
+            DrawTexturedQuad(texture, 1, 1, true, true, true, true, false, intensity, 0);
         }
 
         public static void DrawScreenQuadPostProcessing(int texture0, int texture1)
