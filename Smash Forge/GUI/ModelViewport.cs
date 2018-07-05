@@ -1435,11 +1435,13 @@ namespace Smash_Forge
                 if (meshList.filesTreeView.SelectedNode is BCH_Texture)
                 {
                     DrawBchTex();
+                    glViewport.SwapBuffers();
                     return;
                 }
                 if (meshList.filesTreeView.SelectedNode is NutTexture)
                 {
-                    DrawNutTexAndUvs();
+                    DrawNutTex();
+                    glViewport.SwapBuffers();
                     return;
                 }
             }
@@ -1823,16 +1825,11 @@ namespace Smash_Forge
             return outputPath;
         }
 
-        private void DrawNutTexAndUvs()
+        private void DrawNutTex()
         {
             GL.PopAttrib();
             NutTexture tex = ((NutTexture)meshList.filesTreeView.SelectedNode);
             RenderTools.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HASHID].Id, tex.Width, tex.Height);
-
-            if (Runtime.drawUv)
-                DrawUvsForSelectedTexture(tex);
-
-            glViewport.SwapBuffers();
         }
 
         private void DrawBchTex()
@@ -1840,7 +1837,6 @@ namespace Smash_Forge
             GL.PopAttrib();
             BCH_Texture tex = ((BCH_Texture)meshList.filesTreeView.SelectedNode);
             RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
-            glViewport.SwapBuffers();
         }
 
         private void DrawAreaLightBoundingBoxes()
@@ -1921,32 +1917,6 @@ namespace Smash_Forge
 
                 if (m.NUT != null)
                     m.NUT.RefreshGlTexturesByHashId();
-            }
-        }
-
-        private void DrawUvsForSelectedTexture(NutTexture tex)
-        {
-            foreach (TreeNode node in meshList.filesTreeView.Nodes)
-            {
-                if (!(node is ModelContainer))
-                    continue;
-
-                ModelContainer m = (ModelContainer)node;
-
-                int textureHash = 0;
-                int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
-
-                List<NUD.Polygon> polygonsToRender = new List<NUD.Polygon>();
-                foreach (NUD.Mesh mesh in m.NUD.Nodes)
-                {
-                    foreach (NUD.Polygon p in mesh.Nodes)
-                    {
-                        if (RenderTools.PolyContainsTextureHash(textureHash, p))
-                            polygonsToRender.Add(p);
-                    }
-                }
-                RenderTools.InitializeUVBufferData(polygonsToRender);
-                //RenderTools.DrawUv();
             }
         }
     }

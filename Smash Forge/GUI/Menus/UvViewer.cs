@@ -27,7 +27,7 @@ namespace Smash_Forge.GUI.Menus
             RenderTools.SetUpOpenTkRendering();
             if (polygons != null)
             {
-                RenderTools.InitializeUVBufferData(polygons);
+                UvRendering.InitializeUVBufferData(polygons);
             }
         }
 
@@ -36,7 +36,7 @@ namespace Smash_Forge.GUI.Menus
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
             RenderTools.DrawTexturedQuad(RenderTools.uvTestPattern.Id);
-            RenderTools.DrawUv();
+            UvRendering.DrawUv();
             glControl1.SwapBuffers();
         }
 

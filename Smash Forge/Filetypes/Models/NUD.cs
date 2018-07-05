@@ -345,14 +345,14 @@ namespace Smash_Forge
             // Render using the selected shader.
             GL.UseProgram(shader.Id);
             shader.EnableVertexAttributes();
-            LoadBoneAttributes(vbn, shader);
+            UpdateBonesBuffer(vbn, shader, bonesUbo);
 
             DrawAllPolygons(shader, camera, drawPolyIds);
 
             shader.DisableVertexAttributes();
         }
 
-        private void LoadBoneAttributes(VBN vbn, Shader shader)
+        private void UpdateBonesBuffer(VBN vbn, Shader shader, BufferObject bonesUbo)
         {
             if (vbn != null)
             {
@@ -360,7 +360,7 @@ namespace Smash_Forge
 
                 int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
                 int boneCount = vbn.bones.Count;
-                int dataSize = boneCount * Vector4.SizeInBytes * 4;
+                int dataSize = boneCount * Vector4.SizeInBytes * sizeof(float);
 
                 bonesUbo.Bind();
                 GL.BufferData(bonesUbo.BufferTarget, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
@@ -372,7 +372,7 @@ namespace Smash_Forge
                 if (f.Length > 0)
                 {
                     bonesUbo.Bind();
-                    GL.BufferSubData(bonesUbo.BufferTarget, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
+                    GL.BufferSubData(bonesUbo.BufferTarget, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * sizeof(float)), f);
                 }
             }
         }
