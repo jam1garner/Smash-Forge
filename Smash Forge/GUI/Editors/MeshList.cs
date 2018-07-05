@@ -100,7 +100,7 @@ namespace Smash_Forge
         {
             numericUpDown1.Visible = false;
             label1.Visible = false;
-            button1.Visible = false;
+            matchToNudButton.Visible = false;
             Runtime.TargetVBN = null;
             if (e.Node is NUD.Mesh)
             {
@@ -115,7 +115,7 @@ namespace Smash_Forge
             }
             else if (e.Node is NUD)
             {
-                button1.Visible = true;
+                matchToNudButton.Visible = true;
             }
             else if (e.Node is ModelContainer)
             {
@@ -192,59 +192,64 @@ namespace Smash_Forge
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void matchToNudButton_Click(object sender, EventArgs e)
         {
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter = "Namco Model (.nud)|*.nud";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    string filename = ofd.FileName;
-                    NUD nud = new NUD(filename);
-                    NUD unorderedNud = (NUD)filesTreeView.SelectedNode;
-                    //Gonna reorder some NUDs, nud-in to it
-                    int meshCount = nud.Nodes.Count;
-                    if (unorderedNud.Nodes.Count > meshCount)
-                        meshCount = unorderedNud.Nodes.Count;
-                    NUD.Mesh[] meshes = new NUD.Mesh[meshCount];
+                    NUD sourceNud = new NUD(ofd.FileName);
+                    NUD targetNud = (NUD)filesTreeView.SelectedNode;
 
-                    //Fill in matching meshes
-                    foreach (NUD.Mesh m in nud.Nodes)
+                    //Gonna reorder some NUDs, nud-in to it
+                    // Don't remove any meshes.
+                    int meshCount = Math.Max(sourceNud.Nodes.Count, targetNud.Nodes.Count);
+
+                    NUD.Mesh[] newMeshes = new NUD.Mesh[meshCount];
+
+                    // Fill in matching meshes
+                    foreach (NUD.Mesh sourceMesh in sourceNud.Nodes)
                     {
-                        foreach (NUD.Mesh m2 in unorderedNud.Nodes)
+                        foreach (NUD.Mesh targetMesh in targetNud.Nodes)
                         {
-                            if (m2.Text.Equals(m.Text))
+                            if (targetMesh.Text.Equals(sourceMesh.Text))
                             {
-                                meshes[nud.Nodes.IndexOf((m))] = m2;
+                                newMeshes[sourceNud.Nodes.IndexOf((sourceMesh))] = targetMesh;
                                 break;
                             }
                         }
                     }
-                    //Fill in mismatched meshes
-                    foreach (NUD.Mesh m in unorderedNud.Nodes)
+
+                    // Fill in mismatched meshes
+                    foreach (NUD.Mesh targetMesh in targetNud.Nodes)
                     {
-                        if (!meshes.Contains(m))
+                        if (!newMeshes.Contains(targetMesh))
                         {
-                            for (int i = 0; i < meshes.Length; i++)
+                            for (int i = 0; i < newMeshes.Length; i++)
                             {
-                                if (meshes[i] == null)
+                                if (newMeshes[i] == null)
                                 {
-                                    meshes[i] = m;
+                                    newMeshes[i] = targetMesh;
                                     break;
                                 }
                             }
                         }
                     }
-                    //Dummies for the dummies that don't make enough meshes
-                    for (int i = 0; i < meshes.Length; i++)
+
+                    // Dummies for the dummies that don't make enough meshes
+                    for (int i = 0; i < newMeshes.Length; i++)
                     {
-                        if (meshes[i] == null)
+                        if (newMeshes[i] == null)
                         {
-                            meshes[i] = new NUD.Mesh();
-                            meshes[i].Text = "dummy";  
-                            break;
+                            newMeshes[i] = new NUD.Mesh();
+                            newMeshes[i].Text = "dummy";  
                         }
                     }
+
+                    // Apply the changes.
+                    targetNud.Nodes.Clear();
+                    targetNud.Nodes.AddRange(newMeshes);
 
                     RefreshNodes();
                 }
