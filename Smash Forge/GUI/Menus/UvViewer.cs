@@ -36,7 +36,7 @@ namespace Smash_Forge.GUI.Menus
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
             RenderTools.DrawTexturedQuad(RenderTools.uvTestPattern.Id);
-            NudUvRendering.DrawUv(nud);
+            NudUvRendering.DrawUv(nud, glControl1.Width, glControl1.Height);
             glControl1.SwapBuffers();
         }
 

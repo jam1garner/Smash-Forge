@@ -19,7 +19,7 @@ namespace Smash_Forge.Rendering
         private static BufferObject uvPositionVbo;
         private static BufferObject uvElementsIbo;
 
-        public static void DrawUv(NUD nud)
+        public static void DrawUv(NUD nud, int windowWidth, int windowHeight)
         {
             if (uvPositionVbo == null)
                 return;
@@ -28,12 +28,12 @@ namespace Smash_Forge.Rendering
             {
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
-                    DrawPolygonUv(poly);
+                    DrawPolygonUv(poly, windowWidth, windowHeight);
                 }
             }
         }
 
-        private static void DrawPolygonUv(NUD.Polygon p)
+        private static void DrawPolygonUv(NUD.Polygon p, int windowWidth, int windowHeight)
         {
             Shader shader = Runtime.shaders["UV"];
             GL.UseProgram(shader.Id);
@@ -50,7 +50,7 @@ namespace Smash_Forge.Rendering
             shader.SetMatrix4x4("mvpMatrix", ref matrix);
 
             // TODO: Window size.
-            shader.SetVector2("windowSize", new Vector2(1));
+            shader.SetVector2("windowSize", new Vector2(windowWidth, windowHeight));
 
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 0);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, NUD.DisplayVertex.Size, 12);

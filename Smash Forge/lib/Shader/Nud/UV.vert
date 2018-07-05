@@ -17,5 +17,5 @@ uniform mat4 mvpMatrix;
 void main()
 {
     vec4 objPos = vec4(vPosition.xyz, 1.0);
-    gl_Position = mvpMatrix * vec4(objPos.xyz, 1.0);
+    gl_Position = mvpMatrix * vec4(vUV, 1.0, 1.0);
 }
