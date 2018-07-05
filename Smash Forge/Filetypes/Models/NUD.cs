@@ -24,10 +24,10 @@ namespace Smash_Forge
     public class NUD : FileBase
     {
         // OpenGL Buffers
-        BufferObject positionVbo;
-        BufferObject elementsIbo;
-        BufferObject bonesUbo;
-        BufferObject selectVbo;
+        private BufferObject positionVbo;
+        private BufferObject elementsIbo;
+        private BufferObject bonesUbo;
+        private BufferObject selectVbo;
 
         // Default bind location for dummy textures.
         private static readonly TextureUnit dummyTextureUnit = TextureUnit.Texture20;
@@ -45,7 +45,7 @@ namespace Smash_Forge
         public float[] boundingBox = new float[4];
 
         // Just used for rendering.
-        List<Mesh> depthSortedMeshes = new List<Mesh>();
+        private List<Mesh> depthSortedMeshes = new List<Mesh>();
 
         // xmb stuff
         public int lightSetNumber = 0;
@@ -57,42 +57,44 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
-        Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
-                    { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
-                    { 0x02, BlendingFactorDest.One},
-                    { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
-                    { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
-                    { 0x05, BlendingFactorDest.ConstantAlpha},
-        };
-
-        static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
-                    { 0x01, BlendingFactorSrc.SrcAlpha},
-                    { 0x02, BlendingFactorSrc.SrcAlpha},
-                    { 0x03, BlendingFactorSrc.SrcAlpha},
-                    { 0x04, BlendingFactorSrc.SrcAlpha},
-                    { 0x0a, BlendingFactorSrc.Zero}
-        };
-
-        static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
+        private static readonly Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>()
         {
-                    { 0x01, TextureWrapMode.Repeat},
-                    { 0x02, TextureWrapMode.MirroredRepeat},
-                    { 0x03, TextureWrapMode.ClampToEdge}
+            { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
+            { 0x02, BlendingFactorDest.One},
+            { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
+            { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
+            { 0x05, BlendingFactorDest.ConstantAlpha},
         };
 
-        static Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
+        private static readonly Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>()
         {
-                    { 0x00, TextureMinFilter.LinearMipmapLinear},
-                    { 0x01, TextureMinFilter.Nearest},
-                    { 0x02, TextureMinFilter.Linear},
-                    { 0x03, TextureMinFilter.NearestMipmapLinear},
+            { 0x01, BlendingFactorSrc.SrcAlpha},
+            { 0x02, BlendingFactorSrc.SrcAlpha},
+            { 0x03, BlendingFactorSrc.SrcAlpha},
+            { 0x04, BlendingFactorSrc.SrcAlpha},
+            { 0x0a, BlendingFactorSrc.Zero}
         };
 
-        static Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
+        private static readonly Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
         {
-                    { 0x00, TextureMagFilter.Linear},
-                    { 0x01, TextureMagFilter.Nearest},
-                    { 0x02, TextureMagFilter.Linear}
+            { 0x01, TextureWrapMode.Repeat},
+            { 0x02, TextureWrapMode.MirroredRepeat},
+            { 0x03, TextureWrapMode.ClampToEdge}
+        };
+
+        private static readonly Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
+        {
+            { 0x00, TextureMinFilter.LinearMipmapLinear},
+            { 0x01, TextureMinFilter.Nearest},
+            { 0x02, TextureMinFilter.Linear},
+            { 0x03, TextureMinFilter.NearestMipmapLinear},
+        };
+
+        static readonly Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
+        {
+            { 0x00, TextureMagFilter.Linear},
+            { 0x01, TextureMagFilter.Nearest},
+            { 0x02, TextureMagFilter.Linear}
         };
 
         public enum TextureFlags
@@ -266,7 +268,7 @@ namespace Smash_Forge
             }
         }
 
-        public void UpdateVertexBuffersData()
+        public void UpdateVertexBuffers(BufferObject positionVbo, BufferObject elementsIbo)
         {
             DisplayVertex[] displayVerticesArray;
             int[] vertexIndicesArray;
@@ -312,6 +314,11 @@ namespace Smash_Forge
             GL.BufferData<int>(elementsIbo.BufferTarget, (IntPtr)(vertexIndicesArray.Length * sizeof(int)), vertexIndicesArray, BufferUsageHint.StaticDraw);
         }
 
+        public void UpdateVertexBuffers()
+        {
+            UpdateVertexBuffers(positionVbo, elementsIbo);
+        }
+
         public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)
         {
             // Binding 0 to a buffer target will crash. This also means the NUD buffers weren't generated yet.
@@ -319,7 +326,7 @@ namespace Smash_Forge
             if (!buffersWereInitialized)
             {
                 GenerateBuffers();
-                UpdateVertexBuffersData();
+                UpdateVertexBuffers(positionVbo, elementsIbo);
             }
 
             // Main function for NUD rendering.
