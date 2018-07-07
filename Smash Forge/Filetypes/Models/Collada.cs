@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Globalization;
 using System.Xml;
 using System.Drawing;
 using System.IO;
 using OpenTK;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Diagnostics;
 
@@ -16,7 +13,6 @@ namespace Smash_Forge
 {
     class Collada
     {
-
         public Collada()
         {
 
@@ -92,82 +88,98 @@ namespace Smash_Forge
 
             foreach (ColladaGeometry geom in dae.library_geometries)
             {
-                ColladaMesh mesh = geom.mesh;
-                ColladaPolygons colladaPoly = mesh.polygons[0];
-
-                Dictionary<string, ColladaSource> sources = GetVertexDataSources(mesh);
-
-                // Find the appropriate collada node and associated matrix.
-                Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
-                ColladaNode colladaNode = null;
-                foreach (ColladaNode node in dae.scene.nodes)
-                {
-                    if (node.geom_id.Equals(geom.id))
-                    {
-                        colladaNode = node;
-                        nodeTrans = node.mat;
-                        break;
-                    }
-                }
-
-                // Check if the mesh already exists first.
-                // Remove the initial numbers so that the names aren't unique.
-                NUD.Mesh nudMesh;
-                string nameWithoutNumber = RemoveInitialUnderscoreId(geom.name);
-
-                if (nudMeshByGeometryName.ContainsKey(nameWithoutNumber))
-                {
-                    nudMesh = nudMeshByGeometryName[nameWithoutNumber];
-                }
-                else
-                {
-                    nudMesh = new NUD.Mesh();
-                    nudMesh.Text = geom.name;
-                    nud.Nodes.Add(nudMesh);
-                    nudMeshByGeometryName.Add(nameWithoutNumber, nudMesh);
-                }
-
-                // Always add the polygon.
-                NUD.Polygon nudPolygon = new NUD.Polygon();
-                nudPolygon.AddDefaultMaterial();
-                nudMesh.Nodes.Add(nudPolygon);
-
-                // Many vertices share the same vertex data.
-                // If there aren't any sources, we can't do anything meaningful anyway.
-                int vertexDataLength = sources.First().Value.data.Length / sources.First().Value.stride;
-                NUD.Vertex[] vertexDataSource = new NUD.Vertex[vertexDataLength];
-
-                for (int pIndex = 0; pIndex < colladaPoly.p.Length; pIndex++)
-                {
-                    if (importTexture && colladaPoly.type == ColladaPrimitiveType.triangles)
-                    {
-                        // This may or may not still work.
-                        TryReadTexture(fileName, dae, nut, images, effects, materials, existingTextures, texturemap, colladaPoly, nudPolygon);
-                    }
-
-                    int maxOffset = CalculateMaxOffset(colladaPoly);
-                    if (pIndex * maxOffset >= colladaPoly.p.Length)
-                        break;
-
-                    // Initialize the vertex for the given index.
-                    int vertexSourceIndex = colladaPoly.p[pIndex];
-                    if (vertexDataSource[vertexSourceIndex] == null)
-                    {
-                        // Create the vertex data from all of the inputs.
-                        NUD.Vertex v = ReadVertexSemantics(dae, vertexListBySkinSource, geom, mesh, colladaPoly, sources, nudPolygon, pIndex, maxOffset);
-                        TransformVertexNormalAndPosition(dae, bindMatrixBySkinSource, geom, nodeTrans, v);
-
-                        // Fill the vertex data into the vertex sources.
-                        vertexDataSource[vertexSourceIndex] = v;
-                    }
-                }
-
-                // Add the vertices and indices to the polygon.
-                nudPolygon.vertices = vertexDataSource.ToList();
-                nudPolygon.vertexIndices = colladaPoly.p.ToList();
-
-                AddMaterialsForEachUvChannel(nudPolygon);
+                ConvertColladaGeom(fileName, importTexture, dae, nud, nut, images, effects, materials, existingTextures, vertexListBySkinSource, bindMatrixBySkinSource, texturemap, nudMeshByGeometryName, geom);
             }
+        }
+
+        private static void ConvertColladaGeom(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, NutTexture> existingTextures, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NutTexture> texturemap, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
+        {
+            ConvertColladaMesh(fileName, importTexture, dae, nud, nut, images, effects, materials, existingTextures, vertexListBySkinSource, bindMatrixBySkinSource, texturemap, nudMeshByGeometryName, geom);
+        }
+
+        private static void ConvertColladaMesh(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, NutTexture> existingTextures, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NutTexture> texturemap, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
+        {
+            ColladaMesh mesh = geom.mesh;
+            Dictionary<string, ColladaSource> sources = GetVertexDataSources(mesh);
+
+            ConvertColladaPoly(fileName, importTexture, dae, nud, nut, images, effects, materials, existingTextures, vertexListBySkinSource, bindMatrixBySkinSource, texturemap, nudMeshByGeometryName, geom, mesh, sources);
+        }
+
+        private static void ConvertColladaPoly(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, NutTexture> existingTextures, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NutTexture> texturemap, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom, ColladaMesh mesh, Dictionary<string, ColladaSource> sources)
+        {
+            ColladaPolygons colladaPoly = mesh.polygons[0];
+
+
+            // Find the appropriate collada node and associated matrix.
+            Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
+            ColladaNode colladaNode = null;
+            foreach (ColladaNode node in dae.scene.nodes)
+            {
+                if (node.geom_id.Equals(geom.id))
+                {
+                    colladaNode = node;
+                    nodeTrans = node.mat;
+                    break;
+                }
+            }
+
+            // Check if the mesh already exists first.
+            // Remove the initial numbers so that the names aren't unique.
+            NUD.Mesh nudMesh;
+            string nameWithoutNumber = RemoveInitialUnderscoreId(geom.name);
+
+            if (nudMeshByGeometryName.ContainsKey(nameWithoutNumber))
+            {
+                nudMesh = nudMeshByGeometryName[nameWithoutNumber];
+            }
+            else
+            {
+                nudMesh = new NUD.Mesh();
+                nudMesh.Text = geom.name;
+                nud.Nodes.Add(nudMesh);
+                nudMeshByGeometryName.Add(nameWithoutNumber, nudMesh);
+            }
+
+            // Always add the polygon.
+            NUD.Polygon nudPolygon = new NUD.Polygon();
+            nudPolygon.AddDefaultMaterial();
+            nudMesh.Nodes.Add(nudPolygon);
+
+            // Many vertices share the same vertex data.
+            // If there aren't any sources, we can't do anything meaningful anyway.
+            int vertexDataLength = sources.First().Value.data.Length / sources.First().Value.stride;
+            NUD.Vertex[] vertexDataSource = new NUD.Vertex[vertexDataLength];
+
+            for (int pIndex = 0; pIndex < colladaPoly.p.Length; pIndex++)
+            {
+                if (importTexture && colladaPoly.type == ColladaPrimitiveType.triangles)
+                {
+                    // This may or may not still work.
+                    TryReadTexture(fileName, dae, nut, images, effects, materials, existingTextures, texturemap, colladaPoly, nudPolygon);
+                }
+
+                int maxOffset = CalculateMaxOffset(colladaPoly);
+                if (pIndex * maxOffset >= colladaPoly.p.Length)
+                    break;
+
+                // Initialize the vertex for the given index.
+                int vertexSourceIndex = colladaPoly.p[pIndex];
+                if (vertexDataSource[vertexSourceIndex] == null)
+                {
+                    // Create the vertex data from all of the inputs.
+                    NUD.Vertex v = ReadVertexSemantics(dae, vertexListBySkinSource, geom, mesh, colladaPoly, sources, nudPolygon, pIndex, maxOffset);
+                    TransformVertexNormalAndPosition(dae, bindMatrixBySkinSource, geom, nodeTrans, v);
+
+                    // Fill the vertex data into the vertex sources.
+                    vertexDataSource[vertexSourceIndex] = v;
+                }
+            }
+
+            // Add the vertices and indices to the polygon.
+            nudPolygon.vertices = vertexDataSource.ToList();
+            nudPolygon.vertexIndices = colladaPoly.p.ToList();
+
+            AddMaterialsForEachUvChannel(nudPolygon);
         }
 
         public static string RemoveInitialUnderscoreId(string geometryName)
@@ -448,6 +460,7 @@ namespace Smash_Forge
         {
             ColladaSource colladaSource = sources[input.source];
             int valueCount = colladaSource.accessorParams.Count;
+
             switch (input.semanticType)
             {
                 case SemanticType.POSITION:
