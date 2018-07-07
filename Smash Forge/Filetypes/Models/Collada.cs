@@ -44,20 +44,6 @@ namespace Smash_Forge
             nut = new NUT();
             Runtime.TextureContainers.Add(nut);
 
-            //grab all that material data so we can apply images later
-            Dictionary<string, ColladaImages> images = new Dictionary<string, ColladaImages>();
-            foreach (var image in dae.library_images)
-                if (!images.ContainsKey(image.id))
-                    images.Add(image.id, image);
-            Dictionary<string, ColladaEffects> effects = new Dictionary<string, ColladaEffects>();
-            foreach (var efc in dae.library_effects)
-                if (!effects.ContainsKey(efc.id))
-                    effects.Add(efc.id, efc);
-            Dictionary<string, ColladaMaterials> materials = new Dictionary<string, ColladaMaterials>();
-            foreach (var mat in dae.library_materials)
-                if (!materials.ContainsKey(mat.id))
-                    materials.Add(mat.id, mat);
-
             Dictionary<string, NutTexture> existingTextures = new Dictionary<string, NutTexture>();
 
             // Controllers used for vertex skinning.
@@ -86,24 +72,24 @@ namespace Smash_Forge
 
             foreach (ColladaGeometry geom in dae.library_geometries)
             {
-                ConvertColladaGeom(fileName, importTexture, dae, nud, nut, images, effects, materials, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom);
+                ConvertColladaGeom(fileName, importTexture, dae, nud, nut, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom);
             }
         }
 
-        private static void ConvertColladaGeom(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
+        private static void ConvertColladaGeom(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
         {
             ColladaMesh mesh = geom.mesh;
-            ConvertColladaMesh(mesh, fileName, importTexture, dae, nud, nut, images, effects, materials, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom);
+            ConvertColladaMesh(mesh, fileName, importTexture, dae, nud, nut, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom);
         }
 
-        private static void ConvertColladaMesh(ColladaMesh mesh, string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
+        private static void ConvertColladaMesh(ColladaMesh mesh, string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
         {
             Dictionary<string, ColladaSource> sources = GetVertexDataSources(mesh);
 
-            ConvertColladaPoly(fileName, importTexture, dae, nud, nut, images, effects, materials, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom, mesh, sources);
+            ConvertColladaPoly(fileName, importTexture, dae, nud, nut, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom, mesh, sources);
         }
 
-        private static void ConvertColladaPoly(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom, ColladaMesh mesh, Dictionary<string, ColladaSource> sources)
+        private static void ConvertColladaPoly(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom, ColladaMesh mesh, Dictionary<string, ColladaSource> sources)
         {
             ColladaPolygons colladaPoly = mesh.polygons[0];
 
@@ -145,7 +131,7 @@ namespace Smash_Forge
             if (importTexture && colladaPoly.type == ColladaPrimitiveType.triangles)
             {
                 // This may or may not still work.
-                TryReadTexture(fileName, dae, nut, images, effects, materials, colladaPoly, nudPolygon);
+                TryReadTexture(fileName, dae, nut, colladaPoly, nudPolygon);
             }
 
             // Many vertices share the same vertex data.
@@ -216,12 +202,27 @@ namespace Smash_Forge
             return sources;
         }
 
-        private static void TryReadTexture(string fileName, Collada dae, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, ColladaPolygons colladaPoly, NUD.Polygon npoly)
+        private static void TryReadTexture(string fileName, Collada dae, NUT nut, ColladaPolygons colladaPoly, NUD.Polygon npoly)
         {
+            // Grab all that material data so we can apply images later.
+            // TODO: It's inefficient to do it here, but it makes the code less gross.
+            Dictionary<string, ColladaImages> images = new Dictionary<string, ColladaImages>();
+            foreach (var img in dae.library_images)
+                if (!images.ContainsKey(img.id))
+                    images.Add(img.id, img);
+            Dictionary<string, ColladaEffects> effects = new Dictionary<string, ColladaEffects>();
+            foreach (var efc in dae.library_effects)
+                if (!effects.ContainsKey(efc.id))
+                    effects.Add(efc.id, efc);
+            Dictionary<string, ColladaMaterials> materials = new Dictionary<string, ColladaMaterials>();
+            foreach (var mat in dae.library_materials)
+                if (!materials.ContainsKey(mat.id))
+                    materials.Add(mat.id, mat);
+
             NutTexture tempTex = null;
-            ColladaMaterials mat = null;
-            ColladaEffects eff = null;
-            ColladaImages img = null;
+            ColladaMaterials material = null;
+            ColladaEffects effect = null;
+            ColladaImages image = null;
             string matId = null;
 
             Dictionary<string, NutTexture> existingTextures = new Dictionary<string, NutTexture>();
@@ -231,39 +232,39 @@ namespace Smash_Forge
             dae.scene.MaterialIds.TryGetValue(colladaPoly.materialid, out matId);
 
             if (matId != null && matId[0] == '#')
-                materials.TryGetValue(matId.Substring(1, matId.Length - 1), out mat);
-            if (mat != null && mat.effecturl[0] == '#')
-                effects.TryGetValue(mat.effecturl.Substring(1, mat.effecturl.Length - 1), out eff);
-            if (eff != null && eff.source[0] == '#')
-                images.TryGetValue(eff.source.Substring(1, eff.source.Length - 1), out img);
-            if (img != null)
-                existingTextures.TryGetValue(img.initref, out tempTex);
+                materials.TryGetValue(matId.Substring(1, matId.Length - 1), out material);
+            if (material != null && material.effecturl[0] == '#')
+                effects.TryGetValue(material.effecturl.Substring(1, material.effecturl.Length - 1), out effect);
+            if (effect != null && effect.source[0] == '#')
+                images.TryGetValue(effect.source.Substring(1, effect.source.Length - 1), out image);
+            if (image != null)
+                existingTextures.TryGetValue(image.initref, out tempTex);
 
-            if (texturemap.ContainsKey(img.initref))
+            if (texturemap.ContainsKey(image.initref))
             {
-                tempTex = texturemap[img.initref];
+                tempTex = texturemap[image.initref];
             }
-            else if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))))
+            else if (tempTex == null && image != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), image.initref))))
             {
                 NutTexture tex = null;
-                if (img.initref.ToLower().EndsWith(".dds"))
+                if (image.initref.ToLower().EndsWith(".dds"))
                 {
-                    DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))));
+                    DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), image.initref))));
                     tex = dds.ToNutTexture();
                 }
-                if (img.initref.ToLower().EndsWith(".png"))
+                if (image.initref.ToLower().EndsWith(".png"))
                 {
-                    tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref)), 1);
+                    tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), image.initref)), 1);
                 }
                 if (tex == null)
                     //continue;
-                    texturemap.Add(img.initref, tex);
+                    texturemap.Add(image.initref, tex);
                 tex.HASHID = 0x40FFFF00;
                 while (NUT.texIdUsed(tex.HASHID))
                     tex.HASHID++;
                 nut.Nodes.Add(tex);
                 nut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
-                existingTextures.Add(img.initref, tex);
+                existingTextures.Add(image.initref, tex);
                 tempTex = tex;
             }
             if (tempTex != null)
