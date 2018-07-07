@@ -81,34 +81,31 @@ namespace Smash_Forge
                 SkinVerts(container, skin, sources, verts);
             }
 
-            Dictionary<string, NutTexture> texturemap = new Dictionary<string, NutTexture>();
-
             // Don't add duplicate meshes if they share a name.
             Dictionary<string, NUD.Mesh> nudMeshByGeometryName = new Dictionary<string, NUD.Mesh>();
 
             foreach (ColladaGeometry geom in dae.library_geometries)
             {
-                ConvertColladaGeom(fileName, importTexture, dae, nud, nut, images, effects, materials, existingTextures, vertexListBySkinSource, bindMatrixBySkinSource, texturemap, nudMeshByGeometryName, geom);
+                ConvertColladaGeom(fileName, importTexture, dae, nud, nut, images, effects, materials, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom);
             }
         }
 
-        private static void ConvertColladaGeom(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, NutTexture> existingTextures, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NutTexture> texturemap, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
-        {
-            ConvertColladaMesh(fileName, importTexture, dae, nud, nut, images, effects, materials, existingTextures, vertexListBySkinSource, bindMatrixBySkinSource, texturemap, nudMeshByGeometryName, geom);
-        }
-
-        private static void ConvertColladaMesh(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, NutTexture> existingTextures, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NutTexture> texturemap, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
+        private static void ConvertColladaGeom(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
         {
             ColladaMesh mesh = geom.mesh;
-            Dictionary<string, ColladaSource> sources = GetVertexDataSources(mesh);
-
-            ConvertColladaPoly(fileName, importTexture, dae, nud, nut, images, effects, materials, existingTextures, vertexListBySkinSource, bindMatrixBySkinSource, texturemap, nudMeshByGeometryName, geom, mesh, sources);
+            ConvertColladaMesh(mesh, fileName, importTexture, dae, nud, nut, images, effects, materials, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom);
         }
 
-        private static void ConvertColladaPoly(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, NutTexture> existingTextures, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NutTexture> texturemap, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom, ColladaMesh mesh, Dictionary<string, ColladaSource> sources)
+        private static void ConvertColladaMesh(ColladaMesh mesh, string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
+        {
+            Dictionary<string, ColladaSource> sources = GetVertexDataSources(mesh);
+
+            ConvertColladaPoly(fileName, importTexture, dae, nud, nut, images, effects, materials, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom, mesh, sources);
+        }
+
+        private static void ConvertColladaPoly(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom, ColladaMesh mesh, Dictionary<string, ColladaSource> sources)
         {
             ColladaPolygons colladaPoly = mesh.polygons[0];
-
 
             // Find the appropriate collada node and associated matrix.
             Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
@@ -145,19 +142,21 @@ namespace Smash_Forge
             nudPolygon.AddDefaultMaterial();
             nudMesh.Nodes.Add(nudPolygon);
 
+            if (importTexture && colladaPoly.type == ColladaPrimitiveType.triangles)
+            {
+                // This may or may not still work.
+                TryReadTexture(fileName, dae, nut, images, effects, materials, colladaPoly, nudPolygon);
+            }
+
             // Many vertices share the same vertex data.
             // If there aren't any sources, we can't do anything meaningful anyway.
             int vertexDataLength = sources.First().Value.data.Length / sources.First().Value.stride;
             NUD.Vertex[] vertexDataSource = new NUD.Vertex[vertexDataLength];
 
+            // Create vertices using the vertex indices in colladaPoly.p.
             for (int pIndex = 0; pIndex < colladaPoly.p.Length; pIndex++)
             {
-                if (importTexture && colladaPoly.type == ColladaPrimitiveType.triangles)
-                {
-                    // This may or may not still work.
-                    TryReadTexture(fileName, dae, nut, images, effects, materials, existingTextures, texturemap, colladaPoly, nudPolygon);
-                }
-
+                // TODO: The offsets aren't always the same.
                 int maxOffset = CalculateMaxOffset(colladaPoly);
                 if (pIndex * maxOffset >= colladaPoly.p.Length)
                     break;
@@ -217,13 +216,17 @@ namespace Smash_Forge
             return sources;
         }
 
-        private static void TryReadTexture(string fileName, Collada dae, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, NutTexture> existingTextures, Dictionary<string, NutTexture> texturemap, ColladaPolygons colladaPoly, NUD.Polygon npoly)
+        private static void TryReadTexture(string fileName, Collada dae, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, ColladaPolygons colladaPoly, NUD.Polygon npoly)
         {
             NutTexture tempTex = null;
             ColladaMaterials mat = null;
             ColladaEffects eff = null;
             ColladaImages img = null;
             string matId = null;
+
+            Dictionary<string, NutTexture> existingTextures = new Dictionary<string, NutTexture>();
+            Dictionary<string, NutTexture> texturemap = new Dictionary<string, NutTexture>();
+
 
             dae.scene.MaterialIds.TryGetValue(colladaPoly.materialid, out matId);
 
