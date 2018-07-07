@@ -1071,7 +1071,6 @@
     <None Include="GUI\Editors\MeshList.resx">
       <DependentUpon>MeshList.cs</DependentUpon>
     </None>
-    <Compile Include="Filetypes\Models\DAE.cs" />
     <Compile Include="Filetypes\Models\MBN.cs" />
     <Compile Include="Filetypes\Textures\Pixel.cs" />
   </ItemGroup>
