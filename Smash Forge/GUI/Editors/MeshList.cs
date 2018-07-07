@@ -888,7 +888,7 @@ namespace Smash_Forge
 
         private void generateBoundingBoxesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ((NUD)filesTreeView.SelectedNode).GenerateBoundingBoxes();
+            ((NUD)filesTreeView.SelectedNode).GenerateBoundingSpheres();
         }
 
         private void recalculateToolStripMenuItem_Click(object sender, EventArgs e)
