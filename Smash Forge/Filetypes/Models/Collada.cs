@@ -28,14 +28,26 @@ namespace Smash_Forge
             Collada dae = new Collada(fileName);
 
             NUD nud;
-            NUT nut; 
-            // The filename is just used to get the file directory.
-            CreateNudNutFromDae(fileName, container, importTexture, dae, out nud, out nut);
+            NUT nut;
 
-            // Modify model container.
-            container.NUD = nud;
-            container.NUT = nut;
-            CreateBones(container, dae);
+            try
+            {
+                // The filename is just used to get the file directory.
+                CreateNudNutFromDae(fileName, container, importTexture, dae, out nud, out nut);
+
+                // Modify model container.
+                container.NUD = nud;
+                container.NUT = nut;
+                CreateBones(container, dae);
+            }
+            catch (NotImplementedException e)
+            {
+                // Only triangles are supported, so polylists will crash.
+                container.NUD = null;
+                container.NUT = null;
+                container.VBN = null;
+                MessageBox.Show(e.Message, "Unsupported Dae Format");
+            }
         }
 
         private static void CreateNudNutFromDae(string fileName, ModelContainer container, bool importTexture, Collada dae, out NUD nud, out NUT nut)
@@ -92,6 +104,8 @@ namespace Smash_Forge
         private static void ConvertColladaPoly(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom, ColladaMesh mesh, Dictionary<string, ColladaSource> sources)
         {
             ColladaPolygons colladaPoly = mesh.polygons[0];
+            if (colladaPoly.type != ColladaPrimitiveType.triangles)
+                throw new NotImplementedException("Unsupported primitive type: " + colladaPoly.type.ToString());
 
             // Find the appropriate collada node and associated matrix.
             Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);

@@ -880,7 +880,8 @@ namespace Smash_Forge
                         Collada.DaetoNud(ofd.FileName, con, daeImport.importTexCB.Checked);
 
                         // apply settings
-                        daeImport.Apply(con.NUD);
+                        if (con.NUD != null)
+                            daeImport.Apply(con.NUD);
                     }
                 }
             }
