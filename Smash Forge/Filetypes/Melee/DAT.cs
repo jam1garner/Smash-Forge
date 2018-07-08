@@ -715,7 +715,7 @@ namespace Smash_Forge
                         {
                             if (!usedVertices.Contains(vertBank[index]))
                                 usedVertices.Add(vertBank[index]);
-                            polygon.faces.Add(usedVertices.IndexOf(vertBank[index]));
+                            polygon.vertexIndices.Add(usedVertices.IndexOf(vertBank[index]));
                         }
                     }
                 }
@@ -741,7 +741,7 @@ namespace Smash_Forge
                 mesh.Nodes.Add(polygon);
             }
 
-            nud.UpdateVertexData();
+            nud.UpdateVertexBuffers();
 
 
             return con;

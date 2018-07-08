@@ -32,7 +32,7 @@
             this.filesTreeView = new System.Windows.Forms.TreeView();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.matchToNudButton = new System.Windows.Forms.Button();
             this.polyContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editMaterialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyMaterialToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,6 +43,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.flipUVsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.flipUVsHorizontalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.uvViewerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.smoothNormalsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.recalculateToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.smoothToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -119,15 +121,15 @@
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // treeView1
+            // filesTreeView
             // 
             this.filesTreeView.CheckBoxes = true;
             this.filesTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.filesTreeView.HideSelection = false;
             this.filesTreeView.LabelEdit = true;
             this.filesTreeView.Location = new System.Drawing.Point(3, 16);
-            this.filesTreeView.Name = "treeView1";
-            this.filesTreeView.Size = new System.Drawing.Size(187, 257);
+            this.filesTreeView.Name = "filesTreeView";
+            this.filesTreeView.Size = new System.Drawing.Size(187, 365);
             this.filesTreeView.TabIndex = 0;
             this.filesTreeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
             this.filesTreeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
@@ -139,7 +141,7 @@
             // numericUpDown1
             // 
             this.numericUpDown1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDown1.Location = new System.Drawing.Point(79, 286);
+            this.numericUpDown1.Location = new System.Drawing.Point(76, 389);
             this.numericUpDown1.Name = "numericUpDown1";
             this.numericUpDown1.Size = new System.Drawing.Size(117, 20);
             this.numericUpDown1.TabIndex = 1;
@@ -150,24 +152,24 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 288);
+            this.label1.Location = new System.Drawing.Point(12, 393);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(62, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "Mesh Index";
             this.label1.Visible = false;
             // 
-            // button1
+            // matchToNudButton
             // 
-            this.button1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.button1.Location = new System.Drawing.Point(46, 283);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(105, 23);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "Match To nud";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Visible = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.matchToNudButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.matchToNudButton.Location = new System.Drawing.Point(40, 388);
+            this.matchToNudButton.Name = "matchToNudButton";
+            this.matchToNudButton.Size = new System.Drawing.Size(115, 23);
+            this.matchToNudButton.TabIndex = 3;
+            this.matchToNudButton.Text = "Match to Nud";
+            this.matchToNudButton.UseVisualStyleBackColor = true;
+            this.matchToNudButton.Visible = false;
+            this.matchToNudButton.Click += new System.EventHandler(this.matchToNudButton_Click);
             // 
             // polyContextMenu
             // 
@@ -181,6 +183,8 @@
             this.toolStripSeparator2,
             this.flipUVsToolStripMenuItem,
             this.flipUVsHorizontalToolStripMenuItem,
+            this.uvViewerMenuItem,
+            this.toolStripSeparator7,
             this.smoothNormalsToolStripMenuItem,
             this.generateTanBitanToolStripMenuItem1,
             this.toolStripSeparator3,
@@ -188,7 +192,7 @@
             this.vertexColorToolStripMenuItem,
             this.polyFormatToolStripMenuItem});
             this.polyContextMenu.Name = "polyContextMenu";
-            this.polyContextMenu.Size = new System.Drawing.Size(183, 264);
+            this.polyContextMenu.Size = new System.Drawing.Size(183, 314);
             this.polyContextMenu.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // editMaterialToolStripMenuItem
@@ -250,6 +254,18 @@
             this.flipUVsHorizontalToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.flipUVsHorizontalToolStripMenuItem.Text = "Flip UVs (Horizontal)";
             this.flipUVsHorizontalToolStripMenuItem.Click += new System.EventHandler(this.flipUVsHorizontalToolStripMenuItem_Click);
+            // 
+            // uvViewerMenuItem
+            // 
+            this.uvViewerMenuItem.Name = "uvViewerMenuItem";
+            this.uvViewerMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.uvViewerMenuItem.Text = "Open UV Viewer";
+            this.uvViewerMenuItem.Click += new System.EventHandler(this.uvViewerMenuItem_Click);
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(179, 6);
             // 
             // smoothNormalsToolStripMenuItem
             // 
@@ -359,7 +375,7 @@
             // polyFormatToolStripMenuItem
             // 
             this.polyFormatToolStripMenuItem.Name = "polyFormatToolStripMenuItem";
-            this.polyFormatToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.polyFormatToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.polyFormatToolStripMenuItem.Text = "Change Format...";
             this.polyFormatToolStripMenuItem.Click += new System.EventHandler(this.polyFormatToolStripMenuItem_Click);
             // 
@@ -539,7 +555,7 @@
             this.openEditToolStripMenuItem,
             this.vertexColorToolStripMenuItem2});
             this.nudContextMenu.Name = "nudContextMenu";
-            this.nudContextMenu.Size = new System.Drawing.Size(210, 230);
+            this.nudContextMenu.Size = new System.Drawing.Size(210, 208);
             // 
             // saveToolStripMenuItem
             // 
@@ -776,7 +792,7 @@
             this.groupBox1.Controls.Add(this.filesTreeView);
             this.groupBox1.Location = new System.Drawing.Point(3, 1);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(193, 276);
+            this.groupBox1.Size = new System.Drawing.Size(193, 384);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Model List";
@@ -785,9 +801,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(199, 306);
+            this.ClientSize = new System.Drawing.Size(199, 414);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.matchToNudButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.numericUpDown1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -809,7 +825,7 @@
         public System.Windows.Forms.TreeView filesTreeView;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button matchToNudButton;
         private System.Windows.Forms.ContextMenuStrip polyContextMenu;
         private System.Windows.Forms.ToolStripMenuItem editMaterialToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem flipUVsToolStripMenuItem;
@@ -888,5 +904,7 @@
         private System.Windows.Forms.ToolStripMenuItem uVsToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem texIDToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem texIDNUDNUTToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem uvViewerMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
     }
 }

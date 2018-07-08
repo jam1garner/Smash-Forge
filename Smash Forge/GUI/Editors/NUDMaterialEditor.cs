@@ -107,12 +107,10 @@ namespace Smash_Forge
         public NUDMaterialEditor()
         {
             InitializeComponent();
-            RenderTools.SetupOpenTkRendering();
         }
 
-        public NUDMaterialEditor(NUD.Polygon p)
+        public NUDMaterialEditor(NUD.Polygon p) : this()
         {
-            InitializeComponent();
             currentPolygon = p;
             currentMaterialList = p.materials;
             Init();
@@ -120,7 +118,10 @@ namespace Smash_Forge
             matsComboBox.SelectedIndex = 0;
 
             // The dummy textures will be used later. 
-            RenderTools.SetupOpenTkRendering();
+            RenderTools.SetUpOpenTkRendering();
+
+            // Only happens once.
+            UpdateMaterialThumbnails();
         }
 
         private static void UpdateMaterialThumbnails()
@@ -128,11 +129,8 @@ namespace Smash_Forge
             // Update the material thumbnails.
             if (!Runtime.hasRefreshedMatThumbnails && Runtime.shaders["NudSphere"].ProgramCreatedSuccessfully())
             {
-                ModelViewport mvp = (ModelViewport)MainForm.Instance.GetActiveModelViewport();
-                if (mvp != null)
-                    mvp.RenderMaterialPresetPreviewsToFiles();
                 // If it didn't work the first time, it probably won't work again.
-                Runtime.hasRefreshedMatThumbnails = true;
+                MaterialPreviewRendering.RenderMaterialPresetPreviewsToFilesThreaded();
             }
         }
 
@@ -821,9 +819,6 @@ namespace Smash_Forge
 
         private void loadPresetButton_Click(object sender, EventArgs e)
         {
-            // Only happens once.
-            UpdateMaterialThumbnails();
-
             MaterialSelector matSelector = new MaterialSelector();
             matSelector.ShowDialog();
             if (matSelector.exitStatus == MaterialSelector.ExitStatus.Opened)
@@ -907,16 +902,6 @@ namespace Smash_Forge
                 RenderTools.DrawTexturedQuad(displayTexture, 1, 1);
                 texRgbGlControl.SwapBuffers();
             }
-        }
-
-        private void RenderMaterialPreview(NUD.Material material)
-        {
-            if (!tabControl1.SelectedTab.Text.Equals("Textures"))
-                return;
-
-            GL.Viewport(texAlphaGlControl.ClientRectangle);
-            RenderTools.DrawNudMaterialSphere(material);
-            texRgbGlControl.SwapBuffers();
         }
 
         private void listView1_KeyPress(object sender, KeyPressEventArgs e)

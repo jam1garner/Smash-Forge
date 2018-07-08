@@ -139,7 +139,7 @@ namespace Smash_Forge
 
                     for (int i = 0; i < g.v.Count; i++)
                     {
-                        p.faces.Add(p.vertices.Count);
+                        p.vertexIndices.Add(p.vertices.Count);
                         NUD.Vertex v = new NUD.Vertex();
                         p.vertices.Add(v);
                         if (g.v.Count > i)
@@ -155,7 +155,7 @@ namespace Smash_Forge
             }
 
             n.OptimizeFileSize();
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
 
             return n;
         }

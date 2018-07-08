@@ -1,6 +1,6 @@
 Smash Forge
 ===========
-<a href="url"><img src="https://github.com/jam1garner/Smash-Forge/wiki/Images/Application Main.png" align="top" height="auto" width="auto" ></a>  
+<a href="url"><img src="https://github.com/jam1garner/Smash-Forge/wiki/Images/Application Main.png" align="top" height="auto" width="auto" ></a>
 
 [Bug Tracker](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Request a feature](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Forge Wiki](https://github.com/jam1garner/Smash-Forge/wiki) | [![Build status](https://ci.appveyor.com/api/projects/status/o73kaah41uewf1kx/branch/master?svg=true)](https://ci.appveyor.com/project/Sammi-Husky/smash-4-bone-animator/branch/master)
 

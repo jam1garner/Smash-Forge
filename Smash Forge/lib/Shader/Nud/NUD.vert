@@ -17,7 +17,8 @@ out vec3 geomNormal;
 out vec3 geomViewNormal;
 out vec3 geomTangent;
 out vec3 geomBitangent;
-out vec3 geomFragpos;
+out vec4 geomFragPos;
+out vec4 geomFragPosLightSpace;
 out vec3 geomViewPosition;
 out vec3 geomObjectPosition;
 
@@ -38,6 +39,7 @@ uniform mat4 mvpMatrix;
 uniform mat4 nscMatrix;
 uniform mat4 modelViewMatrix;
 uniform mat4 sphereMapMatrix;
+uniform mat4 lightMatrix;
 
 uniform uint flags;
 uniform float zScale;
@@ -118,7 +120,8 @@ void main()
     geomNormaltexCoord = vec2(nrmSampler.xy * (vUV + nrmSampler.zw));
 
     geomVertexColor = vColor;
-	geomFragpos = objPos.xyz;
+	geomFragPos = vec4(objPos.xyz, 1.0);
+    geomFragPosLightSpace = lightMatrix * vec4(vPosition.xyz, 1.0);
     geomObjectPosition = vPosition.xyz;
     geomTangent.xyz = vTangent.xyz;
     geomBitangent.xyz = vBiTangent.xyz;

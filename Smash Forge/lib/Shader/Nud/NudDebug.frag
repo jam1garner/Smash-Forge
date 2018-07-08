@@ -183,6 +183,7 @@ vec3 BumpMapNormal(sampler2D normalMap, VertexAttributes vert, vec4 dualNormalSc
                                                                int hasDualNormal, vec4 normalParams);
 
 // Defined in Utility.frag.
+float WireframeIntensity(vec3 distanceToEdges);
 float Luminance(vec3 rgb);
 
 // Defined in StageLighting.frag.
@@ -329,11 +330,12 @@ void main() {
     if (alphaOverride == 1)
         fragColor = vec4(resultingColor.aaa, 1);
 
-    if (drawWireFrame == 1) {
-        float minDistance = min(min(edgeDistance.x, edgeDistance.y), edgeDistance.z);
-        float smoothedDistance = exp2(-512.0 * minDistance * minDistance);
+    // Rendering overrides.
+    if (drawWireFrame == 1)
+    {
         vec3 edgeColor = vec3(1);
-        fragColor.rgb = mix(fragColor.rgb, edgeColor, smoothedDistance);
+        float intensity = WireframeIntensity(edgeDistance);
+        fragColor.rgb = mix(fragColor.rgb, edgeColor, intensity);
     }
 
     if (drawId == 1) {

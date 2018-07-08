@@ -224,7 +224,7 @@ namespace Smash_Forge
                             mes.Nodes.Add(poly);
                         }
                         {
-                            ((NUD.Polygon)mes.Nodes[0]).faces.Add(((NUD.Polygon)mes.Nodes[0]).vertices.Count);
+                            ((NUD.Polygon)mes.Nodes[0]).vertexIndices.Add(((NUD.Polygon)mes.Nodes[0]).vertices.Count);
                             ((NUD.Polygon)mes.Nodes[0]).vertices.Add(vert);
                         }
                     }
@@ -232,7 +232,7 @@ namespace Smash_Forge
             }
 
             nud.OptimizeFileSize();
-            nud.UpdateVertexData();
+            nud.UpdateVertexBuffers();
             return nud;
         }
 

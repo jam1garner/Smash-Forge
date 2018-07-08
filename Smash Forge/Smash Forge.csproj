@@ -129,6 +129,12 @@
     <Compile Include="GUI\Controls\VertexTool.Designer.cs">
       <DependentUpon>VertexTool.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\UvViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\UvViewer.Designer.cs">
+      <DependentUpon>UvViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="lib\DiscordController.cs" />
     <Compile Include="lib\DiscordRpc.cs" />
     <Compile Include="GUI\EditorBase.cs">
@@ -480,8 +486,10 @@
     <Compile Include="Rendering\Lights\LightColor.cs" />
     <Compile Include="Rendering\Lights\LightMap.cs" />
     <Compile Include="Rendering\Lights\LightTools.cs" />
+    <Compile Include="Rendering\MaterialPreviewRendering.cs" />
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\Shader\ShaderTools.cs" />
+    <Compile Include="Rendering\NudUvRendering.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
@@ -632,6 +640,9 @@
     <EmbeddedResource Include="GUI\Menus\ROM_Injector.resx">
       <DependentUpon>ROM_Injector.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\UvViewer.resx">
+      <DependentUpon>UvViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\ModelViewport.resx">
       <DependentUpon>ModelViewport.cs</DependentUpon>
     </EmbeddedResource>
@@ -674,6 +685,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Shader\Nud\StageLighting.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Nud\UV.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Nud\UV.geom">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Nud\UV.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Shader\PostProcessing\Gradient.frag">
@@ -728,6 +748,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Shader\PostProcessing\ScreenTexCoordMain.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Shadow.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\Shadow.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Shader\Texture.frag">
@@ -1045,7 +1071,6 @@
     <None Include="GUI\Editors\MeshList.resx">
       <DependentUpon>MeshList.cs</DependentUpon>
     </None>
-    <Compile Include="Filetypes\Models\DAE.cs" />
     <Compile Include="Filetypes\Models\MBN.cs" />
     <Compile Include="Filetypes\Textures\Pixel.cs" />
   </ItemGroup>

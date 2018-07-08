@@ -30,13 +30,12 @@ namespace Smash_Forge
             InitializeComponent();
             matPresetRenders.ImageSize = new Size(64, 64);
             matPresetRenders.ColorDepth = ColorDepth.Depth32Bit;
-            addPresetImages();
+            AddPresetImagesFromFiles();
 
-            treeView1.ImageList = matPresetRenders;
+            materialPresetTreeView.ImageList = matPresetRenders;
         }
 
-
-        public void populateTreeNodes()
+        public void PopulateTreeNodes()
         {
             if (Directory.Exists(MainForm.executableDir + "\\materials"))
             {
@@ -74,17 +73,22 @@ namespace Smash_Forge
                         }
                     }
                     if (dir.Name != "Preview Images")
-                        treeView1.Nodes.Add(folderNode);
+                        materialPresetTreeView.Nodes.Add(folderNode);
                 }
             }
-            treeView1.Refresh();
+            materialPresetTreeView.Refresh();
         }
 
-        public void addPresetImages()
+        public void AddPresetImagesFromFiles()
         {
+            // Wait for thumbnail generation to finish to avoid file concurrency issues.
+            if (Rendering.MaterialPreviewRendering.RenderingCompleted != null)
+                Rendering.MaterialPreviewRendering.RenderingCompleted.Wait();
+
             // Load all of the preview images from the preview images folder.
             if (Directory.Exists(MainForm.executableDir + "//Preview Images"))
             {
+                // Load the folder icons.
                 if (File.Exists(MainForm.executableDir + "//Preview Images//Dummy.png"))
                     matPresetRenders.Images.Add("Dummy", Image.FromFile(MainForm.executableDir + "//Preview Images//Dummy.png"));
                 if (File.Exists(MainForm.executableDir + "//Preview Images//Character.png"))
@@ -92,6 +96,7 @@ namespace Smash_Forge
                 if (File.Exists(MainForm.executableDir + "//Preview Images//Stage.png"))
                     matPresetRenders.Images.Add("Stage", Image.FromFile(MainForm.executableDir + "//Preview Images//Stage.png"));
 
+                // Load the preset images.
                 foreach (string file in Directory.EnumerateFiles(MainForm.executableDir + "//Preview Images"))
                 {
                     if (Path.GetExtension(file) == ".png")
@@ -103,11 +108,11 @@ namespace Smash_Forge
             }
         }
 
-        private void openButton()
+        private void OpenButton()
         {
-            if (treeView1.SelectedNode != null && ((string)treeView1.SelectedNode.Tag).EndsWith(".nmt"))
+            if (materialPresetTreeView.SelectedNode != null && ((string)materialPresetTreeView.SelectedNode.Tag).EndsWith(".nmt"))
             {
-                path = ((string)treeView1.SelectedNode.Tag);
+                path = ((string)materialPresetTreeView.SelectedNode.Tag);
                 exitStatus = ExitStatus.Opened;
                 Close();
             }
@@ -115,7 +120,7 @@ namespace Smash_Forge
 
         private void openButton(object sender, EventArgs e)
         {
-            openButton();
+            OpenButton();
         }
 
         private void closeButton(object sender, EventArgs e)
@@ -126,14 +131,14 @@ namespace Smash_Forge
 
         private void MaterialSelector_Load(object sender, EventArgs e)
         {
-            populateTreeNodes();
+            PopulateTreeNodes();
         }
 
-        private void treeView1_KeyDown(object sender, KeyEventArgs e)
+        private void materialPresetTreeView_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
-                openButton();
+                OpenButton();
                 e.Handled = true;
             }
         }

@@ -292,7 +292,7 @@ namespace Smash_Forge
 
             // Draw the texture to the screen.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            Rendering.RenderTools.DrawTexturedQuad(textureToRender.Id, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio,
+            Rendering.RenderTools.DrawTexturedQuad(textureToRender.Id, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
                 currentMipLevel);
 
             glControl1.SwapBuffers();
@@ -952,8 +952,8 @@ namespace Smash_Forge
         {
             if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
             {
-                // Make sure the shaders and textures are setup for rendering.
-                Rendering.RenderTools.SetupOpenTkRendering();
+                // Make sure the shaders and textures are ready for rendering.
+                Rendering.RenderTools.SetUpOpenTkRendering();
                 pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
                 currentNut.RefreshGlTexturesByHashId();
                 readyToRender = true;

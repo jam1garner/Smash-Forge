@@ -24,10 +24,10 @@ namespace Smash_Forge
     public class NUD : FileBase
     {
         // OpenGL Buffers
-        BufferObject positionVbo;
-        BufferObject elementsIbo;
-        BufferObject bonesUbo;
-        BufferObject selectVbo;
+        private BufferObject positionVbo;
+        private BufferObject elementsIbo;
+        private BufferObject bonesUbo;
+        private BufferObject selectVbo;
 
         // Default bind location for dummy textures.
         private static readonly TextureUnit dummyTextureUnit = TextureUnit.Texture20;
@@ -45,7 +45,7 @@ namespace Smash_Forge
         public float[] boundingBox = new float[4];
 
         // Just used for rendering.
-        List<Mesh> depthSortedMeshes = new List<Mesh>();
+        private List<Mesh> depthSortedMeshes = new List<Mesh>();
 
         // xmb stuff
         public int lightSetNumber = 0;
@@ -57,42 +57,44 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
-        Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
-                    { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
-                    { 0x02, BlendingFactorDest.One},
-                    { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
-                    { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
-                    { 0x05, BlendingFactorDest.ConstantAlpha},
-        };
-
-        static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
-                    { 0x01, BlendingFactorSrc.SrcAlpha},
-                    { 0x02, BlendingFactorSrc.SrcAlpha},
-                    { 0x03, BlendingFactorSrc.SrcAlpha},
-                    { 0x04, BlendingFactorSrc.SrcAlpha},
-                    { 0x0a, BlendingFactorSrc.Zero}
-        };
-
-        static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
+        private static readonly Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>()
         {
-                    { 0x01, TextureWrapMode.Repeat},
-                    { 0x02, TextureWrapMode.MirroredRepeat},
-                    { 0x03, TextureWrapMode.ClampToEdge}
+            { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
+            { 0x02, BlendingFactorDest.One},
+            { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
+            { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
+            { 0x05, BlendingFactorDest.ConstantAlpha},
         };
 
-        static Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
+        private static readonly Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>()
         {
-                    { 0x00, TextureMinFilter.LinearMipmapLinear},
-                    { 0x01, TextureMinFilter.Nearest},
-                    { 0x02, TextureMinFilter.Linear},
-                    { 0x03, TextureMinFilter.NearestMipmapLinear},
+            { 0x01, BlendingFactorSrc.SrcAlpha},
+            { 0x02, BlendingFactorSrc.SrcAlpha},
+            { 0x03, BlendingFactorSrc.SrcAlpha},
+            { 0x04, BlendingFactorSrc.SrcAlpha},
+            { 0x0a, BlendingFactorSrc.Zero}
         };
 
-        static Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
+        private static readonly Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
         {
-                    { 0x00, TextureMagFilter.Linear},
-                    { 0x01, TextureMagFilter.Nearest},
-                    { 0x02, TextureMagFilter.Linear}
+            { 0x01, TextureWrapMode.Repeat},
+            { 0x02, TextureWrapMode.MirroredRepeat},
+            { 0x03, TextureWrapMode.ClampToEdge}
+        };
+
+        private static readonly Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
+        {
+            { 0x00, TextureMinFilter.LinearMipmapLinear},
+            { 0x01, TextureMinFilter.Nearest},
+            { 0x02, TextureMinFilter.Linear},
+            { 0x03, TextureMinFilter.NearestMipmapLinear},
+        };
+
+        static readonly Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
+        {
+            { 0x00, TextureMagFilter.Linear},
+            { 0x01, TextureMagFilter.Nearest},
+            { 0x02, TextureMagFilter.Linear}
         };
 
         public enum TextureFlags
@@ -266,54 +268,65 @@ namespace Smash_Forge
             }
         }
 
-        public void UpdateVertexData()
+        public void UpdateVertexBuffers(BufferObject positionVbo, BufferObject elementsIbo)
         {
-            DisplayVertex[] Vertices;
-            int[] Faces;
+            DisplayVertex[] displayVerticesArray;
+            int[] vertexIndicesArray;
 
-            int poffset = 0;
-            int voffset = 0;
-            List<DisplayVertex> Vs = new List<DisplayVertex>();
-            List<int> Ds = new List<int>();
-            for (int mes = Nodes.Count - 1; mes >= 0; mes--)
+            int polygonOffset = 0;
+            int vertexOffset = 0;
+
+            // Store all of the polygon vert data in one buffer.
+            List<DisplayVertex> displayVerticesList = new List<DisplayVertex>();
+            List<int> vertexIndicesList = new List<int>();
+
+            // Loop backwards?
+            for (int meshIndex = Nodes.Count - 1; meshIndex >= 0; meshIndex--)
             {
-                Mesh m = (Mesh)Nodes[mes];
-                for (int pol = m.Nodes.Count - 1; pol >= 0; pol--)
+                Mesh m = (Mesh)Nodes[meshIndex];
+
+                for (int polyIndex = m.Nodes.Count - 1; polyIndex >= 0; polyIndex--)
                 {
-                    Polygon p = (NUD.Polygon)m.Nodes[pol];
-                    p.Offset = poffset * 4;
-                    List<DisplayVertex> pv = p.CreateDisplayVertices();
-                    Vs.AddRange(pv);
+                    Polygon p = (Polygon)m.Nodes[polyIndex];
+                    p.Offset = polygonOffset * sizeof(float);
+
+                    List<DisplayVertex> polygonDisplayVertices = p.CreateDisplayVertices();
+                    displayVerticesList.AddRange(polygonDisplayVertices);
 
                     for (int i = 0; i < p.displayFaceSize; i++)
                     {
-                        Ds.Add(p.display[i] + voffset);
+                        vertexIndicesList.Add(p.display[i] + vertexOffset);
                     }
-                    poffset += p.displayFaceSize;
-                    voffset += pv.Count;
+
+                    polygonOffset += p.displayFaceSize;
+                    vertexOffset += polygonDisplayVertices.Count;
                 }
             }
 
-            // Binds
-            Vertices = Vs.ToArray();
-            Faces = Ds.ToArray();
+            // Initialize the buffers.
+            displayVerticesArray = displayVerticesList.ToArray();
+            vertexIndicesArray = vertexIndicesList.ToArray();
 
-            // Bind only once!
             positionVbo.Bind();
-            GL.BufferData<DisplayVertex>(positionVbo.BufferTarget, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
+            GL.BufferData<DisplayVertex>(positionVbo.BufferTarget, (IntPtr)(displayVerticesArray.Length * DisplayVertex.Size), displayVerticesArray, BufferUsageHint.StaticDraw);
 
             elementsIbo.Bind();
-            GL.BufferData<int>(elementsIbo.BufferTarget, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
+            GL.BufferData<int>(elementsIbo.BufferTarget, (IntPtr)(vertexIndicesArray.Length * sizeof(int)), vertexIndicesArray, BufferUsageHint.StaticDraw);
         }
 
-        public void Render(VBN vbn, Camera camera, bool drawPolyIds = false)
+        public void UpdateVertexBuffers()
+        {
+            UpdateVertexBuffers(positionVbo, elementsIbo);
+        }
+
+        public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)
         {
             // Binding 0 to a buffer target will crash. This also means the NUD buffers weren't generated yet.
             bool buffersWereInitialized = elementsIbo != null && positionVbo != null && bonesUbo != null && selectVbo != null;
             if (!buffersWereInitialized)
             {
                 GenerateBuffers();
-                UpdateVertexData();
+                UpdateVertexBuffers(positionVbo, elementsIbo);
             }
 
             // Main function for NUD rendering.
@@ -321,21 +334,25 @@ namespace Smash_Forge
                 DrawBoundingBoxes();
 
             // Choose the correct shader.
-            Shader shader = Runtime.shaders["Nud"];
-            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+            Shader shader;
+            if (drawShadow)
+                shader = Runtime.shaders["Shadow"];
+            else if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NudDebug"];
+            else
+                shader = Runtime.shaders["Nud"];
 
             // Render using the selected shader.
             GL.UseProgram(shader.Id);
             shader.EnableVertexAttributes();
-            LoadBoneAttributes(vbn, shader);
+            UpdateBonesBuffer(vbn, shader, bonesUbo);
 
             DrawAllPolygons(shader, camera, drawPolyIds);
 
             shader.DisableVertexAttributes();
         }
 
-        private void LoadBoneAttributes(VBN vbn, Shader shader)
+        private void UpdateBonesBuffer(VBN vbn, Shader shader, BufferObject bonesUbo)
         {
             if (vbn != null)
             {
@@ -343,7 +360,7 @@ namespace Smash_Forge
 
                 int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
                 int boneCount = vbn.bones.Count;
-                int dataSize = boneCount * Vector4.SizeInBytes * 4;
+                int dataSize = boneCount * Vector4.SizeInBytes * sizeof(float);
 
                 bonesUbo.Bind();
                 GL.BufferData(bonesUbo.BufferTarget, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
@@ -355,7 +372,7 @@ namespace Smash_Forge
                 if (f.Length > 0)
                 {
                     bonesUbo.Bind();
-                    GL.BufferSubData(bonesUbo.BufferTarget, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
+                    GL.BufferSubData(bonesUbo.BufferTarget, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * sizeof(float)), f);
                 }
             }
         }
@@ -574,7 +591,7 @@ namespace Smash_Forge
             {
                 if (p.Parent != null && ((Mesh)p.Parent).Checked && p.Checked)
                 {
-                    DrawPolygonShaded(p, shader, camera, drawPolyIds);
+                    DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, drawPolyIds);
                 }
             }
 
@@ -582,21 +599,21 @@ namespace Smash_Forge
             {
                 if (((Mesh)p.Parent).Checked && p.Checked)
                 {
-                    DrawPolygonShaded(p, shader, camera, drawPolyIds);
+                    DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, drawPolyIds);
                 }
             }
         }
 
-        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, bool drawId = false)
+        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<DummyTextures, Texture> dummyTextures, bool drawId = false)
         {
-            if (p.faces.Count <= 3)
+            if (p.vertexIndices.Count <= 3)
                 return;
 
             Material material = p.materials[0];
 
             // Set Shader Values.
-            SetShaderUniforms(p, shader, camera, material, p.DisplayId, drawId);
-            SetVertexAttributes(p, shader);
+            SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
+            SetVertexAttributes(shader);
 
             // Set OpenTK Render Options.
             SetAlphaBlending(material);
@@ -608,12 +625,12 @@ namespace Smash_Forge
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
         }
 
-        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, int id = 0, bool drawId = false)
+        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<DummyTextures, Texture> dummyTextures, int id = 0, bool drawId = false)
         {
             // Shader Uniforms
             shader.SetUint("flags", material.Flags);
             shader.SetBoolToInt("renderVertColor", Runtime.renderVertColor && material.useVertexColor);
-            SetTextureUniforms(shader, material);
+            SetTextureUniforms(shader, material, dummyTextures);
             SetMaterialPropertyUniforms(shader, material);
             SetStageLightingUniforms(shader, lightSetNumber);
             SetXMBUniforms(shader, p);
@@ -691,8 +708,8 @@ namespace Smash_Forge
         {
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
             {
-                // Disable face culling for debug shading.
-                GL.Disable(EnableCap.CullFace);
+                GL.Enable(EnableCap.CullFace);
+                GL.CullFace(CullFaceMode.Back);
                 return;
             }
 
@@ -734,7 +751,7 @@ namespace Smash_Forge
             shader.SetBoolToInt(uniformBoolName, Runtime.lightSetParam.stageDiffuseLights[index].enabled);
 
             string uniformColorName = "stageLight" + (lightIndex + 1) + "Color";
-            ShaderTools.LightColorVector3Uniform(shader, stageLight.diffuseColor, uniformBoolName);
+            ShaderTools.LightColorVector3Uniform(shader, stageLight.diffuseColor, uniformColorName);
 
             string uniformDirectionName = "stageLight" + (lightIndex + 1) + "Direction";
             shader.SetVector3(uniformDirectionName, stageLight.direction);
@@ -778,7 +795,7 @@ namespace Smash_Forge
             }
         }
 
-        private void SetVertexAttributes(Polygon p, Shader shader)
+        private void SetVertexAttributes(Shader shader)
         {
             positionVbo.Bind();
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
@@ -896,7 +913,7 @@ namespace Smash_Forge
             HasMatPropertyShaderUniform(shader, mat, "NU_effUniverseParam",       "hasUniverseParam");
         }
 
-        public static void SetTextureUniforms(Shader shader, Material mat)
+        public static void SetTextureUniforms(Shader shader, Material mat, Dictionary<DummyTextures, Texture> dummyTextures)
         {
             SetHasTextureUniforms(shader, mat);
             SetRenderModeTextureUniforms(shader);
@@ -910,39 +927,23 @@ namespace Smash_Forge
             {
                 int hash = mat.textures[textureUnitIndexOffset].hash;
                 if (mat.displayTexId != -1) hash = mat.displayTexId;
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), BindTexture(mat.textures[textureUnitIndexOffset], hash, textureUnitIndexOffset));
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), BindTexture(mat.textures[textureUnitIndexOffset], hash, textureUnitIndexOffset, RenderTools.dummyTextures));
                 mat.diffuse1ID = mat.textures[textureUnitIndexOffset].hash;
                 textureUnitIndexOffset++;
             }
 
-            // Jigglypuff has weird eyes.
-            if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
-            {
-                SetTextureUniformAndSetTexId(shader, mat, true, "dif2", ref textureUnitIndexOffset, ref mat.diffuse2ID);
-                SetTextureUniformAndSetTexId(shader, mat, true, "normalMap", ref textureUnitIndexOffset, ref mat.normalID);
-            }
-            else if ((mat.Flags & 0xFFFFFFFF) == 0x92F01101)
-            {
-                // Final smash mats and Mega Man's eyes.
-                SetTextureUniformAndSetTexId(shader, mat, true, "dif2", ref textureUnitIndexOffset, ref mat.diffuse2ID);
-                SetTextureUniformAndSetTexId(shader, mat, true, "ramp", ref textureUnitIndexOffset, ref mat.rampID);
-                SetTextureUniformAndSetTexId(shader, mat, true, "dummyRamp", ref textureUnitIndexOffset, ref mat.dummyRampID);
-            }
-            else
-            {
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasSphereMap, "spheremap", ref textureUnitIndexOffset, ref mat.sphereMapID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse2, "dif2", ref textureUnitIndexOffset, ref mat.diffuse2ID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse3, "dif3", ref textureUnitIndexOffset, ref mat.diffuse3ID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasStageMap, "stagecube", ref textureUnitIndexOffset, ref mat.stageMapID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasCubeMap, "cube", ref textureUnitIndexOffset, ref mat.cubeMapID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasAoMap, "ao", ref textureUnitIndexOffset, ref mat.aoMapID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasNormalMap, "normalMap", ref textureUnitIndexOffset, ref mat.normalID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasRamp, "ramp", ref textureUnitIndexOffset, ref mat.rampID);
-                SetTextureUniformAndSetTexId(shader, mat, mat.hasDummyRamp, "dummyRamp", ref textureUnitIndexOffset, ref mat.dummyRampID);
-            }
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasSphereMap, "spheremap", ref textureUnitIndexOffset, ref mat.sphereMapID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse2, "dif2", ref textureUnitIndexOffset, ref mat.diffuse2ID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse3, "dif3", ref textureUnitIndexOffset, ref mat.diffuse3ID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasStageMap, "stagecube", ref textureUnitIndexOffset, ref mat.stageMapID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasCubeMap, "cube", ref textureUnitIndexOffset, ref mat.cubeMapID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasAoMap, "ao", ref textureUnitIndexOffset, ref mat.aoMapID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasNormalMap, "normalMap", ref textureUnitIndexOffset, ref mat.normalID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasRamp, "ramp", ref textureUnitIndexOffset, ref mat.rampID, dummyTextures);
+            SetTextureUniformAndSetTexId(shader, mat, mat.hasDummyRamp, "dummyRamp", ref textureUnitIndexOffset, ref mat.dummyRampID, dummyTextures);
         }
 
-        public static void SetTextureUniformsNudMatSphere(Shader shader, Material mat)
+        public static void SetTextureUniformsNudMatSphere(Shader shader, Material mat, Dictionary<DummyTextures, Texture> dummyTextures)
         {
             SetHasTextureUniforms(shader, mat);
             SetRenderModeTextureUniforms(shader);
@@ -960,7 +961,8 @@ namespace Smash_Forge
             {
                 GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
                 GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereDifTex.Id);
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), nutTextureUnitOffset + textureUnitIndexOffset); textureUnitIndexOffset++;
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), nutTextureUnitOffset + textureUnitIndexOffset);
+                textureUnitIndexOffset++;
             }
 
             // Jigglypuff has weird eyes.
@@ -968,7 +970,7 @@ namespace Smash_Forge
             {
                 if (mat.hasDiffuse2)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
@@ -985,19 +987,19 @@ namespace Smash_Forge
                 // Final smash mats and Mega Man's eyes.
                 if (mat.hasDiffuse2)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasRamp)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasDummyRamp)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
             }
@@ -1005,38 +1007,38 @@ namespace Smash_Forge
             {
                 if (mat.hasSphereMap)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("spheremap"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("spheremap"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasDiffuse2)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasDiffuse3)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif3"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif3"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 // The stage cube maps already use the appropriate dummy texture.
                 if (mat.hasStageMap)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("stagecube"), BindTexture(mat.textures[textureUnitIndexOffset], mat.stageMapID, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("stagecube"), BindTexture(mat.textures[textureUnitIndexOffset], mat.stageMapID, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasCubeMap)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("cube"), BindTexture(cubeMapHigh, cubeMapHigh.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("cube"), BindTexture(cubeMapHigh, cubeMapHigh.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasAoMap)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ao"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ao"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
@@ -1050,13 +1052,13 @@ namespace Smash_Forge
 
                 if (mat.hasRamp)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, RenderTools.dummyTextures));
                     textureUnitIndexOffset++;
                 }
 
                 if (mat.hasDummyRamp)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset));
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, RenderTools.dummyTextures));
                     textureUnitIndexOffset++;
                 }
             }
@@ -1064,31 +1066,21 @@ namespace Smash_Forge
 
         private static void SetTextureUniformsToDefaultTexture(Shader shader, int texture)
         {
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("cube"), 2);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("stagecube"), 2);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("spheremap"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("ao"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), 0);
+            shader.SetTexture("dif", texture, TextureTarget.Texture2D, 0);
+            shader.SetTexture("dif2", texture, TextureTarget.Texture2D, 0);
+            shader.SetTexture("normalMap", texture, TextureTarget.Texture2D, 0);
+            shader.SetTexture("cube", texture, TextureTarget.Texture2D, 2);
+            shader.SetTexture("stagecube", texture, TextureTarget.Texture2D, 2);
+            shader.SetTexture("spheremap", texture, TextureTarget.Texture2D, 0);
+            shader.SetTexture("ao", texture, TextureTarget.Texture2D, 0);
+            shader.SetTexture("ramp", texture, TextureTarget.Texture2D, 0);
         }
 
         private static void SetRenderModeTextureUniforms(Shader shader)
         {
-            GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern.Id);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("UVTestPattern"), 10);
-
-            GL.ActiveTexture(TextureUnit.Texture11);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient.Id);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("weightRamp1"), 11);
-
-            GL.ActiveTexture(TextureUnit.Texture12);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient2.Id);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("weightRamp2"), 12);
+            shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 10);
+            shader.SetTexture("weightRamp1", RenderTools.boneWeightGradient.Id, TextureTarget.Texture2D, 11);
+            shader.SetTexture("weightRamp2", RenderTools.boneWeightGradient2.Id, TextureTarget.Texture2D, 12);
         }
 
         private static void SetHasTextureUniforms(Shader shader, Material mat)
@@ -1132,7 +1124,7 @@ namespace Smash_Forge
                 Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
 
-        private static void SetTextureUniformAndSetTexId(Shader shader, Material mat, bool hasTex, string name, ref int textureIndex, ref int texIdForCurrentTextureType)
+        private static void SetTextureUniformAndSetTexId(Shader shader, Material mat, bool hasTex, string name, ref int textureIndex, ref int texIdForCurrentTextureType, Dictionary<DummyTextures, Texture> dummyTextures)
         {
             // Bind the texture and create the uniform if the material has the right textures and flags. 
             if (hasTex && textureIndex < mat.textures.Count)
@@ -1140,7 +1132,7 @@ namespace Smash_Forge
                 // Find the index for the shader uniform.
                 // Bind the texture to a texture unit and then find where it was bound.
                 int uniformLocation = shader.GetVertexAttributeUniformLocation(name);
-                int textureUnit = BindTexture(mat.textures[textureIndex], mat.textures[textureIndex].hash, textureIndex);
+                int textureUnit = BindTexture(mat.textures[textureIndex], mat.textures[textureIndex].hash, textureIndex, dummyTextures);
                 GL.Uniform1(uniformLocation, textureUnit);
 
                 // We won't know what type a texture is used for until we iterate through the textures.
@@ -1223,11 +1215,11 @@ namespace Smash_Forge
             shader.DisableVertexAttributes();
         }
 
-        public static int BindTexture(MatTexture matTexture, int hash, int loc)
+        public static int BindTexture(MatTexture matTexture, int hash, int loc, Dictionary<DummyTextures, Texture> dummyTextures)
         {
             if (Enum.IsDefined(typeof(DummyTextures), hash))
             {
-                return BindDummyTexture(loc, RenderTools.dummyTextures[(DummyTextures)hash]);
+                return BindDummyTexture(loc, dummyTextures[(DummyTextures)hash]);
             }
             else
             {
@@ -1579,7 +1571,7 @@ namespace Smash_Forge
 
             for (int x = 0; x < p.polyCount; x++)
             {
-                m.faces.Add(d.readUShort());
+                m.vertexIndices.Add(d.readUShort());
             }
 
             return m;
@@ -1855,7 +1847,7 @@ namespace Smash_Forge
                     obj.writeInt(texoff[2] > 0 ? texoff[2] + 0x30 + Nodes.Count * 0x30 + polyCount * 0x30 : 0);
                     obj.writeInt(texoff[3] > 0 ? texoff[3] + 0x30 + Nodes.Count * 0x30 + polyCount * 0x30 : 0);
 
-                    obj.writeShort(p.faces.Count); // polyamt
+                    obj.writeShort(p.vertexIndices.Count); // polyamt
                     obj.writeByte(p.strip); // polysize 0x04 is strips and 0x40 is easy
                     // :D
                     obj.writeByte(p.polflag); // polyflag
@@ -1865,7 +1857,7 @@ namespace Smash_Forge
                     obj.writeInt(0);
 
                     // Write the poly...
-                    foreach (int face in p.faces)
+                    foreach (int face in p.vertexIndices)
                         poly.writeShort(face);
 
                     // Write the vertex....
@@ -2707,6 +2699,21 @@ namespace Smash_Forge
 
                 hasDiffuse2 = hasRampCubeMap && ((matFlags & (int)TextureFlags.NormalMap) == 0)
                     && (hasDummyRamp || hasDiffuse3);
+
+                // Jigglypuff has weird eyes, so just hardcode it.
+                if ((matFlags & 0xFFFFFFFF) == 0x9AE11163)
+                {
+                    hasDiffuse2 = true;
+                    hasNormalMap = true;
+                }
+
+                // Mega Man also has strange eyes.
+                if ((matFlags & 0xFFFFFFFF) == 0x92F01101)
+                {
+                    hasDiffuse2 = true;
+                    hasRamp = true;
+                    hasDummyRamp = true;
+                }
             }
         }
 
@@ -2735,8 +2742,9 @@ namespace Smash_Forge
             public int DisplayId { get { return displayId; } }
             private int displayId = 0;
 
+            // The number of vertices is vertexIndices.Count because many vertices are shared.
             public List<Vertex> vertices = new List<Vertex>();
-            public List<int> faces = new List<int>();
+            public List<int> vertexIndices = new List<int>();
             public int displayFaceSize = 0;
 
             public List<Material> materials = new List<Material>();
@@ -2797,11 +2805,11 @@ namespace Smash_Forge
             public List<DisplayVertex> CreateDisplayVertices()
             {
                 // rearrange faces
-                display = getDisplayFace().ToArray();
+                display = GetRenderingVertexIndices().ToArray();
 
                 List<DisplayVertex> displayVertList = new List<DisplayVertex>();
 
-                if (faces.Count <= 3)
+                if (vertexIndices.Count <= 3)
                     return displayVertList;
                 foreach (Vertex v in vertices)
                 {
@@ -2841,7 +2849,7 @@ namespace Smash_Forge
                 if (!(vertType == 3 || vertType == 7))
                     return;
 
-                List<int> f = getDisplayFace();
+                List<int> f = GetRenderingVertexIndices();
                 Vector3[] tanArray = new Vector3[vertices.Count];
                 Vector3[] bitanArray = new Vector3[vertices.Count];
 
@@ -2907,7 +2915,7 @@ namespace Smash_Forge
             {
                 Vector3[] normals = new Vector3[vertices.Count];
 
-                List<int> f = getDisplayFace();
+                List<int> f = GetRenderingVertexIndices();
 
                 for (int i = 0; i < displayFaceSize; i += 3)
                 {
@@ -2953,7 +2961,7 @@ namespace Smash_Forge
                 for (int i = 0; i < normals.Length; i++)
                     normals[i] = new Vector3(0, 0, 0);
 
-                List<int> f = getDisplayFace();
+                List<int> f = GetRenderingVertexIndices();
 
                 for (int i = 0; i < displayFaceSize; i += 3)
                 {
@@ -2979,30 +2987,30 @@ namespace Smash_Forge
                 mat.textures.Add(MatTexture.GetDefault());
             }
 
-            public List<int> getDisplayFace()
+            public List<int> GetRenderingVertexIndices()
             {
                 if ((strip >> 4) == 4)
                 {
-                    displayFaceSize = faces.Count;
-                    return faces;
+                    displayFaceSize = vertexIndices.Count;
+                    return vertexIndices;
                 }
                 else
                 {
-                    List<int> f = new List<int>();
+                    List<int> vertexIndices = new List<int>();
 
                     int startDirection = 1;
                     int p = 0;
-                    int f1 = faces[p++];
-                    int f2 = faces[p++];
+                    int f1 = this.vertexIndices[p++];
+                    int f2 = this.vertexIndices[p++];
                     int faceDirection = startDirection;
                     int f3;
                     do
                     {
-                        f3 = faces[p++];
+                        f3 = this.vertexIndices[p++];
                         if (f3 == 0xFFFF)
                         {
-                            f1 = faces[p++];
-                            f2 = faces[p++];
+                            f1 = this.vertexIndices[p++];
+                            f2 = this.vertexIndices[p++];
                             faceDirection = startDirection;
                         }
                         else
@@ -3012,24 +3020,24 @@ namespace Smash_Forge
                             {
                                 if (faceDirection > 0)
                                 {
-                                    f.Add(f3);
-                                    f.Add(f2);
-                                    f.Add(f1);
+                                    vertexIndices.Add(f3);
+                                    vertexIndices.Add(f2);
+                                    vertexIndices.Add(f1);
                                 }
                                 else
                                 {
-                                    f.Add(f2);
-                                    f.Add(f3);
-                                    f.Add(f1);
+                                    vertexIndices.Add(f2);
+                                    vertexIndices.Add(f3);
+                                    vertexIndices.Add(f1);
                                 }
                             }
                             f1 = f2;
                             f2 = f3;
                         }
-                    } while (p < faces.Count);
+                    } while (p < this.vertexIndices.Count);
 
-                    displayFaceSize = f.Count;
-                    return f;
+                    displayFaceSize = vertexIndices.Count;
+                    return vertexIndices;
                 }
             }
         }
@@ -3281,7 +3289,7 @@ namespace Smash_Forge
                     // polygons
                     List<int> fac = new List<int>();
                     nmesh.faces.Add(fac);
-                    foreach (int i in p.faces)
+                    foreach (int i in p.vertexIndices)
                         fac.Add(i + fadd);
                     pi++;
                 }
@@ -3295,10 +3303,11 @@ namespace Smash_Forge
 
         public void OptimizeFileSize(bool singleBind = false)
         {
-            // Remove Duplicates
-            MergePoly();
+            // Generate proper indices.
             MergeDuplicateVertices();
-            OptimizeSingleBind(false);
+
+            // This is pretty broken right now.
+            //OptimizeSingleBind(false);
         }
 
         private void MergeDuplicateVertices()
@@ -3314,8 +3323,8 @@ namespace Smash_Forge
                     List<Vertex> newVertices = new List<Vertex>();
                     List<int> newFaces = new List<int>();
 
-                    List<Vertex> vbank = new List<Vertex>(); // only check oast 50 verts - may miss far apart ones but is faster
-                    foreach (int f in p.faces)
+                    List<Vertex> vbank = new List<Vertex>(); // only check last 50 verts - may miss far apart ones but is faster
+                    foreach (int f in p.vertexIndices)
                     {
                         int newFaceIndex = -1; 
                         int i = 0;
@@ -3351,7 +3360,7 @@ namespace Smash_Forge
                     newVertices.AddRange(vbank);
 
                     p.vertices = newVertices;
-                    p.faces = newFaces;
+                    p.vertexIndices = newFaces;
                     p.displayFaceSize = 0;
                 }
             }

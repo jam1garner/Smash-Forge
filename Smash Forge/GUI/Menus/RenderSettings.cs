@@ -25,7 +25,6 @@ namespace Smash_Forge.GUI
 
             // Misc Settings
             renderCameraPathCB.Checked = Runtime.renderPath;
-            drawUvCB.Checked = Runtime.drawUv;
             textParamDir.Text = Runtime.paramDir;
             BackgroundGradient1.BackColor = Runtime.backgroundGradientTop;
             BackgroundGradient2.BackColor = Runtime.backgroundGradientBottom;
@@ -115,6 +114,7 @@ namespace Smash_Forge.GUI
             reflectionCB.Checked = Runtime.renderReflection;
             renderFogCB.Checked = Runtime.renderFog;
             stageLightingCB.Checked = Runtime.renderStageLighting;
+            drawShadowCB.Checked = Runtime.drawModelShadow;
 
             ambTB.Text = Runtime.ambItensity + "";
             difTB.Text = Runtime.difIntensity + "";
@@ -778,11 +778,6 @@ namespace Smash_Forge.GUI
             }
         }
 
-        private void drawUvCB_CheckedChanged(object sender, EventArgs e)
-        {
-            Runtime.drawUv = drawUvCB.Checked;
-        }
-
         private void swagYCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderSwagY = swagYCB.Checked;
@@ -1006,6 +1001,11 @@ namespace Smash_Forge.GUI
         private void backgroundPictureBox_Click(object sender, EventArgs e)
         {
             OpenBackgroundTexture();
+        }
+
+        private void drawShadowCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.drawModelShadow = drawShadowCB.Checked;
         }
     }
 }
