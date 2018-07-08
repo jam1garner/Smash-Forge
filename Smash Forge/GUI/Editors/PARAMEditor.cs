@@ -16,16 +16,10 @@ namespace Smash_Forge
 {
     public partial class PARAMEditor : EditorBase
     {
-        private static IniLabels labelDB;
-        static PARAMEditor()
-        {
-            labelDB = new IniLabels();
-        }
-
         private ParamFile p;
         private DataTable tbl;
         private int[] currentEntry = new int[2];
-        private IniLabels.LabelFile labelFile;
+        private List<IniLabels.Label> labels = null;
 
         public PARAMEditor(string filename)
         {
@@ -36,8 +30,10 @@ namespace Smash_Forge
             tbl.Columns.Add(new DataColumn("Type") { ReadOnly = true });
             tbl.Columns.Add("Value");
             dataGridView1.DataSource = tbl;
-            labelFile = labelDB.GetLabels(Path.GetFileNameWithoutExtension(filename));
-            openParam(filename);
+
+            FilePath = filename;
+            labels = IniLabels.GetLabels(Path.GetFileNameWithoutExtension(FilePath));
+            openParam(FilePath);
             Edited = false;
         }
 
@@ -50,8 +46,8 @@ namespace Smash_Forge
 
         private string getValueName(int i, int j, int k)
         {
-            if (labelFile != null)
-                foreach (IniLabels.Label label in labelFile.labels)
+            if (labels != null)
+                foreach (IniLabels.Label label in labels)
                     if (label.type == IniLabels.Label.LabelType.Value && (label.group == -1 || label.group == i) && (label.entry == -1 || label.entry == j) && label.value == k)
                         return label.name;
             return $"{k}";
@@ -59,8 +55,8 @@ namespace Smash_Forge
 
         private string getValueToolTip(int i, int j, int k)
         {
-            if (labelFile != null)
-                foreach (IniLabels.Label label in labelFile.labels)
+            if (labels != null)
+                foreach (IniLabels.Label label in labels)
                     if (label.type == IniLabels.Label.LabelType.Value && (label.group == -1 || label.group == i) && (label.entry == -1 || label.entry == j) && label.value == k)
                         return label.description;
             return null;
@@ -100,8 +96,8 @@ namespace Smash_Forge
             }
             else
             {
-                if (labelFile != null)
-                    foreach (IniLabels.Label label in labelFile.labels)
+                if (labels != null)
+                    foreach (IniLabels.Label label in labels)
                         if (label.type == IniLabels.Label.LabelType.Group && label.group == groupNum && label.entries != -1)
                             entrySize = (int)((p.Groups[groupNum].Values.ToArray().Length / label.entries) + 0.5);
             }
@@ -127,7 +123,7 @@ namespace Smash_Forge
                     count = entrySize;
                 }
 
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < count; ++i)
                 {
                     ParamEntry val = p.Groups[groupNum].Values[(entrySize * entryNum) + i];
 
@@ -148,8 +144,8 @@ namespace Smash_Forge
 
         private string getGroupName(int i)
         {
-            if (labelFile != null)
-                foreach (IniLabels.Label label in labelFile.labels)
+            if (labels != null)
+                foreach (IniLabels.Label label in labels)
                     if (label.type == IniLabels.Label.LabelType.Group && label.group == i)
                         return label.name;
             return "Group [" + (i + 1) + "]";
@@ -157,8 +153,8 @@ namespace Smash_Forge
 
         private string getEntryName(int i, int j)
         {
-            if (labelFile != null)
-                foreach (IniLabels.Label label in labelFile.labels)
+            if (labels != null)
+                foreach (IniLabels.Label label in labels)
                     if (label.type == IniLabels.Label.LabelType.Entry && (label.group == -1 || label.group == i) && label.entry == j)
                         return label.name;
             return "Entry [" + j + "]";
@@ -169,9 +165,9 @@ namespace Smash_Forge
         {
             Dictionary<string, int> moveNameIdMapping = new Dictionary<string, int>();
 
-            for (int j = 0; j < ((ParamGroup)p.Groups[0]).EntryCount; j++)
-                if (labelFile != null)
-                    foreach (IniLabels.Label label in labelFile.labels)
+            for (int j = 0; j < ((ParamGroup)p.Groups[0]).EntryCount; ++j)
+                if (labels != null)
+                    foreach (IniLabels.Label label in labels)
                         if (label.type == IniLabels.Label.LabelType.Entry && label.group == 0 && label.entry == j)
                             moveNameIdMapping[label.name.Split(' ')[0]] = j;
             return moveNameIdMapping;
@@ -180,12 +176,12 @@ namespace Smash_Forge
         private void openParam(string f)
         {
             p = new ParamFile(f);
-            for (int i = 0; i < p.Groups.Count; i++)
+            for (int i = 0; i < p.Groups.Count; ++i)
             {
                 if (p.Groups[i] is ParamGroup)
                 {
                     TreeNode[] children = new TreeNode[((ParamGroup)p.Groups[i]).EntryCount];
-                    for (int j = 0; j < ((ParamGroup)p.Groups[i]).EntryCount; j++)
+                    for (int j = 0; j < ((ParamGroup)p.Groups[i]).EntryCount; ++j)
                     {
                         TreeNode child = new TreeNode(getEntryName(i, j));
                         children[j] = child;
@@ -196,8 +192,8 @@ namespace Smash_Forge
                 else
                 {
                     int entryCount = -1;
-                    if (labelFile != null)
-                        foreach (IniLabels.Label label in labelFile.labels)
+                    if (labels != null)
+                        foreach (IniLabels.Label label in labels)
                             if (label.type == IniLabels.Label.LabelType.Group && label.group == i && label.entries != -1)
                                 entryCount = label.entries;
                     if (entryCount == -1)
@@ -207,7 +203,7 @@ namespace Smash_Forge
                     else
                     {
                         TreeNode[] children = new TreeNode[entryCount];
-                        for (int j = 0; j < entryCount; j++)
+                        for (int j = 0; j < entryCount; ++j)
                         {
                             TreeNode child = new TreeNode(getEntryName(i, j));
                             children[j] = child;
@@ -299,7 +295,7 @@ namespace Smash_Forge
             }
         }
 
-        public class IniLabels
+        public static class IniLabels
         {
             public class Label
             {
@@ -318,128 +314,163 @@ namespace Smash_Forge
                 public string description = null;
             }
 
-            public class LabelFile
+            public static List<string> ParseIniFileNames(string filePath)
             {
-                public string filePath;
-                public List<string> fileNames;
-                public List<Label> labels;
+                string[] ini = File.ReadAllLines(filePath);
 
-                public LabelFile(string filePath)
+                List<string> fileNames = new List<string>();
+
+                for (int i = 0; i < ini.Length; ++i)
                 {
-                    this.filePath = filePath;
-                    fileNames = new List<string>();
-                    labels = new List<Label>();
-
-                    string[] ini = File.ReadAllLines(filePath);
-
-                    Label currentLabel = null;
-                    for (int i = 0; i < ini.Length; i++)
+                    //Blank line
+                    if (ini[i].Length <= 0)
                     {
-                        if (ini[i].Length <= 0)
-                            continue;
-
-                        //Comment
-                        if (ini[i][0] == ';')
-                        {
-                            continue;
-                        }
-
-                        //Section
-                        if (ini[i][0] == '[')
-                        {
-                            int closeBracket = ini[i].IndexOf(']');
-                            if (closeBracket <= 1)
-                                continue;
-                            currentLabel = null;
-                            string typeName = ini[i].Substring(1, closeBracket - 1);
-                            Label.LabelType tempType;
-                            //If we recognize the section type, start a new label
-                            if (Enum.TryParse(typeName, out tempType))
-                            {
-                                currentLabel = new Label();
-                                labels.Add(currentLabel);
-                                currentLabel.type = tempType;
-                            }
-                            //Else skip lines until the next section
-                            else
-                            {
-                                while (++i < ini.Length && ini[i][0] != '[')
-                                {}
-                                --i;
-                            }
-                            continue;
-                        }
-
-                        //Key
-                        {
-                            int splitIndex = ini[i].IndexOf('=');
-                            if (splitIndex <= 0)
-                                continue;
-                            string key = ini[i].Substring(0, splitIndex).ToLowerInvariant(); //Not case-sensitive
-                            string val = ini[i].Substring(splitIndex + 1);
-
-                            if (currentLabel == null)
-                            {
-                                if (key == "name")
-                                    fileNames.Add(val);
-                            }
-                            else
-                            {
-                                if (key == "name")
-                                    currentLabel.name = val;
-                                else if (key == "group")
-                                    currentLabel.group = int.Parse(val) - 1;
-                                else if (key == "entry")
-                                    currentLabel.entry = int.Parse(val);
-                                else if (key == "value")
-                                    currentLabel.value = int.Parse(val);
-                                else if (key == "entries")
-                                    currentLabel.entries = int.Parse(val);
-                                else if (key == "desc")
-                                    currentLabel.description = val;
-                            }
-                        }
+                        continue;
                     }
-                    //If no name keys were defined outside of a valid section, use the file name as the only name
-                    if (fileNames.Count == 0)
-                        fileNames.Add(Path.GetFileNameWithoutExtension(filePath));
+
+                    //Comment
+                    if (ini[i][0] == ';')
+                    {
+                        continue;
+                    }
+
+                    //Section
+                    if (ini[i][0] == '[')
+                    {
+                        break;
+                    }
+
+                    //Key
+                    {
+                        int splitIndex = ini[i].IndexOf('=');
+                        if (splitIndex <= 0)
+                            continue;
+                        string key = ini[i].Substring(0, splitIndex).ToLowerInvariant(); //Not case-sensitive
+                        string val = ini[i].Substring(splitIndex + 1);
+
+                        if (key == "name")
+                            fileNames.Add(val);
+                    }
                 }
+
+                return fileNames;
             }
 
-            public Dictionary<string, string> fileLookup;
-
-            //We want to read every label file initially, so that each label file can be assigned to each file name that it lists, in the fileLookup dictionary.
-            //Loading of labels for actual use can then be done by calls to GetLabels.
-            public IniLabels()
+            public static List<Label> ParseIniLabels(string filePath)
             {
-                fileLookup = new Dictionary<string, string>();
+                string[] ini = File.ReadAllLines(filePath);
+
+                List<Label> labels = new List<Label>();
+                Label currentLabel = null;
+
+                for (int i = 0; i < ini.Length; ++i)
+                {
+                    //Blank line
+                    if (ini[i].Length <= 0)
+                    {
+                        continue;
+                    }
+
+                    //Comment
+                    if (ini[i][0] == ';')
+                    {
+                        continue;
+                    }
+
+                    //Section
+                    if (ini[i][0] == '[')
+                    {
+                        int closeBracket = ini[i].IndexOf(']');
+                        if (closeBracket <= 1)
+                            continue;
+                        currentLabel = null;
+                        string typeName = ini[i].Substring(1, closeBracket - 1);
+                        Label.LabelType tempType;
+
+                        //If we recognize the section type, start a new label
+                        if (Enum.TryParse(typeName, out tempType))
+                        {
+                            currentLabel = new Label();
+                            labels.Add(currentLabel);
+                            currentLabel.type = tempType;
+                        }
+                        //Else skip lines until the next section
+                        else
+                        {
+                            while (++i < ini.Length && ini[i][0] != '[')
+                            {}
+                            --i;
+                        }
+                        continue;
+                    }
+
+                    //Key
+                    {
+                        int splitIndex = ini[i].IndexOf('=');
+                        if (splitIndex <= 0)
+                            continue;
+                        string key = ini[i].Substring(0, splitIndex).ToLowerInvariant(); //Not case-sensitive
+                        string val = ini[i].Substring(splitIndex + 1);
+
+                        if (currentLabel == null)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            if (key == "name")
+                                currentLabel.name = val;
+                            else if (key == "group")
+                                currentLabel.group = int.Parse(val) - 1;
+                            else if (key == "entry")
+                                currentLabel.entry = int.Parse(val);
+                            else if (key == "value")
+                                currentLabel.value = int.Parse(val);
+                            else if (key == "entries")
+                                currentLabel.entries = int.Parse(val);
+                            else if (key == "desc")
+                                currentLabel.description = val;
+                        }
+                    }
+                }
+
+                return labels;
+            }
+
+            public static List<Label> GetLabels(string paramFileName)
+            {
+                List<Label> labels = new List<Label>();
                 string labelDirectory = Path.Combine(MainForm.executableDir, "param_labels\\");
                 if (Directory.Exists(labelDirectory))
                 {
                     string[] files = Directory.GetFiles(labelDirectory);
-                    foreach (string filePath in files)
+                    foreach (string iniPath in files)
                     {
-                        if (Path.GetExtension(filePath).ToLowerInvariant() == ".ini" && Path.GetFileNameWithoutExtension(filePath) != "material_params")
+                        if (Path.GetExtension(iniPath).ToLowerInvariant() == ".ini" && Path.GetFileNameWithoutExtension(iniPath) != "material_params")
                         {
-                            LabelFile lf = new LabelFile(filePath);
-                            foreach (string name in lf.fileNames)
+                            //If the filename (without extension) of the param file exactly matches the filename (without extension) of this ini, we know to add its labels.
+                            if (paramFileName == Path.GetFileNameWithoutExtension(iniPath) && File.Exists(iniPath))
                             {
-                                fileLookup[name] = filePath;
+                                labels.AddRange(ParseIniLabels(iniPath));
+                            }
+                            //Else check if any name values specified within the ini (outside of a section) have a regex match to the filename (without extension) of the param file.
+                            else
+                            {
+                                List<string> fileNames = ParseIniFileNames(iniPath);
+                                foreach (string fileName in fileNames)
+                                {
+                                    if (Regex.IsMatch(paramFileName, fileName) && File.Exists(iniPath))
+                                    {
+                                        labels.AddRange(ParseIniLabels(iniPath));
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            }
-            public LabelFile GetLabels(string fileName)
-            {
-                //First check if exact name exists, then check with regex
-                if (fileLookup.ContainsKey(fileName) && File.Exists(fileLookup[fileName]))
-                    return new LabelFile(fileLookup[fileName]);
-                else
-                    foreach (string key in fileLookup.Keys)
-                        if ((new Regex(key)).IsMatch(fileName) && File.Exists(fileLookup[key]))
-                            return new LabelFile(fileLookup[key]);
-                return null;
+
+                return labels;
             }
         }
 
@@ -461,7 +492,7 @@ namespace Smash_Forge
             int groupNum = node.Parent.Index;
             int entryNum = node.Index;
             int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
-            for (int j = 0; j < entrySize; j++)
+            for (int j = 0; j < entrySize; ++j)
                 p.Groups[groupNum].Add(new ParamEntry(p.Groups[groupNum].Values[entrySize * entryNum + j].Value, p.Groups[groupNum].Values[entrySize * entryNum + j].Type));
 
             ((ParamGroup)p.Groups[groupNum]).EntryCount++;
@@ -494,7 +525,7 @@ namespace Smash_Forge
             int groupNum = node.Parent.Index;
             int entryNum = node.Index;
             int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
-            for (int j = 0; j < entrySize; j++)
+            for (int j = 0; j < entrySize; ++j)
                 p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum);
             
             ((ParamGroup)p.Groups[groupNum]).EntryCount--;
@@ -537,7 +568,7 @@ namespace Smash_Forge
                     int groupNum = treeView1.SelectedNode.Parent.Index;
                     int entryNum = treeView1.SelectedNode.Index;
                     int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
-                    for (int j = 0; j < entrySize; j++)
+                    for (int j = 0; j < entrySize; ++j)
                     {
                         p.Groups[groupNum].Values.Insert(entrySize * (entryNum - 1) + j, p.Groups[groupNum].Values[entrySize * entryNum + j]);
                         p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum + j + 1);
@@ -550,7 +581,7 @@ namespace Smash_Forge
                     int groupNum = treeView1.SelectedNode.Parent.Index;
                     int entryNum = treeView1.SelectedNode.Index;
                     int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
-                    for (int j = 0; j < entrySize; j++)
+                    for (int j = 0; j < entrySize; ++j)
                     {
                         p.Groups[groupNum].Values.Insert(entrySize * (entryNum + 2), p.Groups[groupNum].Values[entrySize * entryNum]);
                         p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum);
