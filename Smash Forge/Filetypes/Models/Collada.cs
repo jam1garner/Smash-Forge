@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Globalization;
 using System.Xml;
 using System.Drawing;
 using System.IO;
 using OpenTK;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Diagnostics;
 
@@ -16,7 +13,6 @@ namespace Smash_Forge
 {
     class Collada
     {
-
         public Collada()
         {
 
@@ -32,14 +28,30 @@ namespace Smash_Forge
             Collada dae = new Collada(fileName);
 
             NUD nud;
-            NUT nut; 
-            // The filename is just used to get the file directory.
-            CreateNudNutFromDae(fileName, container, importTexture, dae, out nud, out nut);
+            NUT nut;
 
-            // Modify model container.
-            container.NUD = nud;
-            container.NUT = nut;
-            CreateBones(container, dae);
+            try
+            {
+                // The filename is just used to get the file directory.
+                CreateNudNutFromDae(fileName, container, importTexture, dae, out nud, out nut);
+
+                // Modify model container.
+                // The texture IDs won't be correct at this point.
+                container.NUD = nud;
+                Runtime.checkNudTexIdOnOpen = false;
+                container.NUT = nut;
+                Runtime.checkNudTexIdOnOpen = true;
+
+                CreateBones(container, dae);
+            }
+            catch (NotImplementedException e)
+            {
+                // Only triangles are supported, so polylists will crash.
+                container.NUD = null;
+                container.NUT = null;
+                container.VBN = null;
+                MessageBox.Show(e.Message, "Unsupported Dae Format");
+            }
         }
 
         private static void CreateNudNutFromDae(string fileName, ModelContainer container, bool importTexture, Collada dae, out NUD nud, out NUT nut)
@@ -47,20 +59,6 @@ namespace Smash_Forge
             nud = new NUD();
             nut = new NUT();
             Runtime.TextureContainers.Add(nut);
-
-            //grab all that material data so we can apply images later
-            Dictionary<string, ColladaImages> images = new Dictionary<string, ColladaImages>();
-            foreach (var image in dae.library_images)
-                if (!images.ContainsKey(image.id))
-                    images.Add(image.id, image);
-            Dictionary<string, ColladaEffects> effects = new Dictionary<string, ColladaEffects>();
-            foreach (var efc in dae.library_effects)
-                if (!effects.ContainsKey(efc.id))
-                    effects.Add(efc.id, efc);
-            Dictionary<string, ColladaMaterials> materials = new Dictionary<string, ColladaMaterials>();
-            foreach (var mat in dae.library_materials)
-                if (!materials.ContainsKey(mat.id))
-                    materials.Add(mat.id, mat);
 
             Dictionary<string, NutTexture> existingTextures = new Dictionary<string, NutTexture>();
 
@@ -85,86 +83,106 @@ namespace Smash_Forge
                 SkinVerts(container, skin, sources, verts);
             }
 
-            Dictionary<string, NutTexture> texturemap = new Dictionary<string, NutTexture>();
-
             // Don't add duplicate meshes if they share a name.
             Dictionary<string, NUD.Mesh> nudMeshByGeometryName = new Dictionary<string, NUD.Mesh>();
 
             foreach (ColladaGeometry geom in dae.library_geometries)
             {
-                ColladaMesh mesh = geom.mesh;
-                ColladaPolygons colladaPoly = mesh.polygons[0];
-
-                Dictionary<string, ColladaSource> sources = GetVertexDataSources(mesh);
-
-                // Find the appropriate collada node and associated matrix.
-                Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
-                ColladaNode colladaNode = null;
-                foreach (ColladaNode node in dae.scene.nodes)
-                {
-                    if (node.geom_id.Equals(geom.id))
-                    {
-                        colladaNode = node;
-                        nodeTrans = node.mat;
-                        break;
-                    }
-                }
-
-                // Check if the mesh already exists first.
-                // Remove the initial numbers so that the names aren't unique.
-                NUD.Mesh nudMesh;
-                string nameWithoutNumber = RemoveInitialUnderscoreId(geom.name);
-
-                if (nudMeshByGeometryName.ContainsKey(nameWithoutNumber))
-                {
-                    nudMesh = nudMeshByGeometryName[nameWithoutNumber];
-                }
-                else
-                {
-                    nudMesh = new NUD.Mesh();
-                    nudMesh.Text = geom.name;
-                    nud.Nodes.Add(nudMesh);
-                    nudMeshByGeometryName.Add(nameWithoutNumber, nudMesh);
-                }
-
-                // Always add the polygon.
-                NUD.Polygon nudPolygon = new NUD.Polygon();
-                nudPolygon.AddDefaultMaterial();
-                nudMesh.Nodes.Add(nudPolygon);
-
-                // Many vertices share the same vertex data.
-                // If there aren't any sources, we can't do anything meaningful anyway.
-                int vertexDataLength = sources.First().Value.data.Length / sources.First().Value.stride;
-                NUD.Vertex[] vertexDataSource = new NUD.Vertex[vertexDataLength];
-
-                for (int pIndex = 0; pIndex < colladaPoly.p.Length; pIndex++)
-                {
-                    if (importTexture && colladaPoly.type == ColladaPrimitiveType.triangles)
-                    {
-                        // This may or may not still work.
-                        TryReadTexture(fileName, dae, nut, images, effects, materials, existingTextures, texturemap, colladaPoly, nudPolygon);
-                    }
-
-                    int maxOffset = CalculateMaxOffset(colladaPoly);
-                    if (pIndex * maxOffset >= colladaPoly.p.Length)
-                        break;
-
-                    // Initialize the vertex for the given index.
-                    int vertexSourceIndex = colladaPoly.p[pIndex];
-                    if (vertexDataSource[vertexSourceIndex] == null)
-                    {
-                        NUD.Vertex v = ReadVertexSemantics(dae, vertexListBySkinSource, geom, mesh, colladaPoly, sources, nudPolygon, pIndex, maxOffset);
-                        vertexDataSource[vertexSourceIndex] = v;
-                        TransformVertexNormalAndPosition(dae, bindMatrixBySkinSource, geom, nodeTrans, v);
-                    }
-                }
-
-                // Add the vertices and indices to the polygon.
-                nudPolygon.vertices = vertexDataSource.ToList();
-                nudPolygon.vertexIndices = colladaPoly.p.ToList();
-
-                AddMaterialsForEachUvChannel(nudPolygon);
+                ConvertColladaGeom(fileName, importTexture, dae, nud, nut, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom);
             }
+        }
+
+        private static void ConvertColladaGeom(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
+        {
+            ColladaMesh mesh = geom.mesh;
+            ConvertColladaMesh(mesh, fileName, importTexture, dae, nud, nut, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom);
+        }
+
+        private static void ConvertColladaMesh(ColladaMesh mesh, string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
+        {
+            Dictionary<string, ColladaSource> sources = GetVertexDataSources(mesh);
+
+            ConvertColladaPoly(fileName, importTexture, dae, nud, nut, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom, mesh, sources);
+        }
+
+        private static void ConvertColladaPoly(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom, ColladaMesh mesh, Dictionary<string, ColladaSource> sources)
+        {
+            ColladaPolygons colladaPoly = mesh.polygons[0];
+            if (colladaPoly.type != ColladaPrimitiveType.triangles)
+                throw new NotImplementedException("Unsupported primitive type: " + colladaPoly.type.ToString());
+
+            // Find the appropriate collada node and associated matrix.
+            Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
+            ColladaNode colladaNode = null;
+            foreach (ColladaNode node in dae.scene.nodes)
+            {
+                if (node.geom_id.Equals(geom.id))
+                {
+                    colladaNode = node;
+                    nodeTrans = node.mat;
+                    break;
+                }
+            }
+
+            // Check if the mesh already exists first.
+            // Remove the initial numbers so that the names aren't unique.
+            NUD.Mesh nudMesh;
+            string nameWithoutNumber = RemoveInitialUnderscoreId(geom.name);
+
+            if (nudMeshByGeometryName.ContainsKey(nameWithoutNumber))
+            {
+                nudMesh = nudMeshByGeometryName[nameWithoutNumber];
+            }
+            else
+            {
+                nudMesh = new NUD.Mesh();
+                nudMesh.Text = geom.name;
+                nud.Nodes.Add(nudMesh);
+                nudMeshByGeometryName.Add(nameWithoutNumber, nudMesh);
+            }
+
+            // Always add the polygon.
+            NUD.Polygon nudPolygon = new NUD.Polygon();
+            nudPolygon.AddDefaultMaterial();
+            nudMesh.Nodes.Add(nudPolygon);
+
+            if (importTexture && colladaPoly.type == ColladaPrimitiveType.triangles)
+            {
+                // This may or may not still work.
+                TryReadTexture(fileName, dae, nut, colladaPoly, nudPolygon);
+            }
+
+            // Many vertices share the same vertex data.
+            // If there aren't any sources, we can't do anything meaningful anyway.
+            int vertexDataLength = sources.First().Value.data.Length / sources.First().Value.stride;
+            NUD.Vertex[] vertexDataSource = new NUD.Vertex[vertexDataLength];
+
+            // Create vertices using the vertex indices in colladaPoly.p.
+            for (int pIndex = 0; pIndex < colladaPoly.p.Length; pIndex++)
+            {
+                // TODO: The offsets aren't always the same.
+                int maxOffset = CalculateMaxOffset(colladaPoly);
+                if (pIndex * maxOffset >= colladaPoly.p.Length)
+                    break;
+
+                // Initialize the vertex for the given index.
+                int vertexSourceIndex = colladaPoly.p[pIndex];
+                if (vertexDataSource[vertexSourceIndex] == null)
+                {
+                    // Create the vertex data from all of the inputs.
+                    NUD.Vertex v = ReadVertexSemantics(dae, vertexListBySkinSource, geom, mesh, colladaPoly, sources, nudPolygon, pIndex, maxOffset);
+                    TransformVertexNormalAndPosition(dae, bindMatrixBySkinSource, geom, nodeTrans, v);
+
+                    // Fill the vertex data into the vertex sources.
+                    vertexDataSource[vertexSourceIndex] = v;
+                }
+            }
+
+            // Add the vertices and indices to the polygon.
+            nudPolygon.vertices = vertexDataSource.ToList();
+            nudPolygon.vertexIndices = colladaPoly.p.ToList();
+
+            AddMaterialsForEachUvChannel(nudPolygon);
         }
 
         public static string RemoveInitialUnderscoreId(string geometryName)
@@ -202,50 +220,69 @@ namespace Smash_Forge
             return sources;
         }
 
-        private static void TryReadTexture(string fileName, Collada dae, NUT nut, Dictionary<string, ColladaImages> images, Dictionary<string, ColladaEffects> effects, Dictionary<string, ColladaMaterials> materials, Dictionary<string, NutTexture> existingTextures, Dictionary<string, NutTexture> texturemap, ColladaPolygons colladaPoly, NUD.Polygon npoly)
+        private static void TryReadTexture(string fileName, Collada dae, NUT nut, ColladaPolygons colladaPoly, NUD.Polygon npoly)
         {
+            // Grab all that material data so we can apply images later.
+            // TODO: It's inefficient to do it here, but it makes the code less gross.
+            Dictionary<string, ColladaImages> images = new Dictionary<string, ColladaImages>();
+            foreach (var img in dae.library_images)
+                if (!images.ContainsKey(img.id))
+                    images.Add(img.id, img);
+            Dictionary<string, ColladaEffects> effects = new Dictionary<string, ColladaEffects>();
+            foreach (var efc in dae.library_effects)
+                if (!effects.ContainsKey(efc.id))
+                    effects.Add(efc.id, efc);
+            Dictionary<string, ColladaMaterials> materials = new Dictionary<string, ColladaMaterials>();
+            foreach (var mat in dae.library_materials)
+                if (!materials.ContainsKey(mat.id))
+                    materials.Add(mat.id, mat);
+
             NutTexture tempTex = null;
-            ColladaMaterials mat = null;
-            ColladaEffects eff = null;
-            ColladaImages img = null;
+            ColladaMaterials material = null;
+            ColladaEffects effect = null;
+            ColladaImages image = null;
             string matId = null;
+
+            Dictionary<string, NutTexture> existingTextures = new Dictionary<string, NutTexture>();
+            Dictionary<string, NutTexture> texturemap = new Dictionary<string, NutTexture>();
+
 
             dae.scene.MaterialIds.TryGetValue(colladaPoly.materialid, out matId);
 
             if (matId != null && matId[0] == '#')
-                materials.TryGetValue(matId.Substring(1, matId.Length - 1), out mat);
-            if (mat != null && mat.effecturl[0] == '#')
-                effects.TryGetValue(mat.effecturl.Substring(1, mat.effecturl.Length - 1), out eff);
-            if (eff != null && eff.source[0] == '#')
-                images.TryGetValue(eff.source.Substring(1, eff.source.Length - 1), out img);
-            if (img != null)
-                existingTextures.TryGetValue(img.initref, out tempTex);
+                materials.TryGetValue(matId.Substring(1, matId.Length - 1), out material);
+            if (material != null && material.effecturl[0] == '#')
+                effects.TryGetValue(material.effecturl.Substring(1, material.effecturl.Length - 1), out effect);
+            if (effect != null && effect.source[0] == '#')
+                images.TryGetValue(effect.source.Substring(1, effect.source.Length - 1), out image);
+            if (image != null)
+                existingTextures.TryGetValue(image.initref, out tempTex);
 
-            if (texturemap.ContainsKey(img.initref))
+            if (texturemap.ContainsKey(image.initref))
             {
-                tempTex = texturemap[img.initref];
+                tempTex = texturemap[image.initref];
             }
-            else if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))))
+            else if (tempTex == null && image != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), image.initref))))
             {
                 NutTexture tex = null;
-                if (img.initref.ToLower().EndsWith(".dds"))
+                if (image.initref.ToLower().EndsWith(".dds"))
                 {
-                    DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))));
+                    DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), image.initref))));
                     tex = dds.ToNutTexture();
                 }
-                if (img.initref.ToLower().EndsWith(".png"))
+                if (image.initref.ToLower().EndsWith(".png"))
                 {
-                    tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref)), 1);
+                    tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), image.initref)), 1);
                 }
                 if (tex == null)
                     //continue;
-                    texturemap.Add(img.initref, tex);
+                    texturemap.Add(image.initref, tex);
                 tex.HASHID = 0x40FFFF00;
                 while (NUT.texIdUsed(tex.HASHID))
                     tex.HASHID++;
                 nut.Nodes.Add(tex);
                 nut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
-                existingTextures.Add(img.initref, tex);
+                existingTextures.Add(image.initref, tex);
                 tempTex = tex;
             }
             if (tempTex != null)
@@ -296,6 +333,7 @@ namespace Smash_Forge
                 }
                 else
                 {
+                    // Probably won't be reached.
                     // Read position, normals, texcoord, or vert color semantic.
                     ReadSemantic(v, input, colladaPoly.p[(maxoffset * pIndex) + input.offset], sources);
                 }
@@ -443,32 +481,33 @@ namespace Smash_Forge
         private static void ReadSemantic(NUD.Vertex targetVert, ColladaInput input, int pIndex, Dictionary<string, ColladaSource> sources)
         {
             ColladaSource colladaSource = sources[input.source];
+            int startIndex = (pIndex * colladaSource.stride) + input.offset;
 
             switch (input.semanticType)
             {
                 case SemanticType.POSITION:
-                    targetVert.pos.X = float.Parse(colladaSource.data[pIndex * 3 + 0]);
-                    targetVert.pos.Y = float.Parse(colladaSource.data[pIndex * 3 + 1]);
-                    targetVert.pos.Z = float.Parse(colladaSource.data[pIndex * 3 + 2]);
+                    targetVert.pos.X = float.Parse(colladaSource.data[startIndex + 0]);
+                    targetVert.pos.Y = float.Parse(colladaSource.data[startIndex + 1]);
+                    targetVert.pos.Z = float.Parse(colladaSource.data[startIndex + 2]);
                     break;
                 case SemanticType.NORMAL:
-                    targetVert.nrm.X = float.Parse(colladaSource.data[pIndex * 3 + 0]);
-                    targetVert.nrm.Y = float.Parse(colladaSource.data[pIndex * 3 + 1]);
-                    targetVert.nrm.Z = float.Parse(colladaSource.data[pIndex * 3 + 2]);
+                    targetVert.nrm.X = float.Parse(colladaSource.data[startIndex + 0]);
+                    targetVert.nrm.Y = float.Parse(colladaSource.data[startIndex + 1]);
+                    targetVert.nrm.Z = float.Parse(colladaSource.data[startIndex + 2]);
                     break;
                 case SemanticType.TEXCOORD:
                     Vector2 tx = new Vector2();
-                    tx.X = float.Parse(colladaSource.data[pIndex * 2 + 0]);
-                    tx.Y = float.Parse(colladaSource.data[pIndex * 2 + 1]);
+                    tx.X = float.Parse(colladaSource.data[startIndex + 0]);
+                    tx.Y = float.Parse(colladaSource.data[startIndex + 1]);
                     targetVert.uv.Add(tx);
                     break;
                 case SemanticType.COLOR:
                     // Vertex colors are stored as integers [0,255]. (127,127,127) is white.
-                    targetVert.color.X = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 0]) * 255;
-                    targetVert.color.Y = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 1]) * 255;
-                    targetVert.color.Z = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 2]) * 255;
-                    if(colladaSource.stride > 3)
-                        targetVert.color.W = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 3]) * 127;
+                    targetVert.color.X = float.Parse(colladaSource.data[startIndex + 0]) * 255;
+                    targetVert.color.Y = float.Parse(colladaSource.data[startIndex + 1]) * 255;
+                    targetVert.color.Z = float.Parse(colladaSource.data[startIndex + 2]) * 255;
+                    if(colladaSource.accessorParams.Count > 3)
+                        targetVert.color.W = float.Parse(colladaSource.data[startIndex + 3]) * 127;
                     break;
             }
         }
@@ -617,9 +656,9 @@ namespace Smash_Forge
                     {
                         d.AddRange(new string[] { v.pos.X.ToString(), v.pos.Y.ToString(), v.pos.Z.ToString() });
                     }
-                    src.accessor.Add("X");
-                    src.accessor.Add("Y");
-                    src.accessor.Add("Z");
+                    src.accessorParams.Add("X");
+                    src.accessorParams.Add("Y");
+                    src.accessorParams.Add("Z");
                     src.data = d.ToArray();
                     src.count = d.Count * 3;
                 }
@@ -634,9 +673,9 @@ namespace Smash_Forge
                     {
                         d.AddRange(new string[] { v.nrm.X.ToString(), v.nrm.Y.ToString(), v.nrm.Z.ToString() });
                     }
-                    src.accessor.Add("X");
-                    src.accessor.Add("Y");
-                    src.accessor.Add("Z");
+                    src.accessorParams.Add("X");
+                    src.accessorParams.Add("Y");
+                    src.accessorParams.Add("Z");
                     src.data = d.ToArray();
                     src.count = d.Count * 3;
                 }
@@ -652,8 +691,8 @@ namespace Smash_Forge
                     {
                         d.AddRange(new string[] {( v.tx0.X * data.material.texture.scale_w).ToString(), (1-(v.tx0.Y * data.material.texture.scale_h)).ToString() });
                     }
-                    src.accessor.Add("S");
-                    src.accessor.Add("T");
+                    src.accessorParams.Add("S");
+                    src.accessorParams.Add("T");
                     src.data = d.ToArray();
                     src.count = d.Count * 2;
                 }
@@ -669,10 +708,10 @@ namespace Smash_Forge
                     {
                         d.AddRange(new string[] { (v.clr.X).ToString(), (v.clr.Y).ToString(), (v.clr.Z).ToString(), (v.clr.W).ToString() });
                     }
-                    src.accessor.Add("R");
-                    src.accessor.Add("G");
-                    src.accessor.Add("B");
-                    src.accessor.Add("A");
+                    src.accessorParams.Add("R");
+                    src.accessorParams.Add("G");
+                    src.accessorParams.Add("B");
+                    src.accessorParams.Add("A");
                     src.data = d.ToArray();
                     src.count = d.Count * 4;
                 }
@@ -696,14 +735,14 @@ namespace Smash_Forge
                     ColladaSource src = new ColladaSource();
                     skin.sources.Add(src);
                     src.id = control.id + "_joints";
-                    src.type = ArrayType.Name_array;
+                    src.arrayType = ArrayType.Name_array;
                     //src.name = mesh.name + "src1";
                     skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.JOINT });
                     weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.JOINT, offset = 0 });
                     List<string> d = new List<string>();
                     foreach (Bone b in dat.bones.bones)
                         d.Add(b.Text);
-                    src.accessor.Add("JOINT");
+                    src.accessorParams.Add("JOINT");
                     src.data = d.ToArray();
                     src.count = d.Count;
                 }
@@ -721,7 +760,7 @@ namespace Smash_Forge
                             + b.invert.M13 + " " + b.invert.M23 + " " + b.invert.M33 + " " + b.invert.M43 + " "
                             + b.invert.M14 + " " + b.invert.M24 + " " + b.invert.M34 + " " + b.invert.M44);
                     }
-                    src.accessor.Add("TRANSFORM");
+                    src.accessorParams.Add("TRANSFORM");
                     src.data = d.ToArray();
                     src.count = d.Count * 16;
                 }
@@ -753,7 +792,7 @@ namespace Smash_Forge
                     
                     weights.vcount = vcount.ToArray();
                     weights.v = vert.ToArray();
-                    src.accessor.Add("WEIGHT");
+                    src.accessorParams.Add("WEIGHT");
                     src.data = d.ToArray();
                     src.count = d.Count;
                 }
@@ -870,9 +909,9 @@ namespace Smash_Forge
                         {
                             d.AddRange(new string[] { v.pos.X.ToString(), v.pos.Y.ToString(), v.pos.Z.ToString() });
                         }
-                        src.accessor.Add("X");
-                        src.accessor.Add("Y");
-                        src.accessor.Add("Z");
+                        src.accessorParams.Add("X");
+                        src.accessorParams.Add("Y");
+                        src.accessorParams.Add("Z");
                         src.data = d.ToArray();
                         src.count = d.Count * 3;
                     }
@@ -888,9 +927,9 @@ namespace Smash_Forge
                         {
                             d.AddRange(new string[] { v.nrm.X.ToString(), v.nrm.Y.ToString(), v.nrm.Z.ToString() });
                         }
-                        src.accessor.Add("X");
-                        src.accessor.Add("Y");
-                        src.accessor.Add("Z");
+                        src.accessorParams.Add("X");
+                        src.accessorParams.Add("Y");
+                        src.accessorParams.Add("Z");
                         src.data = d.ToArray();
                         src.count = d.Count * 3;
                     }
@@ -906,8 +945,8 @@ namespace Smash_Forge
                         {
                             d.AddRange(new string[] { v.uv[0].X.ToString(), v.uv[0].Y.ToString()});
                         }
-                        src.accessor.Add("S");
-                        src.accessor.Add("T");
+                        src.accessorParams.Add("S");
+                        src.accessorParams.Add("T");
                         src.data = d.ToArray();
                         src.count = d.Count * 2;
                     }
@@ -923,10 +962,10 @@ namespace Smash_Forge
                         {
                             d.AddRange(new string[] { (v.color.X/128).ToString(), (v.color.Y / 128).ToString(), (v.color.Z / 128).ToString(), (v.color.W / 128).ToString() });
                         }
-                        src.accessor.Add("R");
-                        src.accessor.Add("G");
-                        src.accessor.Add("B");
-                        src.accessor.Add("A");
+                        src.accessorParams.Add("R");
+                        src.accessorParams.Add("G");
+                        src.accessorParams.Add("B");
+                        src.accessorParams.Add("A");
                         src.data = d.ToArray();
                         src.count = d.Count * 4;
                     }
@@ -962,7 +1001,7 @@ namespace Smash_Forge
                         ColladaSource src = new ColladaSource();
                         skin.sources.Add(src);
                         src.id = control.id + "_joints";
-                        src.type = ArrayType.Name_array;
+                        src.arrayType = ArrayType.Name_array;
                         //src.name = mesh.name + "src1";
                         skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.JOINT });
                         weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.JOINT, offset = 0 });
@@ -975,7 +1014,7 @@ namespace Smash_Forge
                         {
                             d.Add("ROOT");
                         }
-                        src.accessor.Add("JOINT");
+                        src.accessorParams.Add("JOINT");
                         src.data = d.ToArray();
                         src.count = d.Count;
                     }
@@ -1006,7 +1045,7 @@ namespace Smash_Forge
                                     + b.invert.M14 + " " + b.invert.M24 + " " + b.invert.M34 + " " + b.invert.M44);
                         }
 
-                        src.accessor.Add("TRANSFORM");
+                        src.accessorParams.Add("TRANSFORM");
                         src.data = d.ToArray();
                         src.count = d.Count * 16;
                     }
@@ -1037,7 +1076,7 @@ namespace Smash_Forge
                         }
                         weights.vcount = vcount.ToArray();
                         weights.v = vert.ToArray();
-                        src.accessor.Add("WEIGHT");
+                        src.accessorParams.Add("WEIGHT");
                         src.data = d.ToArray();
                         src.count = d.Count;
                     }
@@ -1334,8 +1373,8 @@ namespace Smash_Forge
             public string[] data;
             public int count;
             public int stride;
-            public ArrayType type;
-            public List<string> accessor = new List<string>();
+            public ArrayType arrayType;
+            public List<string> accessorParams = new List<string>();
 
             public void Read(XmlNode root)
             {
@@ -1344,17 +1383,27 @@ namespace Smash_Forge
                 {
                     if (node.Name.Equals("float_array"))
                     {
-                        count = int.Parse((string)node.Attributes["count"].Value);
+                        count = int.Parse(node.Attributes["count"].Value);
                         data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
                     }
                     if (node.Name.Equals("Name_array"))
                     {
-                        count = int.Parse((string)node.Attributes["count"].Value);
+                        count = int.Parse(node.Attributes["count"].Value);
                         data = node.InnerText.Trim().Replace("\n", " ").Split(' ');
                     }
                     if (node.Name.Equals("technique_common") && node.ChildNodes.Count > 0 && node.ChildNodes[0].Attributes["stride"] != null)
                     {
-                        stride = int.Parse((string)node.ChildNodes[0].Attributes["stride"].Value);
+                        stride = int.Parse(node.ChildNodes[0].Attributes["stride"].Value);
+
+                        // Get the param names so we know how many values to read.
+                        // The stride isn't always equal to the number of params.
+                        foreach (XmlNode childNode in node.ChildNodes[0])
+                        {
+                            if (childNode.Name == "param")
+                            {
+                                accessorParams.Add(childNode.Attributes["name"].Value);
+                            }
+                        }
                     }
                 }
             }
@@ -1366,7 +1415,7 @@ namespace Smash_Forge
                 node.Attributes.Append(CreateAttribute(doc, "id", id));
                 //node.Attributes.Append(createAttribute(doc, "count", count));
 
-                XmlNode arr = doc.CreateElement(type + "");
+                XmlNode arr = doc.CreateElement(arrayType + "");
                 node.AppendChild(arr);
                 arr.Attributes.Append(CreateAttribute(doc, "id", id + "-array"));
                 arr.Attributes.Append(CreateAttribute(doc, "count", count + ""));
@@ -1378,14 +1427,14 @@ namespace Smash_Forge
                 node.AppendChild(tc);
                 XmlNode accessor = doc.CreateElement("accessor");
                 accessor.Attributes.Append(CreateAttribute(doc, "source", "#" + id + "-array"));
-                accessor.Attributes.Append(CreateAttribute(doc, "count", (count / this.accessor.Count) + ""));
-                if(this.accessor.Count > 0 && this.accessor[0].Equals("TRANSFORM"))
+                accessor.Attributes.Append(CreateAttribute(doc, "count", (count / this.accessorParams.Count) + ""));
+                if(this.accessorParams.Count > 0 && this.accessorParams[0].Equals("TRANSFORM"))
                     accessor.Attributes.Append(CreateAttribute(doc, "stride", 16 + ""));
                 else
-                    accessor.Attributes.Append(CreateAttribute(doc, "stride", this.accessor.Count + ""));
+                    accessor.Attributes.Append(CreateAttribute(doc, "stride", this.accessorParams.Count + ""));
                 tc.AppendChild(accessor);
 
-                foreach (string param in this.accessor)
+                foreach (string param in this.accessorParams)
                 {
                     XmlNode pa = doc.CreateElement("param");
                     accessor.AppendChild(pa);
@@ -1393,7 +1442,7 @@ namespace Smash_Forge
                     if(param.Equals("TRANSFORM"))
                         pa.Attributes.Append(CreateAttribute(doc, "type", "float4x4"));
                     else
-                        pa.Attributes.Append(CreateAttribute(doc, "type", type.ToString().Replace("_array", "")));
+                        pa.Attributes.Append(CreateAttribute(doc, "type", arrayType.ToString().Replace("_array", "")));
                 }
 
                 parent.AppendChild(node);

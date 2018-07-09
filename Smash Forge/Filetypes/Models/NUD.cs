@@ -415,10 +415,10 @@ namespace Smash_Forge
             }
         }
 
-        public void GenerateBoundingBoxes()
+        public void GenerateBoundingSpheres()
         {
             foreach (Mesh m in Nodes)
-                m.generateBoundingBox();
+                m.generateBoundingSphere();
 
             Vector3 cen1 = new Vector3(0,0,0), cen2 = new Vector3(0,0,0);
             double rad1 = 0, rad2 = 0;
@@ -3102,7 +3102,7 @@ namespace Smash_Forge
                 ((Polygon)Nodes[0]).AddVertex(v);
             }
 
-            public void generateBoundingBox()
+            public void generateBoundingSphere()
             {
                 Vector3 cen1 = new Vector3(0,0,0), cen2 = new Vector3(0,0,0);
                 double rad1 = 0, rad2 = 0;

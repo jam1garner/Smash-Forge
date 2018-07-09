@@ -880,7 +880,8 @@ namespace Smash_Forge
                         Collada.DaetoNud(ofd.FileName, con, daeImport.importTexCB.Checked);
 
                         // apply settings
-                        daeImport.Apply(con.NUD);
+                        if (con.NUD != null)
+                            daeImport.Apply(con.NUD);
                     }
                 }
             }
@@ -888,7 +889,7 @@ namespace Smash_Forge
 
         private void generateBoundingBoxesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ((NUD)filesTreeView.SelectedNode).GenerateBoundingBoxes();
+            ((NUD)filesTreeView.SelectedNode).GenerateBoundingSpheres();
         }
 
         private void recalculateToolStripMenuItem_Click(object sender, EventArgs e)
