@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NUDMaterialEditor));
             this.matsComboBox = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.texturesListView = new System.Windows.Forms.ListView();
@@ -55,6 +56,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.deleteMatPropertyButton = new System.Windows.Forms.Button();
             this.addMatPropertyButton = new System.Windows.Forms.Button();
             this.matPropertyComboBox = new System.Windows.Forms.ComboBox();
             this.colorSelect = new System.Windows.Forms.Button();
@@ -116,7 +118,6 @@
             this.deleteMaterialButton = new System.Windows.Forms.Button();
             this.addMaterialButton = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.deleteMatPropertyButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -208,6 +209,7 @@
             // 
             // magFilterComboBox
             // 
+            this.magFilterComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.magFilterComboBox.FormattingEnabled = true;
             this.magFilterComboBox.Location = new System.Drawing.Point(100, 56);
             this.magFilterComboBox.Name = "magFilterComboBox";
@@ -235,6 +237,7 @@
             // 
             // minFilterComboBox
             // 
+            this.minFilterComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.minFilterComboBox.FormattingEnabled = true;
             this.minFilterComboBox.Location = new System.Drawing.Point(3, 56);
             this.minFilterComboBox.Name = "minFilterComboBox";
@@ -253,6 +256,7 @@
             // 
             // wrapXComboBox
             // 
+            this.wrapXComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.wrapXComboBox.FormattingEnabled = true;
             this.wrapXComboBox.Location = new System.Drawing.Point(3, 16);
             this.wrapXComboBox.Name = "wrapXComboBox";
@@ -271,6 +275,7 @@
             // 
             // mapModeComboBox
             // 
+            this.mapModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.mapModeComboBox.FormattingEnabled = true;
             this.mapModeComboBox.Location = new System.Drawing.Point(197, 16);
             this.mapModeComboBox.Name = "mapModeComboBox";
@@ -289,6 +294,7 @@
             // 
             // wrapYComboBox
             // 
+            this.wrapYComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.wrapYComboBox.FormattingEnabled = true;
             this.wrapYComboBox.Location = new System.Drawing.Point(100, 16);
             this.wrapYComboBox.Name = "wrapYComboBox";
@@ -307,6 +313,7 @@
             // 
             // mipDetailComboBox
             // 
+            this.mipDetailComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.mipDetailComboBox.FormattingEnabled = true;
             this.mipDetailComboBox.Location = new System.Drawing.Point(197, 56);
             this.mipDetailComboBox.Name = "mipDetailComboBox";
@@ -339,7 +346,7 @@
             this.propertiesListView.Location = new System.Drawing.Point(3, 16);
             this.propertiesListView.Name = "propertiesListView";
             this.propertiesListView.ShowGroups = false;
-            this.propertiesListView.Size = new System.Drawing.Size(325, 169);
+            this.propertiesListView.Size = new System.Drawing.Size(320, 169);
             this.propertiesListView.TabIndex = 12;
             this.propertiesListView.UseCompatibleStateImageBehavior = false;
             this.propertiesListView.SelectedIndexChanged += new System.EventHandler(this.propertiesListView_SelectedIndexChanged);
@@ -384,7 +391,7 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(331, 396);
+            this.groupBox1.Size = new System.Drawing.Size(326, 396);
             this.groupBox1.TabIndex = 25;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Properties";
@@ -396,7 +403,7 @@
             this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel3.Location = new System.Drawing.Point(3, 191);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(325, 202);
+            this.panel3.Size = new System.Drawing.Size(320, 202);
             this.panel3.TabIndex = 26;
             // 
             // panel2
@@ -409,6 +416,16 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(325, 31);
             this.panel2.TabIndex = 18;
+            // 
+            // deleteMatPropertyButton
+            // 
+            this.deleteMatPropertyButton.Location = new System.Drawing.Point(253, 5);
+            this.deleteMatPropertyButton.Name = "deleteMatPropertyButton";
+            this.deleteMatPropertyButton.Size = new System.Drawing.Size(29, 21);
+            this.deleteMatPropertyButton.TabIndex = 25;
+            this.deleteMatPropertyButton.Text = "x";
+            this.deleteMatPropertyButton.UseVisualStyleBackColor = true;
+            this.deleteMatPropertyButton.Click += new System.EventHandler(this.deleteMatPropertyButton_Click);
             // 
             // addMatPropertyButton
             // 
@@ -448,7 +465,7 @@
             this.parameterGroupBox.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.parameterGroupBox.Location = new System.Drawing.Point(0, 43);
             this.parameterGroupBox.Name = "parameterGroupBox";
-            this.parameterGroupBox.Size = new System.Drawing.Size(325, 159);
+            this.parameterGroupBox.Size = new System.Drawing.Size(320, 159);
             this.parameterGroupBox.TabIndex = 25;
             this.parameterGroupBox.TabStop = false;
             this.parameterGroupBox.Text = "Parameters";
@@ -480,7 +497,7 @@
             this.paramTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.paramTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.paramTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.paramTableLayout.Size = new System.Drawing.Size(313, 121);
+            this.paramTableLayout.Size = new System.Drawing.Size(308, 121);
             this.paramTableLayout.TabIndex = 17;
             // 
             // param4TrackBar
@@ -624,7 +641,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(3, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(325, 390);
+            this.groupBox2.Size = new System.Drawing.Size(320, 390);
             this.groupBox2.TabIndex = 26;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Textures";
@@ -757,6 +774,7 @@
             // 
             // AlphaFuncComboBox
             // 
+            this.AlphaFuncComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.AlphaFuncComboBox.FormattingEnabled = true;
             this.AlphaFuncComboBox.Location = new System.Drawing.Point(128, 30);
             this.AlphaFuncComboBox.Name = "AlphaFuncComboBox";
@@ -784,6 +802,7 @@
             // 
             // alphaTestComboBox
             // 
+            this.alphaTestComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.alphaTestComboBox.FormattingEnabled = true;
             this.alphaTestComboBox.Location = new System.Drawing.Point(128, 3);
             this.alphaTestComboBox.Name = "alphaTestComboBox";
@@ -868,6 +887,7 @@
             // 
             // cullModeComboBox
             // 
+            this.cullModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cullModeComboBox.FormattingEnabled = true;
             this.cullModeComboBox.Location = new System.Drawing.Point(144, 3);
             this.cullModeComboBox.Name = "cullModeComboBox";
@@ -927,6 +947,7 @@
             // 
             // srcComboBox
             // 
+            this.srcComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.srcComboBox.FormattingEnabled = true;
             this.srcComboBox.Location = new System.Drawing.Point(123, 3);
             this.srcComboBox.Name = "srcComboBox";
@@ -954,6 +975,7 @@
             // 
             // dstComboBox
             // 
+            this.dstComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.dstComboBox.FormattingEnabled = true;
             this.dstComboBox.Location = new System.Drawing.Point(123, 30);
             this.dstComboBox.Name = "dstComboBox";
@@ -1019,7 +1041,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(331, 396);
+            this.tabPage2.Size = new System.Drawing.Size(326, 396);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Textures";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1029,7 +1051,7 @@
             this.tabPage3.Controls.Add(this.groupBox1);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(331, 396);
+            this.tabPage3.Size = new System.Drawing.Size(326, 396);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Properties";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1068,16 +1090,6 @@
             this.addMaterialButton.UseVisualStyleBackColor = true;
             this.addMaterialButton.Click += new System.EventHandler(this.addMaterialButton_Click);
             // 
-            // deleteMatPropertyButton
-            // 
-            this.deleteMatPropertyButton.Location = new System.Drawing.Point(253, 5);
-            this.deleteMatPropertyButton.Name = "deleteMatPropertyButton";
-            this.deleteMatPropertyButton.Size = new System.Drawing.Size(29, 21);
-            this.deleteMatPropertyButton.TabIndex = 25;
-            this.deleteMatPropertyButton.Text = "x";
-            this.deleteMatPropertyButton.UseVisualStyleBackColor = true;
-            this.deleteMatPropertyButton.Click += new System.EventHandler(this.deleteMatPropertyButton_Click);
-            // 
             // NUDMaterialEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1088,6 +1100,7 @@
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.Black;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "NUDMaterialEditor";
             this.TabText = "Material";
             this.Text = "NUDMaterialEditor";
