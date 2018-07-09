@@ -165,7 +165,6 @@ namespace Smash_Forge
             SelectedImageKey = "folder";
             nud = new NUD();
             nut = new NUT();
-            vbn = new VBN();
             mta = new MTA();
             MOI = new MOI();
             jtb = new JTB();

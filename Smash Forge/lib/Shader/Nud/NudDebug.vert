@@ -55,6 +55,8 @@ uniform sampler2D weightRamp1;
 uniform sampler2D weightRamp2;
 uniform int selectedBoneIndex;
 
+uniform int useBones;
+
 uniform int debug1;
 uniform int debug2;
 uniform int debugOption;
@@ -119,7 +121,7 @@ void main()
 {
     // Vertex Skinning
     vec4 objPos = vec4(vPosition.xyz, 1.0);
-    if(vBone.x != -1.0)
+    if(useBones == 1)
        objPos = skin(vPosition, ivec4(vBone));
 
     objPos.z *= zScale;
@@ -163,7 +165,7 @@ void main()
     geomBoneWeightsColored = BoneWeightColor(totalWeight);
 
     geomNormal = vNormal;
-	if(vBone.x != -1.0)
+	if(useBones == 1)
 		geomNormal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
 
     geomViewNormal = mat3(sphereMapMatrix) * geomNormal.xyz;
