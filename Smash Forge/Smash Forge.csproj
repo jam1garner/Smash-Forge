@@ -903,6 +903,9 @@
     <None Include="param_labels\fighter_param_vl_pikachu.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="param_labels\fighter_param_vl_sheik.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="param_labels\fighter_param_vl_xxx.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

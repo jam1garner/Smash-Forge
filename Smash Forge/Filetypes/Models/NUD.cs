@@ -1295,8 +1295,8 @@ namespace Smash_Forge
                         {
                             float[] matHashFloat;
                             material.entries.TryGetValue("NU_materialHash", out matHashFloat);
-                            if (matHashFloat != null) {
-
+                            if (matHashFloat != null)
+                            {
                                 byte[] bytes = new byte[4];
                                 Buffer.BlockCopy(matHashFloat, 0, bytes, 0, 4);
                                 int matHash = BitConverter.ToInt32(bytes, 0);
@@ -1309,8 +1309,7 @@ namespace Smash_Forge
                                     {
                                         material.displayTexId = matEntry.pat0.getTexId(frm);
                                     }
-
-                                    foreach(MatData md in matEntry.properties)
+                                    foreach (MatData md in matEntry.properties)
                                     {
                                         if (md.frames.Count > 0 && md.frames.Count > frm)
                                         {
