@@ -36,8 +36,12 @@ namespace Smash_Forge
                 CreateNudNutFromDae(fileName, container, importTexture, dae, out nud, out nut);
 
                 // Modify model container.
+                // The texture IDs won't be correct at this point.
                 container.NUD = nud;
+                Runtime.checkNudTexIdOnOpen = false;
                 container.NUT = nut;
+                Runtime.checkNudTexIdOnOpen = true;
+
                 CreateBones(container, dae);
             }
             catch (NotImplementedException e)
