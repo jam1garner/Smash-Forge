@@ -481,33 +481,33 @@ namespace Smash_Forge
         private static void ReadSemantic(NUD.Vertex targetVert, ColladaInput input, int pIndex, Dictionary<string, ColladaSource> sources)
         {
             ColladaSource colladaSource = sources[input.source];
-            int valueCount = colladaSource.accessorParams.Count;
+            int startIndex = (pIndex * colladaSource.stride) + input.offset;
 
             switch (input.semanticType)
             {
                 case SemanticType.POSITION:
-                    targetVert.pos.X = float.Parse(colladaSource.data[pIndex * valueCount + 0]);
-                    targetVert.pos.Y = float.Parse(colladaSource.data[pIndex * valueCount + 1]);
-                    targetVert.pos.Z = float.Parse(colladaSource.data[pIndex * valueCount + 2]);
+                    targetVert.pos.X = float.Parse(colladaSource.data[startIndex + 0]);
+                    targetVert.pos.Y = float.Parse(colladaSource.data[startIndex + 1]);
+                    targetVert.pos.Z = float.Parse(colladaSource.data[startIndex + 2]);
                     break;
                 case SemanticType.NORMAL:
-                    targetVert.nrm.X = float.Parse(colladaSource.data[pIndex * valueCount + 0]);
-                    targetVert.nrm.Y = float.Parse(colladaSource.data[pIndex * valueCount + 1]);
-                    targetVert.nrm.Z = float.Parse(colladaSource.data[pIndex * valueCount + 2]);
+                    targetVert.nrm.X = float.Parse(colladaSource.data[startIndex + 0]);
+                    targetVert.nrm.Y = float.Parse(colladaSource.data[startIndex + 1]);
+                    targetVert.nrm.Z = float.Parse(colladaSource.data[startIndex + 2]);
                     break;
                 case SemanticType.TEXCOORD:
                     Vector2 tx = new Vector2();
-                    tx.X = float.Parse(colladaSource.data[pIndex * valueCount + 0]);
-                    tx.Y = float.Parse(colladaSource.data[pIndex * valueCount + 1]);
+                    tx.X = float.Parse(colladaSource.data[startIndex + 0]);
+                    tx.Y = float.Parse(colladaSource.data[startIndex + 1]);
                     targetVert.uv.Add(tx);
                     break;
                 case SemanticType.COLOR:
                     // Vertex colors are stored as integers [0,255]. (127,127,127) is white.
-                    targetVert.color.X = float.Parse(colladaSource.data[pIndex * valueCount + 0]) * 255;
-                    targetVert.color.Y = float.Parse(colladaSource.data[pIndex * valueCount + 1]) * 255;
-                    targetVert.color.Z = float.Parse(colladaSource.data[pIndex * valueCount + 2]) * 255;
-                    if(valueCount > 3)
-                        targetVert.color.W = float.Parse(colladaSource.data[pIndex * colladaSource.stride + 3]) * 127;
+                    targetVert.color.X = float.Parse(colladaSource.data[startIndex + 0]) * 255;
+                    targetVert.color.Y = float.Parse(colladaSource.data[startIndex + 1]) * 255;
+                    targetVert.color.Z = float.Parse(colladaSource.data[startIndex + 2]) * 255;
+                    if(colladaSource.accessorParams.Count > 3)
+                        targetVert.color.W = float.Parse(colladaSource.data[startIndex + 3]) * 127;
                     break;
             }
         }
