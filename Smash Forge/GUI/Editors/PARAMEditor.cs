@@ -123,7 +123,7 @@ namespace Smash_Forge
                     count = entrySize;
                 }
 
-                for (int i = 0; i < count; ++i)
+                for (int i = 0; i < count; i++)
                 {
                     ParamEntry val = p.Groups[groupNum].Values[(entrySize * entryNum) + i];
 
@@ -165,7 +165,7 @@ namespace Smash_Forge
         {
             Dictionary<string, int> moveNameIdMapping = new Dictionary<string, int>();
 
-            for (int j = 0; j < ((ParamGroup)p.Groups[0]).EntryCount; ++j)
+            for (int j = 0; j < ((ParamGroup)p.Groups[0]).EntryCount; j++)
                 if (labels != null)
                     foreach (IniLabels.Label label in labels)
                         if (label.type == IniLabels.Label.LabelType.Entry && label.group == 0 && label.entry == j)
@@ -176,12 +176,12 @@ namespace Smash_Forge
         private void openParam(string f)
         {
             p = new ParamFile(f);
-            for (int i = 0; i < p.Groups.Count; ++i)
+            for (int i = 0; i < p.Groups.Count; i++)
             {
                 if (p.Groups[i] is ParamGroup)
                 {
                     TreeNode[] children = new TreeNode[((ParamGroup)p.Groups[i]).EntryCount];
-                    for (int j = 0; j < ((ParamGroup)p.Groups[i]).EntryCount; ++j)
+                    for (int j = 0; j < ((ParamGroup)p.Groups[i]).EntryCount; j++)
                     {
                         TreeNode child = new TreeNode(getEntryName(i, j));
                         children[j] = child;
@@ -203,7 +203,7 @@ namespace Smash_Forge
                     else
                     {
                         TreeNode[] children = new TreeNode[entryCount];
-                        for (int j = 0; j < entryCount; ++j)
+                        for (int j = 0; j < entryCount; j++)
                         {
                             TreeNode child = new TreeNode(getEntryName(i, j));
                             children[j] = child;
@@ -320,7 +320,7 @@ namespace Smash_Forge
 
                 List<string> fileNames = new List<string>();
 
-                for (int i = 0; i < ini.Length; ++i)
+                for (int i = 0; i < ini.Length; i++)
                 {
                     //Blank line
                     if (ini[i].Length <= 0)
@@ -363,7 +363,7 @@ namespace Smash_Forge
                 List<Label> labels = new List<Label>();
                 Label currentLabel = null;
 
-                for (int i = 0; i < ini.Length; ++i)
+                for (int i = 0; i < ini.Length; i++)
                 {
                     //Blank line
                     if (ini[i].Length <= 0)
@@ -492,7 +492,7 @@ namespace Smash_Forge
             int groupNum = node.Parent.Index;
             int entryNum = node.Index;
             int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
-            for (int j = 0; j < entrySize; ++j)
+            for (int j = 0; j < entrySize; j++)
                 p.Groups[groupNum].Add(new ParamEntry(p.Groups[groupNum].Values[entrySize * entryNum + j].Value, p.Groups[groupNum].Values[entrySize * entryNum + j].Type));
 
             ((ParamGroup)p.Groups[groupNum]).EntryCount++;
@@ -525,7 +525,7 @@ namespace Smash_Forge
             int groupNum = node.Parent.Index;
             int entryNum = node.Index;
             int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
-            for (int j = 0; j < entrySize; ++j)
+            for (int j = 0; j < entrySize; j++)
                 p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum);
             
             ((ParamGroup)p.Groups[groupNum]).EntryCount--;
@@ -568,7 +568,7 @@ namespace Smash_Forge
                     int groupNum = treeView1.SelectedNode.Parent.Index;
                     int entryNum = treeView1.SelectedNode.Index;
                     int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
-                    for (int j = 0; j < entrySize; ++j)
+                    for (int j = 0; j < entrySize; j++)
                     {
                         p.Groups[groupNum].Values.Insert(entrySize * (entryNum - 1) + j, p.Groups[groupNum].Values[entrySize * entryNum + j]);
                         p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum + j + 1);
@@ -581,7 +581,7 @@ namespace Smash_Forge
                     int groupNum = treeView1.SelectedNode.Parent.Index;
                     int entryNum = treeView1.SelectedNode.Index;
                     int entrySize = ((ParamGroup)p.Groups[groupNum]).EntrySize;
-                    for (int j = 0; j < entrySize; ++j)
+                    for (int j = 0; j < entrySize; j++)
                     {
                         p.Groups[groupNum].Values.Insert(entrySize * (entryNum + 2), p.Groups[groupNum].Values[entrySize * entryNum]);
                         p.Groups[groupNum].Values.RemoveAt(entrySize * entryNum);
