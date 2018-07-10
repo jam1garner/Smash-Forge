@@ -90,7 +90,7 @@ namespace Smash_Forge
         public static bool renderOtherLVDEntries = true;
         public static bool renderSwagZ = false;
         public static bool renderSwagY = false;
-        public static bool renderBoundingBox;
+        public static bool renderBoundingSphere;
         public static bool renderHurtboxes = true;
         public static bool renderHurtboxesZone = true;
         public static bool renderECB = false;

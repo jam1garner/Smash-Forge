@@ -95,7 +95,7 @@
             this.recalculateToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.smoothToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.generateTanBitanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.generateBoundingBoxesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generateBoundingSpheresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openEditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.vertexColorToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.setToWhiteToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -551,7 +551,7 @@
             this.addBlankMeshToolStripMenuItem,
             this.smoothNormalsToolStripMenuItem1,
             this.generateTanBitanToolStripMenuItem,
-            this.generateBoundingBoxesToolStripMenuItem,
+            this.generateBoundingSpheresToolStripMenuItem,
             this.openEditToolStripMenuItem,
             this.vertexColorToolStripMenuItem2});
             this.nudContextMenu.Name = "nudContextMenu";
@@ -652,12 +652,12 @@
             this.generateTanBitanToolStripMenuItem.Text = "Generate Tan/Bitan";
             this.generateTanBitanToolStripMenuItem.Click += new System.EventHandler(this.generateTanBitanToolStripMenuItem_Click);
             // 
-            // generateBoundingBoxesToolStripMenuItem
+            // generateBoundingSpheresToolStripMenuItem
             // 
-            this.generateBoundingBoxesToolStripMenuItem.Name = "generateBoundingBoxesToolStripMenuItem";
-            this.generateBoundingBoxesToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.generateBoundingBoxesToolStripMenuItem.Text = "Generate Bounding Boxes";
-            this.generateBoundingBoxesToolStripMenuItem.Click += new System.EventHandler(this.generateBoundingBoxesToolStripMenuItem_Click);
+            this.generateBoundingSpheresToolStripMenuItem.Name = "generateBoundingSpheresToolStripMenuItem";
+            this.generateBoundingSpheresToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.generateBoundingSpheresToolStripMenuItem.Text = "Generate Bounding Spheres";
+            this.generateBoundingSpheresToolStripMenuItem.Click += new System.EventHandler(this.generateBoundingSpheresToolStripMenuItem_Click);
             // 
             // openEditToolStripMenuItem
             // 
@@ -867,7 +867,7 @@
         private System.Windows.Forms.ToolStripMenuItem exportAsDAEToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importFromDAEToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.ToolStripMenuItem generateBoundingBoxesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem generateBoundingSpheresToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem calculateNormalsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem recalculateToolStripMenuItem;

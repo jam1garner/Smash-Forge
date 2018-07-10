@@ -200,7 +200,14 @@ namespace Smash_Forge
             ElementCM.MenuItems.Add(Delete);
 
             CollisionCM = new ContextMenu();
+
+            Delete = new MenuItem("Delete Entry");
+            Delete.Click += delegate
+            {
+                deleteSelected();
+            };
             CollisionCM.MenuItems.Add(Delete);
+
             MenuItem GenPassthru = new MenuItem("Regenerate Passthrough Angles");
             GenPassthru.Click += delegate
             {
