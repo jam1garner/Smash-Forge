@@ -216,9 +216,9 @@ namespace Smash_Forge.GUI.Editors
             stageDifHueTB.Text = selectedStageLight.diffuseColor.H + "";
             stageDifSatTB.Text = selectedStageLight.diffuseColor.S + "";
             stageDifIntensityTB.Text = selectedStageLight.diffuseColor.V + "";
-            stageDifRotXTB.Text = selectedStageLight.rotX + "";
-            stageDifRotYTB.Text = selectedStageLight.rotY + "";
-            stageDifRotZTB.Text = selectedStageLight.rotZ + "";
+            stageDifRotXTB.Text = selectedStageLight.RotationXDegrees + "";
+            stageDifRotYTB.Text = selectedStageLight.RotationYDegrees + "";
+            stageDifRotZTB.Text = selectedStageLight.RotationZDegrees + "";
         }
 
         private void lightSetLightListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -321,21 +321,21 @@ namespace Smash_Forge.GUI.Editors
         private void stageDifRotXTB_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(stageDifRotXTB);
-            selectedStageLight.rotX = value;
+            selectedStageLight.RotationXDegrees = value;
             stageRotXTrackBar.Value = (int)(value + 180.0f);
         }
 
         private void stageDifRotYTB_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(stageDifRotYTB);
-            selectedStageLight.rotY = value;
+            selectedStageLight.RotationYDegrees = value;
             stageRotYTrackBar.Value = (int)(value + 180.0f);
         }
 
         private void stageDifRotZTB_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(stageDifRotZTB);
-            selectedStageLight.rotZ = value;
+            selectedStageLight.RotationZDegrees = value;
             stageRotZTrackBar.Value = (int)(value + 180.0f);
         }
 
@@ -498,9 +498,9 @@ namespace Smash_Forge.GUI.Editors
             areaGroundGreenTB.Text = selectedAreaLight.groundG + "";
             areaGroundBlueTB.Text = selectedAreaLight.groundB + "";
 
-            areaRotX.Text = selectedAreaLight.rotX + "";
-            areaRotY.Text = selectedAreaLight.rotY + "";
-            areaRotZ.Text = selectedAreaLight.rotZ + "";
+            areaRotX.Text = selectedAreaLight.RotationXDegrees + "";
+            areaRotY.Text = selectedAreaLight.RotationYDegrees + "";
+            areaRotZ.Text = selectedAreaLight.RotationZDegrees + "";
 
             areaPosXTB.Text = selectedAreaLight.positionX + "";
             areaPosYTB.Text = selectedAreaLight.positionY + "";
@@ -634,21 +634,21 @@ namespace Smash_Forge.GUI.Editors
         private void areaRotX_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(areaRotX);
-            selectedAreaLight.rotX = value;
+            selectedAreaLight.RotationXDegrees = value;
             GuiTools.UpdateTrackBarFromValue(value, areaRotXTrackBar, -180, 180);
         }
 
         private void areaRotY_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(areaRotY);
-            selectedAreaLight.rotY = value;
+            selectedAreaLight.RotationYDegrees = value;
             GuiTools.UpdateTrackBarFromValue(value, areaRotYTrackBar, -180, 180);
         }
 
         private void areaRotZ_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(areaRotZ);
-            selectedAreaLight.rotZ = value;
+            selectedAreaLight.RotationZDegrees = value;
             GuiTools.UpdateTrackBarFromValue(value, areaRotZTrackBar, -180, 180);
         }
 

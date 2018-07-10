@@ -191,9 +191,9 @@ namespace Smash_Forge.Params
             ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 3, stageDiffuseLights[lightIndex].diffuseColor.S);
             ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 4, stageDiffuseLights[lightIndex].diffuseColor.V);
 
-            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 5, stageDiffuseLights[lightIndex].rotX);
-            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 6, stageDiffuseLights[lightIndex].rotY);
-            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 7, stageDiffuseLights[lightIndex].rotZ);
+            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 5, stageDiffuseLights[lightIndex].RotationXDegrees);
+            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 6, stageDiffuseLights[lightIndex].RotationYDegrees);
+            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 7, stageDiffuseLights[lightIndex].RotationZDegrees);
         }
     }
 }
