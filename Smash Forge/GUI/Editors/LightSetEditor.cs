@@ -39,21 +39,28 @@ namespace Smash_Forge.GUI.Editors
 
         private void InitStageLightListBox()
         {
-            for (int groupIndex = 1; groupIndex < 17; groupIndex++)
+            // There are 16 groups of 4 stage lights stored in a single array.
+            for (int groupIndex = 0; groupIndex < 16; groupIndex++)
             {
-                TreeNode[] children = new TreeNode[4];
-                for (int lightIndex = 0; lightIndex < 4; lightIndex++)
-                {
-                    DirectionalLight currentLight = Runtime.lightSetParam.stageDiffuseLights[((groupIndex) * 4) + lightIndex];
-                    children[lightIndex] = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
-                    children[lightIndex].Checked = currentLight.enabled;
-                }
-
-                string name = GetGroupAndColorName(groupIndex - 1);
+                TreeNode[] children = GetChildLightsForLightSet(groupIndex);
+                string name = GetGroupAndColorName(groupIndex);
                 TreeNode parent = new TreeNode(name, children);
 
                 stageLightSetTreeView.Nodes.Add(parent);
             }
+        }
+
+        private static TreeNode[] GetChildLightsForLightSet(int groupIndex)
+        {
+            TreeNode[] children = new TreeNode[4];
+            for (int lightIndex = 0; lightIndex < 4; lightIndex++)
+            {
+                DirectionalLight currentLight = Runtime.lightSetParam.stageDiffuseLights[((groupIndex) * 4) + lightIndex];
+                children[lightIndex] = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
+                children[lightIndex].Checked = currentLight.enabled;
+            }
+
+            return children;
         }
 
         private string GetGroupAndColorName(int groupIndex)
