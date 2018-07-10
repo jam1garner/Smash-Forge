@@ -34,20 +34,47 @@ namespace Smash_Forge.GUI.Editors
             InitAreaLightListBox();
             InitLightMapListBox();
             InitFogListBox();
-            InitStageLightListBox();
+            InitStageLightTreeView();
         }
 
-        private void InitStageLightListBox()
+        private void InitStageLightTreeView()
         {
+            // Use solid color thumbnails to avoid confusion between color names.
+            stageLightSetTreeView.ImageList = new ImageList();
+            stageLightSetTreeView.ImageList.ColorDepth = ColorDepth.Depth32Bit;
+
             // There are 16 groups of 4 stage lights stored in a single array.
             for (int groupIndex = 0; groupIndex < 16; groupIndex++)
             {
+                // Add the group and the 4 child lights.
                 TreeNode[] children = GetChildLightsForLightSet(groupIndex);
                 string name = GetGroupAndColorName(groupIndex);
                 TreeNode parent = new TreeNode(name, children);
-
                 stageLightSetTreeView.Nodes.Add(parent);
+
+                AddLightSetGroupThumbnail(groupIndex, parent);
             }
+        }
+
+        private void AddLightSetGroupThumbnail(int groupIndex, TreeNode parent)
+        {
+            // Add color thumbnail.
+            parent.ImageIndex = groupIndex;
+            parent.SelectedImageIndex = groupIndex;
+            Bitmap colorImage = GetLightSetIndexColorThumbnail(groupIndex);
+            stageLightSetTreeView.ImageList.Images.Add(colorImage);
+        }
+
+        private static Bitmap GetLightSetIndexColorThumbnail(int groupIndex)
+        {
+            Bitmap colorImage = new Bitmap(64, 64);
+            using (Graphics graph = Graphics.FromImage(colorImage))
+            {
+                Rectangle ImageSize = new Rectangle(0, 0, 64, 64);
+                graph.Clear(NUD.lightSetColorByIndex[groupIndex]);
+            }
+
+            return colorImage;
         }
 
         private static TreeNode[] GetChildLightsForLightSet(int groupIndex)
@@ -55,9 +82,17 @@ namespace Smash_Forge.GUI.Editors
             TreeNode[] children = new TreeNode[4];
             for (int lightIndex = 0; lightIndex < 4; lightIndex++)
             {
+                // Create a node from the current stage light.
                 DirectionalLight currentLight = Runtime.lightSetParam.stageDiffuseLights[((groupIndex) * 4) + lightIndex];
-                children[lightIndex] = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
-                children[lightIndex].Checked = currentLight.enabled;
+                TreeNode childLight = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
+                childLight = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
+                childLight.Checked = currentLight.enabled;
+
+                // Don't use an image. This will leave a blank space.
+                childLight.ImageIndex = 99;
+                childLight.SelectedImageIndex = 99;
+
+                children[lightIndex] = childLight;
             }
 
             return children;
