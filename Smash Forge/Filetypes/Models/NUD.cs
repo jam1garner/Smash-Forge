@@ -374,6 +374,12 @@ namespace Smash_Forge
                     bonesUbo.Bind();
                     GL.BufferSubData(bonesUbo.BufferTarget, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * sizeof(float)), f);
                 }
+
+                shader.SetBoolToInt("useBones", true);
+            }
+            else
+            {
+                shader.SetBoolToInt("useBones", false);
             }
         }
 
@@ -2228,7 +2234,7 @@ namespace Smash_Forge
             public Vector3 bit;
             public Vector2 uv;
             public Vector4 col;
-            public Vector4 node;
+            public Vector4 boneIds;
             public Vector4 weight;
             public Vector2 uv2;
             public Vector2 uv3;
@@ -2822,7 +2828,7 @@ namespace Smash_Forge
                         uv = v.uv.Count > 0 ? v.uv[0] : new Vector2(0, 0),
                         uv2 = v.uv.Count > 1 ? v.uv[1] : new Vector2(0, 0),
                         uv3 = v.uv.Count > 2 ? v.uv[2] : new Vector2(0, 0),
-                        node = new Vector4(
+                        boneIds = new Vector4(
                             v.boneIds.Count > 0 ? v.boneIds[0] : -1,
                             v.boneIds.Count > 1 ? v.boneIds[1] : -1,
                             v.boneIds.Count > 2 ? v.boneIds[2] : -1,
@@ -2833,7 +2839,6 @@ namespace Smash_Forge
                             v.boneWeights.Count > 2 ? v.boneWeights[2] : 0,
                             v.boneWeights.Count > 3 ? v.boneWeights[3] : 0),
                     };
-
                     displayVertList.Add(displayVert);
                 }
 

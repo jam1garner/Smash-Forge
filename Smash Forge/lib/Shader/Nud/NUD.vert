@@ -52,6 +52,8 @@ uniform int selectedBoneIndex;
 uniform int hasNrmSamplerAUV;
 uniform int hasNrmSamplerBUV;
 
+uniform int useBones;
+
 uniform bones
 {
     mat4 transforms[200];
@@ -86,7 +88,7 @@ void main()
 {
     // Vertex Skinning
     vec4 objPos = vec4(vPosition.xyz, 1.0);
-    if(vBone.x != -1.0)
+    if(useBones == 1)
        objPos = skin(vPosition, ivec4(vBone));
 
     objPos.z *= zScale;
@@ -128,7 +130,7 @@ void main()
     geomViewPosition = vec3(vPosition * mat3(mvpMatrix));
 
     geomNormal = vNormal;
-	if(vBone.x != -1.0)
+	if(useBones == 1)
 		geomNormal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
 
     geomViewNormal = mat3(sphereMapMatrix) * geomNormal.xyz;

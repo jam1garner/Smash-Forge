@@ -25,7 +25,7 @@ namespace Smash_Forge
             set
             {
                 nud = value;
-                if (xmb != null)
+                if (nud != null && xmb != null)
                     nud.SetPropertiesFromXMB(xmb);
                 Refresh();
             }
@@ -43,7 +43,8 @@ namespace Smash_Forge
                 nut = value;
                 Refresh();
 
-                nud.CheckTexIdErrors(nut);
+                if (nud != null)
+                    nud.CheckTexIdErrors(nut);
             }
         }
         private NUT nut;
@@ -165,7 +166,6 @@ namespace Smash_Forge
             SelectedImageKey = "folder";
             nud = new NUD();
             nut = new NUT();
-            vbn = new VBN();
             mta = new MTA();
             MOI = new MOI();
             jtb = new JTB();

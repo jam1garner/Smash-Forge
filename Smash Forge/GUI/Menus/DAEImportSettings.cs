@@ -71,7 +71,6 @@ namespace Smash_Forge
 
         public void Apply(NUD nud)
         {
-            nud.GenerateBoundingSpheres();
             Matrix4 rotXBy90 = Matrix4.CreateRotationX(0.5f * (float)Math.PI);
             float scale = 1f;
             bool hasScale = float.TryParse(scaleTB.Text, out scale);
@@ -160,6 +159,9 @@ namespace Smash_Forge
                     }
                 }
             }
+
+            // Wait until after the model is rotated.
+            nud.GenerateBoundingSpheres();
         }
 
         public VBN getVBN()

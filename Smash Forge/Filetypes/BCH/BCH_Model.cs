@@ -102,10 +102,13 @@ namespace Smash_Forge
                             con.VBN = skeleton;
 
                             Collada.DaetoNud(f, con, daeImport.importTexCB.Checked);
-                            
-                            // apply settings
-                            daeImport.Apply(con.NUD);
-                            CreateFromNUD(con.NUD);
+
+                            if (con.NUD != null)
+                            {
+                                // apply settings
+                                daeImport.Apply(con.NUD);
+                                CreateFromNUD(con.NUD);
+                            }
                         }
                     }
                 }

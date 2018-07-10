@@ -99,6 +99,9 @@ namespace Smash_Forge.Rendering
 
             // Helpful textures. 
             uvTestPattern = new Texture2D(Properties.Resources.UVPattern);
+            uvTestPattern.TextureWrapS = TextureWrapMode.Repeat;
+            uvTestPattern.TextureWrapT = TextureWrapMode.Repeat;
+
             boneWeightGradient = new Texture2D(Properties.Resources.boneWeightGradient);
             boneWeightGradient2 = new Texture2D(Properties.Resources.boneWeightGradient2);
 

@@ -1214,13 +1214,13 @@ namespace Smash_Forge
                     // load vbn
                     modelContainer.VBN = daeImportSettings.getVBN();
 
-                    Stopwatch stopwatch = new Stopwatch();
-                    stopwatch.Start();
                     Collada.DaetoNud(fileName, modelContainer, daeImportSettings.importTexCB.Checked);
-                    
+                    if (modelContainer.NUD == null)
+                        return;
+
                     // apply settings
                     daeImportSettings.Apply(modelContainer.NUD);
-                    Debug.WriteLine(stopwatch.ElapsedMilliseconds);
+
                     if (CheckCurrentViewport(out mvp))
                     {
                         mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
