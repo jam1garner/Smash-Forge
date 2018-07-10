@@ -129,9 +129,9 @@ namespace Smash_Forge
                 ResetModels();
                 currentAnimation = null;
                 currentMaterialAnimation = value;
-                totalFrame.Value = value.numFrames;
+                totalFrame.Value = value.frameCount;
                 animationTrackBar.TickFrequency = 1;
-                animationTrackBar.SetRange(0, (int)value.numFrames);
+                animationTrackBar.SetRange(0, (int)value.frameCount);
                 currentFrame.Value = 1;
                 currentFrame.Value = 0;
             }
@@ -788,61 +788,61 @@ namespace Smash_Forge
         private void FrameSelectedModelContainer()
         {
             ModelContainer modelContainer = (ModelContainer)meshList.filesTreeView.SelectedNode;
-            float[] boundingBox = new float[] { 0, 0, 0, 0 };
+            float[] boundingSphere = new float[] { 0, 0, 0, 0 };
 
             // Use the main bounding box for the NUD.
-            if (modelContainer.NUD.boundingBox[3] > boundingBox[3])
+            if (modelContainer.NUD.boundingSphere[3] > boundingSphere[3])
             {
-                boundingBox[0] = modelContainer.NUD.boundingBox[0];
-                boundingBox[1] = modelContainer.NUD.boundingBox[1];
-                boundingBox[2] = modelContainer.NUD.boundingBox[2];
-                boundingBox[3] = modelContainer.NUD.boundingBox[3];
+                boundingSphere[0] = modelContainer.NUD.boundingSphere[0];
+                boundingSphere[1] = modelContainer.NUD.boundingSphere[1];
+                boundingSphere[2] = modelContainer.NUD.boundingSphere[2];
+                boundingSphere[3] = modelContainer.NUD.boundingSphere[3];
             }
 
             // It's possible that only the individual meshes have bounding boxes.
             foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
             {
-                if (mesh.boundingBox[3] > boundingBox[3])
+                if (mesh.boundingSphere[3] > boundingSphere[3])
                 {
-                    boundingBox[0] = mesh.boundingBox[0];
-                    boundingBox[1] = mesh.boundingBox[1];
-                    boundingBox[2] = mesh.boundingBox[2];
-                    boundingBox[3] = mesh.boundingBox[3];
+                    boundingSphere[0] = mesh.boundingSphere[0];
+                    boundingSphere[1] = mesh.boundingSphere[1];
+                    boundingSphere[2] = mesh.boundingSphere[2];
+                    boundingSphere[3] = mesh.boundingSphere[3];
                 }
             }
 
-            camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
         }
 
         private void FrameSelectedMesh()
         {
             NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode;
-            float[] boundingBox = mesh.boundingBox;
-            camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            float[] boundingSphere = mesh.boundingSphere;
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
         }
 
         private void FrameSelectedNud()
         {
             NUD nud = (NUD)meshList.filesTreeView.SelectedNode;
-            float[] boundingBox = nud.boundingBox;
-            camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            float[] boundingSphere = nud.boundingSphere;
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
         }
 
         private void FrameSelectedPolygon()
         {
             NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode.Parent;
-            float[] boundingBox = mesh.boundingBox;
-            camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            float[] boundingSphere = mesh.boundingSphere;
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
         }
 
         private void FrameAllModelContainers(float maxBoundingRadius = 400)
         {
             // Find the max NUD bounding box for all models. 
-            float[] boundingBox = new float[] { 0, 0, 0, 0 };
+            float[] boundingSphere = new float[] { 0, 0, 0, 0 };
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (node is ModelContainer)
@@ -850,30 +850,30 @@ namespace Smash_Forge
                     ModelContainer modelContainer = (ModelContainer)node;
 
                     // Use the main bounding box for the NUD.
-                    if ((modelContainer.NUD.boundingBox[3] > boundingBox[3]) && (modelContainer.NUD.boundingBox[3] < maxBoundingRadius))
+                    if ((modelContainer.NUD.boundingSphere[3] > boundingSphere[3]) && (modelContainer.NUD.boundingSphere[3] < maxBoundingRadius))
                     {
-                        boundingBox[0] = modelContainer.NUD.boundingBox[0];
-                        boundingBox[1] = modelContainer.NUD.boundingBox[1];
-                        boundingBox[2] = modelContainer.NUD.boundingBox[2];
-                        boundingBox[3] = modelContainer.NUD.boundingBox[3];
+                        boundingSphere[0] = modelContainer.NUD.boundingSphere[0];
+                        boundingSphere[1] = modelContainer.NUD.boundingSphere[1];
+                        boundingSphere[2] = modelContainer.NUD.boundingSphere[2];
+                        boundingSphere[3] = modelContainer.NUD.boundingSphere[3];
                     }
 
                     // It's possible that only the individual meshes have bounding boxes.
                     foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
                     {
-                        if (mesh.boundingBox[3] > boundingBox[3] && mesh.boundingBox[3] < maxBoundingRadius)
+                        if (mesh.boundingSphere[3] > boundingSphere[3] && mesh.boundingSphere[3] < maxBoundingRadius)
                         {
-                            boundingBox[0] = mesh.boundingBox[0];
-                            boundingBox[1] = mesh.boundingBox[1];
-                            boundingBox[2] = mesh.boundingBox[2];
-                            boundingBox[3] = mesh.boundingBox[3];
+                            boundingSphere[0] = mesh.boundingSphere[0];
+                            boundingSphere[1] = mesh.boundingSphere[1];
+                            boundingSphere[2] = mesh.boundingSphere[2];
+                            boundingSphere[3] = mesh.boundingSphere[3];
                         }
                     }
                 }
 
             }
 
-            camera.FrameBoundingSphere(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
         }
 

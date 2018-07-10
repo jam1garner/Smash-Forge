@@ -479,7 +479,7 @@ namespace Smash_Forge
                 Vector3 closest = Vector3.Zero;
                 foreach (NUD.Mesh mesh in NUD.Nodes)
                 {
-                    if (ray.CheckSphereHit(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3], out closest))
+                    if (ray.CheckSphereHit(new Vector3(mesh.boundingSphere[0], mesh.boundingSphere[1], mesh.boundingSphere[2]), mesh.boundingSphere[3], out closest))
                         selected.Add(ray.Distance(closest), mesh);
                 }
             }

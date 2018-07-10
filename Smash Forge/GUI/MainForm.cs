@@ -1152,7 +1152,7 @@ namespace Smash_Forge
                 }else
                 {
                     mvp.ViewComboBox.SelectedItem = "LVD Editor";
-                    mvp.Text = fileName;
+                    mvp.Text = Path.GetFileName(fileName);
                     mvp.LVD = new LVD(fileName);
                 }
             }

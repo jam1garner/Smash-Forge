@@ -48,7 +48,8 @@ namespace Smash_Forge
             if(keyframeOffset != f.eof())
             {
                 f.seek(keyframeOffset);
-                for(int i = 0;i < keyframeCount;i++) {
+                for(int i = 0; i < keyframeCount; i++)
+                {
                     temp.texId = f.readInt();
                     temp.frameNum = f.readInt();
                     keyframes.Add(temp);
@@ -81,6 +82,13 @@ namespace Smash_Forge
 
     public class MatData
     {
+        public enum AnimType : ushort
+        {
+            NONE = 0,
+            FULL = 1,
+            CONST = 2,
+        }
+
         public class frame
         {
             //public int size;
@@ -89,7 +97,8 @@ namespace Smash_Forge
 
         public string name;
         public List<frame> frames = new List<frame>();
-        public int unknown, unknown2, unknown3;
+        public int unknown, unknown2;
+        public ushort animType;
         public int valueCount;
 
         public MatData(){ }
@@ -101,7 +110,7 @@ namespace Smash_Forge
             valueCount = f.readInt();
             int frameCount = f.readInt();
             unknown2 = f.readUShort();
-            unknown3 = f.readUShort();
+            animType = f.readUShort();
             int dataOff = f.readInt();
             f.seek(nameOff);
             name = f.readString();
@@ -127,7 +136,7 @@ namespace Smash_Forge
             f.writeInt(valueCount);
             f.writeInt(frames.Count);
             f.writeShort(unknown2);
-            f.writeShort(unknown3);
+            f.writeShort(animType);
             int position = pos + f.pos() + 0xC + name.Length + 1;
             while (position % 0x10 != 0)
                 position++;
@@ -372,11 +381,14 @@ namespace Smash_Forge
     public class MTA : FileBase
     {
         public uint unknown;
-        public uint numFrames;
+        public uint frameCount;
+        public uint startFrame;
+        public uint endFrame;
         public uint frameRate;
+
         public List<MatEntry> matEntries = new List<MatEntry>();
         public List<VisEntry> visEntries = new List<VisEntry>();
-        
+
         MTAEditor Editor;
 
         public MTA()
@@ -385,8 +397,11 @@ namespace Smash_Forge
             Endian = Endianness.Big;
             ImageKey = "image";
             SelectedImageKey = "image";
-            
-            numFrames = 0;
+
+            unknown = 0;
+            frameCount = 0;
+            startFrame = 0;
+            endFrame = 0;
             frameRate = 60;
 
             ContextMenu = new ContextMenu();
@@ -451,11 +466,13 @@ namespace Smash_Forge
             f.Endian = Endian;
             if (f.size() < 4)
                 return;
+
             f.seek(4);
-            unknown = (uint)f.readInt();
-            numFrames = (uint)f.readInt();
-            f.skip(8);
-            frameRate = (uint)f.readInt();
+            unknown = f.readUInt();
+            frameCount = f.readUInt();
+            startFrame = f.readUInt();
+            endFrame = f.readUInt();
+            frameRate = f.readUInt();
             int matCount = f.readInt();
             int matOffset = f.readInt();
             int visCount = f.readInt();
@@ -489,11 +506,12 @@ namespace Smash_Forge
             f.Endian = Endianness.Big;
 
             f.writeString("MTA4");
-            f.writeInt((int)unknown);
-            f.writeInt((int)numFrames);
-            f.writeInt(0);
-            f.writeInt((int)numFrames - 1);
-            f.writeInt((int)frameRate);
+            f.writeUInt(unknown);
+            f.writeUInt(frameCount);
+            f.writeUInt(startFrame);
+            f.writeUInt(endFrame);
+            f.writeUInt(frameRate);
+
             f.writeInt(matEntries.Count);
             if (matEntries.Count > 0)
                 f.writeInt(0x38);
@@ -560,8 +578,8 @@ namespace Smash_Forge
 
             f += "Header\n";
             f += $"Header_Unknown,{unknown}\n";
-            f += $"Frame Count,{numFrames}\n";
-            f += $"Frame rate,{frameRate}\n";
+            f += $"Frame Count,{frameCount}\n";
+            f += $"Frame Rate,{frameRate}\n";
             foreach(MatEntry matEntry in matEntries)
             {
                 f += "--------------------------------------\n";
@@ -579,7 +597,7 @@ namespace Smash_Forge
                     f += matProp.name + '\n';
                     f += $"MatProp_Unk1,{matProp.unknown}\n";
                     f += $"MatProp_Unk2,{matProp.unknown2}\n";
-                    f += $"MatProp_Unk3,{matProp.unknown3}\n";
+                    f += $"Animation Type,{matProp.animType}\n";
                     f += "Compile Type (Baked or Keyed),Baked\n";
                     foreach(MatData.frame frame in matProp.frames)
                     {
@@ -631,7 +649,9 @@ namespace Smash_Forge
             visEntries.Clear();
             Nodes.Clear();
             unknown = Convert.ToUInt32(f[1].Split(',')[1]);
-            numFrames = Convert.ToUInt32(f[2].Split(',')[1]);
+            frameCount = Convert.ToUInt32(f[2].Split(',')[1]);
+            startFrame = 0;
+            endFrame = frameCount - 1;
             frameRate = Convert.ToUInt32(f[3].Split(',')[1]);
             int l = 3;
             try
@@ -666,7 +686,7 @@ namespace Smash_Forge
                                     md.name = f[l++];
                                     md.unknown = Convert.ToInt32(f[l++].Split(',')[1]);
                                     md.unknown2 = Convert.ToInt32(f[l++].Split(',')[1]);
-                                    md.unknown3 = Convert.ToInt32(f[l++].Split(',')[1]);
+                                    md.animType = Convert.ToUInt16(f[l++].Split(',')[1]);
                                     bool keyed = (f[l++].Split(',')[1].Equals("Keyed") || f[l].Split(',')[1].Equals("keyed"));
                                     int lastFrame = 0;
                                     MatData.frame lastKeyframe = null;

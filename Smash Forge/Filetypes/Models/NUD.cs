@@ -42,7 +42,7 @@ namespace Smash_Forge
         public int type = SMASH;
         public int boneCount = 0;
         public bool hasBones = false;
-        public float[] boundingBox = new float[4];
+        public float[] boundingSphere = new float[4];
 
         // Just used for rendering.
         private List<Mesh> depthSortedMeshes = new List<Mesh>();
@@ -330,8 +330,8 @@ namespace Smash_Forge
             }
 
             // Main function for NUD rendering.
-            if (Runtime.renderBoundingBox)
-                DrawBoundingBoxes();
+            if (Runtime.renderBoundingSphere)
+                DrawBoundingSpheres();
 
             // Choose the correct shader.
             Shader shader;
@@ -377,13 +377,13 @@ namespace Smash_Forge
             }
         }
 
-        private void DrawBoundingBoxes()
+        private void DrawBoundingSpheres()
         {
             GL.UseProgram(0);
 
             // Draw NUD bounding box. 
             GL.Color4(Color.GhostWhite);
-            RenderTools.DrawCube(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3], true);
+            RenderTools.DrawCube(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], true);
 
             // Draw all the mesh bounding boxes. Selected: White. Deselected: Orange.
             foreach (Mesh mesh in Nodes)
@@ -399,20 +399,20 @@ namespace Smash_Forge
                     {
                         // Use the center of the bone as the bounding box center for NSC meshes. 
                         Vector3 center = ((ModelContainer)Parent).VBN.bones[mesh.singlebind].pos;
-                        RenderTools.DrawCube(center, mesh.boundingBox[3], true);
+                        RenderTools.DrawCube(center, mesh.boundingSphere[3], true);
                     }
                     else
                     {
-                        RenderTools.DrawCube(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3], true);
+                        RenderTools.DrawCube(new Vector3(mesh.boundingSphere[0], mesh.boundingSphere[1], mesh.boundingSphere[2]), mesh.boundingSphere[3], true);
                     }
                 }
             }
         }
 
-        public void GenerateBoundingBoxes()
+        public void GenerateBoundingSpheres()
         {
             foreach (Mesh m in Nodes)
-                m.generateBoundingBox();
+                m.generateBoundingSphere();
 
             Vector3 cen1 = new Vector3(0,0,0), cen2 = new Vector3(0,0,0);
             double rad1 = 0, rad2 = 0;
@@ -501,9 +501,9 @@ namespace Smash_Forge
             //Set
             for (int i = 0; i < 3; i++)
             {
-                boundingBox[i] = temp[i];
+                boundingSphere[i] = temp[i];
             }
-            boundingBox[3] = (float)radius;
+            boundingSphere[3] = (float)radius;
         }
 
         public void SetPropertiesFromXMB(XMBFile xmb)
@@ -1295,7 +1295,7 @@ namespace Smash_Forge
                                 Buffer.BlockCopy(matHashFloat, 0, bytes, 0, 4);
                                 int matHash = BitConverter.ToInt32(bytes, 0);
 
-                                int frm = (int)((frame * 60 / m.frameRate) % (m.numFrames));
+                                int frm = (int)((frame * 60 / m.frameRate) % (m.frameCount));
 
                                 if (matHash == matEntry.matHash || matHash == matEntry.matHash2)
                                 {
@@ -1392,28 +1392,28 @@ namespace Smash_Forge
             int vertaddClumpStart = vertClumpStart + vertClumpSize;
             int vertaddClumpSize = fileData.readInt();
             int nameStart = vertaddClumpStart + vertaddClumpSize;
-            boundingBox[0] = fileData.readFloat();
-            boundingBox[1] = fileData.readFloat();
-            boundingBox[2] = fileData.readFloat();
-            boundingBox[3] = fileData.readFloat();
+            boundingSphere[0] = fileData.readFloat();
+            boundingSphere[1] = fileData.readFloat();
+            boundingSphere[2] = fileData.readFloat();
+            boundingSphere[3] = fileData.readFloat();
 
             // object descriptors
 
             ObjectData[] obj = new ObjectData[polysets];
-            List<float[]> boundingBoxes = new List<float[]>();
+            List<float[]> boundingSpheres = new List<float[]>();
             int[] boneflags = new int[polysets];
             for (int i = 0; i < polysets; i++)
             {
-                float[] boundingBox = new float[8];
-                boundingBox[0] = fileData.readFloat();
-                boundingBox[1] = fileData.readFloat();
-                boundingBox[2] = fileData.readFloat();
-                boundingBox[3] = fileData.readFloat();
-                boundingBox[4] = fileData.readFloat();
-                boundingBox[5] = fileData.readFloat();
-                boundingBox[6] = fileData.readFloat();
-                boundingBox[7] = fileData.readFloat();
-                boundingBoxes.Add(boundingBox);
+                float[] boundingSphere = new float[8];
+                boundingSphere[0] = fileData.readFloat();
+                boundingSphere[1] = fileData.readFloat();
+                boundingSphere[2] = fileData.readFloat();
+                boundingSphere[3] = fileData.readFloat();
+                boundingSphere[4] = fileData.readFloat();
+                boundingSphere[5] = fileData.readFloat();
+                boundingSphere[6] = fileData.readFloat();
+                boundingSphere[7] = fileData.readFloat();
+                boundingSpheres.Add(boundingSphere);
                 int temp = fileData.pos() + 4;
                 fileData.seek(nameStart + fileData.readInt());
                 obj[i].name = (fileData.readString());
@@ -1434,7 +1434,7 @@ namespace Smash_Forge
                 Nodes.Add(m);
                 m.boneflag = boneflags[meshIndex];
                 m.singlebind = (short)o.singlebind;
-                m.boundingBox = boundingBoxes[meshIndex++];
+                m.boundingSphere = boundingSpheres[meshIndex++];
 
                 for (int i = 0; i < o.polyCount; i++)
                 {
@@ -1775,10 +1775,10 @@ namespace Smash_Forge
             d.writeInt(0); // vertexClumpsize
             d.writeInt(0); // vertexaddclump size
             
-            d.writeFloat(boundingBox[0]);
-            d.writeFloat(boundingBox[1]);
-            d.writeFloat(boundingBox[2]);
-            d.writeFloat(boundingBox[3]);
+            d.writeFloat(boundingSphere[0]);
+            d.writeFloat(boundingSphere[1]);
+            d.writeFloat(boundingSphere[2]);
+            d.writeFloat(boundingSphere[3]);
 
             // other sections....
             FileOutput obj = new FileOutput();
@@ -1811,7 +1811,7 @@ namespace Smash_Forge
 
             foreach (Mesh m in Nodes)
             {
-                foreach (float f in m.boundingBox)
+                foreach (float f in m.boundingSphere)
                     d.writeFloat(f);
 
                 d.writeInt(tempstring.size());
@@ -3065,7 +3065,7 @@ namespace Smash_Forge
             public bool useNsc = false;
 
             public bool sortByObjHeirarchy = true;
-            public float[] boundingBox = new float[8];
+            public float[] boundingSphere = new float[8];
             public float sortingDistance = 0;
 
             public Mesh()
@@ -3097,7 +3097,7 @@ namespace Smash_Forge
                 ((Polygon)Nodes[0]).AddVertex(v);
             }
 
-            public void generateBoundingBox()
+            public void generateBoundingSphere()
             {
                 Vector3 cen1 = new Vector3(0,0,0), cen2 = new Vector3(0,0,0);
                 double rad1 = 0, rad2 = 0;
@@ -3176,16 +3176,16 @@ namespace Smash_Forge
                 // Set
                 for (int i = 0; i < 3; i++)
                 {
-                    boundingBox[i] = temp[i];
-                    boundingBox[i+4] = temp[i];
+                    boundingSphere[i] = temp[i];
+                    boundingSphere[i+4] = temp[i];
                 }
-                boundingBox[3] = (float)radius;
-                boundingBox[7] = 0;
+                boundingSphere[3] = (float)radius;
+                boundingSphere[7] = 0;
             }
 
             public float CalculateSortingDistance(Vector3 cameraPosition)
             {
-                Vector3 meshCenter = new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]);
+                Vector3 meshCenter = new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]);
                 if (useNsc && singlebind != -1)
                 {
                     // Use the bone position as the bounding box center
@@ -3194,7 +3194,7 @@ namespace Smash_Forge
                 }
 
                 Vector3 distanceVector = new Vector3(cameraPosition - meshCenter);
-                return distanceVector.Length + boundingBox[3] + sortBias;
+                return distanceVector.Length + boundingSphere[3] + sortBias;
             }
 
             private int CalculateSortBias()
