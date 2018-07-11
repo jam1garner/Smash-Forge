@@ -447,7 +447,7 @@ namespace Smash_Forge
             //Calculate average and min/max
             Vector3 min = new Vector3(vert0);
             Vector3 max = new Vector3(vert0);
-            
+
             vertCount = 0;
             foreach (Mesh m in Nodes)
             {
@@ -1487,9 +1487,9 @@ namespace Smash_Forge
                 mats.Add(m);
 
                 m.Flags = (uint)d.readInt();
-                d.skip(4);             
+                d.skip(4);
                 m.srcFactor = d.readUShort();
-                int propCount = d.readUShort();
+                ushort texCount = d.readUShort();
                 m.dstFactor = d.readUShort();
                 m.alphaTest = d.readByte();
                 m.alphaFunction = d.readByte();
@@ -1501,7 +1501,7 @@ namespace Smash_Forge
                 m.unkownWater = d.readInt();
                 m.zBufferOffset = d.readInt();
 
-                for (int i = 0; i < propCount; i++)
+                for (ushort i = 0; i < texCount; i++)
                 {
                     MatTexture tex = new MatTexture();
                     tex.hash = d.readInt();
@@ -1513,7 +1513,8 @@ namespace Smash_Forge
                     tex.magFilter = d.readByte();
                     tex.mipDetail = d.readByte();
                     tex.unknown = d.readByte();
-                    d.skip(6);
+                    d.skip(4); // padding?
+                    tex.unknown2 = d.readShort();
                     m.textures.Add(tex);
                 }
 
@@ -1636,14 +1637,15 @@ namespace Smash_Forge
 
             foreach (Vertex v in vertices)
             {
-                if (vertexType != 8)
-                {
-                    v.pos.X = d.readFloat();
-                    v.pos.Y = d.readFloat();
-                    v.pos.Z = d.readFloat();
-                }
+                v.pos.X = d.readFloat();
+                v.pos.Y = d.readFloat();
+                v.pos.Z = d.readFloat();
 
-                if (vertexType == (int)Polygon.VertexTypes.NormalsFloat)
+                if (vertexType == (int)Polygon.VertexTypes.NoNormals)
+                {
+                    d.readFloat();
+                }
+                else if (vertexType == (int)Polygon.VertexTypes.NormalsFloat)
                 {
                     v.nrm.X = d.readFloat();
                     v.nrm.Y = d.readFloat();
@@ -1663,11 +1665,11 @@ namespace Smash_Forge
                 }
                 else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanFloat)
                 {
-                    d.skip(4); 
+                    d.skip(4);
                     v.nrm.X = d.readFloat();
                     v.nrm.Y = d.readFloat();
                     v.nrm.Z = d.readFloat();
-                    d.skip(4); 
+                    d.skip(4);
                     v.bitan.X = d.readFloat();
                     v.bitan.Y = d.readFloat();
                     v.bitan.Z = d.readFloat();
@@ -1700,7 +1702,9 @@ namespace Smash_Forge
                     v.tan.W = d.readHalfFloat();
                 }
                 else
-                    d.skip(4);
+                {
+                    throw new Exception($"Unsupported vertex type: {vertexType}");
+                }
 
                 if (boneType == (int)Polygon.BoneTypes.NoBones)
                 {
@@ -1755,6 +1759,10 @@ namespace Smash_Forge
                     v.boneIds.Add((short)o.singlebind);
                     v.boneWeights.Add(1);
                 }
+                else
+                {
+                    throw new Exception($"Unsupported bone type: {boneType}");
+                }
             }
 
             foreach (Vertex vi in vertices)
@@ -1771,7 +1779,7 @@ namespace Smash_Forge
             d.writeShort(0x200); //  version num
             d.writeShort(Nodes.Count); // polysets
 
-            boneCount = ((ModelContainer)Parent).VBN.bones.Count;
+            boneCount = ((ModelContainer)Parent).VBN == null ? 0 : ((ModelContainer)Parent).VBN.bones.Count;
 
             d.writeShort(boneCount == 0 ? 0 : 2); // type
             d.writeShort(boneCount == 0 ? boneCount : boneCount - 1); // Number of bones
@@ -1780,7 +1788,7 @@ namespace Smash_Forge
             d.writeInt(0); // polyClump size
             d.writeInt(0); // vertexClumpsize
             d.writeInt(0); // vertexaddclump size
-            
+
             d.writeFloat(boundingSphere[0]);
             d.writeFloat(boundingSphere[1]);
             d.writeFloat(boundingSphere[2]);
@@ -1792,14 +1800,14 @@ namespace Smash_Forge
             FileOutput tex = new FileOutput();
             tex.Endian = Endianness.Big;
 
-            FileOutput poly = new FileOutput(); 
+            FileOutput poly = new FileOutput();
             poly.Endian = Endianness.Big;
-            FileOutput vert = new FileOutput(); 
+            FileOutput vert = new FileOutput();
             vert.Endian = Endianness.Big;
-            FileOutput vertadd = new FileOutput(); 
+            FileOutput vertadd = new FileOutput();
             vertadd.Endian = Endianness.Big;
 
-            FileOutput str = new FileOutput(); 
+            FileOutput str = new FileOutput();
             str.Endian = Endianness.Big;
 
             // obj descriptor
@@ -1842,7 +1850,7 @@ namespace Smash_Forge
 
                     int maxUV = p.vertices[0].uv.Count;
 
-                    obj.writeByte((maxUV << 4) | (p.UVSize & 0xF)); 
+                    obj.writeByte((maxUV << 4) | (p.UVSize & 0xF));
 
                     // MATERIAL SECTION 
                     int[] texoff = WriteMaterial(tex, p.materials, str);
@@ -1955,8 +1963,8 @@ namespace Smash_Forge
         private static void WriteVertex(FileOutput d, FileOutput add, Polygon poly)
         {
             int boneType = poly.vertSize & 0xF0;
-            int vertType = poly.vertSize & 0xF;
-            
+            int vertexType = poly.vertSize & 0xF;
+
             if (boneType > 0)
             {
                 WriteUV(d, poly);
@@ -1964,19 +1972,16 @@ namespace Smash_Forge
             }
 
             foreach (Vertex v in poly.vertices)
-            {             
-                if (vertType < 8)
+            {
+                d.writeFloat(v.pos.X);
+                d.writeFloat(v.pos.Y);
+                d.writeFloat(v.pos.Z);
+
+                if (vertexType == (int)Polygon.VertexTypes.NoNormals)
                 {
-                    d.writeFloat(v.pos.X);
-                    d.writeFloat(v.pos.Y);
-                    d.writeFloat(v.pos.Z);
+                    d.writeFloat(1);
                 }
-                
-                if(vertType == (int)Polygon.VertexTypes.NoNormals)
-                {
-                    d.writeInt(0);
-                }
-                else if (vertType == (int)Polygon.VertexTypes.NormalsFloat)
+                else if (vertexType == (int)Polygon.VertexTypes.NormalsFloat)
                 {
                     d.writeFloat(v.nrm.X);
                     d.writeFloat(v.nrm.Y);
@@ -1984,7 +1989,7 @@ namespace Smash_Forge
                     d.writeFloat(1);
                     d.writeFloat(1);
                 }
-                else if (vertType == 2)
+                else if (vertexType == 2)
                 {
                     d.writeFloat(v.nrm.X);
                     d.writeFloat(v.nrm.Y);
@@ -2000,7 +2005,7 @@ namespace Smash_Forge
                     d.writeFloat(1);
                     d.writeFloat(1);
                 }
-                else if (vertType == (int)Polygon.VertexTypes.NormalsTanBiTanFloat)
+                else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanFloat)
                 {
                     d.writeFloat(1);
                     d.writeFloat(v.nrm.X);
@@ -2016,14 +2021,14 @@ namespace Smash_Forge
                     d.writeFloat(v.tan.Z);
                     d.writeFloat(v.tan.W);
                 }
-                else if (vertType == (int)Polygon.VertexTypes.NormalsHalfFloat)
+                else if (vertexType == (int)Polygon.VertexTypes.NormalsHalfFloat)
                 {
                     d.writeHalfFloat(v.nrm.X);
                     d.writeHalfFloat(v.nrm.Y);
                     d.writeHalfFloat(v.nrm.Z);
                     d.writeHalfFloat(1);
                 }
-                else if (vertType == (int)Polygon.VertexTypes.NormalsTanBiTanHalfFloat)
+                else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanHalfFloat)
                 {
                     d.writeHalfFloat(v.nrm.X);
                     d.writeHalfFloat(v.nrm.Y);
@@ -2037,6 +2042,10 @@ namespace Smash_Forge
                     d.writeHalfFloat(v.tan.Y);
                     d.writeHalfFloat(v.tan.Z);
                     d.writeHalfFloat(v.tan.W);
+                }
+                else
+                {
+                    throw new Exception($"Unsupported vertex type: {vertexType}");
                 }
 
                 if (boneType == (int)Polygon.BoneTypes.NoBones)
@@ -2089,6 +2098,13 @@ namespace Smash_Forge
                     d.writeByte((int)(v.boneWeights.Count > 2 ? Math.Round(v.boneWeights[2] * 0xFF) : 0));
                     d.writeByte((int)(v.boneWeights.Count > 3 ? Math.Round(v.boneWeights[3] * 0xFF) : 0));
                 }
+                else if (boneType == (int)Polygon.BoneTypes.NoBones)
+                {
+                }
+                else
+                {
+                    throw new Exception($"Unsupported bone type: {boneType}");
+                }
             }
         }
 
@@ -2110,8 +2126,8 @@ namespace Smash_Forge
                 d.writeByte(mat.RefAlpha);
                 d.writeShort(mat.cullMode);
                 d.writeInt(0); // padding
-                d.writeInt(mat.unkownWater); 
-                d.writeInt(mat.zBufferOffset); 
+                d.writeInt(mat.unkownWater);
+                d.writeInt(mat.zBufferOffset);
 
                 foreach (MatTexture tex in mat.textures)
                 {
@@ -2126,7 +2142,7 @@ namespace Smash_Forge
                     d.writeByte(tex.mipDetail);
                     d.writeByte(tex.unknown);
                     d.writeInt(0); // padding
-                    d.writeShort(0);
+                    d.writeShort(tex.unknown2);
                 }
 
                 for (int i = 0; i < mat.entries.Count; i++)
@@ -2148,7 +2164,7 @@ namespace Smash_Forge
             }
             return offs;
         }
-        
+
         public void MergePoly()
         {
             Dictionary<string, Mesh> nmesh = new Dictionary<string, Mesh>();
@@ -2283,6 +2299,7 @@ namespace Smash_Forge
             public int magFilter = 2;
             public int mipDetail = 6;
             public int unknown = 0;
+            public short unknown2 = 0;
 
             public MatTexture()
             {
@@ -2305,6 +2322,7 @@ namespace Smash_Forge
                 t.magFilter = magFilter;
                 t.mipDetail = mipDetail;
                 t.unknown = unknown;
+                t.unknown2 = unknown2;
                 return t;
             }
 
@@ -2755,7 +2773,7 @@ namespace Smash_Forge
             public List<Material> materials = new List<Material>();
 
             // defaults to a basic bone weighted vertex format
-            public int vertSize = (int)BoneTypes.Byte | (int)VertexTypes.NormalsHalfFloat; 
+            public int vertSize = (int)BoneTypes.Byte | (int)VertexTypes.NormalsHalfFloat;
 
             public int UVSize = 0x12;
             public int strip = 0x40;
@@ -2804,7 +2822,7 @@ namespace Smash_Forge
                     materials[0].entries["NU_aoMinGain"][1] = 15.0f;
                     materials[0].entries["NU_aoMinGain"][2] = 15.0f;
                     materials[0].entries["NU_aoMinGain"][3] = 0.0f;
-                }      
+                }
             }
 
             public List<DisplayVertex> CreateDisplayVertices()
@@ -3062,7 +3080,7 @@ namespace Smash_Forge
             private int displayId = 0;
             public int DisplayId { get { return displayId; } }
 
-            public int boneflag = (int)BoneFlags.Rigged; 
+            public int boneflag = (int)BoneFlags.Rigged;
             public short singlebind = -1;
             public int sortBias = 0;
             public bool billboardY = false;
@@ -3127,7 +3145,7 @@ namespace Smash_Forge
                 //Calculate average and min/max
                 Vector3 min = new Vector3(vert0);
                 Vector3 max = new Vector3(vert0);
-                
+
                 vertCount = 0;
                 foreach (Polygon p in Nodes)
                 {
