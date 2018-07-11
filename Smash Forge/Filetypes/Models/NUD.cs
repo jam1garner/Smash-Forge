@@ -447,7 +447,7 @@ namespace Smash_Forge
             //Calculate average and min/max
             Vector3 min = new Vector3(vert0);
             Vector3 max = new Vector3(vert0);
-            
+
             vertCount = 0;
             foreach (Mesh m in Nodes)
             {
@@ -1487,7 +1487,7 @@ namespace Smash_Forge
                 mats.Add(m);
 
                 m.Flags = (uint)d.readInt();
-                d.skip(4);             
+                d.skip(4);
                 m.srcFactor = d.readUShort();
                 ushort texCount = d.readUShort();
                 m.dstFactor = d.readUShort();
@@ -1665,11 +1665,11 @@ namespace Smash_Forge
                 }
                 else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanFloat)
                 {
-                    d.skip(4); 
+                    d.skip(4);
                     v.nrm.X = d.readFloat();
                     v.nrm.Y = d.readFloat();
                     v.nrm.Z = d.readFloat();
-                    d.skip(4); 
+                    d.skip(4);
                     v.bitan.X = d.readFloat();
                     v.bitan.Y = d.readFloat();
                     v.bitan.Z = d.readFloat();
@@ -1788,7 +1788,7 @@ namespace Smash_Forge
             d.writeInt(0); // polyClump size
             d.writeInt(0); // vertexClumpsize
             d.writeInt(0); // vertexaddclump size
-            
+
             d.writeFloat(boundingSphere[0]);
             d.writeFloat(boundingSphere[1]);
             d.writeFloat(boundingSphere[2]);
@@ -1800,14 +1800,14 @@ namespace Smash_Forge
             FileOutput tex = new FileOutput();
             tex.Endian = Endianness.Big;
 
-            FileOutput poly = new FileOutput(); 
+            FileOutput poly = new FileOutput();
             poly.Endian = Endianness.Big;
-            FileOutput vert = new FileOutput(); 
+            FileOutput vert = new FileOutput();
             vert.Endian = Endianness.Big;
-            FileOutput vertadd = new FileOutput(); 
+            FileOutput vertadd = new FileOutput();
             vertadd.Endian = Endianness.Big;
 
-            FileOutput str = new FileOutput(); 
+            FileOutput str = new FileOutput();
             str.Endian = Endianness.Big;
 
             // obj descriptor
@@ -1850,7 +1850,7 @@ namespace Smash_Forge
 
                     int maxUV = p.vertices[0].uv.Count;
 
-                    obj.writeByte((maxUV << 4) | (p.UVSize & 0xF)); 
+                    obj.writeByte((maxUV << 4) | (p.UVSize & 0xF));
 
                     // MATERIAL SECTION 
                     int[] texoff = WriteMaterial(tex, p.materials, str);
@@ -1964,7 +1964,7 @@ namespace Smash_Forge
         {
             int boneType = poly.vertSize & 0xF0;
             int vertexType = poly.vertSize & 0xF;
-            
+
             if (boneType > 0)
             {
                 WriteUV(d, poly);
@@ -1972,7 +1972,7 @@ namespace Smash_Forge
             }
 
             foreach (Vertex v in poly.vertices)
-            {           
+            {
                 d.writeFloat(v.pos.X);
                 d.writeFloat(v.pos.Y);
                 d.writeFloat(v.pos.Z);
@@ -2126,8 +2126,8 @@ namespace Smash_Forge
                 d.writeByte(mat.RefAlpha);
                 d.writeShort(mat.cullMode);
                 d.writeInt(0); // padding
-                d.writeInt(mat.unkownWater); 
-                d.writeInt(mat.zBufferOffset); 
+                d.writeInt(mat.unkownWater);
+                d.writeInt(mat.zBufferOffset);
 
                 foreach (MatTexture tex in mat.textures)
                 {
@@ -2164,7 +2164,7 @@ namespace Smash_Forge
             }
             return offs;
         }
-        
+
         public void MergePoly()
         {
             Dictionary<string, Mesh> nmesh = new Dictionary<string, Mesh>();
@@ -2773,7 +2773,7 @@ namespace Smash_Forge
             public List<Material> materials = new List<Material>();
 
             // defaults to a basic bone weighted vertex format
-            public int vertSize = (int)BoneTypes.Byte | (int)VertexTypes.NormalsHalfFloat; 
+            public int vertSize = (int)BoneTypes.Byte | (int)VertexTypes.NormalsHalfFloat;
 
             public int UVSize = 0x12;
             public int strip = 0x40;
@@ -2822,7 +2822,7 @@ namespace Smash_Forge
                     materials[0].entries["NU_aoMinGain"][1] = 15.0f;
                     materials[0].entries["NU_aoMinGain"][2] = 15.0f;
                     materials[0].entries["NU_aoMinGain"][3] = 0.0f;
-                }      
+                }
             }
 
             public List<DisplayVertex> CreateDisplayVertices()
@@ -3080,7 +3080,7 @@ namespace Smash_Forge
             private int displayId = 0;
             public int DisplayId { get { return displayId; } }
 
-            public int boneflag = (int)BoneFlags.Rigged; 
+            public int boneflag = (int)BoneFlags.Rigged;
             public short singlebind = -1;
             public int sortBias = 0;
             public bool billboardY = false;
@@ -3145,7 +3145,7 @@ namespace Smash_Forge
                 //Calculate average and min/max
                 Vector3 min = new Vector3(vert0);
                 Vector3 max = new Vector3(vert0);
-                
+
                 vertCount = 0;
                 foreach (Polygon p in Nodes)
                 {
