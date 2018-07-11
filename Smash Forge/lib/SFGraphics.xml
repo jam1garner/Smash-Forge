@@ -253,12 +253,14 @@
         </member>
         <member name="P:SFGraphics.GLObjects.Framebuffer.ColorAttachments">
             <summary>
-            
+            All color attachment textures. This list may be empty if <c>0</c> is specified for the color attachment count.
+            Attempting to modify the textures in this list may result in unexpected behavior.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget)">
             <summary>
-            Generates an empty framebuffer bound to the specified target. Binds the framebuffer.
+            Generates an empty framebuffer with no attachments bound to the specified target. 
+            Binds the framebuffer.
             </summary>
             <param name="framebufferTarget">The target to which <see cref="P:SFGraphics.GLObjects.Framebuffer.Id"/> is bound</param>
         </member>
@@ -332,11 +334,6 @@
             Call <see cref="M:System.GC.WaitForPendingFinalizers"/> prior to <see cref="M:SFGraphics.GLObjects.GLObjectManager.DeleteUnusedGLObjects"/> if more 
             immediate cleanup is desired.
             </para>
-            </summary>
-        </member>
-        <member name="T:SFGraphics.GLObjects.IGLObject">
-            <summary>
-            
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.IGLObject.Id">
@@ -504,7 +501,7 @@
             Supported shader types are fragment, vertex , and geometry.
             </summary>
             <param name="shaderSource">A string containing the shader source text</param>
-            <param name="shaderType">Supported types are ShaderType.FragmentShader, ShaderType.VertexShader, or ShaderType.GeometryShader</param>
+            <param name="shaderType">The type of shader to load. Ex: ShaderType.FragmentShader</param>
             <param name="shaderName">The title used for the compilation errors section of the error log</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.AttachShader(System.Int32,OpenTK.Graphics.OpenGL.ShaderType)">
