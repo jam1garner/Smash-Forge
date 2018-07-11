@@ -34,26 +34,68 @@ namespace Smash_Forge.GUI.Editors
             InitAreaLightListBox();
             InitLightMapListBox();
             InitFogListBox();
-            InitStageLightListBox();
+            InitStageLightTreeView();
         }
 
-        private void InitStageLightListBox()
+        private void InitStageLightTreeView()
         {
-            for (int groupIndex = 1; groupIndex < 17; groupIndex++)
+            // Use solid color thumbnails to avoid confusion between color names.
+            stageLightSetTreeView.ImageList = new ImageList();
+            stageLightSetTreeView.ImageList.ColorDepth = ColorDepth.Depth32Bit;
+
+            // There are 16 groups of 4 stage lights stored in a single array.
+            for (int groupIndex = 0; groupIndex < 16; groupIndex++)
             {
-                TreeNode[] children = new TreeNode[4];
-                for (int lightIndex = 0; lightIndex < 4; lightIndex++)
-                {
-                    DirectionalLight currentLight = Runtime.lightSetParam.stageDiffuseLights[((groupIndex) * 4) + lightIndex];
-                    children[lightIndex] = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
-                    children[lightIndex].Checked = currentLight.enabled;
-                }
-
-                string name = GetGroupAndColorName(groupIndex - 1);
+                // Add the group and the 4 child lights.
+                TreeNode[] children = GetChildLightsForLightSet(groupIndex);
+                string name = GetGroupAndColorName(groupIndex);
                 TreeNode parent = new TreeNode(name, children);
-
                 stageLightSetTreeView.Nodes.Add(parent);
+
+                AddLightSetGroupThumbnail(groupIndex, parent);
             }
+        }
+
+        private void AddLightSetGroupThumbnail(int groupIndex, TreeNode parent)
+        {
+            // Add color thumbnail.
+            parent.ImageIndex = groupIndex;
+            parent.SelectedImageIndex = groupIndex;
+            Bitmap colorImage = GetLightSetIndexColorThumbnail(groupIndex);
+            stageLightSetTreeView.ImageList.Images.Add(colorImage);
+        }
+
+        private static Bitmap GetLightSetIndexColorThumbnail(int groupIndex)
+        {
+            Bitmap colorImage = new Bitmap(64, 64);
+            using (Graphics graph = Graphics.FromImage(colorImage))
+            {
+                Rectangle ImageSize = new Rectangle(0, 0, 64, 64);
+                graph.Clear(NUD.lightSetColorByIndex[groupIndex]);
+            }
+
+            return colorImage;
+        }
+
+        private static TreeNode[] GetChildLightsForLightSet(int groupIndex)
+        {
+            TreeNode[] children = new TreeNode[4];
+            for (int lightIndex = 0; lightIndex < 4; lightIndex++)
+            {
+                // Create a node from the current stage light.
+                DirectionalLight currentLight = Runtime.lightSetParam.stageDiffuseLights[((groupIndex) * 4) + lightIndex];
+                TreeNode childLight = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
+                childLight = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
+                childLight.Checked = currentLight.enabled;
+
+                // Don't use an image. This will leave a blank space.
+                childLight.ImageIndex = 99;
+                childLight.SelectedImageIndex = 99;
+
+                children[lightIndex] = childLight;
+            }
+
+            return children;
         }
 
         private string GetGroupAndColorName(int groupIndex)
@@ -174,9 +216,9 @@ namespace Smash_Forge.GUI.Editors
             stageDifHueTB.Text = selectedStageLight.diffuseColor.H + "";
             stageDifSatTB.Text = selectedStageLight.diffuseColor.S + "";
             stageDifIntensityTB.Text = selectedStageLight.diffuseColor.V + "";
-            stageDifRotXTB.Text = selectedStageLight.rotX + "";
-            stageDifRotYTB.Text = selectedStageLight.rotY + "";
-            stageDifRotZTB.Text = selectedStageLight.rotZ + "";
+            stageDifRotXTB.Text = selectedStageLight.RotationXDegrees + "";
+            stageDifRotYTB.Text = selectedStageLight.RotationYDegrees + "";
+            stageDifRotZTB.Text = selectedStageLight.RotationZDegrees + "";
         }
 
         private void lightSetLightListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -279,21 +321,21 @@ namespace Smash_Forge.GUI.Editors
         private void stageDifRotXTB_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(stageDifRotXTB);
-            selectedStageLight.rotX = value;
+            selectedStageLight.RotationXDegrees = value;
             stageRotXTrackBar.Value = (int)(value + 180.0f);
         }
 
         private void stageDifRotYTB_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(stageDifRotYTB);
-            selectedStageLight.rotY = value;
+            selectedStageLight.RotationYDegrees = value;
             stageRotYTrackBar.Value = (int)(value + 180.0f);
         }
 
         private void stageDifRotZTB_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(stageDifRotZTB);
-            selectedStageLight.rotZ = value;
+            selectedStageLight.RotationZDegrees = value;
             stageRotZTrackBar.Value = (int)(value + 180.0f);
         }
 
@@ -456,9 +498,9 @@ namespace Smash_Forge.GUI.Editors
             areaGroundGreenTB.Text = selectedAreaLight.groundG + "";
             areaGroundBlueTB.Text = selectedAreaLight.groundB + "";
 
-            areaRotX.Text = selectedAreaLight.rotX + "";
-            areaRotY.Text = selectedAreaLight.rotY + "";
-            areaRotZ.Text = selectedAreaLight.rotZ + "";
+            areaRotX.Text = selectedAreaLight.RotationXDegrees + "";
+            areaRotY.Text = selectedAreaLight.RotationYDegrees + "";
+            areaRotZ.Text = selectedAreaLight.RotationZDegrees + "";
 
             areaPosXTB.Text = selectedAreaLight.positionX + "";
             areaPosYTB.Text = selectedAreaLight.positionY + "";
@@ -592,21 +634,21 @@ namespace Smash_Forge.GUI.Editors
         private void areaRotX_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(areaRotX);
-            selectedAreaLight.rotX = value;
+            selectedAreaLight.RotationXDegrees = value;
             GuiTools.UpdateTrackBarFromValue(value, areaRotXTrackBar, -180, 180);
         }
 
         private void areaRotY_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(areaRotY);
-            selectedAreaLight.rotY = value;
+            selectedAreaLight.RotationYDegrees = value;
             GuiTools.UpdateTrackBarFromValue(value, areaRotYTrackBar, -180, 180);
         }
 
         private void areaRotZ_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(areaRotZ);
-            selectedAreaLight.rotZ = value;
+            selectedAreaLight.RotationZDegrees = value;
             GuiTools.UpdateTrackBarFromValue(value, areaRotZTrackBar, -180, 180);
         }
 

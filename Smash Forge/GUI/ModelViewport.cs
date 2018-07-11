@@ -1476,13 +1476,17 @@ namespace Smash_Forge
             // Depth testing isn't set by materials.
             SetDepthTesting();
 
+            // Ignore the background for the ID pass.
             if (Runtime.drawNudColorIdPass)
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
             if (Runtime.drawModelShadow)
                 DrawModelsIntoShadowMap();
 
-            DrawModelsNormally(width, height, defaultFbo);
+            if (Runtime.usePostProcessing)
+                DrawModelsNormally(width, height, colorHdrFbo);
+            else
+                DrawModelsNormally(width, height, defaultFbo);
 
             if (Runtime.usePostProcessing)
             {
@@ -1495,7 +1499,7 @@ namespace Smash_Forge
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, width, height);
 
-                RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, imageBrightHdrFbo.ColorAttachment0Tex);
+                RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, imageBrightHdrFbo.ColorAttachment0.Id);
             }
 
             FixedFunctionRendering();
