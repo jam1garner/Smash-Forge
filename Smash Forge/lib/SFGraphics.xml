@@ -251,7 +251,7 @@
             All attached textures, renderbuffers, etc are resized when set. The framebuffer's contents will not be preserved when resizing.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Framebuffer.ColorAttachment0Tex">
+        <member name="P:SFGraphics.GLObjects.Framebuffer.ColorAttachment0">
             <summary>
             The Id of the first color attachment.
             </summary>
@@ -601,12 +601,13 @@
             Provides constructors to initialize the image data from bitmaps or byte arrays in the specified PixelInternalFormat.
             </summary>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor(System.Int32,System.Int32)">
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor(System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
             <summary>
             Initialize an empty Texture2D of the specified dimensions.
             </summary>
             <param name="width"></param>
             <param name="height"></param>
+            <param name="pixelInternalFormat">The internal format for the texture</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor(System.Drawing.Bitmap)">
             <summary>
