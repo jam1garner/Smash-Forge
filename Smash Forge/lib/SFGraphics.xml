@@ -251,9 +251,9 @@
             All attached textures, renderbuffers, etc are resized when set. The framebuffer's contents will not be preserved when resizing.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Framebuffer.ColorAttachment0">
+        <member name="P:SFGraphics.GLObjects.Framebuffer.ColorAttachments">
             <summary>
-            The Id of the first color attachment.
+            
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget)">
@@ -262,20 +262,24 @@
             </summary>
             <param name="framebufferTarget">The target to which <see cref="P:SFGraphics.GLObjects.Framebuffer.Id"/> is bound</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffer.Finalize">
+        <member name="M:SFGraphics.GLObjects.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget,System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat,System.Int32)">
             <summary>
-            Decrement the reference count for <see cref="P:SFGraphics.GLObjects.Framebuffer.Id"/>. The context probably isn't current, so the data is deleted later by <see cref="T:SFGraphics.GLObjects.GLObjectManager"/>.
-            </summary>
-        </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget,System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
-            <summary>
-            Generates a framebuffer with a color attachment of the specified pixel format and dimensions. A render buffer of the same dimensions as the color attachment is generated for the depth component.
+            Generates a framebuffer with a color attachment of the specified pixel format and dimensions. 
+            A render buffer of the same dimensions as the color attachment is generated for the depth component.
             Binds the framebuffer.
             </summary>
             <param name="framebufferTarget">The target to which <see cref="P:SFGraphics.GLObjects.Framebuffer.Id"/> is bound</param>
             <param name="width">The width of attached textures or renderbuffers</param>
             <param name="height">The height of attached textures or renderbuffers</param>
-            <param name="pixelInternalFormat"></param>
+            <param name="pixelInternalFormat">The internal format for all color attachments</param>
+            <param name="colorAttachmentsCount">The number of color attachments to create. 
+            Ex: <c>1</c> would only create ColorAttachment0.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">The number of color attachments is negative.</exception>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Framebuffer.Finalize">
+            <summary>
+            Decrement the reference count for <see cref="P:SFGraphics.GLObjects.Framebuffer.Id"/>. The context probably isn't current, so the data is deleted later by <see cref="T:SFGraphics.GLObjects.GLObjectManager"/>.
+            </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffer.GetStatus">
             <summary>

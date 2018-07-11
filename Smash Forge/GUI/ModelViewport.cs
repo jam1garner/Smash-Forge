@@ -35,35 +35,32 @@ namespace Smash_Forge
     public partial class ModelViewport : EditorBase
     {
         // setup
-        bool readyToRender = false;
+        private bool readyToRender = false;
 
         // View controls
         public ForgeCamera camera = new ForgeCamera();
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
         // Rendering Stuff
-        int colorHdrFbo;
-        int colorHdrTex0;
-        int colorHdrTex1;
-        int hdrDepthRbo;
+        private Framebuffer colorHdrFbo;
 
         // The texture that will be blurred for bloom.
-        Framebuffer imageBrightHdrFbo;
+        private Framebuffer imageBrightHdrFbo;
 
         // Used for screen renders and color picking.
-        Framebuffer offscreenRenderFbo;
+        private Framebuffer offscreenRenderFbo;
 
         // Shadow Mapping
-        Framebuffer depthMapFbo;
-        Texture2D depthMap;
-        int shadowWidth = 2048;
-        int shadowHeight = 2048;
-        Matrix4 lightMatrix = Matrix4.Identity;
+        private Framebuffer depthMapFbo;
+        private Texture2D depthMap;
+        private int shadowWidth = 2048;
+        private int shadowHeight = 2048;
+        private Matrix4 lightMatrix = Matrix4.Identity;
 
         // The viewport dimensions should be used for FBOs visible on screen.
         // Larger dimensions can be used for higher quality outputs for FBOs.
-        int fboRenderWidth;
-        int fboRenderHeight;
+        private int fboRenderWidth;
+        private int fboRenderHeight;
 
         // Functions of Viewer
         public enum Mode
@@ -74,8 +71,8 @@ namespace Smash_Forge
         }
         public Mode currentMode = Mode.Normal;
 
-        VertexTool vertexTool = new VertexTool();
-        TransformTool transformTool = new TransformTool();
+        private VertexTool vertexTool = new VertexTool();
+        private TransformTool transformTool = new TransformTool();
 
         //Animation
         private Animation currentAnimation;
@@ -312,7 +309,7 @@ namespace Smash_Forge
             fboRenderHeight = glViewport.Height;
 
             // Render bright and normal images to separate textures.
-            FramebufferTools.CreateHdrFboTwoTextures(out colorHdrFbo, out hdrDepthRbo, out colorHdrTex0, out colorHdrTex1, glViewport.Width, glViewport.Height);
+            colorHdrFbo = new Framebuffer(FramebufferTarget.Framebuffer, glViewport.Width, glViewport.Height, PixelInternalFormat.Rgba16f, 2);
 
             // Smaller FBO/texture for the brighter, blurred portions.
             int brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
@@ -320,7 +317,7 @@ namespace Smash_Forge
             imageBrightHdrFbo = new Framebuffer(FramebufferTarget.Framebuffer, brightTexWidth, brightTexHeight, PixelInternalFormat.Rgba16f);
 
             // Screen Rendering
-            offscreenRenderFbo = new Framebuffer(FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight);
+            offscreenRenderFbo = new Framebuffer(FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, PixelInternalFormat.Rgba);
 
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -616,22 +613,8 @@ namespace Smash_Forge
         private void ResizeHdrFboRboTwoColorAttachments()
         {
             // Resize the textures and buffers everytime the dimensions change.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
-
-            int textureWidth = glViewport.Width;
-            int textureHeight = glViewport.Height;
-
-            // First color attachment.
-            GL.BindTexture(TextureTarget.Texture2D, colorHdrTex0);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-
-            // Second color attachment.
-            GL.BindTexture(TextureTarget.Texture2D, colorHdrTex1);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-
-            // Render buffer for the depth attachment.
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, hdrDepthRbo);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, textureWidth, textureHeight);
+            colorHdrFbo.Width = glViewport.Width;
+            colorHdrFbo.Height = glViewport.Height;
         }
 
         #region Animation Events
@@ -1449,7 +1432,7 @@ namespace Smash_Forge
             if (Runtime.usePostProcessing)
             {
                 // Render models and background into an HDR buffer. 
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
+                colorHdrFbo.Bind();
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             }
 
@@ -1484,7 +1467,7 @@ namespace Smash_Forge
                 DrawModelsIntoShadowMap();
 
             if (Runtime.usePostProcessing)
-                DrawModelsNormally(width, height, colorHdrFbo);
+                DrawModelsNormally(width, height, colorHdrFbo.Id);
             else
                 DrawModelsNormally(width, height, defaultFbo);
 
@@ -1493,13 +1476,13 @@ namespace Smash_Forge
                 // Draw the texture to the screen into a smaller FBO.
                 imageBrightHdrFbo.Bind();
                 GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
-                RenderTools.DrawTexturedQuad(colorHdrTex1, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
+                RenderTools.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1].Id, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, width, height);
 
-                RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, imageBrightHdrFbo.ColorAttachment0.Id);
+                RenderTools.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id);
             }
 
             FixedFunctionRendering();
