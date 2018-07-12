@@ -962,5 +962,10 @@ namespace Smash_Forge.GUI.Editors
 
             charDifColorGLControl.SwapBuffers();
         }
+
+        private void areaLightFlowLayout_Resize(object sender, EventArgs e)
+        {
+            ResizeFlowLayoutControls(areaLightFlowLayout);
+        }
     }
 }
