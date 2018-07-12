@@ -35,6 +35,12 @@ namespace Smash_Forge.GUI.Editors
             InitLightMapListBox();
             InitFogListBox();
             InitStageLightTreeView();
+
+            // Make sure the panels all fit on the form initially.
+            areaLightRotPanel.Visible = false;
+            areaLightScalePanel.Visible = false;
+            areaLightPosPanel.Visible = false;
+            areaLightColGroundPanel.Visible = false;
         }
 
         private void InitStageLightTreeView()
@@ -147,47 +153,69 @@ namespace Smash_Forge.GUI.Editors
 
         private void charLightsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // The additional character diffuse lights don't have ambient color.
             switch (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString())
             {
                 default:
                     break;
                 case "Diffuse":
                     selectedCharDiffuseLight = Runtime.lightSetParam.characterDiffuse;
-                    charColor2GroupBox.Enabled = true;
+                    SetUpCharDiffuseLight();
+                    // The additional character diffuse lights don't have ambient color.
+                    charColor2Button.Visible = true;
+                    charColor2Panel.Visible = true;
                     break;
                 case "Diffuse2":
                     selectedCharDiffuseLight = Runtime.lightSetParam.characterDiffuse2;
-                    charColor2GroupBox.Enabled = false;
+                    SetUpCharDiffuseLight();
                     break;
                 case "Diffuse3":
                     selectedCharDiffuseLight = Runtime.lightSetParam.characterDiffuse3;
-                    charColor2GroupBox.Enabled = false;
+                    SetUpCharDiffuseLight();
                     break;
                 case "Fresnel":
-                    charColor2GroupBox.Enabled = true;
+                    charColor2Panel.Enabled = true;
+                    SetUpCharFresnelLight();
                     break;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
+        }
+
+        private void SetUpCharFresnelLight()
+        {
+            charColor1Button.Text = "Fresnel Sky Color";
+            charColor2Button.Text = "Fresnel Ground Color";
+
+            charColor2Panel.Visible = true;
+            charColor2Button.Visible = true;
+
+            UpdateCharFresnelValues();
+        }
+
+        private void SetUpCharDiffuseLight()
+        {
+            charColor1Button.Text = "Diffuse Color";
+            charColor2Button.Text = "Ambient Color";
+
+            charColor2Panel.Visible = false;
+            charColor2Button.Visible = false;
+
+            UpdateCharDiffuseValues();
         }
 
         private void RenderCharacterLightColors()
         {
-            if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
-            {
-                charColor1GroupBox.Text = "Fresnel Sky Color";
-                charColor2GroupBox.Text = "Fresnel Ground Color";
-                RenderCharacterLightGradient(Runtime.lightSetParam.fresnelLight.skyColor, Runtime.lightSetParam.fresnelLight.groundColor);
-                UpdateCharFresnelValues();
-            }
-            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString().Contains("Diffuse"))
-            {
-                charColor1GroupBox.Text = "Diffuse Color";
-                charColor2GroupBox.Text = "Ambient Color";
+            if (charLightsListBox.SelectedItems.Count == 0)
+                return;
 
+            string name = charLightsListBox.SelectedItems[0].ToString();
+            if (name.Contains("Fresnel"))
+            {
+                RenderCharacterLightGradient(Runtime.lightSetParam.fresnelLight.skyColor, Runtime.lightSetParam.fresnelLight.groundColor);
+            }
+            else if (name.Contains("Diffuse"))
+            {
                 RenderCharacterLightGradient(selectedCharDiffuseLight.diffuseColor, selectedCharDiffuseLight.ambientColor);
-                UpdateCharDiffuseValues();
             }
         }
 
@@ -247,24 +275,14 @@ namespace Smash_Forge.GUI.Editors
 
         private void RenderCharacterLightGradient(LightColor topColor, LightColor bottomColor)
         {
-            charDifColorGLControl.MakeCurrent();
-            GL.Viewport(charDifColorGLControl.ClientRectangle);
-          
             RenderTools.DrawQuadGradient(new Vector3(topColor.R, topColor.G, topColor.B), new Vector3(bottomColor.R, bottomColor.G, bottomColor.B), RenderTools.screenQuadVbo);
-
-            charDifColorGLControl.SwapBuffers();
         }
 
         private void RenderAreaLightColor()
         {
-            areaColorGLControl.MakeCurrent();
-            GL.Viewport(areaColorGLControl.ClientRectangle);
-
             Vector3 topColor = new Vector3(selectedAreaLight.skyR, selectedAreaLight.skyG, selectedAreaLight.skyB);
             Vector3 bottomColor = new Vector3(selectedAreaLight.groundR, selectedAreaLight.groundG, selectedAreaLight.groundB);
             RenderTools.DrawQuadGradient(topColor, bottomColor, RenderTools.screenQuadVbo);
-
-            areaColorGLControl.SwapBuffers();
         }
 
         private void RenderLightMapColor()
@@ -366,7 +384,7 @@ namespace Smash_Forge.GUI.Editors
                 selectedCharDiffuseLight.diffuseColor.H = value;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, charColor1XTrackBar, 0, 360.0f);
         }
 
@@ -382,7 +400,7 @@ namespace Smash_Forge.GUI.Editors
                 selectedCharDiffuseLight.diffuseColor.S = value;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, charColor1YTrackBar, 0, 1);
         }
 
@@ -398,7 +416,7 @@ namespace Smash_Forge.GUI.Editors
                 selectedCharDiffuseLight.diffuseColor.V = value;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, charColor1ZTrackBar, 0, 1);
         }
 
@@ -414,7 +432,7 @@ namespace Smash_Forge.GUI.Editors
                 Runtime.lightSetParam.characterDiffuse.ambientColor.H = value;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, charColor2XTrackBar, 0, 360);
         }
 
@@ -430,7 +448,7 @@ namespace Smash_Forge.GUI.Editors
                 Runtime.lightSetParam.characterDiffuse.ambientColor.S = value;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, charColor2YTrackBar, 0, 1);
         }
 
@@ -446,7 +464,7 @@ namespace Smash_Forge.GUI.Editors
                 Runtime.lightSetParam.characterDiffuse.ambientColor.V = value;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, charColor2ZTrackBar, 0, 1);
         }
 
@@ -483,7 +501,7 @@ namespace Smash_Forge.GUI.Editors
         private void areaLightListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateCurrentAreaLightValues();
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
         }
 
         private void UpdateCurrentAreaLightValues()
@@ -515,7 +533,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaCeilRedTB);
             selectedAreaLight.skyR = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaCeilRedTrackBar, 0, 2);
         }
 
@@ -523,7 +541,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaCeilGreenTB);
             selectedAreaLight.skyG = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaCeilGreenTrackBar, 0, 2);
         }
 
@@ -531,7 +549,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaCeilBlueTB);
             selectedAreaLight.skyB = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaCeilBlueTrackBar, 0, 2);
         }
 
@@ -539,7 +557,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaGroundRedTB); 
             selectedAreaLight.groundR = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaGroundRedTrackBar, 0, 2);
         }
 
@@ -547,7 +565,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaGroundGreenTB);
             selectedAreaLight.groundG = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaGroundGreenTrackBar, 0, 2);
         }
 
@@ -555,7 +573,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaGroundBlueTB);
             selectedAreaLight.groundB = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaGroundBlueTrackBar, 0, 2);
         }
 
@@ -706,7 +724,7 @@ namespace Smash_Forge.GUI.Editors
                     RenderCharacterLightGradient(new LightColor(0, 0, 1), new LightColor(0, 0, 1));                    
                     break;
                 case 3:
-                    RenderAreaLightColor();
+                    areaColorGLControl.Invalidate();
                     break;
                 case 4:
                     RenderLightMapColor();
@@ -839,6 +857,120 @@ namespace Smash_Forge.GUI.Editors
         private void charDifColorGLControl_Load(object sender, EventArgs e)
         {
             RenderTools.SetUpOpenTkRendering();
+        }
+
+        private void charLightsTab_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charLightPanelExpander_Click(object sender, EventArgs e)
+        {
+            charLightGlControlPanel.Visible = !charLightGlControlPanel.Visible;
+            // TODO: Redraw the glControl.
+        }
+
+        private void charColor1Button_Click(object sender, EventArgs e)
+        {
+            charColor1Panel.Visible = !charColor1Panel.Visible;
+        }
+
+        private void charColor2Button_Click(object sender, EventArgs e)
+        {
+            charColor2Panel.Visible = !charColor2Panel.Visible;
+        }
+
+        private void stageDifColorPanelButton_Click(object sender, EventArgs e)
+        {
+            stageLightColorPanel.Visible = !stageLightColorPanel.Visible;
+        }
+
+        private void stageRotButton_Click(object sender, EventArgs e)
+        {
+            stageLightRotPanel.Visible = !stageLightRotPanel.Visible;
+        }
+
+        private void stageFogPanelButton_Click(object sender, EventArgs e)
+        {
+            stageFogColorPanel.Visible = !stageFogColorPanel.Visible;
+        }
+
+        private void charLightsFlowLayout_Resize(object sender, EventArgs e)
+        {
+            ResizeFlowLayoutControls(charLightsFlowLayout);
+        }
+
+        private void ResizeFlowLayoutControls(FlowLayoutPanel flowLayout)
+        {
+            foreach (Control control in flowLayout.Controls)
+            {
+                control.Width = flowLayout.Width - flowLayout.Margin.Horizontal;
+            }
+        }
+
+        private void lightSetFlowLayout_Resize(object sender, EventArgs e)
+        {
+            ResizeFlowLayoutControls(lightSetFlowLayout);
+        }
+
+        private void fogFlowLayout_Resize(object sender, EventArgs e)
+        {
+            ResizeFlowLayoutControls(fogFlowLayout);
+        }
+
+        private void areaLightColorPreviewButton_Click(object sender, EventArgs e)
+        {
+            areaLightPreviewPanel.Visible = !areaLightPreviewPanel.Visible;
+        }
+
+        private void colCeilButton_Click(object sender, EventArgs e)
+        {
+            areaLightColCeilPanel.Visible = !areaLightColCeilPanel.Visible;
+        }
+
+        private void colGroundButton_Click(object sender, EventArgs e)
+        {
+            areaLightColGroundPanel.Visible = !areaLightColGroundPanel.Visible;
+        }
+
+        private void areaLightPosButton_Click(object sender, EventArgs e)
+        {
+            areaLightPosPanel.Visible = !areaLightPosPanel.Visible;
+        }
+
+        private void areaLightScaleButton_Click(object sender, EventArgs e)
+        {
+            areaLightScalePanel.Visible = !areaLightScalePanel.Visible;
+        }
+
+        private void areaLightRotButton_Click(object sender, EventArgs e)
+        {
+            areaLightRotPanel.Visible = !areaLightRotPanel.Visible;
+        }
+
+        private void charDifColorGLControl_Paint(object sender, PaintEventArgs e)
+        {
+            charDifColorGLControl.MakeCurrent();
+            GL.Viewport(charDifColorGLControl.ClientRectangle);
+
+            RenderCharacterLightColors();
+
+            charDifColorGLControl.SwapBuffers();
+        }
+
+        private void areaLightFlowLayout_Resize(object sender, EventArgs e)
+        {
+            ResizeFlowLayoutControls(areaLightFlowLayout);
+        }
+
+        private void areaColorGLControl_Paint(object sender, PaintEventArgs e)
+        {
+            areaColorGLControl.MakeCurrent();
+            GL.Viewport(areaColorGLControl.ClientRectangle);
+
+            RenderAreaLightColor();
+
+            areaColorGLControl.SwapBuffers();
         }
     }
 }
