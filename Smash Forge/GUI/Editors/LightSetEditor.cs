@@ -35,6 +35,12 @@ namespace Smash_Forge.GUI.Editors
             InitLightMapListBox();
             InitFogListBox();
             InitStageLightTreeView();
+
+            // Make sure the panels all fit on the form initially.
+            areaLightRotPanel.Visible = false;
+            areaLightScalePanel.Visible = false;
+            areaLightPosPanel.Visible = false;
+            areaLightColGroundPanel.Visible = false;
         }
 
         private void InitStageLightTreeView()
@@ -902,22 +908,32 @@ namespace Smash_Forge.GUI.Editors
 
         private void areaLightColorPreviewButton_Click(object sender, EventArgs e)
         {
-            // TODO: Toggle visibility.
+            areaLightPreviewPanel.Visible = !areaLightPreviewPanel.Visible;
         }
 
         private void colCeilButton_Click(object sender, EventArgs e)
         {
-            colCeilPanel.Visible = !colCeilPanel.Visible;
+            areaLightColCeilPanel.Visible = !areaLightColCeilPanel.Visible;
         }
 
         private void colGroundButton_Click(object sender, EventArgs e)
         {
-            colorGroundPanel.Visible = !colorGroundPanel.Visible;
+            areaLightColGroundPanel.Visible = !areaLightColGroundPanel.Visible;
         }
 
         private void areaLightPosButton_Click(object sender, EventArgs e)
         {
             areaLightPosPanel.Visible = !areaLightPosPanel.Visible;
+        }
+
+        private void areaLightScaleButton_Click(object sender, EventArgs e)
+        {
+            areaLightScalePanel.Visible = !areaLightScalePanel.Visible;
+        }
+
+        private void areaLightRotButton_Click(object sender, EventArgs e)
+        {
+            areaLightRotPanel.Visible = !areaLightRotPanel.Visible;
         }
     }
 }
