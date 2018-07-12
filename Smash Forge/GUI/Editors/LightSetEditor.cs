@@ -280,14 +280,9 @@ namespace Smash_Forge.GUI.Editors
 
         private void RenderAreaLightColor()
         {
-            areaColorGLControl.MakeCurrent();
-            GL.Viewport(areaColorGLControl.ClientRectangle);
-
             Vector3 topColor = new Vector3(selectedAreaLight.skyR, selectedAreaLight.skyG, selectedAreaLight.skyB);
             Vector3 bottomColor = new Vector3(selectedAreaLight.groundR, selectedAreaLight.groundG, selectedAreaLight.groundB);
             RenderTools.DrawQuadGradient(topColor, bottomColor, RenderTools.screenQuadVbo);
-
-            areaColorGLControl.SwapBuffers();
         }
 
         private void RenderLightMapColor()
@@ -506,7 +501,7 @@ namespace Smash_Forge.GUI.Editors
         private void areaLightListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateCurrentAreaLightValues();
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
         }
 
         private void UpdateCurrentAreaLightValues()
@@ -538,7 +533,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaCeilRedTB);
             selectedAreaLight.skyR = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaCeilRedTrackBar, 0, 2);
         }
 
@@ -546,7 +541,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaCeilGreenTB);
             selectedAreaLight.skyG = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaCeilGreenTrackBar, 0, 2);
         }
 
@@ -554,7 +549,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaCeilBlueTB);
             selectedAreaLight.skyB = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaCeilBlueTrackBar, 0, 2);
         }
 
@@ -562,7 +557,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaGroundRedTB); 
             selectedAreaLight.groundR = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaGroundRedTrackBar, 0, 2);
         }
 
@@ -570,7 +565,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaGroundGreenTB);
             selectedAreaLight.groundG = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaGroundGreenTrackBar, 0, 2);
         }
 
@@ -578,7 +573,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaGroundBlueTB);
             selectedAreaLight.groundB = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaGroundBlueTrackBar, 0, 2);
         }
 
@@ -729,7 +724,7 @@ namespace Smash_Forge.GUI.Editors
                     RenderCharacterLightGradient(new LightColor(0, 0, 1), new LightColor(0, 0, 1));                    
                     break;
                 case 3:
-                    RenderAreaLightColor();
+                    areaColorGLControl.Invalidate();
                     break;
                 case 4:
                     RenderLightMapColor();
@@ -966,6 +961,16 @@ namespace Smash_Forge.GUI.Editors
         private void areaLightFlowLayout_Resize(object sender, EventArgs e)
         {
             ResizeFlowLayoutControls(areaLightFlowLayout);
+        }
+
+        private void areaColorGLControl_Paint(object sender, PaintEventArgs e)
+        {
+            areaColorGLControl.MakeCurrent();
+            GL.Viewport(areaColorGLControl.ClientRectangle);
+
+            RenderAreaLightColor();
+
+            areaColorGLControl.SwapBuffers();
         }
     }
 }
