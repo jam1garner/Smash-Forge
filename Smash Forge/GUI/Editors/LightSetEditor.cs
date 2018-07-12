@@ -154,18 +154,18 @@ namespace Smash_Forge.GUI.Editors
                     break;
                 case "Diffuse":
                     selectedCharDiffuseLight = Runtime.lightSetParam.characterDiffuse;
-                    charColor2GroupBox.Enabled = true;
+                    charColor2Panel.Enabled = true;
                     break;
                 case "Diffuse2":
                     selectedCharDiffuseLight = Runtime.lightSetParam.characterDiffuse2;
-                    charColor2GroupBox.Enabled = false;
+                    charColor2Panel.Enabled = false;
                     break;
                 case "Diffuse3":
                     selectedCharDiffuseLight = Runtime.lightSetParam.characterDiffuse3;
-                    charColor2GroupBox.Enabled = false;
+                    charColor2Panel.Enabled = false;
                     break;
                 case "Fresnel":
-                    charColor2GroupBox.Enabled = true;
+                    charColor2Panel.Enabled = true;
                     break;
             }
 
@@ -176,15 +176,15 @@ namespace Smash_Forge.GUI.Editors
         {
             if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
             {
-                charColor1GroupBox.Text = "Fresnel Sky Color";
-                charColor2GroupBox.Text = "Fresnel Ground Color";
+                charColor1Button.Text = "Fresnel Sky Color";
+                charColor2Button.Text = "Fresnel Ground Color";
                 RenderCharacterLightGradient(Runtime.lightSetParam.fresnelLight.skyColor, Runtime.lightSetParam.fresnelLight.groundColor);
                 UpdateCharFresnelValues();
             }
             else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString().Contains("Diffuse"))
             {
-                charColor1GroupBox.Text = "Diffuse Color";
-                charColor2GroupBox.Text = "Ambient Color";
+                charColor1Button.Text = "Diffuse Color";
+                charColor2Button.Text = "Ambient Color";
 
                 RenderCharacterLightGradient(selectedCharDiffuseLight.diffuseColor, selectedCharDiffuseLight.ambientColor);
                 UpdateCharDiffuseValues();
@@ -839,6 +839,27 @@ namespace Smash_Forge.GUI.Editors
         private void charDifColorGLControl_Load(object sender, EventArgs e)
         {
             RenderTools.SetUpOpenTkRendering();
+        }
+
+        private void charLightsTab_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charLightPanelExpander_Click(object sender, EventArgs e)
+        {
+            charLightGlControlPanel.Visible = !charLightGlControlPanel.Visible;
+            // TODO: Redraw the glControl.
+        }
+
+        private void charColor1Button_Click(object sender, EventArgs e)
+        {
+            charColor1Panel.Visible = !charColor1Panel.Visible;
+        }
+
+        private void charColor2Button_Click(object sender, EventArgs e)
+        {
+            charColor2Panel.Visible = !charColor2Panel.Visible;
         }
     }
 }
