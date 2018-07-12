@@ -85,11 +85,15 @@ namespace Smash_Forge.GUI.Editors
 
         private static TreeNode[] GetChildLightsForLightSet(int groupIndex)
         {
+            // The first 4 lights are used for characters.
+            // We only need the stage lights. #ihatearrayindices
+            int offset = 1;
+
             TreeNode[] children = new TreeNode[4];
             for (int lightIndex = 0; lightIndex < 4; lightIndex++)
             {
                 // Create a node from the current stage light.
-                DirectionalLight currentLight = Runtime.lightSetParam.stageDiffuseLights[((groupIndex) * 4) + lightIndex];
+                DirectionalLight currentLight = Runtime.lightSetParam.stageDiffuseLights[((groupIndex + offset) * 4) + lightIndex];
                 TreeNode childLight = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
                 childLight = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
                 childLight.Checked = currentLight.enabled;
