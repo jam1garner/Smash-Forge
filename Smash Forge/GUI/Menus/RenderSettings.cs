@@ -259,98 +259,77 @@ namespace Smash_Forge.GUI
 
         private void DisplayDebugButtonsFromDebugMode()
         {
-
             // Reuse the same buttons to control different settings for each render mode.
             switch (Runtime.renderType)
             {
                 default:
-                    debug1CB.Enabled = false;
-
-                    radioButton1.Enabled = false;
-                    radioButton2.Enabled = false;
-                    radioButton3.Enabled = false;
+                    debug1CB.Visible = false;
+                    
+                    debugRadioTableLayout.Visible = false;
                     break;
                 case Runtime.RenderTypes.UVTestPattern:
-                    debug1CB.Enabled = false;
+                    debug1CB.Visible = false;
 
-                    radioButton1.Enabled = true;
-                    radioButton2.Enabled = true;
-                    radioButton3.Enabled = true;
-
+                    debugRadioTableLayout.Visible = true;
                     radioButton1.Text = "UV1";
                     radioButton2.Text = "UV2";
                     radioButton3.Text = "UV3";
                     break;
                 case Runtime.RenderTypes.UVCoords:
-                    debug1CB.Enabled = false;
+                    debug1CB.Visible = false;
 
-                    radioButton1.Enabled = true;
-                    radioButton2.Enabled = true;
-                    radioButton3.Enabled = true;
-
+                    debugRadioTableLayout.Visible = true;
                     radioButton1.Text = "UV1";
                     radioButton2.Text = "UV2";
                     radioButton3.Text = "UV3";
                     break;
                 case Runtime.RenderTypes.DiffuseMap:
-                    debug1CB.Enabled = false;
+                    debug1CB.Visible = false;
 
-                    radioButton1.Enabled = true;
-                    radioButton2.Enabled = true;
-                    radioButton3.Enabled = true;
-
+                    debugRadioTableLayout.Visible = true;
                     radioButton1.Text = "UV1";
                     radioButton2.Text = "UV2";
                     radioButton3.Text = "UV3";
                     break;
                 case Runtime.RenderTypes.AmbientOcclusion:
                     debug1CB.Text = "aoMinGain";
-                    debug1CB.Enabled = true;
+                    debug1CB.Visible = true;
 
-                    radioButton1.Enabled = false;
-                    radioButton2.Enabled = false;
-                    radioButton3.Enabled = false;
+                    debugRadioTableLayout.Visible = false;
                     break;
                 case Runtime.RenderTypes.SelectedBoneWeights:
                     debug1CB.Text = "Color Ramp";
-                    debug1CB.Enabled = false;
+                    debug1CB.Visible = false;
 
-                    radioButton1.Enabled = true;
-                    radioButton2.Enabled = true;
-                    radioButton3.Enabled = true;
-
+                    debugRadioTableLayout.Visible = true;
                     radioButton1.Text = "BnW";
                     radioButton2.Text = "Color 1";
                     radioButton3.Text = "Color 2";
                     break;
                 case Runtime.RenderTypes.Normals:
-                    debug1CB.Enabled = false;
+                    debug1CB.Visible = false;
 
-                    radioButton1.Enabled = false;
-                    radioButton2.Enabled = false;
-                    radioButton3.Enabled = false;
+                    debugRadioTableLayout.Visible = false;
                     break;
                 case Runtime.RenderTypes.VertColor:
                     debug1CB.Text = "Divide by 2";
-                    debug1CB.Enabled = true;
+                    debug1CB.Visible = true;
 
-                    radioButton1.Enabled = false;
-                    radioButton2.Enabled = false;
-                    radioButton3.Enabled = false;
+                    debugRadioTableLayout.Visible = false;
                     break;
             }
         }
 
         private void ShowHideDebugButtonsIfUsingDebugMode()
         {
-            renderChannelR.Enabled = true;
-            renderChannelG.Enabled = true;
-            renderChannelB.Enabled = true;
-            renderChannelA.Enabled = true;
-            debug1CB.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            radioButton1.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            radioButton2.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            radioButton3.Enabled = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderChannelR.Visible = true;
+            renderChannelG.Visible = true;
+            renderChannelB.Visible = true;
+            renderChannelA.Visible = true;
+            debug1CB.Visible = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton1.Visible = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton2.Visible = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            radioButton3.Visible = Runtime.renderType != Runtime.RenderTypes.Shaded;
             radioButton1.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel1 && Runtime.renderType != Runtime.RenderTypes.Shaded;
             radioButton2.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel2 && Runtime.renderType != Runtime.RenderTypes.Shaded;
             radioButton3.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel3 && Runtime.renderType != Runtime.RenderTypes.Shaded;
@@ -1006,6 +985,36 @@ namespace Smash_Forge.GUI
         private void drawShadowCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.drawModelShadow = drawShadowCB.Checked;
+        }
+
+        private void renderModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void debugPanelButton_Click(object sender, EventArgs e)
+        {
+            debugShadePanel.Visible = !debugShadePanel.Visible;
+        }
+
+        private void bonePanelButton_Click(object sender, EventArgs e)
+        {
+            bonePanel.Visible = !bonePanel.Visible;
+        }
+
+        private void label76_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void experimentalPanelButton_Click(object sender, EventArgs e)
+        {
+            experimentalPanel.Visible = !experimentalPanel.Visible;
+        }
+
+        private void lvdPanelButton_Click(object sender, EventArgs e)
+        {
+            lvdPanel.Visible = !lvdPanel.Visible;
         }
     }
 }

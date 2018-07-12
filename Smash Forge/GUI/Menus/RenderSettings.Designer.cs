@@ -85,7 +85,6 @@
             this.renderHurtboxZonesCB = new System.Windows.Forms.CheckBox();
             this.renderInterpHitboxCB = new System.Windows.Forms.CheckBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
@@ -96,7 +95,6 @@
             this.renderChannelB = new System.Windows.Forms.Button();
             this.renderModeComboBox = new System.Windows.Forms.ComboBox();
             this.debugModeLabel = new System.Windows.Forms.Label();
-            this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.renderGeneralShapesCB = new System.Windows.Forms.CheckBox();
             this.renderCollisionsCB = new System.Windows.Forms.CheckBox();
             this.renderLvdCB = new System.Windows.Forms.CheckBox();
@@ -104,7 +102,6 @@
             this.renderRespawnsCB = new System.Windows.Forms.CheckBox();
             this.renderPassthroughCB = new System.Windows.Forms.CheckBox();
             this.renderItemSpawnersCB = new System.Windows.Forms.CheckBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.zScaleTB = new System.Windows.Forms.TextBox();
             this.label76 = new System.Windows.Forms.Label();
             this.depthTestCB = new System.Windows.Forms.CheckBox();
@@ -121,7 +118,6 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.drawShadowCB = new System.Windows.Forms.CheckBox();
             this.stageLightingCB = new System.Windows.Forms.CheckBox();
             this.renderFogCB = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -186,6 +182,23 @@
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.defaultRadioButton = new System.Windows.Forms.RadioButton();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.debugModeTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.rgbaTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.debugRadioTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.debugFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+            this.debugPanelButton = new System.Windows.Forms.Button();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.debugShadePanel = new System.Windows.Forms.Panel();
+            this.bonePanelButton = new System.Windows.Forms.Button();
+            this.bonePanel = new System.Windows.Forms.Panel();
+            this.boneFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+            this.drawShadowCB = new System.Windows.Forms.CheckBox();
+            this.experimentalPanelButton = new System.Windows.Forms.Button();
+            this.experimentalPanel = new System.Windows.Forms.Panel();
+            this.experimentalFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+            this.zScaleTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.lvdPanelButton = new System.Windows.Forms.Button();
+            this.lvdPanel = new System.Windows.Forms.Panel();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -203,9 +216,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).BeginInit();
             this.tabPage1.SuspendLayout();
-            this.groupBox6.SuspendLayout();
-            this.groupBox10.SuspendLayout();
-            this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage6.SuspendLayout();
@@ -224,6 +234,18 @@
             this.tableLayoutPanel2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox7.SuspendLayout();
+            this.debugModeTableLayout.SuspendLayout();
+            this.rgbaTableLayout.SuspendLayout();
+            this.debugRadioTableLayout.SuspendLayout();
+            this.debugFlowLayout.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
+            this.debugShadePanel.SuspendLayout();
+            this.bonePanel.SuspendLayout();
+            this.boneFlowLayout.SuspendLayout();
+            this.experimentalPanel.SuspendLayout();
+            this.experimentalFlowLayout.SuspendLayout();
+            this.zScaleTableLayout.SuspendLayout();
+            this.lvdPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabPage2
@@ -283,7 +305,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(556, 621);
+            this.tabPage2.Size = new System.Drawing.Size(636, 655);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Hit/Hurt boxes";
             // 
@@ -807,40 +829,19 @@
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage1.Controls.Add(this.groupBox6);
-            this.tabPage1.Controls.Add(this.groupBox10);
-            this.tabPage1.Controls.Add(this.groupBox4);
+            this.tabPage1.Controls.Add(this.flowLayoutPanel1);
             this.tabPage1.Controls.Add(this.groupBox2);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(556, 621);
+            this.tabPage1.Size = new System.Drawing.Size(1018, 655);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.radioButton3);
-            this.groupBox6.Controls.Add(this.radioButton2);
-            this.groupBox6.Controls.Add(this.radioButton1);
-            this.groupBox6.Controls.Add(this.debug1CB);
-            this.groupBox6.Controls.Add(this.renderChannelR);
-            this.groupBox6.Controls.Add(this.renderChannelA);
-            this.groupBox6.Controls.Add(this.renderChannelG);
-            this.groupBox6.Controls.Add(this.renderChannelB);
-            this.groupBox6.Controls.Add(this.renderModeComboBox);
-            this.groupBox6.Controls.Add(this.debugModeLabel);
-            this.groupBox6.Location = new System.Drawing.Point(266, 6);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(284, 234);
-            this.groupBox6.TabIndex = 36;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Debug Shading";
             // 
             // radioButton3
             // 
             this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(155, 111);
+            this.radioButton3.Location = new System.Drawing.Point(135, 3);
             this.radioButton3.Name = "radioButton3";
             this.radioButton3.Size = new System.Drawing.Size(46, 17);
             this.radioButton3.TabIndex = 38;
@@ -852,7 +853,7 @@
             // radioButton2
             // 
             this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(86, 111);
+            this.radioButton2.Location = new System.Drawing.Point(69, 3);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(46, 17);
             this.radioButton2.TabIndex = 37;
@@ -864,7 +865,7 @@
             // radioButton1
             // 
             this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(11, 111);
+            this.radioButton1.Location = new System.Drawing.Point(3, 3);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(46, 17);
             this.radioButton1.TabIndex = 36;
@@ -876,7 +877,7 @@
             // debug1CB
             // 
             this.debug1CB.AutoSize = true;
-            this.debug1CB.Location = new System.Drawing.Point(10, 85);
+            this.debug1CB.Location = new System.Drawing.Point(3, 121);
             this.debug1CB.Name = "debug1CB";
             this.debug1CB.Size = new System.Drawing.Size(61, 17);
             this.debug1CB.TabIndex = 34;
@@ -888,9 +889,9 @@
             // 
             this.renderChannelR.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.renderChannelR.ForeColor = System.Drawing.Color.Red;
-            this.renderChannelR.Location = new System.Drawing.Point(11, 50);
+            this.renderChannelR.Location = new System.Drawing.Point(3, 3);
             this.renderChannelR.Name = "renderChannelR";
-            this.renderChannelR.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelR.Size = new System.Drawing.Size(22, 24);
             this.renderChannelR.TabIndex = 29;
             this.renderChannelR.Text = "R";
             this.renderChannelR.UseVisualStyleBackColor = true;
@@ -899,9 +900,9 @@
             // renderChannelA
             // 
             this.renderChannelA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderChannelA.Location = new System.Drawing.Point(89, 50);
+            this.renderChannelA.Location = new System.Drawing.Point(87, 3);
             this.renderChannelA.Name = "renderChannelA";
-            this.renderChannelA.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelA.Size = new System.Drawing.Size(23, 24);
             this.renderChannelA.TabIndex = 32;
             this.renderChannelA.Text = "A";
             this.renderChannelA.UseVisualStyleBackColor = true;
@@ -911,9 +912,9 @@
             // 
             this.renderChannelG.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.renderChannelG.ForeColor = System.Drawing.Color.Green;
-            this.renderChannelG.Location = new System.Drawing.Point(37, 50);
+            this.renderChannelG.Location = new System.Drawing.Point(31, 3);
             this.renderChannelG.Name = "renderChannelG";
-            this.renderChannelG.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelG.Size = new System.Drawing.Size(22, 24);
             this.renderChannelG.TabIndex = 31;
             this.renderChannelG.Text = "G";
             this.renderChannelG.UseVisualStyleBackColor = true;
@@ -923,9 +924,9 @@
             // 
             this.renderChannelB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.renderChannelB.ForeColor = System.Drawing.Color.Blue;
-            this.renderChannelB.Location = new System.Drawing.Point(63, 50);
+            this.renderChannelB.Location = new System.Drawing.Point(59, 3);
             this.renderChannelB.Name = "renderChannelB";
-            this.renderChannelB.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelB.Size = new System.Drawing.Size(22, 24);
             this.renderChannelB.TabIndex = 30;
             this.renderChannelB.Text = "B";
             this.renderChannelB.UseVisualStyleBackColor = true;
@@ -949,41 +950,27 @@
             "Bitangents",
             "Light Set",
             "Bone Weights"});
-            this.renderModeComboBox.Location = new System.Drawing.Point(129, 19);
+            this.renderModeComboBox.Location = new System.Drawing.Point(79, 3);
             this.renderModeComboBox.Name = "renderModeComboBox";
             this.renderModeComboBox.Size = new System.Drawing.Size(149, 21);
             this.renderModeComboBox.TabIndex = 16;
+            this.renderModeComboBox.SelectedIndexChanged += new System.EventHandler(this.renderModeComboBox_SelectedIndexChanged);
             this.renderModeComboBox.SelectionChangeCommitted += new System.EventHandler(this.renderMode_SelectionChangeCommitted);
             // 
             // debugModeLabel
             // 
+            this.debugModeLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.debugModeLabel.AutoSize = true;
-            this.debugModeLabel.Location = new System.Drawing.Point(8, 22);
+            this.debugModeLabel.Location = new System.Drawing.Point(4, 10);
             this.debugModeLabel.Name = "debugModeLabel";
             this.debugModeLabel.Size = new System.Drawing.Size(69, 13);
             this.debugModeLabel.TabIndex = 28;
             this.debugModeLabel.Text = "Debug Mode";
             // 
-            // groupBox10
-            // 
-            this.groupBox10.Controls.Add(this.renderGeneralShapesCB);
-            this.groupBox10.Controls.Add(this.renderCollisionsCB);
-            this.groupBox10.Controls.Add(this.renderLvdCB);
-            this.groupBox10.Controls.Add(this.renderSpawnsCB);
-            this.groupBox10.Controls.Add(this.renderRespawnsCB);
-            this.groupBox10.Controls.Add(this.renderPassthroughCB);
-            this.groupBox10.Controls.Add(this.renderItemSpawnersCB);
-            this.groupBox10.Location = new System.Drawing.Point(6, 246);
-            this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Size = new System.Drawing.Size(254, 369);
-            this.groupBox10.TabIndex = 19;
-            this.groupBox10.TabStop = false;
-            this.groupBox10.Text = "LVD Display";
-            // 
             // renderGeneralShapesCB
             // 
             this.renderGeneralShapesCB.AutoSize = true;
-            this.renderGeneralShapesCB.Location = new System.Drawing.Point(42, 162);
+            this.renderGeneralShapesCB.Location = new System.Drawing.Point(36, 146);
             this.renderGeneralShapesCB.Name = "renderGeneralShapesCB";
             this.renderGeneralShapesCB.Size = new System.Drawing.Size(193, 17);
             this.renderGeneralShapesCB.TabIndex = 33;
@@ -993,7 +980,7 @@
             // renderCollisionsCB
             // 
             this.renderCollisionsCB.AutoSize = true;
-            this.renderCollisionsCB.Location = new System.Drawing.Point(42, 46);
+            this.renderCollisionsCB.Location = new System.Drawing.Point(36, 30);
             this.renderCollisionsCB.Name = "renderCollisionsCB";
             this.renderCollisionsCB.Size = new System.Drawing.Size(107, 17);
             this.renderCollisionsCB.TabIndex = 28;
@@ -1003,7 +990,7 @@
             // renderLvdCB
             // 
             this.renderLvdCB.AutoSize = true;
-            this.renderLvdCB.Location = new System.Drawing.Point(9, 19);
+            this.renderLvdCB.Location = new System.Drawing.Point(3, 3);
             this.renderLvdCB.Name = "renderLvdCB";
             this.renderLvdCB.Size = new System.Drawing.Size(85, 17);
             this.renderLvdCB.TabIndex = 27;
@@ -1013,7 +1000,7 @@
             // renderSpawnsCB
             // 
             this.renderSpawnsCB.AutoSize = true;
-            this.renderSpawnsCB.Location = new System.Drawing.Point(42, 92);
+            this.renderSpawnsCB.Location = new System.Drawing.Point(36, 76);
             this.renderSpawnsCB.Name = "renderSpawnsCB";
             this.renderSpawnsCB.Size = new System.Drawing.Size(102, 17);
             this.renderSpawnsCB.TabIndex = 29;
@@ -1023,7 +1010,7 @@
             // renderRespawnsCB
             // 
             this.renderRespawnsCB.AutoSize = true;
-            this.renderRespawnsCB.Location = new System.Drawing.Point(42, 115);
+            this.renderRespawnsCB.Location = new System.Drawing.Point(36, 99);
             this.renderRespawnsCB.Name = "renderRespawnsCB";
             this.renderRespawnsCB.Size = new System.Drawing.Size(114, 17);
             this.renderRespawnsCB.TabIndex = 30;
@@ -1033,7 +1020,7 @@
             // renderPassthroughCB
             // 
             this.renderPassthroughCB.AutoSize = true;
-            this.renderPassthroughCB.Location = new System.Drawing.Point(71, 69);
+            this.renderPassthroughCB.Location = new System.Drawing.Point(65, 53);
             this.renderPassthroughCB.Name = "renderPassthroughCB";
             this.renderPassthroughCB.Size = new System.Drawing.Size(158, 17);
             this.renderPassthroughCB.TabIndex = 32;
@@ -1043,46 +1030,37 @@
             // renderItemSpawnersCB
             // 
             this.renderItemSpawnersCB.AutoSize = true;
-            this.renderItemSpawnersCB.Location = new System.Drawing.Point(42, 138);
+            this.renderItemSpawnersCB.Location = new System.Drawing.Point(36, 122);
             this.renderItemSpawnersCB.Name = "renderItemSpawnersCB";
             this.renderItemSpawnersCB.Size = new System.Drawing.Size(134, 17);
             this.renderItemSpawnersCB.TabIndex = 31;
             this.renderItemSpawnersCB.Text = "Render Item Spawners";
             this.renderItemSpawnersCB.UseVisualStyleBackColor = true;
             // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.zScaleTB);
-            this.groupBox4.Controls.Add(this.label76);
-            this.groupBox4.Controls.Add(this.depthTestCB);
-            this.groupBox4.Location = new System.Drawing.Point(266, 246);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(284, 369);
-            this.groupBox4.TabIndex = 18;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "zDepth (Experimental WIP)";
-            // 
             // zScaleTB
             // 
-            this.zScaleTB.Location = new System.Drawing.Point(129, 43);
+            this.zScaleTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.zScaleTB.Location = new System.Drawing.Point(89, 3);
             this.zScaleTB.Name = "zScaleTB";
-            this.zScaleTB.Size = new System.Drawing.Size(149, 20);
+            this.zScaleTB.Size = new System.Drawing.Size(114, 20);
             this.zScaleTB.TabIndex = 2;
             this.zScaleTB.TextChanged += new System.EventHandler(this.zScaleTB_TextChanged);
             // 
             // label76
             // 
+            this.label76.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label76.AutoSize = true;
-            this.label76.Location = new System.Drawing.Point(11, 47);
+            this.label76.Location = new System.Drawing.Point(17, 8);
             this.label76.Name = "label76";
             this.label76.Size = new System.Drawing.Size(66, 13);
             this.label76.TabIndex = 1;
             this.label76.Text = "Z Axis Scale";
+            this.label76.Click += new System.EventHandler(this.label76_Click);
             // 
             // depthTestCB
             // 
             this.depthTestCB.AutoSize = true;
-            this.depthTestCB.Location = new System.Drawing.Point(8, 19);
+            this.depthTestCB.Location = new System.Drawing.Point(3, 26);
             this.depthTestCB.Name = "depthTestCB";
             this.depthTestCB.Size = new System.Drawing.Size(129, 17);
             this.depthTestCB.TabIndex = 0;
@@ -1092,18 +1070,15 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.swagYCB);
             this.groupBox2.Controls.Add(this.areaLightBoundingBoxCB);
             this.groupBox2.Controls.Add(this.renderModelCB);
             this.groupBox2.Controls.Add(this.wireframeCB);
             this.groupBox2.Controls.Add(this.modelSelectCB);
             this.groupBox2.Controls.Add(this.boundingCB);
-            this.groupBox2.Controls.Add(this.showSwagDataCB);
-            this.groupBox2.Controls.Add(this.renderBonesCB);
             this.groupBox2.Controls.Add(this.renderCameraPathCB);
-            this.groupBox2.Location = new System.Drawing.Point(6, 6);
+            this.groupBox2.Location = new System.Drawing.Point(675, 193);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(254, 234);
+            this.groupBox2.Size = new System.Drawing.Size(254, 169);
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Display Settings";
@@ -1111,7 +1086,7 @@
             // swagYCB
             // 
             this.swagYCB.AutoSize = true;
-            this.swagYCB.Location = new System.Drawing.Point(127, 114);
+            this.swagYCB.Location = new System.Drawing.Point(103, 3);
             this.swagYCB.Name = "swagYCB";
             this.swagYCB.Size = new System.Drawing.Size(106, 17);
             this.swagYCB.TabIndex = 29;
@@ -1124,7 +1099,7 @@
             this.areaLightBoundingBoxCB.AutoSize = true;
             this.areaLightBoundingBoxCB.Checked = true;
             this.areaLightBoundingBoxCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.areaLightBoundingBoxCB.Location = new System.Drawing.Point(9, 183);
+            this.areaLightBoundingBoxCB.Location = new System.Drawing.Point(17, 143);
             this.areaLightBoundingBoxCB.Name = "areaLightBoundingBoxCB";
             this.areaLightBoundingBoxCB.Size = new System.Drawing.Size(192, 17);
             this.areaLightBoundingBoxCB.TabIndex = 27;
@@ -1135,7 +1110,7 @@
             // renderModelCB
             // 
             this.renderModelCB.AutoSize = true;
-            this.renderModelCB.Location = new System.Drawing.Point(9, 24);
+            this.renderModelCB.Location = new System.Drawing.Point(30, 28);
             this.renderModelCB.Name = "renderModelCB";
             this.renderModelCB.Size = new System.Drawing.Size(93, 17);
             this.renderModelCB.TabIndex = 0;
@@ -1146,7 +1121,7 @@
             // wireframeCB
             // 
             this.wireframeCB.AutoSize = true;
-            this.wireframeCB.Location = new System.Drawing.Point(42, 70);
+            this.wireframeCB.Location = new System.Drawing.Point(63, 74);
             this.wireframeCB.Name = "wireframeCB";
             this.wireframeCB.Size = new System.Drawing.Size(104, 17);
             this.wireframeCB.TabIndex = 22;
@@ -1157,7 +1132,7 @@
             // modelSelectCB
             // 
             this.modelSelectCB.AutoSize = true;
-            this.modelSelectCB.Location = new System.Drawing.Point(42, 46);
+            this.modelSelectCB.Location = new System.Drawing.Point(63, 50);
             this.modelSelectCB.Name = "modelSelectCB";
             this.modelSelectCB.Size = new System.Drawing.Size(132, 17);
             this.modelSelectCB.TabIndex = 21;
@@ -1168,7 +1143,7 @@
             // boundingCB
             // 
             this.boundingCB.AutoSize = true;
-            this.boundingCB.Location = new System.Drawing.Point(9, 137);
+            this.boundingCB.Location = new System.Drawing.Point(17, 97);
             this.boundingCB.Name = "boundingCB";
             this.boundingCB.Size = new System.Drawing.Size(141, 17);
             this.boundingCB.TabIndex = 20;
@@ -1179,7 +1154,7 @@
             // showSwagDataCB
             // 
             this.showSwagDataCB.AutoSize = true;
-            this.showSwagDataCB.Location = new System.Drawing.Point(9, 114);
+            this.showSwagDataCB.Location = new System.Drawing.Point(215, 3);
             this.showSwagDataCB.Name = "showSwagDataCB";
             this.showSwagDataCB.Size = new System.Drawing.Size(106, 17);
             this.showSwagDataCB.TabIndex = 18;
@@ -1190,7 +1165,7 @@
             // renderBonesCB
             // 
             this.renderBonesCB.AutoSize = true;
-            this.renderBonesCB.Location = new System.Drawing.Point(9, 93);
+            this.renderBonesCB.Location = new System.Drawing.Point(3, 3);
             this.renderBonesCB.Name = "renderBonesCB";
             this.renderBonesCB.Size = new System.Drawing.Size(94, 17);
             this.renderBonesCB.TabIndex = 1;
@@ -1201,7 +1176,7 @@
             // renderCameraPathCB
             // 
             this.renderCameraPathCB.AutoSize = true;
-            this.renderCameraPathCB.Location = new System.Drawing.Point(9, 160);
+            this.renderCameraPathCB.Location = new System.Drawing.Point(17, 120);
             this.renderCameraPathCB.Name = "renderCameraPathCB";
             this.renderCameraPathCB.Size = new System.Drawing.Size(125, 17);
             this.renderCameraPathCB.TabIndex = 2;
@@ -1217,10 +1192,11 @@
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(12, 12);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(564, 647);
+            this.tabControl1.Size = new System.Drawing.Size(1026, 681);
             this.tabControl1.TabIndex = 17;
             // 
             // tabPage6
@@ -1230,13 +1206,12 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(556, 621);
+            this.tabPage6.Size = new System.Drawing.Size(636, 655);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Material Lighting";
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.drawShadowCB);
             this.groupBox5.Controls.Add(this.stageLightingCB);
             this.groupBox5.Controls.Add(this.renderFogCB);
             this.groupBox5.Controls.Add(this.tableLayoutPanel1);
@@ -1249,23 +1224,13 @@
             this.groupBox5.Controls.Add(this.specularCB);
             this.groupBox5.Controls.Add(this.reflectionCB);
             this.groupBox5.Controls.Add(this.useNormCB);
-            this.groupBox5.Location = new System.Drawing.Point(6, 6);
+            this.groupBox5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox5.Location = new System.Drawing.Point(3, 3);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(544, 609);
+            this.groupBox5.Size = new System.Drawing.Size(630, 649);
             this.groupBox5.TabIndex = 36;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Material Lighting";
-            // 
-            // drawShadowCB
-            // 
-            this.drawShadowCB.AutoSize = true;
-            this.drawShadowCB.Location = new System.Drawing.Point(156, 116);
-            this.drawShadowCB.Name = "drawShadowCB";
-            this.drawShadowCB.Size = new System.Drawing.Size(177, 17);
-            this.drawShadowCB.TabIndex = 35;
-            this.drawShadowCB.Text = "Render Shadows (Experimental)";
-            this.drawShadowCB.UseVisualStyleBackColor = true;
-            this.drawShadowCB.CheckedChanged += new System.EventHandler(this.drawShadowCB_CheckedChanged);
             // 
             // stageLightingCB
             // 
@@ -1308,7 +1273,7 @@
             this.tableLayoutPanel1.Controls.Add(this.refTB, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.difIntensityLabel, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.modelScaleLabel, 0, 5);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 192);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(22, 303);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 6;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -1317,53 +1282,59 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(264, 160);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(254, 160);
             this.tableLayoutPanel1.TabIndex = 31;
             // 
             // modelscaleTB
             // 
-            this.modelscaleTB.Location = new System.Drawing.Point(135, 133);
+            this.modelscaleTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.modelscaleTB.Location = new System.Drawing.Point(130, 133);
             this.modelscaleTB.Name = "modelscaleTB";
-            this.modelscaleTB.Size = new System.Drawing.Size(100, 20);
+            this.modelscaleTB.Size = new System.Drawing.Size(121, 20);
             this.modelscaleTB.TabIndex = 33;
             this.modelscaleTB.TextChanged += new System.EventHandler(this.modelscaleTB_TextChanged);
             // 
             // difTB
             // 
-            this.difTB.Location = new System.Drawing.Point(135, 3);
+            this.difTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.difTB.Location = new System.Drawing.Point(130, 3);
             this.difTB.Name = "difTB";
-            this.difTB.Size = new System.Drawing.Size(100, 20);
+            this.difTB.Size = new System.Drawing.Size(121, 20);
             this.difTB.TabIndex = 30;
             this.difTB.TextChanged += new System.EventHandler(this.difTB_TextChanged);
             // 
             // spcTB
             // 
-            this.spcTB.Location = new System.Drawing.Point(135, 29);
+            this.spcTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.spcTB.Location = new System.Drawing.Point(130, 29);
             this.spcTB.Name = "spcTB";
-            this.spcTB.Size = new System.Drawing.Size(100, 20);
+            this.spcTB.Size = new System.Drawing.Size(121, 20);
             this.spcTB.TabIndex = 31;
             this.spcTB.TextChanged += new System.EventHandler(this.spcTB_TextChanged);
             // 
             // frsTB
             // 
-            this.frsTB.Location = new System.Drawing.Point(135, 55);
+            this.frsTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.frsTB.Location = new System.Drawing.Point(130, 55);
             this.frsTB.Name = "frsTB";
-            this.frsTB.Size = new System.Drawing.Size(100, 20);
+            this.frsTB.Size = new System.Drawing.Size(121, 20);
             this.frsTB.TabIndex = 32;
             this.frsTB.TextChanged += new System.EventHandler(this.frsTB_TextChanged);
             // 
             // ambTB
             // 
-            this.ambTB.Location = new System.Drawing.Point(135, 81);
+            this.ambTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ambTB.Location = new System.Drawing.Point(130, 81);
             this.ambTB.Name = "ambTB";
-            this.ambTB.Size = new System.Drawing.Size(100, 20);
+            this.ambTB.Size = new System.Drawing.Size(121, 20);
             this.ambTB.TabIndex = 33;
             this.ambTB.TextChanged += new System.EventHandler(this.ambTB_TextChanged);
             // 
             // specIntensityLabel
             // 
+            this.specIntensityLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.specIntensityLabel.AutoSize = true;
-            this.specIntensityLabel.Location = new System.Drawing.Point(3, 26);
+            this.specIntensityLabel.Location = new System.Drawing.Point(33, 32);
             this.specIntensityLabel.Name = "specIntensityLabel";
             this.specIntensityLabel.Size = new System.Drawing.Size(91, 13);
             this.specIntensityLabel.TabIndex = 35;
@@ -1371,8 +1342,9 @@
             // 
             // fresIntensityLabel
             // 
+            this.fresIntensityLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.fresIntensityLabel.AutoSize = true;
-            this.fresIntensityLabel.Location = new System.Drawing.Point(3, 52);
+            this.fresIntensityLabel.Location = new System.Drawing.Point(41, 58);
             this.fresIntensityLabel.Name = "fresIntensityLabel";
             this.fresIntensityLabel.Size = new System.Drawing.Size(83, 13);
             this.fresIntensityLabel.TabIndex = 36;
@@ -1380,8 +1352,9 @@
             // 
             // ambIntensityLabel
             // 
+            this.ambIntensityLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.ambIntensityLabel.AutoSize = true;
-            this.ambIntensityLabel.Location = new System.Drawing.Point(3, 78);
+            this.ambIntensityLabel.Location = new System.Drawing.Point(37, 84);
             this.ambIntensityLabel.Name = "ambIntensityLabel";
             this.ambIntensityLabel.Size = new System.Drawing.Size(87, 13);
             this.ambIntensityLabel.TabIndex = 37;
@@ -1389,8 +1362,9 @@
             // 
             // refIntensityLabel
             // 
+            this.refIntensityLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.refIntensityLabel.AutoSize = true;
-            this.refIntensityLabel.Location = new System.Drawing.Point(3, 104);
+            this.refIntensityLabel.Location = new System.Drawing.Point(27, 110);
             this.refIntensityLabel.Name = "refIntensityLabel";
             this.refIntensityLabel.Size = new System.Drawing.Size(97, 13);
             this.refIntensityLabel.TabIndex = 38;
@@ -1398,16 +1372,18 @@
             // 
             // refTB
             // 
-            this.refTB.Location = new System.Drawing.Point(135, 107);
+            this.refTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.refTB.Location = new System.Drawing.Point(130, 107);
             this.refTB.Name = "refTB";
-            this.refTB.Size = new System.Drawing.Size(100, 20);
+            this.refTB.Size = new System.Drawing.Size(121, 20);
             this.refTB.TabIndex = 39;
             this.refTB.TextChanged += new System.EventHandler(this.refTB_TextChanged);
             // 
             // difIntensityLabel
             // 
+            this.difIntensityLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.difIntensityLabel.AutoSize = true;
-            this.difIntensityLabel.Location = new System.Drawing.Point(3, 0);
+            this.difIntensityLabel.Location = new System.Drawing.Point(42, 6);
             this.difIntensityLabel.Name = "difIntensityLabel";
             this.difIntensityLabel.Size = new System.Drawing.Size(82, 13);
             this.difIntensityLabel.TabIndex = 34;
@@ -1415,8 +1391,9 @@
             // 
             // modelScaleLabel
             // 
+            this.modelScaleLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.modelScaleLabel.AutoSize = true;
-            this.modelScaleLabel.Location = new System.Drawing.Point(3, 130);
+            this.modelScaleLabel.Location = new System.Drawing.Point(58, 138);
             this.modelScaleLabel.Name = "modelScaleLabel";
             this.modelScaleLabel.Size = new System.Drawing.Size(66, 13);
             this.modelScaleLabel.TabIndex = 40;
@@ -1537,7 +1514,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(556, 621);
+            this.tabPage5.Size = new System.Drawing.Size(636, 655);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Background/Floor";
             // 
@@ -1551,7 +1528,7 @@
             this.groupBox9.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox9.Location = new System.Drawing.Point(3, 3);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(550, 180);
+            this.groupBox9.Size = new System.Drawing.Size(630, 180);
             this.groupBox9.TabIndex = 39;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Background Settings";
@@ -1664,9 +1641,9 @@
             this.groupBox8.Controls.Add(this.floorComboBox);
             this.groupBox8.Controls.Add(this.renderFloorCB);
             this.groupBox8.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox8.Location = new System.Drawing.Point(3, 189);
+            this.groupBox8.Location = new System.Drawing.Point(3, 223);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(550, 429);
+            this.groupBox8.Size = new System.Drawing.Size(630, 429);
             this.groupBox8.TabIndex = 38;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Floor Settings";
@@ -1742,7 +1719,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(556, 621);
+            this.tabPage4.Size = new System.Drawing.Size(636, 655);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Post Processing";
             // 
@@ -1859,7 +1836,7 @@
             this.tabPage3.Controls.Add(this.groupBox7);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(556, 621);
+            this.tabPage3.Size = new System.Drawing.Size(636, 655);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Discord Rich Presence";
             // 
@@ -1974,11 +1951,219 @@
             this.defaultRadioButton.UseVisualStyleBackColor = true;
             this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
+            // debugModeTableLayout
+            // 
+            this.debugModeTableLayout.ColumnCount = 2;
+            this.debugModeTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 32F));
+            this.debugModeTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 68F));
+            this.debugModeTableLayout.Controls.Add(this.renderModeComboBox, 1, 0);
+            this.debugModeTableLayout.Controls.Add(this.debugModeLabel, 0, 0);
+            this.debugModeTableLayout.Location = new System.Drawing.Point(3, 3);
+            this.debugModeTableLayout.Name = "debugModeTableLayout";
+            this.debugModeTableLayout.RowCount = 1;
+            this.debugModeTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.debugModeTableLayout.Size = new System.Drawing.Size(238, 34);
+            this.debugModeTableLayout.TabIndex = 39;
+            // 
+            // rgbaTableLayout
+            // 
+            this.rgbaTableLayout.ColumnCount = 4;
+            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.rgbaTableLayout.Controls.Add(this.renderChannelR, 0, 0);
+            this.rgbaTableLayout.Controls.Add(this.renderChannelG, 1, 0);
+            this.rgbaTableLayout.Controls.Add(this.renderChannelB, 2, 0);
+            this.rgbaTableLayout.Controls.Add(this.renderChannelA, 3, 0);
+            this.rgbaTableLayout.Location = new System.Drawing.Point(3, 43);
+            this.rgbaTableLayout.Name = "rgbaTableLayout";
+            this.rgbaTableLayout.RowCount = 1;
+            this.rgbaTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.rgbaTableLayout.Size = new System.Drawing.Size(113, 33);
+            this.rgbaTableLayout.TabIndex = 40;
+            // 
+            // debugRadioTableLayout
+            // 
+            this.debugRadioTableLayout.ColumnCount = 3;
+            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 34F));
+            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.debugRadioTableLayout.Controls.Add(this.radioButton1, 0, 0);
+            this.debugRadioTableLayout.Controls.Add(this.radioButton2, 1, 0);
+            this.debugRadioTableLayout.Controls.Add(this.radioButton3, 2, 0);
+            this.debugRadioTableLayout.Location = new System.Drawing.Point(3, 82);
+            this.debugRadioTableLayout.Name = "debugRadioTableLayout";
+            this.debugRadioTableLayout.RowCount = 1;
+            this.debugRadioTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.debugRadioTableLayout.Size = new System.Drawing.Size(201, 33);
+            this.debugRadioTableLayout.TabIndex = 41;
+            // 
+            // debugFlowLayout
+            // 
+            this.debugFlowLayout.Controls.Add(this.debugModeTableLayout);
+            this.debugFlowLayout.Controls.Add(this.rgbaTableLayout);
+            this.debugFlowLayout.Controls.Add(this.debugRadioTableLayout);
+            this.debugFlowLayout.Controls.Add(this.debug1CB);
+            this.debugFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.debugFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.debugFlowLayout.Location = new System.Drawing.Point(0, 0);
+            this.debugFlowLayout.Name = "debugFlowLayout";
+            this.debugFlowLayout.Size = new System.Drawing.Size(606, 150);
+            this.debugFlowLayout.TabIndex = 42;
+            this.debugFlowLayout.WrapContents = false;
+            // 
+            // debugPanelButton
+            // 
+            this.debugPanelButton.Location = new System.Drawing.Point(3, 3);
+            this.debugPanelButton.Name = "debugPanelButton";
+            this.debugPanelButton.Size = new System.Drawing.Size(606, 23);
+            this.debugPanelButton.TabIndex = 43;
+            this.debugPanelButton.Text = "Debug Shading Modes";
+            this.debugPanelButton.UseVisualStyleBackColor = true;
+            this.debugPanelButton.Click += new System.EventHandler(this.debugPanelButton_Click);
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Controls.Add(this.debugPanelButton);
+            this.flowLayoutPanel1.Controls.Add(this.debugShadePanel);
+            this.flowLayoutPanel1.Controls.Add(this.bonePanelButton);
+            this.flowLayoutPanel1.Controls.Add(this.bonePanel);
+            this.flowLayoutPanel1.Controls.Add(this.experimentalPanelButton);
+            this.flowLayoutPanel1.Controls.Add(this.experimentalPanel);
+            this.flowLayoutPanel1.Controls.Add(this.lvdPanelButton);
+            this.flowLayoutPanel1.Controls.Add(this.lvdPanel);
+            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(8, 6);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(622, 641);
+            this.flowLayoutPanel1.TabIndex = 44;
+            this.flowLayoutPanel1.WrapContents = false;
+            // 
+            // debugShadePanel
+            // 
+            this.debugShadePanel.Controls.Add(this.debugFlowLayout);
+            this.debugShadePanel.Location = new System.Drawing.Point(3, 32);
+            this.debugShadePanel.Name = "debugShadePanel";
+            this.debugShadePanel.Size = new System.Drawing.Size(606, 150);
+            this.debugShadePanel.TabIndex = 44;
+            // 
+            // bonePanelButton
+            // 
+            this.bonePanelButton.Location = new System.Drawing.Point(3, 188);
+            this.bonePanelButton.Name = "bonePanelButton";
+            this.bonePanelButton.Size = new System.Drawing.Size(606, 23);
+            this.bonePanelButton.TabIndex = 45;
+            this.bonePanelButton.Text = "Bone Display Settings";
+            this.bonePanelButton.UseVisualStyleBackColor = true;
+            this.bonePanelButton.Click += new System.EventHandler(this.bonePanelButton_Click);
+            // 
+            // bonePanel
+            // 
+            this.bonePanel.Controls.Add(this.boneFlowLayout);
+            this.bonePanel.Location = new System.Drawing.Point(3, 217);
+            this.bonePanel.Name = "bonePanel";
+            this.bonePanel.Size = new System.Drawing.Size(606, 33);
+            this.bonePanel.TabIndex = 46;
+            // 
+            // boneFlowLayout
+            // 
+            this.boneFlowLayout.Controls.Add(this.renderBonesCB);
+            this.boneFlowLayout.Controls.Add(this.swagYCB);
+            this.boneFlowLayout.Controls.Add(this.showSwagDataCB);
+            this.boneFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneFlowLayout.Location = new System.Drawing.Point(0, 0);
+            this.boneFlowLayout.Name = "boneFlowLayout";
+            this.boneFlowLayout.Size = new System.Drawing.Size(606, 33);
+            this.boneFlowLayout.TabIndex = 0;
+            this.boneFlowLayout.WrapContents = false;
+            // 
+            // drawShadowCB
+            // 
+            this.drawShadowCB.AutoSize = true;
+            this.drawShadowCB.Location = new System.Drawing.Point(3, 3);
+            this.drawShadowCB.Name = "drawShadowCB";
+            this.drawShadowCB.Size = new System.Drawing.Size(108, 17);
+            this.drawShadowCB.TabIndex = 45;
+            this.drawShadowCB.Text = "Render Shadows";
+            this.drawShadowCB.UseVisualStyleBackColor = true;
+            // 
+            // experimentalPanelButton
+            // 
+            this.experimentalPanelButton.Location = new System.Drawing.Point(3, 256);
+            this.experimentalPanelButton.Name = "experimentalPanelButton";
+            this.experimentalPanelButton.Size = new System.Drawing.Size(606, 23);
+            this.experimentalPanelButton.TabIndex = 47;
+            this.experimentalPanelButton.Text = "Experimental Rendering Features";
+            this.experimentalPanelButton.UseVisualStyleBackColor = true;
+            this.experimentalPanelButton.Click += new System.EventHandler(this.experimentalPanelButton_Click);
+            // 
+            // experimentalPanel
+            // 
+            this.experimentalPanel.Controls.Add(this.experimentalFlowLayout);
+            this.experimentalPanel.Location = new System.Drawing.Point(3, 285);
+            this.experimentalPanel.Name = "experimentalPanel";
+            this.experimentalPanel.Size = new System.Drawing.Size(606, 86);
+            this.experimentalPanel.TabIndex = 48;
+            // 
+            // experimentalFlowLayout
+            // 
+            this.experimentalFlowLayout.Controls.Add(this.drawShadowCB);
+            this.experimentalFlowLayout.Controls.Add(this.depthTestCB);
+            this.experimentalFlowLayout.Controls.Add(this.zScaleTableLayout);
+            this.experimentalFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.experimentalFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.experimentalFlowLayout.Location = new System.Drawing.Point(0, 0);
+            this.experimentalFlowLayout.Name = "experimentalFlowLayout";
+            this.experimentalFlowLayout.Size = new System.Drawing.Size(606, 86);
+            this.experimentalFlowLayout.TabIndex = 0;
+            this.experimentalFlowLayout.WrapContents = false;
+            // 
+            // zScaleTableLayout
+            // 
+            this.zScaleTableLayout.ColumnCount = 2;
+            this.zScaleTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 41.74757F));
+            this.zScaleTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 58.25243F));
+            this.zScaleTableLayout.Controls.Add(this.zScaleTB, 1, 0);
+            this.zScaleTableLayout.Controls.Add(this.label76, 0, 0);
+            this.zScaleTableLayout.Location = new System.Drawing.Point(3, 49);
+            this.zScaleTableLayout.Name = "zScaleTableLayout";
+            this.zScaleTableLayout.RowCount = 1;
+            this.zScaleTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.zScaleTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.zScaleTableLayout.Size = new System.Drawing.Size(206, 29);
+            this.zScaleTableLayout.TabIndex = 45;
+            // 
+            // lvdPanelButton
+            // 
+            this.lvdPanelButton.Location = new System.Drawing.Point(3, 377);
+            this.lvdPanelButton.Name = "lvdPanelButton";
+            this.lvdPanelButton.Size = new System.Drawing.Size(606, 23);
+            this.lvdPanelButton.TabIndex = 49;
+            this.lvdPanelButton.Text = "LVD Display Settings";
+            this.lvdPanelButton.UseVisualStyleBackColor = true;
+            this.lvdPanelButton.Click += new System.EventHandler(this.lvdPanelButton_Click);
+            // 
+            // lvdPanel
+            // 
+            this.lvdPanel.Controls.Add(this.renderGeneralShapesCB);
+            this.lvdPanel.Controls.Add(this.renderLvdCB);
+            this.lvdPanel.Controls.Add(this.renderCollisionsCB);
+            this.lvdPanel.Controls.Add(this.renderItemSpawnersCB);
+            this.lvdPanel.Controls.Add(this.renderPassthroughCB);
+            this.lvdPanel.Controls.Add(this.renderSpawnsCB);
+            this.lvdPanel.Controls.Add(this.renderRespawnsCB);
+            this.lvdPanel.Location = new System.Drawing.Point(3, 406);
+            this.lvdPanel.Name = "lvdPanel";
+            this.lvdPanel.Size = new System.Drawing.Size(606, 177);
+            this.lvdPanel.TabIndex = 50;
+            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(584, 664);
+            this.ClientSize = new System.Drawing.Size(1026, 681);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = global::Smash_Forge.Resources.Resources.forge2;
@@ -2003,12 +2188,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).EndInit();
             this.tabPage1.ResumeLayout(false);
-            this.groupBox6.ResumeLayout(false);
-            this.groupBox6.PerformLayout();
-            this.groupBox10.ResumeLayout(false);
-            this.groupBox10.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.tabControl1.ResumeLayout(false);
@@ -2038,6 +2217,25 @@
             this.tabPage3.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
+            this.debugModeTableLayout.ResumeLayout(false);
+            this.debugModeTableLayout.PerformLayout();
+            this.rgbaTableLayout.ResumeLayout(false);
+            this.debugRadioTableLayout.ResumeLayout(false);
+            this.debugRadioTableLayout.PerformLayout();
+            this.debugFlowLayout.ResumeLayout(false);
+            this.debugFlowLayout.PerformLayout();
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.debugShadePanel.ResumeLayout(false);
+            this.bonePanel.ResumeLayout(false);
+            this.boneFlowLayout.ResumeLayout(false);
+            this.boneFlowLayout.PerformLayout();
+            this.experimentalPanel.ResumeLayout(false);
+            this.experimentalFlowLayout.ResumeLayout(false);
+            this.experimentalFlowLayout.PerformLayout();
+            this.zScaleTableLayout.ResumeLayout(false);
+            this.zScaleTableLayout.PerformLayout();
+            this.lvdPanel.ResumeLayout(false);
+            this.lvdPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2095,7 +2293,6 @@
         private System.Windows.Forms.CheckBox renderHurtboxZonesCB;
         private System.Windows.Forms.CheckBox renderInterpHitboxCB;
         private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TextBox zScaleTB;
         private System.Windows.Forms.Label label76;
         private System.Windows.Forms.CheckBox depthTestCB;
@@ -2111,7 +2308,6 @@
         private System.Windows.Forms.ComboBox renderModeComboBox;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.CheckBox areaLightBoundingBoxCB;
-        private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.Button renderChannelR;
         private System.Windows.Forms.Button renderChannelA;
         private System.Windows.Forms.Button renderChannelG;
@@ -2161,7 +2357,6 @@
         private System.Windows.Forms.TextBox floorScaleTB;
         private System.Windows.Forms.Label floorStyleLabel;
         private System.Windows.Forms.ComboBox floorComboBox;
-        private System.Windows.Forms.GroupBox groupBox10;
         private System.Windows.Forms.CheckBox renderGeneralShapesCB;
         private System.Windows.Forms.CheckBox renderCollisionsCB;
         private System.Windows.Forms.CheckBox renderLvdCB;
@@ -2198,6 +2393,22 @@
         private System.Windows.Forms.PictureBox floorColorPictureBox;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.PictureBox backgroundPictureBox;
+        private System.Windows.Forms.TableLayoutPanel rgbaTableLayout;
+        private System.Windows.Forms.TableLayoutPanel debugModeTableLayout;
+        private System.Windows.Forms.TableLayoutPanel debugRadioTableLayout;
+        private System.Windows.Forms.FlowLayoutPanel debugFlowLayout;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Button debugPanelButton;
+        private System.Windows.Forms.Panel debugShadePanel;
+        private System.Windows.Forms.Button bonePanelButton;
+        private System.Windows.Forms.Panel bonePanel;
+        private System.Windows.Forms.FlowLayoutPanel boneFlowLayout;
         private System.Windows.Forms.CheckBox drawShadowCB;
+        private System.Windows.Forms.Button experimentalPanelButton;
+        private System.Windows.Forms.Panel experimentalPanel;
+        private System.Windows.Forms.FlowLayoutPanel experimentalFlowLayout;
+        private System.Windows.Forms.TableLayoutPanel zScaleTableLayout;
+        private System.Windows.Forms.Button lvdPanelButton;
+        private System.Windows.Forms.Panel lvdPanel;
     }
 }
