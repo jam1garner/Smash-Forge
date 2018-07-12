@@ -871,5 +871,28 @@ namespace Smash_Forge.GUI.Editors
         {
             stageLightRotPanel.Visible = !stageLightRotPanel.Visible;
         }
+
+        private void stageFogPanelButton_Click(object sender, EventArgs e)
+        {
+            stageFogColorPanel.Visible = !stageFogColorPanel.Visible;
+        }
+
+        private void charLightsFlowLayout_Resize(object sender, EventArgs e)
+        {
+            ResizeFlowLayoutControls(charLightsFlowLayout);
+        }
+
+        private void ResizeFlowLayoutControls(FlowLayoutPanel flowLayout)
+        {
+            foreach (Control control in flowLayout.Controls)
+            {
+                control.Width = flowLayout.Width - flowLayout.Margin.Horizontal;
+            }
+        }
+
+        private void lightSetFlowLayout_Resize(object sender, EventArgs e)
+        {
+            ResizeFlowLayoutControls(lightSetFlowLayout);
+        }
     }
 }
