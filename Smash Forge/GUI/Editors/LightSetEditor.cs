@@ -153,6 +153,9 @@ namespace Smash_Forge.GUI.Editors
 
         private void charLightsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (charLightsListBox.SelectedItems.Count == 0)
+                return;
+
             switch (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString())
             {
                 default:
@@ -755,13 +758,6 @@ namespace Smash_Forge.GUI.Editors
 
         private void stageLightSetTreeView_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            /*if (e.Node.Tag is DirectionalLight)
-            {
-                foreach (TreeNode node in stageLightSetTreeView.SelectedNode.Nodes)
-                {
-                    node.Checked = stageLightSetTreeView.SelectedNode.Checked;
-                }
-            }*/
         }
 
         public static bool OpenLightSet()
