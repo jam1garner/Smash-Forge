@@ -894,5 +894,30 @@ namespace Smash_Forge.GUI.Editors
         {
             ResizeFlowLayoutControls(lightSetFlowLayout);
         }
+
+        private void fogFlowLayout_Resize(object sender, EventArgs e)
+        {
+            ResizeFlowLayoutControls(fogFlowLayout);
+        }
+
+        private void areaLightColorPreviewButton_Click(object sender, EventArgs e)
+        {
+            // TODO: Toggle visibility.
+        }
+
+        private void colCeilButton_Click(object sender, EventArgs e)
+        {
+            colCeilPanel.Visible = !colCeilPanel.Visible;
+        }
+
+        private void colGroundButton_Click(object sender, EventArgs e)
+        {
+            colorGroundPanel.Visible = !colorGroundPanel.Visible;
+        }
+
+        private void areaLightPosButton_Click(object sender, EventArgs e)
+        {
+            areaLightPosPanel.Visible = !areaLightPosPanel.Visible;
+        }
     }
 }
