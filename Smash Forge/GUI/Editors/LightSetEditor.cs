@@ -861,5 +861,15 @@ namespace Smash_Forge.GUI.Editors
         {
             charColor2Panel.Visible = !charColor2Panel.Visible;
         }
+
+        private void stageDifColorPanelButton_Click(object sender, EventArgs e)
+        {
+            stageLightColorPanel.Visible = !stageLightColorPanel.Visible;
+        }
+
+        private void stageRotButton_Click(object sender, EventArgs e)
+        {
+            stageLightRotPanel.Visible = !stageLightRotPanel.Visible;
+        }
     }
 }
