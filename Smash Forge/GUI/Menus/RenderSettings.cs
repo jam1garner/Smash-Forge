@@ -23,6 +23,8 @@ namespace Smash_Forge.GUI
             InitializeComponent();
             disableRuntimeUpdates = true;
 
+            debug1CB.Checked = Runtime.debug1;
+
             // Misc Settings
             renderCameraPathCB.Checked = Runtime.renderPath;
             textParamDir.Text = Runtime.paramDir;
@@ -144,6 +146,10 @@ namespace Smash_Forge.GUI
             // Background Settings
             renderBackgroundCB.Checked = Runtime.renderBackGround;
             backgroundComboBox.SelectedIndex = (int)Runtime.backgroundStyle;
+
+            // Hide less used panels in the general tab to save space.
+            experimentalPanel.Visible = false;
+            lvdPanel.Visible = false;
 
             disableRuntimeUpdates = false;
         }
@@ -287,7 +293,7 @@ namespace Smash_Forge.GUI
                     radioButton3.Text = "UV3";
                     break;
                 case Runtime.RenderTypes.AmbientOcclusion:
-                    debug1CB.Text = "aoMinGain";
+                    debug1CB.Text = "NU_aoMinGain";
                     debug1CB.Visible = true;
 
                     debugRadioTableLayout.Visible = false;
