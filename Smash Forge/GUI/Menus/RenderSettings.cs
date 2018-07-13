@@ -245,12 +245,6 @@ namespace Smash_Forge.GUI
             populateColorsFromRuntime();
         }
 
-        private void renderMode_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            Runtime.renderType = (Runtime.RenderTypes)renderModeComboBox.SelectedIndex;
-            UpdateDebugButtonsFromRenderType();
-        }
-
         private void UpdateDebugButtonsFromRenderType()
         {
             ShowHideDebugButtonsIfUsingDebugMode();
@@ -260,6 +254,7 @@ namespace Smash_Forge.GUI
         private void DisplayDebugButtonsFromDebugMode()
         {
             // Reuse the same buttons to control different settings for each render mode.
+            // The sizes are hardcoded until I can find a better way to handle hiding controls.
             switch (Runtime.renderType)
             {
                 default:
@@ -298,7 +293,6 @@ namespace Smash_Forge.GUI
                     debugRadioTableLayout.Visible = false;
                     break;
                 case Runtime.RenderTypes.SelectedBoneWeights:
-                    debug1CB.Text = "Color Ramp";
                     debug1CB.Visible = false;
 
                     debugRadioTableLayout.Visible = true;
@@ -322,14 +316,13 @@ namespace Smash_Forge.GUI
 
         private void ShowHideDebugButtonsIfUsingDebugMode()
         {
-            renderChannelR.Visible = true;
-            renderChannelG.Visible = true;
-            renderChannelB.Visible = true;
-            renderChannelA.Visible = true;
-            debug1CB.Visible = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            radioButton1.Visible = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            radioButton2.Visible = Runtime.renderType != Runtime.RenderTypes.Shaded;
-            radioButton3.Visible = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderChannelR.Visible = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderChannelG.Visible = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderChannelB.Visible = Runtime.renderType != Runtime.RenderTypes.Shaded;
+            renderChannelA.Visible = Runtime.renderType != Runtime.RenderTypes.Shaded;
+
+            debug1CB.Visible = false;
+
             radioButton1.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel1 && Runtime.renderType != Runtime.RenderTypes.Shaded;
             radioButton2.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel2 && Runtime.renderType != Runtime.RenderTypes.Shaded;
             radioButton3.Checked = Runtime.uvChannel == Runtime.UVChannel.Channel3 && Runtime.renderType != Runtime.RenderTypes.Shaded;
@@ -989,7 +982,8 @@ namespace Smash_Forge.GUI
 
         private void renderModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            Runtime.renderType = (Runtime.RenderTypes)renderModeComboBox.SelectedIndex;
+            UpdateDebugButtonsFromRenderType();
         }
 
         private void debugPanelButton_Click(object sender, EventArgs e)
@@ -1002,11 +996,6 @@ namespace Smash_Forge.GUI
             bonePanel.Visible = !bonePanel.Visible;
         }
 
-        private void label76_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void experimentalPanelButton_Click(object sender, EventArgs e)
         {
             experimentalPanel.Visible = !experimentalPanel.Visible;
@@ -1015,6 +1004,11 @@ namespace Smash_Forge.GUI
         private void lvdPanelButton_Click(object sender, EventArgs e)
         {
             lvdPanel.Visible = !lvdPanel.Visible;
+        }
+
+        private void modelPanelButton_Click(object sender, EventArgs e)
+        {
+            modelPanel.Visible = !modelPanel.Visible;
         }
     }
 }

@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -85,35 +85,54 @@
             this.renderHurtboxZonesCB = new System.Windows.Forms.CheckBox();
             this.renderInterpHitboxCB = new System.Windows.Forms.CheckBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.debug1CB = new System.Windows.Forms.CheckBox();
-            this.renderChannelR = new System.Windows.Forms.Button();
-            this.renderChannelA = new System.Windows.Forms.Button();
-            this.renderChannelG = new System.Windows.Forms.Button();
-            this.renderChannelB = new System.Windows.Forms.Button();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.modelPanelButton = new System.Windows.Forms.Button();
+            this.modelPanel = new System.Windows.Forms.Panel();
+            this.boundingCB = new System.Windows.Forms.CheckBox();
+            this.renderModelCB = new System.Windows.Forms.CheckBox();
+            this.modelSelectCB = new System.Windows.Forms.CheckBox();
+            this.wireframeCB = new System.Windows.Forms.CheckBox();
+            this.debugPanelButton = new System.Windows.Forms.Button();
+            this.debugShadePanel = new System.Windows.Forms.Panel();
+            this.debugFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+            this.debugModeTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.renderModeComboBox = new System.Windows.Forms.ComboBox();
             this.debugModeLabel = new System.Windows.Forms.Label();
-            this.renderGeneralShapesCB = new System.Windows.Forms.CheckBox();
-            this.renderCollisionsCB = new System.Windows.Forms.CheckBox();
-            this.renderLvdCB = new System.Windows.Forms.CheckBox();
-            this.renderSpawnsCB = new System.Windows.Forms.CheckBox();
-            this.renderRespawnsCB = new System.Windows.Forms.CheckBox();
-            this.renderPassthroughCB = new System.Windows.Forms.CheckBox();
-            this.renderItemSpawnersCB = new System.Windows.Forms.CheckBox();
+            this.rgbaTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.renderChannelR = new System.Windows.Forms.Button();
+            this.renderChannelG = new System.Windows.Forms.Button();
+            this.renderChannelB = new System.Windows.Forms.Button();
+            this.renderChannelA = new System.Windows.Forms.Button();
+            this.debugRadioTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.debug1CB = new System.Windows.Forms.CheckBox();
+            this.bonePanelButton = new System.Windows.Forms.Button();
+            this.bonePanel = new System.Windows.Forms.Panel();
+            this.boneFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+            this.renderBonesCB = new System.Windows.Forms.CheckBox();
+            this.swagYCB = new System.Windows.Forms.CheckBox();
+            this.showSwagDataCB = new System.Windows.Forms.CheckBox();
+            this.experimentalPanelButton = new System.Windows.Forms.Button();
+            this.experimentalPanel = new System.Windows.Forms.Panel();
+            this.experimentalFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+            this.drawShadowCB = new System.Windows.Forms.CheckBox();
+            this.depthTestCB = new System.Windows.Forms.CheckBox();
+            this.zScaleTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.zScaleTB = new System.Windows.Forms.TextBox();
             this.label76 = new System.Windows.Forms.Label();
-            this.depthTestCB = new System.Windows.Forms.CheckBox();
+            this.lvdPanelButton = new System.Windows.Forms.Button();
+            this.lvdPanel = new System.Windows.Forms.Panel();
+            this.renderGeneralShapesCB = new System.Windows.Forms.CheckBox();
+            this.renderLvdCB = new System.Windows.Forms.CheckBox();
+            this.renderCollisionsCB = new System.Windows.Forms.CheckBox();
+            this.renderItemSpawnersCB = new System.Windows.Forms.CheckBox();
+            this.renderPassthroughCB = new System.Windows.Forms.CheckBox();
+            this.renderSpawnsCB = new System.Windows.Forms.CheckBox();
+            this.renderRespawnsCB = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.swagYCB = new System.Windows.Forms.CheckBox();
             this.areaLightBoundingBoxCB = new System.Windows.Forms.CheckBox();
-            this.renderModelCB = new System.Windows.Forms.CheckBox();
-            this.wireframeCB = new System.Windows.Forms.CheckBox();
-            this.modelSelectCB = new System.Windows.Forms.CheckBox();
-            this.boundingCB = new System.Windows.Forms.CheckBox();
-            this.showSwagDataCB = new System.Windows.Forms.CheckBox();
-            this.renderBonesCB = new System.Windows.Forms.CheckBox();
             this.renderCameraPathCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
@@ -182,23 +201,6 @@
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.defaultRadioButton = new System.Windows.Forms.RadioButton();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.debugModeTableLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.rgbaTableLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.debugRadioTableLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.debugFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
-            this.debugPanelButton = new System.Windows.Forms.Button();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.debugShadePanel = new System.Windows.Forms.Panel();
-            this.bonePanelButton = new System.Windows.Forms.Button();
-            this.bonePanel = new System.Windows.Forms.Panel();
-            this.boneFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
-            this.drawShadowCB = new System.Windows.Forms.CheckBox();
-            this.experimentalPanelButton = new System.Windows.Forms.Button();
-            this.experimentalPanel = new System.Windows.Forms.Panel();
-            this.experimentalFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
-            this.zScaleTableLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.lvdPanelButton = new System.Windows.Forms.Button();
-            this.lvdPanel = new System.Windows.Forms.Panel();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -216,6 +218,19 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).BeginInit();
             this.tabPage1.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
+            this.modelPanel.SuspendLayout();
+            this.debugShadePanel.SuspendLayout();
+            this.debugFlowLayout.SuspendLayout();
+            this.debugModeTableLayout.SuspendLayout();
+            this.rgbaTableLayout.SuspendLayout();
+            this.debugRadioTableLayout.SuspendLayout();
+            this.bonePanel.SuspendLayout();
+            this.boneFlowLayout.SuspendLayout();
+            this.experimentalPanel.SuspendLayout();
+            this.experimentalFlowLayout.SuspendLayout();
+            this.zScaleTableLayout.SuspendLayout();
+            this.lvdPanel.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage6.SuspendLayout();
@@ -234,18 +249,6 @@
             this.tableLayoutPanel2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox7.SuspendLayout();
-            this.debugModeTableLayout.SuspendLayout();
-            this.rgbaTableLayout.SuspendLayout();
-            this.debugRadioTableLayout.SuspendLayout();
-            this.debugFlowLayout.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
-            this.debugShadePanel.SuspendLayout();
-            this.bonePanel.SuspendLayout();
-            this.boneFlowLayout.SuspendLayout();
-            this.experimentalPanel.SuspendLayout();
-            this.experimentalFlowLayout.SuspendLayout();
-            this.zScaleTableLayout.SuspendLayout();
-            this.lvdPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabPage2
@@ -305,7 +308,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(636, 655);
+            this.tabPage2.Size = new System.Drawing.Size(1018, 830);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Hit/Hurt boxes";
             // 
@@ -733,8 +736,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2});
+            listViewItem3,
+            listViewItem4});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -834,56 +837,195 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1018, 655);
+            this.tabPage1.Size = new System.Drawing.Size(1018, 830);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
             // 
-            // radioButton3
+            // flowLayoutPanel1
             // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(135, 3);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(46, 17);
-            this.radioButton3.TabIndex = 38;
-            this.radioButton3.TabStop = true;
-            this.radioButton3.Text = "UV3";
-            this.radioButton3.UseVisualStyleBackColor = true;
-            this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
+            this.flowLayoutPanel1.Controls.Add(this.modelPanelButton);
+            this.flowLayoutPanel1.Controls.Add(this.modelPanel);
+            this.flowLayoutPanel1.Controls.Add(this.debugPanelButton);
+            this.flowLayoutPanel1.Controls.Add(this.debugShadePanel);
+            this.flowLayoutPanel1.Controls.Add(this.bonePanelButton);
+            this.flowLayoutPanel1.Controls.Add(this.bonePanel);
+            this.flowLayoutPanel1.Controls.Add(this.experimentalPanelButton);
+            this.flowLayoutPanel1.Controls.Add(this.experimentalPanel);
+            this.flowLayoutPanel1.Controls.Add(this.lvdPanelButton);
+            this.flowLayoutPanel1.Controls.Add(this.lvdPanel);
+            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(8, 6);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(622, 731);
+            this.flowLayoutPanel1.TabIndex = 44;
+            this.flowLayoutPanel1.WrapContents = false;
             // 
-            // radioButton2
+            // modelPanelButton
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(69, 3);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(46, 17);
-            this.radioButton2.TabIndex = 37;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "UV2";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            this.modelPanelButton.Location = new System.Drawing.Point(3, 3);
+            this.modelPanelButton.Name = "modelPanelButton";
+            this.modelPanelButton.Size = new System.Drawing.Size(606, 23);
+            this.modelPanelButton.TabIndex = 51;
+            this.modelPanelButton.Text = "Model Display Settings";
+            this.modelPanelButton.UseVisualStyleBackColor = true;
+            this.modelPanelButton.Click += new System.EventHandler(this.modelPanelButton_Click);
             // 
-            // radioButton1
+            // modelPanel
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(3, 3);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(46, 17);
-            this.radioButton1.TabIndex = 36;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "UV1";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            this.modelPanel.Controls.Add(this.boundingCB);
+            this.modelPanel.Controls.Add(this.renderModelCB);
+            this.modelPanel.Controls.Add(this.modelSelectCB);
+            this.modelPanel.Controls.Add(this.wireframeCB);
+            this.modelPanel.Location = new System.Drawing.Point(3, 32);
+            this.modelPanel.Name = "modelPanel";
+            this.modelPanel.Size = new System.Drawing.Size(606, 100);
+            this.modelPanel.TabIndex = 52;
             // 
-            // debug1CB
+            // boundingCB
             // 
-            this.debug1CB.AutoSize = true;
-            this.debug1CB.Location = new System.Drawing.Point(3, 121);
-            this.debug1CB.Name = "debug1CB";
-            this.debug1CB.Size = new System.Drawing.Size(61, 17);
-            this.debug1CB.TabIndex = 34;
-            this.debug1CB.Text = "option1";
-            this.debug1CB.UseVisualStyleBackColor = true;
-            this.debug1CB.CheckedChanged += new System.EventHandler(this.debug1CB_CheckedChanged);
+            this.boundingCB.AutoSize = true;
+            this.boundingCB.Location = new System.Drawing.Point(3, 80);
+            this.boundingCB.Name = "boundingCB";
+            this.boundingCB.Size = new System.Drawing.Size(141, 17);
+            this.boundingCB.TabIndex = 20;
+            this.boundingCB.Text = "Render Bounding Boxes";
+            this.boundingCB.UseVisualStyleBackColor = true;
+            this.boundingCB.CheckedChanged += new System.EventHandler(this.boundingCB_CheckedChanged);
+            // 
+            // renderModelCB
+            // 
+            this.renderModelCB.AutoSize = true;
+            this.renderModelCB.Location = new System.Drawing.Point(3, 3);
+            this.renderModelCB.Name = "renderModelCB";
+            this.renderModelCB.Size = new System.Drawing.Size(93, 17);
+            this.renderModelCB.TabIndex = 0;
+            this.renderModelCB.Text = "Render Model";
+            this.renderModelCB.UseVisualStyleBackColor = true;
+            this.renderModelCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            // 
+            // modelSelectCB
+            // 
+            this.modelSelectCB.AutoSize = true;
+            this.modelSelectCB.Location = new System.Drawing.Point(22, 26);
+            this.modelSelectCB.Name = "modelSelectCB";
+            this.modelSelectCB.Size = new System.Drawing.Size(132, 17);
+            this.modelSelectCB.TabIndex = 21;
+            this.modelSelectCB.Text = "Show Model Selection";
+            this.modelSelectCB.UseVisualStyleBackColor = true;
+            this.modelSelectCB.CheckedChanged += new System.EventHandler(this.modelSelectCB_CheckedChanged);
+            // 
+            // wireframeCB
+            // 
+            this.wireframeCB.AutoSize = true;
+            this.wireframeCB.Location = new System.Drawing.Point(22, 50);
+            this.wireframeCB.Name = "wireframeCB";
+            this.wireframeCB.Size = new System.Drawing.Size(104, 17);
+            this.wireframeCB.TabIndex = 22;
+            this.wireframeCB.Text = "Show Wireframe";
+            this.wireframeCB.UseVisualStyleBackColor = true;
+            this.wireframeCB.CheckedChanged += new System.EventHandler(this.wireframeCB_CheckedChanged);
+            // 
+            // debugPanelButton
+            // 
+            this.debugPanelButton.Location = new System.Drawing.Point(3, 138);
+            this.debugPanelButton.Name = "debugPanelButton";
+            this.debugPanelButton.Size = new System.Drawing.Size(606, 23);
+            this.debugPanelButton.TabIndex = 43;
+            this.debugPanelButton.Text = "Debug Shading Modes";
+            this.debugPanelButton.UseVisualStyleBackColor = true;
+            this.debugPanelButton.Click += new System.EventHandler(this.debugPanelButton_Click);
+            // 
+            // debugShadePanel
+            // 
+            this.debugShadePanel.AutoSize = true;
+            this.debugShadePanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.debugShadePanel.Controls.Add(this.debugFlowLayout);
+            this.debugShadePanel.Location = new System.Drawing.Point(3, 167);
+            this.debugShadePanel.Name = "debugShadePanel";
+            this.debugShadePanel.Size = new System.Drawing.Size(244, 141);
+            this.debugShadePanel.TabIndex = 44;
+            // 
+            // debugFlowLayout
+            // 
+            this.debugFlowLayout.AutoSize = true;
+            this.debugFlowLayout.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.debugFlowLayout.Controls.Add(this.debugModeTableLayout);
+            this.debugFlowLayout.Controls.Add(this.rgbaTableLayout);
+            this.debugFlowLayout.Controls.Add(this.debugRadioTableLayout);
+            this.debugFlowLayout.Controls.Add(this.debug1CB);
+            this.debugFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.debugFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.debugFlowLayout.Location = new System.Drawing.Point(0, 0);
+            this.debugFlowLayout.Name = "debugFlowLayout";
+            this.debugFlowLayout.Size = new System.Drawing.Size(244, 141);
+            this.debugFlowLayout.TabIndex = 42;
+            this.debugFlowLayout.WrapContents = false;
+            // 
+            // debugModeTableLayout
+            // 
+            this.debugModeTableLayout.ColumnCount = 2;
+            this.debugModeTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 32F));
+            this.debugModeTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 68F));
+            this.debugModeTableLayout.Controls.Add(this.renderModeComboBox, 1, 0);
+            this.debugModeTableLayout.Controls.Add(this.debugModeLabel, 0, 0);
+            this.debugModeTableLayout.Location = new System.Drawing.Point(3, 3);
+            this.debugModeTableLayout.Name = "debugModeTableLayout";
+            this.debugModeTableLayout.RowCount = 1;
+            this.debugModeTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.debugModeTableLayout.Size = new System.Drawing.Size(238, 34);
+            this.debugModeTableLayout.TabIndex = 39;
+            // 
+            // renderModeComboBox
+            // 
+            this.renderModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.renderModeComboBox.FormattingEnabled = true;
+            this.renderModeComboBox.Items.AddRange(new object[] {
+            "Shaded",
+            "Normals",
+            "Lighting",
+            "Diffuse Maps",
+            "Normal Maps",
+            "Vertex Color",
+            "Ambient Occlusion",
+            "UV Coords",
+            "UV Test Pattern",
+            "Tangents",
+            "Bitangents",
+            "Light Set",
+            "Bone Weights"});
+            this.renderModeComboBox.Location = new System.Drawing.Point(79, 3);
+            this.renderModeComboBox.Name = "renderModeComboBox";
+            this.renderModeComboBox.Size = new System.Drawing.Size(149, 21);
+            this.renderModeComboBox.TabIndex = 16;
+            this.renderModeComboBox.SelectedIndexChanged += new System.EventHandler(this.renderModeComboBox_SelectedIndexChanged);
+            // 
+            // debugModeLabel
+            // 
+            this.debugModeLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.debugModeLabel.AutoSize = true;
+            this.debugModeLabel.Location = new System.Drawing.Point(4, 10);
+            this.debugModeLabel.Name = "debugModeLabel";
+            this.debugModeLabel.Size = new System.Drawing.Size(69, 13);
+            this.debugModeLabel.TabIndex = 28;
+            this.debugModeLabel.Text = "Debug Mode";
+            // 
+            // rgbaTableLayout
+            // 
+            this.rgbaTableLayout.ColumnCount = 4;
+            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.rgbaTableLayout.Controls.Add(this.renderChannelR, 0, 0);
+            this.rgbaTableLayout.Controls.Add(this.renderChannelG, 1, 0);
+            this.rgbaTableLayout.Controls.Add(this.renderChannelB, 2, 0);
+            this.rgbaTableLayout.Controls.Add(this.renderChannelA, 3, 0);
+            this.rgbaTableLayout.Location = new System.Drawing.Point(3, 43);
+            this.rgbaTableLayout.Name = "rgbaTableLayout";
+            this.rgbaTableLayout.RowCount = 1;
+            this.rgbaTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.rgbaTableLayout.Size = new System.Drawing.Size(115, 33);
+            this.rgbaTableLayout.TabIndex = 40;
             // 
             // renderChannelR
             // 
@@ -896,17 +1038,6 @@
             this.renderChannelR.Text = "R";
             this.renderChannelR.UseVisualStyleBackColor = true;
             this.renderChannelR.Click += new System.EventHandler(this.renderChannelR_Click);
-            // 
-            // renderChannelA
-            // 
-            this.renderChannelA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderChannelA.Location = new System.Drawing.Point(87, 3);
-            this.renderChannelA.Name = "renderChannelA";
-            this.renderChannelA.Size = new System.Drawing.Size(23, 24);
-            this.renderChannelA.TabIndex = 32;
-            this.renderChannelA.Text = "A";
-            this.renderChannelA.UseVisualStyleBackColor = true;
-            this.renderChannelA.Click += new System.EventHandler(this.renderChannelA_Click);
             // 
             // renderChannelG
             // 
@@ -932,40 +1063,253 @@
             this.renderChannelB.UseVisualStyleBackColor = true;
             this.renderChannelB.Click += new System.EventHandler(this.renderChannelB_Click);
             // 
-            // renderModeComboBox
+            // renderChannelA
             // 
-            this.renderModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.renderModeComboBox.FormattingEnabled = true;
-            this.renderModeComboBox.Items.AddRange(new object[] {
-            "Shaded",
-            "Normals",
-            "Lighting",
-            "Diffuse Maps",
-            "Normal Maps",
-            "Vertex Color",
-            "Ambient Occlusion",
-            "UV Coords",
-            "UV Test Pattern",
-            "Tangents",
-            "Bitangents",
-            "Light Set",
-            "Bone Weights"});
-            this.renderModeComboBox.Location = new System.Drawing.Point(79, 3);
-            this.renderModeComboBox.Name = "renderModeComboBox";
-            this.renderModeComboBox.Size = new System.Drawing.Size(149, 21);
-            this.renderModeComboBox.TabIndex = 16;
-            this.renderModeComboBox.SelectedIndexChanged += new System.EventHandler(this.renderModeComboBox_SelectedIndexChanged);
-            this.renderModeComboBox.SelectionChangeCommitted += new System.EventHandler(this.renderMode_SelectionChangeCommitted);
+            this.renderChannelA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.renderChannelA.Location = new System.Drawing.Point(87, 3);
+            this.renderChannelA.Name = "renderChannelA";
+            this.renderChannelA.Size = new System.Drawing.Size(23, 24);
+            this.renderChannelA.TabIndex = 32;
+            this.renderChannelA.Text = "A";
+            this.renderChannelA.UseVisualStyleBackColor = true;
+            this.renderChannelA.Click += new System.EventHandler(this.renderChannelA_Click);
             // 
-            // debugModeLabel
+            // debugRadioTableLayout
             // 
-            this.debugModeLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.debugModeLabel.AutoSize = true;
-            this.debugModeLabel.Location = new System.Drawing.Point(4, 10);
-            this.debugModeLabel.Name = "debugModeLabel";
-            this.debugModeLabel.Size = new System.Drawing.Size(69, 13);
-            this.debugModeLabel.TabIndex = 28;
-            this.debugModeLabel.Text = "Debug Mode";
+            this.debugRadioTableLayout.ColumnCount = 3;
+            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 34F));
+            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.debugRadioTableLayout.Controls.Add(this.radioButton1, 0, 0);
+            this.debugRadioTableLayout.Controls.Add(this.radioButton2, 1, 0);
+            this.debugRadioTableLayout.Controls.Add(this.radioButton3, 2, 0);
+            this.debugRadioTableLayout.Location = new System.Drawing.Point(3, 82);
+            this.debugRadioTableLayout.Name = "debugRadioTableLayout";
+            this.debugRadioTableLayout.RowCount = 1;
+            this.debugRadioTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.debugRadioTableLayout.Size = new System.Drawing.Size(201, 33);
+            this.debugRadioTableLayout.TabIndex = 41;
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(3, 3);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(46, 17);
+            this.radioButton1.TabIndex = 36;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "UV1";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Location = new System.Drawing.Point(69, 3);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(46, 17);
+            this.radioButton2.TabIndex = 37;
+            this.radioButton2.TabStop = true;
+            this.radioButton2.Text = "UV2";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            // 
+            // radioButton3
+            // 
+            this.radioButton3.AutoSize = true;
+            this.radioButton3.Location = new System.Drawing.Point(135, 3);
+            this.radioButton3.Name = "radioButton3";
+            this.radioButton3.Size = new System.Drawing.Size(46, 17);
+            this.radioButton3.TabIndex = 38;
+            this.radioButton3.TabStop = true;
+            this.radioButton3.Text = "UV3";
+            this.radioButton3.UseVisualStyleBackColor = true;
+            this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
+            // 
+            // debug1CB
+            // 
+            this.debug1CB.AutoSize = true;
+            this.debug1CB.Location = new System.Drawing.Point(3, 121);
+            this.debug1CB.Name = "debug1CB";
+            this.debug1CB.Size = new System.Drawing.Size(61, 17);
+            this.debug1CB.TabIndex = 34;
+            this.debug1CB.Text = "option1";
+            this.debug1CB.UseVisualStyleBackColor = true;
+            this.debug1CB.CheckedChanged += new System.EventHandler(this.debug1CB_CheckedChanged);
+            // 
+            // bonePanelButton
+            // 
+            this.bonePanelButton.Location = new System.Drawing.Point(3, 314);
+            this.bonePanelButton.Name = "bonePanelButton";
+            this.bonePanelButton.Size = new System.Drawing.Size(606, 23);
+            this.bonePanelButton.TabIndex = 45;
+            this.bonePanelButton.Text = "Bone Display Settings";
+            this.bonePanelButton.UseVisualStyleBackColor = true;
+            this.bonePanelButton.Click += new System.EventHandler(this.bonePanelButton_Click);
+            // 
+            // bonePanel
+            // 
+            this.bonePanel.Controls.Add(this.boneFlowLayout);
+            this.bonePanel.Location = new System.Drawing.Point(3, 343);
+            this.bonePanel.Name = "bonePanel";
+            this.bonePanel.Size = new System.Drawing.Size(606, 33);
+            this.bonePanel.TabIndex = 46;
+            // 
+            // boneFlowLayout
+            // 
+            this.boneFlowLayout.Controls.Add(this.renderBonesCB);
+            this.boneFlowLayout.Controls.Add(this.swagYCB);
+            this.boneFlowLayout.Controls.Add(this.showSwagDataCB);
+            this.boneFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.boneFlowLayout.Location = new System.Drawing.Point(0, 0);
+            this.boneFlowLayout.Name = "boneFlowLayout";
+            this.boneFlowLayout.Size = new System.Drawing.Size(606, 33);
+            this.boneFlowLayout.TabIndex = 0;
+            this.boneFlowLayout.WrapContents = false;
+            // 
+            // renderBonesCB
+            // 
+            this.renderBonesCB.AutoSize = true;
+            this.renderBonesCB.Location = new System.Drawing.Point(3, 3);
+            this.renderBonesCB.Name = "renderBonesCB";
+            this.renderBonesCB.Size = new System.Drawing.Size(94, 17);
+            this.renderBonesCB.TabIndex = 1;
+            this.renderBonesCB.Text = "Render Bones";
+            this.renderBonesCB.UseVisualStyleBackColor = true;
+            this.renderBonesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            // 
+            // swagYCB
+            // 
+            this.swagYCB.AutoSize = true;
+            this.swagYCB.Location = new System.Drawing.Point(103, 3);
+            this.swagYCB.Name = "swagYCB";
+            this.swagYCB.Size = new System.Drawing.Size(106, 17);
+            this.swagYCB.TabIndex = 29;
+            this.swagYCB.Text = "Animate Swing Y";
+            this.swagYCB.UseVisualStyleBackColor = true;
+            this.swagYCB.CheckedChanged += new System.EventHandler(this.swagYCB_CheckedChanged);
+            // 
+            // showSwagDataCB
+            // 
+            this.showSwagDataCB.AutoSize = true;
+            this.showSwagDataCB.Location = new System.Drawing.Point(215, 3);
+            this.showSwagDataCB.Name = "showSwagDataCB";
+            this.showSwagDataCB.Size = new System.Drawing.Size(106, 17);
+            this.showSwagDataCB.TabIndex = 18;
+            this.showSwagDataCB.Text = "Animate Swing Z";
+            this.showSwagDataCB.UseVisualStyleBackColor = true;
+            this.showSwagDataCB.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
+            // 
+            // experimentalPanelButton
+            // 
+            this.experimentalPanelButton.Location = new System.Drawing.Point(3, 382);
+            this.experimentalPanelButton.Name = "experimentalPanelButton";
+            this.experimentalPanelButton.Size = new System.Drawing.Size(606, 23);
+            this.experimentalPanelButton.TabIndex = 47;
+            this.experimentalPanelButton.Text = "Experimental Rendering Features";
+            this.experimentalPanelButton.UseVisualStyleBackColor = true;
+            this.experimentalPanelButton.Click += new System.EventHandler(this.experimentalPanelButton_Click);
+            // 
+            // experimentalPanel
+            // 
+            this.experimentalPanel.Controls.Add(this.experimentalFlowLayout);
+            this.experimentalPanel.Location = new System.Drawing.Point(3, 411);
+            this.experimentalPanel.Name = "experimentalPanel";
+            this.experimentalPanel.Size = new System.Drawing.Size(606, 86);
+            this.experimentalPanel.TabIndex = 48;
+            // 
+            // experimentalFlowLayout
+            // 
+            this.experimentalFlowLayout.Controls.Add(this.drawShadowCB);
+            this.experimentalFlowLayout.Controls.Add(this.depthTestCB);
+            this.experimentalFlowLayout.Controls.Add(this.zScaleTableLayout);
+            this.experimentalFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.experimentalFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.experimentalFlowLayout.Location = new System.Drawing.Point(0, 0);
+            this.experimentalFlowLayout.Name = "experimentalFlowLayout";
+            this.experimentalFlowLayout.Size = new System.Drawing.Size(606, 86);
+            this.experimentalFlowLayout.TabIndex = 0;
+            this.experimentalFlowLayout.WrapContents = false;
+            // 
+            // drawShadowCB
+            // 
+            this.drawShadowCB.AutoSize = true;
+            this.drawShadowCB.Location = new System.Drawing.Point(3, 3);
+            this.drawShadowCB.Name = "drawShadowCB";
+            this.drawShadowCB.Size = new System.Drawing.Size(108, 17);
+            this.drawShadowCB.TabIndex = 45;
+            this.drawShadowCB.Text = "Render Shadows";
+            this.drawShadowCB.UseVisualStyleBackColor = true;
+            // 
+            // depthTestCB
+            // 
+            this.depthTestCB.AutoSize = true;
+            this.depthTestCB.Location = new System.Drawing.Point(3, 26);
+            this.depthTestCB.Name = "depthTestCB";
+            this.depthTestCB.Size = new System.Drawing.Size(129, 17);
+            this.depthTestCB.TabIndex = 0;
+            this.depthTestCB.Text = "Enable Depth Testing";
+            this.depthTestCB.UseVisualStyleBackColor = true;
+            this.depthTestCB.CheckedChanged += new System.EventHandler(this.depthTestCB_CheckedChanged);
+            // 
+            // zScaleTableLayout
+            // 
+            this.zScaleTableLayout.ColumnCount = 2;
+            this.zScaleTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 41.74757F));
+            this.zScaleTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 58.25243F));
+            this.zScaleTableLayout.Controls.Add(this.zScaleTB, 1, 0);
+            this.zScaleTableLayout.Controls.Add(this.label76, 0, 0);
+            this.zScaleTableLayout.Location = new System.Drawing.Point(3, 49);
+            this.zScaleTableLayout.Name = "zScaleTableLayout";
+            this.zScaleTableLayout.RowCount = 1;
+            this.zScaleTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.zScaleTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
+            this.zScaleTableLayout.Size = new System.Drawing.Size(206, 29);
+            this.zScaleTableLayout.TabIndex = 45;
+            // 
+            // zScaleTB
+            // 
+            this.zScaleTB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.zScaleTB.Location = new System.Drawing.Point(88, 3);
+            this.zScaleTB.Name = "zScaleTB";
+            this.zScaleTB.Size = new System.Drawing.Size(115, 20);
+            this.zScaleTB.TabIndex = 2;
+            this.zScaleTB.TextChanged += new System.EventHandler(this.zScaleTB_TextChanged);
+            // 
+            // label76
+            // 
+            this.label76.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label76.AutoSize = true;
+            this.label76.Location = new System.Drawing.Point(16, 8);
+            this.label76.Name = "label76";
+            this.label76.Size = new System.Drawing.Size(66, 13);
+            this.label76.TabIndex = 1;
+            this.label76.Text = "Z Axis Scale";
+            // 
+            // lvdPanelButton
+            // 
+            this.lvdPanelButton.Location = new System.Drawing.Point(3, 503);
+            this.lvdPanelButton.Name = "lvdPanelButton";
+            this.lvdPanelButton.Size = new System.Drawing.Size(606, 23);
+            this.lvdPanelButton.TabIndex = 49;
+            this.lvdPanelButton.Text = "LVD Display Settings";
+            this.lvdPanelButton.UseVisualStyleBackColor = true;
+            this.lvdPanelButton.Click += new System.EventHandler(this.lvdPanelButton_Click);
+            // 
+            // lvdPanel
+            // 
+            this.lvdPanel.Controls.Add(this.renderGeneralShapesCB);
+            this.lvdPanel.Controls.Add(this.renderLvdCB);
+            this.lvdPanel.Controls.Add(this.renderCollisionsCB);
+            this.lvdPanel.Controls.Add(this.renderItemSpawnersCB);
+            this.lvdPanel.Controls.Add(this.renderPassthroughCB);
+            this.lvdPanel.Controls.Add(this.renderSpawnsCB);
+            this.lvdPanel.Controls.Add(this.renderRespawnsCB);
+            this.lvdPanel.Location = new System.Drawing.Point(3, 532);
+            this.lvdPanel.Name = "lvdPanel";
+            this.lvdPanel.Size = new System.Drawing.Size(606, 177);
+            this.lvdPanel.TabIndex = 50;
             // 
             // renderGeneralShapesCB
             // 
@@ -977,6 +1321,16 @@
             this.renderGeneralShapesCB.Text = "Render General Shapes and Points";
             this.renderGeneralShapesCB.UseVisualStyleBackColor = true;
             // 
+            // renderLvdCB
+            // 
+            this.renderLvdCB.AutoSize = true;
+            this.renderLvdCB.Location = new System.Drawing.Point(3, 3);
+            this.renderLvdCB.Name = "renderLvdCB";
+            this.renderLvdCB.Size = new System.Drawing.Size(85, 17);
+            this.renderLvdCB.TabIndex = 27;
+            this.renderLvdCB.Text = "Render LVD";
+            this.renderLvdCB.UseVisualStyleBackColor = true;
+            // 
             // renderCollisionsCB
             // 
             this.renderCollisionsCB.AutoSize = true;
@@ -987,15 +1341,25 @@
             this.renderCollisionsCB.Text = "Render Collisions";
             this.renderCollisionsCB.UseVisualStyleBackColor = true;
             // 
-            // renderLvdCB
+            // renderItemSpawnersCB
             // 
-            this.renderLvdCB.AutoSize = true;
-            this.renderLvdCB.Location = new System.Drawing.Point(3, 3);
-            this.renderLvdCB.Name = "renderLvdCB";
-            this.renderLvdCB.Size = new System.Drawing.Size(85, 17);
-            this.renderLvdCB.TabIndex = 27;
-            this.renderLvdCB.Text = "Render LVD";
-            this.renderLvdCB.UseVisualStyleBackColor = true;
+            this.renderItemSpawnersCB.AutoSize = true;
+            this.renderItemSpawnersCB.Location = new System.Drawing.Point(36, 122);
+            this.renderItemSpawnersCB.Name = "renderItemSpawnersCB";
+            this.renderItemSpawnersCB.Size = new System.Drawing.Size(134, 17);
+            this.renderItemSpawnersCB.TabIndex = 31;
+            this.renderItemSpawnersCB.Text = "Render Item Spawners";
+            this.renderItemSpawnersCB.UseVisualStyleBackColor = true;
+            // 
+            // renderPassthroughCB
+            // 
+            this.renderPassthroughCB.AutoSize = true;
+            this.renderPassthroughCB.Location = new System.Drawing.Point(65, 53);
+            this.renderPassthroughCB.Name = "renderPassthroughCB";
+            this.renderPassthroughCB.Size = new System.Drawing.Size(158, 17);
+            this.renderPassthroughCB.TabIndex = 32;
+            this.renderPassthroughCB.Text = "Render Passthrough Angles";
+            this.renderPassthroughCB.UseVisualStyleBackColor = true;
             // 
             // renderSpawnsCB
             // 
@@ -1017,64 +1381,9 @@
             this.renderRespawnsCB.Text = "Render Respawns";
             this.renderRespawnsCB.UseVisualStyleBackColor = true;
             // 
-            // renderPassthroughCB
-            // 
-            this.renderPassthroughCB.AutoSize = true;
-            this.renderPassthroughCB.Location = new System.Drawing.Point(65, 53);
-            this.renderPassthroughCB.Name = "renderPassthroughCB";
-            this.renderPassthroughCB.Size = new System.Drawing.Size(158, 17);
-            this.renderPassthroughCB.TabIndex = 32;
-            this.renderPassthroughCB.Text = "Render Passthrough Angles";
-            this.renderPassthroughCB.UseVisualStyleBackColor = true;
-            // 
-            // renderItemSpawnersCB
-            // 
-            this.renderItemSpawnersCB.AutoSize = true;
-            this.renderItemSpawnersCB.Location = new System.Drawing.Point(36, 122);
-            this.renderItemSpawnersCB.Name = "renderItemSpawnersCB";
-            this.renderItemSpawnersCB.Size = new System.Drawing.Size(134, 17);
-            this.renderItemSpawnersCB.TabIndex = 31;
-            this.renderItemSpawnersCB.Text = "Render Item Spawners";
-            this.renderItemSpawnersCB.UseVisualStyleBackColor = true;
-            // 
-            // zScaleTB
-            // 
-            this.zScaleTB.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.zScaleTB.Location = new System.Drawing.Point(89, 3);
-            this.zScaleTB.Name = "zScaleTB";
-            this.zScaleTB.Size = new System.Drawing.Size(114, 20);
-            this.zScaleTB.TabIndex = 2;
-            this.zScaleTB.TextChanged += new System.EventHandler(this.zScaleTB_TextChanged);
-            // 
-            // label76
-            // 
-            this.label76.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label76.AutoSize = true;
-            this.label76.Location = new System.Drawing.Point(17, 8);
-            this.label76.Name = "label76";
-            this.label76.Size = new System.Drawing.Size(66, 13);
-            this.label76.TabIndex = 1;
-            this.label76.Text = "Z Axis Scale";
-            this.label76.Click += new System.EventHandler(this.label76_Click);
-            // 
-            // depthTestCB
-            // 
-            this.depthTestCB.AutoSize = true;
-            this.depthTestCB.Location = new System.Drawing.Point(3, 26);
-            this.depthTestCB.Name = "depthTestCB";
-            this.depthTestCB.Size = new System.Drawing.Size(129, 17);
-            this.depthTestCB.TabIndex = 0;
-            this.depthTestCB.Text = "Enable Depth Testing";
-            this.depthTestCB.UseVisualStyleBackColor = true;
-            this.depthTestCB.CheckedChanged += new System.EventHandler(this.depthTestCB_CheckedChanged);
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.areaLightBoundingBoxCB);
-            this.groupBox2.Controls.Add(this.renderModelCB);
-            this.groupBox2.Controls.Add(this.wireframeCB);
-            this.groupBox2.Controls.Add(this.modelSelectCB);
-            this.groupBox2.Controls.Add(this.boundingCB);
             this.groupBox2.Controls.Add(this.renderCameraPathCB);
             this.groupBox2.Location = new System.Drawing.Point(675, 193);
             this.groupBox2.Name = "groupBox2";
@@ -1082,17 +1391,6 @@
             this.groupBox2.TabIndex = 16;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Display Settings";
-            // 
-            // swagYCB
-            // 
-            this.swagYCB.AutoSize = true;
-            this.swagYCB.Location = new System.Drawing.Point(103, 3);
-            this.swagYCB.Name = "swagYCB";
-            this.swagYCB.Size = new System.Drawing.Size(106, 17);
-            this.swagYCB.TabIndex = 29;
-            this.swagYCB.Text = "Animate Swing Y";
-            this.swagYCB.UseVisualStyleBackColor = true;
-            this.swagYCB.CheckedChanged += new System.EventHandler(this.swagYCB_CheckedChanged);
             // 
             // areaLightBoundingBoxCB
             // 
@@ -1106,72 +1404,6 @@
             this.areaLightBoundingBoxCB.Text = "Render Area Light Bounding Boxes";
             this.areaLightBoundingBoxCB.UseVisualStyleBackColor = true;
             this.areaLightBoundingBoxCB.CheckedChanged += new System.EventHandler(this.areaLightBoundingBoxCB_CheckedChanged);
-            // 
-            // renderModelCB
-            // 
-            this.renderModelCB.AutoSize = true;
-            this.renderModelCB.Location = new System.Drawing.Point(30, 28);
-            this.renderModelCB.Name = "renderModelCB";
-            this.renderModelCB.Size = new System.Drawing.Size(93, 17);
-            this.renderModelCB.TabIndex = 0;
-            this.renderModelCB.Text = "Render Model";
-            this.renderModelCB.UseVisualStyleBackColor = true;
-            this.renderModelCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
-            // wireframeCB
-            // 
-            this.wireframeCB.AutoSize = true;
-            this.wireframeCB.Location = new System.Drawing.Point(63, 74);
-            this.wireframeCB.Name = "wireframeCB";
-            this.wireframeCB.Size = new System.Drawing.Size(104, 17);
-            this.wireframeCB.TabIndex = 22;
-            this.wireframeCB.Text = "Show Wireframe";
-            this.wireframeCB.UseVisualStyleBackColor = true;
-            this.wireframeCB.CheckedChanged += new System.EventHandler(this.wireframeCB_CheckedChanged);
-            // 
-            // modelSelectCB
-            // 
-            this.modelSelectCB.AutoSize = true;
-            this.modelSelectCB.Location = new System.Drawing.Point(63, 50);
-            this.modelSelectCB.Name = "modelSelectCB";
-            this.modelSelectCB.Size = new System.Drawing.Size(132, 17);
-            this.modelSelectCB.TabIndex = 21;
-            this.modelSelectCB.Text = "Show Model Selection";
-            this.modelSelectCB.UseVisualStyleBackColor = true;
-            this.modelSelectCB.CheckedChanged += new System.EventHandler(this.modelSelectCB_CheckedChanged);
-            // 
-            // boundingCB
-            // 
-            this.boundingCB.AutoSize = true;
-            this.boundingCB.Location = new System.Drawing.Point(17, 97);
-            this.boundingCB.Name = "boundingCB";
-            this.boundingCB.Size = new System.Drawing.Size(141, 17);
-            this.boundingCB.TabIndex = 20;
-            this.boundingCB.Text = "Render Bounding Boxes";
-            this.boundingCB.UseVisualStyleBackColor = true;
-            this.boundingCB.CheckedChanged += new System.EventHandler(this.boundingCB_CheckedChanged);
-            // 
-            // showSwagDataCB
-            // 
-            this.showSwagDataCB.AutoSize = true;
-            this.showSwagDataCB.Location = new System.Drawing.Point(215, 3);
-            this.showSwagDataCB.Name = "showSwagDataCB";
-            this.showSwagDataCB.Size = new System.Drawing.Size(106, 17);
-            this.showSwagDataCB.TabIndex = 18;
-            this.showSwagDataCB.Text = "Animate Swing Z";
-            this.showSwagDataCB.UseVisualStyleBackColor = true;
-            this.showSwagDataCB.CheckedChanged += new System.EventHandler(this.swagViewing_CheckedChanged);
-            // 
-            // renderBonesCB
-            // 
-            this.renderBonesCB.AutoSize = true;
-            this.renderBonesCB.Location = new System.Drawing.Point(3, 3);
-            this.renderBonesCB.Name = "renderBonesCB";
-            this.renderBonesCB.Size = new System.Drawing.Size(94, 17);
-            this.renderBonesCB.TabIndex = 1;
-            this.renderBonesCB.Text = "Render Bones";
-            this.renderBonesCB.UseVisualStyleBackColor = true;
-            this.renderBonesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // renderCameraPathCB
             // 
@@ -1196,7 +1428,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1026, 681);
+            this.tabControl1.Size = new System.Drawing.Size(1026, 856);
             this.tabControl1.TabIndex = 17;
             // 
             // tabPage6
@@ -1206,7 +1438,7 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(636, 655);
+            this.tabPage6.Size = new System.Drawing.Size(1018, 830);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Material Lighting";
             // 
@@ -1227,7 +1459,7 @@
             this.groupBox5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox5.Location = new System.Drawing.Point(3, 3);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(630, 649);
+            this.groupBox5.Size = new System.Drawing.Size(1012, 824);
             this.groupBox5.TabIndex = 36;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Material Lighting";
@@ -1514,7 +1746,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(636, 655);
+            this.tabPage5.Size = new System.Drawing.Size(1018, 830);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Background/Floor";
             // 
@@ -1528,7 +1760,7 @@
             this.groupBox9.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox9.Location = new System.Drawing.Point(3, 3);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(630, 180);
+            this.groupBox9.Size = new System.Drawing.Size(1012, 180);
             this.groupBox9.TabIndex = 39;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Background Settings";
@@ -1641,9 +1873,9 @@
             this.groupBox8.Controls.Add(this.floorComboBox);
             this.groupBox8.Controls.Add(this.renderFloorCB);
             this.groupBox8.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox8.Location = new System.Drawing.Point(3, 223);
+            this.groupBox8.Location = new System.Drawing.Point(3, 398);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(630, 429);
+            this.groupBox8.Size = new System.Drawing.Size(1012, 429);
             this.groupBox8.TabIndex = 38;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Floor Settings";
@@ -1719,7 +1951,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(636, 655);
+            this.tabPage4.Size = new System.Drawing.Size(1018, 830);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Post Processing";
             // 
@@ -1836,7 +2068,7 @@
             this.tabPage3.Controls.Add(this.groupBox7);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(636, 655);
+            this.tabPage3.Size = new System.Drawing.Size(1018, 830);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Discord Rich Presence";
             // 
@@ -1951,219 +2183,11 @@
             this.defaultRadioButton.UseVisualStyleBackColor = true;
             this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
-            // debugModeTableLayout
-            // 
-            this.debugModeTableLayout.ColumnCount = 2;
-            this.debugModeTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 32F));
-            this.debugModeTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 68F));
-            this.debugModeTableLayout.Controls.Add(this.renderModeComboBox, 1, 0);
-            this.debugModeTableLayout.Controls.Add(this.debugModeLabel, 0, 0);
-            this.debugModeTableLayout.Location = new System.Drawing.Point(3, 3);
-            this.debugModeTableLayout.Name = "debugModeTableLayout";
-            this.debugModeTableLayout.RowCount = 1;
-            this.debugModeTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.debugModeTableLayout.Size = new System.Drawing.Size(238, 34);
-            this.debugModeTableLayout.TabIndex = 39;
-            // 
-            // rgbaTableLayout
-            // 
-            this.rgbaTableLayout.ColumnCount = 4;
-            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.rgbaTableLayout.Controls.Add(this.renderChannelR, 0, 0);
-            this.rgbaTableLayout.Controls.Add(this.renderChannelG, 1, 0);
-            this.rgbaTableLayout.Controls.Add(this.renderChannelB, 2, 0);
-            this.rgbaTableLayout.Controls.Add(this.renderChannelA, 3, 0);
-            this.rgbaTableLayout.Location = new System.Drawing.Point(3, 43);
-            this.rgbaTableLayout.Name = "rgbaTableLayout";
-            this.rgbaTableLayout.RowCount = 1;
-            this.rgbaTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.rgbaTableLayout.Size = new System.Drawing.Size(113, 33);
-            this.rgbaTableLayout.TabIndex = 40;
-            // 
-            // debugRadioTableLayout
-            // 
-            this.debugRadioTableLayout.ColumnCount = 3;
-            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 34F));
-            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.debugRadioTableLayout.Controls.Add(this.radioButton1, 0, 0);
-            this.debugRadioTableLayout.Controls.Add(this.radioButton2, 1, 0);
-            this.debugRadioTableLayout.Controls.Add(this.radioButton3, 2, 0);
-            this.debugRadioTableLayout.Location = new System.Drawing.Point(3, 82);
-            this.debugRadioTableLayout.Name = "debugRadioTableLayout";
-            this.debugRadioTableLayout.RowCount = 1;
-            this.debugRadioTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.debugRadioTableLayout.Size = new System.Drawing.Size(201, 33);
-            this.debugRadioTableLayout.TabIndex = 41;
-            // 
-            // debugFlowLayout
-            // 
-            this.debugFlowLayout.Controls.Add(this.debugModeTableLayout);
-            this.debugFlowLayout.Controls.Add(this.rgbaTableLayout);
-            this.debugFlowLayout.Controls.Add(this.debugRadioTableLayout);
-            this.debugFlowLayout.Controls.Add(this.debug1CB);
-            this.debugFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.debugFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.debugFlowLayout.Location = new System.Drawing.Point(0, 0);
-            this.debugFlowLayout.Name = "debugFlowLayout";
-            this.debugFlowLayout.Size = new System.Drawing.Size(606, 150);
-            this.debugFlowLayout.TabIndex = 42;
-            this.debugFlowLayout.WrapContents = false;
-            // 
-            // debugPanelButton
-            // 
-            this.debugPanelButton.Location = new System.Drawing.Point(3, 3);
-            this.debugPanelButton.Name = "debugPanelButton";
-            this.debugPanelButton.Size = new System.Drawing.Size(606, 23);
-            this.debugPanelButton.TabIndex = 43;
-            this.debugPanelButton.Text = "Debug Shading Modes";
-            this.debugPanelButton.UseVisualStyleBackColor = true;
-            this.debugPanelButton.Click += new System.EventHandler(this.debugPanelButton_Click);
-            // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.Controls.Add(this.debugPanelButton);
-            this.flowLayoutPanel1.Controls.Add(this.debugShadePanel);
-            this.flowLayoutPanel1.Controls.Add(this.bonePanelButton);
-            this.flowLayoutPanel1.Controls.Add(this.bonePanel);
-            this.flowLayoutPanel1.Controls.Add(this.experimentalPanelButton);
-            this.flowLayoutPanel1.Controls.Add(this.experimentalPanel);
-            this.flowLayoutPanel1.Controls.Add(this.lvdPanelButton);
-            this.flowLayoutPanel1.Controls.Add(this.lvdPanel);
-            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(8, 6);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(622, 641);
-            this.flowLayoutPanel1.TabIndex = 44;
-            this.flowLayoutPanel1.WrapContents = false;
-            // 
-            // debugShadePanel
-            // 
-            this.debugShadePanel.Controls.Add(this.debugFlowLayout);
-            this.debugShadePanel.Location = new System.Drawing.Point(3, 32);
-            this.debugShadePanel.Name = "debugShadePanel";
-            this.debugShadePanel.Size = new System.Drawing.Size(606, 150);
-            this.debugShadePanel.TabIndex = 44;
-            // 
-            // bonePanelButton
-            // 
-            this.bonePanelButton.Location = new System.Drawing.Point(3, 188);
-            this.bonePanelButton.Name = "bonePanelButton";
-            this.bonePanelButton.Size = new System.Drawing.Size(606, 23);
-            this.bonePanelButton.TabIndex = 45;
-            this.bonePanelButton.Text = "Bone Display Settings";
-            this.bonePanelButton.UseVisualStyleBackColor = true;
-            this.bonePanelButton.Click += new System.EventHandler(this.bonePanelButton_Click);
-            // 
-            // bonePanel
-            // 
-            this.bonePanel.Controls.Add(this.boneFlowLayout);
-            this.bonePanel.Location = new System.Drawing.Point(3, 217);
-            this.bonePanel.Name = "bonePanel";
-            this.bonePanel.Size = new System.Drawing.Size(606, 33);
-            this.bonePanel.TabIndex = 46;
-            // 
-            // boneFlowLayout
-            // 
-            this.boneFlowLayout.Controls.Add(this.renderBonesCB);
-            this.boneFlowLayout.Controls.Add(this.swagYCB);
-            this.boneFlowLayout.Controls.Add(this.showSwagDataCB);
-            this.boneFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.boneFlowLayout.Location = new System.Drawing.Point(0, 0);
-            this.boneFlowLayout.Name = "boneFlowLayout";
-            this.boneFlowLayout.Size = new System.Drawing.Size(606, 33);
-            this.boneFlowLayout.TabIndex = 0;
-            this.boneFlowLayout.WrapContents = false;
-            // 
-            // drawShadowCB
-            // 
-            this.drawShadowCB.AutoSize = true;
-            this.drawShadowCB.Location = new System.Drawing.Point(3, 3);
-            this.drawShadowCB.Name = "drawShadowCB";
-            this.drawShadowCB.Size = new System.Drawing.Size(108, 17);
-            this.drawShadowCB.TabIndex = 45;
-            this.drawShadowCB.Text = "Render Shadows";
-            this.drawShadowCB.UseVisualStyleBackColor = true;
-            // 
-            // experimentalPanelButton
-            // 
-            this.experimentalPanelButton.Location = new System.Drawing.Point(3, 256);
-            this.experimentalPanelButton.Name = "experimentalPanelButton";
-            this.experimentalPanelButton.Size = new System.Drawing.Size(606, 23);
-            this.experimentalPanelButton.TabIndex = 47;
-            this.experimentalPanelButton.Text = "Experimental Rendering Features";
-            this.experimentalPanelButton.UseVisualStyleBackColor = true;
-            this.experimentalPanelButton.Click += new System.EventHandler(this.experimentalPanelButton_Click);
-            // 
-            // experimentalPanel
-            // 
-            this.experimentalPanel.Controls.Add(this.experimentalFlowLayout);
-            this.experimentalPanel.Location = new System.Drawing.Point(3, 285);
-            this.experimentalPanel.Name = "experimentalPanel";
-            this.experimentalPanel.Size = new System.Drawing.Size(606, 86);
-            this.experimentalPanel.TabIndex = 48;
-            // 
-            // experimentalFlowLayout
-            // 
-            this.experimentalFlowLayout.Controls.Add(this.drawShadowCB);
-            this.experimentalFlowLayout.Controls.Add(this.depthTestCB);
-            this.experimentalFlowLayout.Controls.Add(this.zScaleTableLayout);
-            this.experimentalFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.experimentalFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.experimentalFlowLayout.Location = new System.Drawing.Point(0, 0);
-            this.experimentalFlowLayout.Name = "experimentalFlowLayout";
-            this.experimentalFlowLayout.Size = new System.Drawing.Size(606, 86);
-            this.experimentalFlowLayout.TabIndex = 0;
-            this.experimentalFlowLayout.WrapContents = false;
-            // 
-            // zScaleTableLayout
-            // 
-            this.zScaleTableLayout.ColumnCount = 2;
-            this.zScaleTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 41.74757F));
-            this.zScaleTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 58.25243F));
-            this.zScaleTableLayout.Controls.Add(this.zScaleTB, 1, 0);
-            this.zScaleTableLayout.Controls.Add(this.label76, 0, 0);
-            this.zScaleTableLayout.Location = new System.Drawing.Point(3, 49);
-            this.zScaleTableLayout.Name = "zScaleTableLayout";
-            this.zScaleTableLayout.RowCount = 1;
-            this.zScaleTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.zScaleTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.zScaleTableLayout.Size = new System.Drawing.Size(206, 29);
-            this.zScaleTableLayout.TabIndex = 45;
-            // 
-            // lvdPanelButton
-            // 
-            this.lvdPanelButton.Location = new System.Drawing.Point(3, 377);
-            this.lvdPanelButton.Name = "lvdPanelButton";
-            this.lvdPanelButton.Size = new System.Drawing.Size(606, 23);
-            this.lvdPanelButton.TabIndex = 49;
-            this.lvdPanelButton.Text = "LVD Display Settings";
-            this.lvdPanelButton.UseVisualStyleBackColor = true;
-            this.lvdPanelButton.Click += new System.EventHandler(this.lvdPanelButton_Click);
-            // 
-            // lvdPanel
-            // 
-            this.lvdPanel.Controls.Add(this.renderGeneralShapesCB);
-            this.lvdPanel.Controls.Add(this.renderLvdCB);
-            this.lvdPanel.Controls.Add(this.renderCollisionsCB);
-            this.lvdPanel.Controls.Add(this.renderItemSpawnersCB);
-            this.lvdPanel.Controls.Add(this.renderPassthroughCB);
-            this.lvdPanel.Controls.Add(this.renderSpawnsCB);
-            this.lvdPanel.Controls.Add(this.renderRespawnsCB);
-            this.lvdPanel.Location = new System.Drawing.Point(3, 406);
-            this.lvdPanel.Name = "lvdPanel";
-            this.lvdPanel.Size = new System.Drawing.Size(606, 177);
-            this.lvdPanel.TabIndex = 50;
-            // 
             // RenderSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1026, 681);
+            this.ClientSize = new System.Drawing.Size(1026, 856);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = global::Smash_Forge.Resources.Resources.forge2;
@@ -2188,6 +2212,29 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudHurtboxAlpha)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudHitboxAlpha)).EndInit();
             this.tabPage1.ResumeLayout(false);
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.flowLayoutPanel1.PerformLayout();
+            this.modelPanel.ResumeLayout(false);
+            this.modelPanel.PerformLayout();
+            this.debugShadePanel.ResumeLayout(false);
+            this.debugShadePanel.PerformLayout();
+            this.debugFlowLayout.ResumeLayout(false);
+            this.debugFlowLayout.PerformLayout();
+            this.debugModeTableLayout.ResumeLayout(false);
+            this.debugModeTableLayout.PerformLayout();
+            this.rgbaTableLayout.ResumeLayout(false);
+            this.debugRadioTableLayout.ResumeLayout(false);
+            this.debugRadioTableLayout.PerformLayout();
+            this.bonePanel.ResumeLayout(false);
+            this.boneFlowLayout.ResumeLayout(false);
+            this.boneFlowLayout.PerformLayout();
+            this.experimentalPanel.ResumeLayout(false);
+            this.experimentalFlowLayout.ResumeLayout(false);
+            this.experimentalFlowLayout.PerformLayout();
+            this.zScaleTableLayout.ResumeLayout(false);
+            this.zScaleTableLayout.PerformLayout();
+            this.lvdPanel.ResumeLayout(false);
+            this.lvdPanel.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.tabControl1.ResumeLayout(false);
@@ -2217,25 +2264,6 @@
             this.tabPage3.PerformLayout();
             this.groupBox7.ResumeLayout(false);
             this.groupBox7.PerformLayout();
-            this.debugModeTableLayout.ResumeLayout(false);
-            this.debugModeTableLayout.PerformLayout();
-            this.rgbaTableLayout.ResumeLayout(false);
-            this.debugRadioTableLayout.ResumeLayout(false);
-            this.debugRadioTableLayout.PerformLayout();
-            this.debugFlowLayout.ResumeLayout(false);
-            this.debugFlowLayout.PerformLayout();
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.debugShadePanel.ResumeLayout(false);
-            this.bonePanel.ResumeLayout(false);
-            this.boneFlowLayout.ResumeLayout(false);
-            this.boneFlowLayout.PerformLayout();
-            this.experimentalPanel.ResumeLayout(false);
-            this.experimentalFlowLayout.ResumeLayout(false);
-            this.experimentalFlowLayout.PerformLayout();
-            this.zScaleTableLayout.ResumeLayout(false);
-            this.zScaleTableLayout.PerformLayout();
-            this.lvdPanel.ResumeLayout(false);
-            this.lvdPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -2410,5 +2438,7 @@
         private System.Windows.Forms.TableLayoutPanel zScaleTableLayout;
         private System.Windows.Forms.Button lvdPanelButton;
         private System.Windows.Forms.Panel lvdPanel;
+        private System.Windows.Forms.Button modelPanelButton;
+        private System.Windows.Forms.Panel modelPanel;
     }
 }
