@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -734,8 +734,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem9,
-            listViewItem10});
+            listViewItem17,
+            listViewItem18});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -834,7 +834,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(579, 627);
+            this.tabPage1.Size = new System.Drawing.Size(579, 628);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
             // 
@@ -854,7 +854,7 @@
             this.generalFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.generalFlowLayout.Location = new System.Drawing.Point(3, 3);
             this.generalFlowLayout.Name = "generalFlowLayout";
-            this.generalFlowLayout.Size = new System.Drawing.Size(573, 621);
+            this.generalFlowLayout.Size = new System.Drawing.Size(573, 622);
             this.generalFlowLayout.TabIndex = 44;
             this.generalFlowLayout.WrapContents = false;
             // 
@@ -1241,6 +1241,7 @@
             this.drawShadowCB.TabIndex = 45;
             this.drawShadowCB.Text = "Render Shadows";
             this.drawShadowCB.UseVisualStyleBackColor = true;
+            this.drawShadowCB.CheckedChanged += new System.EventHandler(this.drawShadowCB_CheckedChanged);
             // 
             // depthTestCB
             // 
@@ -1320,6 +1321,7 @@
             this.renderGeneralShapesCB.TabIndex = 33;
             this.renderGeneralShapesCB.Text = "Render General Shapes and Points";
             this.renderGeneralShapesCB.UseVisualStyleBackColor = true;
+            this.renderGeneralShapesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // renderLvdCB
             // 
@@ -1330,6 +1332,7 @@
             this.renderLvdCB.TabIndex = 27;
             this.renderLvdCB.Text = "Render LVD";
             this.renderLvdCB.UseVisualStyleBackColor = true;
+            this.renderLvdCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // renderCollisionsCB
             // 
@@ -1340,6 +1343,7 @@
             this.renderCollisionsCB.TabIndex = 28;
             this.renderCollisionsCB.Text = "Render Collisions";
             this.renderCollisionsCB.UseVisualStyleBackColor = true;
+            this.renderCollisionsCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // renderItemSpawnersCB
             // 
@@ -1350,6 +1354,7 @@
             this.renderItemSpawnersCB.TabIndex = 31;
             this.renderItemSpawnersCB.Text = "Render Item Spawners";
             this.renderItemSpawnersCB.UseVisualStyleBackColor = true;
+            this.renderItemSpawnersCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // renderPassthroughCB
             // 
@@ -1360,6 +1365,7 @@
             this.renderPassthroughCB.TabIndex = 32;
             this.renderPassthroughCB.Text = "Render Passthrough Angles";
             this.renderPassthroughCB.UseVisualStyleBackColor = true;
+            this.renderPassthroughCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // renderSpawnsCB
             // 
@@ -1370,6 +1376,7 @@
             this.renderSpawnsCB.TabIndex = 29;
             this.renderSpawnsCB.Text = "Render Spawns";
             this.renderSpawnsCB.UseVisualStyleBackColor = true;
+            this.renderSpawnsCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // renderRespawnsCB
             // 
@@ -1380,6 +1387,7 @@
             this.renderRespawnsCB.TabIndex = 30;
             this.renderRespawnsCB.Text = "Render Respawns";
             this.renderRespawnsCB.UseVisualStyleBackColor = true;
+            this.renderRespawnsCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
             // areaLightBoundingBoxCB
             // 
@@ -1417,7 +1425,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(587, 653);
+            this.tabControl1.Size = new System.Drawing.Size(587, 654);
             this.tabControl1.TabIndex = 17;
             // 
             // tabPage6
@@ -2177,7 +2185,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(587, 653);
+            this.ClientSize = new System.Drawing.Size(587, 654);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = global::Smash_Forge.Resources.Resources.forge2;
