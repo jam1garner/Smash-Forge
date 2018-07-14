@@ -57,7 +57,7 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
-        private static readonly Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>()
+        private static readonly Dictionary<int, BlendingFactorDest> dstFactorsByMatValue = new Dictionary<int, BlendingFactorDest>()
         {
             { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
             { 0x02, BlendingFactorDest.One},
@@ -66,8 +66,9 @@ namespace Smash_Forge
             { 0x05, BlendingFactorDest.ConstantAlpha},
         };
 
-        private static readonly Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>()
+        private static readonly Dictionary<int, BlendingFactorSrc> srcFactorsByMatValue = new Dictionary<int, BlendingFactorSrc>()
         {
+            { 0x00, BlendingFactorSrc.Zero },
             { 0x01, BlendingFactorSrc.SrcAlpha},
             { 0x02, BlendingFactorSrc.SrcAlpha},
             { 0x03, BlendingFactorSrc.SrcAlpha},
@@ -660,25 +661,39 @@ namespace Smash_Forge
 
         private void SetAlphaBlending(Material material)
         {
-            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-            {
-                // Disable alpha blending for debug shading.
-                GL.Disable(EnableCap.Blend);
-                return;
-            }
+            //// Disable alpha blending for debug shading.
+            //if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+            //{
+            //    GL.Disable(EnableCap.Blend);
+            //    return;
+            //}
 
-            if (material.srcFactor == 0 && material.dstFactor == 0)
-            {
-                // Src and dst of 0 don't use alpha blending.
-                GL.Disable(EnableCap.Blend);
-                return;
-            }
+            //// Src and dst of 0 don't use alpha blending.
+            //if (material.srcFactor == 0 && material.dstFactor == 0)
+            //{
+            //    GL.Disable(EnableCap.Blend);
+            //    return;
+            //}
 
+            // Set the alpha blending based on the material.
+            // If the values are not researched, use a default blending mode.
             GL.Enable(EnableCap.Blend);
-            BlendingFactorSrc blendSrc = srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha;
-            BlendingFactorDest blendDst = dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha;
+
+            BlendingFactorSrc blendSrc = BlendingFactorSrc.SrcAlpha;
+            if (srcFactorsByMatValue.ContainsKey(material.srcFactor))
+                blendSrc = srcFactorsByMatValue[material.srcFactor];
+            blendSrc = (BlendingFactorSrc)material.srcFactor;
+
+            BlendingFactorDest blendDst = BlendingFactorDest.OneMinusSrcAlpha;
+            if (dstFactorsByMatValue.ContainsKey(material.dstFactor))
+                blendDst = dstFactorsByMatValue[material.dstFactor];
+            blendDst = (BlendingFactorDest)material.dstFactor;
+
+            BlendEquationMode blendEquation = BlendEquationMode.FuncAdd;
+
             GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
-            GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
+            GL.BlendEquationSeparate(blendEquation, BlendEquationMode.FuncAdd);
+
         }
 
         private static void SetAlphaTesting(Material material)
