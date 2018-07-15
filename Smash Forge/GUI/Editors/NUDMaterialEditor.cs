@@ -171,17 +171,11 @@ namespace Smash_Forge
             if (materialParamList.Count == 0)
                 InitMaterialParamList();
 
+            // HACK: ???
             if (wrapXComboBox.Items.Count == 0)
             {               
-                foreach (int i in srcFactor.Keys)
-                    srcComboBox.Items.Add(srcFactor[i]);
-                foreach (int i in dstFactor.Keys)
-                    dstComboBox.Items.Add(dstFactor[i]);
-                
                 foreach (int i in cullmode.Keys)
                     cullModeComboBox.Items.Add(cullmode[i]);
-                foreach (int i in AlphaTest.Keys)
-                    alphaTestComboBox.Items.Add(AlphaTest[i]);
                 foreach (int i in AlphaFunc.Keys)
                     AlphaFuncComboBox.Items.Add(AlphaFunc[i]);
 
@@ -223,7 +217,6 @@ namespace Smash_Forge
 
         private void InitializeComboBoxes(NUD.Material mat)
         {
-            alphaTestComboBox.SelectedItem = AlphaTest[mat.alphaTest];
             AlphaFuncComboBox.SelectedItem = AlphaFunc[mat.alphaFunction];
         }
 
@@ -313,46 +306,14 @@ namespace Smash_Forge
             FillForm();
         }
 
-        private void srcComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (srcComboBox.SelectedItem == null)
-                return;
-
-            // Find the src factor for the given description.
-            foreach (int srcFactor in srcFactor.Keys)
-            {
-                if (NUDMaterialEditor.srcFactor[srcFactor].Equals(srcComboBox.SelectedItem))
-                {
-                    srcTB.Text = srcFactor + "";
-                    break;
-                }
-            }
-        }
-
         private void srcTB_TextChanged(object sender, EventArgs e)
         {
-            SetValue(srcTB, srcComboBox, srcFactor, out currentMaterialList[currentMatIndex].srcFactor);
-        }
-
-        private void dstComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (dstComboBox.SelectedItem == null)
-                return;
-
-            // Find the dst factor for the given description.
-            foreach (int i in dstFactor.Keys)
-            {
-                if (dstFactor[i].Equals(dstComboBox.SelectedItem))
-                {
-                    dstTB.Text = i + "";
-                    break;
-                }
-            }
+            //SetValue(srcTB, srcComboBox, srcFactor, out currentMaterialList[currentMatIndex].srcFactor);
         }
 
         private void dstTB_TextChanged(object sender, EventArgs e)
         {
-            SetValue(dstTB, dstComboBox, dstFactor, out currentMaterialList[currentMatIndex].dstFactor);
+            //SetValue(dstTB, dstComboBox, dstFactor, out currentMaterialList[currentMatIndex].dstFactor);
         }
 
         public void SetValue(TextBox textBox, ComboBox combobox, Dictionary<int, string> dict, out int materialValue)
@@ -385,25 +346,10 @@ namespace Smash_Forge
             SetValue(cullModeTB, cullModeComboBox, cullmode, out currentMaterialList[currentMatIndex].cullMode);
         }
 
-        private void alphaTestComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            foreach (int i in AlphaTest.Keys)
-                if (AlphaTest[i].Equals(alphaTestComboBox.SelectedItem))
-                {
-                    alphaTestTB.Text = i + "";
-                    break;
-                }
-        }
-
-        private void alphaTestTB_TextChanged(object sender, EventArgs e)
-        {
-            int.TryParse(alphaTestTB.Text, out currentMaterialList[currentMatIndex].alphaTest);
-        }
-        
         private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
         {
-
             foreach (int i in AlphaFunc.Keys)
+            {
                 if (AlphaFunc[i].Equals(AlphaFuncComboBox.SelectedItem))
                 {
                     Console.WriteLine(AlphaFunc[i] + " " + i);
@@ -411,6 +357,7 @@ namespace Smash_Forge
                     currentMaterialList[currentMatIndex].alphaFunction = i;
                     break;
                 }
+            }
         }
         
         private void alphaFuncTB_TextChanged(object sender, EventArgs e)
@@ -1137,6 +1084,15 @@ namespace Smash_Forge
         private void param4TrackBar_Leave(object sender, EventArgs e)
         {
             enableParam4SliderUpdates = true;
+        }
+
+        private void alphaTestCB_CheckedChanged(object sender, EventArgs e)
+        {
+            currentMaterialList[currentMatIndex].alphaTest = alphaTestCB.Checked ? 0x2 : 0x0;
+
+            // Only enable extra settings when alpha testing is enabled.
+            refAlphaTableLayout.Visible = alphaTestCB.Checked;
+            alphaFuncTableLayout.Visible = alphaTestCB.Checked;
         }
     }
 }
