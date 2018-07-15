@@ -49,10 +49,7 @@ namespace Smash_Forge
         {
             { 0x00, "Nothing"},
             { 0x01, "SourceAlpha + CompareBeforeTextureFalse + DepthTestTrue + EnableDepthUpdateTrue"},
-            { 0x03, "SourceAlpha + CompareBeforeTextureTrue + DepthTestTrue + EnableDepthUpdateFalse + MultiplyBy1"},
             { 0x04, "RasterAlpha + CompareBeforeTextureTrue + DepthTestTrue + EnableDepthUpdateFalse"},
-            { 0x05, "SourceAlpha + CompareBeforeTextureTrue + DepthTestTrue (can also be False) + EnableDepthUpdateFalse + MultiplyBy2"},
-            { 0x07, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + ObjectDraw"},
             { 0x32, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy2"},
             { 0x33, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy1"}
         };
@@ -181,11 +178,6 @@ namespace Smash_Forge
                 foreach (int i in dstFactor.Keys)
                     dstComboBox.Items.Add(dstFactor[i]);
                 
-                //foreach (var src in Enum.GetNames(typeof(BlendingFactorSrc)))
-                //    srcComboBox.Items.Add(src);
-                //foreach (var dst in Enum.GetNames(typeof(BlendingFactorDest)))
-                //    dstComboBox.Items.Add(dst);
-
                 foreach (int i in cullmode.Keys)
                     cullModeComboBox.Items.Add(cullmode[i]);
                 foreach (int i in AlphaTest.Keys)
@@ -335,18 +327,11 @@ namespace Smash_Forge
                     break;
                 }
             }
-
-            //blendingfactorsrc blendingfactorsrc;
-            //Enum.TryParse(srcComboBox.SelectedItem.ToString(), out blendingFactorSrc);
-            //srcTB.Text = (int)blendingFactorSrc + "";
         }
 
         private void srcTB_TextChanged(object sender, EventArgs e)
         {
             SetValue(srcTB, srcComboBox, srcFactor, out currentMaterialList[currentMatIndex].srcFactor);
-            //BlendingFactorSrc blendingFactorSrc;
-            //Enum.TryParse(srcTB.Text, out blendingFactorSrc);
-            //currentMaterialList[currentMatIndex].srcFactor = (int)blendingFactorSrc;
         }
 
         private void dstComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -363,18 +348,11 @@ namespace Smash_Forge
                     break;
                 }
             }
-
-            //BlendingFactorDest blendingFactorDest;
-            //Enum.TryParse(dstComboBox.SelectedItem.ToString(), out blendingFactorDest);
-            //dstTB.Text = (int)blendingFactorDest + "";
         }
 
         private void dstTB_TextChanged(object sender, EventArgs e)
         {
             SetValue(dstTB, dstComboBox, dstFactor, out currentMaterialList[currentMatIndex].dstFactor);
-            //BlendingFactorDest blendingFactorDest;
-            //Enum.TryParse(dstTB.Text, out blendingFactorDest);
-            //currentMaterialList[currentMatIndex].dstFactor = (int)blendingFactorDest;
         }
 
         public void SetValue(TextBox textBox, ComboBox combobox, Dictionary<int, string> dict, out int materialValue)

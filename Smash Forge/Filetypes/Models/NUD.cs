@@ -666,7 +666,7 @@ namespace Smash_Forge
                 return;
             }
 
-            //// Src and dst of 0 don't use alpha blending.
+            // Src and dst of 0 don't use alpha blending.
             if (material.srcFactor == 0 && material.dstFactor == 0)
             {
                 GL.Disable(EnableCap.Blend);
@@ -675,32 +675,32 @@ namespace Smash_Forge
 
             // Set the alpha blending based on the material.
             // If the values are not researched, use a default blending mode.
+            GL.Enable(EnableCap.Blend);
+
             // Hacks for Game & Watch.
-            if (material.srcFactor == 4)
+            if ((material.srcFactor == 4) || (material.srcFactor == 51) || (material.srcFactor == 50))
                 GL.DepthMask(false);
             else
                 GL.DepthMask(true);
 
-            GL.Enable(EnableCap.Blend);
-
+            // Set the source factor.
             BlendingFactorSrc blendSrc = BlendingFactorSrc.SrcAlpha;
             if (srcFactorsByMatValue.ContainsKey(material.srcFactor))
                 blendSrc = srcFactorsByMatValue[material.srcFactor];
-            //blendSrc = (BlendingFactorSrc)material.srcFactor;
 
+            // Set the destination factor.
             BlendingFactorDest blendDst = BlendingFactorDest.OneMinusSrcAlpha;
             if (dstFactorsByMatValue.ContainsKey(material.dstFactor))
                 blendDst = dstFactorsByMatValue[material.dstFactor];
-            //blendDst = (BlendingFactorDest)material.dstFactor;
 
             // The dstFactor can also set the blending equation.
             BlendEquationMode blendEquation = BlendEquationMode.FuncAdd;
             if (material.dstFactor == 3)
                 blendEquation = BlendEquationMode.FuncReverseSubtract;
 
+            // Use separate equations for better alpha value blending.
             GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
             GL.BlendEquationSeparate(blendEquation, BlendEquationMode.FuncAdd);
-
         }
 
         private static void SetAlphaTesting(Material material)
