@@ -36,73 +36,87 @@ namespace Smash_Forge
         bool enableParam3SliderUpdates = true;
         bool enableParam4SliderUpdates = true;
 
-        public static Dictionary<int, string> dstFactor = new Dictionary<int, string>(){
-                    { 0x00, "Nothing"},
-                    { 0x01, "SourceAlpha"},
-                    { 0x02, "One"},
-                    { 0x03, "InverseSourceAlpha + SubtractTrue"},
-                    { 0x04, "Dummy"},
-                };
+        public static Dictionary<int, string> dstFactor = new Dictionary<int, string>()
+        {
+            { 0x00, "Nothing"},
+            { 0x01, "SourceAlpha"},
+            { 0x02, "One"},
+            { 0x03, "InverseSourceAlpha + SubtractTrue"},
+            { 0x04, "Dummy"},
+        };
 
-        public static Dictionary<int, string> srcFactor = new Dictionary<int, string>(){
-                    { 0x00, "Nothing"},
-                    { 0x01, "SourceAlpha + CompareBeforeTextureFalse + DepthTestTrue + EnableDepthUpdateTrue"},
-                    { 0x03, "SourceAlpha + CompareBeforeTextureTrue + DepthTestTrue + EnableDepthUpdateFalse + MultiplyBy1"},
-                    { 0x04, "RasterAlpha + CompareBeforeTextureTrue + DepthTestTrue + EnableDepthUpdateFalse"},
-                    { 0x05, "SourceAlpha + CompareBeforeTextureTrue + DepthTestTrue (can also be False) + EnableDepthUpdateFalse + MultiplyBy2"},
-                    { 0x07, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + ObjectDraw"},
-                    { 0x32, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy2"},
-                    { 0x33, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy1"}
-                };
+        public static Dictionary<int, string> srcFactor = new Dictionary<int, string>()
+        {
+            { 0x00, "Nothing"},
+            { 0x01, "SourceAlpha + CompareBeforeTextureFalse + DepthTestTrue + EnableDepthUpdateTrue"},
+            { 0x03, "SourceAlpha + CompareBeforeTextureTrue + DepthTestTrue + EnableDepthUpdateFalse + MultiplyBy1"},
+            { 0x04, "RasterAlpha + CompareBeforeTextureTrue + DepthTestTrue + EnableDepthUpdateFalse"},
+            { 0x05, "SourceAlpha + CompareBeforeTextureTrue + DepthTestTrue (can also be False) + EnableDepthUpdateFalse + MultiplyBy2"},
+            { 0x07, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + ObjectDraw"},
+            { 0x32, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy2"},
+            { 0x33, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy1"}
+        };
 
-        public static Dictionary<int, string> cullmode = new Dictionary<int, string>(){
-                    { 0x0000, "Cull None"},
-                    { 0x0404, "Cull Outside"},
-                    { 0x0405, "Cull Inside"}
-                };
+        public static Dictionary<int, string> cullmode = new Dictionary<int, string>()
+        {
+            { 0x0000, "Cull None"},
+            { 0x0404, "Cull Outside"},
+            { 0x0405, "Cull Inside"}
+        };
 
-        public static Dictionary<int, string> AlphaTest = new Dictionary<int, string>(){
-                    { 0x00, "Alpha Test Disabled"},
-                    { 0x02, "Alpha Test Enabled"},
-                };
+        public static Dictionary<int, string> AlphaTest = new Dictionary<int, string>()
+        {
+            { 0x00, "Alpha Test Disabled"},
+            { 0x02, "Alpha Test Enabled"},
+        };
 
-        public static Dictionary<int, string> AlphaFunc = new Dictionary<int, string>(){
-                    { 0x00, "Never"},
-                    { 0x04, "Lequal Ref Alpha + ??"},
-                    { 0x06, "Lequal Ref Alpha + ???"}
-                };
+        public static Dictionary<int, string> AlphaFunc = new Dictionary<int, string>()
+        {
+            { 0x00, "Never"},
+            { 0x04, "Lequal Ref Alpha + ??"},
+            { 0x06, "Lequal Ref Alpha + ???"}
+        };
 
-        public static Dictionary<int, string> mapmode = new Dictionary<int, string>(){
-                    { 0x00, "TexCoord"},
-                    { 0x1D00, "EnvCamera"},
-                    { 0x1E00, "Projection"},
-                    { 0x1ECD, "EnvLight"},
-                    { 0x1F00, "EnvSpec"}
-                };
-        public static Dictionary<int, string> minfilter = new Dictionary<int, string>(){
-                    { 0x00, "Linear_Mipmap_Linear"},
-                    { 0x01, "Nearest"},
-                    { 0x02, "Linear"},
-                    { 0x03, "Nearest_Mipmap_Linear"}
-                };
-        public static Dictionary<int, string> magfilter = new Dictionary<int, string>(){
-                    { 0x00, "???"},
-                    { 0x01, "Nearest"},
-                    { 0x02, "Linear"}
-                };
-        public static Dictionary<int, string> wrapmode = new Dictionary<int, string>(){
-                    { 0x01, "Repeat"},
-                    { 0x02, "Mirror"},
-                    { 0x03, "Clamp"}
-                };
-        public static Dictionary<int, string> mip = new Dictionary<int, string>(){
-                    { 0x01, "1 mip level, anisotropic off"},
-                    { 0x02, "1 mip level, anisotropic off 2"},
-                    { 0x03, "4 mip levels, trilinear off, anisotropic off"},
-                    { 0x04, "4 mip levels, trilinear off, anisotropic on"},
-                    { 0x05, "4 mip levels, trilinear on, anisotropic off"},
-                    { 0x06, "4 mip levels, trilinear on, anisotropic on"}
-                };
+        public static Dictionary<int, string> mapmode = new Dictionary<int, string>()
+        {
+            { 0x00, "TexCoord"},
+            { 0x1D00, "EnvCamera"},
+            { 0x1E00, "Projection"},
+            { 0x1ECD, "EnvLight"},
+            { 0x1F00, "EnvSpec"}
+        };
+
+        public static Dictionary<int, string> minfilter = new Dictionary<int, string>()
+        {
+            { 0x00, "Linear_Mipmap_Linear"},
+            { 0x01, "Nearest"},
+            { 0x02, "Linear"},
+            { 0x03, "Nearest_Mipmap_Linear"}
+        };
+
+        public static Dictionary<int, string> magfilter = new Dictionary<int, string>()
+        {
+            { 0x00, "???"},
+            { 0x01, "Nearest"},
+            { 0x02, "Linear"}
+        };
+
+        public static Dictionary<int, string> wrapmode = new Dictionary<int, string>()
+        {
+            { 0x01, "Repeat"},
+            { 0x02, "Mirror"},
+            { 0x03, "Clamp"}
+        };
+
+        public static Dictionary<int, string> mip = new Dictionary<int, string>()
+        {
+            { 0x01, "1 mip level, anisotropic off"},
+            { 0x02, "1 mip level, anisotropic off 2"},
+            { 0x03, "4 mip levels, trilinear off, anisotropic off"},
+            { 0x04, "4 mip levels, trilinear off, anisotropic on"},
+            { 0x05, "4 mip levels, trilinear on, anisotropic off"},
+            { 0x06, "4 mip levels, trilinear on, anisotropic on"}
+        };
 
         public NUDMaterialEditor()
         {

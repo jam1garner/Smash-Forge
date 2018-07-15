@@ -674,6 +674,12 @@ namespace Smash_Forge
                 return;
             }
 
+            // Hacks for Game & Watch.
+            if (material.srcFactor == 4)
+                GL.DepthMask(false);
+            else
+                GL.DepthMask(true);
+
             GL.Enable(EnableCap.Blend);
             BlendingFactorSrc blendSrc = srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha;
             BlendingFactorDest blendDst = dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha;
