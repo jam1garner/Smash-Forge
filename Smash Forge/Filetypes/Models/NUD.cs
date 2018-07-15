@@ -57,6 +57,16 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
+        private static readonly Dictionary<int, BlendingFactorSrc> srcFactorsByMatValue = new Dictionary<int, BlendingFactorSrc>()
+        {
+            { 0x00, BlendingFactorSrc.Zero },
+            { 0x01, BlendingFactorSrc.SrcAlpha},
+            { 0x02, BlendingFactorSrc.One},
+            { 0x03, BlendingFactorSrc.SrcAlpha},
+            { 0x04, BlendingFactorSrc.SrcAlpha},
+            { 0x0a, BlendingFactorSrc.Zero}
+        };
+
         private static readonly Dictionary<int, BlendingFactorDest> dstFactorsByMatValue = new Dictionary<int, BlendingFactorDest>()
         {
             { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
@@ -64,16 +74,6 @@ namespace Smash_Forge
             { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
             { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
             { 0x05, BlendingFactorDest.ConstantAlpha},
-        };
-
-        private static readonly Dictionary<int, BlendingFactorSrc> srcFactorsByMatValue = new Dictionary<int, BlendingFactorSrc>()
-        {
-            { 0x00, BlendingFactorSrc.Zero },
-            { 0x01, BlendingFactorSrc.SrcAlpha},
-            { 0x02, BlendingFactorSrc.SrcAlpha},
-            { 0x03, BlendingFactorSrc.SrcAlpha},
-            { 0x04, BlendingFactorSrc.SrcAlpha},
-            { 0x0a, BlendingFactorSrc.Zero}
         };
 
         private static readonly Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
