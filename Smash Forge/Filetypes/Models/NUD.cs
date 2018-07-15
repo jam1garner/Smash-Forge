@@ -64,7 +64,6 @@ namespace Smash_Forge
             { 0x02, BlendingFactorSrc.One},
             { 0x03, BlendingFactorSrc.SrcAlpha},
             { 0x04, BlendingFactorSrc.SrcAlpha},
-            { 0x0a, BlendingFactorSrc.Zero}
         };
 
         private static readonly Dictionary<int, BlendingFactorDest> dstFactorsByMatValue = new Dictionary<int, BlendingFactorDest>()
@@ -73,8 +72,6 @@ namespace Smash_Forge
             { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
             { 0x02, BlendingFactorDest.One},
             { 0x03, BlendingFactorDest.One},
-            { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
-            { 0x05, BlendingFactorDest.ConstantAlpha},
         };
 
         private static readonly Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
@@ -683,17 +680,17 @@ namespace Smash_Forge
             BlendingFactorSrc blendSrc = BlendingFactorSrc.SrcAlpha;
             if (srcFactorsByMatValue.ContainsKey(material.srcFactor))
                 blendSrc = srcFactorsByMatValue[material.srcFactor];
-            //blendSrc = (BlendingFactorSrc)material.srcFactor;
+            blendSrc = (BlendingFactorSrc)material.srcFactor;
 
             BlendingFactorDest blendDst = BlendingFactorDest.OneMinusSrcAlpha;
             if (dstFactorsByMatValue.ContainsKey(material.dstFactor))
                 blendDst = dstFactorsByMatValue[material.dstFactor];
-            //blendDst = (BlendingFactorDest)material.dstFactor;
+            blendDst = (BlendingFactorDest)material.dstFactor;
 
             // The dstFactor can also set the blending equation.
             BlendEquationMode blendEquation = BlendEquationMode.FuncAdd;
-            if (material.dstFactor == 3)
-                blendEquation = BlendEquationMode.FuncReverseSubtract;
+            //if (material.dstFactor == 3)
+            //    blendEquation = BlendEquationMode.FuncReverseSubtract;
 
             GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
             GL.BlendEquationSeparate(blendEquation, BlendEquationMode.FuncAdd);
