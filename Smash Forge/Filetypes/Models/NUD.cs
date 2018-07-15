@@ -59,7 +59,7 @@ namespace Smash_Forge
 
         private static readonly Dictionary<int, BlendingFactorSrc> srcFactorsByMatValue = new Dictionary<int, BlendingFactorSrc>()
         {
-            { 0x00, BlendingFactorSrc.Zero },
+            { 0x00, BlendingFactorSrc.One },
             { 0x01, BlendingFactorSrc.SrcAlpha},
             { 0x02, BlendingFactorSrc.One},
             { 0x03, BlendingFactorSrc.SrcAlpha},
@@ -69,9 +69,10 @@ namespace Smash_Forge
 
         private static readonly Dictionary<int, BlendingFactorDest> dstFactorsByMatValue = new Dictionary<int, BlendingFactorDest>()
         {
+            { 0x00, BlendingFactorDest.Zero },
             { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
             { 0x02, BlendingFactorDest.One},
-            { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
+            { 0x03, BlendingFactorDest.One},
             { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
             { 0x05, BlendingFactorDest.ConstantAlpha},
         };
@@ -661,19 +662,19 @@ namespace Smash_Forge
 
         private void SetAlphaBlending(Material material)
         {
-            //// Disable alpha blending for debug shading.
-            //if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-            //{
-            //    GL.Disable(EnableCap.Blend);
-            //    return;
-            //}
+            // Disable alpha blending for debug shading.
+            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+            {
+                GL.Disable(EnableCap.Blend);
+                return;
+            }
 
             //// Src and dst of 0 don't use alpha blending.
-            //if (material.srcFactor == 0 && material.dstFactor == 0)
-            //{
-            //    GL.Disable(EnableCap.Blend);
-            //    return;
-            //}
+            if (material.srcFactor == 0 && material.dstFactor == 0)
+            {
+                GL.Disable(EnableCap.Blend);
+                return;
+            }
 
             // Set the alpha blending based on the material.
             // If the values are not researched, use a default blending mode.
@@ -682,14 +683,17 @@ namespace Smash_Forge
             BlendingFactorSrc blendSrc = BlendingFactorSrc.SrcAlpha;
             if (srcFactorsByMatValue.ContainsKey(material.srcFactor))
                 blendSrc = srcFactorsByMatValue[material.srcFactor];
-            blendSrc = (BlendingFactorSrc)material.srcFactor;
+            //blendSrc = (BlendingFactorSrc)material.srcFactor;
 
             BlendingFactorDest blendDst = BlendingFactorDest.OneMinusSrcAlpha;
             if (dstFactorsByMatValue.ContainsKey(material.dstFactor))
                 blendDst = dstFactorsByMatValue[material.dstFactor];
-            blendDst = (BlendingFactorDest)material.dstFactor;
+            //blendDst = (BlendingFactorDest)material.dstFactor;
 
+            // The dstFactor can also set the blending equation.
             BlendEquationMode blendEquation = BlendEquationMode.FuncAdd;
+            if (material.dstFactor == 3)
+                blendEquation = BlendEquationMode.FuncReverseSubtract;
 
             GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
             GL.BlendEquationSeparate(blendEquation, BlendEquationMode.FuncAdd);
