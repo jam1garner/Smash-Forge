@@ -675,6 +675,12 @@ namespace Smash_Forge
 
             // Set the alpha blending based on the material.
             // If the values are not researched, use a default blending mode.
+            // Hacks for Game & Watch.
+            if (material.srcFactor == 4)
+                GL.DepthMask(false);
+            else
+                GL.DepthMask(true);
+
             GL.Enable(EnableCap.Blend);
 
             BlendingFactorSrc blendSrc = BlendingFactorSrc.SrcAlpha;
