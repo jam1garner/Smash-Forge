@@ -646,10 +646,10 @@ namespace Smash_Forge
 
             materialParamList.TryGetValue(propertyName, out matParam);
 
-            tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 0));
-            tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 1));
-            tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 2));
-            tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 3));
+            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 0));
+            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 1));
+            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 2));
+            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 3));
 
         }
 
@@ -1093,6 +1093,21 @@ namespace Smash_Forge
             // Only enable extra settings when alpha testing is enabled.
             refAlphaTableLayout.Visible = alphaTestCB.Checked;
             alphaFuncTableLayout.Visible = alphaTestCB.Checked;
+        }
+
+        private void flagsButton_Click(object sender, EventArgs e)
+        {
+            flagsPanel.Visible = !flagsPanel.Visible;
+        }
+
+        private void alphaTestButton_Click(object sender, EventArgs e)
+        {
+            alphaTestPanel.Visible = !alphaTestPanel.Visible;
+        }
+
+        private void alphaBlendButton_Click(object sender, EventArgs e)
+        {
+            alphaBlendPanel.Visible = !alphaBlendPanel.Visible;
         }
     }
 }
