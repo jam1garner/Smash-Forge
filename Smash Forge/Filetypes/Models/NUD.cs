@@ -686,17 +686,17 @@ namespace Smash_Forge
             BlendingFactorSrc blendSrc = BlendingFactorSrc.SrcAlpha;
             if (srcFactorsByMatValue.ContainsKey(material.srcFactor))
                 blendSrc = srcFactorsByMatValue[material.srcFactor];
-            blendSrc = (BlendingFactorSrc)material.srcFactor;
+            //blendSrc = (BlendingFactorSrc)material.srcFactor;
 
             BlendingFactorDest blendDst = BlendingFactorDest.OneMinusSrcAlpha;
             if (dstFactorsByMatValue.ContainsKey(material.dstFactor))
                 blendDst = dstFactorsByMatValue[material.dstFactor];
-            blendDst = (BlendingFactorDest)material.dstFactor;
+            //blendDst = (BlendingFactorDest)material.dstFactor;
 
             // The dstFactor can also set the blending equation.
             BlendEquationMode blendEquation = BlendEquationMode.FuncAdd;
-            //if (material.dstFactor == 3)
-            //    blendEquation = BlendEquationMode.FuncReverseSubtract;
+            if (material.dstFactor == 3)
+                blendEquation = BlendEquationMode.FuncReverseSubtract;
 
             GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
             GL.BlendEquationSeparate(blendEquation, BlendEquationMode.FuncAdd);

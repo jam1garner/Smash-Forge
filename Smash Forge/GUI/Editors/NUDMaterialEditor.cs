@@ -175,17 +175,16 @@ namespace Smash_Forge
                 InitMaterialParamList();
 
             if (wrapXComboBox.Items.Count == 0)
-            {
-                /*
+            {               
                 foreach (int i in srcFactor.Keys)
                     srcComboBox.Items.Add(srcFactor[i]);
                 foreach (int i in dstFactor.Keys)
                     dstComboBox.Items.Add(dstFactor[i]);
-                */
-                foreach (var src in Enum.GetNames(typeof(BlendingFactorSrc)))
-                    srcComboBox.Items.Add(src);
-                foreach (var dst in Enum.GetNames(typeof(BlendingFactorDest)))
-                    dstComboBox.Items.Add(dst);
+                
+                //foreach (var src in Enum.GetNames(typeof(BlendingFactorSrc)))
+                //    srcComboBox.Items.Add(src);
+                //foreach (var dst in Enum.GetNames(typeof(BlendingFactorDest)))
+                //    dstComboBox.Items.Add(dst);
 
                 foreach (int i in cullmode.Keys)
                     cullModeComboBox.Items.Add(cullmode[i]);
@@ -324,53 +323,58 @@ namespace Smash_Forge
 
         private void srcComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //foreach (int i in srcFactor.Keys)
-            //{
-            //    if (srcFactor[i].Equals(srcComboBox.SelectedItem))
-            //    {
-            //        srcTB.Text = i + "";
-            //        break;
-            //    }
-            //}
-
             if (srcComboBox.SelectedItem == null)
                 return;
-            BlendingFactorSrc blendingFactorSrc;
-            Enum.TryParse(srcComboBox.SelectedItem.ToString(), out blendingFactorSrc);
-            srcTB.Text = (int)blendingFactorSrc + "";
+
+            // Find the src factor for the given description.
+            foreach (int srcFactor in srcFactor.Keys)
+            {
+                if (NUDMaterialEditor.srcFactor[srcFactor].Equals(srcComboBox.SelectedItem))
+                {
+                    srcTB.Text = srcFactor + "";
+                    break;
+                }
+            }
+
+            //blendingfactorsrc blendingfactorsrc;
+            //Enum.TryParse(srcComboBox.SelectedItem.ToString(), out blendingFactorSrc);
+            //srcTB.Text = (int)blendingFactorSrc + "";
         }
 
         private void srcTB_TextChanged(object sender, EventArgs e)
         {
-            //SetValue(srcTB, srcComboBox, srcFactor, out currentMaterialList[currentMatIndex].srcFactor);
-            BlendingFactorSrc blendingFactorSrc;
-            Enum.TryParse(srcTB.Text, out blendingFactorSrc);
-            currentMaterialList[currentMatIndex].srcFactor = (int)blendingFactorSrc;
+            SetValue(srcTB, srcComboBox, srcFactor, out currentMaterialList[currentMatIndex].srcFactor);
+            //BlendingFactorSrc blendingFactorSrc;
+            //Enum.TryParse(srcTB.Text, out blendingFactorSrc);
+            //currentMaterialList[currentMatIndex].srcFactor = (int)blendingFactorSrc;
         }
 
         private void dstComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //foreach (int i in dstFactor.Keys)
-            //{
-            //    if (dstFactor[i].Equals(dstComboBox.SelectedItem))
-            //    {
-            //        dstTB.Text = i + "";
-            //        break;
-            //    }
-            //}
             if (dstComboBox.SelectedItem == null)
                 return;
-            BlendingFactorDest blendingFactorDest;
-            Enum.TryParse(dstComboBox.SelectedItem.ToString(), out blendingFactorDest);
-            dstTB.Text = (int)blendingFactorDest + "";
+
+            // Find the dst factor for the given description.
+            foreach (int i in dstFactor.Keys)
+            {
+                if (dstFactor[i].Equals(dstComboBox.SelectedItem))
+                {
+                    dstTB.Text = i + "";
+                    break;
+                }
+            }
+
+            //BlendingFactorDest blendingFactorDest;
+            //Enum.TryParse(dstComboBox.SelectedItem.ToString(), out blendingFactorDest);
+            //dstTB.Text = (int)blendingFactorDest + "";
         }
 
         private void dstTB_TextChanged(object sender, EventArgs e)
         {
-            //SetValue(dstTB, dstComboBox, dstFactor, out currentMaterialList[currentMatIndex].dstFactor);
-            BlendingFactorDest blendingFactorDest;
-            Enum.TryParse(dstTB.Text, out blendingFactorDest);
-            currentMaterialList[currentMatIndex].dstFactor = (int)blendingFactorDest;
+            SetValue(dstTB, dstComboBox, dstFactor, out currentMaterialList[currentMatIndex].dstFactor);
+            //BlendingFactorDest blendingFactorDest;
+            //Enum.TryParse(dstTB.Text, out blendingFactorDest);
+            //currentMaterialList[currentMatIndex].dstFactor = (int)blendingFactorDest;
         }
 
         public void SetValue(TextBox textBox, ComboBox combobox, Dictionary<int, string> dict, out int materialValue)
@@ -379,10 +383,10 @@ namespace Smash_Forge
             int.TryParse(textBox.Text, out materialValue);
             if (materialValue != -1)
             {
-                string o = "";
-                dict.TryGetValue(materialValue, out o);
-                if (o != "")
-                    combobox.Text = o;
+                string descriptionKey = "";
+                dict.TryGetValue(materialValue, out descriptionKey);
+                if (descriptionKey != "")
+                    combobox.Text = descriptionKey;
             }
             else
                 textBox.Text = "0";
