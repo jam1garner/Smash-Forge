@@ -1574,12 +1574,11 @@ namespace Smash_Forge.Rendering
             DrawScreenTriangle(shader, screenQuadVbo);
         }
 
-        public static void DrawNudMaterialSphere(NUD.Material material, BufferObject screenVbo, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
+        public static void DrawNudMaterialSphere(Shader shader, NUD.Material material, BufferObject screenVbo, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
         {
-            if (!Runtime.shaders["NudSphere"].ProgramCreatedSuccessfully())
+            if (!shader.ProgramCreatedSuccessfully())
                 return;
 
-            Shader shader = Runtime.shaders["NudSphere"];
             GL.UseProgram(shader.Id);
 
             // Use the same uniforms as the NUD shader. 

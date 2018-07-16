@@ -9,6 +9,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects.Textures;
 
 
@@ -16,19 +17,28 @@ namespace Smash_Forge.Rendering
 {
     static class MaterialPreviewRendering
     {
-        public static Task RenderingCompleted { get { return renderingCompleted; } }
-        private static Task renderingCompleted;
+        public static Task RenderAllPresetsToFiles { get { return renderAllPresetsToFiles; } }
+        private static Task renderAllPresetsToFiles;
+
+        // Resources for rendering.
+        // These need to be regenerated every time due to using a separate thread.
+        private static BufferObject screenVbo;
+        private static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
+        private static Shader shader;
+
+        // Reduce file size.
+        private static readonly int width = 256;
+        private static readonly int height = 256;
 
         public static void RenderMaterialPresetPreviewsToFilesThreaded()
         {
-            // Save on file size.
-            int width = 256;
-            int height = 256;
-
-            renderingCompleted = Task.Run(() =>
+            renderAllPresetsToFiles = Task.Run(() =>
             {
                 SetUpContextWindow(width, height);
-                BufferObject screenVbo = RenderTools.CreateScreenQuadBuffer();
+
+                // Resource creation.
+                screenVbo = RenderTools.CreateScreenQuadBuffer();
+                shader = Runtime.shaders["NudSphere"];
 
                 // HACK: This isn't a very clean way to pass resources around.
                 RenderTools.LoadMaterialSphereTextures();
@@ -51,7 +61,8 @@ namespace Smash_Forge.Rendering
                 foreach (string file in Directory.EnumerateFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
                 {
                     NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
-                    RenderMaterialPresetToFile(width, height, file, material, screenVbo, dummyTextures);
+                    string presetName = Path.GetFileNameWithoutExtension(file);
+                    RenderMaterialPresetToFile(presetName, material, dummyTextures);
                 }
             });
         }
@@ -65,25 +76,21 @@ namespace Smash_Forge.Rendering
             window.MakeCurrent();
         }
 
-        private static void RenderMaterialPresetToFile(int width, int height, string file, NUD.Material material, BufferObject screenVbo, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
+        private static void RenderMaterialPresetToFile(string presetName, NUD.Material material, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
         {
-            // Save the image file using the name of the preset.
-            string[] parts = file.Split('\\');
-            string presetName = parts[parts.Length - 1];
-            presetName = presetName.Replace(".nmt", ".png");
-
             // Setup new dimensions.
             GL.Viewport(0, 0, width, height);
 
-            // Draw the material to a textured quad.
             Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
             framebuffer.Bind();
 
-            RenderTools.DrawNudMaterialSphere(material, screenVbo, dummyTextures);
+            // Draw the material to a textured quad.
+            RenderTools.DrawNudMaterialSphere(shader, material, screenVbo, dummyTextures);
 
+            // Save output.
             using (Bitmap image = framebuffer.ReadImagePixels(true))
             {
-                string outputPath = MainForm.executableDir + "\\Preview Images\\" + presetName;
+                string outputPath =  String.Format("{0}\\Preview Images\\{1}.png", MainForm.executableDir, presetName);
                 image.Save(outputPath);
             }
         }

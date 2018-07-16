@@ -121,7 +121,7 @@ namespace Smash_Forge
             { 0x06, "4 mip levels, trilinear on, anisotropic on"}
         };
 
-        public NUDMaterialEditor()
+        private NUDMaterialEditor()
         {
             InitializeComponent();
         }
@@ -300,13 +300,13 @@ namespace Smash_Forge
                 if (mat.hasCubeMap)
                     texturesListView.Items.Add("Cubemap");
                 if (mat.hasAoMap)
-                    texturesListView.Items.Add("AO Map");
+                    texturesListView.Items.Add("AOMap");
                 if (mat.hasNormalMap)
                     texturesListView.Items.Add("NormalMap");
                 if (mat.hasRamp)
                     texturesListView.Items.Add("Ramp");
                 if (mat.hasDummyRamp)
-                    texturesListView.Items.Add("Dummy Ramp");
+                    texturesListView.Items.Add("DummyRamp");
             }
         }
 
