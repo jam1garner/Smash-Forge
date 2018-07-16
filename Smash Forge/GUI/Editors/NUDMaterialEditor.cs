@@ -12,7 +12,6 @@ using WeifenLuo.WinFormsUI.Docking;
 using System.IO;
 using OpenTK.Graphics.OpenGL;
 using System.Timers;
-using System.Windows.Input;
 using System.Diagnostics;
 using Smash_Forge.Rendering;
 using SFGraphics.Tools;
@@ -743,51 +742,6 @@ namespace Smash_Forge
             }
         }
 
-        //Saving Mat
-        private void savePresetButton_Click(object sender, EventArgs e)
-        {
-            using (var sfd = new SaveFileDialog())
-            {
-                sfd.Filter = "Namco Material (NMT)|*.nmt|" +
-                             "All files(*.*)|*.*";
-
-                sfd.InitialDirectory = Path.Combine(MainForm.executableDir,"materials\\");
-                Console.WriteLine(sfd.InitialDirectory);
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    sfd.FileName = sfd.FileName;
-                    sfd.RestoreDirectory = true;
-
-                    if (sfd.FileName.EndsWith(".nmt"))
-                    {
-                        FileOutput m = new FileOutput();
-                        FileOutput s = new FileOutput();
-
-                        int[] c = NUD.WriteMaterial(m, currentMaterialList, s);
-
-                        FileOutput fin = new FileOutput();
-                        
-                        fin.writeInt(0);
-
-                        fin.writeInt(20 + c[0]);
-                        for (int i = 1; i < 4; i++)
-                        {
-                            fin.writeInt(c[i] == c[i-1] ? 0 : 20 + c[i]);
-                        }
-
-                        for (int i = 0; i < 4 - c.Length; i++)
-                            fin.writeInt(0);
-                        
-                        fin.writeOutput(m);
-                        fin.align(32, 0xFF);
-                        fin.writeIntAt(fin.size(), 0);
-                        fin.writeOutput(s);
-                        fin.save(sfd.FileName);
-                    }
-                }
-            }
-        }
-
         private void loadPresetButton_Click(object sender, EventArgs e)
         {
             MaterialSelector matSelector = new MaterialSelector();
@@ -1054,8 +1008,9 @@ namespace Smash_Forge
             currentMaterialList[currentMatIndex].alphaTest = alphaTestCB.Checked ? 0x2 : 0x0;
 
             // Only enable extra settings when alpha testing is enabled.
-            refAlphaTableLayout.Visible = alphaTestCB.Checked;
-            alphaFuncTableLayout.Visible = alphaTestCB.Checked;
+            alphaFuncRefPanel.Visible = alphaTestCB.Checked;
+            // Force all flow layouts to rescale children.
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(generalFlowLayout);
         }
 
         private void flagsButton_Click(object sender, EventArgs e)
@@ -1078,29 +1033,53 @@ namespace Smash_Forge
             miscPanel.Visible = !miscPanel.Visible;
         }
 
-        private void label11_Click(object sender, EventArgs e)
+        private void flowLayout_Resize(object sender, EventArgs e)
         {
-
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth((FlowLayoutPanel)sender);
         }
 
-        private void paramsFlowLayout_Resize(object sender, EventArgs e)
+        private void savePresetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GuiTools.ScaleControlsHorizontallyToLayoutWidth(paramsFlowLayout);
-        }
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Namco Material (NMT)|*.nmt|" +
+                             "All files(*.*)|*.*";
 
-        private void selectedPropFlowLayout_Resize(object sender, EventArgs e)
-        {
-            GuiTools.ScaleControlsHorizontallyToLayoutWidth(selectedPropFlowLayout);
-        }
+                sfd.InitialDirectory = Path.Combine(MainForm.executableDir, "materials\\");
+                Console.WriteLine(sfd.InitialDirectory);
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    sfd.FileName = sfd.FileName;
+                    sfd.RestoreDirectory = true;
 
-        private void generalFlowLayout_Resize(object sender, EventArgs e)
-        {
-            GuiTools.ScaleControlsHorizontallyToLayoutWidth(generalFlowLayout);
-        }
+                    if (sfd.FileName.EndsWith(".nmt"))
+                    {
+                        FileOutput m = new FileOutput();
+                        FileOutput s = new FileOutput();
 
-        private void miscFlowLayout_Resize(object sender, EventArgs e)
-        {
-            GuiTools.ScaleControlsHorizontallyToLayoutWidth(miscFlowLayout);
+                        int[] c = NUD.WriteMaterial(m, currentMaterialList, s);
+
+                        FileOutput fin = new FileOutput();
+
+                        fin.writeInt(0);
+
+                        fin.writeInt(20 + c[0]);
+                        for (int i = 1; i < 4; i++)
+                        {
+                            fin.writeInt(c[i] == c[i - 1] ? 0 : 20 + c[i]);
+                        }
+
+                        for (int i = 0; i < 4 - c.Length; i++)
+                            fin.writeInt(0);
+
+                        fin.writeOutput(m);
+                        fin.align(32, 0xFF);
+                        fin.writeIntAt(fin.size(), 0);
+                        fin.writeOutput(s);
+                        fin.save(sfd.FileName);
+                    }
+                }
+            }
         }
     }
 }
