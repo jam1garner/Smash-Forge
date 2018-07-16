@@ -134,6 +134,11 @@ namespace Smash_Forge
             FillForm();
             matsComboBox.SelectedIndex = 0;
 
+            // Set padding between elements.
+            ImageList imgList = new ImageList();
+            imgList.ImageSize = new Size(1, 30);
+            texturesListView.SmallImageList = imgList;
+
             // The dummy textures will be used later. 
             RenderTools.SetUpOpenTkRendering();
 
@@ -170,7 +175,7 @@ namespace Smash_Forge
         {
             UpdateMatComboBox();
 
-            tableLayoutPanel2.Enabled = false;
+            texParamsTableLayout.Enabled = false;
 
             matPropertyComboBox.Items.Clear();
 
@@ -368,12 +373,12 @@ namespace Smash_Forge
             if (texturesListView.SelectedItems.Count > 0)
             {
                 index = texturesListView.Items.IndexOf(texturesListView.SelectedItems[0]);
-                tableLayoutPanel2.Enabled = true;
+                texParamsTableLayout.Enabled = true;
                 textureIDTB.Enabled = true;
             }
             else
             {
-                tableLayoutPanel2.Enabled = false;
+                texParamsTableLayout.Enabled = false;
                 textureIDTB.Enabled = false;
             }
             if(index >= currentMaterialList[currentMatIndex].textures.Count)
@@ -1100,6 +1105,11 @@ namespace Smash_Forge
             NUD.Material mat = currentMaterialList[currentMatIndex];
             if (matValueByCullModeName.ContainsKey(cullModeComboBox.SelectedItem.ToString()))
                 mat.cullMode = matValueByCullModeName[cullModeComboBox.SelectedItem.ToString()];
+        }
+
+        private void NUDMaterialEditor_Resize(object sender, EventArgs e)
+        {
+            Debug.WriteLine(Size);
         }
     }
 }
