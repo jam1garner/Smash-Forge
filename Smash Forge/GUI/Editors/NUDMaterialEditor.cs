@@ -1082,5 +1082,25 @@ namespace Smash_Forge
         {
 
         }
+
+        private void paramsFlowLayout_Resize(object sender, EventArgs e)
+        {
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(paramsFlowLayout);
+        }
+
+        private void selectedPropFlowLayout_Resize(object sender, EventArgs e)
+        {
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(selectedPropFlowLayout);
+        }
+
+        private void generalFlowLayout_Resize(object sender, EventArgs e)
+        {
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(generalFlowLayout);
+        }
+
+        private void miscFlowLayout_Resize(object sender, EventArgs e)
+        {
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(miscFlowLayout);
+        }
     }
 }
