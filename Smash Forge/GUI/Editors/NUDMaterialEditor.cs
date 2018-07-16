@@ -232,7 +232,6 @@ namespace Smash_Forge
             srcTB.Text = mat.srcFactor + "";
             dstTB.Text = mat.dstFactor + "";
             refAlphaTB.Text = mat.RefAlpha + "";
-            cullModeTB.Text = mat.cullMode + "";
             zBufferTB.Text = mat.zBufferOffset + "";
         }
 
@@ -333,17 +332,7 @@ namespace Smash_Forge
 
         private void cullModeComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            foreach (int i in cullmode.Keys)
-                if (cullmode[i].Equals(cullModeComboBox.SelectedItem))
-                {
-                    cullModeTB.Text = i + "";
-                    break;
-                }
-        }
 
-        private void cullModeTB_TextChanged(object sender, EventArgs e)
-        {
-            SetValue(cullModeTB, cullModeComboBox, cullmode, out currentMaterialList[currentMatIndex].cullMode);
         }
 
         private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
@@ -535,6 +524,20 @@ namespace Smash_Forge
             SetPropertyLabelText(currentPropertyName);
             SetParamTextBoxValues(currentPropertyName);
             SetParamLabelsAndToolTips(matParam);
+        }
+
+        private void propertiesListView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                NUD.Material mat = currentMaterialList[currentMatIndex];
+                foreach (ListViewItem property in propertiesListView.SelectedItems)
+                {
+                    mat.entries.Remove(property.Text);
+                }
+                FillForm();
+                e.Handled = true;
+            }
         }
 
         private void SetParamTextBoxValues(string propertyName)
@@ -875,25 +878,13 @@ namespace Smash_Forge
             }
         }
 
-        private void listView1_KeyPress(object sender, KeyPressEventArgs e)
+        private void texturesListView_KeyPress(object sender, KeyPressEventArgs e)
         {
             if(e.KeyChar == 'd' && texturesListView.SelectedIndices.Count > 0)
             {
                 if(currentMaterialList[currentMatIndex].textures.Count > 1)
                 {
                     currentMaterialList[currentMatIndex].textures.RemoveAt(texturesListView.SelectedIndices[0]);
-                    FillForm();
-                }
-            }
-        }
-
-        private void listView2_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if ((e.KeyChar == 'd') && propertiesListView.SelectedIndices.Count > 0)
-            {
-                if (currentMaterialList[currentMatIndex].entries.Count > 1)
-                {
-                    currentMaterialList[currentMatIndex].entries.Remove(propertiesListView.SelectedItems[0].Text);
                     FillForm();
                 }
             }
@@ -932,18 +923,6 @@ namespace Smash_Forge
             }
         }
 
-        private void listView2_KeyUp(object sender, KeyEventArgs e)
-        {
-            if ((e.KeyCode == Keys.Delete) && propertiesListView.SelectedIndices.Count > 0)
-            {
-                if (currentMaterialList[currentMatIndex].textures.Count > 1)
-                {
-                    currentMaterialList[currentMatIndex].entries.Remove(propertiesListView.SelectedItems[0].Text);
-                    FillForm();
-                }
-            }
-        }
-
         private void sphereMapCB_CheckedChanged(object sender, EventArgs e)
         {
             currentMaterialList[currentMatIndex].hasSphereMap = sphereMapCB.Checked;
@@ -979,19 +958,6 @@ namespace Smash_Forge
         private void texAlphaGlControl_Paint(object sender, PaintEventArgs e)
         {
             RenderTexture(true);
-        }
-
-        private void listView2_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.KeyCode == Keys.Delete)
-            {
-                NUD.Material mat = currentMaterialList[currentMatIndex];
-                foreach (var property in propertiesListView.SelectedItems)
-                {
-                    mat.entries.Remove(property.ToString());
-                }
-                e.Handled = true;
-            }
         }
 
         private void param1TrackBar_Scroll(object sender, EventArgs e)
@@ -1108,6 +1074,16 @@ namespace Smash_Forge
         private void alphaBlendButton_Click(object sender, EventArgs e)
         {
             alphaBlendPanel.Visible = !alphaBlendPanel.Visible;
+        }
+
+        private void miscButton_Click(object sender, EventArgs e)
+        {
+            miscPanel.Visible = !miscPanel.Visible;
+        }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
