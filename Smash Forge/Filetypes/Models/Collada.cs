@@ -1401,7 +1401,8 @@ namespace Smash_Forge
                         {
                             if (childNode.Name == "param")
                             {
-                                accessorParams.Add(childNode.Attributes["name"].Value);
+                                if (childNode.Attributes["name"] != null)
+                                    accessorParams.Add(childNode.Attributes["name"].Value);
                             }
                         }
                     }
