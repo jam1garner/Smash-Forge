@@ -12,7 +12,6 @@ using WeifenLuo.WinFormsUI.Docking;
 using System.IO;
 using OpenTK.Graphics.OpenGL;
 using System.Timers;
-using System.Windows.Input;
 using System.Diagnostics;
 using Smash_Forge.Rendering;
 using SFGraphics.Tools;
@@ -54,27 +53,34 @@ namespace Smash_Forge
             { 0x33, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy1"}
         };
 
-        public static Dictionary<int, string> cullmode = new Dictionary<int, string>()
+        public static Dictionary<int, string> cullModeByMatValue = new Dictionary<int, string>()
         {
-            { 0x0000, "Cull None"},
-            { 0x0404, "Cull Outside"},
-            { 0x0405, "Cull Inside"}
+            { 0x000, "Cull None"},
+            { 0x404, "Cull Outside"},
+            { 0x405, "Cull Inside"}
         };
 
-        public static Dictionary<int, string> AlphaTest = new Dictionary<int, string>()
+        public static Dictionary<string, int> matValueByCullModeName = new Dictionary<string, int>()
+        {
+            { "Cull None", 0x000 },
+            { "Cull Outside", 0x404 },
+            { "Cull Inside", 0x405 }
+        };
+
+        public static Dictionary<int, string> alphaTestByMatValue = new Dictionary<int, string>()
         {
             { 0x00, "Alpha Test Disabled"},
             { 0x02, "Alpha Test Enabled"},
         };
 
-        public static Dictionary<int, string> AlphaFunc = new Dictionary<int, string>()
+        public static Dictionary<int, string> alphaFuncByMatValue = new Dictionary<int, string>()
         {
             { 0x00, "Never"},
             { 0x04, "Lequal Ref Alpha + ??"},
             { 0x06, "Lequal Ref Alpha + ???"}
         };
 
-        public static Dictionary<int, string> mapmode = new Dictionary<int, string>()
+        public static Dictionary<int, string> mapModeByMatValue = new Dictionary<int, string>()
         {
             { 0x00, "TexCoord"},
             { 0x1D00, "EnvCamera"},
@@ -83,7 +89,7 @@ namespace Smash_Forge
             { 0x1F00, "EnvSpec"}
         };
 
-        public static Dictionary<int, string> minfilter = new Dictionary<int, string>()
+        public static Dictionary<int, string> minFilterByMatValue = new Dictionary<int, string>()
         {
             { 0x00, "Linear_Mipmap_Linear"},
             { 0x01, "Nearest"},
@@ -91,21 +97,21 @@ namespace Smash_Forge
             { 0x03, "Nearest_Mipmap_Linear"}
         };
 
-        public static Dictionary<int, string> magfilter = new Dictionary<int, string>()
+        public static Dictionary<int, string> magFilterByMatValue = new Dictionary<int, string>()
         {
             { 0x00, "???"},
             { 0x01, "Nearest"},
             { 0x02, "Linear"}
         };
 
-        public static Dictionary<int, string> wrapmode = new Dictionary<int, string>()
+        public static Dictionary<int, string> wrapModeByMatValue = new Dictionary<int, string>()
         {
             { 0x01, "Repeat"},
             { 0x02, "Mirror"},
             { 0x03, "Clamp"}
         };
 
-        public static Dictionary<int, string> mip = new Dictionary<int, string>()
+        public static Dictionary<int, string> mipDetailByMatValue = new Dictionary<int, string>()
         {
             { 0x01, "1 mip level, anisotropic off"},
             { 0x02, "1 mip level, anisotropic off 2"},
@@ -115,7 +121,7 @@ namespace Smash_Forge
             { 0x06, "4 mip levels, trilinear on, anisotropic on"}
         };
 
-        public NUDMaterialEditor()
+        private NUDMaterialEditor()
         {
             InitializeComponent();
         }
@@ -127,6 +133,11 @@ namespace Smash_Forge
             Init();
             FillForm();
             matsComboBox.SelectedIndex = 0;
+
+            // Set padding between elements.
+            ImageList imgList = new ImageList();
+            imgList.ImageSize = new Size(1, 30);
+            texturesListView.SmallImageList = imgList;
 
             // The dummy textures will be used later. 
             RenderTools.SetUpOpenTkRendering();
@@ -164,40 +175,34 @@ namespace Smash_Forge
         {
             UpdateMatComboBox();
 
-            tableLayoutPanel2.Enabled = false;
+            texParamsTableLayout.Enabled = false;
 
             matPropertyComboBox.Items.Clear();
 
             if (materialParamList.Count == 0)
                 InitMaterialParamList();
 
+            // HACK: ???
             if (wrapXComboBox.Items.Count == 0)
             {               
-                foreach (int i in srcFactor.Keys)
-                    srcComboBox.Items.Add(srcFactor[i]);
-                foreach (int i in dstFactor.Keys)
-                    dstComboBox.Items.Add(dstFactor[i]);
-                
-                foreach (int i in cullmode.Keys)
-                    cullModeComboBox.Items.Add(cullmode[i]);
-                foreach (int i in AlphaTest.Keys)
-                    alphaTestComboBox.Items.Add(AlphaTest[i]);
-                foreach (int i in AlphaFunc.Keys)
-                    AlphaFuncComboBox.Items.Add(AlphaFunc[i]);
+                foreach (int i in cullModeByMatValue.Keys)
+                    cullModeComboBox.Items.Add(cullModeByMatValue[i]);
+                foreach (int i in alphaFuncByMatValue.Keys)
+                    alphaFuncComboBox.Items.Add(alphaFuncByMatValue[i]);
 
-                foreach (int i in wrapmode.Keys)
+                foreach (int i in wrapModeByMatValue.Keys)
                 {
-                    wrapXComboBox.Items.Add(wrapmode[i]);
-                    wrapYComboBox.Items.Add(wrapmode[i]);
+                    wrapXComboBox.Items.Add(wrapModeByMatValue[i]);
+                    wrapYComboBox.Items.Add(wrapModeByMatValue[i]);
                 }
-                foreach (int i in mapmode.Keys)
-                    mapModeComboBox.Items.Add(mapmode[i]);
-                foreach (int i in minfilter.Keys)
-                    minFilterComboBox.Items.Add(minfilter[i]);
-                foreach (int i in magfilter.Keys)
-                    magFilterComboBox.Items.Add(magfilter[i]);
-                foreach (int i in mip.Keys)
-                    mipDetailComboBox.Items.Add(mip[i]);
+                foreach (int i in mapModeByMatValue.Keys)
+                    mapModeComboBox.Items.Add(mapModeByMatValue[i]);
+                foreach (int i in minFilterByMatValue.Keys)
+                    minFilterComboBox.Items.Add(minFilterByMatValue[i]);
+                foreach (int i in magFilterByMatValue.Keys)
+                    magFilterComboBox.Items.Add(magFilterByMatValue[i]);
+                foreach (int i in mipDetailByMatValue.Keys)
+                    mipDetailComboBox.Items.Add(mipDetailByMatValue[i]);
             }
         }
 
@@ -223,14 +228,18 @@ namespace Smash_Forge
 
         private void InitializeComboBoxes(NUD.Material mat)
         {
-            alphaTestComboBox.SelectedItem = AlphaTest[mat.alphaTest];
-            AlphaFuncComboBox.SelectedItem = AlphaFunc[mat.alphaFunction];
+            alphaFuncComboBox.SelectedItem = alphaFuncByMatValue[mat.alphaFunction];
+            cullModeComboBox.SelectedItem = cullModeByMatValue[mat.cullMode];
         }
 
         private void InitializeCheckBoxes(NUD.Material mat)
         {
             shadowCB.Checked = mat.hasShadow;
             GlowCB.Checked = mat.glow;
+
+            alphaTestCB.Checked = mat.alphaTest == 0x2;
+            // Enable/disable extra controls.
+            alphaTestCB_CheckedChanged(null, null);
         }
 
         private void InitializeTextBoxes(NUD.Material mat)
@@ -239,7 +248,6 @@ namespace Smash_Forge
             srcTB.Text = mat.srcFactor + "";
             dstTB.Text = mat.dstFactor + "";
             refAlphaTB.Text = mat.RefAlpha + "";
-            cullModeTB.Text = mat.cullMode + "";
             zBufferTB.Text = mat.zBufferOffset + "";
         }
 
@@ -297,13 +305,13 @@ namespace Smash_Forge
                 if (mat.hasCubeMap)
                     texturesListView.Items.Add("Cubemap");
                 if (mat.hasAoMap)
-                    texturesListView.Items.Add("AO Map");
+                    texturesListView.Items.Add("AOMap");
                 if (mat.hasNormalMap)
                     texturesListView.Items.Add("NormalMap");
                 if (mat.hasRamp)
                     texturesListView.Items.Add("Ramp");
                 if (mat.hasDummyRamp)
-                    texturesListView.Items.Add("Dummy Ramp");
+                    texturesListView.Items.Add("DummyRamp");
             }
         }
 
@@ -313,46 +321,18 @@ namespace Smash_Forge
             FillForm();
         }
 
-        private void srcComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (srcComboBox.SelectedItem == null)
-                return;
-
-            // Find the src factor for the given description.
-            foreach (int srcFactor in srcFactor.Keys)
-            {
-                if (NUDMaterialEditor.srcFactor[srcFactor].Equals(srcComboBox.SelectedItem))
-                {
-                    srcTB.Text = srcFactor + "";
-                    break;
-                }
-            }
-        }
-
         private void srcTB_TextChanged(object sender, EventArgs e)
         {
-            SetValue(srcTB, srcComboBox, srcFactor, out currentMaterialList[currentMatIndex].srcFactor);
-        }
-
-        private void dstComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (dstComboBox.SelectedItem == null)
-                return;
-
-            // Find the dst factor for the given description.
-            foreach (int i in dstFactor.Keys)
-            {
-                if (dstFactor[i].Equals(dstComboBox.SelectedItem))
-                {
-                    dstTB.Text = i + "";
-                    break;
-                }
-            }
+            int value = GuiTools.TryParseTBInt(srcTB);
+            if (value != -1)
+                currentMaterialList[currentMatIndex].srcFactor = value;
         }
 
         private void dstTB_TextChanged(object sender, EventArgs e)
         {
-            SetValue(dstTB, dstComboBox, dstFactor, out currentMaterialList[currentMatIndex].dstFactor);
+            int value = GuiTools.TryParseTBInt(dstTB);
+            if (value != -1)
+                currentMaterialList[currentMatIndex].dstFactor = value;
         }
 
         public void SetValue(TextBox textBox, ComboBox combobox, Dictionary<int, string> dict, out int materialValue)
@@ -372,64 +352,33 @@ namespace Smash_Forge
 
         private void cullModeComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            foreach (int i in cullmode.Keys)
-                if (cullmode[i].Equals(cullModeComboBox.SelectedItem))
-                {
-                    cullModeTB.Text = i + "";
-                    break;
-                }
+
         }
 
-        private void cullModeTB_TextChanged(object sender, EventArgs e)
-        {
-            SetValue(cullModeTB, cullModeComboBox, cullmode, out currentMaterialList[currentMatIndex].cullMode);
-        }
-
-        private void alphaTestComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            foreach (int i in AlphaTest.Keys)
-                if (AlphaTest[i].Equals(alphaTestComboBox.SelectedItem))
-                {
-                    alphaTestTB.Text = i + "";
-                    break;
-                }
-        }
-
-        private void alphaTestTB_TextChanged(object sender, EventArgs e)
-        {
-            int.TryParse(alphaTestTB.Text, out currentMaterialList[currentMatIndex].alphaTest);
-        }
-        
         private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
         {
-
-            foreach (int i in AlphaFunc.Keys)
-                if (AlphaFunc[i].Equals(AlphaFuncComboBox.SelectedItem))
+            foreach (int i in alphaFuncByMatValue.Keys)
+            {
+                if (alphaFuncByMatValue[i].Equals(alphaFuncComboBox.SelectedItem))
                 {
-                    Console.WriteLine(AlphaFunc[i] + " " + i);
-                    alphaFuncTB.Text = i + "";
                     currentMaterialList[currentMatIndex].alphaFunction = i;
                     break;
                 }
+            }
         }
         
-        private void alphaFuncTB_TextChanged(object sender, EventArgs e)
-        {
-            int.TryParse(alphaFuncTB.Text, out currentMaterialList[currentMatIndex].alphaFunction);
-        }
-
         private void texturesListView_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = 0;
             if (texturesListView.SelectedItems.Count > 0)
             {
                 index = texturesListView.Items.IndexOf(texturesListView.SelectedItems[0]);
-                tableLayoutPanel2.Enabled = true;
+                texParamsTableLayout.Enabled = true;
                 textureIDTB.Enabled = true;
             }
             else
             {
-                tableLayoutPanel2.Enabled = false;
+                texParamsTableLayout.Enabled = false;
                 textureIDTB.Enabled = false;
             }
             if(index >= currentMaterialList[currentMatIndex].textures.Count)
@@ -440,12 +389,12 @@ namespace Smash_Forge
             NUD.MatTexture tex = currentMaterialList[currentMatIndex].textures[index];
             textureIDTB.Text = tex.hash.ToString("X");
 
-            mapModeComboBox.SelectedItem = mapmode[tex.mapMode];
-            wrapXComboBox.SelectedItem = wrapmode[tex.wrapModeS];
-            wrapYComboBox.SelectedItem = wrapmode[tex.wrapModeT];
-            minFilterComboBox.SelectedItem = minfilter[tex.minFilter];
-            magFilterComboBox.SelectedItem = magfilter[tex.magFilter];
-            mipDetailComboBox.SelectedItem = mip[tex.mipDetail];
+            mapModeComboBox.SelectedItem = mapModeByMatValue[tex.mapMode];
+            wrapXComboBox.SelectedItem = wrapModeByMatValue[tex.wrapModeS];
+            wrapYComboBox.SelectedItem = wrapModeByMatValue[tex.wrapModeT];
+            minFilterComboBox.SelectedItem = minFilterByMatValue[tex.minFilter];
+            magFilterComboBox.SelectedItem = magFilterByMatValue[tex.magFilter];
+            mipDetailComboBox.SelectedItem = mipDetailByMatValue[tex.mipDetail];
             RenderTexture();
             RenderTexture(true);
         }
@@ -507,8 +456,8 @@ namespace Smash_Forge
 
         private void mapModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in mapmode.Keys)
-                if (mapmode[i].Equals(mapModeComboBox.SelectedItem))
+            foreach (int i in mapModeByMatValue.Keys)
+                if (mapModeByMatValue[i].Equals(mapModeComboBox.SelectedItem))
                 {
                     currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].mapMode = i;
                     break;
@@ -517,8 +466,8 @@ namespace Smash_Forge
 
         private void wrapXComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in wrapmode.Keys)
-                if (wrapmode[i].Equals(wrapXComboBox.SelectedItem))
+            foreach (int i in wrapModeByMatValue.Keys)
+                if (wrapModeByMatValue[i].Equals(wrapXComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].wrapModeS = i;
@@ -528,8 +477,8 @@ namespace Smash_Forge
 
         private void wrapYComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in wrapmode.Keys)
-                if (wrapmode[i].Equals(wrapYComboBox.SelectedItem))
+            foreach (int i in wrapModeByMatValue.Keys)
+                if (wrapModeByMatValue[i].Equals(wrapYComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].wrapModeT = i;
@@ -539,8 +488,8 @@ namespace Smash_Forge
 
         private void minFilterComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in minfilter.Keys)
-                if (minfilter[i].Equals(minFilterComboBox.SelectedItem))
+            foreach (int i in minFilterByMatValue.Keys)
+                if (minFilterByMatValue[i].Equals(minFilterComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].minFilter = i;
@@ -550,8 +499,8 @@ namespace Smash_Forge
 
         private void comboBox12_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in magfilter.Keys)
-                if (magfilter[i].Equals(magFilterComboBox.SelectedItem))
+            foreach (int i in magFilterByMatValue.Keys)
+                if (magFilterByMatValue[i].Equals(magFilterComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].magFilter = i;
@@ -561,8 +510,8 @@ namespace Smash_Forge
 
         private void comboBox13_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in mip.Keys)
-                if (mip[i].Equals(mipDetailComboBox.SelectedItem))
+            foreach (int i in mipDetailByMatValue.Keys)
+                if (mipDetailByMatValue[i].Equals(mipDetailComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].mipDetail = i;
@@ -588,6 +537,20 @@ namespace Smash_Forge
             SetPropertyLabelText(currentPropertyName);
             SetParamTextBoxValues(currentPropertyName);
             SetParamLabelsAndToolTips(matParam);
+        }
+
+        private void propertiesListView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                NUD.Material mat = currentMaterialList[currentMatIndex];
+                foreach (ListViewItem property in propertiesListView.SelectedItems)
+                {
+                    mat.entries.Remove(property.Text);
+                }
+                FillForm();
+                e.Handled = true;
+            }
         }
 
         private void SetParamTextBoxValues(string propertyName)
@@ -699,10 +662,10 @@ namespace Smash_Forge
 
             materialParamList.TryGetValue(propertyName, out matParam);
 
-            tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 0));
-            tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 1));
-            tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 2));
-            tableLayoutPanel1.Controls.Remove(tableLayoutPanel1.GetControlFromPosition(2, 3));
+            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 0));
+            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 1));
+            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 2));
+            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 3));
 
         }
 
@@ -796,51 +759,6 @@ namespace Smash_Forge
             }
         }
 
-        //Saving Mat
-        private void savePresetButton_Click(object sender, EventArgs e)
-        {
-            using (var sfd = new SaveFileDialog())
-            {
-                sfd.Filter = "Namco Material (NMT)|*.nmt|" +
-                             "All files(*.*)|*.*";
-
-                sfd.InitialDirectory = Path.Combine(MainForm.executableDir,"materials\\");
-                Console.WriteLine(sfd.InitialDirectory);
-                if (sfd.ShowDialog() == DialogResult.OK)
-                {
-                    sfd.FileName = sfd.FileName;
-                    sfd.RestoreDirectory = true;
-
-                    if (sfd.FileName.EndsWith(".nmt"))
-                    {
-                        FileOutput m = new FileOutput();
-                        FileOutput s = new FileOutput();
-
-                        int[] c = NUD.WriteMaterial(m, currentMaterialList, s);
-
-                        FileOutput fin = new FileOutput();
-                        
-                        fin.writeInt(0);
-
-                        fin.writeInt(20 + c[0]);
-                        for (int i = 1; i < 4; i++)
-                        {
-                            fin.writeInt(c[i] == c[i-1] ? 0 : 20 + c[i]);
-                        }
-
-                        for (int i = 0; i < 4 - c.Length; i++)
-                            fin.writeInt(0);
-                        
-                        fin.writeOutput(m);
-                        fin.align(32, 0xFF);
-                        fin.writeIntAt(fin.size(), 0);
-                        fin.writeOutput(s);
-                        fin.save(sfd.FileName);
-                    }
-                }
-            }
-        }
-
         private void loadPresetButton_Click(object sender, EventArgs e)
         {
             MaterialSelector matSelector = new MaterialSelector();
@@ -928,25 +846,13 @@ namespace Smash_Forge
             }
         }
 
-        private void listView1_KeyPress(object sender, KeyPressEventArgs e)
+        private void texturesListView_KeyPress(object sender, KeyPressEventArgs e)
         {
             if(e.KeyChar == 'd' && texturesListView.SelectedIndices.Count > 0)
             {
                 if(currentMaterialList[currentMatIndex].textures.Count > 1)
                 {
                     currentMaterialList[currentMatIndex].textures.RemoveAt(texturesListView.SelectedIndices[0]);
-                    FillForm();
-                }
-            }
-        }
-
-        private void listView2_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if ((e.KeyChar == 'd') && propertiesListView.SelectedIndices.Count > 0)
-            {
-                if (currentMaterialList[currentMatIndex].entries.Count > 1)
-                {
-                    currentMaterialList[currentMatIndex].entries.Remove(propertiesListView.SelectedItems[0].Text);
                     FillForm();
                 }
             }
@@ -985,18 +891,6 @@ namespace Smash_Forge
             }
         }
 
-        private void listView2_KeyUp(object sender, KeyEventArgs e)
-        {
-            if ((e.KeyCode == Keys.Delete) && propertiesListView.SelectedIndices.Count > 0)
-            {
-                if (currentMaterialList[currentMatIndex].textures.Count > 1)
-                {
-                    currentMaterialList[currentMatIndex].entries.Remove(propertiesListView.SelectedItems[0].Text);
-                    FillForm();
-                }
-            }
-        }
-
         private void sphereMapCB_CheckedChanged(object sender, EventArgs e)
         {
             currentMaterialList[currentMatIndex].hasSphereMap = sphereMapCB.Checked;
@@ -1032,19 +926,6 @@ namespace Smash_Forge
         private void texAlphaGlControl_Paint(object sender, PaintEventArgs e)
         {
             RenderTexture(true);
-        }
-
-        private void listView2_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.KeyCode == Keys.Delete)
-            {
-                NUD.Material mat = currentMaterialList[currentMatIndex];
-                foreach (var property in propertiesListView.SelectedItems)
-                {
-                    mat.entries.Remove(property.ToString());
-                }
-                e.Handled = true;
-            }
         }
 
         private void param1TrackBar_Scroll(object sender, EventArgs e)
@@ -1137,6 +1018,98 @@ namespace Smash_Forge
         private void param4TrackBar_Leave(object sender, EventArgs e)
         {
             enableParam4SliderUpdates = true;
+        }
+
+        private void alphaTestCB_CheckedChanged(object sender, EventArgs e)
+        {
+            currentMaterialList[currentMatIndex].alphaTest = alphaTestCB.Checked ? 0x2 : 0x0;
+
+            // Only enable extra settings when alpha testing is enabled.
+            alphaFuncRefPanel.Visible = alphaTestCB.Checked;
+            // Force all flow layouts to rescale children.
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(generalFlowLayout);
+        }
+
+        private void flagsButton_Click(object sender, EventArgs e)
+        {
+            flagsPanel.Visible = !flagsPanel.Visible;
+        }
+
+        private void alphaTestButton_Click(object sender, EventArgs e)
+        {
+            alphaTestPanel.Visible = !alphaTestPanel.Visible;
+        }
+
+        private void alphaBlendButton_Click(object sender, EventArgs e)
+        {
+            alphaBlendPanel.Visible = !alphaBlendPanel.Visible;
+        }
+
+        private void miscButton_Click(object sender, EventArgs e)
+        {
+            miscPanel.Visible = !miscPanel.Visible;
+        }
+
+        private void flowLayout_Resize(object sender, EventArgs e)
+        {
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth((FlowLayoutPanel)sender);
+        }
+
+        private void savePresetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Namco Material (NMT)|*.nmt";
+                sfd.InitialDirectory = Path.Combine(MainForm.executableDir, "materials\\");
+
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    sfd.FileName = sfd.FileName;
+                    sfd.RestoreDirectory = true;
+
+                    if (sfd.FileName.EndsWith(".nmt"))
+                        SaveMaterialToFile(sfd.FileName);
+                }
+            }
+        }
+
+        private void SaveMaterialToFile(string fileName)
+        {
+            FileOutput m = new FileOutput();
+            FileOutput s = new FileOutput();
+
+            int[] c = NUD.WriteMaterial(m, currentMaterialList, s);
+
+            FileOutput fin = new FileOutput();
+
+            fin.writeInt(0);
+
+            fin.writeInt(20 + c[0]);
+            for (int i = 1; i < 4; i++)
+            {
+                fin.writeInt(c[i] == c[i - 1] ? 0 : 20 + c[i]);
+            }
+
+            for (int i = 0; i < 4 - c.Length; i++)
+                fin.writeInt(0);
+
+            fin.writeOutput(m);
+            fin.align(32, 0xFF);
+            fin.writeIntAt(fin.size(), 0);
+            fin.writeOutput(s);
+            fin.save(fileName);
+        }
+
+        private void cullModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            NUD.Material mat = currentMaterialList[currentMatIndex];
+            if (matValueByCullModeName.ContainsKey(cullModeComboBox.SelectedItem.ToString()))
+                mat.cullMode = matValueByCullModeName[cullModeComboBox.SelectedItem.ToString()];
+        }
+
+        private void NUDMaterialEditor_Resize(object sender, EventArgs e)
+        {
+            Debug.WriteLine(Size);
         }
     }
 }

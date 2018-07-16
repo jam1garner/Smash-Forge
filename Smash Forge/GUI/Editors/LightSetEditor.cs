@@ -897,25 +897,17 @@ namespace Smash_Forge.GUI.Editors
 
         private void charLightsFlowLayout_Resize(object sender, EventArgs e)
         {
-            ResizeFlowLayoutControls(charLightsFlowLayout);
-        }
-
-        private void ResizeFlowLayoutControls(FlowLayoutPanel flowLayout)
-        {
-            foreach (Control control in flowLayout.Controls)
-            {
-                control.Width = flowLayout.Width - flowLayout.Margin.Horizontal;
-            }
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(charLightsFlowLayout);
         }
 
         private void lightSetFlowLayout_Resize(object sender, EventArgs e)
         {
-            ResizeFlowLayoutControls(lightSetFlowLayout);
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(lightSetFlowLayout);
         }
 
         private void fogFlowLayout_Resize(object sender, EventArgs e)
         {
-            ResizeFlowLayoutControls(fogFlowLayout);
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(fogFlowLayout);
         }
 
         private void areaLightColorPreviewButton_Click(object sender, EventArgs e)
@@ -960,7 +952,7 @@ namespace Smash_Forge.GUI.Editors
 
         private void areaLightFlowLayout_Resize(object sender, EventArgs e)
         {
-            ResizeFlowLayoutControls(areaLightFlowLayout);
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(areaLightFlowLayout);
         }
 
         private void areaColorGLControl_Paint(object sender, PaintEventArgs e)

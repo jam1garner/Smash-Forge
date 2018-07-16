@@ -82,8 +82,8 @@ namespace Smash_Forge
         public void AddPresetImagesFromFiles()
         {
             // Wait for thumbnail generation to finish to avoid file concurrency issues.
-            if (Rendering.MaterialPreviewRendering.RenderingCompleted != null)
-                Rendering.MaterialPreviewRendering.RenderingCompleted.Wait();
+            if (Rendering.MaterialPreviewRendering.RenderAllPresetsToFiles != null)
+                Rendering.MaterialPreviewRendering.RenderAllPresetsToFiles.Wait();
 
             // Load all of the preview images from the preview images folder.
             if (Directory.Exists(MainForm.executableDir + "//Preview Images"))
