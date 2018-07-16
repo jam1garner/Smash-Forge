@@ -1528,9 +1528,8 @@ namespace Smash_Forge.Rendering
             // Perform aspect ratio calculations in shader. 
             // This only works properly if the viewport is square.
             shader.SetBoolToInt("preserveAspectRatio", keepAspectRatio);
-            float aspectRatio = (float)width / (float)height;
-            shader.SetInt("width", width);
-            shader.SetInt("height", height);
+            shader.SetFloat("width", width);
+            shader.SetFloat("height", height);
 
             // Display certain mip levels.
             shader.SetInt("currentMipLevel", currentMipLevel);

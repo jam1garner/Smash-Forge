@@ -11,8 +11,8 @@ uniform int renderB;
 uniform int renderAlpha;
 uniform int alphaOverride;
 uniform int preserveAspectRatio;
-uniform int width;
-uniform int height;
+uniform float width;
+uniform float height;
 uniform int currentMipLevel;
 
 uniform float intensity;

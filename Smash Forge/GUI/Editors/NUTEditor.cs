@@ -929,12 +929,6 @@ namespace Smash_Forge
             glControl1.Invalidate();           
         }
 
-        private void aspectRatioCB_CheckedChanged(object sender, EventArgs e)
-        {
-            keepAspectRatio = preserveAspectRatioCB.Checked;
-            glControl1.Invalidate();
-        }
-
         private void glControl1_KeyPress(object sender, KeyPressEventArgs e)
         {
             // toggle channel rendering
