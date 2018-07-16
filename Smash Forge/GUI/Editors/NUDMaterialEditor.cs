@@ -55,9 +55,16 @@ namespace Smash_Forge
 
         public static Dictionary<int, string> cullModeByMatValue = new Dictionary<int, string>()
         {
-            { 0x0000, "Cull None"},
-            { 0x0404, "Cull Outside"},
-            { 0x0405, "Cull Inside"}
+            { 0x000, "Cull None"},
+            { 0x404, "Cull Outside"},
+            { 0x405, "Cull Inside"}
+        };
+
+        public static Dictionary<string, int> matValueByCullModeName = new Dictionary<string, int>()
+        {
+            { "Cull None", 0x000 },
+            { "Cull Outside", 0x404 },
+            { "Cull Inside", 0x405 }
         };
 
         public static Dictionary<int, string> alphaTestByMatValue = new Dictionary<int, string>()
@@ -176,7 +183,7 @@ namespace Smash_Forge
                 foreach (int i in cullModeByMatValue.Keys)
                     cullModeComboBox.Items.Add(cullModeByMatValue[i]);
                 foreach (int i in alphaFuncByMatValue.Keys)
-                    AlphaFuncComboBox.Items.Add(alphaFuncByMatValue[i]);
+                    alphaFuncComboBox.Items.Add(alphaFuncByMatValue[i]);
 
                 foreach (int i in wrapModeByMatValue.Keys)
                 {
@@ -216,7 +223,8 @@ namespace Smash_Forge
 
         private void InitializeComboBoxes(NUD.Material mat)
         {
-            AlphaFuncComboBox.SelectedItem = alphaFuncByMatValue[mat.alphaFunction];
+            alphaFuncComboBox.SelectedItem = alphaFuncByMatValue[mat.alphaFunction];
+            cullModeComboBox.SelectedItem = cullModeByMatValue[mat.cullMode];
         }
 
         private void InitializeCheckBoxes(NUD.Material mat)
@@ -342,7 +350,7 @@ namespace Smash_Forge
         {
             foreach (int i in alphaFuncByMatValue.Keys)
             {
-                if (alphaFuncByMatValue[i].Equals(AlphaFuncComboBox.SelectedItem))
+                if (alphaFuncByMatValue[i].Equals(alphaFuncComboBox.SelectedItem))
                 {
                     currentMaterialList[currentMatIndex].alphaFunction = i;
                     break;
@@ -1042,44 +1050,52 @@ namespace Smash_Forge
         {
             using (var sfd = new SaveFileDialog())
             {
-                sfd.Filter = "Namco Material (NMT)|*.nmt|" +
-                             "All files(*.*)|*.*";
-
+                sfd.Filter = "Namco Material (NMT)|*.nmt";
                 sfd.InitialDirectory = Path.Combine(MainForm.executableDir, "materials\\");
-                Console.WriteLine(sfd.InitialDirectory);
+
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     sfd.FileName = sfd.FileName;
                     sfd.RestoreDirectory = true;
 
                     if (sfd.FileName.EndsWith(".nmt"))
-                    {
-                        FileOutput m = new FileOutput();
-                        FileOutput s = new FileOutput();
-
-                        int[] c = NUD.WriteMaterial(m, currentMaterialList, s);
-
-                        FileOutput fin = new FileOutput();
-
-                        fin.writeInt(0);
-
-                        fin.writeInt(20 + c[0]);
-                        for (int i = 1; i < 4; i++)
-                        {
-                            fin.writeInt(c[i] == c[i - 1] ? 0 : 20 + c[i]);
-                        }
-
-                        for (int i = 0; i < 4 - c.Length; i++)
-                            fin.writeInt(0);
-
-                        fin.writeOutput(m);
-                        fin.align(32, 0xFF);
-                        fin.writeIntAt(fin.size(), 0);
-                        fin.writeOutput(s);
-                        fin.save(sfd.FileName);
-                    }
+                        SaveMaterialToFile(sfd.FileName);
                 }
             }
+        }
+
+        private void SaveMaterialToFile(string fileName)
+        {
+            FileOutput m = new FileOutput();
+            FileOutput s = new FileOutput();
+
+            int[] c = NUD.WriteMaterial(m, currentMaterialList, s);
+
+            FileOutput fin = new FileOutput();
+
+            fin.writeInt(0);
+
+            fin.writeInt(20 + c[0]);
+            for (int i = 1; i < 4; i++)
+            {
+                fin.writeInt(c[i] == c[i - 1] ? 0 : 20 + c[i]);
+            }
+
+            for (int i = 0; i < 4 - c.Length; i++)
+                fin.writeInt(0);
+
+            fin.writeOutput(m);
+            fin.align(32, 0xFF);
+            fin.writeIntAt(fin.size(), 0);
+            fin.writeOutput(s);
+            fin.save(fileName);
+        }
+
+        private void cullModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            NUD.Material mat = currentMaterialList[currentMatIndex];
+            if (matValueByCullModeName.ContainsKey(cullModeComboBox.SelectedItem.ToString()))
+                mat.cullMode = matValueByCullModeName[cullModeComboBox.SelectedItem.ToString()];
         }
     }
 }

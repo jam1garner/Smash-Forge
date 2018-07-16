@@ -97,7 +97,7 @@
             this.alphaTestTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.refAlphaTB = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.AlphaFuncComboBox = new System.Windows.Forms.ComboBox();
+            this.alphaFuncComboBox = new System.Windows.Forms.ComboBox();
             this.label9 = new System.Windows.Forms.Label();
             this.alphaBlendButton = new System.Windows.Forms.Button();
             this.alphaBlendPanel = new System.Windows.Forms.Panel();
@@ -121,11 +121,11 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.deleteMaterialButton = new System.Windows.Forms.Button();
             this.addMaterialButton = new System.Windows.Forms.Button();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.presetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadPresetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.savePresetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tableLayoutPanel2.SuspendLayout();
             this.propertiesGroupBox.SuspendLayout();
             this.paramsFlowLayout.SuspendLayout();
@@ -901,7 +901,7 @@
             this.alphaTestTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.alphaTestTableLayout.Controls.Add(this.refAlphaTB, 1, 1);
             this.alphaTestTableLayout.Controls.Add(this.label5, 0, 1);
-            this.alphaTestTableLayout.Controls.Add(this.AlphaFuncComboBox, 1, 0);
+            this.alphaTestTableLayout.Controls.Add(this.alphaFuncComboBox, 1, 0);
             this.alphaTestTableLayout.Controls.Add(this.label9, 0, 0);
             this.alphaTestTableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.alphaTestTableLayout.Location = new System.Drawing.Point(0, 0);
@@ -931,16 +931,16 @@
             this.label5.TabIndex = 7;
             this.label5.Text = "Reference Alpha";
             // 
-            // AlphaFuncComboBox
+            // alphaFuncComboBox
             // 
-            this.AlphaFuncComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.AlphaFuncComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.AlphaFuncComboBox.FormattingEnabled = true;
-            this.AlphaFuncComboBox.Location = new System.Drawing.Point(211, 5);
-            this.AlphaFuncComboBox.Name = "AlphaFuncComboBox";
-            this.AlphaFuncComboBox.Size = new System.Drawing.Size(202, 21);
-            this.AlphaFuncComboBox.TabIndex = 19;
-            this.AlphaFuncComboBox.SelectedIndexChanged += new System.EventHandler(this.AlphaFuncCB_SelectedIndexChanged);
+            this.alphaFuncComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.alphaFuncComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.alphaFuncComboBox.FormattingEnabled = true;
+            this.alphaFuncComboBox.Location = new System.Drawing.Point(211, 5);
+            this.alphaFuncComboBox.Name = "alphaFuncComboBox";
+            this.alphaFuncComboBox.Size = new System.Drawing.Size(202, 21);
+            this.alphaFuncComboBox.TabIndex = 19;
+            this.alphaFuncComboBox.SelectedIndexChanged += new System.EventHandler(this.AlphaFuncCB_SelectedIndexChanged);
             // 
             // label9
             // 
@@ -1112,6 +1112,7 @@
             this.cullModeComboBox.Name = "cullModeComboBox";
             this.cullModeComboBox.Size = new System.Drawing.Size(261, 21);
             this.cullModeComboBox.TabIndex = 18;
+            this.cullModeComboBox.SelectedIndexChanged += new System.EventHandler(this.cullModeComboBox_SelectedIndexChanged);
             this.cullModeComboBox.SelectionChangeCommitted += new System.EventHandler(this.cullModeComboBox_SelectionChangeCommitted);
             // 
             // shadowCB
@@ -1212,14 +1213,14 @@
             // loadPresetToolStripMenuItem
             // 
             this.loadPresetToolStripMenuItem.Name = "loadPresetToolStripMenuItem";
-            this.loadPresetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadPresetToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.loadPresetToolStripMenuItem.Text = "Load preset";
             this.loadPresetToolStripMenuItem.Click += new System.EventHandler(this.loadPresetButton_Click);
             // 
             // savePresetToolStripMenuItem
             // 
             this.savePresetToolStripMenuItem.Name = "savePresetToolStripMenuItem";
-            this.savePresetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.savePresetToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.savePresetToolStripMenuItem.Text = "Save preset";
             this.savePresetToolStripMenuItem.Click += new System.EventHandler(this.savePresetToolStripMenuItem_Click);
             // 
@@ -1325,7 +1326,7 @@
         private System.Windows.Forms.TextBox zBufferTB;
         private System.Windows.Forms.ComboBox cullModeComboBox;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.ComboBox AlphaFuncComboBox;
+        private System.Windows.Forms.ComboBox alphaFuncComboBox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.CheckBox shadowCB;
