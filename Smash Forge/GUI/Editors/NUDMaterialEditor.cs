@@ -318,12 +318,16 @@ namespace Smash_Forge
 
         private void srcTB_TextChanged(object sender, EventArgs e)
         {
-            //SetValue(srcTB, srcComboBox, srcFactor, out currentMaterialList[currentMatIndex].srcFactor);
+            int value = GuiTools.TryParseTBInt(srcTB);
+            if (value != -1)
+                currentMaterialList[currentMatIndex].srcFactor = value;
         }
 
         private void dstTB_TextChanged(object sender, EventArgs e)
         {
-            //SetValue(dstTB, dstComboBox, dstFactor, out currentMaterialList[currentMatIndex].dstFactor);
+            int value = GuiTools.TryParseTBInt(dstTB);
+            if (value != -1)
+                currentMaterialList[currentMatIndex].dstFactor = value;
         }
 
         public void SetValue(TextBox textBox, ComboBox combobox, Dictionary<int, string> dict, out int materialValue)

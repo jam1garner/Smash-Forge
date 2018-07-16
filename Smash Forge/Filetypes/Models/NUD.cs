@@ -840,6 +840,9 @@ namespace Smash_Forge
 
         private static void DrawModelSelection(Polygon p, Shader shader)
         {
+            // This might have been changed to reverse subtract.
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
             GL.Disable(EnableCap.DepthTest);
