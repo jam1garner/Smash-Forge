@@ -95,7 +95,6 @@
             this.alphaTestCB = new System.Windows.Forms.CheckBox();
             this.alphaFuncTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.label9 = new System.Windows.Forms.Label();
-            this.alphaFuncTB = new System.Windows.Forms.TextBox();
             this.AlphaFuncComboBox = new System.Windows.Forms.ComboBox();
             this.refAlphaTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.label5 = new System.Windows.Forms.Label();
@@ -859,13 +858,12 @@
             // 
             // alphaFuncTableLayout
             // 
-            this.alphaFuncTableLayout.ColumnCount = 3;
-            this.alphaFuncTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.alphaFuncTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.alphaFuncTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 34F));
+            this.alphaFuncTableLayout.ColumnCount = 2;
+            this.alphaFuncTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.alphaFuncTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.alphaFuncTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.alphaFuncTableLayout.Controls.Add(this.label9, 0, 0);
-            this.alphaFuncTableLayout.Controls.Add(this.alphaFuncTB, 1, 0);
-            this.alphaFuncTableLayout.Controls.Add(this.AlphaFuncComboBox, 2, 0);
+            this.alphaFuncTableLayout.Controls.Add(this.AlphaFuncComboBox, 1, 0);
             this.alphaFuncTableLayout.Location = new System.Drawing.Point(3, 26);
             this.alphaFuncTableLayout.Name = "alphaFuncTableLayout";
             this.alphaFuncTableLayout.RowCount = 1;
@@ -877,30 +875,20 @@
             // 
             this.label9.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(75, 8);
+            this.label9.Location = new System.Drawing.Point(146, 8);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(58, 13);
             this.label9.TabIndex = 20;
             this.label9.Text = "AlphaFunc";
-            // 
-            // alphaFuncTB
-            // 
-            this.alphaFuncTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.alphaFuncTB.Enabled = false;
-            this.alphaFuncTB.Location = new System.Drawing.Point(139, 4);
-            this.alphaFuncTB.Name = "alphaFuncTB";
-            this.alphaFuncTB.Size = new System.Drawing.Size(130, 20);
-            this.alphaFuncTB.TabIndex = 21;
-            this.alphaFuncTB.TextChanged += new System.EventHandler(this.alphaFuncTB_TextChanged);
             // 
             // AlphaFuncComboBox
             // 
             this.AlphaFuncComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.AlphaFuncComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.AlphaFuncComboBox.FormattingEnabled = true;
-            this.AlphaFuncComboBox.Location = new System.Drawing.Point(275, 4);
+            this.AlphaFuncComboBox.Location = new System.Drawing.Point(210, 4);
             this.AlphaFuncComboBox.Name = "AlphaFuncComboBox";
-            this.AlphaFuncComboBox.Size = new System.Drawing.Size(136, 21);
+            this.AlphaFuncComboBox.Size = new System.Drawing.Size(201, 21);
             this.AlphaFuncComboBox.TabIndex = 19;
             this.AlphaFuncComboBox.SelectedIndexChanged += new System.EventHandler(this.AlphaFuncCB_SelectedIndexChanged);
             // 
@@ -1278,7 +1266,6 @@
         private System.Windows.Forms.ComboBox AlphaFuncComboBox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox alphaFuncTB;
         private System.Windows.Forms.CheckBox shadowCB;
         private System.Windows.Forms.CheckBox GlowCB;
         private System.Windows.Forms.Label flagsLabel;

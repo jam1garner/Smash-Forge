@@ -54,27 +54,27 @@ namespace Smash_Forge
             { 0x33, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy1"}
         };
 
-        public static Dictionary<int, string> cullmode = new Dictionary<int, string>()
+        public static Dictionary<int, string> cullModeByMatValue = new Dictionary<int, string>()
         {
             { 0x0000, "Cull None"},
             { 0x0404, "Cull Outside"},
             { 0x0405, "Cull Inside"}
         };
 
-        public static Dictionary<int, string> AlphaTest = new Dictionary<int, string>()
+        public static Dictionary<int, string> alphaTestByMatValue = new Dictionary<int, string>()
         {
             { 0x00, "Alpha Test Disabled"},
             { 0x02, "Alpha Test Enabled"},
         };
 
-        public static Dictionary<int, string> AlphaFunc = new Dictionary<int, string>()
+        public static Dictionary<int, string> alphaFuncByMatValue = new Dictionary<int, string>()
         {
             { 0x00, "Never"},
             { 0x04, "Lequal Ref Alpha + ??"},
             { 0x06, "Lequal Ref Alpha + ???"}
         };
 
-        public static Dictionary<int, string> mapmode = new Dictionary<int, string>()
+        public static Dictionary<int, string> mapModeByMatValue = new Dictionary<int, string>()
         {
             { 0x00, "TexCoord"},
             { 0x1D00, "EnvCamera"},
@@ -83,7 +83,7 @@ namespace Smash_Forge
             { 0x1F00, "EnvSpec"}
         };
 
-        public static Dictionary<int, string> minfilter = new Dictionary<int, string>()
+        public static Dictionary<int, string> minFilterByMatValue = new Dictionary<int, string>()
         {
             { 0x00, "Linear_Mipmap_Linear"},
             { 0x01, "Nearest"},
@@ -91,21 +91,21 @@ namespace Smash_Forge
             { 0x03, "Nearest_Mipmap_Linear"}
         };
 
-        public static Dictionary<int, string> magfilter = new Dictionary<int, string>()
+        public static Dictionary<int, string> magFilterByMatValue = new Dictionary<int, string>()
         {
             { 0x00, "???"},
             { 0x01, "Nearest"},
             { 0x02, "Linear"}
         };
 
-        public static Dictionary<int, string> wrapmode = new Dictionary<int, string>()
+        public static Dictionary<int, string> wrapModeByMatValue = new Dictionary<int, string>()
         {
             { 0x01, "Repeat"},
             { 0x02, "Mirror"},
             { 0x03, "Clamp"}
         };
 
-        public static Dictionary<int, string> mip = new Dictionary<int, string>()
+        public static Dictionary<int, string> mipDetailByMatValue = new Dictionary<int, string>()
         {
             { 0x01, "1 mip level, anisotropic off"},
             { 0x02, "1 mip level, anisotropic off 2"},
@@ -174,24 +174,24 @@ namespace Smash_Forge
             // HACK: ???
             if (wrapXComboBox.Items.Count == 0)
             {               
-                foreach (int i in cullmode.Keys)
-                    cullModeComboBox.Items.Add(cullmode[i]);
-                foreach (int i in AlphaFunc.Keys)
-                    AlphaFuncComboBox.Items.Add(AlphaFunc[i]);
+                foreach (int i in cullModeByMatValue.Keys)
+                    cullModeComboBox.Items.Add(cullModeByMatValue[i]);
+                foreach (int i in alphaFuncByMatValue.Keys)
+                    AlphaFuncComboBox.Items.Add(alphaFuncByMatValue[i]);
 
-                foreach (int i in wrapmode.Keys)
+                foreach (int i in wrapModeByMatValue.Keys)
                 {
-                    wrapXComboBox.Items.Add(wrapmode[i]);
-                    wrapYComboBox.Items.Add(wrapmode[i]);
+                    wrapXComboBox.Items.Add(wrapModeByMatValue[i]);
+                    wrapYComboBox.Items.Add(wrapModeByMatValue[i]);
                 }
-                foreach (int i in mapmode.Keys)
-                    mapModeComboBox.Items.Add(mapmode[i]);
-                foreach (int i in minfilter.Keys)
-                    minFilterComboBox.Items.Add(minfilter[i]);
-                foreach (int i in magfilter.Keys)
-                    magFilterComboBox.Items.Add(magfilter[i]);
-                foreach (int i in mip.Keys)
-                    mipDetailComboBox.Items.Add(mip[i]);
+                foreach (int i in mapModeByMatValue.Keys)
+                    mapModeComboBox.Items.Add(mapModeByMatValue[i]);
+                foreach (int i in minFilterByMatValue.Keys)
+                    minFilterComboBox.Items.Add(minFilterByMatValue[i]);
+                foreach (int i in magFilterByMatValue.Keys)
+                    magFilterComboBox.Items.Add(magFilterByMatValue[i]);
+                foreach (int i in mipDetailByMatValue.Keys)
+                    mipDetailComboBox.Items.Add(mipDetailByMatValue[i]);
             }
         }
 
@@ -217,13 +217,17 @@ namespace Smash_Forge
 
         private void InitializeComboBoxes(NUD.Material mat)
         {
-            AlphaFuncComboBox.SelectedItem = AlphaFunc[mat.alphaFunction];
+            AlphaFuncComboBox.SelectedItem = alphaFuncByMatValue[mat.alphaFunction];
         }
 
         private void InitializeCheckBoxes(NUD.Material mat)
         {
             shadowCB.Checked = mat.hasShadow;
             GlowCB.Checked = mat.glow;
+
+            alphaTestCB.Checked = mat.alphaTest == 0x2;
+            // Enable/disable extra controls.
+            alphaTestCB_CheckedChanged(null, null);
         }
 
         private void InitializeTextBoxes(NUD.Material mat)
@@ -337,23 +341,16 @@ namespace Smash_Forge
 
         private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in AlphaFunc.Keys)
+            foreach (int i in alphaFuncByMatValue.Keys)
             {
-                if (AlphaFunc[i].Equals(AlphaFuncComboBox.SelectedItem))
+                if (alphaFuncByMatValue[i].Equals(AlphaFuncComboBox.SelectedItem))
                 {
-                    Console.WriteLine(AlphaFunc[i] + " " + i);
-                    alphaFuncTB.Text = i + "";
                     currentMaterialList[currentMatIndex].alphaFunction = i;
                     break;
                 }
             }
         }
         
-        private void alphaFuncTB_TextChanged(object sender, EventArgs e)
-        {
-            int.TryParse(alphaFuncTB.Text, out currentMaterialList[currentMatIndex].alphaFunction);
-        }
-
         private void texturesListView_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = 0;
@@ -376,12 +373,12 @@ namespace Smash_Forge
             NUD.MatTexture tex = currentMaterialList[currentMatIndex].textures[index];
             textureIDTB.Text = tex.hash.ToString("X");
 
-            mapModeComboBox.SelectedItem = mapmode[tex.mapMode];
-            wrapXComboBox.SelectedItem = wrapmode[tex.wrapModeS];
-            wrapYComboBox.SelectedItem = wrapmode[tex.wrapModeT];
-            minFilterComboBox.SelectedItem = minfilter[tex.minFilter];
-            magFilterComboBox.SelectedItem = magfilter[tex.magFilter];
-            mipDetailComboBox.SelectedItem = mip[tex.mipDetail];
+            mapModeComboBox.SelectedItem = mapModeByMatValue[tex.mapMode];
+            wrapXComboBox.SelectedItem = wrapModeByMatValue[tex.wrapModeS];
+            wrapYComboBox.SelectedItem = wrapModeByMatValue[tex.wrapModeT];
+            minFilterComboBox.SelectedItem = minFilterByMatValue[tex.minFilter];
+            magFilterComboBox.SelectedItem = magFilterByMatValue[tex.magFilter];
+            mipDetailComboBox.SelectedItem = mipDetailByMatValue[tex.mipDetail];
             RenderTexture();
             RenderTexture(true);
         }
@@ -443,8 +440,8 @@ namespace Smash_Forge
 
         private void mapModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in mapmode.Keys)
-                if (mapmode[i].Equals(mapModeComboBox.SelectedItem))
+            foreach (int i in mapModeByMatValue.Keys)
+                if (mapModeByMatValue[i].Equals(mapModeComboBox.SelectedItem))
                 {
                     currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].mapMode = i;
                     break;
@@ -453,8 +450,8 @@ namespace Smash_Forge
 
         private void wrapXComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in wrapmode.Keys)
-                if (wrapmode[i].Equals(wrapXComboBox.SelectedItem))
+            foreach (int i in wrapModeByMatValue.Keys)
+                if (wrapModeByMatValue[i].Equals(wrapXComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].wrapModeS = i;
@@ -464,8 +461,8 @@ namespace Smash_Forge
 
         private void wrapYComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in wrapmode.Keys)
-                if (wrapmode[i].Equals(wrapYComboBox.SelectedItem))
+            foreach (int i in wrapModeByMatValue.Keys)
+                if (wrapModeByMatValue[i].Equals(wrapYComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].wrapModeT = i;
@@ -475,8 +472,8 @@ namespace Smash_Forge
 
         private void minFilterComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in minfilter.Keys)
-                if (minfilter[i].Equals(minFilterComboBox.SelectedItem))
+            foreach (int i in minFilterByMatValue.Keys)
+                if (minFilterByMatValue[i].Equals(minFilterComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].minFilter = i;
@@ -486,8 +483,8 @@ namespace Smash_Forge
 
         private void comboBox12_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in magfilter.Keys)
-                if (magfilter[i].Equals(magFilterComboBox.SelectedItem))
+            foreach (int i in magFilterByMatValue.Keys)
+                if (magFilterByMatValue[i].Equals(magFilterComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].magFilter = i;
@@ -497,8 +494,8 @@ namespace Smash_Forge
 
         private void comboBox13_SelectedIndexChanged(object sender, EventArgs e)
         {
-            foreach (int i in mip.Keys)
-                if (mip[i].Equals(mipDetailComboBox.SelectedItem))
+            foreach (int i in mipDetailByMatValue.Keys)
+                if (mipDetailByMatValue[i].Equals(mipDetailComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].mipDetail = i;
