@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem17 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem18 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -117,6 +117,8 @@
             this.experimentalPanelButton = new System.Windows.Forms.Button();
             this.experimentalPanel = new System.Windows.Forms.Panel();
             this.experimentalFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+            this.renderCameraPathCB = new System.Windows.Forms.CheckBox();
+            this.areaLightBoundingBoxCB = new System.Windows.Forms.CheckBox();
             this.drawShadowCB = new System.Windows.Forms.CheckBox();
             this.depthTestCB = new System.Windows.Forms.CheckBox();
             this.zScaleTableLayout = new System.Windows.Forms.TableLayoutPanel();
@@ -131,8 +133,6 @@
             this.renderPassthroughCB = new System.Windows.Forms.CheckBox();
             this.renderSpawnsCB = new System.Windows.Forms.CheckBox();
             this.renderRespawnsCB = new System.Windows.Forms.CheckBox();
-            this.areaLightBoundingBoxCB = new System.Windows.Forms.CheckBox();
-            this.renderCameraPathCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -306,7 +306,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(579, 627);
+            this.tabPage2.Size = new System.Drawing.Size(557, 628);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Hit/Hurt boxes";
             // 
@@ -734,8 +734,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem17,
-            listViewItem18});
+            listViewItem13,
+            listViewItem14});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -857,6 +857,7 @@
             this.generalFlowLayout.Size = new System.Drawing.Size(573, 622);
             this.generalFlowLayout.TabIndex = 44;
             this.generalFlowLayout.WrapContents = false;
+            this.generalFlowLayout.Resize += new System.EventHandler(this.flowLayout_Resize);
             // 
             // modelPanelButton
             // 
@@ -876,7 +877,7 @@
             this.modelPanel.Controls.Add(this.wireframeCB);
             this.modelPanel.Location = new System.Drawing.Point(3, 32);
             this.modelPanel.Name = "modelPanel";
-            this.modelPanel.Size = new System.Drawing.Size(606, 100);
+            this.modelPanel.Size = new System.Drawing.Size(567, 100);
             this.modelPanel.TabIndex = 52;
             // 
             // boundingCB
@@ -940,7 +941,7 @@
             this.debugShadePanel.Controls.Add(this.debugFlowLayout);
             this.debugShadePanel.Location = new System.Drawing.Point(3, 167);
             this.debugShadePanel.Name = "debugShadePanel";
-            this.debugShadePanel.Size = new System.Drawing.Size(244, 141);
+            this.debugShadePanel.Size = new System.Drawing.Size(568, 141);
             this.debugShadePanel.TabIndex = 44;
             // 
             // debugFlowLayout
@@ -955,9 +956,10 @@
             this.debugFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.debugFlowLayout.Location = new System.Drawing.Point(0, 0);
             this.debugFlowLayout.Name = "debugFlowLayout";
-            this.debugFlowLayout.Size = new System.Drawing.Size(244, 141);
+            this.debugFlowLayout.Size = new System.Drawing.Size(568, 141);
             this.debugFlowLayout.TabIndex = 42;
             this.debugFlowLayout.WrapContents = false;
+            this.debugFlowLayout.Resize += new System.EventHandler(this.flowLayout_Resize);
             // 
             // debugModeTableLayout
             // 
@@ -970,11 +972,12 @@
             this.debugModeTableLayout.Name = "debugModeTableLayout";
             this.debugModeTableLayout.RowCount = 1;
             this.debugModeTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.debugModeTableLayout.Size = new System.Drawing.Size(238, 34);
+            this.debugModeTableLayout.Size = new System.Drawing.Size(562, 34);
             this.debugModeTableLayout.TabIndex = 39;
             // 
             // renderModeComboBox
             // 
+            this.renderModeComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.renderModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.renderModeComboBox.FormattingEnabled = true;
             this.renderModeComboBox.Items.AddRange(new object[] {
@@ -991,9 +994,9 @@
             "Bitangents",
             "Light Set",
             "Bone Weights"});
-            this.renderModeComboBox.Location = new System.Drawing.Point(79, 3);
+            this.renderModeComboBox.Location = new System.Drawing.Point(182, 6);
             this.renderModeComboBox.Name = "renderModeComboBox";
-            this.renderModeComboBox.Size = new System.Drawing.Size(149, 21);
+            this.renderModeComboBox.Size = new System.Drawing.Size(377, 21);
             this.renderModeComboBox.TabIndex = 16;
             this.renderModeComboBox.SelectedIndexChanged += new System.EventHandler(this.renderModeComboBox_SelectedIndexChanged);
             // 
@@ -1001,7 +1004,7 @@
             // 
             this.debugModeLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.debugModeLabel.AutoSize = true;
-            this.debugModeLabel.Location = new System.Drawing.Point(4, 10);
+            this.debugModeLabel.Location = new System.Drawing.Point(107, 10);
             this.debugModeLabel.Name = "debugModeLabel";
             this.debugModeLabel.Size = new System.Drawing.Size(69, 13);
             this.debugModeLabel.TabIndex = 28;
@@ -1010,10 +1013,10 @@
             // rgbaTableLayout
             // 
             this.rgbaTableLayout.ColumnCount = 4;
-            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
-            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.rgbaTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.rgbaTableLayout.Controls.Add(this.renderChannelR, 0, 0);
             this.rgbaTableLayout.Controls.Add(this.renderChannelG, 1, 0);
             this.rgbaTableLayout.Controls.Add(this.renderChannelB, 2, 0);
@@ -1075,10 +1078,9 @@
             // debugRadioTableLayout
             // 
             this.debugRadioTableLayout.ColumnCount = 3;
-            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 34F));
-            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.debugRadioTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.debugRadioTableLayout.Controls.Add(this.radioButton1, 0, 0);
             this.debugRadioTableLayout.Controls.Add(this.radioButton2, 1, 0);
             this.debugRadioTableLayout.Controls.Add(this.radioButton3, 2, 0);
@@ -1086,7 +1088,7 @@
             this.debugRadioTableLayout.Name = "debugRadioTableLayout";
             this.debugRadioTableLayout.RowCount = 1;
             this.debugRadioTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.debugRadioTableLayout.Size = new System.Drawing.Size(201, 33);
+            this.debugRadioTableLayout.Size = new System.Drawing.Size(176, 33);
             this.debugRadioTableLayout.TabIndex = 41;
             // 
             // radioButton1
@@ -1104,7 +1106,7 @@
             // radioButton2
             // 
             this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(69, 3);
+            this.radioButton2.Location = new System.Drawing.Point(55, 3);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(46, 17);
             this.radioButton2.TabIndex = 37;
@@ -1116,7 +1118,7 @@
             // radioButton3
             // 
             this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(135, 3);
+            this.radioButton3.Location = new System.Drawing.Point(107, 3);
             this.radioButton3.Name = "radioButton3";
             this.radioButton3.Size = new System.Drawing.Size(46, 17);
             this.radioButton3.TabIndex = 38;
@@ -1231,6 +1233,30 @@
             this.experimentalFlowLayout.Size = new System.Drawing.Size(606, 141);
             this.experimentalFlowLayout.TabIndex = 0;
             this.experimentalFlowLayout.WrapContents = false;
+            // 
+            // renderCameraPathCB
+            // 
+            this.renderCameraPathCB.AutoSize = true;
+            this.renderCameraPathCB.Location = new System.Drawing.Point(3, 3);
+            this.renderCameraPathCB.Name = "renderCameraPathCB";
+            this.renderCameraPathCB.Size = new System.Drawing.Size(125, 17);
+            this.renderCameraPathCB.TabIndex = 2;
+            this.renderCameraPathCB.Text = "Render Camera Path";
+            this.renderCameraPathCB.UseVisualStyleBackColor = true;
+            this.renderCameraPathCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            // 
+            // areaLightBoundingBoxCB
+            // 
+            this.areaLightBoundingBoxCB.AutoSize = true;
+            this.areaLightBoundingBoxCB.Checked = true;
+            this.areaLightBoundingBoxCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.areaLightBoundingBoxCB.Location = new System.Drawing.Point(3, 26);
+            this.areaLightBoundingBoxCB.Name = "areaLightBoundingBoxCB";
+            this.areaLightBoundingBoxCB.Size = new System.Drawing.Size(192, 17);
+            this.areaLightBoundingBoxCB.TabIndex = 27;
+            this.areaLightBoundingBoxCB.Text = "Render Area Light Bounding Boxes";
+            this.areaLightBoundingBoxCB.UseVisualStyleBackColor = true;
+            this.areaLightBoundingBoxCB.CheckedChanged += new System.EventHandler(this.areaLightBoundingBoxCB_CheckedChanged);
             // 
             // drawShadowCB
             // 
@@ -1389,30 +1415,6 @@
             this.renderRespawnsCB.UseVisualStyleBackColor = true;
             this.renderRespawnsCB.CheckedChanged += new System.EventHandler(this.checkChanged);
             // 
-            // areaLightBoundingBoxCB
-            // 
-            this.areaLightBoundingBoxCB.AutoSize = true;
-            this.areaLightBoundingBoxCB.Checked = true;
-            this.areaLightBoundingBoxCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.areaLightBoundingBoxCB.Location = new System.Drawing.Point(3, 26);
-            this.areaLightBoundingBoxCB.Name = "areaLightBoundingBoxCB";
-            this.areaLightBoundingBoxCB.Size = new System.Drawing.Size(192, 17);
-            this.areaLightBoundingBoxCB.TabIndex = 27;
-            this.areaLightBoundingBoxCB.Text = "Render Area Light Bounding Boxes";
-            this.areaLightBoundingBoxCB.UseVisualStyleBackColor = true;
-            this.areaLightBoundingBoxCB.CheckedChanged += new System.EventHandler(this.areaLightBoundingBoxCB_CheckedChanged);
-            // 
-            // renderCameraPathCB
-            // 
-            this.renderCameraPathCB.AutoSize = true;
-            this.renderCameraPathCB.Location = new System.Drawing.Point(3, 3);
-            this.renderCameraPathCB.Name = "renderCameraPathCB";
-            this.renderCameraPathCB.Size = new System.Drawing.Size(125, 17);
-            this.renderCameraPathCB.TabIndex = 2;
-            this.renderCameraPathCB.Text = "Render Camera Path";
-            this.renderCameraPathCB.UseVisualStyleBackColor = true;
-            this.renderCameraPathCB.CheckedChanged += new System.EventHandler(this.checkChanged);
-            // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
@@ -1425,7 +1427,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(587, 654);
+            this.tabControl1.Size = new System.Drawing.Size(565, 654);
             this.tabControl1.TabIndex = 17;
             // 
             // tabPage6
@@ -1435,7 +1437,7 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(579, 627);
+            this.tabPage6.Size = new System.Drawing.Size(579, 628);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Material Lighting";
             // 
@@ -1456,7 +1458,7 @@
             this.groupBox5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox5.Location = new System.Drawing.Point(3, 3);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(573, 621);
+            this.groupBox5.Size = new System.Drawing.Size(573, 622);
             this.groupBox5.TabIndex = 36;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Material Lighting";
@@ -1502,7 +1504,7 @@
             this.tableLayoutPanel1.Controls.Add(this.refTB, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.difIntensityLabel, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.modelScaleLabel, 0, 5);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(22, 303);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 185);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 6;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -1743,7 +1745,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(579, 627);
+            this.tabPage5.Size = new System.Drawing.Size(579, 628);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Background/Floor";
             // 
@@ -1870,7 +1872,7 @@
             this.groupBox8.Controls.Add(this.floorComboBox);
             this.groupBox8.Controls.Add(this.renderFloorCB);
             this.groupBox8.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox8.Location = new System.Drawing.Point(3, 195);
+            this.groupBox8.Location = new System.Drawing.Point(3, 196);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(573, 429);
             this.groupBox8.TabIndex = 38;
@@ -1948,7 +1950,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(579, 627);
+            this.tabPage4.Size = new System.Drawing.Size(579, 628);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Post Processing";
             // 
@@ -2065,7 +2067,7 @@
             this.tabPage3.Controls.Add(this.groupBox7);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(1018, 830);
+            this.tabPage3.Size = new System.Drawing.Size(579, 628);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Discord Rich Presence";
             // 
@@ -2184,10 +2186,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(587, 654);
+            this.ClientSize = new System.Drawing.Size(565, 654);
             this.Controls.Add(this.tabControl1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = global::Smash_Forge.Resources.Resources.forge2;
             this.Name = "RenderSettings";
             this.Text = "Render Settings";

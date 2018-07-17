@@ -129,11 +129,11 @@
             this.texIdTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.textureIDTB = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
-            this.texturesListView = new System.Windows.Forms.ListView();
             this.glControlTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.texAlphaGlControl = new OpenTK.GLControl();
             this.texRgbGlControl = new OpenTK.GLControl();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.texturesListView = new System.Windows.Forms.ListView();
             this.propertiesGroupBox.SuspendLayout();
             this.paramsFlowLayout.SuspendLayout();
             this.addDelPropertyTableLayout.SuspendLayout();
@@ -1192,7 +1192,7 @@
             this.texIdTableLayout.Controls.Add(this.label10, 0, 0);
             this.texIdTableLayout.Controls.Add(this.textureIDTB, 1, 0);
             this.texIdTableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.texIdTableLayout.Location = new System.Drawing.Point(3, 167);
+            this.texIdTableLayout.Location = new System.Drawing.Point(3, 331);
             this.texIdTableLayout.Name = "texIdTableLayout";
             this.texIdTableLayout.RowCount = 1;
             this.texIdTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -1217,30 +1217,6 @@
             this.label10.Size = new System.Drawing.Size(57, 13);
             this.label10.TabIndex = 12;
             this.label10.Text = "Texture ID";
-            // 
-            // texturesListView
-            // 
-            this.texturesListView.Alignment = System.Windows.Forms.ListViewAlignment.Left;
-            this.texturesListView.AllowColumnReorder = true;
-            this.texturesListView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.texturesListView.HideSelection = false;
-            this.texturesListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2,
-            listViewItem3,
-            listViewItem4,
-            listViewItem5});
-            this.texturesListView.LabelWrap = false;
-            this.texturesListView.Location = new System.Drawing.Point(3, 207);
-            this.texturesListView.MultiSelect = false;
-            this.texturesListView.Name = "texturesListView";
-            this.texturesListView.Size = new System.Drawing.Size(543, 158);
-            this.texturesListView.TabIndex = 3;
-            this.texturesListView.TileSize = new System.Drawing.Size(100, 10);
-            this.texturesListView.UseCompatibleStateImageBehavior = false;
-            this.texturesListView.View = System.Windows.Forms.View.List;
-            this.texturesListView.SelectedIndexChanged += new System.EventHandler(this.texturesListView_SelectedIndexChanged);
-            this.texturesListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.texturesListView_KeyPress);
             // 
             // glControlTableLayout
             // 
@@ -1289,8 +1265,8 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.glControlTableLayout, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.texParamsTableLayout, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.texIdTableLayout, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.texturesListView, 0, 2);
+            this.tableLayoutPanel1.Controls.Add(this.texturesListView, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.texIdTableLayout, 0, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -1299,8 +1275,33 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(549, 566);
             this.tableLayoutPanel1.TabIndex = 28;
+            // 
+            // texturesListView
+            // 
+            this.texturesListView.Alignment = System.Windows.Forms.ListViewAlignment.Left;
+            this.texturesListView.AllowColumnReorder = true;
+            this.texturesListView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.texturesListView.HideSelection = false;
+            this.texturesListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5});
+            this.texturesListView.LabelWrap = false;
+            this.texturesListView.Location = new System.Drawing.Point(3, 167);
+            this.texturesListView.MultiSelect = false;
+            this.texturesListView.Name = "texturesListView";
+            this.texturesListView.Size = new System.Drawing.Size(543, 158);
+            this.texturesListView.TabIndex = 3;
+            this.texturesListView.TileSize = new System.Drawing.Size(100, 10);
+            this.texturesListView.UseCompatibleStateImageBehavior = false;
+            this.texturesListView.View = System.Windows.Forms.View.List;
+            this.texturesListView.SelectedIndexChanged += new System.EventHandler(this.texturesListView_SelectedIndexChanged);
+            this.texturesListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.texturesListView_KeyPress);
             // 
             // NUDMaterialEditor
             // 

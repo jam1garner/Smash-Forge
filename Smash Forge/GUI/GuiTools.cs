@@ -65,11 +65,11 @@ namespace Smash_Forge
             return result;
         }
 
-        public static void ScaleControlsHorizontallyToLayoutWidth(FlowLayoutPanel flowLayout)
+        public static void ScaleControlsHorizontallyToLayoutWidth(Control containerControl)
         {
-            foreach (Control control in flowLayout.Controls)
+            foreach (Control control in containerControl.Controls)
             {
-                control.Width = flowLayout.Width - flowLayout.Margin.Horizontal;
+                control.Width = containerControl.Width - containerControl.Margin.Horizontal;
             }
         }
     }

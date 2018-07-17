@@ -1016,5 +1016,10 @@ namespace Smash_Forge.GUI
         {
             modelPanel.Visible = !modelPanel.Visible;
         }
+
+        private void flowLayout_Resize(object sender, EventArgs e)
+        {
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth((Control)sender);
+        }
     }
 }
