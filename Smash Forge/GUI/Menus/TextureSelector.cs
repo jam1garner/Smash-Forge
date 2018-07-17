@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
 using System.Windows.Forms;
+using System.Diagnostics;
+using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge.GUI.Menus
 {
@@ -15,41 +13,73 @@ namespace Smash_Forge.GUI.Menus
         private int imageWidth = 64;
         private int imageHeight = 64;
 
+        public int TextureId { get { return selectedTextureId; } }
+        private int selectedTextureId = -1;
+
         public TextureSelector()
         {
             InitializeComponent();
             InitializeImageList();
 
-            for (int i = 0; i < 10; i++)
+            foreach (NUT nut in Runtime.TextureContainers)
             {
-                listView1.Items.Add("texture", "image");
+                foreach (var texture in nut.glTexByHashId)
+                {
+                    // Use the texture ID in hex for the display text and image key.
+                    listView1.Items.Add(texture.Key.ToString("X"), texture.Key.ToString("X"));
+
+                    // TODO: Properly dispose image.
+                    Bitmap bitmap = Rendering.TextureToBitmap.RenderBitmap((Texture2D)texture.Value, imageWidth, imageHeight);
+                    listView1.LargeImageList.Images.Add(texture.Key.ToString("X"), bitmap);
+                }
             }
         }
 
         private void InitializeImageList()
         {
+            // 8 bits per channel PNG.
             ImageList imageList = new ImageList();
             imageList.ColorDepth = ColorDepth.Depth32Bit;
             imageList.ImageSize = new Size(imageWidth, imageHeight);
-
-            imageList.Images.Add("image", Properties.Resources.UVPattern);
 
             listView1.LargeImageList = imageList;
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // TODO: change the selected texture hash.
+            if (listView1.SelectedItems.Count == 0)
+                return;
+            UpdateSelectedTextureId();
+        }
+
+        private void UpdateSelectedTextureId()
+        {
+            int value = -1;
+            if (int.TryParse(listView1.SelectedItems[0].Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out value))
+                selectedTextureId = value;
         }
 
         private void listView1_DoubleClick(object sender, EventArgs e)
         {
-            // TODO: apply the selection.
+            if (listView1.SelectedItems.Count == 0)
+                return;
+
+            UpdateSelectedTextureId();
+            Close();
         }
 
         private void selectButton_Click(object sender, EventArgs e)
         {
-            // TODO: apply the selection.
+            if (listView1.SelectedItems.Count == 0)
+                return;
+
+            UpdateSelectedTextureId();
+            Close();
+        }
+
+        private void TextureSelector_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // TODO: Properly dispose images.
         }
     }
 }

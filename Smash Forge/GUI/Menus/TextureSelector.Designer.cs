@@ -65,6 +65,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TextureSelector";
             this.Text = "TextureSelector";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.TextureSelector_FormClosed);
             this.ResumeLayout(false);
 
         }

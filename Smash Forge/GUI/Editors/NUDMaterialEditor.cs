@@ -1158,7 +1158,13 @@ namespace Smash_Forge
         private void texturesListView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             GUI.Menus.TextureSelector textureSelector = new GUI.Menus.TextureSelector();
-            textureSelector.Show();
+            textureSelector.ShowDialog();
+
+            // Updating the text box will update the material texture.
+            if (textureSelector.TextureId != -1)
+            {
+                textureIDTB.Text = textureSelector.TextureId.ToString("X");
+            }
         }
     }
 }
