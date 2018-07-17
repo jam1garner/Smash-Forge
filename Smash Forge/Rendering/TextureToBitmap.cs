@@ -19,17 +19,31 @@ namespace Smash_Forge.Rendering
         public static Bitmap RenderBitmap(Texture2D texture, 
             bool r = true, bool g = true, bool b = true, bool a = false)
         {
+            // Use the texture's dimensions.
+            Framebuffer framebuffer = DrawTexturetoFbo(texture, texture.Width, texture.Height, r, g, b, a);
+            return framebuffer.ReadImagePixels(a);
+        }
+
+        public static Bitmap RenderBitmap(Texture2D texture, int width, int height,
+            bool r = true, bool g = true, bool b = true, bool a = false)
+        {
+            // Scale the image to new dimensions.
+            Framebuffer framebuffer = DrawTexturetoFbo(texture, width, height, r, g, b, a);
+            return framebuffer.ReadImagePixels(a);
+        }
+
+        private static Framebuffer DrawTexturetoFbo(Texture2D texture, int width, int height, bool r, bool g, bool b, bool a)
+        {
             // Set up the framebuffer and context to match the texture's dimensions.
-            SetUpContextWindow(texture.Width, texture.Height);
+            SetUpContextWindow(width, height);
             BufferObject screenVbo = RenderTools.CreateScreenQuadBuffer();
-            Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, texture.Width, texture.Height, PixelInternalFormat.Rgba);
+            Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
             framebuffer.Bind();
 
             // Draw the specified color channels.
-            GL.Viewport(0, 0, texture.Width, texture.Height);
+            GL.Viewport(0, 0, width, height);
             RenderTools.DrawTexturedQuad(texture.Id, 1, 1, r, g, b, a);
-
-            return framebuffer.ReadImagePixels(a);
+            return framebuffer;
         }
 
         private static void SetUpContextWindow(int width, int height)

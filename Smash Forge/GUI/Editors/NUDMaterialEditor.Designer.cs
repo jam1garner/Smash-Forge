@@ -745,6 +745,7 @@
             this.texturesListView.UseCompatibleStateImageBehavior = false;
             this.texturesListView.SelectedIndexChanged += new System.EventHandler(this.texturesListView_SelectedIndexChanged);
             this.texturesListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.texturesListView_KeyPress);
+            this.texturesListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.texturesListView_MouseDoubleClick);
             // 
             // texIdTableLayout
             // 

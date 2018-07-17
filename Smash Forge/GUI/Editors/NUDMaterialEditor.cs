@@ -130,10 +130,6 @@ namespace Smash_Forge
         {
             if (texturesListView.LargeImageList != null)
             {
-                foreach (Image image in textureThumbnails.Images)
-                {
-                    image.Dispose();
-                }
                 textureThumbnails.Images.Clear();
             }
 
@@ -151,7 +147,7 @@ namespace Smash_Forge
                     {
                         if (nut.glTexByHashId[texture.hash] is SFGraphics.GLObjects.Textures.Texture2D)
                         {
-                            Bitmap bitmap = TextureToBitmap.RenderBitmap((SFGraphics.GLObjects.Textures.Texture2D)nut.glTexByHashId[texture.hash]);
+                            Bitmap bitmap = TextureToBitmap.RenderBitmap((SFGraphics.GLObjects.Textures.Texture2D)nut.glTexByHashId[texture.hash], 64, 64);
                             imageList.Images.Add(texture.hash.ToString(), bitmap);
                             var dummy = imageList.Handle;
                             bitmap.Dispose();
@@ -1157,6 +1153,12 @@ namespace Smash_Forge
             texRgbGlControl.Height = sideLength;
             texAlphaGlControl.Width = sideLength;
             texAlphaGlControl.Height = sideLength;
+        }
+
+        private void texturesListView_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            GUI.Menus.TextureSelector textureSelector = new GUI.Menus.TextureSelector();
+            textureSelector.Show();
         }
     }
 }
