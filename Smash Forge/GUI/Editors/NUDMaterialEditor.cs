@@ -128,11 +128,7 @@ namespace Smash_Forge
 
         private void RefreshTexturesImageList()
         {
-            if (texturesListView.LargeImageList != null)
-            {
-                textureThumbnails.Images.Clear();
-            }
-
+            textureThumbnails.Images.Clear();
             AddTextureThumbnails(textureThumbnails);
         }
 
@@ -482,67 +478,97 @@ namespace Smash_Forge
 
         private void mapModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (texturesListView.SelectedIndices.Count == 0)
+                return;
+
             foreach (int i in mapModeByMatValue.Keys)
+            {
                 if (mapModeByMatValue[i].Equals(mapModeComboBox.SelectedItem))
                 {
                     currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].mapMode = i;
                     break;
                 }
+            }
         }
 
         private void wrapXComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (texturesListView.SelectedIndices.Count == 0)
+                return;
+
             foreach (int i in wrapModeByMatValue.Keys)
+            {
                 if (wrapModeByMatValue[i].Equals(wrapXComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].wrapModeS = i;
                     break;
                 }
+            }
         }
 
         private void wrapYComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (texturesListView.SelectedIndices.Count == 0)
+                return;
+
             foreach (int i in wrapModeByMatValue.Keys)
+            {
                 if (wrapModeByMatValue[i].Equals(wrapYComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].wrapModeT = i;
                     break;
                 }
+            }
         }
 
         private void minFilterComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (texturesListView.SelectedIndices.Count == 0)
+                return;
+
             foreach (int i in minFilterByMatValue.Keys)
+            {
                 if (minFilterByMatValue[i].Equals(minFilterComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].minFilter = i;
                     break;
                 }
+            }
         }
 
-        private void comboBox12_SelectedIndexChanged(object sender, EventArgs e)
+        private void magFilterComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (texturesListView.SelectedIndices.Count == 0)
+                return;
+
             foreach (int i in magFilterByMatValue.Keys)
+            {
                 if (magFilterByMatValue[i].Equals(magFilterComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].magFilter = i;
                     break;
                 }
+            }
         }
 
-        private void comboBox13_SelectedIndexChanged(object sender, EventArgs e)
+        private void mipDetailComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (texturesListView.SelectedIndices.Count == 0)
+                return;
+
             foreach (int i in mipDetailByMatValue.Keys)
+            {
                 if (mipDetailByMatValue[i].Equals(mipDetailComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].mipDetail = i;
                     break;
                 }
+            }
         }
 
         private void SetPropertyLabelText(string propertyName)

@@ -606,7 +606,7 @@
             this.magFilterComboBox.Name = "magFilterComboBox";
             this.magFilterComboBox.Size = new System.Drawing.Size(266, 21);
             this.magFilterComboBox.TabIndex = 15;
-            this.magFilterComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox12_SelectedIndexChanged);
+            this.magFilterComboBox.SelectedIndexChanged += new System.EventHandler(this.magFilterComboBox_SelectedIndexChanged);
             // 
             // label14
             // 
@@ -711,7 +711,7 @@
             this.mipDetailComboBox.Name = "mipDetailComboBox";
             this.mipDetailComboBox.Size = new System.Drawing.Size(265, 21);
             this.mipDetailComboBox.TabIndex = 15;
-            this.mipDetailComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox13_SelectedIndexChanged);
+            this.mipDetailComboBox.SelectedIndexChanged += new System.EventHandler(this.mipDetailComboBox_SelectedIndexChanged);
             // 
             // label16
             // 
