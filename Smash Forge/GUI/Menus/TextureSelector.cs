@@ -10,8 +10,15 @@ namespace Smash_Forge.GUI.Menus
 {
     public partial class TextureSelector : Form
     {
-        private int imageWidth = 64;
-        private int imageHeight = 64;
+
+        private static readonly int imageWidth = 64;
+        private static readonly int imageHeight = 64;
+
+        private ImageList imageList = new ImageList()
+        {
+            ColorDepth = ColorDepth.Depth32Bit,
+            ImageSize = new Size(imageWidth, imageHeight)
+        };
 
         public int TextureId { get { return selectedTextureId; } }
         private int selectedTextureId = -1;
@@ -20,7 +27,10 @@ namespace Smash_Forge.GUI.Menus
         {
             InitializeComponent();
             InitializeImageList();
+        }
 
+        private void InitializeImageList()
+        {
             foreach (NUT nut in Runtime.TextureContainers)
             {
                 foreach (var texture in nut.glTexByHashId)
@@ -30,17 +40,11 @@ namespace Smash_Forge.GUI.Menus
 
                     // TODO: Properly dispose image.
                     Bitmap bitmap = Rendering.TextureToBitmap.RenderBitmap((Texture2D)texture.Value, imageWidth, imageHeight);
-                    listView1.LargeImageList.Images.Add(texture.Key.ToString("X"), bitmap);
+                    imageList.Images.Add(texture.Key.ToString("X"), bitmap);
+                    var dummy = imageList.Handle;
+                    bitmap.Dispose();
                 }
             }
-        }
-
-        private void InitializeImageList()
-        {
-            // 8 bits per channel PNG.
-            ImageList imageList = new ImageList();
-            imageList.ColorDepth = ColorDepth.Depth32Bit;
-            imageList.ImageSize = new Size(imageWidth, imageHeight);
 
             listView1.LargeImageList = imageList;
         }
