@@ -127,10 +127,7 @@ namespace Smash_Forge
             }
             FileOutput fileOutput = new FileOutput();
             byte[] n = currentNut.Rebuild();
-            //Temporarily disabling this prompt until zlib works properly
-            /*DialogResult dialogResult = MessageBox.Show("Would you like to compress this NUT file with zlib?\nIf you are unsure, select \"No\".", "zlib Compression", MessageBoxButtons.YesNo);
-            if (dialogResult == DialogResult.Yes)
-                n = FileData.DeflateZLIB(n);*/
+
             fileOutput.writeBytes(n);
             fileOutput.save(FilePath);
             Edited = false;
@@ -298,36 +295,17 @@ namespace Smash_Forge
             glControl1.SwapBuffers();
         }
 
-        private void RenderTextureToPng(NutTexture nutTexture, string outputPath, bool renderR = true, bool renderG = true, bool renderB = true, bool renderAlpha = false)
+        private void RenderTextureToPng(NutTexture nutTexture, string outputPath, bool r = true, bool g = true, bool b = true, bool a = false)
         {
             if (!readyToRender || glControl1 == null)
                 return;
 
-            // Load the OpenGL texture.
-            int width = nutTexture.Width;
-            int height = nutTexture.Height;
-            int texture = currentNut.glTexByHashId[nutTexture.HASHID].Id;
-
-            // Setup and reuse the same buffer for each image.
-            glControl1.MakeCurrent();
-            GL.Disable(EnableCap.ScissorTest);
-            pngExportFramebuffer.Width = width;
-            pngExportFramebuffer.Height = height;
-            GL.Viewport(0, 0, width, height);
-
-            // Render the texture to the fbo.
-            pngExportFramebuffer.Bind();
-            Rendering.RenderTools.DrawTexturedQuad(texture, width, height, renderR, renderG, renderB, renderAlpha);
-
-            // Save the image.
-            Bitmap image = pngExportFramebuffer.ReadImagePixels();
-            image.Save(outputPath);
-
-            // Cleanup
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.Viewport(glControl1.ClientRectangle);
-            image.Dispose();
-            GL.DeleteBuffer(pngExportFramebuffer.Id);
+            // Load the OpenGL texture and export the image data.
+            Texture2D texture = (Texture2D)currentNut.glTexByHashId[nutTexture.HASHID];
+            using (Bitmap image = Rendering.TextureToBitmap.RenderBitmap(texture, r, g, b, a))
+            {
+                image.Save(outputPath);
+            }
         }
 
         private void exportNutAsPngToolStripMenuItem_Click(object sender, EventArgs e)

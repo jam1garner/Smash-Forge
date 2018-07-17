@@ -712,24 +712,18 @@ namespace Smash_Forge
                 return;
             }
 
-            GL.Enable(EnableCap.AlphaTest);
-            if (material.alphaTest == 0)
+            if (material.alphaTest == (int)Material.AlphaTest.Enabled)
+                GL.Enable(EnableCap.AlphaTest);
+            else
                 GL.Disable(EnableCap.AlphaTest);
 
+            AlphaFunction alphaFunction = AlphaFunction.Always;
+            if (Material.alphaFunctionByMatValue.ContainsKey(material.alphaFunction))
+                alphaFunction = Material.alphaFunctionByMatValue[material.alphaFunction];
+
             float refAlpha = material.RefAlpha / 255f;
-            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-            switch (material.alphaFunction)
-            {
-                case 0x0:
-                    GL.AlphaFunc(AlphaFunction.Never, refAlpha);
-                    break;
-                case 0x4:
-                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
-                    break;
-                case 0x6:
-                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
-                    break;
-            }
+
+            GL.AlphaFunc(alphaFunction, refAlpha);
         }
 
         private static void SetFaceCulling(Material material)
@@ -2360,12 +2354,26 @@ namespace Smash_Forge
 
         public class Material
         {
+            public enum AlphaTest
+            {
+                Enabled = 0x02,
+                Disabled = 0x00
+            }
+
+            // TODO: How are 0x4 and 0x6 different?
             public enum AlphaFunction
             {
                 Never = 0x0,
                 GequalRefAlpha1 = 0x4,
                 GequalRefAlpha2 = 0x6
             }
+
+            public static Dictionary<int, OpenTK.Graphics.OpenGL.AlphaFunction> alphaFunctionByMatValue = new Dictionary<int, OpenTK.Graphics.OpenGL.AlphaFunction>()
+            {
+                { 0x0, OpenTK.Graphics.OpenGL.AlphaFunction.Never },
+                { 0x4, OpenTK.Graphics.OpenGL.AlphaFunction.Gequal },
+                { 0x6, OpenTK.Graphics.OpenGL.AlphaFunction.Gequal },
+            };
 
             public Dictionary<string, float[]> entries = new Dictionary<string, float[]>();
             public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();

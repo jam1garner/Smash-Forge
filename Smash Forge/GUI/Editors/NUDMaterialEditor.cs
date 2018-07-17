@@ -35,24 +35,6 @@ namespace Smash_Forge
         bool enableParam3SliderUpdates = true;
         bool enableParam4SliderUpdates = true;
 
-        public static Dictionary<int, string> dstFactor = new Dictionary<int, string>()
-        {
-            { 0x00, "Nothing"},
-            { 0x01, "SourceAlpha"},
-            { 0x02, "One"},
-            { 0x03, "InverseSourceAlpha + SubtractTrue"},
-            { 0x04, "Dummy"},
-        };
-
-        public static Dictionary<int, string> srcFactor = new Dictionary<int, string>()
-        {
-            { 0x00, "Nothing"},
-            { 0x01, "SourceAlpha + CompareBeforeTextureFalse + DepthTestTrue + EnableDepthUpdateTrue"},
-            { 0x04, "RasterAlpha + CompareBeforeTextureTrue + DepthTestTrue + EnableDepthUpdateFalse"},
-            { 0x32, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy2"},
-            { 0x33, "SourceAlpha + CompareBeforeTextureTrue + DepthTestFalse + EnableDepthUpdateFalse + MultiplyBy1"}
-        };
-
         public static Dictionary<int, string> cullModeByMatValue = new Dictionary<int, string>()
         {
             { 0x000, "Cull None"},
@@ -67,17 +49,11 @@ namespace Smash_Forge
             { "Cull Inside", 0x405 }
         };
 
-        public static Dictionary<int, string> alphaTestByMatValue = new Dictionary<int, string>()
-        {
-            { 0x00, "Alpha Test Disabled"},
-            { 0x02, "Alpha Test Enabled"},
-        };
-
         public static Dictionary<int, string> alphaFuncByMatValue = new Dictionary<int, string>()
         {
             { 0x00, "Never"},
-            { 0x04, "Lequal Ref Alpha + ??"},
-            { 0x06, "Lequal Ref Alpha + ???"}
+            { 0x04, "Gequal Ref Alpha"},
+            { 0x06, "Gequal Ref Alpha + ???"}
         };
 
         public static Dictionary<int, string> mapModeByMatValue = new Dictionary<int, string>()
@@ -238,7 +214,7 @@ namespace Smash_Forge
             shadowCB.Checked = mat.hasShadow;
             GlowCB.Checked = mat.glow;
 
-            alphaTestCB.Checked = mat.alphaTest == 0x2;
+            alphaTestCB.Checked = mat.alphaTest == (int)NUD.Material.AlphaTest.Enabled;
             // Enable/disable extra controls.
             alphaTestCB_CheckedChanged(null, null);
         }
@@ -1023,7 +999,10 @@ namespace Smash_Forge
 
         private void alphaTestCB_CheckedChanged(object sender, EventArgs e)
         {
-            currentMaterialList[currentMatIndex].alphaTest = alphaTestCB.Checked ? 0x2 : 0x0;
+            if (alphaTestCB.Checked)
+                currentMaterialList[currentMatIndex].alphaTest = (int)NUD.Material.AlphaTest.Enabled;
+            else
+                currentMaterialList[currentMatIndex].alphaTest = (int)NUD.Material.AlphaTest.Disabled;
 
             // Only enable extra settings when alpha testing is enabled.
             alphaFuncRefPanel.Visible = alphaTestCB.Checked;
