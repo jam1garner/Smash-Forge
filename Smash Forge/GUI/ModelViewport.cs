@@ -63,7 +63,8 @@ namespace Smash_Forge
         //Animation
         private VBN TargetVBN;
         private Animation Animation;
-        public Animation CurrentAnimation {
+        public Animation CurrentAnimation
+        {
             get
             {
                 return Animation;
@@ -75,7 +76,7 @@ namespace Smash_Forge
                 if (MovesetManager != null && ACMDScript == null)
                     ACMDScript = new ForgeACMDScript(null);
 
-                if(value != null)
+                if (value != null)
                 {
                     string TargetAnimString = value.Text;
                     if (!string.IsNullOrEmpty(TargetAnimString))
@@ -154,7 +155,7 @@ namespace Smash_Forge
             set
             {
                 _MovesetManager = value;
-                if(ACMDEditor != null)
+                if (ACMDEditor != null)
                     ACMDEditor.updateCrcList();
             }
         }
@@ -189,7 +190,7 @@ namespace Smash_Forge
         LVDList LVDList = new LVDList();
         LVDEditor LVDEditor = new LVDEditor();
 
-        
+
         public BYAML BYAML
         {
             get
@@ -205,10 +206,10 @@ namespace Smash_Forge
 
         //Path
         public PathBin PathBin;
-        
+
         // Selection Functions
         public float sx1, sy1;
-        
+
         //Animation Functions
         public int AnimationSpeed = 60;
         public float Frame = 0;
@@ -350,7 +351,7 @@ namespace Smash_Forge
 
         ~ModelViewport()
         {
-            
+
         }
 
         public Camera GetCamera()
@@ -495,7 +496,7 @@ namespace Smash_Forge
                             MeshList.filesTreeView.SelectedNode = selected.Values.ElementAt(dbdistance);
                     }
                 }
-                
+
                 dbdistance += 1;
                 if (dbdistance >= selectedSize) dbdistance = 0;
                 _LastPoint = e.Location;
@@ -570,7 +571,7 @@ namespace Smash_Forge
             float animFrameNum = frameNum;
             if (ACMDScript != null && Runtime.useFrameDuration)
                 animFrameNum = ACMDScript.animationFrame;// - 1;
-            
+
             foreach (TreeNode node in MeshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer)) continue;
@@ -787,7 +788,7 @@ namespace Smash_Forge
             Z.Sort();
             Radius.Sort();
 
-            camera.FrameSelection(new Vector3(X[ X.Count - 1], Y[Y.Count - 1], Z[Z.Count - 1]), Radius[ Radius.Count - 1]);
+            camera.FrameSelection(new Vector3(X[X.Count - 1], Y[Y.Count - 1], Z[Z.Count - 1]), Radius[Radius.Count - 1]);
             camera.Update();
         }
 
@@ -936,7 +937,7 @@ namespace Smash_Forge
 
         private void CameraSettings_Click(object sender, EventArgs e)
         {
-            if(cameraPosForm == null)
+            if (cameraPosForm == null)
                 cameraPosForm = new GUI.Menus.CameraSettings(camera);
             cameraPosForm.ShowDialog();
         }
@@ -1149,7 +1150,7 @@ namespace Smash_Forge
             ScaleFactor = settings.ScaleFactor;
 
             int cFrame = (int)currentFrame.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
-                                                    //Disable controls
+                                                  //Disable controls
             this.Enabled = false;
 
             for (int i = settings.StartFrame; i <= settings.EndFrame + 1; i++)
@@ -1200,7 +1201,7 @@ namespace Smash_Forge
                     ((ModelContainer)n).NUD.Destroy();
                 }
             }
-            
+
             GC.Collect();
         }
 
@@ -1222,7 +1223,7 @@ namespace Smash_Forge
 
         private void prevButton_Click(object sender, EventArgs e)
         {
-            if(currentFrame.Value != 0)
+            if (currentFrame.Value != 0)
                 currentFrame.Value--;
         }
 
@@ -1252,9 +1253,9 @@ namespace Smash_Forge
 
         private void ModelViewport_FormClosing(object sender, FormClosingEventArgs e)
         {
-            foreach(TreeNode n in MeshList.filesTreeView.Nodes)
+            foreach (TreeNode n in MeshList.filesTreeView.Nodes)
             {
-                if(n is ModelContainer)
+                if (n is ModelContainer)
                 {
                     ((ModelContainer)n).NUD.Dispose();
                     ((ModelContainer)n).NUT.Destroy();
@@ -1266,7 +1267,7 @@ namespace Smash_Forge
         {
             CaptureScreen(false).Save(MainForm.executableDir + "\\Render.png");
         }
-        
+
         private void ModelViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
 
@@ -1275,12 +1276,13 @@ namespace Smash_Forge
         private void totalFrame_ValueChanged(object sender, EventArgs e)
         {
             if (Animation == null) return;
-            if(totalFrame.Value < 1)
+            if (totalFrame.Value < 1)
             {
                 totalFrame.Value = 1;
-            }else
+            }
+            else
             {
-                if(Animation.Tag is Animation)
+                if (Animation.Tag is Animation)
                     ((Animation)Animation.Tag).FrameCount = (int)totalFrame.Value;
                 Animation.FrameCount = (int)totalFrame.Value;
                 animationTrackBar.Value = 0;
@@ -1398,7 +1400,7 @@ namespace Smash_Forge
 
         private void glViewport_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void glViewport_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)

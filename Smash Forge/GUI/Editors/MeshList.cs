@@ -359,14 +359,14 @@ namespace Smash_Forge
                     bfresToolStripMenu.Show(this, e.X, e.Y);
                 }
                 else
-                if (filesTreeView.SelectedNode is BNTX)
-                {
-                    bfresBntxContextMenuStrip2.Show(this, e.X, e.Y);
-                }
-                else
                 if (filesTreeView.SelectedNode is BFRES.FMDL_Model)
                 {
                     bfresFmdlcontextMenuStrip1.Show(this, e.X, e.Y);
+                }
+                else
+                if (filesTreeView.SelectedNode is KCL)
+                {
+                    kclContextMenuStrip1.Show(this, e.X, e.Y);
                 }
                 else
                 if(filesTreeView.SelectedNode == null)
@@ -871,12 +871,15 @@ namespace Smash_Forge
         private void exportAsDAEToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog save = new SaveFileDialog();
-            save.Filter = "Supported Filetypes (DAE)|*.dae;|All files(*.*)|*.*";
+            save.Filter = "Supported Filetypes (DAE)|*.dae;*.obj;|All files(*.*)|*.*";
             DialogResult result = save.ShowDialog();
 
             if (result == DialogResult.OK && filesTreeView.SelectedNode is ModelContainer)
             {
-                Collada.Save(save.FileName, (ModelContainer)filesTreeView.SelectedNode);
+                if (save.FileName.EndsWith(".dae"))
+                    Collada.Save(save.FileName, (ModelContainer)filesTreeView.SelectedNode);
+                if (save.FileName.EndsWith(".obj"))
+                    OBJ.Save(save.FileName, (ModelContainer)filesTreeView.SelectedNode);
             }
         }
 
@@ -1452,7 +1455,7 @@ namespace Smash_Forge
 
         private void openPolygonEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            MainForm.Instance.bfresOpenMeshEditor((BFRES.Mesh)filesTreeView.SelectedNode, $"");
         }
 
         private void bfresSaveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1665,29 +1668,8 @@ namespace Smash_Forge
 
         }
 
-        private void toolStripMenuItem2_Click(object sender, EventArgs e)
-        {
-            if (!(filesTreeView.SelectedNode is BNTX))
-                return;
-
-            BNTX bn = (BNTX)filesTreeView.SelectedNode;
-
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.FileName = "textures.bntx";
-
-            sfd.Filter =
-                    "Supported Formats|*.bntx;|" +
-                    "All files(*.*)|*.*";
-
-            if (sfd.ShowDialog() == DialogResult.OK)
-            {
-                File.WriteAllBytes(sfd.FileName, BNTX.BNTXFile);
-            }
-        }
-
         public void UpdateBFRESMeshList()
         {
-            Console.WriteLine(filesTreeView.Nodes.Count);
 
             // Update the data for rendering.
             foreach (TreeNode con in filesTreeView.Nodes)
@@ -1701,6 +1683,7 @@ namespace Smash_Forge
                             foreach (BFRES.Mesh m in mdl.poly)
                             {
                                 Console.WriteLine("Updating mesh " + m.Text);
+                                ((ModelContainer)con).BFRES.UpdateVertexData();
                                 m.UpdateTexIDs();
                             }
                         }
@@ -1709,50 +1692,19 @@ namespace Smash_Forge
             }
         }
 
-        private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exportMaterialsXMLToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!(filesTreeView.SelectedNode is BNTX))
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
                 return;
 
-            BNTX bn = (BNTX)filesTreeView.SelectedNode;
+            BFRES.Mesh msh = (BFRES.Mesh)filesTreeView.SelectedNode;
 
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter =
-                    "Supported Formats|*.bntx;|" +
-                    "All files(*.*)|*.*";
-
-
-
-            if (ofd.ShowDialog() == DialogResult.OK)
-            {
-                byte[] newBntx = File.ReadAllBytes(ofd.FileName);
-
-
-                if (newBntx.Length == BNTX.BNTXFile.Length)
-                {
-                    FileData f = new FileData(newBntx);
-                    f.Endian = Endianness.Little;
-
-                    BNTX.textured.Clear();
-
-                    bn.Nodes.Clear();
-                    bn.ReadBNTX(f);
-                }
-                else
-                {
-                    MessageBox.Show("Your BNTX is too big or small! Must be original size!!!");
-                }
-            }
-
-            // Update the data for rendering.
-            UpdateBFRESMeshList();
+            msh.ExportMaterials2XML();
         }
 
-        #endregion
-
-        private void bfresFmdlreplaceToolStripMenuItem_Click(object sender, EventArgs e)
+        private void bfresConvertWiiU2SwitchToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (!(filesTreeView.SelectedNode is BFRES.FMDL_Model))
+            if (!(filesTreeView.SelectedNode is BFRES))
                 return;
 
             // Update the data for rendering.
@@ -1764,7 +1716,7 @@ namespace Smash_Forge
                     {
                         OpenFileDialog ofd = new OpenFileDialog();
                         ofd.Filter =
-                                "Supported Formats|*.dae;*.bfres;|" +
+                                "Supported Formats|*.bfres;|" +
                                 "All files(*.*)|*.*";
 
                         if (ofd.ShowDialog() == DialogResult.OK)
@@ -1773,14 +1725,75 @@ namespace Smash_Forge
                             {
                                 BFRES.WiiU2Switch(ofd.FileName, filesTreeView.SelectedNode.Index, ((ModelContainer)con).BFRES);
                             }
-                            if (ofd.FileName.EndsWith(".dae"))
-                            {
-                                Collada.DaetoBfresReplace(ofd.FileName, ((ModelContainer)con), filesTreeView.SelectedNode.Index);
-                            }
                         }
                     }
                 }
             }
         }
+
+        private void generateTanBitanToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.FMDL_Model))
+                return;
+
+            BFRES.FMDL_Model mdl = (BFRES.FMDL_Model)filesTreeView.SelectedNode;
+
+            mdl.GenerateTansBitansEachMesh();
+            UpdateBFRESMeshList();
+        }
+
+        private void recalculateToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.FMDL_Model))
+                return;
+
+            BFRES.FMDL_Model mdl = (BFRES.FMDL_Model)filesTreeView.SelectedNode;
+
+            mdl.GenerateNormalEachMesh();
+            UpdateBFRESMeshList();
+        }
+
+        private void smoothToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.FMDL_Model))
+                return;
+
+            BFRES.FMDL_Model mdl = (BFRES.FMDL_Model)filesTreeView.SelectedNode;
+
+            mdl.SmoothNormalEachMesh();
+            UpdateBFRESMeshList();
+        }
+
+        private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.FMDL_Model))
+                return;
+
+        }
+
+        private void copyChannel1To2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh m = (BFRES.Mesh)filesTreeView.SelectedNode;
+            m.CopyUVChannel2();
+            UpdateBFRESMeshList();
+        }
+
+        #endregion
+
+        private void KCLtoolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.Filter = "Supported Filetypes (OBJ)|*.obj;|All files(*.*)|*.*";
+            DialogResult result = save.ShowDialog();
+
+            if (result == DialogResult.OK && filesTreeView.SelectedNode is KCL)
+            {
+                OBJ.KCL2OBJ(save.FileName, (KCL)filesTreeView.SelectedNode);
+            }
+        }
+
     }
 }

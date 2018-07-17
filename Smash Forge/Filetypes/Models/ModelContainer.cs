@@ -161,6 +161,19 @@ namespace Smash_Forge
                 Refresh();
             }
         }
+        public KCL kcl;
+        public KCL KCL
+        {
+            get
+            {
+                return kcl;
+            }
+            set
+            {
+                kcl = value;
+                Refresh();
+            }
+        }
         public DAT DAT_MELEE
         {
             get
@@ -198,14 +211,14 @@ namespace Smash_Forge
         {
             Nodes.Clear();
 
-            if(DAT_MELEE != null)
+            if (DAT_MELEE != null)
             {
                 Text = "Melee DAT";
                 Nodes.AddRange(DAT_MELEE.tree.ToArray());
                 if (vbn != null && vbn.Parent == null) Nodes.Add(vbn);
             }
             else
-            if(bch != null)
+            if (bch != null)
             {
                 Nodes.Add(bch);
             }
@@ -213,7 +226,13 @@ namespace Smash_Forge
             if (bfres != null)
             {
                 Nodes.Add(bfres);
-            }else
+            }
+            else
+            if (kcl != null)
+            {
+                Nodes.Add(kcl);
+            }
+            else
             {
                 if (nud != null) Nodes.Add(nud);
                 if (nut != null) Nodes.Add(nut);
@@ -244,6 +263,8 @@ namespace Smash_Forge
                 NUT.Destroy();
             if (bfres != null)
                 bfres.Destroy();
+            if (kcl != null)
+                kcl.Destroy();
         }
 
         public VBN GetVBN()
@@ -313,13 +334,22 @@ namespace Smash_Forge
             GL.Uniform3(shader.getAttribute("difLightColor"), diffuseColor.R, diffuseColor.G, diffuseColor.B);
             GL.Uniform3(shader.getAttribute("ambLightColor"), ambientColor.R, ambientColor.G, ambientColor.B);
             
-            
             if (BCH != null)
             {
                 foreach (BCH_Model mo in BCH.Models.Nodes)
                 {
                     mo.Render(camera.mvpMatrix);
                 }
+            }
+            if (KCL != null && Runtime.shaders["KCL"].CompiledSuccessfully())
+            {
+                shader = Runtime.shaders["KCL"];
+                GL.UseProgram(shader.programID);
+
+                GL.Uniform3(shader.getAttribute("difLightColor"), diffuseColor.R, diffuseColor.G, diffuseColor.B);
+                GL.Uniform3(shader.getAttribute("ambLightColor"), ambientColor.R, ambientColor.G, ambientColor.B);
+
+                KCL.Render(camera.mvpMatrix);
             }
             if (BFRES != null && Runtime.shaders["BFRES"].CompiledSuccessfully() && Runtime.shaders["BFRES_PBR"].CompiledSuccessfully())
             {
@@ -553,6 +583,26 @@ namespace Smash_Forge
                     if (ray.CheckSphereHit(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3], out closest))
                         selected.Add(ray.Distance(closest), mesh);
                 }
+            }
+            return selected;
+        }
+
+        public SortedList<double, BFRES.Mesh> GetBFRESMeshSelection(Ray ray)
+        {
+            SortedList<double, BFRES.Mesh> selected = new SortedList<double, BFRES.Mesh>(new DuplicateKeyComparer<double>());
+            if (BFRES != null)
+            {
+                Vector3 closest = Vector3.Zero;
+                foreach (BFRES.FMDL_Model mdl in BFRES.models)
+                {
+                    foreach (BFRES.Mesh mesh in mdl.poly)
+                    {
+                        BFRES.Mesh.BoundingBox box = mesh.boundingBoxes[0];
+                        if (ray.CheckSphereHit(box.Extent, mesh.radius[0], out closest))
+                            selected.Add(ray.Distance(closest), mesh);
+                    }
+                }
+              
             }
             return selected;
         }

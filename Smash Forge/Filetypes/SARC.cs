@@ -87,11 +87,15 @@ namespace Smash_Forge
         {
             Dictionary<string, byte[]> res = new Dictionary<string, byte[]>();
             BinaryDataReader br = new BinaryDataReader(src, false);
+            br.ByteOrder = ByteOrder.BigEndian;
+
             br.BaseStream.Position = 0;
-            br.ByteOrder = ByteOrder.LittleEndian;
             br.ReadUInt32(); // Header
             br.ReadUInt16(); // Chunk length
-            br.ReadUInt16(); // BOM
+            if (br.ReadUInt16() == 0xFFFE)  // BOM
+                br.ByteOrder = ByteOrder.LittleEndian;
+            else
+                br.ByteOrder = ByteOrder.BigEndian;
             br.ReadUInt32(); // File size
             UInt32 startingOff = br.ReadUInt32();
             br.ReadUInt32(); // Unknown;

@@ -1,5 +1,19 @@
 #version 330
 
+//------------------------------------------------------------------------------------
+//
+//      Viewport Model View
+//
+//------------------------------------------------------------------------------------
+
+uniform mat4 modelview;
+
+//------------------------------------------------------------------------------------
+//
+//      Verex Attributes
+//
+//------------------------------------------------------------------------------------
+
 in vec2 f_texcoord0;
 in vec2 f_texcoord1;
 in vec2 f_texcoord2;
@@ -8,6 +22,12 @@ in vec3 normal;
 in vec4 color;
 in vec3 tangent;
 in vec3 bitangent;
+
+//------------------------------------------------------------------------------------
+//
+//      Viewport Settings
+//
+//------------------------------------------------------------------------------------
 
 uniform int uvChannel;
 uniform vec3 difLightDirection;
@@ -19,8 +39,18 @@ uniform vec3 difLightColor;
 uniform vec3 ambLightColor;
 uniform int colorOverride;
 
+// Channel Toggles
+uniform int renderR;
+uniform int renderG;
+uniform int renderB;
+uniform int renderAlpha;
 
-//Texture Samplers
+//------------------------------------------------------------------------------------
+//
+//      Texture Samplers
+//
+//------------------------------------------------------------------------------------
+
 uniform sampler2D tex0;
 uniform sampler2D BakeShadowMap;
 uniform sampler2D spl;
@@ -32,36 +62,47 @@ uniform sampler2D EmissionMap;
 uniform sampler2D SpecularMap;
 uniform sampler2D DiffuseLayer;
 
-uniform mat4 modelview;
+//------------------------------------------------------------------------------------
+//
+//      Shader Params
+//
+//------------------------------------------------------------------------------------
 
-//Shader Params via BFRES
 uniform float normal_map_weight;
 uniform float ao_density;
 uniform float emission_intensity;
+uniform vec4 fresnelParams;
+uniform vec4 base_color_mul_color;
+uniform vec3 emission_color;
 
 
-//Shader Options via BFRES
+//------------------------------------------------------------------------------------
+//
+//      Shader Options
+//
+//------------------------------------------------------------------------------------
+
 uniform float uking_texture2_texcoord;
+uniform float bake_shadow_type;
+uniform float enable_fresnel;
+uniform float enable_emission;
 
-// Check if src, dst, alpha function are non zero.
-uniform int isTransparent;
 
-// Channel Toggles
-uniform int renderR;
-uniform int renderG;
-uniform int renderB;
-uniform int renderAlpha;
+//------------------------------------------------------------------------------------
+//
+//      Texture Map Toggles
+//
+//------------------------------------------------------------------------------------
 
-//Map toggles
 uniform int HasNormalMap;
 uniform int HasSpecularMap;
 uniform int HasShadowMap;
-uniform int HasLightMapMap;
+uniform int HasLightMap;
 uniform int HasTransparencyMap;
 uniform int HasEmissionMap;
 uniform int HasDiffuseLayer;
+uniform int isTransparent;
 
-uniform int bake_shadow_type;
 
 out vec4 FragColor;
 
@@ -69,7 +110,6 @@ out vec4 FragColor;
 
 
 vec2 displayTexCoord =  f_texcoord0;
-
 
 float AmbientOcclusionBlend()
 {
@@ -80,7 +120,6 @@ float AmbientOcclusionBlend()
     return mix(aoMap, 1, aoDensity);
 }
 
-//Todo: Determine which UV channel to map to based on Shader Assign
 
 vec3 CalcSpecularMap(vec3 inputSpecular)
 {
@@ -169,6 +208,7 @@ void main()
     float diff = max(dot(difLightColor, normal), 0.0);
     vec3 diffuse = diff * lightColor;
 
+
   //Normal Map
 	vec3 bumpMapNormal = CalcBumpedNormal(normal);
     float halfLambert = dot(difLightDirection, bumpMapNormal) * 0.5 + 0.5;
@@ -207,26 +247,30 @@ void main()
 
 	vec4 outputColor =  (vec4(texture(tex0, displayTexCoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normalBnW );
 
+
+//----------------------------------------------------------------------
+//
+// Diffuse Layer
+//
+//----------------------------------------------------------------------
+
+    //Texture Overlay (Like an emblem in mk8)
 	if (HasDiffuseLayer == 1)
 	{
-	 //    outputColor = outputColor + vec4(texture(DiffuseLayer, f_texcoord3).rgb, 1) * vec4(1);
+	      FragColor += vec4(texture(DiffuseLayer, f_texcoord3).rgb, 1) * vec4(1);
+	  //   outputColor = outputColor + vec4(texture(DiffuseLayer, f_texcoord3).rgb, 1) * vec4(1);
 	}
-
-	if (HasShadowMap == 1)
-	{
-	  //   outputColor = outputColor + vec4(0.1) * vec4(texture(BakeShadowMap, f_texcoord1).ggg, 1);
-		// outputColor = outputColor + vec4(LightMapColor.rgb, 1) * vec4(LightMapColor.aaa, 1)
-   }
 	
 
 
   //Default Shader
     FragColor =  ambiant + vec4(((0.9,0.9,0.9 * alpha * outputColor)).xyz, alpha.x * halfLambert);
 
-
-
-	// This area below is for debug settings!
-
+//----------------------------------------------------------------------
+//
+// Emission
+//
+//----------------------------------------------------------------------
 
 	float EmissionIntensity = emission_intensity * emission_intensity;
 
@@ -236,12 +280,67 @@ void main()
 	    FragColor.rgb += emission.rgb;
 	}
 
-    if (HasEmissionMap == 1)
+    if (HasEmissionMap == 1 || enable_emission == 1)
 	{
-	    vec3 emission = texture2D(EmissionMap, displayTexCoord).rgb * vec3(1);
-	    FragColor.rgb += emission.rgb;
+	     vec3 emission = vec3(1);
+
+    //BOTW somtimes uses second uv channel for emission map
+	if (uking_texture2_texcoord == 1)
+	    emission = texture2D(EmissionMap, f_texcoord1).rgb * vec3(1);
+    else
+	    emission = texture2D(EmissionMap, displayTexCoord).rgb * emission_color;
+
+		if (emission.rgb == vec3(0)) //If tex is empty then use full brightness. Some emissive mats have emission but no texture
+		{
+     	    FragColor.rgb += vec3(emission_intensity) * emission_color;
+		}
+		else
+		{
+     	    FragColor.rgb += emission.rgb;
+		}
 	}
-    
+
+//----------------------------------------------------------------------
+//
+// Shadows and AO
+//
+//----------------------------------------------------------------------
+
+	if (HasShadowMap == 1)
+	{
+	     if (bake_shadow_type == 0)
+		 {
+		       vec4 A0Tex = vec4(texture(BakeShadowMap, f_texcoord1).rrr, 1);
+		       FragColor *= A0Tex;
+		 }
+         if (bake_shadow_type == 2)
+		 {
+		       vec4 A0Tex = vec4(texture(BakeShadowMap, f_texcoord1).rrr, 1);
+		       FragColor *= A0Tex;
+
+			   //For this it will need a frame buffer to be used
+			   vec4 ShadowTex = vec4(texture(BakeShadowMap, f_texcoord1).ggg, 1);
+
+		 }
+	}
+
+//----------------------------------------------------------------------
+//
+// Diffuse Colors
+//
+//----------------------------------------------------------------------
+
+   //Mario Odyssey uses this. Often for fur colors
+   if (base_color_mul_color != vec4(0))
+       FragColor *= min(base_color_mul_color, 1);
+
+
+//----------------------------------------------------------------------
+//
+//      Debug Shading
+//
+//----------------------------------------------------------------------
+
     vec3 displayNormal = (bumpMapNormal * 0.5) + 0.5;
 
     vec3 displayTangent = (tangent * 0.5) + 0.5;
@@ -269,9 +368,9 @@ void main()
 	else if (renderType == 4) //Display Normal
 	{
 		if (uking_texture2_texcoord == 1)
-        FragColor = vec4(texture(nrm, f_texcoord1).rg, 1, 1);
-    else
-        FragColor = vec4(texture(nrm, displayTexCoord).rg, 1, 1);
+            FragColor.rgb = texture(nrm, f_texcoord1).rgb;
+		else
+            FragColor.rgb = texture(nrm, displayTexCoord).rgb;
 	}
 	else if (renderType == 3) //DiffuseColor
 	    FragColor = vec4(texture(tex0, displayTexCoord).rgb, 1);
@@ -279,7 +378,10 @@ void main()
         FragColor = color;
 	else if (renderType == 6) //Display Ambient Occlusion
 	{
-        FragColor =  vec4(texture(BakeShadowMap, f_texcoord1).rrr, 1);
+	    if (HasShadowMap == 1)
+            FragColor =  vec4(texture(BakeShadowMap, f_texcoord1).rrr, 1);
+		else
+            FragColor = vec4(1);
 	}
     else if (renderType == 7) // uv coords
         FragColor = vec4(displayTexCoord.x, displayTexCoord.y, 1, 1);
@@ -311,19 +413,20 @@ void main()
 		{
 		    LColor = LightMapColor.rgb;
 		}
-	
 
-		vec3 LightMap = LightHDRScale * LColor * LightMapColor.a;
+	    if (HasLightMap == 1)
+		{
+		    vec3 LightMap = LightHDRScale * LColor * LightMapColor.a;
 
+		    FragColor = AmbientOcc * ColorMain * vec4(LightMap, 1) ;
 
+		}
 
-        FragColor = AmbientOcc * ColorMain * vec4(LightMap, 1) ;
-
-    if (HasEmissionMap == 1)
-	{
-	    vec3 emission = texture2D(EmissionMap, displayTexCoord).rgb * vec3(1);
-	    FragColor.rgb += emission.rgb;
-	}
+        if (HasEmissionMap == 1)
+	    {
+	        vec3 emission = texture2D(EmissionMap, displayTexCoord).rgb * vec3(1);
+	        FragColor.rgb += emission.rgb;
+	    }
 	}
 
 

@@ -32,7 +32,7 @@ namespace Smash_Forge.Rendering
         public Matrix4 perspFov = Matrix4.Identity;
 
         // Camera control settings. 
-        public float zoomMultiplier = Runtime.zoomModifierScale; 
+        public float zoomMultiplier = Runtime.zoomModifierScale;
         public float zoomSpeed = Runtime.zoomspeed;
         public float mouseTranslateSpeed = 0.050f;
         public float scrollWheelZoomSpeed = 1.75f;
@@ -97,7 +97,7 @@ namespace Smash_Forge.Rendering
 
                 // Holding shift changes zoom speed.
                 if (OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftLeft) || OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ShiftRight))
-                    zoomscale *= shiftZoomMultiplier; 
+                    zoomscale *= shiftZoomMultiplier;
 
 
                 // Zooms in or out with arrow keys.
@@ -144,8 +144,8 @@ namespace Smash_Forge.Rendering
             if (stprm == null)
                 return;
             float newFov = (float)ParamTools.GetParamValue(stprm, 0, 0, 6);
-            fovRadians = newFov * ((float)Math.PI / 180.0f); 
-            renderDepth = (float)ParamTools.GetParamValue(stprm, 0, 0, 77);           
+            fovRadians = newFov * ((float)Math.PI / 180.0f);
+            renderDepth = (float)ParamTools.GetParamValue(stprm, 0, 0, 77);
         }
 
         public void ResetPositionRotation()

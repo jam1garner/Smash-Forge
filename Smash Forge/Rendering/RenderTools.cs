@@ -1542,7 +1542,6 @@ namespace Smash_Forge.Rendering
                             bone.rot = VBN.FromEulerAngles(bone.rotation[2], bone.rotation[1], bone.rotation[0]) *
                                 VBN.FromEulerAngles(sz, sy, 0);
                         }
-
                     }
                 }
 

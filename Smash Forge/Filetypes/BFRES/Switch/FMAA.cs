@@ -27,20 +27,16 @@ namespace Smash_Forge
         {
             Console.WriteLine("Reading Material Animations ...");
 
-            ThisAnimation.Text = "Material Animations" ;
+            TreeNode MaterialAnimation = new TreeNode() { Text = "Material Animations" };
+            ThisAnimation.Nodes.Add(MaterialAnimation);
 
-    
-
-            TreeNode dummy = new TreeNode() { Text = "Animation Set" };
-
-            int i = 0;
             foreach (MaterialAnim vis in b.MaterialAnims)
             {
                 modelContainer.BFRES_MTA = new BFRES.MTA();
 
                 PerMatAnim perAnim = new PerMatAnim(modelContainer.BFRES_MTA, vis);
 
-                ThisAnimation.Nodes.Add(modelContainer.BFRES_MTA);
+                MaterialAnimation.Nodes.Add(modelContainer.BFRES_MTA);
             }
         }
     }

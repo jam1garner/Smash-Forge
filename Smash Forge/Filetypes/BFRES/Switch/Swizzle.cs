@@ -8,7 +8,6 @@ namespace Smash_Forge
 {
     public class Swizzle
     {
-
         public struct Surface
         {
             public sbyte dim;

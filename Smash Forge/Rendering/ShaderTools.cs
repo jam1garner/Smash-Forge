@@ -21,6 +21,9 @@ namespace Smash_Forge.Rendering
             CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
             CreateShader("MBN", "/lib/Shader/Legacy/", "/lib/Shader/");
             CreateShader("DAT", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("BFRES", "/lib/Shader/Legacy/", "/lib/Shader/");
+            CreateShader("BFRES_PBR", "/lib/Shader/Legacy/", "/lib/Shader/");         
+            CreateShader("KCL", "/lib/Shader/Legacy/", "/lib/Shader/");
             CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
             CreateShader("Gradient", "/lib/Shader/", "/lib/Shader/");
             CreateShader("Quad", "/lib/Shader/", "/lib/Shader/");

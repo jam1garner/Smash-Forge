@@ -324,6 +324,9 @@ namespace Smash_Forge
                             }
                         }
                         break;
+                    case "GamePath":
+                        Runtime.MarioOdysseyGamePath = (node.InnerText);
+                        break;
                 }
             }
         }
@@ -398,6 +401,7 @@ namespace Smash_Forge
             viewportNode.AppendChild(createNode(doc, "fov", Runtime.fov.ToString()));
             viewportNode.AppendChild(createNode(doc, "render_depth", Runtime.renderDepth.ToString()));
             AppendBackgroundSettings(doc, viewportNode);
+            AppendOdysseyCostumeEditor(doc, viewportNode);
 
             AppendRenderSettings(doc, mainNode);
 
@@ -414,6 +418,10 @@ namespace Smash_Forge
             parentNode.AppendChild(createNode(doc, "render_background", Runtime.renderBackGround.ToString()));
             parentNode.AppendChild(createNode(doc, "back_gradient_top", ColorTranslator.ToHtml(Runtime.backgroundGradientTop)));
             parentNode.AppendChild(createNode(doc, "back_gradient_bottom", ColorTranslator.ToHtml(Runtime.backgroundGradientBottom)));
+        }
+        private static void AppendOdysseyCostumeEditor(XmlDocument doc, XmlNode parentNode)
+        {
+            parentNode.AppendChild(createNode(doc, "GamePath", Runtime.MarioOdysseyGamePath.ToString()));
         }
 
         private static void AppendRenderSettings(XmlDocument doc, XmlNode parentNode)

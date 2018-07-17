@@ -23,6 +23,8 @@ namespace Smash_Forge
             Animnames = new Dictionary<uint, string>();
         }
 
+        public static string MarioOdysseyGamePath = "";
+
         public static Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
 
         //public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
@@ -110,6 +112,7 @@ namespace Smash_Forge
         public static bool useFrameDuration = true;
         public static bool useFAFasAnimationLength = false;
         public static bool HasNoAnimationBaseValues = false;
+        public static bool Is2DView = false;
 
         public static Color counterBubbleColor = Color.FromArgb(0x89, 0x89, 0x89);
         public static Color reflectBubbleColor = Color.Cyan;

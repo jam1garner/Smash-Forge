@@ -27,12 +27,8 @@ namespace Smash_Forge
         {
             Console.WriteLine("Reading Shape Animations ...");
 
-
-            ThisAnimation.Text = "Shape Animations";
-
-
-
-            TreeNode dummy = new TreeNode() { Text = "Animation Set" };
+            TreeNode ShapeAnimation = new TreeNode() { Text = "Shape Animations" };
+            ThisAnimation.Nodes.Add(ShapeAnimation);
 
             int i = 0;
             foreach (ShapeAnim fsha in b.ShapeAnims)
@@ -41,7 +37,7 @@ namespace Smash_Forge
 
                 PerShapeAnim perAnim = new PerShapeAnim(modelContainer.BFRES_MTA, fsha);
 
-                ThisAnimation.Nodes.Add(modelContainer.BFRES_MTA);
+                ShapeAnimation.Nodes.Add(modelContainer.BFRES_MTA);
             }
         }
     }

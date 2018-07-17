@@ -843,5 +843,30 @@ namespace Smash_Forge
             keepAspectRatio = preserveAspectRatioCB.Checked;
             glControl1.Invalidate();
         }
+
+        private void glControl1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void maxMipLevelLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void minMipLevelLabel_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void mipMapGroupBox_Enter(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -126,25 +126,86 @@ namespace Smash_Forge
         int BRTIOffset;
 
         public static int temp; //This variable is so we can get offsets from start of BNTX file
-        public static byte[] BNTXFile;
+        public static byte[] BNTXFile = new byte[0];
 
+        BNTXEditor Editor;
 
-
-        public void ReadBNTXFile(string FileName) //For single BNTX files
+        public BNTX()
         {
-            FileData f = new FileData(FileName);
+            ImageKey = "nut";
+            SelectedImageKey = "nut";
+
+            ContextMenu = new ContextMenu();
+            MenuItem export = new MenuItem("Export");
+            ContextMenu.MenuItems.Add(export);
+            export.Click += Export;
+            MenuItem replace = new MenuItem("Replace");
+            ContextMenu.MenuItems.Add(replace);
+            replace.Click += Replace;
+            MenuItem edit = new MenuItem("Edit");
+            ContextMenu.MenuItems.Add(edit);
+            edit.Click += OpenEditor;
+        }
+
+        private void Export(object sender, EventArgs args)
+        {
+
+            BNTX bn = this;
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.FileName = "textures.bntx";
+
+            sfd.Filter =
+                    "Supported Formats|*.bntx;|" +
+                    "All files(*.*)|*.*";
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllBytes(sfd.FileName, BNTXFile);
+            }
+        }
+
+        private void Replace(object sender, EventArgs args)
+        {
+            BNTX bn = this;
+
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter =
+                    "Supported Formats|*.bntx;|" +
+                    "All files(*.*)|*.*";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                byte[] newBntx = File.ReadAllBytes(ofd.FileName);
+
+
+                FileData f = new FileData(newBntx);
+                f.Endian = Endianness.Little;
+
+                textured.Clear();
+
+                bn.Nodes.Clear();
+                bn.ReadBNTX(f);
+            }
+        }
+
+        private void OpenEditor(object sender, EventArgs args)
+        {
+            Editor = new BNTXEditor(this);
+            Editor.Text = Parent.Text + "\\" + Text;
+            MainForm.Instance.AddDockedControl(Editor);
+        }
+
+        public void ReadBNTXFile(byte[] data) //For single BNTX files
+        {
+            FileData f = new FileData(data);
             f.Endian = Endianness.Little;
 
             ReadBNTX(f);
         }
 
- 
-
         public void ReadBNTX(FileData f)
         {
-            ImageKey = "nut";
-            SelectedImageKey = "nut";
-
             textures.Clear();
 
             BFRES b = new BFRES();
@@ -170,8 +231,6 @@ namespace Smash_Forge
             Text = Text + ".bntx";
 
             BNTXFile = f.getSection(temp, FileSize);
-
-
 
             for (int i = 0; i < TexturesCount; i++)
             {
@@ -210,6 +269,10 @@ namespace Smash_Forge
         public static List<BRTI_Texture> RenderableTex = new List<BRTI_Texture>();
         public uint blkWidth, blkHeight, bpp;
 
+        public override string ToString()
+        {
+            return Text;
+        }
 
         public BRTI(FileData f) //Docs thanks to gdkchan!!
         {

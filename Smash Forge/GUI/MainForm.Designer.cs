@@ -41,6 +41,7 @@
             this.openStageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.openCharacterToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.open3DSCharacterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openOdysseyCostumeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadShadersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -162,7 +163,8 @@
             this.openFileToolStripMenuItem,
             this.openStageToolStripMenuItem1,
             this.openCharacterToolStripMenuItem1,
-            this.open3DSCharacterToolStripMenuItem});
+            this.open3DSCharacterToolStripMenuItem,
+            this.openOdysseyCostumeToolStripMenuItem});
             this.openVBNToolStripMenuItem.Name = "openVBNToolStripMenuItem";
             this.openVBNToolStripMenuItem.Size = new System.Drawing.Size(202, 22);
             this.openVBNToolStripMenuItem.Text = "Open";
@@ -202,6 +204,13 @@
             this.open3DSCharacterToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
             this.open3DSCharacterToolStripMenuItem.Text = "Open 3DS Character";
             this.open3DSCharacterToolStripMenuItem.Click += new System.EventHandler(this.open3DSCharacterToolStripMenuItem_Click);
+            // 
+            // openOdysseyCostumeToolStripMenuItem
+            // 
+            this.openOdysseyCostumeToolStripMenuItem.Name = "openOdysseyCostumeToolStripMenuItem";
+            this.openOdysseyCostumeToolStripMenuItem.Size = new System.Drawing.Size(252, 22);
+            this.openOdysseyCostumeToolStripMenuItem.Text = "Open Odyssey Costume";
+            this.openOdysseyCostumeToolStripMenuItem.Click += new System.EventHandler(this.openOdysseyCostumeToolStripMenuItem_Click);
             // 
             // openNUDToolStripMenuItem
             // 
@@ -645,6 +654,7 @@
         private System.Windows.Forms.ToolStripMenuItem forgeWikiToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importWiiUNUTAsPS3NUTToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openOdysseyCostumeToolStripMenuItem;
     }
 }
 

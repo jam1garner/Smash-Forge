@@ -25,41 +25,53 @@ namespace Smash_Forge
         {
             Console.WriteLine("Reading Textue Pattern Animations ...");
 
-            ThisAnimation.Text = "Textue Pattern Animations";
+            TreeNode TexAnimation = new TreeNode() { Text = "Textue Pattern Animations" };
+            ThisAnimation.Nodes.Add(TexAnimation);
 
             TreeNode dummy = new TreeNode() { Text = "Animation Set" };
 
-            int i = 0;
             foreach (TexPatternAnim tex in b.TexPatternAnims.Values)
             {
                 modelContainer.BFRES_MTA = new BFRES.MTA();
 
-                BFRES_FVTX FVTX = new BFRES_FVTX(modelContainer.BFRES_MTA, tex);
+                BFRES_FVTX FVTX = new BFRES_FVTX(modelContainer.BFRES_MTA, tex, b);
 
 
-                ThisAnimation.Nodes.Add(modelContainer.BFRES_MTA);
+                TexAnimation.Nodes.Add(modelContainer.BFRES_MTA);
             }
         }
     }
 
     public class BFRES_FVTX
     {
-    
 
-        public BFRES_FVTX(BFRES.MTA mta, TexPatternAnim tex)
+
+        public BFRES_FVTX(BFRES.MTA mta, TexPatternAnim tex, ResFile b)
         {
-           
+
             mta.Text = tex.Name;
 
             mta.FrameCount = (uint)tex.FrameCount;
 
 
-            if (tex.TextureRefs != null)
+            if (tex.TextureRefs != null || tex.TextureRefNames != null) 
             {
-                foreach (var tx in tex.TextureRefs)
+                if (b.Version >= 0x03040000)
                 {
-                    mta.Pat0.Add(tx.Key);
+                    foreach (var tx in tex.TextureRefs)
+                    {
+                        mta.Pat0.Add(tx.Key);
+                    }
                 }
+                else
+                {
+                    foreach (var tx in tex.TextureRefNames)
+                    {
+                        mta.Pat0.Add(tx.Name);
+                        Console.WriteLine(tx.Name);
+                    }
+                }
+           
             }
 
             foreach (TexPatternMatAnim matanim in tex.TexPatternMatAnims)
@@ -67,13 +79,15 @@ namespace Smash_Forge
                 BFRES.MatAnimEntry mat = new BFRES.MatAnimEntry();
 
                 mat.Text = matanim.Name;
+                Console.WriteLine($"MatAnim = {mat.Text}");
+                Console.WriteLine($"Curve Count = {matanim.Curves.Count}");
 
                 if (matanim.Curves.Count == 0)
                 {
                     int CurTex = 0;
                     foreach (PatternAnimInfo inf in matanim.PatternAnimInfos)
                     {
-                        if (tex.TextureRefs != null)
+                        if (tex.TextureRefs != null || tex.TextureRefNames != null)
                         {
                             BFRES.MatAnimData md = new BFRES.MatAnimData();
 
@@ -86,7 +100,6 @@ namespace Smash_Forge
                         CurTex++;
                     }
                 }
-
 
                 int CurCurve = 0;
                 foreach (AnimCurve cr in matanim.Curves)
@@ -103,7 +116,7 @@ namespace Smash_Forge
                             }
                         }
 
-                        if (tex.TextureRefs != null)
+                        if (tex.TextureRefs != null || tex.TextureRefNames != null)
                         {
                             if (cr.KeyType == AnimCurveKeyType.SByte)
                             {
@@ -123,6 +136,7 @@ namespace Smash_Forge
                                     int key = cr.Offset + test;
                                     md.Pat0Tex = (mta.Pat0[(int)key]);
                                     md.Frame = (int)cr.Frames[i];
+                                    Console.WriteLine($"{md.Frame} {md.Pat0Tex}");
 
                                 }
                             }

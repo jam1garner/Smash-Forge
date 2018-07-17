@@ -27,6 +27,11 @@ namespace Smash_Forge
             ImageKey = "bfres";
             SelectedImageKey = "bfres";
 
+            AnimationCountTotal = TargetSwitchBFRES.SkeletalAnims.Count
+                + TargetSwitchBFRES.BoneVisibilityAnims.Count
+                + TargetSwitchBFRES.MaterialAnims.Count
+                + TargetSwitchBFRES.ShapeAnims.Count;
+
             FSKACount = TargetSwitchBFRES.SkeletalAnims.Count;
             FVISCount = TargetSwitchBFRES.BoneVisibilityAnims.Count;
             FMAACount = TargetSwitchBFRES.MaterialAnims.Count;
@@ -82,12 +87,8 @@ namespace Smash_Forge
                     poly.matrFlag = shp.VertexSkinCount;
                     poly.fsklindx = shp.BoneIndex;
 
-                    if (model.Node_Array != null)
-                        Console.WriteLine(model.skeleton.bones[poly.fsklindx].Text);
-
                     foreach (int bn in shp.SkinBoneIndices)
                     {
-                        Console.WriteLine(model.skeleton.bones[bn].Text);
                         poly.BoneIndexList.Add(model.skeleton.bones[bn].Text, bn);
                     }
 
@@ -135,13 +136,34 @@ namespace Smash_Forge
                         SampIndex++;
                     }
 
+                    MaterialData.ShaderAssign shaderassign = new MaterialData.ShaderAssign();
+
+
+                    shaderassign.ShaderModel = mat.ShaderAssign.ShadingModelName;
+                    shaderassign.ShaderArchive = mat.ShaderAssign.ShaderArchiveName;
 
                     int o = 0;
                     foreach (var op in mat.ShaderAssign.ShaderOptionDict)
                     {
-                        poly.material.shaderassign.Add(op.Key, mat.ShaderAssign.ShaderOptions[o]);
+                        shaderassign.options.Add(op.Key, mat.ShaderAssign.ShaderOptions[o]);
                         o++;
                     }
+                    int sa = 0;
+                    foreach (var smp in mat.ShaderAssign.SamplerAssignDict)
+                    {
+                        Console.WriteLine($"{smp.Key} ---> {mat.ShaderAssign.SamplerAssigns[sa]}");
+                        shaderassign.samplers.Add(smp.Key, mat.ShaderAssign.SamplerAssigns[sa]);
+                        sa++;
+                    }
+            
+                    int va = 0;
+                    foreach (var att in mat.ShaderAssign.AttribAssignDict)
+                    {
+                        shaderassign.attributes.Add(att.Key, mat.ShaderAssign.AttribAssigns[va]);
+                        va++;
+                    }
+
+                    poly.material.shaderassign = shaderassign;
 
                     ReadTextureRefs(mat, poly);
                     ReadShaderParams(mat, poly);
@@ -211,6 +233,10 @@ namespace Smash_Forge
             Vertex v = new Vertex();
             foreach (VertexAttrib att in mdl.VertexBuffers[shp.VertexBufferIndex].Attributes)
             {
+                Mesh.VertexAttribute attr = new Mesh.VertexAttribute();
+                attr.Name = att.Name;
+                attr.Format = att.Format;
+
                 if (att.Name == "_p0")
                 {
                     VertexBufferHelperAttrib position = helper["_p0"];
@@ -339,7 +365,7 @@ namespace Smash_Forge
                         v.pos2.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z });
                     }
                 }
-
+                poly.vertexAttributes.Add(attr);
             }
             poly.vertices = v;
         }
@@ -358,6 +384,18 @@ namespace Smash_Forge
 
                 texture.wrapModeS = (int)mat.Samplers[id].WrapModeU;
                 texture.wrapModeT = (int)mat.Samplers[id].WrapModeV;
+                texture.wrapModeW = (int)mat.Samplers[id].WrapModeW;
+                texture.SamplerName = mat.SamplerDict.Keys.ElementAt(id);
+                try
+                {
+                    Console.WriteLine(poly.material.shaderassign.samplers[texture.SamplerName]);
+                    texture.FragShaderSampler = poly.material.shaderassign.samplers[texture.SamplerName];
+                }
+                catch
+                {
+
+                }
+
 
 
                 bool IsAlbedo = HackyTextureList.Any(TextureName.Contains);
@@ -371,6 +409,13 @@ namespace Smash_Forge
                         AlbedoCount++;
                         texture.hash = 0;
                         texture.Type = MatTexture.TextureType.Diffuse;
+                    }
+                    if (AlbedoCount == 1)
+                    {
+                     //   poly.material.HasDiffuseLayer = true;
+                    //    texture.hash = 19;
+                     //   texture.Type = MatTexture.TextureType.DiffuseLayer2;
+
                     }
                 }
 
@@ -423,6 +468,24 @@ namespace Smash_Forge
                     poly.material.HasRoughnessMap = true;
                 }
                 texture.Name = TextureName;
+
+                //Now determine the types by sampler from fragment shader
+                //a0 and a1 will not be defined this way however because KSA using only those in no particular order
+                if (texture.FragShaderSampler == "_t0")
+                    poly.material.HasTransparencyMap = true;
+                if (texture.FragShaderSampler == "_e0")
+                    poly.material.HasEmissionMap = true;
+                if (texture.FragShaderSampler == "_e1")
+                    poly.material.HasEmissionMap = true;
+                if (texture.FragShaderSampler == "_b0")
+                    poly.material.HasShadowMap = true;
+                if (texture.FragShaderSampler == "_b1")
+                    poly.material.HasLightMap = true;
+                if (texture.FragShaderSampler == "_n0")
+                    poly.material.HasNormalMap = true;
+                if (texture.FragShaderSampler == "_s0")
+                    poly.material.HasSpecularMap = true;
+
                 poly.material.textures.Add(texture);
                 id++;
             }
@@ -434,6 +497,7 @@ namespace Smash_Forge
                 RenderInfoData r = new RenderInfoData();
 
                 r.Name = rnd.Name;
+                r.Type = (Syroot.NintenTools.Bfres.RenderInfoType)rnd.Type;
 
                 switch (rnd.Type)
                 {
@@ -485,7 +549,6 @@ namespace Smash_Forge
                 case "mode":
                     if (r.Value_Int == 1)
                     {
-                        m.isTransparent = true;
                     }
                     if (r.Value_Int == 2)
                     {
@@ -495,7 +558,7 @@ namespace Smash_Forge
             }
         }
 
-            private void SetAlphaBlending(MaterialData mat, RenderInfoData r)
+        private void SetAlphaBlending(MaterialData mat, RenderInfoData r)
         {
             switch (r.Name)
             {
@@ -615,6 +678,7 @@ namespace Smash_Forge
                     ShaderParam prm = new ShaderParam();
 
                     prm.Type = (Syroot.NintenTools.Bfres.ShaderParamType)param.Type;
+                    prm.Name = param.Name;
 
                     switch (param.Type)
                     {
@@ -662,15 +726,23 @@ namespace Smash_Forge
 
         #region HackyInject (No rebuild)
 
+        private IDictionary<object, BlockEntry> _savedBlocks;
+        public bool SaveShaderParam = true;
+
         public void InjectToFile(string FileName)
         {
             //Reparse and inject buffer data
 
+            using (Syroot.BinaryData.BinaryDataReader reader = new Syroot.BinaryData.BinaryDataReader(new MemoryStream(BFRESFile)))
             using (Syroot.BinaryData.BinaryDataWriter writer = new Syroot.BinaryData.BinaryDataWriter(File.Open(FileName, FileMode.Create)))
             {
                 writer.ByteOrder = Syroot.BinaryData.ByteOrder.LittleEndian;
+                reader.ByteOrder = Syroot.BinaryData.ByteOrder.LittleEndian;
 
-                writer.Write(BFRESFile);
+                BufferInjection(writer, reader);
+                BNTXInjectionSameSize(writer, reader);
+                FSKAInjection(writer);
+                FSKLInjection(writer);
 
                 int mdl = 0;
                 foreach (Model fmdl in TargetSwitchBFRES.Models)
@@ -678,250 +750,13 @@ namespace Smash_Forge
                     int s = 0;
                     foreach (Shape shp in fmdl.Shapes)
                     {
-                        Vertex v = models[mdl].poly[s].vertices;
+                        byte[] data = fmdl.Materials[shp.MaterialIndex].ShaderParamData;
+                        byte[] NewParamData = WriteShaderParams(data, models[mdl].poly[s]);
 
-                        writer.Seek(shp.Meshes[0].DataOffset);
-
-                        int[] Faces = models[mdl].poly[s].getDisplayFace().ToArray();
-
-                        writer.Write(Faces);
-
-                        foreach (VertexAttrib att in fmdl.VertexBuffers[shp.VertexBufferIndex].Attributes)
+                        if (SaveShaderParam == true)
                         {
-                            int test = (int)fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].DataOffset + att.Offset + fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].Stride;
-                        }
-
-                        for (int vt = 0; vt < fmdl.VertexBuffers[shp.VertexBufferIndex].VertexCount; vt++)
-                        {
-                            int at = 0;
-                            foreach (VertexAttrib att in fmdl.VertexBuffers[shp.VertexBufferIndex].Attributes)
-                            {
-                                writer.Seek(fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].DataOffset + att.Offset + fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].Stride * vt, SeekOrigin.Begin);
-                                if (att.Name == "_p0")
-                                {
-                                    if (att.Format == AttribFormat.Format_32_32_32_Single)
-                                    {
-                                        writer.Write(v.pos[vt].X);
-                                        writer.Write(v.pos[vt].Y);
-                                        writer.Write(v.pos[vt].Z);
-                                    }
-                                    else if (att.Format == AttribFormat.Format_16_16_16_16_Single)
-                                    {
-                                        Syroot.Maths.Vector4F value = new Syroot.Maths.Vector4F(v.pos[vt].X, v.pos[vt].Y, v.pos[vt].Z, 0);
-
-                                        writer.Write((short)fromFloat(value.X));
-                                        writer.Write((short)fromFloat(value.Y));
-                                        writer.Write((short)fromFloat(value.Z));
-                                        writer.Write((short)fromFloat(value.W));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for bitans " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_n0")
-                                {
-                                    if (att.Format == AttribFormat.Format_10_10_10_2_SNorm)
-                                    {
-                                        int x = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm[vt].X, -1, 1) * 511);
-                                        int y = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm[vt].Y, -1, 1) * 511);
-                                        int z = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm[vt].Z, -1, 1) * 511);
-                                        int w = SingleToInt2(Syroot.Maths.Algebra.Clamp(0, 0, 1));
-                                        writer.Write(x | (y << 10) | (z << 20) | (w << 30));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for normals " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_t0")
-                                {
-                                    if (att.Format == AttribFormat.Format_8_8_8_8_SNorm)
-                                    {
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].X, -1, 1) * 127));
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].Y, -1, 1) * 127));
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].Z, -1, 1) * 127));
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].W, -1, 1) * 127));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for tangents " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_b0")
-                                {
-                                    if (att.Format == AttribFormat.Format_8_8_8_8_SNorm)
-                                    {
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].X, -1, 1) * 127));
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].Y, -1, 1) * 127));
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].Z, -1, 1) * 127));
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].W, -1, 1) * 127));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for bitans " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_c0")
-                                {
-                                    if (att.Format == AttribFormat.Format_8_8_8_8_UNorm)
-                                    {
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].X, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].Y, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].Z, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].W, 0, 1) * 255));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for bitans " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_u0")
-                                {
-                                    if (att.Format == AttribFormat.Format_16_16_UNorm)
-                                    {
-                                        writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].X, 0, 1) * 65535));
-                                        writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].Y, 0, 1) * 65535));
-                                    }
-                                    else if (att.Format == AttribFormat.Format_32_32_Single)
-                                    {
-                                        writer.Write(v.uv0[vt].X);
-                                        writer.Write(v.uv0[vt].Y);
-                                    }
-                                    else if (att.Format == AttribFormat.Format_16_16_Single)
-                                    {
-                                        Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0[vt].X, v.uv0[vt].Y);
-
-                                        writer.Write((short)fromFloat(value.X));
-                                        writer.Write((short)fromFloat(value.Y));
-                                    }
-                                    else if (att.Format == AttribFormat.Format_16_16_SNorm)
-                                    {
-                                        writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].X, -1, 1) * 32767));
-                                        writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].Y, -1, 1) * 32767));
-                                    }
-                                    else if (att.Format == AttribFormat.Format_8_8_UNorm)
-                                    {
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].X, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].Y, 0, 1) * 255));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for uv0 " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_u1")
-                                {
-                                    if (att.Format == AttribFormat.Format_16_16_UNorm)
-                                    {
-                                        writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].X, 0, 1) * 65535));
-                                        writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].Y, 0, 1) * 65535));
-                                    }
-                                    else if (att.Format == AttribFormat.Format_32_32_Single)
-                                    {
-                                        writer.Write(v.uv1[vt].X);
-                                        writer.Write(v.uv1[vt].Y);
-                                    }
-                                    else if (att.Format == AttribFormat.Format_16_16_Single)
-                                    {
-                                        Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0[vt].X, v.uv0[vt].Y);
-
-                                        writer.Write((short)fromFloat(value.X));
-                                        writer.Write((short)fromFloat(value.Y));
-                                    }
-                                    else if (att.Format == AttribFormat.Format_16_16_SNorm)
-                                    {
-                                        writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].X, -1, 1) * 32767));
-                                        writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].Y, -1, 1) * 32767));
-                                    }
-                                    else if (att.Format == AttribFormat.Format_8_8_UNorm)
-                                    {
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].X, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].Y, 0, 1) * 255));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for uv1 " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_u2")
-                                {
-                                    if (att.Format == AttribFormat.Format_16_16_UNorm)
-                                    {
-                                        writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].X, 0, 1) * 65535));
-                                        writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].Y, 0, 1) * 65535));
-                                    }
-                                    else if (att.Format == AttribFormat.Format_32_32_Single)
-                                    {
-                                        writer.Write(v.uv2[vt].X);
-                                        writer.Write(v.uv2[vt].Y);
-                                    }
-                                    else if (att.Format == AttribFormat.Format_16_16_Single)
-                                    {
-                                        Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0[vt].X, v.uv0[vt].Y);
-
-                                        writer.Write((short)fromFloat(value.X));
-                                        writer.Write((short)fromFloat(value.Y));
-                                    }
-                                    else if (att.Format == AttribFormat.Format_16_16_SNorm)
-                                    {
-                                        writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].X, -1, 1) * 32767));
-                                        writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].Y, -1, 1) * 32767));
-                                    }
-                                    else if (att.Format == AttribFormat.Format_8_8_UNorm)
-                                    {
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].X, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].Y, 0, 1) * 255));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for uv2 " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_i0")
-                                {
-                                    if (att.Format == AttribFormat.Format_8_8_8_8_UInt)
-                                    {
-                                        writer.Write((byte)v.nodes[vt].X);
-                                        writer.Write((byte)v.nodes[vt].Y);
-                                        writer.Write((byte)v.nodes[vt].Z);
-                                        writer.Write((byte)v.nodes[vt].W);
-                                    }
-                                    else if (att.Format == AttribFormat.Format_8_8_UInt)
-                                    {
-                                        writer.Write((byte)v.nodes[vt].X);
-                                        writer.Write((byte)v.nodes[vt].Y);
-                                    }
-                                    else if (att.Format == AttribFormat.Format_8_UInt)
-                                    {
-                                        writer.Write((byte)v.nodes[vt].X);
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported format for indices " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_w0")
-                                {
-                                    if (att.Format == AttribFormat.Format_8_8_8_8_UNorm)
-                                    {
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].X, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].Y, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].Z, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].W, 0, 1) * 255));
-                                    }
-                                    else if (att.Format == AttribFormat.Format_8_8_UNorm)
-                                    {
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].X, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].Y, 0, 1) * 255));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported format for weights " + att.Format);
-                                    }
-                                }
-                            }
-                            at++;
+                            writer.Seek(fmdl.Materials[shp.MaterialIndex].SourceParamOffset, SeekOrigin.Begin);
+                            writer.Write(NewParamData);
                         }
 
                         s++;
@@ -929,36 +764,506 @@ namespace Smash_Forge
                     mdl++;
                 }
 
-
-                foreach (ExternalFile ext in TargetSwitchBFRES.ExternalFiles)
-                {
-                    using (Syroot.BinaryData.BinaryDataReader reader = new Syroot.BinaryData.BinaryDataReader(new MemoryStream(ext.Data)))
-                    {
-                        char[] emchar = reader.ReadChars(4);
-
-                        string em = new string(emchar);
-
-                        if (em == "BNTX")
-                        {
-                            Console.WriteLine("Found BNTX");
-
-                            writer.Seek((int)ext.ofsData, SeekOrigin.Begin);
-
-                            writer.Write(BNTX.BNTXFile);
-
-                            //Go back and write new size
-                            //    writer.Seek((int)pos + 8, SeekOrigin.Begin);
-                            //    writer.Write(BNTX.BNTXFile.Length);
-
-                        }
-                        reader.Close();
-                    }
-                }
                 writer.Flush();
                 writer.Close();
             }
         }
-   
+        public void BufferInjection(Syroot.BinaryData.BinaryDataWriter writer, Syroot.BinaryData.BinaryDataReader reader)
+        {
+            writer.Write(BFRESFile);
+
+            int mdl = 0;
+            foreach (Model fmdl in TargetSwitchBFRES.Models)
+            {
+                int s = 0;
+                foreach (Shape shp in fmdl.Shapes)
+                {
+                    Vertex v = models[mdl].poly[s].vertices;
+
+                    writer.Seek(shp.Meshes[0].DataOffset, SeekOrigin.Begin);
+
+                    int[] Faces = models[mdl].poly[s].getDisplayFace().ToArray();
+
+                    foreach (int f in Faces)
+                    {
+                        if (shp.Meshes[0].IndexFormat == IndexFormat.UInt16)
+                            writer.Write((ushort)f);
+                        if (shp.Meshes[0].IndexFormat == IndexFormat.UInt32)
+                            writer.Write((uint)f);
+                    }
+
+                    foreach (VertexAttrib att in fmdl.VertexBuffers[shp.VertexBufferIndex].Attributes)
+                    {
+                        int test = (int)fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].DataOffset + att.Offset + fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].Stride;
+                    }
+
+                    for (int vt = 0; vt < fmdl.VertexBuffers[shp.VertexBufferIndex].VertexCount; vt++)
+                    {
+                        int at = 0;
+                        foreach (VertexAttrib att in fmdl.VertexBuffers[shp.VertexBufferIndex].Attributes)
+                        {
+                            writer.Seek(fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].DataOffset + att.Offset + fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].Stride * vt, SeekOrigin.Begin);
+                            if (att.Name == "_p0")
+                            {
+                                if (att.Format == AttribFormat.Format_32_32_32_Single)
+                                {
+                                    writer.Write(v.pos[vt].X);
+                                    writer.Write(v.pos[vt].Y);
+                                    writer.Write(v.pos[vt].Z);
+                                }
+                                else if (att.Format == AttribFormat.Format_16_16_16_16_Single)
+                                {
+                                    Syroot.Maths.Vector4F value = new Syroot.Maths.Vector4F(v.pos[vt].X, v.pos[vt].Y, v.pos[vt].Z, 0);
+
+                                    writer.Write((short)fromFloat(value.X));
+                                    writer.Write((short)fromFloat(value.Y));
+                                    writer.Write((short)fromFloat(value.Z));
+                                    writer.Write((short)fromFloat(value.W));
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Unsupported  format for bitans " + att.Format);
+                                }
+                            }
+                            if (att.Name == "_n0")
+                            {
+                                if (att.Format == AttribFormat.Format_10_10_10_2_SNorm)
+                                {
+                                    int x = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm[vt].X, -1, 1) * 511);
+                                    int y = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm[vt].Y, -1, 1) * 511);
+                                    int z = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm[vt].Z, -1, 1) * 511);
+                                    int w = SingleToInt2(Syroot.Maths.Algebra.Clamp(0, 0, 1));
+                                    writer.Write(x | (y << 10) | (z << 20) | (w << 30));
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Unsupported  format for normals " + att.Format);
+                                }
+                            }
+                            if (att.Name == "_t0")
+                            {
+                                if (att.Format == AttribFormat.Format_8_8_8_8_SNorm)
+                                {
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].X, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].Y, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].Z, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].W, -1, 1) * 127));
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Unsupported  format for tangents " + att.Format);
+                                }
+                            }
+                            if (att.Name == "_b0")
+                            {
+                                if (att.Format == AttribFormat.Format_8_8_8_8_SNorm)
+                                {
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].X, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].Y, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].Z, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].W, -1, 1) * 127));
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Unsupported  format for bitans " + att.Format);
+                                }
+                            }
+                            if (att.Name == "_c0")
+                            {
+                                if (att.Format == AttribFormat.Format_8_8_8_8_UNorm)
+                                {
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].X, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].Y, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].Z, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].W, 0, 1) * 255));
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Unsupported  format for bitans " + att.Format);
+                                }
+                            }
+                            if (att.Name == "_u0")
+                            {
+                                if (att.Format == AttribFormat.Format_16_16_UNorm)
+                                {
+                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].X, 0, 1) * 65535));
+                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].Y, 0, 1) * 65535));
+                                }
+                                else if (att.Format == AttribFormat.Format_32_32_Single)
+                                {
+                                    writer.Write(v.uv0[vt].X);
+                                    writer.Write(v.uv0[vt].Y);
+                                }
+                                else if (att.Format == AttribFormat.Format_16_16_Single)
+                                {
+                                    Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0[vt].X, v.uv0[vt].Y);
+
+                                    writer.Write((short)fromFloat(value.X));
+                                    writer.Write((short)fromFloat(value.Y));
+                                }
+                                else if (att.Format == AttribFormat.Format_16_16_SNorm)
+                                {
+                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].X, -1, 1) * 32767));
+                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].Y, -1, 1) * 32767));
+                                }
+                                else if (att.Format == AttribFormat.Format_8_8_UNorm)
+                                {
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].X, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].Y, 0, 1) * 255));
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Unsupported  format for uv0 " + att.Format);
+                                }
+                            }
+                            if (att.Name == "_u1")
+                            {
+                                if (att.Format == AttribFormat.Format_16_16_UNorm)
+                                {
+                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].X, 0, 1) * 65535));
+                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].Y, 0, 1) * 65535));
+                                }
+                                else if (att.Format == AttribFormat.Format_32_32_Single)
+                                {
+                                    writer.Write(v.uv1[vt].X);
+                                    writer.Write(v.uv1[vt].Y);
+                                }
+                                else if (att.Format == AttribFormat.Format_16_16_Single)
+                                {
+                                    Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0[vt].X, v.uv0[vt].Y);
+
+                                    writer.Write((short)fromFloat(value.X));
+                                    writer.Write((short)fromFloat(value.Y));
+                                }
+                                else if (att.Format == AttribFormat.Format_16_16_SNorm)
+                                {
+                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].X, -1, 1) * 32767));
+                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].Y, -1, 1) * 32767));
+                                }
+                                else if (att.Format == AttribFormat.Format_8_8_UNorm)
+                                {
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].X, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].Y, 0, 1) * 255));
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Unsupported  format for uv1 " + att.Format);
+                                }
+                            }
+                            if (att.Name == "_u2")
+                            {
+                                if (att.Format == AttribFormat.Format_16_16_UNorm)
+                                {
+                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].X, 0, 1) * 65535));
+                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].Y, 0, 1) * 65535));
+                                }
+                                else if (att.Format == AttribFormat.Format_32_32_Single)
+                                {
+                                    writer.Write(v.uv2[vt].X);
+                                    writer.Write(v.uv2[vt].Y);
+                                }
+                                else if (att.Format == AttribFormat.Format_16_16_Single)
+                                {
+                                    Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0[vt].X, v.uv0[vt].Y);
+
+                                    writer.Write((short)fromFloat(value.X));
+                                    writer.Write((short)fromFloat(value.Y));
+                                }
+                                else if (att.Format == AttribFormat.Format_16_16_SNorm)
+                                {
+                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].X, -1, 1) * 32767));
+                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].Y, -1, 1) * 32767));
+                                }
+                                else if (att.Format == AttribFormat.Format_8_8_UNorm)
+                                {
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].X, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].Y, 0, 1) * 255));
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Unsupported  format for uv2 " + att.Format);
+                                }
+                            }
+                            if (att.Name == "_i0")
+                            {
+                                if (att.Format == AttribFormat.Format_8_8_8_8_UInt)
+                                {
+                                    writer.Write((byte)v.nodes[vt].X);
+                                    writer.Write((byte)v.nodes[vt].Y);
+                                    writer.Write((byte)v.nodes[vt].Z);
+                                    writer.Write((byte)v.nodes[vt].W);
+                                }
+                                else if (att.Format == AttribFormat.Format_8_8_UInt)
+                                {
+                                    writer.Write((byte)v.nodes[vt].X);
+                                    writer.Write((byte)v.nodes[vt].Y);
+                                }
+                                else if (att.Format == AttribFormat.Format_8_UInt)
+                                {
+                                    writer.Write((byte)v.nodes[vt].X);
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Unsupported format for indices " + att.Format);
+                                }
+                            }
+                            if (att.Name == "_w0")
+                            {
+                                if (att.Format == AttribFormat.Format_8_8_8_8_UNorm)
+                                {
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].X, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].Y, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].Z, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].W, 0, 1) * 255));
+                                }
+                                else if (att.Format == AttribFormat.Format_8_8_UNorm)
+                                {
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].X, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].Y, 0, 1) * 255));
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Unsupported format for weights " + att.Format);
+                                }
+                            }
+                        }
+                        at++;
+                    }
+
+                    s++;
+                }
+                mdl++;
+            }
+        }
+        public void FSKLInjection(Syroot.BinaryData.BinaryDataWriter writer)
+        {
+            int mdl = 0;
+            foreach (Model fmdl in TargetSwitchBFRES.Models)
+            {
+                int CurBn = 0;
+                foreach (Syroot.NintenTools.NSW.Bfres.Bone bn in fmdl.Skeleton.Bones)
+                {
+                    Bone bone = models[mdl].skeleton.bones[CurBn];
+
+                    writer.Seek(bn.SRTPos, SeekOrigin.Begin);
+                    writer.Write(bone.scale[0]);
+                    writer.Write(bone.scale[1]);
+                    writer.Write(bone.scale[2]);
+                    writer.Write(bone.rotation[0]);
+                    writer.Write(bone.rotation[1]);
+                    writer.Write(bone.rotation[2]);
+                    writer.Write(bone.rotation[3]);
+                    writer.Write(bone.position[0]);
+                    writer.Write(bone.position[1]);
+                    writer.Write(bone.position[2]);
+                    CurBn++;
+                }
+                mdl++;
+            }
+        }
+
+        public void FSKAInjection(Syroot.BinaryData.BinaryDataWriter writer)
+        {
+            int CurAnim = 0;
+            foreach (Animation anim in FSKA.SkeletonAnimations)
+            {
+                SkeletalAnim fska = TargetSwitchBFRES.SkeletalAnims[CurAnim];
+
+                int CurBnAnim = 0;
+                foreach (Animation.KeyNode bnanim in anim.Bones)
+                {
+                    Vector3 Pos = new Vector3(0);
+                    Vector3 Scale = new Vector3(0);
+                    Vector3 Rot = new Vector3(0);
+
+
+                    if (bnanim.Text == "Hip")
+                    {
+                        Pos.Y = 1;
+                    }
+
+                    if (bnanim.Text == "ArmR1")
+                    {
+                        Pos.X = -4;
+                    }
+                    if (bnanim.Text == "ArmL1")
+                    {
+                        Pos.X = -4;
+                    }
+
+                    if (bnanim.Text == "Spine2")
+                    {
+                        Pos.X = 5;
+                    }
+                    if (bnanim.Text == "LegL2" || bnanim.Text == "LegR2")
+                    {
+                        Pos.X = 7;
+                        Pos.Y = -2;
+                    }
+                    if (bnanim.Text == "nw4f_root")
+                    {
+                        Pos.Y = 5;
+                    }
+                    
+                    if (bnanim.Text == "LegL1" || bnanim.Text == "LegR1")
+                    {
+                        Pos.X = -1;
+                    }
+                    if (bnanim.Text == "LegL1")
+                    {
+                        Pos.Z = 2f;
+                    }
+                    if (bnanim.Text == "LegR1")
+                    {
+                        Pos.Z = -2f;
+                    }
+
+                    if (bnanim.Text == "FootL" || bnanim.Text == "FootR")
+                    {
+                        Pos.Y = 8;
+                    }
+
+
+                    BoneAnim bnan = fska.BoneAnims[CurBnAnim];
+                    if (bnanim.XSCA.Keys.Count != 0)
+                    {
+                        writer.Seek(bnan.BaseData.tempPos, SeekOrigin.Begin);
+                        //Base Scale
+                        writer.Write(bnanim.XSCA.Keys[0].Value + Scale.X);
+                        writer.Write(bnanim.YSCA.Keys[0].Value + Scale.Y);
+                        writer.Write(bnanim.ZSCA.Keys[0].Value + Scale.Z);
+
+                        //Base Rotation
+                        writer.Write(bnanim.XROT.Keys[0].Value + Rot.X);
+                        writer.Write(bnanim.YROT.Keys[0].Value + Rot.Y);
+                        writer.Write(bnanim.ZROT.Keys[0].Value + Rot.Z);
+                        writer.Write(bnanim.WROT.Keys[0].Value);
+
+                        //Base Position
+                        writer.Write(bnanim.XPOS.Keys[0].Value + Pos.X);
+                        writer.Write(bnanim.YPOS.Keys[0].Value + Pos.Y);
+                        writer.Write(bnanim.ZPOS.Keys[0].Value + Pos.Z);
+                    }
+
+                    CurBnAnim++;
+                }
+                CurAnim++;
+            }
+        }
+
+        public void BNTXInjectionSameSize(Syroot.BinaryData.BinaryDataWriter writer, Syroot.BinaryData.BinaryDataReader reader)
+        {
+
+            foreach (ExternalFile ext in TargetSwitchBFRES.ExternalFiles)
+            {
+                reader.Seek(ext.ofsData, SeekOrigin.Begin);
+                char[] emchar = reader.ReadChars(4);
+
+                string em = new string(emchar);
+
+
+                if (em == "BNTX")
+                {
+                    Console.WriteLine("Found BNTX");
+
+                    long OriginalBNTXSize = ext.sizData;
+                    long InjectedBNTXSize = BNTX.BNTXFile.Length;
+
+                    if (OriginalBNTXSize == InjectedBNTXSize)
+                    {
+                        writer.Seek((int)ext.ofsData, SeekOrigin.Begin);
+                        writer.Write(BNTX.BNTXFile);
+                    }
+                    else
+                    {
+                        MessageBox.Show("BNTX Is too big or small! Must be original Size!");
+                    }
+                }
+            }
+        }
+        public byte[] WriteShaderParams(byte[] data, Mesh m)
+        {
+            //Write data to this byte array. 
+            using (Syroot.BinaryData.BinaryDataWriter writer = new Syroot.BinaryData.BinaryDataWriter(new MemoryStream(data)))
+            {
+                writer.ByteOrder = Syroot.BinaryData.ByteOrder.LittleEndian;
+                foreach (var prm in m.material.matparam.Values)
+                {
+                    switch (prm.Type)
+                    {
+                        case Syroot.NintenTools.Bfres.ShaderParamType.Float:
+                            writer.Write(prm.Value_float);
+                            break;
+                        case Syroot.NintenTools.Bfres.ShaderParamType.Float2:
+                            writer.Write(prm.Value_float2.X);
+                            writer.Write(prm.Value_float2.Y);
+                            break;
+                        case Syroot.NintenTools.Bfres.ShaderParamType.Float3:
+                            writer.Write(prm.Value_float3.X);
+                            writer.Write(prm.Value_float3.Y);
+                            writer.Write(prm.Value_float3.Z);
+                            break;
+                        case Syroot.NintenTools.Bfres.ShaderParamType.Float4:
+                            writer.Write(prm.Value_float4.X);
+                            writer.Write(prm.Value_float4.Y);
+                            writer.Write(prm.Value_float4.Z);
+                            writer.Write(prm.Value_float4.W);
+                            break;
+                        case Syroot.NintenTools.Bfres.ShaderParamType.TexSrt:
+                            writer.Write(prm.Value_TexSrt.Mode);
+                            writer.Write(prm.Value_TexSrt.scale.X);
+                            writer.Write(prm.Value_TexSrt.scale.Y);
+                            writer.Write(prm.Value_TexSrt.rotate);
+                            writer.Write(prm.Value_TexSrt.translate.X);
+                            writer.Write(prm.Value_TexSrt.translate.Y);
+                            break;
+                        default:
+                            MessageBox.Show("Format not added to shader param saving " + prm.Type);
+                            MessageBox.Show("Shader param will not save!");
+                            SaveShaderParam = false;
+                            break;
+
+                    }
+                }
+                return data;
+            }
+        }
+
+        private class BlockEntry
+        {
+            internal List<uint> Offsets;
+            internal uint Alignment;
+            internal Action Callback;
+
+            internal BlockEntry(uint alignment, Action callback)
+            {
+                Alignment = alignment;
+                Callback = callback;
+            }
+        }
+
+        internal void SaveBlock(object data, uint alignment, Action callback)
+        {
+            if (data == null)
+            {
+                return;
+            }
+            else
+            {
+                _savedBlocks.Add(data, new BlockEntry(alignment, callback));
+            }
+        }
+
+        public void WriteBlocks(Syroot.BinaryData.BinaryDataWriter writer)
+        {
+            foreach (KeyValuePair<object, BlockEntry> entry in _savedBlocks)
+            {
+                if (entry.Value.Alignment != 0) writer.Align((int)entry.Value.Alignment);
+
+                // Write the data.
+                entry.Value.Callback.Invoke();
+            }
+        }
 
         //Thanks stack exchange. This is all temp till i do rebuilding of course
         public byte[] truncate(float f)

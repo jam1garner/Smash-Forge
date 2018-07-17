@@ -21,8 +21,8 @@ namespace Smash_Forge
         public void Read(Syroot.NintenTools.NSW.Bfres.ResFile b, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
         {
 
-            ThisAnimation.Text = "Bone Visual Animations";
-
+            TreeNode BoneVISAnimation = new TreeNode() { Text = "Bone Visual Animations" };
+            ThisAnimation.Nodes.Add(BoneVISAnimation);
 
             int i = 0;
             foreach (Syroot.NintenTools.NSW.Bfres.VisibilityAnim vis in b.BoneVisibilityAnims)
@@ -31,7 +31,7 @@ namespace Smash_Forge
 
                 ReadVIS(modelContainer.BFRES_MTA, vis);
 
-                ThisAnimation.Nodes.Add(modelContainer.BFRES_MTA);
+                BoneVISAnimation.Nodes.Add(modelContainer.BFRES_MTA);
 
                 i++;
             }
