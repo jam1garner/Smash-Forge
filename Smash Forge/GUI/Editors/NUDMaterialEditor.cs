@@ -132,6 +132,7 @@ namespace Smash_Forge
             currentMaterialList = p.materials;
             Init();
             FillForm();
+            ResizeGlControlsToMaxSquareSize(glControlTableLayout);
             matsComboBox.SelectedIndex = 0;
 
             // Set padding between elements.
@@ -1110,6 +1111,21 @@ namespace Smash_Forge
         private void NUDMaterialEditor_Resize(object sender, EventArgs e)
         {
             Debug.WriteLine(Size);
+        }
+
+        private void glControlTableLayout_Resize(object sender, EventArgs e)
+        {
+            ResizeGlControlsToMaxSquareSize(glControlTableLayout);
+        }
+
+        private void ResizeGlControlsToMaxSquareSize(Control container)
+        {
+            // Scale the glControls to the maximum size that still preserves the square aspect ratio.
+            int sideLength = Math.Min(container.Width / 2, container.Height);
+            texRgbGlControl.Width = sideLength;
+            texRgbGlControl.Height = sideLength;
+            texAlphaGlControl.Width = sideLength;
+            texAlphaGlControl.Height = sideLength;
         }
     }
 }
