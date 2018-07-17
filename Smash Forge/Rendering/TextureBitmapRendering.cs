@@ -13,22 +13,23 @@ using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge.Rendering
 {
-    static class TextureBitmapRendering
+    static class TextureToBitmap
     {
-        public static Task RenderBitmap { get { return renderBitmap; } }
-        private static Task renderBitmap;
-
-        public static void RenderTextureToBitmap(Texture2D texture, int width, int height)
+        // TODO: Use separate thread.
+        public static Bitmap RenderBitmap(Texture2D texture, 
+            bool r = true, bool g = true, bool b = true, bool a = false)
         {
-            renderBitmap = Task.Run(() =>
-            {
-                SetUpContextWindow(width, height);
-                BufferObject screenVbo = RenderTools.CreateScreenQuadBuffer();
+            // Set up the framebuffer and context to match the texture's dimensions.
+            SetUpContextWindow(texture.Width, texture.Height);
+            BufferObject screenVbo = RenderTools.CreateScreenQuadBuffer();
+            Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, texture.Width, texture.Height, PixelInternalFormat.Rgba);
+            framebuffer.Bind();
 
-                // 1. Create texture shader
-                // 2. Render textured quad
-                // 3. Copy framebuffer to bitmap
-            });
+            // Draw the specified color channels.
+            GL.Viewport(0, 0, texture.Width, texture.Height);
+            RenderTools.DrawTexturedQuad(texture.Id, 1, 1, r, g, b, a);
+
+            return framebuffer.ReadImagePixels(a);
         }
 
         private static void SetUpContextWindow(int width, int height)

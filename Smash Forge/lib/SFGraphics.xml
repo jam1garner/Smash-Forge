@@ -238,7 +238,7 @@
         </member>
         <member name="P:SFGraphics.GLObjects.Framebuffer.PixelInternalFormat">
             <summary>
-            
+            The internal format used for all color attachments.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Framebuffer.Width">
@@ -549,7 +549,7 @@
         </member>
         <member name="P:SFGraphics.GLObjects.Textures.Texture.PixelInternalFormat">
             <summary>
-            
+            The internal format of the image data.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Textures.Texture.MinFilter">
@@ -577,14 +577,12 @@
             Binds and updates the TextureParameter when set.
             </summary>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Texture.#ctor(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.Texture.#ctor(OpenTK.Graphics.OpenGL.TextureTarget,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
             <summary>
-            
+            Creates an empty texture of the specified target and internal format.
             </summary>
-            <param name="target"></param>
-            <param name="width"></param>
-            <param name="height"></param>
-            <param name="pixelInternalFormat"></param>
+            <param name="target">The target to which <see cref="P:SFGraphics.GLObjects.Textures.Texture.Id"/> is bound.</param>
+            <param name="pixelInternalFormat">The internal format of the image data.</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture.Finalize">
             <summary>
@@ -600,6 +598,16 @@
             <summary>
             A <see cref="T:SFGraphics.GLObjects.Textures.Texture"/> class for TextureTarget.Texture2D textures. 
             Provides constructors to initialize the image data from bitmaps or byte arrays in the specified PixelInternalFormat.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.Texture2D.Width">
+            <summary>
+            The width of the base mip level in pixels.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.Texture2D.Height">
+            <summary>
+            The height of the base mip level in pixels.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor(System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
