@@ -964,5 +964,40 @@ namespace Smash_Forge.GUI.Editors
 
             areaColorGLControl.SwapBuffers();
         }
+
+        private void charAngle1TB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charAngle2TB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charAngle3TB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charAngleButton_Click(object sender, EventArgs e)
+        {
+            charAngleTableLayout.Visible = !charAngleTableLayout.Visible;
+        }
+
+        private void charAngle1TrackBar_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charAngle2TrackBar_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charAngle3TrackBar_Scroll(object sender, EventArgs e)
+        {
+
+        }
     }
 }
