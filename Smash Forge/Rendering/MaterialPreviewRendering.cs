@@ -34,8 +34,14 @@ namespace Smash_Forge.Rendering
         {
             renderAllPresetsToFiles = Task.Run(() =>
             {
-                SetUpContextWindow(width, height);
+                RenderPresetsToFiles();
+            });
+        }
 
+        private static void RenderPresetsToFiles()
+        {
+            using (GameWindow gameWindow = RenderTools.CreateGameWindowContext(width, height))
+            {
                 // Resource creation.
                 screenVbo = RenderTools.CreateScreenQuadBuffer();
                 shader = Runtime.shaders["NudSphere"];
@@ -44,19 +50,7 @@ namespace Smash_Forge.Rendering
                 RenderTools.LoadMaterialSphereTextures();
                 Dictionary<NUD.DummyTextures, Texture> dummyTextures = RenderTools.CreateNudDummyTextures();
 
-                // HACK: Recreating static resources is dumb. 
-                // Don't add this to the main shaders to begin with.
-                string[] nudMatShaders = new string[]
-                {
-                    "Nud\\NudSphere.frag",
-                    "Nud\\NudSphere.vert",
-                    "Nud\\StageLighting.frag",
-                    "Nud\\Bayo.frag",
-                    "Nud\\SmashShader.frag",
-                    "Utility\\Utility.frag"
-                };
-                Runtime.shaders.Remove("NudSphere");
-                ShaderTools.CreateAndAddShader("NudSphere", nudMatShaders);
+                CreateNudSphereShader();
 
                 foreach (string file in Directory.EnumerateFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
                 {
@@ -64,16 +58,24 @@ namespace Smash_Forge.Rendering
                     string presetName = Path.GetFileNameWithoutExtension(file);
                     RenderMaterialPresetToFile(presetName, material, dummyTextures);
                 }
-            });
+            }
         }
 
-        private static void SetUpContextWindow(int width, int height)
+        private static void CreateNudSphereShader()
         {
-            // Set up a context for this thread.
-            GraphicsMode mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
-            GameWindow window = new GameWindow(width, height, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
-            window.Visible = false;
-            window.MakeCurrent();
+            // HACK: Recreating static resources is dumb. 
+            // Don't add this to the main shaders to begin with.
+            string[] nudMatShaders = new string[]
+            {
+                    "Nud\\NudSphere.frag",
+                    "Nud\\NudSphere.vert",
+                    "Nud\\StageLighting.frag",
+                    "Nud\\Bayo.frag",
+                    "Nud\\SmashShader.frag",
+                    "Utility\\Utility.frag"
+            };
+            Runtime.shaders.Remove("NudSphere");
+            ShaderTools.CreateAndAddShader("NudSphere", nudMatShaders);
         }
 
         private static void RenderMaterialPresetToFile(string presetName, NUD.Material material, Dictionary<NUD.DummyTextures, Texture> dummyTextures)

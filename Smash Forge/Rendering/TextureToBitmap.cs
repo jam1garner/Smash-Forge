@@ -28,15 +28,11 @@ namespace Smash_Forge.Rendering
             bool r = true, bool g = true, bool b = true, bool a = false)
         {
             // Set up the framebuffer and context to match the texture's dimensions.
-            GameWindow gameWindow = CreateContextWindow(width, height);
-            Framebuffer framebuffer = DrawTextureToNewFbo(texture, width, height, r, g, b, a);
-
-            Bitmap image = framebuffer.ReadImagePixels(a);
-
-            // Clean up OpenGL resources.
-            gameWindow.Dispose();
-
-            return image;
+            using (GameWindow gameWindow = RenderTools.CreateGameWindowContext(width, height))
+            {
+                Framebuffer framebuffer = DrawTextureToNewFbo(texture, width, height, r, g, b, a);
+                return framebuffer.ReadImagePixels(a);
+            }
         }
 
         private static Framebuffer DrawTextureToNewFbo(Texture2D texture, int width, int height, bool r, bool g, bool b, bool a)
@@ -49,16 +45,6 @@ namespace Smash_Forge.Rendering
             GL.Viewport(0, 0, width, height);
             RenderTools.DrawTexturedQuad(texture.Id, 1, 1, r, g, b, a);
             return framebuffer;
-        }
-
-        private static GameWindow CreateContextWindow(int width, int height)
-        {
-            // Set up a context for this thread.
-            GraphicsMode mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
-            GameWindow window = new GameWindow(width, height, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
-            window.Visible = false;
-            window.MakeCurrent();
-            return window;
         }
     }
 }

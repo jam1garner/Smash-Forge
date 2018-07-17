@@ -62,7 +62,7 @@ namespace Smash_Forge.Rendering
 
             // Make a dummy context so shaders, textures, etc don't become unloaded.
             GraphicsContext.ShareContexts = true;
-            SetUpDummyResourceContext();
+            dummyResourceWindow = CreateGameWindowContext();
 
             nudSphereCamera.UpdateFromMouse(); // Update matrices for shader.
             LoadTextures();
@@ -73,12 +73,14 @@ namespace Smash_Forge.Rendering
             hasSetUpOpenTK = true;
         }
 
-        private static void SetUpDummyResourceContext()
+        public static GameWindow CreateGameWindowContext(int width = 640, int height = 480)
         {
             GraphicsMode mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
-            dummyResourceWindow = new GameWindow(640, 480, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 3, GraphicsContextFlags.Default);
-            dummyResourceWindow.Visible = false;
-            dummyResourceWindow.MakeCurrent();
+            // TODO: Version 330 doesn't work with texture rendering for some reason.
+            GameWindow gameWindow = new GameWindow(width, height, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
+            gameWindow.Visible = false;
+            gameWindow.MakeCurrent();
+            return gameWindow;
         }
 
         public static BufferObject CreateScreenQuadBuffer()

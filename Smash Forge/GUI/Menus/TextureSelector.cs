@@ -38,9 +38,9 @@ namespace Smash_Forge.GUI.Menus
                     // Use the texture ID in hex for the display text and image key.
                     listView1.Items.Add(texture.Key.ToString("X"), texture.Key.ToString("X"));
 
-                    // TODO: Properly dispose image.
                     Bitmap bitmap = Rendering.TextureToBitmap.RenderBitmap((Texture2D)texture.Value, imageWidth, imageHeight);
                     imageList.Images.Add(texture.Key.ToString("X"), bitmap);
+                    // StackOverflow makes the bad exceptions go away.
                     var dummy = imageList.Handle;
                     bitmap.Dispose();
                 }

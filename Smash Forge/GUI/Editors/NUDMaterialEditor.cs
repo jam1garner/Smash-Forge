@@ -149,6 +149,7 @@ namespace Smash_Forge
                         {
                             Bitmap bitmap = TextureToBitmap.RenderBitmap((SFGraphics.GLObjects.Textures.Texture2D)nut.glTexByHashId[texture.hash], 64, 64);
                             imageList.Images.Add(texture.hash.ToString(), bitmap);
+                            // StackOverflow makes the bad exceptions go away.
                             var dummy = imageList.Handle;
                             bitmap.Dispose();
                         }
