@@ -144,24 +144,19 @@ namespace Smash_Forge
 
         private static void RenderMaterialTexturesAddToImageList(ImageList imageList, NUD.Material mat)
         {
-            foreach (NUD.MatTexture texture in mat.textures)
+            // Generate thumbnails for all textures in case the material's texture IDs are changed.
+            foreach (NUT nut in Runtime.TextureContainers)
             {
-                foreach (NUT nut in Runtime.TextureContainers)
+                foreach (var texture in nut.glTexByHashId)
                 {
-                    if (nut.glTexByHashId.ContainsKey(texture.hash))
-                    {
-                        if (nut.glTexByHashId[texture.hash] is SFGraphics.GLObjects.Textures.Texture2D)
-                        {
-                            Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)nut.glTexByHashId[texture.hash], 64, 64);
-                            imageList.Images.Add(texture.hash.ToString("X"), bitmap);
-                            // StackOverflow makes the bad exceptions go away.
-                            var dummy = imageList.Handle;
-                            bitmap.Dispose();
-                        }
+                    Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)nut.glTexByHashId[texture.Key], 64, 64);
+                    imageList.Images.Add(texture.Key.ToString("X"), bitmap);
 
-                        break;
-                    }
+                    // StackOverflow makes the bad exceptions go away.
+                    var dummy = imageList.Handle;
+                    bitmap.Dispose();
                 }
+              
             }
         }
 
