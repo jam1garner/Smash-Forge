@@ -230,12 +230,12 @@ namespace Smash_Forge
 
             // 3DS MBN
             shader = Runtime.shaders["Mbn"];
-            GL.UseProgram(shader.Id);
+            shader.UseProgram();
             SetMbnUniforms(camera, shader);
 
             // Melee DAT
             shader = Runtime.shaders["Dat"];
-            GL.UseProgram(shader.Id);
+            shader.UseProgram();
             SetDatUniforms(shader);
 
             if (BCH != null)
@@ -261,7 +261,7 @@ namespace Smash_Forge
                 else
                     shader = Runtime.shaders["Nud"];
 
-                GL.UseProgram(shader.Id);
+                shader.UseProgram();
 
                 // Matrices.
                 Matrix4 lightMatrixRef = lightMatrix;

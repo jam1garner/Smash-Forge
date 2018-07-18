@@ -1491,7 +1491,7 @@ namespace Smash_Forge.Rendering
         {
             // draw RGB and alpha channels of texture to screen quad
             Shader shader = Runtime.shaders["Gradient"];
-            GL.UseProgram(shader.Id);
+            shader.UseProgram();
 
             SetUp2DRendering();
 
@@ -1506,7 +1506,7 @@ namespace Smash_Forge.Rendering
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = Runtime.shaders["Texture"];
-            GL.UseProgram(shader.Id);
+            shader.UseProgram();
 
             SetUp2DRendering();
 
@@ -1550,7 +1550,7 @@ namespace Smash_Forge.Rendering
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = Runtime.shaders["ScreenQuad"];
-            GL.UseProgram(shader.Id);
+            shader.UseProgram();
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, texture0);
@@ -1580,7 +1580,7 @@ namespace Smash_Forge.Rendering
             if (!shader.ProgramCreatedSuccessfully())
                 return;
 
-            GL.UseProgram(shader.Id);
+            shader.UseProgram();
 
             // Use the same uniforms as the NUD shader. 
             NUD.SetMaterialPropertyUniforms(shader, material);

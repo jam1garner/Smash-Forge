@@ -52,7 +52,7 @@ namespace Smash_Forge
 
         // Shadow Mapping
         private Framebuffer depthMapFbo;
-        private Texture2D depthMap;
+        private DepthTexture depthMap;
         private int shadowWidth = 2048;
         private int shadowHeight = 2048;
         private Matrix4 lightMatrix = Matrix4.Identity;
@@ -332,26 +332,11 @@ namespace Smash_Forge
             depthMapFbo.Bind();
 
             // Set up the depth map texture.
-            depthMap = new Texture2D(glViewport.Width, glViewport.Height);
-            ResizeDepthMap();
-            GL.DrawBuffer(DrawBufferMode.None);
-            GL.ReadBuffer(ReadBufferMode.None);
-        }
-
-        private void ResizeDepthMap()
-        {
-            depthMap.Bind();
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, shadowWidth, shadowHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-            depthMap.MagFilter = TextureMagFilter.Nearest;
-            depthMap.MinFilter = TextureMinFilter.Nearest;
-            // Use white for values outside shadow map.
-            depthMap.TextureWrapS = TextureWrapMode.ClampToBorder;
-            depthMap.TextureWrapT = TextureWrapMode.ClampToBorder;
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, new float[] { 1, 1, 1, 1 });
-
-            // Attach the depth map to the fbo.
+            depthMap = new DepthTexture(shadowWidth, shadowHeight, PixelInternalFormat.DepthComponent24);
             depthMapFbo.Bind();
             GL.FramebufferTexture2D(depthMapFbo.FramebufferTarget, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthMap.Id, 0);
+            GL.DrawBuffer(DrawBufferMode.None);
+            GL.ReadBuffer(ReadBufferMode.None);
         }
 
         public Camera GetCamera()
@@ -606,7 +591,7 @@ namespace Smash_Forge
             offscreenRenderFbo.Height = fboRenderHeight;
 
             // Resize manually created fbos.
-            ResizeDepthMap();
+            AttachDepthMap();
             ResizeHdrFboRboTwoColorAttachments();
         }
 

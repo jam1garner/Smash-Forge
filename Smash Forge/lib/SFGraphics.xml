@@ -365,6 +365,11 @@
             The context probably isn't current, so the data is deleted later by <see cref="T:SFGraphics.GLObjects.GLObjectManager"/>.
             </summary>
         </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.UseProgram">
+            <summary>
+            Use this shader program's program ID for rendering.
+            </summary>
+        </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetFloat(System.String,System.Single)">
             <summary>
             Names not present in the shader are ignored and saved to the error log.
@@ -526,6 +531,29 @@
             <summary>
             Stores hardware info, OpenGL/GLSL version, invalid uniform/attribute names, shader compilation errors, and linker errors.
             </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Textures.DepthTexture">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.DepthTexture.Width">
+            <summary>
+            The width of the texture in pixels.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.DepthTexture.Height">
+            <summary>
+            The height of the texture in pixels.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.DepthTexture.#ctor(System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
+            <summary>
+            
+            </summary>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="pixelInternalFormat"></param>
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.Texture">
             <summary>

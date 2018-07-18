@@ -342,7 +342,7 @@ namespace Smash_Forge
                 shader = Runtime.shaders["Nud"];
 
             // Render using the selected shader.
-            GL.UseProgram(shader.Id);
+            shader.UseProgram();
             shader.EnableVertexAttributes();
             UpdateBonesBuffer(vbn, shader, bonesUbo);
 
@@ -1199,7 +1199,7 @@ namespace Smash_Forge
         public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)
         {
             Shader shader = Runtime.shaders["Point"];
-            GL.UseProgram(shader.Id);
+            shader.UseProgram();
             Matrix4 mat = camera.MvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref mat);
 
