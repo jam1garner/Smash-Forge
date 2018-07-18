@@ -591,7 +591,6 @@ namespace Smash_Forge
             offscreenRenderFbo.Height = fboRenderHeight;
 
             // Resize manually created fbos.
-            AttachDepthMap();
             ResizeHdrFboRboTwoColorAttachments();
         }
 
