@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -15,24 +11,48 @@ namespace Smash_Forge.Rendering
 {
     static class TextureToBitmap
     {
-        // TODO: Use separate thread.
         public static Bitmap RenderBitmap(Texture2D texture, 
             bool r = true, bool g = true, bool b = true, bool a = false)
         {
             // Use the texture's dimensions.
-            Framebuffer framebuffer = DrawTextureToNewFbo(texture, texture.Width, texture.Height, r, g, b, a);
-            return framebuffer.ReadImagePixels(a);
+            return DrawTextureToBitmap(texture, texture.Width, texture.Height, r, g, b, a);
+        }
+
+        public static Bitmap RenderBitmapUseExistingContext(Texture2D texture,
+            bool r = true, bool g = true, bool b = true, bool a = false)
+        {
+            // Use the texture's dimensions.
+            return DrawTextureToBitmapUseExistingContext(texture, texture.Width, texture.Height, r, g, b, a);
         }
 
         public static Bitmap RenderBitmap(Texture2D texture, int width, int height,
             bool r = true, bool g = true, bool b = true, bool a = false)
         {
-            // Set up the framebuffer and context to match the texture's dimensions.
+            // Scale the image to new dimensions.
+            return DrawTextureToBitmap(texture, width, height, r, g, b, a);
+        }
+
+        public static Bitmap RenderBitmapUseExistingContext(Texture2D texture, int width, int height,
+            bool r = true, bool g = true, bool b = true, bool a = false)
+        {
+            // Scale the image to new dimensions.
+            return DrawTextureToBitmapUseExistingContext(texture, width, height, r, g, b, a);
+        }
+
+        private static Bitmap DrawTextureToBitmap(Texture2D texture, int width, int height, bool r, bool g, bool b, bool a)
+        {
             using (GameWindow gameWindow = RenderTools.CreateGameWindowContext(width, height))
             {
                 Framebuffer framebuffer = DrawTextureToNewFbo(texture, width, height, r, g, b, a);
                 return framebuffer.ReadImagePixels(a);
             }
+        }
+
+        private static Bitmap DrawTextureToBitmapUseExistingContext(Texture2D texture, int width, int height, bool r, bool g, bool b, bool a)
+        {
+            // Context creation will create CPU bottlenecks for multiple textures.
+            Framebuffer framebuffer = DrawTextureToNewFbo(texture, width, height, r, g, b, a);
+            return framebuffer.ReadImagePixels(a);
         }
 
         private static Framebuffer DrawTextureToNewFbo(Texture2D texture, int width, int height, bool r, bool g, bool b, bool a)
