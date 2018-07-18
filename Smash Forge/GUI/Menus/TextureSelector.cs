@@ -11,8 +11,8 @@ namespace Smash_Forge.GUI.Menus
     public partial class TextureSelector : Form
     {
 
-        private static readonly int imageWidth = 64;
-        private static readonly int imageHeight = 64;
+        private static readonly int imageWidth = 80;
+        private static readonly int imageHeight = 80;
 
         private ImageList imageList = new ImageList()
         {

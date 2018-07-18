@@ -155,8 +155,7 @@ namespace Smash_Forge
                     // StackOverflow makes the bad exceptions go away.
                     var dummy = imageList.Handle;
                     bitmap.Dispose();
-                }
-              
+                }      
             }
         }
 

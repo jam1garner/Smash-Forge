@@ -38,7 +38,7 @@
             this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(470, 588);
+            this.listView1.Size = new System.Drawing.Size(703, 736);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
@@ -47,9 +47,9 @@
             // selectButton
             // 
             this.selectButton.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.selectButton.Location = new System.Drawing.Point(0, 546);
+            this.selectButton.Location = new System.Drawing.Point(0, 694);
             this.selectButton.Name = "selectButton";
-            this.selectButton.Size = new System.Drawing.Size(470, 42);
+            this.selectButton.Size = new System.Drawing.Size(703, 42);
             this.selectButton.TabIndex = 1;
             this.selectButton.Text = "Apply";
             this.selectButton.UseVisualStyleBackColor = true;
@@ -59,12 +59,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(470, 588);
+            this.ClientSize = new System.Drawing.Size(703, 736);
             this.Controls.Add(this.selectButton);
             this.Controls.Add(this.listView1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TextureSelector";
-            this.Text = "TextureSelector";
+            this.Text = "Texture Selector";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.TextureSelector_FormClosed);
             this.ResumeLayout(false);
 
