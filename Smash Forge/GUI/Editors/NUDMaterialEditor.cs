@@ -130,14 +130,20 @@ namespace Smash_Forge
         {
             textureThumbnails.Images.Clear();
             AddTextureThumbnails(textureThumbnails);
-
-            NUD.Material material = currentMaterialList[currentMatIndex];
-
         }
 
         private void AddTextureThumbnails(ImageList imageList)
         {
-            NUD.Material mat = currentMaterialList[currentMatIndex];
+            // Reuse the same context to avoid CPU bottlenecks.
+            using (OpenTK.GameWindow gameWindow = RenderTools.CreateGameWindowContext(64, 64))
+            {
+                NUD.Material mat = currentMaterialList[currentMatIndex];
+                RenderMaterialTexturesAddToImageList(imageList, mat);
+            }
+        }
+
+        private static void RenderMaterialTexturesAddToImageList(ImageList imageList, NUD.Material mat)
+        {
             foreach (NUD.MatTexture texture in mat.textures)
             {
                 foreach (NUT nut in Runtime.TextureContainers)
@@ -146,7 +152,7 @@ namespace Smash_Forge
                     {
                         if (nut.glTexByHashId[texture.hash] is SFGraphics.GLObjects.Textures.Texture2D)
                         {
-                            Bitmap bitmap = TextureToBitmap.RenderBitmap((SFGraphics.GLObjects.Textures.Texture2D)nut.glTexByHashId[texture.hash], 64, 64);
+                            Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)nut.glTexByHashId[texture.hash], 64, 64);
                             imageList.Images.Add(texture.hash.ToString("X"), bitmap);
                             // StackOverflow makes the bad exceptions go away.
                             var dummy = imageList.Handle;

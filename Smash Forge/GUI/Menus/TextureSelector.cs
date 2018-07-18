@@ -38,13 +38,15 @@ namespace Smash_Forge.GUI.Menus
 
         private void AddImagesFromAllTextureContainers()
         {
-            int totalTextureCount = GetTotalTextureCount();
+            // Reuse the same context to avoid CPU bottlenecks.
+            using (OpenTK.GameWindow window = Rendering.RenderTools.CreateGameWindowContext(imageWidth, imageHeight))
+            {
+                RenderTexturesAddToImageList();
+            }
+        }
 
-            // This may take a while for larger NUTs.
-            ProgressAlert progressAlert = new ProgressAlert();
-            progressAlert.Show();
-
-            int index = 0;
+        private void RenderTexturesAddToImageList()
+        {
             foreach (NUT nut in Runtime.TextureContainers)
             {
                 foreach (var texture in nut.glTexByHashId)
@@ -52,33 +54,13 @@ namespace Smash_Forge.GUI.Menus
                     // Use the texture ID in hex for the display text and image key.
                     listView1.Items.Add(texture.Key.ToString("X"), texture.Key.ToString("X"));
 
-                    Bitmap bitmap = Rendering.TextureToBitmap.RenderBitmap((Texture2D)texture.Value, imageWidth, imageHeight);
+                    Bitmap bitmap = Rendering.TextureToBitmap.RenderBitmapUseExistingContext((Texture2D)texture.Value, imageWidth, imageHeight);
                     imageList.Images.Add(texture.Key.ToString("X"), bitmap);
                     // StackOverflow makes the bad exceptions go away.
                     var dummy = imageList.Handle;
                     bitmap.Dispose();
-
-                    // Update progress.
-                    progressAlert.ProgressValue = (int)(((double)index / totalTextureCount) * 100);
-                    progressAlert.Message = String.Format("Rendering {0}...", texture.Key.ToString("X"));
-                    progressAlert.Refresh();
-                    index += 1;
                 }
             }
-            // Finished
-            progressAlert.ProgressValue = 100;
-            progressAlert.Refresh();
-            progressAlert.Close();
-        }
-
-        private static int GetTotalTextureCount()
-        {
-            int totalTextureCount = 0;
-            foreach (NUT nut in Runtime.TextureContainers)
-            {
-                totalTextureCount += nut.glTexByHashId.Count;
-            }
-            return totalTextureCount;
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
@@ -115,7 +97,7 @@ namespace Smash_Forge.GUI.Menus
 
         private void TextureSelector_FormClosed(object sender, FormClosedEventArgs e)
         {
-            // TODO: Properly dispose images.
+
         }
     }
 }
