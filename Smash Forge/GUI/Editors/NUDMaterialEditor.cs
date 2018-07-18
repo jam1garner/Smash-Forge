@@ -23,17 +23,7 @@ namespace Smash_Forge
     {
         public NUD.Polygon currentPolygon;
         public List<NUD.Material> currentMaterialList;
-        int currentMatIndex = 0;
-        string currentPropertyName = "";
-
         public static Dictionary<string, Params.MatParam> materialParamList = new Dictionary<string, Params.MatParam>();
-
-        // Set to false while using the sliders to avoid a loop of scroll and text changed events.
-        // Set to true when focus on the slider is lost (ex. clicking on text box).
-        bool enableParam1SliderUpdates = true;
-        bool enableParam2SliderUpdates = true;
-        bool enableParam3SliderUpdates = true;
-        bool enableParam4SliderUpdates = true;
 
         public static Dictionary<int, string> cullModeByMatValue = new Dictionary<int, string>()
         {
@@ -91,11 +81,26 @@ namespace Smash_Forge
         {
             { 0x01, "1 mip level, anisotropic off"},
             { 0x02, "1 mip level, anisotropic off 2"},
-            { 0x03, "4 mip levels, trilinear off, anisotropic off"},
-            { 0x04, "4 mip levels, trilinear off, anisotropic on"},
-            { 0x05, "4 mip levels, trilinear on, anisotropic off"},
-            { 0x06, "4 mip levels, trilinear on, anisotropic on"}
+            { 0x03, "4 mip levels"},
+            { 0x04, "4 mip levels, anisotropic"},
+            { 0x05, "4 mip levels, trilinear"},
+            { 0x06, "4 mip levels, trilinear, anisotropic"}
         };
+
+        private int currentMatIndex = 0;
+        private string currentPropertyName = "";
+        private ImageList textureThumbnails = new ImageList()
+        {
+            ColorDepth = ColorDepth.Depth32Bit,
+            ImageSize = new Size(64, 64)
+        };
+
+        // Set to false while using the sliders to avoid a loop of scroll and text changed events.
+        // Set to true when focus on the slider is lost (ex. clicking on text box).
+        private bool enableParam1SliderUpdates = true;
+        private bool enableParam2SliderUpdates = true;
+        private bool enableParam3SliderUpdates = true;
+        private bool enableParam4SliderUpdates = true;
 
         private NUDMaterialEditor()
         {
@@ -110,17 +115,56 @@ namespace Smash_Forge
             FillForm();
             ResizeGlControlsToMaxSquareSize(glControlTableLayout);
             matsComboBox.SelectedIndex = 0;
+            texturesListView.LargeImageList = textureThumbnails;
 
-            // Set padding between elements.
-            ImageList imgList = new ImageList();
-            imgList.ImageSize = new Size(1, 30);
-            texturesListView.SmallImageList = imgList;
+            RefreshTexturesImageList();
 
             // The dummy textures will be used later. 
             RenderTools.SetUpOpenTkRendering();
 
             // Only happens once.
             UpdateMaterialThumbnails();
+        }
+
+        private void RefreshTexturesImageList()
+        {
+            textureThumbnails.Images.Clear();
+            AddTextureThumbnails(textureThumbnails);
+        }
+
+        private void AddTextureThumbnails(ImageList imageList)
+        {
+            // Reuse the same context to avoid CPU bottlenecks.
+            using (OpenTK.GameWindow gameWindow = RenderTools.CreateGameWindowContext(64, 64))
+            {
+                NUD.Material mat = currentMaterialList[currentMatIndex];
+                RenderMaterialTexturesAddToImageList(imageList, mat);
+            }
+        }
+
+        private static void RenderMaterialTexturesAddToImageList(ImageList imageList, NUD.Material mat)
+        {
+            // Generate thumbnails for all textures in case the material's texture IDs are changed.
+            foreach (NUT nut in Runtime.TextureContainers)
+            {
+                foreach (var texture in nut.glTexByHashId)
+                {
+                    Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)nut.glTexByHashId[texture.Key], 64, 64);
+                    imageList.Images.Add(texture.Key.ToString("X"), bitmap);
+
+                    // StackOverflow makes the bad exceptions go away.
+                    var dummy = imageList.Handle;
+                    bitmap.Dispose();
+                }      
+            }
+        }
+
+        private static ImageList CreateImageList()
+        {
+            ImageList imageList = new ImageList();
+            imageList.ColorDepth = ColorDepth.Depth32Bit;
+            imageList.ImageSize = new Size(64, 64);
+            return imageList;
         }
 
         private static void UpdateMaterialThumbnails()
@@ -249,52 +293,53 @@ namespace Smash_Forge
             // Jigglypuff has weird eyes.
             if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
             {
-                texturesListView.Items.Add("Diffuse");
-                texturesListView.Items.Add("Diffuse2");
-                texturesListView.Items.Add("NormalMap");
+                texturesListView.Items.Add("Diffuse", mat.diffuse1ID.ToString("X"));
+                texturesListView.Items.Add("Diffuse2", mat.diffuse2ID.ToString("X"));
+                texturesListView.Items.Add("NormalMap", mat.normalID.ToString("X"));
             }
             else if ((mat.Flags & 0xFFFFFFFF) == 0x92F01101)
             {
                 // These flags are even weirder. 
-                texturesListView.Items.Add("Diffuse");
-                texturesListView.Items.Add("Diffuse2");
+                texturesListView.Items.Add("Diffuse", mat.diffuse1ID.ToString("X"));
+                texturesListView.Items.Add("Diffuse2", mat.diffuse2ID.ToString("X"));
                 if (currentMatIndex == 0)
                 {
                     // The second material doesn't have these textures.
                     // The texture are probably shared with the first material.
-                    texturesListView.Items.Add("Ramp");
-                    texturesListView.Items.Add("DummyRamp");
+                    texturesListView.Items.Add("Ramp", mat.rampID.ToString("X"));
+                    texturesListView.Items.Add("DummyRamp", mat.dummyRampID.ToString("X"));
                 }
             }
             else
             {
                 // The order of the textures is critical.
                 if (mat.hasDiffuse)
-                    texturesListView.Items.Add("Diffuse");
+                    texturesListView.Items.Add("Diffuse", mat.diffuse1ID.ToString("X"));
                 if (mat.hasSphereMap)
-                    texturesListView.Items.Add("SphereMap");
+                    texturesListView.Items.Add("SphereMap", mat.sphereMapID.ToString("X"));
                 if (mat.hasDiffuse2)
-                    texturesListView.Items.Add("Diffuse2");
+                    texturesListView.Items.Add("Diffuse2", mat.diffuse2ID.ToString("X"));
                 if (mat.hasDiffuse3)
-                    texturesListView.Items.Add("Diffuse3");
+                    texturesListView.Items.Add("Diffuse3", mat.diffuse3ID.ToString("X"));
                 if (mat.hasStageMap)
-                    texturesListView.Items.Add("StageMap");
+                    texturesListView.Items.Add("StageMap", mat.stageMapID.ToString("X"));
                 if (mat.hasCubeMap)
-                    texturesListView.Items.Add("Cubemap");
+                    texturesListView.Items.Add("Cubemap", mat.cubeMapID.ToString("X"));
                 if (mat.hasAoMap)
-                    texturesListView.Items.Add("AOMap");
+                    texturesListView.Items.Add("AOMap", mat.aoMapID.ToString("X"));
                 if (mat.hasNormalMap)
-                    texturesListView.Items.Add("NormalMap");
+                    texturesListView.Items.Add("NormalMap", mat.normalID.ToString("X"));
                 if (mat.hasRamp)
-                    texturesListView.Items.Add("Ramp");
+                    texturesListView.Items.Add("Ramp", mat.rampID.ToString("X"));
                 if (mat.hasDummyRamp)
-                    texturesListView.Items.Add("DummyRamp");
+                    texturesListView.Items.Add("DummyRamp", mat.dummyRampID.ToString("X"));
             }
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             currentMatIndex = matsComboBox.SelectedIndex;
+            RefreshTexturesImageList();
             FillForm();
         }
 
@@ -327,11 +372,6 @@ namespace Smash_Forge
                 textBox.Text = "0";
         }
 
-        private void cullModeComboBox_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-
-        }
-
         private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
         {
             foreach (int i in alphaFuncByMatValue.Keys)
@@ -351,20 +391,29 @@ namespace Smash_Forge
             {
                 index = texturesListView.Items.IndexOf(texturesListView.SelectedItems[0]);
                 texParamsTableLayout.Enabled = true;
-                textureIDTB.Enabled = true;
+                textureIdTB.Enabled = true;
             }
             else
             {
                 texParamsTableLayout.Enabled = false;
-                textureIDTB.Enabled = false;
+                textureIdTB.Enabled = false;
             }
-            if(index >= currentMaterialList[currentMatIndex].textures.Count)
+            if (index >= currentMaterialList[currentMatIndex].textures.Count)
             {
                 MessageBox.Show("Texture doesn't exist");
                 return;
             }
+
+            UpdateSelectedTextureControlValues(index);
+
+            RenderTexture();
+            RenderTexture(true);
+        }
+
+        private void UpdateSelectedTextureControlValues(int index)
+        {
             NUD.MatTexture tex = currentMaterialList[currentMatIndex].textures[index];
-            textureIDTB.Text = tex.hash.ToString("X");
+            textureIdTB.Text = tex.hash.ToString("X");
 
             mapModeComboBox.SelectedItem = mapModeByMatValue[tex.mapMode];
             wrapXComboBox.SelectedItem = wrapModeByMatValue[tex.wrapModeS];
@@ -372,9 +421,8 @@ namespace Smash_Forge
             minFilterComboBox.SelectedItem = minFilterByMatValue[tex.minFilter];
             magFilterComboBox.SelectedItem = magFilterByMatValue[tex.magFilter];
             mipDetailComboBox.SelectedItem = mipDetailByMatValue[tex.mipDetail];
-            RenderTexture();
-            RenderTexture(true);
         }
+
         private void flagsTB_TextChanged(object sender, EventArgs e)
         {
             uint f = 0;
@@ -391,109 +439,129 @@ namespace Smash_Forge
                 flagsTB.BackColor = Color.Red;
         }
 
-        private void textureIDTB_TextChanged(object sender, EventArgs e)
+        private void textureIdTB_TextChanged(object sender, EventArgs e)
         {
-            int f = -1;
-            int.TryParse(textureIDTB.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f);
-            if (f != -1 && texturesListView.SelectedIndices.Count > 0)
-                currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash = f;
+            int value = GuiTools.TryParseTBInt(textureIdTB, true);
+            if (value != -1 && texturesListView.SelectedIndices.Count > 0)
+                currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash = value;
 
             // Update the texture color channels.
             RenderTexture();
             RenderTexture(true);
+
+            if (texturesListView.SelectedItems.Count > 0 && value != -1)
+            {
+                texturesListView.SelectedItems[0].ImageKey = value.ToString("X");
+            }
         }
 
         private void refAlphaTB_TextChanged(object sender, EventArgs e)
         {
-            int n = -1;
-            int.TryParse(refAlphaTB.Text, out n);
-            if (n != -1)
-            {
-                currentMaterialList[currentMatIndex].RefAlpha = n;
-            }
-            else
-            {
-                refAlphaTB.Text = "0";
-            }
+            int value = GuiTools.TryParseTBInt(refAlphaTB);
+            if (value != -1)
+                currentMaterialList[currentMatIndex].RefAlpha = value;
         }
 
         private void zBufferTB_TextChanged(object sender, EventArgs e)
         {
-            int n = -1;
-            int.TryParse(zBufferTB.Text, out n);
-            if (n != -1)
-            {
-                currentMaterialList[currentMatIndex].zBufferOffset = n;
-            }
-            else
-            {
-                zBufferTB.Text = "0";
-            }
+            int value = GuiTools.TryParseTBInt(zBufferTB);
+            if (value != -1)
+                currentMaterialList[currentMatIndex].zBufferOffset = value;
         }
 
         private void mapModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (texturesListView.SelectedIndices.Count == 0)
+                return;
+
             foreach (int i in mapModeByMatValue.Keys)
+            {
                 if (mapModeByMatValue[i].Equals(mapModeComboBox.SelectedItem))
                 {
                     currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].mapMode = i;
                     break;
                 }
+            }
         }
 
         private void wrapXComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (texturesListView.SelectedIndices.Count == 0)
+                return;
+
             foreach (int i in wrapModeByMatValue.Keys)
+            {
                 if (wrapModeByMatValue[i].Equals(wrapXComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].wrapModeS = i;
                     break;
                 }
+            }
         }
 
         private void wrapYComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (texturesListView.SelectedIndices.Count == 0)
+                return;
+
             foreach (int i in wrapModeByMatValue.Keys)
+            {
                 if (wrapModeByMatValue[i].Equals(wrapYComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].wrapModeT = i;
                     break;
                 }
+            }
         }
 
         private void minFilterComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (texturesListView.SelectedIndices.Count == 0)
+                return;
+
             foreach (int i in minFilterByMatValue.Keys)
+            {
                 if (minFilterByMatValue[i].Equals(minFilterComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].minFilter = i;
                     break;
                 }
+            }
         }
 
-        private void comboBox12_SelectedIndexChanged(object sender, EventArgs e)
+        private void magFilterComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (texturesListView.SelectedIndices.Count == 0)
+                return;
+
             foreach (int i in magFilterByMatValue.Keys)
+            {
                 if (magFilterByMatValue[i].Equals(magFilterComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].magFilter = i;
                     break;
                 }
+            }
         }
 
-        private void comboBox13_SelectedIndexChanged(object sender, EventArgs e)
+        private void mipDetailComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (texturesListView.SelectedIndices.Count == 0)
+                return;
+
             foreach (int i in mipDetailByMatValue.Keys)
+            {
                 if (mipDetailByMatValue[i].Equals(mipDetailComboBox.SelectedItem))
                 {
                     if (texturesListView.SelectedItems.Count > 0)
                         currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].mipDetail = i;
                     break;
                 }
+            }
         }
 
         private void SetPropertyLabelText(string propertyName)
@@ -518,7 +586,7 @@ namespace Smash_Forge
 
         private void propertiesListView_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Delete)
+            if (e.KeyCode == Keys.Delete || e.KeyCode == Keys.D)
             {
                 NUD.Material mat = currentMaterialList[currentMatIndex];
                 foreach (ListViewItem property in propertiesListView.SelectedItems)
@@ -549,13 +617,13 @@ namespace Smash_Forge
             }
         }
 
-        private static float GetMatParamMax(string propertyName)
+        private static float GetMatParamMax(string propertyName, int index)
         {
             Params.MatParam labels = null;
             materialParamList.TryGetValue(propertyName, out labels);
             if (labels != null)
             {
-                return labels.max1;
+                return labels.maxValues[index];
             }
 
             return 1;
@@ -573,7 +641,7 @@ namespace Smash_Forge
                 float value = GuiTools.TryParseTBFloat(param1TB);
                 currentMaterialList[currentMatIndex].entries[propertyName][0] = value;
 
-                float max = GetMatParamMax(propertyName);
+                float max = GetMatParamMax(propertyName, 0);
                 if (enableParam1SliderUpdates)
                     GuiTools.UpdateTrackBarFromValue(value, param1TrackBar, 0, max);
             }
@@ -594,7 +662,7 @@ namespace Smash_Forge
             float value = GuiTools.TryParseTBFloat(param2TB);
             currentMaterialList[currentMatIndex].entries[propertyName][1] = value;
 
-            float max = GetMatParamMax(propertyName);
+            float max = GetMatParamMax(propertyName, 1);
             if (enableParam2SliderUpdates)
                 GuiTools.UpdateTrackBarFromValue(value, param2TrackBar, 0, max);
 
@@ -607,7 +675,7 @@ namespace Smash_Forge
             float value = GuiTools.TryParseTBFloat(param3TB);
             currentMaterialList[currentMatIndex].entries[propertyName][2] = value;
 
-            float max = GetMatParamMax(propertyName);
+            float max = GetMatParamMax(propertyName, 2);
             if (enableParam3SliderUpdates)
                 GuiTools.UpdateTrackBarFromValue(value, param3TrackBar, 0, max);
 
@@ -620,30 +688,11 @@ namespace Smash_Forge
             float value = GuiTools.TryParseTBFloat(param4TB);
             currentMaterialList[currentMatIndex].entries[propertyName][3] = value;
 
-            float max = GetMatParamMax(propertyName);
+            float max = GetMatParamMax(propertyName, 3);
             if (enableParam4SliderUpdates)
                 GuiTools.UpdateTrackBarFromValue(value, param4TrackBar, 0, max);
 
             UpdateButtonColor();
-        }
-
-        // property change
-        private void matPropertyTB_TextChanged(object sender, EventArgs e)
-        {
-            Params.MatParam matParam = null;
-
-            // Try and find the name of the property that is selected in the listview.
-            string propertyName = "";
-            if (propertiesListView.SelectedIndices.Count > 0)
-                propertyName = currentMaterialList[currentMatIndex].entries.Keys.ElementAt(propertiesListView.SelectedIndices[0]);
-
-            materialParamList.TryGetValue(propertyName, out matParam);
-
-            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 0));
-            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 1));
-            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 2));
-            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 3));
-
         }
 
         private void SetParamLabelsAndToolTips(Params.MatParam matParam)
@@ -892,7 +941,7 @@ namespace Smash_Forge
             FillForm();
 
             // Nothing is currently selected, so don't display the tex ID.
-            textureIDTB.Text = "";
+            textureIdTB.Text = "";
         }
 
         private void texRgbGlControl_Paint(object sender, PaintEventArgs e)
@@ -913,7 +962,7 @@ namespace Smash_Forge
             if (labels != null)
             {
                 enableParam1SliderUpdates = false;
-                param1TB.Text = GuiTools.GetTrackBarValue(param1TrackBar, 0, labels.max1).ToString();
+                param1TB.Text = GuiTools.GetTrackBarValue(param1TrackBar, 0, labels.maxValues[0]).ToString();
             }
         }
 
@@ -925,7 +974,7 @@ namespace Smash_Forge
             if (labels != null)
             {
                 enableParam2SliderUpdates = false;
-                param2TB.Text = GuiTools.GetTrackBarValue(param2TrackBar, 0, labels.max2).ToString();
+                param2TB.Text = GuiTools.GetTrackBarValue(param2TrackBar, 0, labels.maxValues[1]).ToString();
             }
         }
 
@@ -937,7 +986,7 @@ namespace Smash_Forge
             if (labels != null)
             {
                 enableParam3SliderUpdates = false;
-                param3TB.Text = GuiTools.GetTrackBarValue(param3TrackBar, 0, labels.max3).ToString();
+                param3TB.Text = GuiTools.GetTrackBarValue(param3TrackBar, 0, labels.maxValues[2]).ToString();
             }
         }
 
@@ -949,7 +998,7 @@ namespace Smash_Forge
             if (labels != null)
             {
                 enableParam4SliderUpdates = false;
-                param4TB.Text = GuiTools.GetTrackBarValue(param4TrackBar, 0, labels.max4).ToString();
+                param4TB.Text = GuiTools.GetTrackBarValue(param4TrackBar, 0, labels.maxValues[3]).ToString();
             }
         }
 
@@ -1006,6 +1055,7 @@ namespace Smash_Forge
 
             // Only enable extra settings when alpha testing is enabled.
             alphaFuncRefPanel.Visible = alphaTestCB.Checked;
+
             // Force all flow layouts to rescale children.
             GuiTools.ScaleControlsHorizontallyToLayoutWidth(generalFlowLayout);
         }
@@ -1087,11 +1137,6 @@ namespace Smash_Forge
                 mat.cullMode = matValueByCullModeName[cullModeComboBox.SelectedItem.ToString()];
         }
 
-        private void NUDMaterialEditor_Resize(object sender, EventArgs e)
-        {
-            Debug.WriteLine(Size);
-        }
-
         private void glControlTableLayout_Resize(object sender, EventArgs e)
         {
             ResizeGlControlsToMaxSquareSize(glControlTableLayout);
@@ -1105,6 +1150,18 @@ namespace Smash_Forge
             texRgbGlControl.Height = sideLength;
             texAlphaGlControl.Width = sideLength;
             texAlphaGlControl.Height = sideLength;
+        }
+
+        private void texturesListView_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            GUI.Menus.TextureSelector textureSelector = new GUI.Menus.TextureSelector();
+            textureSelector.ShowDialog();
+
+            // Updating the text box will update the material texture.
+            if (textureSelector.TextureId != -1)
+            {
+                textureIdTB.Text = textureSelector.TextureId.ToString("X");
+            }
         }
     }
 }

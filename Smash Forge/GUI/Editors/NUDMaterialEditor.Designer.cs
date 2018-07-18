@@ -64,6 +64,27 @@
             this.param2Label = new System.Windows.Forms.Label();
             this.param1TrackBar = new System.Windows.Forms.TrackBar();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.glControlTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.texRgbGlControl = new OpenTK.GLControl();
+            this.texAlphaGlControl = new OpenTK.GLControl();
+            this.texParamsTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.magFilterComboBox = new System.Windows.Forms.ComboBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.minFilterComboBox = new System.Windows.Forms.ComboBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.wrapXComboBox = new System.Windows.Forms.ComboBox();
+            this.mapModeComboBox = new System.Windows.Forms.ComboBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.wrapYComboBox = new System.Windows.Forms.ComboBox();
+            this.mipDetailComboBox = new System.Windows.Forms.ComboBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.texturesListView = new System.Windows.Forms.ListView();
+            this.texIdTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.label10 = new System.Windows.Forms.Label();
+            this.textureIdTB = new System.Windows.Forms.TextBox();
             this.dummyRampCB = new System.Windows.Forms.CheckBox();
             this.sphereMapCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -113,27 +134,6 @@
             this.loadPresetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.savePresetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.texParamsTableLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.label16 = new System.Windows.Forms.Label();
-            this.mipDetailComboBox = new System.Windows.Forms.ComboBox();
-            this.wrapYComboBox = new System.Windows.Forms.ComboBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.mapModeComboBox = new System.Windows.Forms.ComboBox();
-            this.wrapXComboBox = new System.Windows.Forms.ComboBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.minFilterComboBox = new System.Windows.Forms.ComboBox();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label14 = new System.Windows.Forms.Label();
-            this.magFilterComboBox = new System.Windows.Forms.ComboBox();
-            this.texIdTableLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.textureIDTB = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.glControlTableLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.texAlphaGlControl = new OpenTK.GLControl();
-            this.texRgbGlControl = new OpenTK.GLControl();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.texturesListView = new System.Windows.Forms.ListView();
             this.propertiesGroupBox.SuspendLayout();
             this.paramsFlowLayout.SuspendLayout();
             this.addDelPropertyTableLayout.SuspendLayout();
@@ -146,6 +146,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.param2TrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.param1TrackBar)).BeginInit();
             this.groupBox2.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.glControlTableLayout.SuspendLayout();
+            this.texParamsTableLayout.SuspendLayout();
+            this.texIdTableLayout.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -166,10 +170,6 @@
             this.headerPanel.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.menuStrip1.SuspendLayout();
-            this.texParamsTableLayout.SuspendLayout();
-            this.texIdTableLayout.SuspendLayout();
-            this.glControlTableLayout.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // matsComboBox
@@ -201,7 +201,7 @@
             this.propertiesListView.Location = new System.Drawing.Point(3, 16);
             this.propertiesListView.Name = "propertiesListView";
             this.propertiesListView.ShowGroups = false;
-            this.propertiesListView.Size = new System.Drawing.Size(437, 198);
+            this.propertiesListView.Size = new System.Drawing.Size(555, 198);
             this.propertiesListView.TabIndex = 12;
             this.propertiesListView.UseCompatibleStateImageBehavior = false;
             this.propertiesListView.SelectedIndexChanged += new System.EventHandler(this.propertiesListView_SelectedIndexChanged);
@@ -214,7 +214,7 @@
             this.propertiesGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.propertiesGroupBox.Location = new System.Drawing.Point(0, 0);
             this.propertiesGroupBox.Name = "propertiesGroupBox";
-            this.propertiesGroupBox.Size = new System.Drawing.Size(443, 501);
+            this.propertiesGroupBox.Size = new System.Drawing.Size(561, 591);
             this.propertiesGroupBox.TabIndex = 25;
             this.propertiesGroupBox.TabStop = false;
             this.propertiesGroupBox.Text = "Properties";
@@ -227,7 +227,7 @@
             this.paramsFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.paramsFlowLayout.Location = new System.Drawing.Point(3, 214);
             this.paramsFlowLayout.Name = "paramsFlowLayout";
-            this.paramsFlowLayout.Size = new System.Drawing.Size(437, 284);
+            this.paramsFlowLayout.Size = new System.Drawing.Size(555, 374);
             this.paramsFlowLayout.TabIndex = 19;
             this.paramsFlowLayout.WrapContents = false;
             this.paramsFlowLayout.Resize += new System.EventHandler(this.flowLayout_Resize);
@@ -505,6 +505,282 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Textures";
             // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.glControlTableLayout, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.texParamsTableLayout, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.texturesListView, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.texIdTableLayout, 0, 2);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 4;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(549, 566);
+            this.tableLayoutPanel1.TabIndex = 28;
+            // 
+            // glControlTableLayout
+            // 
+            this.glControlTableLayout.ColumnCount = 2;
+            this.glControlTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.glControlTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.glControlTableLayout.Controls.Add(this.texRgbGlControl, 0, 0);
+            this.glControlTableLayout.Controls.Add(this.texAlphaGlControl, 1, 0);
+            this.glControlTableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.glControlTableLayout.Location = new System.Drawing.Point(3, 3);
+            this.glControlTableLayout.Name = "glControlTableLayout";
+            this.glControlTableLayout.RowCount = 1;
+            this.glControlTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.glControlTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 158F));
+            this.glControlTableLayout.Size = new System.Drawing.Size(543, 158);
+            this.glControlTableLayout.TabIndex = 26;
+            this.glControlTableLayout.Resize += new System.EventHandler(this.glControlTableLayout_Resize);
+            // 
+            // texRgbGlControl
+            // 
+            this.texRgbGlControl.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.texRgbGlControl.BackColor = System.Drawing.Color.Black;
+            this.texRgbGlControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.texRgbGlControl.Location = new System.Drawing.Point(70, 14);
+            this.texRgbGlControl.Name = "texRgbGlControl";
+            this.texRgbGlControl.Size = new System.Drawing.Size(130, 130);
+            this.texRgbGlControl.TabIndex = 23;
+            this.texRgbGlControl.VSync = false;
+            this.texRgbGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texRgbGlControl_Paint);
+            // 
+            // texAlphaGlControl
+            // 
+            this.texAlphaGlControl.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.texAlphaGlControl.BackColor = System.Drawing.Color.Black;
+            this.texAlphaGlControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.texAlphaGlControl.Location = new System.Drawing.Point(342, 14);
+            this.texAlphaGlControl.Name = "texAlphaGlControl";
+            this.texAlphaGlControl.Size = new System.Drawing.Size(130, 130);
+            this.texAlphaGlControl.TabIndex = 25;
+            this.texAlphaGlControl.VSync = false;
+            this.texAlphaGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texAlphaGlControl_Paint);
+            // 
+            // texParamsTableLayout
+            // 
+            this.texParamsTableLayout.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.texParamsTableLayout.ColumnCount = 2;
+            this.texParamsTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 49.99999F));
+            this.texParamsTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.00001F));
+            this.texParamsTableLayout.Controls.Add(this.magFilterComboBox, 1, 3);
+            this.texParamsTableLayout.Controls.Add(this.label14, 0, 2);
+            this.texParamsTableLayout.Controls.Add(this.label15, 1, 2);
+            this.texParamsTableLayout.Controls.Add(this.minFilterComboBox, 0, 3);
+            this.texParamsTableLayout.Controls.Add(this.label12, 0, 0);
+            this.texParamsTableLayout.Controls.Add(this.wrapXComboBox, 0, 1);
+            this.texParamsTableLayout.Controls.Add(this.mapModeComboBox, 1, 5);
+            this.texParamsTableLayout.Controls.Add(this.label13, 1, 0);
+            this.texParamsTableLayout.Controls.Add(this.label11, 1, 4);
+            this.texParamsTableLayout.Controls.Add(this.wrapYComboBox, 1, 1);
+            this.texParamsTableLayout.Controls.Add(this.mipDetailComboBox, 0, 5);
+            this.texParamsTableLayout.Controls.Add(this.label16, 0, 4);
+            this.texParamsTableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.texParamsTableLayout.Location = new System.Drawing.Point(3, 371);
+            this.texParamsTableLayout.Name = "texParamsTableLayout";
+            this.texParamsTableLayout.RowCount = 6;
+            this.texParamsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.texParamsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.texParamsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.texParamsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.texParamsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.texParamsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
+            this.texParamsTableLayout.Size = new System.Drawing.Size(543, 192);
+            this.texParamsTableLayout.TabIndex = 11;
+            // 
+            // magFilterComboBox
+            // 
+            this.magFilterComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.magFilterComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.magFilterComboBox.FormattingEnabled = true;
+            this.magFilterComboBox.Location = new System.Drawing.Point(274, 98);
+            this.magFilterComboBox.Name = "magFilterComboBox";
+            this.magFilterComboBox.Size = new System.Drawing.Size(266, 21);
+            this.magFilterComboBox.TabIndex = 15;
+            this.magFilterComboBox.SelectedIndexChanged += new System.EventHandler(this.magFilterComboBox_SelectedIndexChanged);
+            // 
+            // label14
+            // 
+            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(3, 80);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(49, 13);
+            this.label14.TabIndex = 12;
+            this.label14.Text = "Min Filter";
+            // 
+            // label15
+            // 
+            this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(274, 80);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(53, 13);
+            this.label15.TabIndex = 12;
+            this.label15.Text = "Mag Filter";
+            // 
+            // minFilterComboBox
+            // 
+            this.minFilterComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.minFilterComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.minFilterComboBox.FormattingEnabled = true;
+            this.minFilterComboBox.Location = new System.Drawing.Point(3, 98);
+            this.minFilterComboBox.Name = "minFilterComboBox";
+            this.minFilterComboBox.Size = new System.Drawing.Size(265, 21);
+            this.minFilterComboBox.TabIndex = 15;
+            this.minFilterComboBox.SelectedIndexChanged += new System.EventHandler(this.minFilterComboBox_SelectedIndexChanged);
+            // 
+            // label12
+            // 
+            this.label12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(3, 18);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(67, 13);
+            this.label12.TabIndex = 12;
+            this.label12.Text = "WrapModeX";
+            // 
+            // wrapXComboBox
+            // 
+            this.wrapXComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.wrapXComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.wrapXComboBox.FormattingEnabled = true;
+            this.wrapXComboBox.Location = new System.Drawing.Point(3, 36);
+            this.wrapXComboBox.Name = "wrapXComboBox";
+            this.wrapXComboBox.Size = new System.Drawing.Size(265, 21);
+            this.wrapXComboBox.TabIndex = 15;
+            this.wrapXComboBox.SelectedIndexChanged += new System.EventHandler(this.wrapXComboBox_SelectedIndexChanged);
+            // 
+            // mapModeComboBox
+            // 
+            this.mapModeComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.mapModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.mapModeComboBox.FormattingEnabled = true;
+            this.mapModeComboBox.Location = new System.Drawing.Point(274, 163);
+            this.mapModeComboBox.Name = "mapModeComboBox";
+            this.mapModeComboBox.Size = new System.Drawing.Size(266, 21);
+            this.mapModeComboBox.TabIndex = 15;
+            this.mapModeComboBox.SelectedIndexChanged += new System.EventHandler(this.mapModeComboBox_SelectedIndexChanged);
+            // 
+            // label13
+            // 
+            this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(274, 18);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(67, 13);
+            this.label13.TabIndex = 12;
+            this.label13.Text = "WrapModeY";
+            // 
+            // label11
+            // 
+            this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(274, 142);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(58, 13);
+            this.label11.TabIndex = 12;
+            this.label11.Text = "Map Mode";
+            // 
+            // wrapYComboBox
+            // 
+            this.wrapYComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.wrapYComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.wrapYComboBox.FormattingEnabled = true;
+            this.wrapYComboBox.Location = new System.Drawing.Point(274, 36);
+            this.wrapYComboBox.Name = "wrapYComboBox";
+            this.wrapYComboBox.Size = new System.Drawing.Size(266, 21);
+            this.wrapYComboBox.TabIndex = 15;
+            this.wrapYComboBox.SelectedIndexChanged += new System.EventHandler(this.wrapYComboBox_SelectedIndexChanged);
+            // 
+            // mipDetailComboBox
+            // 
+            this.mipDetailComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.mipDetailComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.mipDetailComboBox.FormattingEnabled = true;
+            this.mipDetailComboBox.Location = new System.Drawing.Point(3, 163);
+            this.mipDetailComboBox.Name = "mipDetailComboBox";
+            this.mipDetailComboBox.Size = new System.Drawing.Size(265, 21);
+            this.mipDetailComboBox.TabIndex = 15;
+            this.mipDetailComboBox.SelectedIndexChanged += new System.EventHandler(this.mipDetailComboBox_SelectedIndexChanged);
+            // 
+            // label16
+            // 
+            this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(3, 142);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(54, 13);
+            this.label16.TabIndex = 12;
+            this.label16.Text = "Mip Detail";
+            // 
+            // texturesListView
+            // 
+            this.texturesListView.Alignment = System.Windows.Forms.ListViewAlignment.Left;
+            this.texturesListView.AllowColumnReorder = true;
+            this.texturesListView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.texturesListView.HideSelection = false;
+            this.texturesListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1,
+            listViewItem2,
+            listViewItem3,
+            listViewItem4,
+            listViewItem5});
+            this.texturesListView.LabelWrap = false;
+            this.texturesListView.Location = new System.Drawing.Point(3, 167);
+            this.texturesListView.MultiSelect = false;
+            this.texturesListView.Name = "texturesListView";
+            this.texturesListView.Size = new System.Drawing.Size(543, 158);
+            this.texturesListView.TabIndex = 3;
+            this.texturesListView.TileSize = new System.Drawing.Size(100, 10);
+            this.texturesListView.UseCompatibleStateImageBehavior = false;
+            this.texturesListView.SelectedIndexChanged += new System.EventHandler(this.texturesListView_SelectedIndexChanged);
+            this.texturesListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.texturesListView_KeyPress);
+            this.texturesListView.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.texturesListView_MouseDoubleClick);
+            // 
+            // texIdTableLayout
+            // 
+            this.texIdTableLayout.ColumnCount = 2;
+            this.texIdTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.texIdTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.texIdTableLayout.Controls.Add(this.label10, 0, 0);
+            this.texIdTableLayout.Controls.Add(this.textureIdTB, 1, 0);
+            this.texIdTableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.texIdTableLayout.Location = new System.Drawing.Point(3, 331);
+            this.texIdTableLayout.Name = "texIdTableLayout";
+            this.texIdTableLayout.RowCount = 1;
+            this.texIdTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.texIdTableLayout.Size = new System.Drawing.Size(543, 34);
+            this.texIdTableLayout.TabIndex = 27;
+            // 
+            // label10
+            // 
+            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(211, 10);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(57, 13);
+            this.label10.TabIndex = 12;
+            this.label10.Text = "Texture ID";
+            // 
+            // textureIDTB
+            // 
+            this.textureIdTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.textureIdTB.Location = new System.Drawing.Point(274, 7);
+            this.textureIdTB.Name = "textureIDTB";
+            this.textureIdTB.Size = new System.Drawing.Size(266, 20);
+            this.textureIdTB.TabIndex = 17;
+            this.textureIdTB.TextChanged += new System.EventHandler(this.textureIdTB_TextChanged);
+            // 
             // dummyRampCB
             // 
             this.dummyRampCB.Location = new System.Drawing.Point(0, 0);
@@ -538,7 +814,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(443, 501);
+            this.tabPage1.Size = new System.Drawing.Size(561, 591);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -549,7 +825,7 @@
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox3.Location = new System.Drawing.Point(3, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(437, 495);
+            this.groupBox3.Size = new System.Drawing.Size(555, 585);
             this.groupBox3.TabIndex = 27;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Material";
@@ -568,7 +844,7 @@
             this.generalFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.generalFlowLayout.Location = new System.Drawing.Point(3, 16);
             this.generalFlowLayout.Name = "generalFlowLayout";
-            this.generalFlowLayout.Size = new System.Drawing.Size(431, 476);
+            this.generalFlowLayout.Size = new System.Drawing.Size(549, 566);
             this.generalFlowLayout.TabIndex = 25;
             this.generalFlowLayout.WrapContents = false;
             this.generalFlowLayout.Resize += new System.EventHandler(this.flowLayout_Resize);
@@ -898,7 +1174,6 @@
             this.cullModeComboBox.Size = new System.Drawing.Size(258, 21);
             this.cullModeComboBox.TabIndex = 18;
             this.cullModeComboBox.SelectedIndexChanged += new System.EventHandler(this.cullModeComboBox_SelectedIndexChanged);
-            this.cullModeComboBox.SelectionChangeCommitted += new System.EventHandler(this.cullModeComboBox_SelectionChangeCommitted);
             // 
             // shadowCB
             // 
@@ -938,7 +1213,7 @@
             this.tabPage3.Controls.Add(this.propertiesGroupBox);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(443, 501);
+            this.tabPage3.Size = new System.Drawing.Size(561, 591);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Properties";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1027,282 +1302,6 @@
             this.savePresetToolStripMenuItem.Text = "Save preset";
             this.savePresetToolStripMenuItem.Click += new System.EventHandler(this.savePresetToolStripMenuItem_Click);
             // 
-            // texParamsTableLayout
-            // 
-            this.texParamsTableLayout.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.texParamsTableLayout.ColumnCount = 2;
-            this.texParamsTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 49.99999F));
-            this.texParamsTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.00001F));
-            this.texParamsTableLayout.Controls.Add(this.magFilterComboBox, 1, 3);
-            this.texParamsTableLayout.Controls.Add(this.label14, 0, 2);
-            this.texParamsTableLayout.Controls.Add(this.label15, 1, 2);
-            this.texParamsTableLayout.Controls.Add(this.minFilterComboBox, 0, 3);
-            this.texParamsTableLayout.Controls.Add(this.label12, 0, 0);
-            this.texParamsTableLayout.Controls.Add(this.wrapXComboBox, 0, 1);
-            this.texParamsTableLayout.Controls.Add(this.mapModeComboBox, 1, 5);
-            this.texParamsTableLayout.Controls.Add(this.label13, 1, 0);
-            this.texParamsTableLayout.Controls.Add(this.label11, 1, 4);
-            this.texParamsTableLayout.Controls.Add(this.wrapYComboBox, 1, 1);
-            this.texParamsTableLayout.Controls.Add(this.mipDetailComboBox, 0, 5);
-            this.texParamsTableLayout.Controls.Add(this.label16, 0, 4);
-            this.texParamsTableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.texParamsTableLayout.Location = new System.Drawing.Point(3, 371);
-            this.texParamsTableLayout.Name = "texParamsTableLayout";
-            this.texParamsTableLayout.RowCount = 6;
-            this.texParamsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.texParamsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.texParamsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.texParamsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.texParamsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.texParamsTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.texParamsTableLayout.Size = new System.Drawing.Size(543, 192);
-            this.texParamsTableLayout.TabIndex = 11;
-            // 
-            // label16
-            // 
-            this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(3, 142);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(54, 13);
-            this.label16.TabIndex = 12;
-            this.label16.Text = "Mip Detail";
-            // 
-            // mipDetailComboBox
-            // 
-            this.mipDetailComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.mipDetailComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.mipDetailComboBox.FormattingEnabled = true;
-            this.mipDetailComboBox.Location = new System.Drawing.Point(3, 163);
-            this.mipDetailComboBox.Name = "mipDetailComboBox";
-            this.mipDetailComboBox.Size = new System.Drawing.Size(265, 21);
-            this.mipDetailComboBox.TabIndex = 15;
-            this.mipDetailComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox13_SelectedIndexChanged);
-            // 
-            // wrapYComboBox
-            // 
-            this.wrapYComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.wrapYComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.wrapYComboBox.FormattingEnabled = true;
-            this.wrapYComboBox.Location = new System.Drawing.Point(274, 36);
-            this.wrapYComboBox.Name = "wrapYComboBox";
-            this.wrapYComboBox.Size = new System.Drawing.Size(266, 21);
-            this.wrapYComboBox.TabIndex = 15;
-            this.wrapYComboBox.SelectedIndexChanged += new System.EventHandler(this.wrapYComboBox_SelectedIndexChanged);
-            // 
-            // label11
-            // 
-            this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(274, 142);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(58, 13);
-            this.label11.TabIndex = 12;
-            this.label11.Text = "Map Mode";
-            // 
-            // label13
-            // 
-            this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(274, 18);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(67, 13);
-            this.label13.TabIndex = 12;
-            this.label13.Text = "WrapModeY";
-            // 
-            // mapModeComboBox
-            // 
-            this.mapModeComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.mapModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.mapModeComboBox.FormattingEnabled = true;
-            this.mapModeComboBox.Location = new System.Drawing.Point(274, 163);
-            this.mapModeComboBox.Name = "mapModeComboBox";
-            this.mapModeComboBox.Size = new System.Drawing.Size(266, 21);
-            this.mapModeComboBox.TabIndex = 15;
-            this.mapModeComboBox.SelectedIndexChanged += new System.EventHandler(this.mapModeComboBox_SelectedIndexChanged);
-            // 
-            // wrapXComboBox
-            // 
-            this.wrapXComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.wrapXComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.wrapXComboBox.FormattingEnabled = true;
-            this.wrapXComboBox.Location = new System.Drawing.Point(3, 36);
-            this.wrapXComboBox.Name = "wrapXComboBox";
-            this.wrapXComboBox.Size = new System.Drawing.Size(265, 21);
-            this.wrapXComboBox.TabIndex = 15;
-            this.wrapXComboBox.SelectedIndexChanged += new System.EventHandler(this.wrapXComboBox_SelectedIndexChanged);
-            // 
-            // label12
-            // 
-            this.label12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(3, 18);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(67, 13);
-            this.label12.TabIndex = 12;
-            this.label12.Text = "WrapModeX";
-            // 
-            // minFilterComboBox
-            // 
-            this.minFilterComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.minFilterComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.minFilterComboBox.FormattingEnabled = true;
-            this.minFilterComboBox.Location = new System.Drawing.Point(3, 98);
-            this.minFilterComboBox.Name = "minFilterComboBox";
-            this.minFilterComboBox.Size = new System.Drawing.Size(265, 21);
-            this.minFilterComboBox.TabIndex = 15;
-            this.minFilterComboBox.SelectedIndexChanged += new System.EventHandler(this.minFilterComboBox_SelectedIndexChanged);
-            // 
-            // label15
-            // 
-            this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(274, 80);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(53, 13);
-            this.label15.TabIndex = 12;
-            this.label15.Text = "Mag Filter";
-            // 
-            // label14
-            // 
-            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(3, 80);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(49, 13);
-            this.label14.TabIndex = 12;
-            this.label14.Text = "Min Filter";
-            // 
-            // magFilterComboBox
-            // 
-            this.magFilterComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.magFilterComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.magFilterComboBox.FormattingEnabled = true;
-            this.magFilterComboBox.Location = new System.Drawing.Point(274, 98);
-            this.magFilterComboBox.Name = "magFilterComboBox";
-            this.magFilterComboBox.Size = new System.Drawing.Size(266, 21);
-            this.magFilterComboBox.TabIndex = 15;
-            this.magFilterComboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox12_SelectedIndexChanged);
-            // 
-            // texIdTableLayout
-            // 
-            this.texIdTableLayout.ColumnCount = 2;
-            this.texIdTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.texIdTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.texIdTableLayout.Controls.Add(this.label10, 0, 0);
-            this.texIdTableLayout.Controls.Add(this.textureIDTB, 1, 0);
-            this.texIdTableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.texIdTableLayout.Location = new System.Drawing.Point(3, 331);
-            this.texIdTableLayout.Name = "texIdTableLayout";
-            this.texIdTableLayout.RowCount = 1;
-            this.texIdTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.texIdTableLayout.Size = new System.Drawing.Size(543, 34);
-            this.texIdTableLayout.TabIndex = 27;
-            // 
-            // textureIDTB
-            // 
-            this.textureIDTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.textureIDTB.Location = new System.Drawing.Point(274, 7);
-            this.textureIDTB.Name = "textureIDTB";
-            this.textureIDTB.Size = new System.Drawing.Size(266, 20);
-            this.textureIDTB.TabIndex = 17;
-            this.textureIDTB.TextChanged += new System.EventHandler(this.textureIDTB_TextChanged);
-            // 
-            // label10
-            // 
-            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(211, 10);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(57, 13);
-            this.label10.TabIndex = 12;
-            this.label10.Text = "Texture ID";
-            // 
-            // glControlTableLayout
-            // 
-            this.glControlTableLayout.ColumnCount = 2;
-            this.glControlTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.glControlTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.glControlTableLayout.Controls.Add(this.texRgbGlControl, 0, 0);
-            this.glControlTableLayout.Controls.Add(this.texAlphaGlControl, 1, 0);
-            this.glControlTableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.glControlTableLayout.Location = new System.Drawing.Point(3, 3);
-            this.glControlTableLayout.Name = "glControlTableLayout";
-            this.glControlTableLayout.RowCount = 1;
-            this.glControlTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.glControlTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 136F));
-            this.glControlTableLayout.Size = new System.Drawing.Size(543, 158);
-            this.glControlTableLayout.TabIndex = 26;
-            this.glControlTableLayout.Resize += new System.EventHandler(this.glControlTableLayout_Resize);
-            // 
-            // texAlphaGlControl
-            // 
-            this.texAlphaGlControl.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.texAlphaGlControl.BackColor = System.Drawing.Color.Black;
-            this.texAlphaGlControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.texAlphaGlControl.Location = new System.Drawing.Point(342, 14);
-            this.texAlphaGlControl.Name = "texAlphaGlControl";
-            this.texAlphaGlControl.Size = new System.Drawing.Size(130, 130);
-            this.texAlphaGlControl.TabIndex = 25;
-            this.texAlphaGlControl.VSync = false;
-            this.texAlphaGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texAlphaGlControl_Paint);
-            // 
-            // texRgbGlControl
-            // 
-            this.texRgbGlControl.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.texRgbGlControl.BackColor = System.Drawing.Color.Black;
-            this.texRgbGlControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.texRgbGlControl.Location = new System.Drawing.Point(70, 14);
-            this.texRgbGlControl.Name = "texRgbGlControl";
-            this.texRgbGlControl.Size = new System.Drawing.Size(130, 130);
-            this.texRgbGlControl.TabIndex = 23;
-            this.texRgbGlControl.VSync = false;
-            this.texRgbGlControl.Paint += new System.Windows.Forms.PaintEventHandler(this.texRgbGlControl_Paint);
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.glControlTableLayout, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.texParamsTableLayout, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.texturesListView, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.texIdTableLayout, 0, 2);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(549, 566);
-            this.tableLayoutPanel1.TabIndex = 28;
-            // 
-            // texturesListView
-            // 
-            this.texturesListView.Alignment = System.Windows.Forms.ListViewAlignment.Left;
-            this.texturesListView.AllowColumnReorder = true;
-            this.texturesListView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.texturesListView.HideSelection = false;
-            this.texturesListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2,
-            listViewItem3,
-            listViewItem4,
-            listViewItem5});
-            this.texturesListView.LabelWrap = false;
-            this.texturesListView.Location = new System.Drawing.Point(3, 167);
-            this.texturesListView.MultiSelect = false;
-            this.texturesListView.Name = "texturesListView";
-            this.texturesListView.Size = new System.Drawing.Size(543, 158);
-            this.texturesListView.TabIndex = 3;
-            this.texturesListView.TileSize = new System.Drawing.Size(100, 10);
-            this.texturesListView.UseCompatibleStateImageBehavior = false;
-            this.texturesListView.View = System.Windows.Forms.View.List;
-            this.texturesListView.SelectedIndexChanged += new System.EventHandler(this.texturesListView_SelectedIndexChanged);
-            this.texturesListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.texturesListView_KeyPress);
-            // 
             // NUDMaterialEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1334,6 +1333,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.param2TrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.param1TrackBar)).EndInit();
             this.groupBox2.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.glControlTableLayout.ResumeLayout(false);
+            this.texParamsTableLayout.ResumeLayout(false);
+            this.texParamsTableLayout.PerformLayout();
+            this.texIdTableLayout.ResumeLayout(false);
+            this.texIdTableLayout.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
@@ -1367,12 +1372,6 @@
             this.tableLayoutPanel4.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.texParamsTableLayout.ResumeLayout(false);
-            this.texParamsTableLayout.PerformLayout();
-            this.texIdTableLayout.ResumeLayout(false);
-            this.texIdTableLayout.PerformLayout();
-            this.glControlTableLayout.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1475,7 +1474,7 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TableLayoutPanel texIdTableLayout;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox textureIDTB;
+        private System.Windows.Forms.TextBox textureIdTB;
         private System.Windows.Forms.ListView texturesListView;
     }
 }

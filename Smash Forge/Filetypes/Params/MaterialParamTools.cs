@@ -20,10 +20,7 @@ namespace Smash_Forge.Params
         public string[] paramLabels = new string[4];
 
         // Users can still manually enter a value higher than max.
-        public float max1 = 10.0f;
-        public float max2 = 10.0f;
-        public float max3 = 10.0f;
-        public float max4 = 10.0f;
+        public float[] maxValues = new float[] { 10, 10, 10, 10 };
 
         public bool useTrackBar = true;
     }
@@ -81,15 +78,15 @@ namespace Smash_Forge.Params
                                     matParam.paramLabels[3] = args[1];
                                     break;
                                 case "max1":
-                                    float.TryParse(args[1], out matParam.max1);
+                                    float.TryParse(args[1], out matParam.maxValues[0]);
                                     break;
                                 case "max2":
-                                    float.TryParse(args[1], out matParam.max2); break;
+                                    float.TryParse(args[1], out matParam.maxValues[1]); break;
                                 case "max3":
-                                    float.TryParse(args[1], out matParam.max3);
+                                    float.TryParse(args[1], out matParam.maxValues[2]);
                                     break;
                                 case "max4": float.TryParse(args[1], 
-                                    out matParam.max4);
+                                    out matParam.maxValues[3]);
                                     break;
                                 case "useTrackBar":
                                     bool.TryParse(args[1], out matParam.useTrackBar);

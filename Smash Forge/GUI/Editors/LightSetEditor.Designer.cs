@@ -211,6 +211,17 @@
             this.charColor2XTB = new System.Windows.Forms.TextBox();
             this.charColor2YTB = new System.Windows.Forms.TextBox();
             this.charColor2ZTB = new System.Windows.Forms.TextBox();
+            this.charAngleButton = new System.Windows.Forms.Button();
+            this.charAngleTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.charAngle1TrackBar = new System.Windows.Forms.TrackBar();
+            this.charAngle2TrackBar = new System.Windows.Forms.TrackBar();
+            this.charAngle3TrackBar = new System.Windows.Forms.TrackBar();
+            this.label44 = new System.Windows.Forms.Label();
+            this.label45 = new System.Windows.Forms.Label();
+            this.label46 = new System.Windows.Forms.Label();
+            this.charAngle1TB = new System.Windows.Forms.TextBox();
+            this.charAngle2TB = new System.Windows.Forms.TextBox();
+            this.charAngle3TB = new System.Windows.Forms.TextBox();
             this.charLightsListBox = new System.Windows.Forms.ListBox();
             this.stageLightingTabControl = new System.Windows.Forms.TabControl();
             this.stageFogTab = new System.Windows.Forms.TabPage();
@@ -236,17 +247,6 @@
             this.openLightsetparamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveLightsetparamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.charAngleButton = new System.Windows.Forms.Button();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.charAngle1TrackBar = new System.Windows.Forms.TrackBar();
-            this.charAngle2TrackBar = new System.Windows.Forms.TrackBar();
-            this.charAngle3TrackBar = new System.Windows.Forms.TrackBar();
-            this.label44 = new System.Windows.Forms.Label();
-            this.label45 = new System.Windows.Forms.Label();
-            this.label46 = new System.Windows.Forms.Label();
-            this.charAngle1TB = new System.Windows.Forms.TextBox();
-            this.charAngle2TB = new System.Windows.Forms.TextBox();
-            this.charAngle3TB = new System.Windows.Forms.TextBox();
             this.lightMapTab.SuspendLayout();
             this.groupBox8.SuspendLayout();
             this.tableLayoutPanel10.SuspendLayout();
@@ -326,6 +326,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.charColor2XTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.charColor2YTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.charColor2ZTrackBar)).BeginInit();
+            this.charAngleTableLayout.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.charAngle1TrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.charAngle2TrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.charAngle3TrackBar)).BeginInit();
             this.stageLightingTabControl.SuspendLayout();
             this.stageFogTab.SuspendLayout();
             this.fogFlowLayout.SuspendLayout();
@@ -335,10 +339,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.fogSaturationTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fogIntensityTrackBar)).BeginInit();
             this.menuStrip1.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.charAngle1TrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.charAngle2TrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.charAngle3TrackBar)).BeginInit();
             this.SuspendLayout();
             // 
             // lightMapTab
@@ -373,7 +373,7 @@
             this.tableLayoutPanel10.ColumnCount = 3;
             this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.75221F));
             this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.24779F));
-            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 215F));
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 216F));
             this.tableLayoutPanel10.Controls.Add(this.trackBar1, 2, 0);
             this.tableLayoutPanel10.Controls.Add(this.trackBar2, 2, 1);
             this.tableLayoutPanel10.Controls.Add(this.trackBar3, 2, 2);
@@ -394,7 +394,7 @@
             // 
             // trackBar1
             // 
-            this.trackBar1.Location = new System.Drawing.Point(111, 3);
+            this.trackBar1.Location = new System.Drawing.Point(110, 3);
             this.trackBar1.Maximum = 360;
             this.trackBar1.Name = "trackBar1";
             this.trackBar1.Size = new System.Drawing.Size(198, 33);
@@ -404,7 +404,7 @@
             // 
             // trackBar2
             // 
-            this.trackBar2.Location = new System.Drawing.Point(111, 42);
+            this.trackBar2.Location = new System.Drawing.Point(110, 42);
             this.trackBar2.Maximum = 360;
             this.trackBar2.Name = "trackBar2";
             this.trackBar2.Size = new System.Drawing.Size(198, 33);
@@ -414,7 +414,7 @@
             // 
             // trackBar3
             // 
-            this.trackBar3.Location = new System.Drawing.Point(111, 81);
+            this.trackBar3.Location = new System.Drawing.Point(110, 81);
             this.trackBar3.Maximum = 360;
             this.trackBar3.Name = "trackBar3";
             this.trackBar3.Size = new System.Drawing.Size(198, 37);
@@ -457,7 +457,7 @@
             this.lightMapRotXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lightMapRotXTB.Location = new System.Drawing.Point(63, 9);
             this.lightMapRotXTB.Name = "lightMapRotXTB";
-            this.lightMapRotXTB.Size = new System.Drawing.Size(42, 20);
+            this.lightMapRotXTB.Size = new System.Drawing.Size(41, 20);
             this.lightMapRotXTB.TabIndex = 6;
             // 
             // lightMapRotYTB
@@ -465,7 +465,7 @@
             this.lightMapRotYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lightMapRotYTB.Location = new System.Drawing.Point(63, 48);
             this.lightMapRotYTB.Name = "lightMapRotYTB";
-            this.lightMapRotYTB.Size = new System.Drawing.Size(42, 20);
+            this.lightMapRotYTB.Size = new System.Drawing.Size(41, 20);
             this.lightMapRotYTB.TabIndex = 7;
             // 
             // lightMapRotZTB
@@ -473,7 +473,7 @@
             this.lightMapRotZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lightMapRotZTB.Location = new System.Drawing.Point(63, 89);
             this.lightMapRotZTB.Name = "lightMapRotZTB";
-            this.lightMapRotZTB.Size = new System.Drawing.Size(42, 20);
+            this.lightMapRotZTB.Size = new System.Drawing.Size(41, 20);
             this.lightMapRotZTB.TabIndex = 8;
             // 
             // groupBox9
@@ -491,7 +491,7 @@
             this.tableLayoutPanel11.ColumnCount = 3;
             this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 53.38983F));
             this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 46.61017F));
-            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 217F));
+            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 218F));
             this.tableLayoutPanel11.Controls.Add(this.trackBar4, 2, 0);
             this.tableLayoutPanel11.Controls.Add(this.trackBar5, 2, 1);
             this.tableLayoutPanel11.Controls.Add(this.trackBar6, 2, 2);
@@ -512,7 +512,7 @@
             // 
             // trackBar4
             // 
-            this.trackBar4.Location = new System.Drawing.Point(109, 3);
+            this.trackBar4.Location = new System.Drawing.Point(108, 3);
             this.trackBar4.Maximum = 360;
             this.trackBar4.Name = "trackBar4";
             this.trackBar4.Size = new System.Drawing.Size(200, 33);
@@ -521,7 +521,7 @@
             // 
             // trackBar5
             // 
-            this.trackBar5.Location = new System.Drawing.Point(109, 42);
+            this.trackBar5.Location = new System.Drawing.Point(108, 42);
             this.trackBar5.Maximum = 360;
             this.trackBar5.Name = "trackBar5";
             this.trackBar5.Size = new System.Drawing.Size(200, 33);
@@ -530,7 +530,7 @@
             // 
             // trackBar6
             // 
-            this.trackBar6.Location = new System.Drawing.Point(109, 81);
+            this.trackBar6.Location = new System.Drawing.Point(108, 81);
             this.trackBar6.Maximum = 360;
             this.trackBar6.Name = "trackBar6";
             this.trackBar6.Size = new System.Drawing.Size(200, 37);
@@ -570,7 +570,7 @@
             // lightMapScaleXTB
             // 
             this.lightMapScaleXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lightMapScaleXTB.Location = new System.Drawing.Point(60, 9);
+            this.lightMapScaleXTB.Location = new System.Drawing.Point(59, 9);
             this.lightMapScaleXTB.Name = "lightMapScaleXTB";
             this.lightMapScaleXTB.Size = new System.Drawing.Size(43, 20);
             this.lightMapScaleXTB.TabIndex = 6;
@@ -578,7 +578,7 @@
             // lightMapScaleYTB
             // 
             this.lightMapScaleYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lightMapScaleYTB.Location = new System.Drawing.Point(60, 48);
+            this.lightMapScaleYTB.Location = new System.Drawing.Point(59, 48);
             this.lightMapScaleYTB.Name = "lightMapScaleYTB";
             this.lightMapScaleYTB.Size = new System.Drawing.Size(43, 20);
             this.lightMapScaleYTB.TabIndex = 7;
@@ -586,7 +586,7 @@
             // lightMapScaleZTB
             // 
             this.lightMapScaleZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lightMapScaleZTB.Location = new System.Drawing.Point(60, 89);
+            this.lightMapScaleZTB.Location = new System.Drawing.Point(59, 89);
             this.lightMapScaleZTB.Name = "lightMapScaleZTB";
             this.lightMapScaleZTB.Size = new System.Drawing.Size(43, 20);
             this.lightMapScaleZTB.TabIndex = 8;
@@ -606,7 +606,7 @@
             this.tableLayoutPanel12.ColumnCount = 3;
             this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54.86726F));
             this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45.13274F));
-            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 219F));
+            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
             this.tableLayoutPanel12.Controls.Add(this.trackBar7, 2, 0);
             this.tableLayoutPanel12.Controls.Add(this.trackBar8, 2, 1);
             this.tableLayoutPanel12.Controls.Add(this.trackBar9, 2, 2);
@@ -627,7 +627,7 @@
             // 
             // trackBar7
             // 
-            this.trackBar7.Location = new System.Drawing.Point(107, 3);
+            this.trackBar7.Location = new System.Drawing.Point(106, 3);
             this.trackBar7.Maximum = 360;
             this.trackBar7.Name = "trackBar7";
             this.trackBar7.Size = new System.Drawing.Size(201, 33);
@@ -637,7 +637,7 @@
             // 
             // trackBar8
             // 
-            this.trackBar8.Location = new System.Drawing.Point(107, 42);
+            this.trackBar8.Location = new System.Drawing.Point(106, 42);
             this.trackBar8.Maximum = 360;
             this.trackBar8.Name = "trackBar8";
             this.trackBar8.Size = new System.Drawing.Size(201, 33);
@@ -647,7 +647,7 @@
             // 
             // trackBar9
             // 
-            this.trackBar9.Location = new System.Drawing.Point(107, 81);
+            this.trackBar9.Location = new System.Drawing.Point(106, 81);
             this.trackBar9.Maximum = 360;
             this.trackBar9.Name = "trackBar9";
             this.trackBar9.Size = new System.Drawing.Size(201, 37);
@@ -690,7 +690,7 @@
             this.lightMapPosXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lightMapPosXTB.Location = new System.Drawing.Point(60, 9);
             this.lightMapPosXTB.Name = "lightMapPosXTB";
-            this.lightMapPosXTB.Size = new System.Drawing.Size(41, 20);
+            this.lightMapPosXTB.Size = new System.Drawing.Size(40, 20);
             this.lightMapPosXTB.TabIndex = 6;
             // 
             // lightMapPosYTB
@@ -698,7 +698,7 @@
             this.lightMapPosYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lightMapPosYTB.Location = new System.Drawing.Point(60, 48);
             this.lightMapPosYTB.Name = "lightMapPosYTB";
-            this.lightMapPosYTB.Size = new System.Drawing.Size(41, 20);
+            this.lightMapPosYTB.Size = new System.Drawing.Size(40, 20);
             this.lightMapPosYTB.TabIndex = 7;
             // 
             // lightMapPosZTB
@@ -706,7 +706,7 @@
             this.lightMapPosZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.lightMapPosZTB.Location = new System.Drawing.Point(60, 89);
             this.lightMapPosZTB.Name = "lightMapPosZTB";
-            this.lightMapPosZTB.Size = new System.Drawing.Size(41, 20);
+            this.lightMapPosZTB.Size = new System.Drawing.Size(40, 20);
             this.lightMapPosZTB.TabIndex = 8;
             // 
             // groupBox11
@@ -2059,7 +2059,7 @@
             this.charLightsFlowLayout.Controls.Add(this.charColor2Button);
             this.charLightsFlowLayout.Controls.Add(this.charColor2Panel);
             this.charLightsFlowLayout.Controls.Add(this.charAngleButton);
-            this.charLightsFlowLayout.Controls.Add(this.tableLayoutPanel1);
+            this.charLightsFlowLayout.Controls.Add(this.charAngleTableLayout);
             this.charLightsFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.charLightsFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.charLightsFlowLayout.Location = new System.Drawing.Point(123, 3);
@@ -2365,6 +2365,132 @@
             this.charColor2ZTB.TabIndex = 8;
             this.charColor2ZTB.TextChanged += new System.EventHandler(this.charColor2ZTB_TextChanged);
             // 
+            // charAngleButton
+            // 
+            this.charAngleButton.Location = new System.Drawing.Point(3, 454);
+            this.charAngleButton.Name = "charAngleButton";
+            this.charAngleButton.Size = new System.Drawing.Size(786, 23);
+            this.charAngleButton.TabIndex = 34;
+            this.charAngleButton.Text = "Rotation";
+            this.charAngleButton.UseVisualStyleBackColor = true;
+            this.charAngleButton.Click += new System.EventHandler(this.charAngleButton_Click);
+            // 
+            // charAngleTableLayout
+            // 
+            this.charAngleTableLayout.ColumnCount = 3;
+            this.charAngleTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.charAngleTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.charAngleTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.charAngleTableLayout.Controls.Add(this.charAngle1TrackBar, 2, 0);
+            this.charAngleTableLayout.Controls.Add(this.charAngle2TrackBar, 2, 1);
+            this.charAngleTableLayout.Controls.Add(this.charAngle3TrackBar, 2, 2);
+            this.charAngleTableLayout.Controls.Add(this.label44, 0, 0);
+            this.charAngleTableLayout.Controls.Add(this.label45, 0, 1);
+            this.charAngleTableLayout.Controls.Add(this.label46, 0, 2);
+            this.charAngleTableLayout.Controls.Add(this.charAngle1TB, 1, 0);
+            this.charAngleTableLayout.Controls.Add(this.charAngle2TB, 1, 1);
+            this.charAngleTableLayout.Controls.Add(this.charAngle3TB, 1, 2);
+            this.charAngleTableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charAngleTableLayout.Enabled = false;
+            this.charAngleTableLayout.Location = new System.Drawing.Point(3, 483);
+            this.charAngleTableLayout.Name = "charAngleTableLayout";
+            this.charAngleTableLayout.RowCount = 3;
+            this.charAngleTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.charAngleTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.charAngleTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
+            this.charAngleTableLayout.Size = new System.Drawing.Size(786, 100);
+            this.charAngleTableLayout.TabIndex = 35;
+            // 
+            // charAngle1TrackBar
+            // 
+            this.charAngle1TrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charAngle1TrackBar.Location = new System.Drawing.Point(237, 3);
+            this.charAngle1TrackBar.Maximum = 360;
+            this.charAngle1TrackBar.Name = "charAngle1TrackBar";
+            this.charAngle1TrackBar.Size = new System.Drawing.Size(546, 27);
+            this.charAngle1TrackBar.TabIndex = 0;
+            this.charAngle1TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.charAngle1TrackBar.Scroll += new System.EventHandler(this.charAngle1TrackBar_Scroll);
+            // 
+            // charAngle2TrackBar
+            // 
+            this.charAngle2TrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charAngle2TrackBar.Location = new System.Drawing.Point(237, 36);
+            this.charAngle2TrackBar.Maximum = 100;
+            this.charAngle2TrackBar.Name = "charAngle2TrackBar";
+            this.charAngle2TrackBar.Size = new System.Drawing.Size(546, 27);
+            this.charAngle2TrackBar.TabIndex = 1;
+            this.charAngle2TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.charAngle2TrackBar.Scroll += new System.EventHandler(this.charAngle2TrackBar_Scroll);
+            // 
+            // charAngle3TrackBar
+            // 
+            this.charAngle3TrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charAngle3TrackBar.Location = new System.Drawing.Point(237, 69);
+            this.charAngle3TrackBar.Maximum = 100;
+            this.charAngle3TrackBar.Name = "charAngle3TrackBar";
+            this.charAngle3TrackBar.Size = new System.Drawing.Size(546, 28);
+            this.charAngle3TrackBar.TabIndex = 2;
+            this.charAngle3TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.charAngle3TrackBar.Scroll += new System.EventHandler(this.charAngle3TrackBar_Scroll);
+            // 
+            // label44
+            // 
+            this.label44.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(57, 10);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(57, 13);
+            this.label44.TabIndex = 3;
+            this.label44.Text = "Rotation X";
+            // 
+            // label45
+            // 
+            this.label45.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(57, 43);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(57, 13);
+            this.label45.TabIndex = 4;
+            this.label45.Text = "Rotation Y";
+            // 
+            // label46
+            // 
+            this.label46.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(57, 76);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(57, 13);
+            this.label46.TabIndex = 5;
+            this.label46.Text = "Rotation Z";
+            // 
+            // charAngle1TB
+            // 
+            this.charAngle1TB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.charAngle1TB.Location = new System.Drawing.Point(120, 6);
+            this.charAngle1TB.Name = "charAngle1TB";
+            this.charAngle1TB.Size = new System.Drawing.Size(111, 20);
+            this.charAngle1TB.TabIndex = 6;
+            this.charAngle1TB.TextChanged += new System.EventHandler(this.charAngle1TB_TextChanged);
+            // 
+            // charAngle2TB
+            // 
+            this.charAngle2TB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.charAngle2TB.Location = new System.Drawing.Point(120, 39);
+            this.charAngle2TB.Name = "charAngle2TB";
+            this.charAngle2TB.Size = new System.Drawing.Size(111, 20);
+            this.charAngle2TB.TabIndex = 7;
+            this.charAngle2TB.TextChanged += new System.EventHandler(this.charAngle2TB_TextChanged);
+            // 
+            // charAngle3TB
+            // 
+            this.charAngle3TB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.charAngle3TB.Location = new System.Drawing.Point(120, 73);
+            this.charAngle3TB.Name = "charAngle3TB";
+            this.charAngle3TB.Size = new System.Drawing.Size(111, 20);
+            this.charAngle3TB.TabIndex = 8;
+            this.charAngle3TB.TextChanged += new System.EventHandler(this.charAngle3TB_TextChanged);
+            // 
             // charLightsListBox
             // 
             this.charLightsListBox.Dock = System.Windows.Forms.DockStyle.Left;
@@ -2630,124 +2756,6 @@
             this.saveLightsetparamToolStripMenuItem.Text = "Save light_set_param";
             this.saveLightsetparamToolStripMenuItem.Click += new System.EventHandler(this.saveLightsetparamToolStripMenuItem_Click);
             // 
-            // charAngleButton
-            // 
-            this.charAngleButton.Location = new System.Drawing.Point(3, 454);
-            this.charAngleButton.Name = "charAngleButton";
-            this.charAngleButton.Size = new System.Drawing.Size(786, 23);
-            this.charAngleButton.TabIndex = 34;
-            this.charAngleButton.Text = "Rotation";
-            this.charAngleButton.UseVisualStyleBackColor = true;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 3;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
-            this.tableLayoutPanel1.Controls.Add(this.charAngle1TrackBar, 2, 0);
-            this.tableLayoutPanel1.Controls.Add(this.charAngle2TrackBar, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.charAngle3TrackBar, 2, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label44, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label45, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label46, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.charAngle1TB, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.charAngle2TB, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.charAngle3TB, 1, 2);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 483);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 3;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(786, 100);
-            this.tableLayoutPanel1.TabIndex = 35;
-            // 
-            // charAngle1TrackBar
-            // 
-            this.charAngle1TrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.charAngle1TrackBar.Location = new System.Drawing.Point(237, 3);
-            this.charAngle1TrackBar.Maximum = 360;
-            this.charAngle1TrackBar.Name = "charAngle1TrackBar";
-            this.charAngle1TrackBar.Size = new System.Drawing.Size(546, 27);
-            this.charAngle1TrackBar.TabIndex = 0;
-            this.charAngle1TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            // 
-            // charAngle2TrackBar
-            // 
-            this.charAngle2TrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.charAngle2TrackBar.Location = new System.Drawing.Point(237, 36);
-            this.charAngle2TrackBar.Maximum = 100;
-            this.charAngle2TrackBar.Name = "charAngle2TrackBar";
-            this.charAngle2TrackBar.Size = new System.Drawing.Size(546, 27);
-            this.charAngle2TrackBar.TabIndex = 1;
-            this.charAngle2TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            // 
-            // charAngle3TrackBar
-            // 
-            this.charAngle3TrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.charAngle3TrackBar.Location = new System.Drawing.Point(237, 69);
-            this.charAngle3TrackBar.Maximum = 100;
-            this.charAngle3TrackBar.Name = "charAngle3TrackBar";
-            this.charAngle3TrackBar.Size = new System.Drawing.Size(546, 28);
-            this.charAngle3TrackBar.TabIndex = 2;
-            this.charAngle3TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            // 
-            // label44
-            // 
-            this.label44.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(57, 10);
-            this.label44.Name = "label44";
-            this.label44.Size = new System.Drawing.Size(57, 13);
-            this.label44.TabIndex = 3;
-            this.label44.Text = "Rotation X";
-            // 
-            // label45
-            // 
-            this.label45.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(57, 43);
-            this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(57, 13);
-            this.label45.TabIndex = 4;
-            this.label45.Text = "Rotation Y";
-            // 
-            // label46
-            // 
-            this.label46.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label46.AutoSize = true;
-            this.label46.Location = new System.Drawing.Point(57, 76);
-            this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(57, 13);
-            this.label46.TabIndex = 5;
-            this.label46.Text = "Rotation Z";
-            // 
-            // charAngle1TB
-            // 
-            this.charAngle1TB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.charAngle1TB.Location = new System.Drawing.Point(120, 6);
-            this.charAngle1TB.Name = "charAngle1TB";
-            this.charAngle1TB.Size = new System.Drawing.Size(111, 20);
-            this.charAngle1TB.TabIndex = 6;
-            // 
-            // charAngle2TB
-            // 
-            this.charAngle2TB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.charAngle2TB.Location = new System.Drawing.Point(120, 39);
-            this.charAngle2TB.Name = "charAngle2TB";
-            this.charAngle2TB.Size = new System.Drawing.Size(111, 20);
-            this.charAngle2TB.TabIndex = 7;
-            // 
-            // charAngle3TB
-            // 
-            this.charAngle3TB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.charAngle3TB.Location = new System.Drawing.Point(120, 73);
-            this.charAngle3TB.Name = "charAngle3TB";
-            this.charAngle3TB.Size = new System.Drawing.Size(111, 20);
-            this.charAngle3TB.TabIndex = 8;
-            // 
             // LightSetEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2853,6 +2861,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.charColor2XTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.charColor2YTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.charColor2ZTrackBar)).EndInit();
+            this.charAngleTableLayout.ResumeLayout(false);
+            this.charAngleTableLayout.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.charAngle1TrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.charAngle2TrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.charAngle3TrackBar)).EndInit();
             this.stageLightingTabControl.ResumeLayout(false);
             this.stageFogTab.ResumeLayout(false);
             this.fogFlowLayout.ResumeLayout(false);
@@ -2864,11 +2877,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.fogIntensityTrackBar)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.charAngle1TrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.charAngle2TrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.charAngle3TrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -3084,7 +3092,7 @@
         private System.Windows.Forms.Button areaLightRotButton;
         private System.Windows.Forms.Panel areaLightRotPanel;
         private System.Windows.Forms.Button charAngleButton;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel charAngleTableLayout;
         private System.Windows.Forms.TrackBar charAngle1TrackBar;
         private System.Windows.Forms.TrackBar charAngle2TrackBar;
         private System.Windows.Forms.TrackBar charAngle3TrackBar;

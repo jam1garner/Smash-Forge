@@ -129,6 +129,12 @@
     <Compile Include="GUI\Controls\VertexTool.Designer.cs">
       <DependentUpon>VertexTool.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\TextureSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\TextureSelector.Designer.cs">
+      <DependentUpon>TextureSelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Menus\UvViewer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -490,7 +496,7 @@
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\Shader\ShaderTools.cs" />
     <Compile Include="Rendering\NudUvRendering.cs" />
-    <Compile Include="Rendering\TextureBitmapRendering.cs" />
+    <Compile Include="Rendering\TextureToBitmap.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
@@ -640,6 +646,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\ROM_Injector.resx">
       <DependentUpon>ROM_Injector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\TextureSelector.resx">
+      <DependentUpon>TextureSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\UvViewer.resx">
       <DependentUpon>UvViewer.cs</DependentUpon>
