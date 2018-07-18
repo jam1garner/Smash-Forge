@@ -450,35 +450,23 @@ namespace Smash_Forge
             RenderTexture(true);
 
             if (texturesListView.SelectedItems.Count > 0 && value != -1)
+            {
                 texturesListView.SelectedItems[0].ImageKey = value.ToString("X");
+            }
         }
 
         private void refAlphaTB_TextChanged(object sender, EventArgs e)
         {
-            int n = -1;
-            int.TryParse(refAlphaTB.Text, out n);
-            if (n != -1)
-            {
-                currentMaterialList[currentMatIndex].RefAlpha = n;
-            }
-            else
-            {
-                refAlphaTB.Text = "0";
-            }
+            int value = GuiTools.TryParseTBInt(refAlphaTB);
+            if (value != -1)
+                currentMaterialList[currentMatIndex].RefAlpha = value;
         }
 
         private void zBufferTB_TextChanged(object sender, EventArgs e)
         {
-            int n = -1;
-            int.TryParse(zBufferTB.Text, out n);
-            if (n != -1)
-            {
-                currentMaterialList[currentMatIndex].zBufferOffset = n;
-            }
-            else
-            {
-                zBufferTB.Text = "0";
-            }
+            int value = GuiTools.TryParseTBInt(zBufferTB);
+            if (value != -1)
+                currentMaterialList[currentMatIndex].zBufferOffset = value;
         }
 
         private void mapModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -598,7 +586,7 @@ namespace Smash_Forge
 
         private void propertiesListView_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Delete)
+            if (e.KeyCode == Keys.Delete || e.KeyCode == Keys.D)
             {
                 NUD.Material mat = currentMaterialList[currentMatIndex];
                 foreach (ListViewItem property in propertiesListView.SelectedItems)
@@ -629,13 +617,13 @@ namespace Smash_Forge
             }
         }
 
-        private static float GetMatParamMax(string propertyName)
+        private static float GetMatParamMax(string propertyName, int index)
         {
             Params.MatParam labels = null;
             materialParamList.TryGetValue(propertyName, out labels);
             if (labels != null)
             {
-                return labels.max1;
+                return labels.maxValues[index];
             }
 
             return 1;
@@ -653,7 +641,7 @@ namespace Smash_Forge
                 float value = GuiTools.TryParseTBFloat(param1TB);
                 currentMaterialList[currentMatIndex].entries[propertyName][0] = value;
 
-                float max = GetMatParamMax(propertyName);
+                float max = GetMatParamMax(propertyName, 0);
                 if (enableParam1SliderUpdates)
                     GuiTools.UpdateTrackBarFromValue(value, param1TrackBar, 0, max);
             }
@@ -674,7 +662,7 @@ namespace Smash_Forge
             float value = GuiTools.TryParseTBFloat(param2TB);
             currentMaterialList[currentMatIndex].entries[propertyName][1] = value;
 
-            float max = GetMatParamMax(propertyName);
+            float max = GetMatParamMax(propertyName, 1);
             if (enableParam2SliderUpdates)
                 GuiTools.UpdateTrackBarFromValue(value, param2TrackBar, 0, max);
 
@@ -687,7 +675,7 @@ namespace Smash_Forge
             float value = GuiTools.TryParseTBFloat(param3TB);
             currentMaterialList[currentMatIndex].entries[propertyName][2] = value;
 
-            float max = GetMatParamMax(propertyName);
+            float max = GetMatParamMax(propertyName, 2);
             if (enableParam3SliderUpdates)
                 GuiTools.UpdateTrackBarFromValue(value, param3TrackBar, 0, max);
 
@@ -700,30 +688,11 @@ namespace Smash_Forge
             float value = GuiTools.TryParseTBFloat(param4TB);
             currentMaterialList[currentMatIndex].entries[propertyName][3] = value;
 
-            float max = GetMatParamMax(propertyName);
+            float max = GetMatParamMax(propertyName, 3);
             if (enableParam4SliderUpdates)
                 GuiTools.UpdateTrackBarFromValue(value, param4TrackBar, 0, max);
 
             UpdateButtonColor();
-        }
-
-        // property change
-        private void matPropertyTB_TextChanged(object sender, EventArgs e)
-        {
-            Params.MatParam matParam = null;
-
-            // Try and find the name of the property that is selected in the listview.
-            string propertyName = "";
-            if (propertiesListView.SelectedIndices.Count > 0)
-                propertyName = currentMaterialList[currentMatIndex].entries.Keys.ElementAt(propertiesListView.SelectedIndices[0]);
-
-            materialParamList.TryGetValue(propertyName, out matParam);
-
-            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 0));
-            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 1));
-            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 2));
-            srcDstTableLayout.Controls.Remove(srcDstTableLayout.GetControlFromPosition(2, 3));
-
         }
 
         private void SetParamLabelsAndToolTips(Params.MatParam matParam)
@@ -993,7 +962,7 @@ namespace Smash_Forge
             if (labels != null)
             {
                 enableParam1SliderUpdates = false;
-                param1TB.Text = GuiTools.GetTrackBarValue(param1TrackBar, 0, labels.max1).ToString();
+                param1TB.Text = GuiTools.GetTrackBarValue(param1TrackBar, 0, labels.maxValues[0]).ToString();
             }
         }
 
@@ -1005,7 +974,7 @@ namespace Smash_Forge
             if (labels != null)
             {
                 enableParam2SliderUpdates = false;
-                param2TB.Text = GuiTools.GetTrackBarValue(param2TrackBar, 0, labels.max2).ToString();
+                param2TB.Text = GuiTools.GetTrackBarValue(param2TrackBar, 0, labels.maxValues[1]).ToString();
             }
         }
 
@@ -1017,7 +986,7 @@ namespace Smash_Forge
             if (labels != null)
             {
                 enableParam3SliderUpdates = false;
-                param3TB.Text = GuiTools.GetTrackBarValue(param3TrackBar, 0, labels.max3).ToString();
+                param3TB.Text = GuiTools.GetTrackBarValue(param3TrackBar, 0, labels.maxValues[2]).ToString();
             }
         }
 
@@ -1029,7 +998,7 @@ namespace Smash_Forge
             if (labels != null)
             {
                 enableParam4SliderUpdates = false;
-                param4TB.Text = GuiTools.GetTrackBarValue(param4TrackBar, 0, labels.max4).ToString();
+                param4TB.Text = GuiTools.GetTrackBarValue(param4TrackBar, 0, labels.maxValues[3]).ToString();
             }
         }
 
@@ -1086,6 +1055,7 @@ namespace Smash_Forge
 
             // Only enable extra settings when alpha testing is enabled.
             alphaFuncRefPanel.Visible = alphaTestCB.Checked;
+
             // Force all flow layouts to rescale children.
             GuiTools.ScaleControlsHorizontallyToLayoutWidth(generalFlowLayout);
         }
@@ -1165,11 +1135,6 @@ namespace Smash_Forge
             NUD.Material mat = currentMaterialList[currentMatIndex];
             if (matValueByCullModeName.ContainsKey(cullModeComboBox.SelectedItem.ToString()))
                 mat.cullMode = matValueByCullModeName[cullModeComboBox.SelectedItem.ToString()];
-        }
-
-        private void NUDMaterialEditor_Resize(object sender, EventArgs e)
-        {
-            Debug.WriteLine(Size);
         }
 
         private void glControlTableLayout_Resize(object sender, EventArgs e)
