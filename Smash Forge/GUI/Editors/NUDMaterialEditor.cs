@@ -130,6 +130,9 @@ namespace Smash_Forge
         {
             textureThumbnails.Images.Clear();
             AddTextureThumbnails(textureThumbnails);
+
+            NUD.Material material = currentMaterialList[currentMatIndex];
+
         }
 
         private void AddTextureThumbnails(ImageList imageList)
@@ -144,7 +147,7 @@ namespace Smash_Forge
                         if (nut.glTexByHashId[texture.hash] is SFGraphics.GLObjects.Textures.Texture2D)
                         {
                             Bitmap bitmap = TextureToBitmap.RenderBitmap((SFGraphics.GLObjects.Textures.Texture2D)nut.glTexByHashId[texture.hash], 64, 64);
-                            imageList.Images.Add(texture.hash.ToString(), bitmap);
+                            imageList.Images.Add(texture.hash.ToString("X"), bitmap);
                             // StackOverflow makes the bad exceptions go away.
                             var dummy = imageList.Handle;
                             bitmap.Dispose();
@@ -290,46 +293,46 @@ namespace Smash_Forge
             // Jigglypuff has weird eyes.
             if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
             {
-                texturesListView.Items.Add("Diffuse", mat.diffuse1ID.ToString());
-                texturesListView.Items.Add("Diffuse2", mat.diffuse2ID.ToString());
-                texturesListView.Items.Add("NormalMap", mat.normalID.ToString());
+                texturesListView.Items.Add("Diffuse", mat.diffuse1ID.ToString("X"));
+                texturesListView.Items.Add("Diffuse2", mat.diffuse2ID.ToString("X"));
+                texturesListView.Items.Add("NormalMap", mat.normalID.ToString("X"));
             }
             else if ((mat.Flags & 0xFFFFFFFF) == 0x92F01101)
             {
                 // These flags are even weirder. 
-                texturesListView.Items.Add("Diffuse", mat.diffuse1ID.ToString());
-                texturesListView.Items.Add("Diffuse2", mat.diffuse2ID.ToString());
+                texturesListView.Items.Add("Diffuse", mat.diffuse1ID.ToString("X"));
+                texturesListView.Items.Add("Diffuse2", mat.diffuse2ID.ToString("X"));
                 if (currentMatIndex == 0)
                 {
                     // The second material doesn't have these textures.
                     // The texture are probably shared with the first material.
-                    texturesListView.Items.Add("Ramp", mat.rampID.ToString());
-                    texturesListView.Items.Add("DummyRamp", mat.dummyRampID.ToString());
+                    texturesListView.Items.Add("Ramp", mat.rampID.ToString("X"));
+                    texturesListView.Items.Add("DummyRamp", mat.dummyRampID.ToString("X"));
                 }
             }
             else
             {
                 // The order of the textures is critical.
                 if (mat.hasDiffuse)
-                    texturesListView.Items.Add("Diffuse", mat.diffuse1ID.ToString());
+                    texturesListView.Items.Add("Diffuse", mat.diffuse1ID.ToString("X"));
                 if (mat.hasSphereMap)
-                    texturesListView.Items.Add("SphereMap", mat.sphereMapID.ToString());
+                    texturesListView.Items.Add("SphereMap", mat.sphereMapID.ToString("X"));
                 if (mat.hasDiffuse2)
-                    texturesListView.Items.Add("Diffuse2", mat.diffuse2ID.ToString());
+                    texturesListView.Items.Add("Diffuse2", mat.diffuse2ID.ToString("X"));
                 if (mat.hasDiffuse3)
-                    texturesListView.Items.Add("Diffuse3", mat.diffuse3ID.ToString());
+                    texturesListView.Items.Add("Diffuse3", mat.diffuse3ID.ToString("X"));
                 if (mat.hasStageMap)
-                    texturesListView.Items.Add("StageMap", mat.stageMapID.ToString());
+                    texturesListView.Items.Add("StageMap", mat.stageMapID.ToString("X"));
                 if (mat.hasCubeMap)
-                    texturesListView.Items.Add("Cubemap", mat.cubeMapID.ToString());
+                    texturesListView.Items.Add("Cubemap", mat.cubeMapID.ToString("X"));
                 if (mat.hasAoMap)
-                    texturesListView.Items.Add("AOMap", mat.aoMapID.ToString());
+                    texturesListView.Items.Add("AOMap", mat.aoMapID.ToString("X"));
                 if (mat.hasNormalMap)
-                    texturesListView.Items.Add("NormalMap", mat.normalID.ToString());
+                    texturesListView.Items.Add("NormalMap", mat.normalID.ToString("X"));
                 if (mat.hasRamp)
-                    texturesListView.Items.Add("Ramp", mat.rampID.ToString());
+                    texturesListView.Items.Add("Ramp", mat.rampID.ToString("X"));
                 if (mat.hasDummyRamp)
-                    texturesListView.Items.Add("DummyRamp", mat.dummyRampID.ToString());
+                    texturesListView.Items.Add("DummyRamp", mat.dummyRampID.ToString("X"));
             }
         }
 
@@ -388,12 +391,12 @@ namespace Smash_Forge
             {
                 index = texturesListView.Items.IndexOf(texturesListView.SelectedItems[0]);
                 texParamsTableLayout.Enabled = true;
-                textureIDTB.Enabled = true;
+                textureIdTB.Enabled = true;
             }
             else
             {
                 texParamsTableLayout.Enabled = false;
-                textureIDTB.Enabled = false;
+                textureIdTB.Enabled = false;
             }
             if (index >= currentMaterialList[currentMatIndex].textures.Count)
             {
@@ -410,7 +413,7 @@ namespace Smash_Forge
         private void UpdateSelectedTextureControlValues(int index)
         {
             NUD.MatTexture tex = currentMaterialList[currentMatIndex].textures[index];
-            textureIDTB.Text = tex.hash.ToString("X");
+            textureIdTB.Text = tex.hash.ToString("X");
 
             mapModeComboBox.SelectedItem = mapModeByMatValue[tex.mapMode];
             wrapXComboBox.SelectedItem = wrapModeByMatValue[tex.wrapModeS];
@@ -436,16 +439,18 @@ namespace Smash_Forge
                 flagsTB.BackColor = Color.Red;
         }
 
-        private void textureIDTB_TextChanged(object sender, EventArgs e)
+        private void textureIdTB_TextChanged(object sender, EventArgs e)
         {
-            int value = GuiTools.TryParseTBInt(textureIDTB, true);
+            int value = GuiTools.TryParseTBInt(textureIdTB, true);
             if (value != -1 && texturesListView.SelectedIndices.Count > 0)
                 currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash = value;
 
             // Update the texture color channels.
             RenderTexture();
             RenderTexture(true);
-            RefreshTexturesImageList();
+
+            if (texturesListView.SelectedItems.Count > 0 && value != -1)
+                texturesListView.SelectedItems[0].ImageKey = value.ToString("X");
         }
 
         private void refAlphaTB_TextChanged(object sender, EventArgs e)
@@ -967,7 +972,7 @@ namespace Smash_Forge
             FillForm();
 
             // Nothing is currently selected, so don't display the tex ID.
-            textureIDTB.Text = "";
+            textureIdTB.Text = "";
         }
 
         private void texRgbGlControl_Paint(object sender, PaintEventArgs e)
@@ -1190,7 +1195,7 @@ namespace Smash_Forge
             // Updating the text box will update the material texture.
             if (textureSelector.TextureId != -1)
             {
-                textureIDTB.Text = textureSelector.TextureId.ToString("X");
+                textureIdTB.Text = textureSelector.TextureId.ToString("X");
             }
         }
     }

@@ -84,7 +84,7 @@
             this.texturesListView = new System.Windows.Forms.ListView();
             this.texIdTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.label10 = new System.Windows.Forms.Label();
-            this.textureIDTB = new System.Windows.Forms.TextBox();
+            this.textureIdTB = new System.Windows.Forms.TextBox();
             this.dummyRampCB = new System.Windows.Forms.CheckBox();
             this.sphereMapCB = new System.Windows.Forms.CheckBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -753,7 +753,7 @@
             this.texIdTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.texIdTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.texIdTableLayout.Controls.Add(this.label10, 0, 0);
-            this.texIdTableLayout.Controls.Add(this.textureIDTB, 1, 0);
+            this.texIdTableLayout.Controls.Add(this.textureIdTB, 1, 0);
             this.texIdTableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.texIdTableLayout.Location = new System.Drawing.Point(3, 331);
             this.texIdTableLayout.Name = "texIdTableLayout";
@@ -774,12 +774,12 @@
             // 
             // textureIDTB
             // 
-            this.textureIDTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.textureIDTB.Location = new System.Drawing.Point(274, 7);
-            this.textureIDTB.Name = "textureIDTB";
-            this.textureIDTB.Size = new System.Drawing.Size(266, 20);
-            this.textureIDTB.TabIndex = 17;
-            this.textureIDTB.TextChanged += new System.EventHandler(this.textureIDTB_TextChanged);
+            this.textureIdTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.textureIdTB.Location = new System.Drawing.Point(274, 7);
+            this.textureIdTB.Name = "textureIDTB";
+            this.textureIdTB.Size = new System.Drawing.Size(266, 20);
+            this.textureIdTB.TabIndex = 17;
+            this.textureIdTB.TextChanged += new System.EventHandler(this.textureIdTB_TextChanged);
             // 
             // dummyRampCB
             // 
@@ -1474,7 +1474,7 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TableLayoutPanel texIdTableLayout;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox textureIDTB;
+        private System.Windows.Forms.TextBox textureIdTB;
         private System.Windows.Forms.ListView texturesListView;
     }
 }

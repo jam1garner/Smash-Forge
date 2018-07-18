@@ -31,6 +31,20 @@ namespace Smash_Forge.GUI.Menus
 
         private void InitializeImageList()
         {
+            AddImagesFromAllTextureContainers();
+
+            listView1.LargeImageList = imageList;
+        }
+
+        private void AddImagesFromAllTextureContainers()
+        {
+            int totalTextureCount = GetTotalTextureCount();
+
+            // This may take a while for larger NUTs.
+            ProgressAlert progressAlert = new ProgressAlert();
+            progressAlert.Show();
+
+            int index = 0;
             foreach (NUT nut in Runtime.TextureContainers)
             {
                 foreach (var texture in nut.glTexByHashId)
@@ -43,10 +57,28 @@ namespace Smash_Forge.GUI.Menus
                     // StackOverflow makes the bad exceptions go away.
                     var dummy = imageList.Handle;
                     bitmap.Dispose();
+
+                    // Update progress.
+                    progressAlert.ProgressValue = (int)(((double)index / totalTextureCount) * 100);
+                    progressAlert.Message = String.Format("Rendering {0}...", texture.Key.ToString("X"));
+                    progressAlert.Refresh();
+                    index += 1;
                 }
             }
+            // Finished
+            progressAlert.ProgressValue = 100;
+            progressAlert.Refresh();
+            progressAlert.Close();
+        }
 
-            listView1.LargeImageList = imageList;
+        private static int GetTotalTextureCount()
+        {
+            int totalTextureCount = 0;
+            foreach (NUT nut in Runtime.TextureContainers)
+            {
+                totalTextureCount += nut.glTexByHashId.Count;
+            }
+            return totalTextureCount;
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
