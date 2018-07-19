@@ -95,6 +95,9 @@ namespace Smash_Forge
             Thread thread = new Thread(t);
             thread.Start();
 
+            if(File.Exists(Path.Combine(executableDir, "version.txt")))
+                Text = "Smash Forge | Build: " + File.ReadAllText(Path.Combine(executableDir, "version.txt"));
+
             System.Windows.Forms.Application.Idle += AppIdle;
 
             allViewsPreset(new Object(), new EventArgs());
