@@ -46,6 +46,10 @@ namespace Smash_Forge.Rendering
                 screenVbo = RenderTools.CreateScreenQuadBuffer();
                 shader = Runtime.shaders["NudSphere"];
 
+                // Skip thumbnail generation if the shader didn't compile.
+                if (!shader.ProgramCreatedSuccessfully())
+                    return;
+
                 // HACK: This isn't a very clean way to pass resources around.
                 RenderTools.LoadMaterialSphereTextures();
                 Dictionary<NUD.DummyTextures, Texture> dummyTextures = RenderTools.CreateNudDummyTextures();

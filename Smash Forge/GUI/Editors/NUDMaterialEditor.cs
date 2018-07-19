@@ -149,6 +149,9 @@ namespace Smash_Forge
             {
                 foreach (var texture in nut.glTexByHashId)
                 {
+                    if (!(nut.glTexByHashId[texture.Key] is SFGraphics.GLObjects.Textures.Texture2D))
+                        continue;
+
                     Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)nut.glTexByHashId[texture.Key], 64, 64);
                     imageList.Images.Add(texture.Key.ToString("X"), bitmap);
 
@@ -170,7 +173,7 @@ namespace Smash_Forge
         private static void UpdateMaterialThumbnails()
         {
             // Update the material thumbnails.
-            if (!Runtime.hasRefreshedMatThumbnails && Runtime.shaders["NudSphere"].ProgramCreatedSuccessfully())
+            if (!Runtime.hasRefreshedMatThumbnails)
             {
                 // If it didn't work the first time, it probably won't work again.
                 MaterialPreviewRendering.RenderMaterialPresetPreviewsToFilesThreaded();

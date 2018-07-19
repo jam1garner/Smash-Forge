@@ -76,8 +76,10 @@ namespace Smash_Forge.Rendering
         public static GameWindow CreateGameWindowContext(int width = 640, int height = 480)
         {
             GraphicsMode mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
-            // TODO: Version 330 doesn't work with texture rendering for some reason.
+
+            // TODO: Versions higher than 300 do not work for some reason.
             GameWindow gameWindow = new GameWindow(width, height, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
+
             gameWindow.Visible = false;
             gameWindow.MakeCurrent();
             return gameWindow;
@@ -1007,32 +1009,38 @@ namespace Smash_Forge.Rendering
             if (Runtime.renderFloorLines)
             {
                 GL.Disable(EnableCap.DepthTest);
-                GL.Begin(PrimitiveType.Lines);
                 GL.Color3(Color.White);
+
                 GL.Begin(PrimitiveType.Lines);
                 GL.Vertex3(-scale, 0f, 0);
                 GL.Vertex3(scale, 0f, 0);
                 GL.Vertex3(0, 0f, -scale);
                 GL.Vertex3(0, 0f, scale);
                 GL.End();
+
                 GL.Enable(EnableCap.DepthTest);
 
                 GL.Disable(EnableCap.DepthTest);
                 GL.Color3(Color.LightGray);
+
                 GL.Begin(PrimitiveType.Lines);
                 GL.Vertex3(0, 5, 0);
                 GL.Vertex3(0, 0, 0);
+                GL.End();
 
                 GL.Color3(Color.OrangeRed);
+
+                GL.Begin(PrimitiveType.Lines);
                 GL.Vertex3(0f, 0f, 0);
-                GL.Color3(Color.OrangeRed);
                 GL.Vertex3(5f, 0f, 0);
+                GL.End();
 
                 GL.Color3(Color.Olive);
+
+                GL.Begin(PrimitiveType.Lines);
                 GL.Vertex3(0, 0f, 0f);
                 GL.Color3(Color.Olive);
                 GL.Vertex3(0, 0f, 5f);
-
                 GL.End();
             }
 
