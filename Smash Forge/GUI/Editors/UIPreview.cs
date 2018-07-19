@@ -304,7 +304,7 @@ namespace Smash_Forge
             GL.ClearColor(Color.Black);
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();

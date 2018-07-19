@@ -838,12 +838,15 @@ namespace Smash_Forge
                 if (nutTexture.surfaces[0].mipmaps.Count > 1 && nutTexture.isDds)
                 {
                     // Reading mip maps past the first level is only supported for DDS currently.
-                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps, nutTexture.surfaces[surfaceIndex].mipmaps[0].Length, true, nutTexture.pixelInternalFormat);
+                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps, nutTexture.surfaces[surfaceIndex].mipmaps[0].Length, true,
+                        (InternalFormat)nutTexture.pixelInternalFormat);
                 }
                 else
                 {
                     // Only load the first level and generate the rest.
-                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps, nutTexture.Size, false, nutTexture.pixelInternalFormat);
+                    return new Texture2D(nutTexture.Width, nutTexture.Height, 
+                        nutTexture.surfaces[surfaceIndex].mipmaps, nutTexture.Size, false, 
+                        (InternalFormat)nutTexture.pixelInternalFormat);
                 }
             }
             else
@@ -870,12 +873,12 @@ namespace Smash_Forge
 
             for (int i = 0; i < t.surfaces.Count; i++)
             {
-                GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, 0, t.pixelInternalFormat, t.Width, t.Height, 0, t.Size, t.surfaces[i].mipmaps[0]);
+                GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, 0, (InternalFormat)t.pixelInternalFormat, t.Width, t.Height, 0, t.Size, t.surfaces[i].mipmaps[0]);
 
                 // Initialize the data for each level.
                 for (int j = 1; j < t.surfaces[i].mipmaps.Count; j++)
                 {
-                    GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, j, t.pixelInternalFormat,
+                    GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, j, (InternalFormat)t.pixelInternalFormat,
                      t.Width / (int)Math.Pow(2, j), t.Height / (int)Math.Pow(2, j), 0, t.surfaces[i].mipmaps[j].Length, t.surfaces[i].mipmaps[j]);
                 }
             }

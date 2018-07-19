@@ -57,21 +57,21 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
-        private static readonly Dictionary<int, BlendingFactorSrc> srcFactorsByMatValue = new Dictionary<int, BlendingFactorSrc>()
+        private static readonly Dictionary<int, BlendingFactor> srcFactorsByMatValue = new Dictionary<int, BlendingFactor>()
         {
-            { 0x00, BlendingFactorSrc.One },
-            { 0x01, BlendingFactorSrc.SrcAlpha},
-            { 0x02, BlendingFactorSrc.One},
-            { 0x03, BlendingFactorSrc.SrcAlpha},
-            { 0x04, BlendingFactorSrc.SrcAlpha},
+            { 0x00, BlendingFactor.One },
+            { 0x01, BlendingFactor.SrcAlpha},
+            { 0x02, BlendingFactor.One},
+            { 0x03, BlendingFactor.SrcAlpha},
+            { 0x04, BlendingFactor.SrcAlpha},
         };
 
-        private static readonly Dictionary<int, BlendingFactorDest> dstFactorsByMatValue = new Dictionary<int, BlendingFactorDest>()
+        private static readonly Dictionary<int, BlendingFactor> dstFactorsByMatValue = new Dictionary<int, BlendingFactor>()
         {
-            { 0x00, BlendingFactorDest.Zero },
-            { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
-            { 0x02, BlendingFactorDest.One},
-            { 0x03, BlendingFactorDest.One},
+            { 0x00, BlendingFactor.Zero },
+            { 0x01, BlendingFactor.OneMinusSrcAlpha},
+            { 0x02, BlendingFactor.One},
+            { 0x03, BlendingFactor.One},
         };
 
         private static readonly Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
@@ -684,12 +684,12 @@ namespace Smash_Forge
                 GL.DepthMask(true);
 
             // Set the source factor.
-            BlendingFactorSrc blendSrc = BlendingFactorSrc.SrcAlpha;
+            BlendingFactor blendSrc = BlendingFactor.SrcAlpha;
             if (srcFactorsByMatValue.ContainsKey(material.srcFactor))
                 blendSrc = srcFactorsByMatValue[material.srcFactor];
 
             // Set the destination factor.
-            BlendingFactorDest blendDst = BlendingFactorDest.OneMinusSrcAlpha;
+            BlendingFactor blendDst = BlendingFactor.OneMinusSrcAlpha;
             if (dstFactorsByMatValue.ContainsKey(material.dstFactor))
                 blendDst = dstFactorsByMatValue[material.dstFactor];
 
@@ -699,7 +699,7 @@ namespace Smash_Forge
                 blendEquation = BlendEquationMode.FuncReverseSubtract;
 
             // Use separate equations for better alpha value blending.
-            GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
+            GL.BlendFunc(blendSrc, blendDst);
             GL.BlendEquationSeparate(blendEquation, BlendEquationMode.FuncAdd);
         }
 
@@ -1317,7 +1317,7 @@ namespace Smash_Forge
                             if (matHashFloat != null)
                             {
                                 byte[] bytes = new byte[4];
-                                Buffer.BlockCopy(matHashFloat, 0, bytes, 0, 4);
+                                System.Buffer.BlockCopy(matHashFloat, 0, bytes, 0, 4);
                                 int matHash = BitConverter.ToInt32(bytes, 0);
 
                                 int frm = (int)((frame * 60 / m.frameRate) % (m.frameCount));
