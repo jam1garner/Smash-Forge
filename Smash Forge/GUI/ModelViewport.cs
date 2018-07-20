@@ -1485,7 +1485,12 @@ namespace Smash_Forge
             // Depth testing has a huge performance impact.
             GL.Disable(EnableCap.DepthTest);
 
-            Mesh3D cubeMesh = new Mesh3D(new Vector4(1, 0, 1, 1), 1, 1, 1);
+            Mesh3D cubeMesh = new Mesh3D(new Vector4(1, 0, 1, 1));
+            cubeMesh.Color = ColorTools.Vector4FromColor(Color.Aquamarine);
+            cubeMesh.ScaleX = 5;
+            cubeMesh.ScaleY = 2;
+            cubeMesh.ScaleZ = 3;
+
             Vector3[] vertices = ShapeDrawing.GetRectangularPrismPositions();
             foreach (Vector3 vert in vertices)
             {
@@ -1497,7 +1502,7 @@ namespace Smash_Forge
             for (int i = 1; i < count; i++)
             {
                 // Identical speeds to fixed function pipeline for small scale values.
-                cubeMesh.Draw(camera.MvpMatrix, new Vector3(5));               
+                cubeMesh.Draw(camera.MvpMatrix);               
                 //GL.Begin(PrimitiveType.TriangleStrip);
                 //foreach (Vector3 vert in vertices)
                 //{

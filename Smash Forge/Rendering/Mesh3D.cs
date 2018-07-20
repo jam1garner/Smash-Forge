@@ -10,23 +10,81 @@ namespace Smash_Forge.Rendering
     class Mesh3D
     {
         private List<Vector3> vertexPositions = new List<Vector3>();
-        private BufferObject positionBuffer;
+        private BufferObject positionBuffer = new BufferObject(BufferTarget.ArrayBuffer);
+
+        public float ScaleX
+        {
+            get { return scaleX; }
+            set
+            {
+                scaleX = value;
+                SetScaleUniform();
+            }
+        }
+        private float scaleX = 1;
+
+        public float ScaleY
+        {
+            get { return scaleY; }
+            set
+            {
+                scaleY = value;
+                SetScaleUniform();
+            }
+        }
+        private float scaleY = 1;
+
+        public float ScaleZ
+        {
+            get { return scaleZ; }
+            set
+            {
+                scaleZ = value;
+                SetScaleUniform();
+            }
+        }
+        private float scaleZ = 1;
+
+        public Vector4 Color
+        {
+            get { return Color; }
+            set
+            {
+                color = value;
+                SetColorUniform();
+            }
+        }
+        private Vector4 color = new Vector4(1);
 
         public Mesh3D(Vector4 color, float scaleX = 1, float scaleY = 1, float scaleZ = 1, 
             float centerX = 0, float centerY = 0, float centerZ = 0)
         {
-            UpdateShaderUniforms(color, scaleX, scaleY, scaleZ, centerX, centerY, centerZ);
+            ScaleX = scaleX;
+            ScaleY = scaleY;
+            ScaleZ = scaleZ;
+            Color = color;
+            SetCenterUniform(centerX, centerY, centerZ);
         }
 
-        private static void UpdateShaderUniforms(Vector4 color, float scaleX, float scaleY, float scaleZ, 
-            float centerX, float centerY, float centerZ)
+        private void SetColorUniform()
         {
             Shader shader = Runtime.shaders["SolidColor3D"];
             shader.UseProgram();
-
-            shader.SetVector3("center", centerX, centerY, centerZ);
-            shader.SetVector3("scale", scaleX, scaleY, scaleZ);
             shader.SetVector4("color", color);
+        }
+
+        private void SetScaleUniform()
+        {
+            Shader shader = Runtime.shaders["SolidColor3D"];
+            shader.UseProgram();
+            shader.SetVector3("scale", scaleX, scaleY, scaleZ);
+        }
+
+        private void SetCenterUniform(float centerX, float centerY, float centerZ)
+        {
+            Shader shader = Runtime.shaders["SolidColor3D"];
+            shader.UseProgram();
+            shader.SetVector3("center", centerX, centerY, centerZ);
         }
 
         public void AddVertex(Vector3 position)
@@ -35,7 +93,7 @@ namespace Smash_Forge.Rendering
             UpdateBuffers();
         }
 
-        public void Draw(Matrix4 mvpMatrix, Vector3 scale)
+        public void Draw(Matrix4 mvpMatrix)
         {
             Shader shader = Runtime.shaders["SolidColor3D"];
             if (!shader.ProgramCreatedSuccessfully())
@@ -49,7 +107,6 @@ namespace Smash_Forge.Rendering
             // Set shader values.
             Matrix4 matrix = mvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref matrix);
-            shader.SetVector3("scale", scale);
 
             // Draw.
             int rectangularPrismVertCount = 24;
@@ -60,9 +117,6 @@ namespace Smash_Forge.Rendering
 
         private void UpdateBuffers()
         {
-            if (positionBuffer == null)
-                positionBuffer = new BufferObject(BufferTarget.ArrayBuffer);
-
             positionBuffer.Bind();
             UpdateBufferData();
 
