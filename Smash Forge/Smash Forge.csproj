@@ -496,6 +496,7 @@
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\Shader\ShaderTools.cs" />
     <Compile Include="Rendering\NudUvRendering.cs" />
+    <Compile Include="Rendering\ShapeDrawing.cs" />
     <Compile Include="Rendering\TextureToBitmap.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
@@ -764,6 +765,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Shader\Shadow.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\SolidColor3D.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\SolidColor3D.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Shader\Texture.frag">

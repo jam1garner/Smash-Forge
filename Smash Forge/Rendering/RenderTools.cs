@@ -1655,7 +1655,6 @@ namespace Smash_Forge.Rendering
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
             shader.DisableVertexAttributes();
         }
-
         public static byte[] DXT5ScreenShot(GLControl gc, int x, int y, int width, int height)
         {
             int newtex;

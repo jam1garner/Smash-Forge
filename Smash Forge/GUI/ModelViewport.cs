@@ -1455,6 +1455,9 @@ namespace Smash_Forge
             else
                 DrawModelsNormally(width, height, defaultFbo);
 
+            ShapeDrawing.DrawCubeShader(camera.MvpMatrix);
+
+
             if (Runtime.usePostProcessing)
             {
                 // Draw the texture to the screen into a smaller FBO.
