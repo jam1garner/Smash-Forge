@@ -1483,7 +1483,7 @@ namespace Smash_Forge
             ShapeDrawing.SetUp();
 
 
-            Mesh3D cubeMesh = new Mesh3D(new Vector4(1, 0, 1, 1), 15, 15, 15);
+            Mesh3D cubeMesh = new Mesh3D(new Vector4(1, 0, 1, 1), 1, 1, 1);
             Vector3[] vertices = ShapeDrawing.GetRectangularPrismPositions();
             foreach (Vector3 vert in vertices)
             {
@@ -1494,7 +1494,7 @@ namespace Smash_Forge
             Stopwatch stopwatch = Stopwatch.StartNew();
             for (int i = 0; i < count; i++)
             {
-                cubeMesh.Draw(camera.MvpMatrix);
+                cubeMesh.Draw(camera.MvpMatrix, i);
             }
             stopwatch.Stop();
 
@@ -1502,8 +1502,7 @@ namespace Smash_Forge
             Stopwatch stopwatch2 = Stopwatch.StartNew();
             for (int i = 0; i < count; i++)
             {
-                ShapeDrawing.DrawCube(camera.MvpMatrix, 15);
-                //RenderTools.DrawCube(new Vector3(0), 15);
+                RenderTools.DrawCube(new Vector3(0), i);
             }
             stopwatch2.Stop();
             Debug.WriteLine("{0}, {1}", stopwatch.ElapsedMilliseconds, stopwatch2.ElapsedMilliseconds);
