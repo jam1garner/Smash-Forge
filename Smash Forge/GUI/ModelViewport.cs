@@ -1457,14 +1457,14 @@ namespace Smash_Forge
 
             ShapeDrawing.SetUp();
             Stopwatch stopwatch = Stopwatch.StartNew();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 ShapeDrawing.DrawCube(camera.MvpMatrix, 1, 15, 15, 15);
             }
             stopwatch.Stop();
 
             Stopwatch stopwatch2 = Stopwatch.StartNew();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 RenderTools.DrawCube(new Vector3(0), 15);
             }

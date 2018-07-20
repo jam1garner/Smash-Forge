@@ -72,25 +72,34 @@ namespace Smash_Forge.Rendering
             if (!shader.ProgramCreatedSuccessfully())
                 return;
 
+            // Set up.
             shader.UseProgram();
-
             shader.EnableVertexAttributes();
-
-            // Set everytime because multiple shaders use this for drawing.
             rectangularPrismPositionBuffer.Bind();
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
 
-            // Shader uniforms.
+            // Set shader values.
+            SetVertexAttributes(shader);
+            SetShaderUniforms(mvpMatrix, scaleX, scaleY, scaleZ, centerX, centerY, centerZ, shader);
+
+            // Draw.
+            int rectangularPrismVertCount = 24;
+            GL.DrawArrays(PrimitiveType.TriangleFan, 0, rectangularPrismVertCount);
+
+            shader.DisableVertexAttributes();
+        }
+
+        private static void SetVertexAttributes(Shader shader)
+        {
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
+        }
+
+        private static void SetShaderUniforms(Matrix4 mvpMatrix, float scaleX, float scaleY, float scaleZ, float centerX, float centerY, float centerZ, Shader shader)
+        {
             shader.SetVector3("center", centerX, centerY, centerZ);
             shader.SetVector3("scale", scaleX, scaleY, scaleZ);
             shader.SetVector4("color", new Vector4(1, 0, 1, 1));
             Matrix4 matrix = mvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref matrix);
-
-            // Draw.
-            int rectangularPrismVertCount = 24;
-            GL.DrawArrays(PrimitiveType.TriangleFan, 0, rectangularPrismVertCount);
-            shader.DisableVertexAttributes();
         }
     }
 }

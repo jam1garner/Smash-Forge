@@ -3,7 +3,7 @@
 in vec3 position;
 
 uniform vec3 center;
-uniform float scale;
+uniform vec3 scale;
 
 uniform mat4 mvpMatrix;
 
