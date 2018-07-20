@@ -9,7 +9,64 @@ namespace Smash_Forge.Rendering
 {
     static class ShapeDrawing
     {
-        public static void DrawCubeShader(Matrix4 mvpMatrix)
+        private static BufferObject rectangularPrismPositionBuffer;
+
+        private static Vector3[] GetRectangularPrismPositions(float scaleX = 1, float scaleY = 1, float scaleZ = 1)
+        {
+            Vector3[] rectangularPrismPositions = new Vector3[]
+            {
+                new Vector3(+scaleX, +scaleY, -scaleZ),
+                new Vector3(-scaleX, +scaleY, -scaleZ),
+                new Vector3(-scaleX, +scaleY, +scaleZ),
+                new Vector3(+scaleX, +scaleY, +scaleZ),
+
+                new Vector3(+scaleX, -scaleY, +scaleZ),
+                new Vector3(-scaleX, -scaleY, +scaleZ),
+                new Vector3(-scaleX, -scaleY, -scaleZ),
+                new Vector3(+scaleX, -scaleY, -scaleZ),
+
+                new Vector3(+scaleX, +scaleY, +scaleZ),
+                new Vector3(-scaleX, +scaleY, +scaleZ),
+                new Vector3(-scaleX, -scaleY, +scaleZ),
+                new Vector3(+scaleX, -scaleY, +scaleZ),
+
+                new Vector3(+scaleX, -scaleY, -scaleZ),
+                new Vector3(-scaleX, -scaleY, -scaleZ),
+                new Vector3(-scaleX, +scaleY, -scaleZ),
+                new Vector3(+scaleX, +scaleY, -scaleZ),
+
+                new Vector3(-scaleX, +scaleY, +scaleZ),
+                new Vector3(-scaleX, +scaleY, -scaleZ),
+                new Vector3(-scaleX, -scaleY, -scaleZ),
+                new Vector3(-scaleX, -scaleY, +scaleZ),
+
+                new Vector3(+scaleX, +scaleY, -scaleZ),
+                new Vector3(+scaleX, +scaleY, +scaleZ),
+                new Vector3(+scaleX, -scaleY, +scaleZ),
+                new Vector3(+scaleX, -scaleY, -scaleZ)
+            };
+
+            return rectangularPrismPositions;
+        }
+
+        public static void SetUp()
+        {
+            // Create the buffer.
+            rectangularPrismPositionBuffer = new BufferObject(BufferTarget.ArrayBuffer);
+            rectangularPrismPositionBuffer.Bind();
+
+            Vector3[] rectangularPrismPositions = GetRectangularPrismPositions(1, 1, 1);
+            GL.BufferData(rectangularPrismPositionBuffer.BufferTarget, (IntPtr)(sizeof(float) * 3 * rectangularPrismPositions.Length),
+                rectangularPrismPositions, BufferUsageHint.DynamicDraw);
+        }
+
+        public static void DrawCube(Matrix4 mvpMatrix, float scale = 1, float centerX = 0, float centerY = 0, float centerZ = 0)
+        {
+            DrawRectangularPrism(mvpMatrix, scale, scale, scale, centerX, centerY, centerZ);
+        }
+
+        public static void DrawRectangularPrism(Matrix4 mvpMatrix, float scaleX = 1, float scaleY = 1, float scaleZ = 1,
+            float centerX = 0, float centerY = 0, float centerZ = 0)
         {
             Shader shader = Runtime.shaders["SolidColor3D"];
             if (!shader.ProgramCreatedSuccessfully())
@@ -19,62 +76,20 @@ namespace Smash_Forge.Rendering
 
             shader.EnableVertexAttributes();
 
-            // Create the buffer.
-            BufferObject bufferObject = new BufferObject(BufferTarget.ArrayBuffer);
-            bufferObject.Bind();
-
-            float sizeX = 1;
-            float sizeY = 1;
-            float sizeZ = 1;
-
-            Vector3[] vertices = new Vector3[]
-            {
-                new Vector3(+sizeX, +sizeY, -sizeZ),
-                new Vector3(-sizeX, +sizeY, -sizeZ),
-                new Vector3(-sizeX, +sizeY, +sizeZ),
-                new Vector3(+sizeX, +sizeY, +sizeZ),
-
-                new Vector3(+sizeX, -sizeY, +sizeZ),
-                new Vector3(-sizeX, -sizeY, +sizeZ),
-                new Vector3(-sizeX, -sizeY, -sizeZ),
-                new Vector3(+sizeX, -sizeY, -sizeZ),
-
-                new Vector3(+sizeX, +sizeY, +sizeZ),
-                new Vector3(-sizeX, +sizeY, +sizeZ),
-                new Vector3(-sizeX, -sizeY, +sizeZ),
-                new Vector3(+sizeX, -sizeY, +sizeZ),
-
-                new Vector3(+sizeX, -sizeY, -sizeZ),
-                new Vector3(-sizeX, -sizeY, -sizeZ),
-                new Vector3(-sizeX, +sizeY, -sizeZ),
-                new Vector3(+sizeX, +sizeY, -sizeZ),
-
-                new Vector3(-sizeX, +sizeY, +sizeZ),
-                new Vector3(-sizeX, +sizeY, -sizeZ),
-                new Vector3(-sizeX, -sizeY, -sizeZ),
-                new Vector3(-sizeX, -sizeY, +sizeZ),
-
-                new Vector3(+sizeX, +sizeY, -sizeZ),
-                new Vector3(+sizeX, +sizeY, +sizeZ),
-                new Vector3(+sizeX, -sizeY, +sizeZ),
-                new Vector3(+sizeX, -sizeY, -sizeZ)
-            };
-
-            GL.BufferData(bufferObject.BufferTarget, (IntPtr)(sizeof(float) * 3 * vertices.Length),
-                vertices, BufferUsageHint.StaticDraw);
-
             // Set everytime because multiple shaders use this for drawing.
+            rectangularPrismPositionBuffer.Bind();
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
 
             // Shader uniforms.
-            shader.SetVector3("center", new Vector3(0));
-            shader.SetFloat("scale", 1);
-            shader.SetVector4("color", new Vector4(1, 0, 0, 1));
+            shader.SetVector3("center", centerX, centerY, centerZ);
+            shader.SetVector3("scale", scaleX, scaleY, scaleZ);
+            shader.SetVector4("color", new Vector4(1, 0, 1, 1));
             Matrix4 matrix = mvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref matrix);
 
             // Draw.
-            GL.DrawArrays(PrimitiveType.TriangleFan, 0, vertices.Length);
+            int rectangularPrismVertCount = 24;
+            GL.DrawArrays(PrimitiveType.TriangleFan, 0, rectangularPrismVertCount);
             shader.DisableVertexAttributes();
         }
     }

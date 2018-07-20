@@ -1455,8 +1455,22 @@ namespace Smash_Forge
             else
                 DrawModelsNormally(width, height, defaultFbo);
 
-            ShapeDrawing.DrawCubeShader(camera.MvpMatrix);
+            ShapeDrawing.SetUp();
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            for (int i = 0; i < 100; i++)
+            {
+                ShapeDrawing.DrawCube(camera.MvpMatrix, 1, 15, 15, 15);
+            }
+            stopwatch.Stop();
 
+            Stopwatch stopwatch2 = Stopwatch.StartNew();
+            for (int i = 0; i < 100; i++)
+            {
+                RenderTools.DrawCube(new Vector3(0), 15);
+            }
+            stopwatch2.Stop();
+
+            Debug.WriteLine("Draw 100 Cubes. Shader: {0}. Legacy: {1}.", stopwatch.ElapsedMilliseconds, stopwatch2.ElapsedMilliseconds);
 
             if (Runtime.usePostProcessing)
             {
