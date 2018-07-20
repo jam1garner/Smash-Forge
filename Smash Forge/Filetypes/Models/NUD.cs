@@ -618,7 +618,7 @@ namespace Smash_Forge
 
             // Set Shader Values.
             SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
-            SetVertexAttributes(shader);
+            SetVertexAttributes(shader, positionVbo);
 
             // Set OpenTK Render Options.
             SetAlphaBlending(material);
@@ -817,19 +817,50 @@ namespace Smash_Forge
             }
         }
 
-        private void SetVertexAttributes(Shader shader)
+        private void SetVertexAttributes(Shader shader, BufferObject bufferObject)
         {
-            positionVbo.Bind();
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBiTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 36);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 48);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vColor"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 56);
-            GL.VertexAttribIPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribIntegerType.Int, DisplayVertex.Size, new IntPtr(72));
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV3"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
+            bufferObject.Bind();
+
+            // Check indices in case the vertex attributes were optimized out by the shader compiler.
+            int posIndex = shader.GetVertexAttributeUniformLocation("vPosition");
+            if (posIndex != -1)
+                GL.VertexAttribPointer(posIndex, 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
+
+            int normalIndex = shader.GetVertexAttributeUniformLocation("vNormal");
+            if (normalIndex != -1)
+                GL.VertexAttribPointer(normalIndex, 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
+
+            int tanIndex = shader.GetVertexAttributeUniformLocation("vTangent");
+            if (tanIndex != -1)
+                GL.VertexAttribPointer(tanIndex, 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
+
+            int bitanIndex = shader.GetVertexAttributeUniformLocation("vBiTangent");
+            if (bitanIndex != -1)
+                GL.VertexAttribPointer(bitanIndex, 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 36);
+
+            int uvIndex = shader.GetVertexAttributeUniformLocation("vUV");
+            if (uvIndex != -1)
+                GL.VertexAttribPointer(uvIndex, 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 48);
+
+            int colIndex = shader.GetVertexAttributeUniformLocation("vColor");
+            if (colIndex != -1)
+                GL.VertexAttribPointer(colIndex, 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 56);
+
+            int boneIndex = shader.GetVertexAttributeUniformLocation("vBone");
+            if (boneIndex != -1)
+                GL.VertexAttribIPointer(boneIndex, 4, VertexAttribIntegerType.Int, DisplayVertex.Size, new IntPtr(72));
+
+            int weightIndex = shader.GetVertexAttributeUniformLocation("vWeight");
+            if (weightIndex != -1)
+                GL.VertexAttribPointer(weightIndex, 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
+
+            int uv2Index = shader.GetVertexAttributeUniformLocation("vUV2");
+            if (uv2Index != -1)
+                GL.VertexAttribPointer(uv2Index, 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
+
+            int uv3Index = shader.GetVertexAttributeUniformLocation("vUV3");
+            if (uv3Index != -1)
+                GL.VertexAttribPointer(uv3Index, 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
         }
 
         private static void DrawModelSelection(Polygon p, Shader shader)

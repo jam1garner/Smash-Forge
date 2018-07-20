@@ -979,12 +979,12 @@ namespace Smash_Forge.Rendering
             GL.Color3(Runtime.floorColor);
             GL.LineWidth(1f);
 
-            // THe user textured mode is currently broken.
             if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
             {
                 GL.Enable(EnableCap.Texture2D);
                 GL.ActiveTexture(TextureUnit.Texture0);
-                if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+
+                if (floorTexture != null)
                     floorTexture.Bind();
                 else
                     defaultTex.Bind();
@@ -993,18 +993,21 @@ namespace Smash_Forge.Rendering
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)Runtime.floorWrap);
 
                 GL.Color3(Runtime.floorColor == Color.Gray ? Color.White : Runtime.floorColor);
-                GL.Begin(PrimitiveType.Quads);
 
+                GL.Begin(PrimitiveType.Quads);
                 GL.TexCoord2(0, 0);
                 GL.Vertex3(new Vector3(-scale, 0f, -scale));
+
                 GL.TexCoord2(0, 2);
                 GL.Vertex3(new Vector3(-scale, 0f, scale));
+
                 GL.TexCoord2(2, 2);
                 GL.Vertex3(new Vector3(scale, 0f, scale));
+
                 GL.TexCoord2(2, 0);
                 GL.Vertex3(new Vector3(scale, 0f, -scale));
-
                 GL.End();
+
                 GL.Disable(EnableCap.Texture2D);
             }
             else if (Runtime.floorStyle == Runtime.FloorStyle.Solid)
@@ -1545,10 +1548,6 @@ namespace Smash_Forge.Rendering
             SetUp2DRendering();
 
             // Single texture uniform.
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
             shader.SetTexture("image", texture, TextureTarget.Texture2D, 0);
 
             // Channel toggle uniforms. 
@@ -1563,7 +1562,7 @@ namespace Smash_Forge.Rendering
             shader.SetBoolToInt("alphaOverride", alphaOverride);
 
             // Perform aspect ratio calculations in shader. 
-            // This only works properly if the viewport is square.
+            // This only displays correctly if the viewport is square.
             shader.SetBoolToInt("preserveAspectRatio", keepAspectRatio);
             shader.SetFloat("width", width);
             shader.SetFloat("height", height);
@@ -1586,17 +1585,7 @@ namespace Smash_Forge.Rendering
             Shader shader = Runtime.shaders["ScreenQuad"];
             shader.UseProgram();
 
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture0);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
             shader.SetTexture("image0", texture0, TextureTarget.Texture2D, 0);
-
-
-            GL.ActiveTexture(TextureUnit.Texture1);
-            GL.BindTexture(TextureTarget.Texture2D, texture1);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
             shader.SetTexture("image1", texture1, TextureTarget.Texture2D, 1);
 
             shader.SetBoolToInt("renderBloom", Runtime.renderBloom);
@@ -1649,11 +1638,6 @@ namespace Smash_Forge.Rendering
             // Set up OpenGL settings for basic 2D rendering.
             GL.ClearColor(Color.White);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
 
             // Allow for alpha blending.
             GL.Enable(EnableCap.Blend);
