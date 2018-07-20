@@ -1872,6 +1872,12 @@ namespace Smash_Forge
             {
                 RenderTools.SetUpOpenTkRendering();
                 SetupBuffersAndTextures();
+
+                glViewport.MakeCurrent();
+                if (Runtime.enableOpenTKDebugOutput)
+                {
+                    RenderTools.EnableOpenTKDebugOutput();
+                }
                 readyToRender = true;
             }
         }

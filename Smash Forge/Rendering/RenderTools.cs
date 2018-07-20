@@ -54,6 +54,7 @@ namespace Smash_Forge.Rendering
         // Keep a context around to avoid setting up after making each context.
         public static GameWindow dummyResourceWindow;
         private static bool hasSetUpOpenTK = false;
+        private static DebugProc debugProc;
 
         public static void SetUpOpenTkRendering()
         {
@@ -64,6 +65,11 @@ namespace Smash_Forge.Rendering
             GraphicsContext.ShareContexts = true;
             dummyResourceWindow = CreateGameWindowContext();
 
+            if (Runtime.enableOpenTKDebugOutput)
+            {
+                EnableOpenTKDebugOutput();
+            }
+
             nudSphereCamera.UpdateFromMouse(); // Update matrices for shader.
             LoadTextures();
             screenQuadVbo = CreateScreenQuadBuffer();
@@ -71,6 +77,26 @@ namespace Smash_Forge.Rendering
             ShaderTools.SetupShaders();
 
             hasSetUpOpenTK = true;
+        }
+
+        // This isn't free, so skip this step when not debugging.
+        public static void EnableOpenTKDebugOutput()
+        {
+#if DEBUG
+            GL.Enable(EnableCap.DebugOutput);
+            GL.Enable(EnableCap.DebugOutputSynchronous);
+            debugProc = DebugCallback;
+            GL.DebugMessageCallback(debugProc, IntPtr.Zero);
+            int[] ids = { };
+            GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare,
+                DebugSeverityControl.DontCare, 0, ids, true);
+#endif
+        }
+
+        private static void DebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+        {
+            string debugMessage = Marshal.PtrToStringAnsi(message, length);
+            Debug.WriteLine(String.Format("{0} {1} {2}", severity, type, debugMessage));
         }
 
         public static GameWindow CreateGameWindowContext(int width = 640, int height = 480)
