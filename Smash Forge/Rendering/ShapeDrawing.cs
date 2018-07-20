@@ -11,7 +11,7 @@ namespace Smash_Forge.Rendering
     {
         private static BufferObject rectangularPrismPositionBuffer;
 
-        private static Vector3[] GetRectangularPrismPositions(float scaleX = 1, float scaleY = 1, float scaleZ = 1)
+        public static Vector3[] GetRectangularPrismPositions(float scaleX = 1, float scaleY = 1, float scaleZ = 1)
         {
             Vector3[] rectangularPrismPositions = new Vector3[]
             {
@@ -57,7 +57,7 @@ namespace Smash_Forge.Rendering
 
             Vector3[] rectangularPrismPositions = GetRectangularPrismPositions(1, 1, 1);
             GL.BufferData(rectangularPrismPositionBuffer.BufferTarget, (IntPtr)(sizeof(float) * 3 * rectangularPrismPositions.Length),
-                rectangularPrismPositions, BufferUsageHint.DynamicDraw);
+                rectangularPrismPositions, BufferUsageHint.StaticDraw);
         }
 
         public static void DrawCube(Matrix4 mvpMatrix, float scale = 1, float centerX = 0, float centerY = 0, float centerZ = 0)
