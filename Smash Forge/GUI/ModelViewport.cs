@@ -1482,6 +1482,8 @@ namespace Smash_Forge
             int count = 2000;
             ShapeDrawing.SetUp();
 
+            // Depth testing has a huge performance impact.
+            GL.Disable(EnableCap.DepthTest);
 
             Mesh3D cubeMesh = new Mesh3D(new Vector4(1, 0, 1, 1), 1, 1, 1);
             Vector3[] vertices = ShapeDrawing.GetRectangularPrismPositions();
@@ -1492,20 +1494,21 @@ namespace Smash_Forge
 
             // Test shader rendering.
             Stopwatch stopwatch = Stopwatch.StartNew();
-            for (int i = 0; i < count; i++)
+            for (int i = 1; i < count; i++)
             {
-                cubeMesh.Draw(camera.MvpMatrix, i);
+                // Identical speeds to fixed function pipeline for small scale values.
+                cubeMesh.Draw(camera.MvpMatrix, new Vector3(5));               
+                //GL.Begin(PrimitiveType.TriangleStrip);
+                //foreach (Vector3 vert in vertices)
+                //{
+                //    GL.Vertex3(vert * 15);
+                //}
+                //GL.End();
+                
             }
             stopwatch.Stop();
 
-            // Test legacy fixed function pipeline.
-            Stopwatch stopwatch2 = Stopwatch.StartNew();
-            for (int i = 0; i < count; i++)
-            {
-                RenderTools.DrawCube(new Vector3(0), i);
-            }
-            stopwatch2.Stop();
-            Debug.WriteLine("{0}, {1}", stopwatch.ElapsedMilliseconds, stopwatch2.ElapsedMilliseconds);
+            Debug.WriteLine(String.Format("{0}", stopwatch.ElapsedMilliseconds));
         }
 
         private void DrawModelsNormally(int width, int height, int defaultFbo)

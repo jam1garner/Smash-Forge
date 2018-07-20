@@ -35,7 +35,7 @@ namespace Smash_Forge.Rendering
             UpdateBuffers();
         }
 
-        public void Draw(Matrix4 mvpMatrix, float scale)
+        public void Draw(Matrix4 mvpMatrix, Vector3 scale)
         {
             Shader shader = Runtime.shaders["SolidColor3D"];
             if (!shader.ProgramCreatedSuccessfully())
@@ -49,7 +49,7 @@ namespace Smash_Forge.Rendering
             // Set shader values.
             Matrix4 matrix = mvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref matrix);
-            shader.SetFloat("scale", scale);
+            shader.SetVector3("scale", scale);
 
             // Draw.
             int rectangularPrismVertCount = 24;

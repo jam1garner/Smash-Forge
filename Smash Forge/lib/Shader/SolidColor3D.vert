@@ -8,6 +8,6 @@ uniform vec3 scale;
 uniform mat4 mvpMatrix;
 
 void main() {
-    vec3 finalPosition = (position + center) * scale;
+    vec3 finalPosition = (position * scale) + center;
     gl_Position = mvpMatrix * vec4(finalPosition, 1);
 }
