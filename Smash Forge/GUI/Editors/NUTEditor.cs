@@ -958,7 +958,8 @@ namespace Smash_Forge
 
         private void previewBox_Resize(object sender, EventArgs e)
         {
-            int size = Math.Min(previewGroupBox.Width, previewGroupBox.Height);
+            int padding = 25;
+            int size = Math.Min(previewGroupBox.Width - padding, previewGroupBox.Height - padding);
             glControl1.Width = size;
             glControl1.Height = size;
         }

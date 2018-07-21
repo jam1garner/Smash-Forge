@@ -39,7 +39,7 @@
             this.renderChannelG = new System.Windows.Forms.Button();
             this.renderChannelA = new System.Windows.Forms.Button();
             this.renderChannelR = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.settingsGroupBox = new System.Windows.Forms.GroupBox();
             this.generalGroupBox = new System.Windows.Forms.GroupBox();
             this.textureIdLabel = new System.Windows.Forms.Label();
             this.textureIdTB = new System.Windows.Forms.TextBox();
@@ -54,24 +54,29 @@
             this.preserveAspectRatioCB = new System.Windows.Forms.CheckBox();
             this.glControl1 = new OpenTK.GLControl();
             this.previewGroupBox = new System.Windows.Forms.GroupBox();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.displayGroupBox = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.menuStrip1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.settingsGroupBox.SuspendLayout();
             this.generalGroupBox.SuspendLayout();
             this.mipmapGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mipLevelTrackBar)).BeginInit();
             this.dimensionsGroupBox.SuspendLayout();
             this.previewGroupBox.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
+            this.displayGroupBox.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // textureListBox
             // 
-            this.textureListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
+            this.textureListBox.Dock = System.Windows.Forms.DockStyle.Left;
             this.textureListBox.FormattingEnabled = true;
-            this.textureListBox.Location = new System.Drawing.Point(11, 22);
+            this.textureListBox.Location = new System.Drawing.Point(0, 24);
             this.textureListBox.Margin = new System.Windows.Forms.Padding(2);
             this.textureListBox.Name = "textureListBox";
-            this.textureListBox.Size = new System.Drawing.Size(91, 511);
+            this.textureListBox.Size = new System.Drawing.Size(97, 655);
             this.textureListBox.TabIndex = 2;
             this.textureListBox.SelectedIndexChanged += new System.EventHandler(this.textureListBox_SelectedIndexChanged);
             this.textureListBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox2_MouseDown);
@@ -84,7 +89,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(761, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1045, 24);
             this.menuStrip1.TabIndex = 11;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -131,11 +136,12 @@
             // 
             // renderChannelB
             // 
+            this.renderChannelB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.renderChannelB.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.renderChannelB.ForeColor = System.Drawing.Color.Blue;
-            this.renderChannelB.Location = new System.Drawing.Point(59, 61);
+            this.renderChannelB.Location = new System.Drawing.Point(69, 3);
             this.renderChannelB.Name = "renderChannelB";
-            this.renderChannelB.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelB.Size = new System.Drawing.Size(27, 26);
             this.renderChannelB.TabIndex = 18;
             this.renderChannelB.Text = "B";
             this.renderChannelB.UseVisualStyleBackColor = true;
@@ -143,11 +149,12 @@
             // 
             // renderChannelG
             // 
+            this.renderChannelG.Dock = System.Windows.Forms.DockStyle.Fill;
             this.renderChannelG.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.renderChannelG.ForeColor = System.Drawing.Color.Green;
-            this.renderChannelG.Location = new System.Drawing.Point(33, 61);
+            this.renderChannelG.Location = new System.Drawing.Point(36, 3);
             this.renderChannelG.Name = "renderChannelG";
-            this.renderChannelG.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelG.Size = new System.Drawing.Size(27, 26);
             this.renderChannelG.TabIndex = 19;
             this.renderChannelG.Text = "G";
             this.renderChannelG.UseVisualStyleBackColor = true;
@@ -155,10 +162,11 @@
             // 
             // renderChannelA
             // 
+            this.renderChannelA.Dock = System.Windows.Forms.DockStyle.Fill;
             this.renderChannelA.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.renderChannelA.Location = new System.Drawing.Point(85, 61);
+            this.renderChannelA.Location = new System.Drawing.Point(102, 3);
             this.renderChannelA.Name = "renderChannelA";
-            this.renderChannelA.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelA.Size = new System.Drawing.Size(27, 26);
             this.renderChannelA.TabIndex = 20;
             this.renderChannelA.Text = "A";
             this.renderChannelA.UseVisualStyleBackColor = true;
@@ -166,42 +174,36 @@
             // 
             // renderChannelR
             // 
+            this.renderChannelR.Dock = System.Windows.Forms.DockStyle.Fill;
             this.renderChannelR.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.renderChannelR.ForeColor = System.Drawing.Color.Red;
-            this.renderChannelR.Location = new System.Drawing.Point(7, 61);
+            this.renderChannelR.Location = new System.Drawing.Point(3, 3);
             this.renderChannelR.Name = "renderChannelR";
-            this.renderChannelR.Size = new System.Drawing.Size(24, 24);
+            this.renderChannelR.Size = new System.Drawing.Size(27, 26);
             this.renderChannelR.TabIndex = 17;
             this.renderChannelR.Text = "R";
             this.renderChannelR.UseVisualStyleBackColor = true;
             this.renderChannelR.Click += new System.EventHandler(this.renderChannelR_Click_1);
             // 
-            // groupBox1
+            // settingsGroupBox
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.generalGroupBox);
-            this.groupBox1.Controls.Add(this.mipmapGroupBox);
-            this.groupBox1.Controls.Add(this.dimensionsGroupBox);
-            this.groupBox1.Location = new System.Drawing.Point(107, 27);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(642, 121);
-            this.groupBox1.TabIndex = 12;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Texture Settings";
+            this.settingsGroupBox.Controls.Add(this.flowLayoutPanel1);
+            this.settingsGroupBox.Dock = System.Windows.Forms.DockStyle.Right;
+            this.settingsGroupBox.Location = new System.Drawing.Point(800, 24);
+            this.settingsGroupBox.Name = "settingsGroupBox";
+            this.settingsGroupBox.Size = new System.Drawing.Size(245, 655);
+            this.settingsGroupBox.TabIndex = 12;
+            this.settingsGroupBox.TabStop = false;
+            this.settingsGroupBox.Text = "Texture Settings";
             // 
             // generalGroupBox
             // 
             this.generalGroupBox.Controls.Add(this.textureIdLabel);
             this.generalGroupBox.Controls.Add(this.formatLabel);
-            this.generalGroupBox.Controls.Add(this.renderChannelB);
             this.generalGroupBox.Controls.Add(this.textureIdTB);
-            this.generalGroupBox.Controls.Add(this.renderChannelG);
-            this.generalGroupBox.Controls.Add(this.renderChannelA);
-            this.generalGroupBox.Controls.Add(this.renderChannelR);
-            this.generalGroupBox.Location = new System.Drawing.Point(6, 19);
+            this.generalGroupBox.Location = new System.Drawing.Point(3, 3);
             this.generalGroupBox.Name = "generalGroupBox";
-            this.generalGroupBox.Size = new System.Drawing.Size(200, 94);
+            this.generalGroupBox.Size = new System.Drawing.Size(233, 73);
             this.generalGroupBox.TabIndex = 29;
             this.generalGroupBox.TabStop = false;
             this.generalGroupBox.Text = "General";
@@ -219,10 +221,10 @@
             // textureIdTB
             // 
             this.textureIdTB.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.textureIdTB.Location = new System.Drawing.Point(66, 17);
+            this.textureIdTB.Location = new System.Drawing.Point(94, 14);
             this.textureIdTB.Margin = new System.Windows.Forms.Padding(2);
             this.textureIdTB.Name = "textureIdTB";
-            this.textureIdTB.Size = new System.Drawing.Size(72, 20);
+            this.textureIdTB.Size = new System.Drawing.Size(134, 20);
             this.textureIdTB.TabIndex = 3;
             this.textureIdTB.TextChanged += new System.EventHandler(this.textureIdTB_TextChanged);
             // 
@@ -232,9 +234,9 @@
             this.mipmapGroupBox.Controls.Add(this.mipLevelLabel);
             this.mipmapGroupBox.Controls.Add(this.minMipLevelLabel);
             this.mipmapGroupBox.Controls.Add(this.maxMipLevelLabel);
-            this.mipmapGroupBox.Location = new System.Drawing.Point(212, 19);
+            this.mipmapGroupBox.Location = new System.Drawing.Point(3, 142);
             this.mipmapGroupBox.Name = "mipmapGroupBox";
-            this.mipmapGroupBox.Size = new System.Drawing.Size(210, 94);
+            this.mipmapGroupBox.Size = new System.Drawing.Size(236, 94);
             this.mipmapGroupBox.TabIndex = 28;
             this.mipmapGroupBox.TabStop = false;
             this.mipmapGroupBox.Text = "Mipmaps";
@@ -243,7 +245,7 @@
             // 
             this.mipLevelTrackBar.Location = new System.Drawing.Point(64, 19);
             this.mipLevelTrackBar.Name = "mipLevelTrackBar";
-            this.mipLevelTrackBar.Size = new System.Drawing.Size(134, 45);
+            this.mipLevelTrackBar.Size = new System.Drawing.Size(169, 45);
             this.mipLevelTrackBar.TabIndex = 22;
             this.mipLevelTrackBar.Scroll += new System.EventHandler(this.mipLevelTrackBar_Scroll);
             // 
@@ -268,7 +270,7 @@
             // maxMipLevelLabel
             // 
             this.maxMipLevelLabel.AutoSize = true;
-            this.maxMipLevelLabel.Location = new System.Drawing.Point(148, 67);
+            this.maxMipLevelLabel.Location = new System.Drawing.Point(184, 67);
             this.maxMipLevelLabel.Name = "maxMipLevelLabel";
             this.maxMipLevelLabel.Size = new System.Drawing.Size(43, 13);
             this.maxMipLevelLabel.TabIndex = 25;
@@ -278,10 +280,9 @@
             // 
             this.dimensionsGroupBox.Controls.Add(this.heightLabel);
             this.dimensionsGroupBox.Controls.Add(this.widthLabel);
-            this.dimensionsGroupBox.Controls.Add(this.preserveAspectRatioCB);
-            this.dimensionsGroupBox.Location = new System.Drawing.Point(438, 19);
+            this.dimensionsGroupBox.Location = new System.Drawing.Point(3, 82);
             this.dimensionsGroupBox.Name = "dimensionsGroupBox";
-            this.dimensionsGroupBox.Size = new System.Drawing.Size(198, 94);
+            this.dimensionsGroupBox.Size = new System.Drawing.Size(233, 54);
             this.dimensionsGroupBox.TabIndex = 27;
             this.dimensionsGroupBox.TabStop = false;
             this.dimensionsGroupBox.Text = "Dimensions";
@@ -309,7 +310,7 @@
             // preserveAspectRatioCB
             // 
             this.preserveAspectRatioCB.AutoSize = true;
-            this.preserveAspectRatioCB.Location = new System.Drawing.Point(8, 42);
+            this.preserveAspectRatioCB.Location = new System.Drawing.Point(6, 57);
             this.preserveAspectRatioCB.Name = "preserveAspectRatioCB";
             this.preserveAspectRatioCB.Size = new System.Drawing.Size(132, 17);
             this.preserveAspectRatioCB.TabIndex = 26;
@@ -319,14 +320,11 @@
             // 
             // glControl1
             // 
-            this.glControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.glControl1.AutoSize = true;
             this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(10, 19);
+            this.glControl1.Location = new System.Drawing.Point(8, 19);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(626, 361);
+            this.glControl1.Size = new System.Drawing.Size(666, 630);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
@@ -336,25 +334,66 @@
             // 
             // previewGroupBox
             // 
-            this.previewGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.previewGroupBox.Controls.Add(this.glControl1);
-            this.previewGroupBox.Location = new System.Drawing.Point(107, 154);
+            this.previewGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.previewGroupBox.Location = new System.Drawing.Point(97, 24);
             this.previewGroupBox.Name = "previewGroupBox";
-            this.previewGroupBox.Size = new System.Drawing.Size(642, 386);
+            this.previewGroupBox.Size = new System.Drawing.Size(703, 655);
             this.previewGroupBox.TabIndex = 13;
             this.previewGroupBox.TabStop = false;
             this.previewGroupBox.Text = "Preview";
             this.previewGroupBox.Resize += new System.EventHandler(this.previewBox_Resize);
             // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Controls.Add(this.generalGroupBox);
+            this.flowLayoutPanel1.Controls.Add(this.dimensionsGroupBox);
+            this.flowLayoutPanel1.Controls.Add(this.mipmapGroupBox);
+            this.flowLayoutPanel1.Controls.Add(this.displayGroupBox);
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 16);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(239, 636);
+            this.flowLayoutPanel1.TabIndex = 30;
+            // 
+            // displayGroupBox
+            // 
+            this.displayGroupBox.Controls.Add(this.tableLayoutPanel1);
+            this.displayGroupBox.Controls.Add(this.preserveAspectRatioCB);
+            this.displayGroupBox.Location = new System.Drawing.Point(3, 242);
+            this.displayGroupBox.Name = "displayGroupBox";
+            this.displayGroupBox.Size = new System.Drawing.Size(233, 100);
+            this.displayGroupBox.TabIndex = 30;
+            this.displayGroupBox.TabStop = false;
+            this.displayGroupBox.Text = "Display Settings";
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 4;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel1.Controls.Add(this.renderChannelR, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.renderChannelG, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.renderChannelB, 2, 0);
+            this.tableLayoutPanel1.Controls.Add(this.renderChannelA, 3, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(6, 19);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(132, 32);
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
             // NUTEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(761, 558);
+            this.ClientSize = new System.Drawing.Size(1045, 679);
             this.Controls.Add(this.previewGroupBox);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.settingsGroupBox);
             this.Controls.Add(this.textureListBox);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -366,7 +405,7 @@
             this.Load += new System.EventHandler(this.NUTEditor_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
+            this.settingsGroupBox.ResumeLayout(false);
             this.generalGroupBox.ResumeLayout(false);
             this.generalGroupBox.PerformLayout();
             this.mipmapGroupBox.ResumeLayout(false);
@@ -376,6 +415,10 @@
             this.dimensionsGroupBox.PerformLayout();
             this.previewGroupBox.ResumeLayout(false);
             this.previewGroupBox.PerformLayout();
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.displayGroupBox.ResumeLayout(false);
+            this.displayGroupBox.PerformLayout();
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -393,7 +436,7 @@
         private System.Windows.Forms.Button renderChannelG;
         private System.Windows.Forms.Button renderChannelA;
         private System.Windows.Forms.Button renderChannelR;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox settingsGroupBox;
         private OpenTK.GLControl glControl1;
         private System.Windows.Forms.GroupBox previewGroupBox;
         private System.Windows.Forms.Label mipLevelLabel;
@@ -408,5 +451,8 @@
         private System.Windows.Forms.GroupBox dimensionsGroupBox;
         private System.Windows.Forms.GroupBox mipmapGroupBox;
         private System.Windows.Forms.GroupBox generalGroupBox;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.GroupBox displayGroupBox;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }
