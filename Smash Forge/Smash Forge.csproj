@@ -141,6 +141,12 @@
     <Compile Include="GUI\Menus\UvViewer.Designer.cs">
       <DependentUpon>UvViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\XmbViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\XmbViewer.Designer.cs">
+      <DependentUpon>XmbViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="lib\DiscordController.cs" />
     <Compile Include="lib\DiscordRpc.cs" />
     <Compile Include="GUI\EditorBase.cs">
@@ -652,6 +658,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\UvViewer.resx">
       <DependentUpon>UvViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\XmbViewer.resx">
+      <DependentUpon>XmbViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\ModelViewport.resx">
       <DependentUpon>ModelViewport.cs</DependentUpon>
