@@ -625,11 +625,11 @@ namespace Smash_Forge
             //Some objects will have no weights or indices. These will weigh to the bone index in the shape section.
             GL.Uniform1(shader.getAttribute("SingleBoneIndex"), m.boneIndx);
 
-            if (m.matrFlag == 1)
+            if (m.VertexSkinCount == 1)
             {
                 GL.Uniform1(shader.getAttribute("RigidSkinning"), 1);
             }
-            if (m.matrFlag == 0)
+            if (m.VertexSkinCount == 0)
             {
                 GL.Uniform1(shader.getAttribute("NoSkinning"), 1);
 
@@ -641,6 +641,8 @@ namespace Smash_Forge
             GL.Uniform4(shader.getAttribute("SamplerUV1"), new Vector4(1, 1, 0, 0));
             GL.Uniform4(shader.getAttribute("gsys_bake_st0"), new Vector4(1, 1, 0, 0));
             GL.Uniform4(shader.getAttribute("gsys_bake_st1"), new Vector4(1, 1, 0, 0));
+
+            GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
             //This uniform is set so I can do SRT anims.
             SetUnifromData(mat, shader, "tex_mtx0");
@@ -1123,12 +1125,11 @@ namespace Smash_Forge
             public string name;
             public int MaterialIndex;
             public List<string> TextureMapTypes = new List<string>();
-            public int matrFlag;
+            public int VertexSkinCount;
             public int[] BoneFixNode;
             public int boneIndx;
             public int fmdlIndx; //Just so we know what fmdl it's in
             public uint[] indicesArray;
-
 
             public bool isTransparent = false;
 

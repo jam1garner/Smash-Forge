@@ -370,6 +370,8 @@ namespace Smash_Forge
                 GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
                 GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
 
+                GL.Uniform1(shader.getAttribute("debugOption"), (int)Runtime.uvChannel);
+
                 //This cube map is for a quick test
                 GL.ActiveTexture(TextureUnit.Texture2);
                 GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh]);

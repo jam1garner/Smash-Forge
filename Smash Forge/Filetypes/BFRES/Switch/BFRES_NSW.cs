@@ -89,7 +89,7 @@ namespace Smash_Forge
                     Mesh poly = new Mesh();
                     poly.Text = shp.Name;
                     poly.MaterialIndex = shp.MaterialIndex;
-                    poly.matrFlag = shp.VertexSkinCount;
+                    poly.VertexSkinCount = shp.VertexSkinCount;
                     poly.boneIndx = shp.BoneIndex;
                     poly.fmdlIndx = ModelCur;
 
@@ -318,14 +318,14 @@ namespace Smash_Forge
                 if (vec4c0.Length > 0)
                     v.col = new Vector4(vec4c0[i].X, vec4c0[i].Y, vec4c0[i].Z, vec4c0[i].W);
 
-                if (poly.matrFlag == 1)
+                if (poly.VertexSkinCount == 1)
                 {
                     Matrix4 sb = model.skeleton.bones[model.Node_Array[v.boneIds[0]]].transform;
                   //  Console.WriteLine(model.skeleton.bones[model.Node_Array[v.boneIds[0]]].Text);
                     v.pos = Vector3.TransformPosition(v.pos, sb);
                     v.nrm = Vector3.TransformNormal(v.nrm, sb);
                 }
-                if (poly.matrFlag == 0)
+                if (poly.VertexSkinCount == 0)
                 {
                     Matrix4 NoBindFix = model.skeleton.bones[poly.boneIndx].transform;
                     v.pos = Vector3.TransformPosition(v.pos, NoBindFix);

@@ -24,7 +24,7 @@ namespace Smash_Forge
             textBox1.Text = p.Text;
             VertCountlabel1.Text = VertCountlabel1.Text + " " + p.vertices.Count.ToString();
             PolyCountlabel3.Text = PolyCountlabel3.Text + " " + p.lodMeshes[p.DisplayLODIndex].displayFaceSize.ToString();
-            skinCountLabel.Text = skinCountLabel.Text + " " + p.matrFlag.ToString();
+            skinCountLabel.Text = skinCountLabel.Text + " " + p.VertexSkinCount.ToString();
             label3.Text = label3.Text + " " + mdl.skeleton.bones[p.boneIndx].ToString();
 
             Mesh = p;

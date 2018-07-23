@@ -34,6 +34,8 @@ out vec4 color;
 out vec3 tangent;
 out vec3 bitangent;
 
+out vec3 boneWeightsColored;
+
 //------------------------------------------------------------------------------------
 //
 //      Shader Options
@@ -55,6 +57,11 @@ uniform int NoSkinning;
 uniform int RigidSkinning;
 uniform int SingleBoneIndex;
 
+uniform int selectedBoneIndex;
+
+uniform sampler2D weightRamp1;
+uniform sampler2D weightRamp2;
+
 //------------------------------------------------------------------------------------
 //
 //      SRT Animation uniforms
@@ -64,6 +71,9 @@ uniform int SingleBoneIndex;
 uniform vec2 SRT_Scale;
 uniform vec2 SRT_Translate;
 uniform float SRT_Rotate;
+
+uniform int debugOption;
+
 
 
 vec3 skinNRM(vec3 nr, ivec4 index)
@@ -85,6 +95,38 @@ vec2 rotateUV(vec2 uv, float rotation)
         cos(rotation) * (uv.x - mid) + sin(rotation) * (uv.y - mid) + mid,
         cos(rotation) * (uv.y - mid) - sin(rotation) * (uv.x - mid) + mid
     );
+}
+
+float BoneWeightDisplay(ivec4 index)
+{
+    int X = int(boneList[index.x]);
+    int Y = int(boneList[index.y]);
+    int Z = int(boneList[index.z]);
+    int W = int(boneList[index.w]); 
+
+    float weight = 0;
+    if (selectedBoneIndex == X)
+        weight += vWeight.x;
+    if (selectedBoneIndex == Y)
+        weight += vWeight.y;
+    if (selectedBoneIndex == Z)
+        weight += vWeight.z;
+    if (selectedBoneIndex == W)
+        weight += vWeight.w;
+
+    return weight;
+}
+
+vec3 BoneWeightColor(float weights)
+{
+	float rampInputLuminance = weights;
+	rampInputLuminance = clamp((rampInputLuminance), 0.001, 0.999);
+    if (debugOption == 1)
+        return vec3(weights);
+    else if (debugOption == 2)
+	   return texture(weightRamp1, vec2(1 - rampInputLuminance, 0.50)).rgb;
+    else
+        return texture(weightRamp2, vec2(1 - rampInputLuminance, 0.50)).rgb;
 }
 
 void main()
@@ -149,6 +191,10 @@ void main()
 
 	tangent = vTangent;
 	bitangent = vBitangent;
+
+	 // fragment shader attributes
+    float totalWeight = BoneWeightDisplay(ivec4(vBone));
+    boneWeightsColored = BoneWeightColor(totalWeight).rgb;
 
 
     color = vColor;

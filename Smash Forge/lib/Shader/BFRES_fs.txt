@@ -25,6 +25,8 @@ in vec4 color;
 in vec3 tangent;
 in vec3 bitangent;
 
+in vec3 boneWeightsColored;
+
 //------------------------------------------------------------------------------------
 //
 //      Viewport Settings
@@ -446,4 +448,7 @@ void main()
 
     if (renderAlpha != 1 || isTransparent != 1)
         FragColor.a = 1;
+
+    if (renderType == 12)
+        FragColor.rgb = boneWeightsColored;
 }

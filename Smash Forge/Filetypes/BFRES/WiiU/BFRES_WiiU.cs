@@ -105,7 +105,7 @@ namespace Smash_Forge
                     Mesh poly = new Mesh();
                     poly.Text = shp.Name;
                     poly.MaterialIndex = shp.MaterialIndex;
-                    poly.matrFlag = shp.VertexSkinCount;
+                    poly.VertexSkinCount = shp.VertexSkinCount;
                     poly.boneIndx = shp.BoneIndex;
                     poly.fmdlIndx = ModelCur;
 
