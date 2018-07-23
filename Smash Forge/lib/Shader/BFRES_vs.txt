@@ -114,6 +114,10 @@ float BoneWeightDisplay(ivec4 index)
     if (selectedBoneIndex == W)
         weight += vWeight.w;
 
+		//For meshes that only use the skin index. Usually it defaults to root, but some are specific. 
+        if (selectedBoneIndex == SingleBoneIndex)
+		    weight += 1;
+
     return weight;
 }
 
