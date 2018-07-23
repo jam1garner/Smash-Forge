@@ -37,6 +37,7 @@ namespace Smash_Forge.GUI
             renderBonesCB.Checked = Runtime.renderBones;
             showSwagDataCB.Checked = Runtime.renderSwagZ;
             swagYCB.Checked = Runtime.renderSwagY;
+            numericUpDown1.Value = (decimal)Runtime.RenderBoneNodeSize;
 
             // Model Settings
             renderModelCB.Checked = Runtime.renderModel;
@@ -874,6 +875,12 @@ namespace Smash_Forge.GUI
         private void groupBox5_Enter(object sender, EventArgs e)
         {
 
+        }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            //Todo put this in another tab or elsewhere
+            Runtime.RenderBoneNodeSize = (float)numericUpDown1.Value;
         }
     }
 }

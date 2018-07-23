@@ -107,6 +107,9 @@ namespace Smash_Forge
                     case "OpenGL_2.10":
                         bool.TryParse(node.InnerText, out Runtime.useLegacyShaders);
                         break;
+                    case "bone_node_size":
+                        float.TryParse(node.InnerText, out Runtime.RenderBoneNodeSize);
+                        break;
                     case "camera_light":
                         bool.TryParse(node.InnerText, out Runtime.cameraLight);
                         break;
@@ -437,6 +440,7 @@ namespace Smash_Forge
             renderSettingsNode.AppendChild(createNode(doc, "camera_light", Runtime.cameraLight.ToString()));
             renderSettingsNode.AppendChild(createNode(doc, "use_normal_map", Runtime.renderNormalMap.ToString()));
             renderSettingsNode.AppendChild(createNode(doc, "OpenGL_2.10", Runtime.useLegacyShaders.ToString()));
+            renderSettingsNode.AppendChild(createNode(doc, "bone_node_size", Runtime.RenderBoneNodeSize.ToString()));
 
             AppendMaterialLightingSettings(doc, renderSettingsNode);
             AppendModelRenderSettings(doc, renderSettingsNode);
