@@ -333,7 +333,7 @@ namespace Smash_Forge
             {
                 List<Mesh> unsortedMeshes = new List<Mesh>();
 
-                foreach (Mesh m in fmdl.Nodes)
+                foreach (Mesh m in fmdl.poly)
                 {
                     m.sortingDistance = m.CalculateSortingDistance(cameraPosition);
                     unsortedMeshes.Add(m);

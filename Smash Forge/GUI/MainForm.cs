@@ -486,8 +486,8 @@ namespace Smash_Forge
 
             if (modelContainer.BFRES.models.Count != 0)
             {
-                FSKLTreePanel editor = new FSKLTreePanel(Runtime.TargetVBN);
-                AddDockedControl(editor);
+             //   FSKLTreePanel editor = new FSKLTreePanel(Runtime.TargetVBN);
+             //   AddDockedControl(editor);
             }
 
             // Reset the camera. 

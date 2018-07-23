@@ -234,7 +234,16 @@ namespace Smash_Forge
                 bone.position[2] = bn.Position.Z;
 
                 model.skeleton.bones.Add(bone);
+            }
+            model.skeleton.Text = "Skeleton";
+            model.Nodes.Add(model.skeleton);
 
+            foreach (TreeNode nod in model.skeleton.Nodes)
+            {
+                if (nod.Text == "model.sb")
+                {
+                    nod.Remove();
+                }
             }
         }
         private void ReadVertexBuffer(Model mdl, Shape shp, Mesh poly, FMDL_Model model)
