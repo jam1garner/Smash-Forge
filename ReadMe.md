@@ -3,7 +3,7 @@ Smash Forge (BFRES WIP Implementation)
 
 ## 
 ## BFRES Features
- - Can open and preview BFRES models, skeleton animations, and textures
+ - Can open and preview BFRES models, skeleton animations, texture pattern animations, bone visual animations and textures
  - Wii U and Switch support. 
  - Exportable models, animations, and textures
  - Improved shaders from previous tool
