@@ -7,15 +7,15 @@ Smash Forge (BFRES WIP Implementation)
  - Wii U and Switch support. 
  - Exportable models, animations, and textures
  - Improved shaders from previous tool
- - Debug shader options (in view - render settings) to help debug mods
- 
- 
- ## Todo
- - Support BC7 textures.
+ - Debug shader options (in view - render settings) to help debug mods.
  - SARC support. 
+ - DAE model importing.
+
+ ## Todo
+
+ - Finish nintendo switch bfres rebuilding for full edits
  - Fix up model exporting (bones have issues, and weights, and materials).
  - Add animation importing.
- - Add model importing.
  - Add every other type of animation (texture pattern, visual anim, srt anim, ect)
  - Add physically based rendering
  - Full decoding and compression of all texture types for editing.
