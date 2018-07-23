@@ -960,39 +960,22 @@ namespace Smash_Forge.Rendering
                     // TODO: previously selected model or select multiple models.
                     bool containsTexture = BFRES_MeshContainsTextureHash(texHash, p);
 
-                    
-
                     if (containsTexture)
                     {
-                        List<int> f = p.getDisplayFace();
+                        List<int> f = p.lodMeshes[p.DisplayLODIndex].getDisplayFace();
 
-                        for (int i = 0; i < p.displayFaceSize; i += 3)
+                        for (int i = 0; i < p.lodMeshes[p.DisplayLODIndex].displayFaceSize; i += 3)
                         {
+                            BFRES.Vertex v1 = p.vertices[f[i]];
+                            BFRES.Vertex v2 = p.vertices[f[i + 1]];
+                            BFRES.Vertex v3 = p.vertices[f[i + 2]];
+
                             if (Runtime.uvChannel == Runtime.UVChannel.Channel1)
-                            {
-
-                                Vector2 v1 = p.vertices.uv0[f[i]];
-                                Vector2 v2 = p.vertices.uv0[f[i + 1]];
-                                Vector2 v3 = p.vertices.uv0[f[i + 2]];
-
-                                BFRES_DrawUVTriangleAndGrid(v1, v2, v3, divisions, uvColor, lineWidth, gridColor, p.material);
-                            }
+                                BFRES_DrawUVTriangleAndGrid(v1.uv0, v2.uv0, v3.uv0, divisions, uvColor, lineWidth, gridColor, p.material);
                             else if (Runtime.uvChannel == Runtime.UVChannel.Channel2)
-                            {
-                                Vector2 v1 = p.vertices.uv1[f[i]];
-                                Vector2 v2 = p.vertices.uv1[f[i + 1]];
-                                Vector2 v3 = p.vertices.uv1[f[i + 2]];
-
-                                BFRES_DrawUVTriangleAndGrid(v1, v2, v3, divisions, uvColor, lineWidth, gridColor, p.material);
-                            }
+                                BFRES_DrawUVTriangleAndGrid(v1.uv1, v2.uv1, v3.uv1, divisions, uvColor, lineWidth, gridColor, p.material);
                             else if (Runtime.uvChannel == Runtime.UVChannel.Channel3)
-                            {
-                                Vector2 v1 = p.vertices.uv2[f[i]];
-                                Vector2 v2 = p.vertices.uv2[f[i + 1]];
-                                Vector2 v3 = p.vertices.uv2[f[i + 2]];
-
-                                BFRES_DrawUVTriangleAndGrid(v1, v2, v3, divisions, uvColor, lineWidth, gridColor, p.material);
-                            }
+                                BFRES_DrawUVTriangleAndGrid(v1.uv2, v2.uv2, v3.uv2, divisions, uvColor, lineWidth, gridColor, p.material);
                         }
                     }
                 }

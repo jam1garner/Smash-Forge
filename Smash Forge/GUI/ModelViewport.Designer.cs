@@ -51,7 +51,6 @@
             this.GIFButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.animationTrackBar = new System.Windows.Forms.TrackBar();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -110,7 +109,8 @@
             "LVD Editor",
             "ACMD Editor",
             "Clean",
-            "BYAML Editor"});
+            "BYAML Editor",
+            "BFRES Material Editor"});
             this.ViewComboBox.Name = "ViewComboBox";
             this.ViewComboBox.Size = new System.Drawing.Size(121, 31);
             this.ViewComboBox.ToolTipText = "The current view for the Viewport";
@@ -300,7 +300,6 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.animationTrackBar);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
@@ -318,18 +317,6 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Animation Controls";
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(482, 91);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(165, 17);
-            this.checkBox1.TabIndex = 10;
-            this.checkBox1.Text = "Disable Base Values (BOTW)\r\n";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // animationTrackBar
             // 
@@ -525,7 +512,6 @@
         private System.Windows.Forms.ToolStripButton stripRot;
         private System.Windows.Forms.ToolStripButton stripSca;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.ToolStripButton toolStripButton2;
     }
 }

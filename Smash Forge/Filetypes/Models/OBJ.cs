@@ -163,18 +163,14 @@ namespace Smash_Forge
 
                         f.WriteLine($"o {m.Text}");
 
-                        BFRES.Vertex v = m.vertices;
-
-                        foreach(Vector3 p in v.pos)
+                        foreach (BFRES.Vertex vtx in m.vertices)
                         {
-                            f.WriteLine($"v {p.X} {p.Y} {p.Z}");
-                        }
-                        foreach (Vector3 n in v.nrm)
-                        {
-                            f.WriteLine($"vn {n.X} {n.Y} {n.Z}");
+                            f.WriteLine($"v {vtx.pos.X} {vtx.pos.Y} {vtx.pos.Z}");
+                            f.WriteLine($"vn {vtx.nrm.X} {vtx.nrm.Y} {vtx.nrm.Z}");
+                            VerticesN.Add(vtx.nrm);
 
-                            VerticesN.Add(n);
                         }
+           
                         Vector2 Scale = new Vector2(1);
                         Vector2 Position = new Vector2(0);
 
@@ -187,18 +183,18 @@ namespace Smash_Forge
                    
                         if (Scale != new Vector2(1) || Position != new Vector2(0))
                         {
-                            foreach (Vector2 u in v.uv1)
+                            foreach (BFRES.Vertex vtx in m.vertices)
                             {
-                                Vector2 st = (u * Scale) + Position;
+                                Vector2 st = (vtx.uv1 * Scale) + Position;
                                 st = new Vector2(st.X, 1 - st.Y);
                                 f.WriteLine($"vt {st.X} {st.Y}");
                             }
                         }
                         else
                         {
-                            foreach (Vector2 u in v.uv0)
+                            foreach (BFRES.Vertex vtx in m.vertices)
                             {
-                                f.WriteLine($"vt {u.X * Scale.X + Position.X} {u.Y * Scale.Y + Position.Y}");
+                                f.WriteLine($"vt {vtx.uv0.X * Scale.X + Position.X} {vtx.uv0.Y * Scale.Y + Position.Y}");
                             }
                         }
                     
@@ -215,9 +211,9 @@ namespace Smash_Forge
                         {
                             int[] verts = new int[3] { (int)m.display[i++], (int)m.display[i++], (int)m.display[i] };
                             int[] normals = new int[3] {
-                        VerticesN.IndexOf(v.nrm[verts[0]]),
-                        VerticesN.IndexOf(v.nrm[verts[1]]),
-                        VerticesN.IndexOf(v.nrm[verts[2]])
+                        VerticesN.IndexOf(m.vertices[verts[0]].nrm),
+                        VerticesN.IndexOf(m.vertices[verts[1]].nrm),
+                        VerticesN.IndexOf(m.vertices[verts[2]].nrm)
                         };
                             f.WriteLine($"f {verts[0] + FaceShift}/{verts[0] + FaceShift}/{normals[0] + FaceShift} {verts[1] + FaceShift}/{verts[1] + FaceShift}/{normals[1] + FaceShift} {verts[2] + FaceShift}/{verts[2] + FaceShift}/{normals[2] + FaceShift}");                  
                         }
@@ -225,7 +221,7 @@ namespace Smash_Forge
                         FaceShift += vert.Count;
 
                         Console.WriteLine(m.Text);
-                        Console.WriteLine(v.pos.Count);
+                        Console.WriteLine(m.vertices.Count);
                         Console.WriteLine(m.display.Length);
 
                         CurMesh++;

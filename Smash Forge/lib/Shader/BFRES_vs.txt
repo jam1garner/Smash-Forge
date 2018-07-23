@@ -1,6 +1,18 @@
 ﻿#version 330
  
-const int MY_ARRAY_SIZE = 200;
+//------------------------------------------------------------------------------------
+//
+//      Viewport Camera/Lighting
+//
+//------------------------------------------------------------------------------------
+
+uniform mat4 modelview;
+
+//------------------------------------------------------------------------------------
+//
+//      Verex Attributes
+//
+//------------------------------------------------------------------------------------
 
 in vec3 vPosition;
 in vec4 vColor;
@@ -22,19 +34,33 @@ out vec4 color;
 out vec3 tangent;
 out vec3 bitangent;
 
+//------------------------------------------------------------------------------------
+//
+//      Shader Options
+//
+//------------------------------------------------------------------------------------
+
 uniform vec4 gsys_bake_st0;
 uniform vec4 gsys_bake_st1;
-uniform vec4 SamplerUV1;
-uniform mat4 modelview;
-uniform mat4 bones[112];
-uniform mat4 bonesfixed[112];
-uniform int boneList[112];
-uniform int RigidSkinning;
-uniform mat4 modelLocation;
-uniform int NoSkinning;
-uniform mat4 TransformNoRig;
 
-//SRT Animation uniforms
+//------------------------------------------------------------------------------------
+//
+//      Skinning uniforms
+//
+//------------------------------------------------------------------------------------
+
+uniform mat4 bones[200];
+uniform int boneList[200];
+uniform int NoSkinning;
+uniform int RigidSkinning;
+uniform int SingleBoneIndex;
+
+//------------------------------------------------------------------------------------
+//
+//      SRT Animation uniforms
+//
+//------------------------------------------------------------------------------------
+
 uniform vec2 SRT_Scale;
 uniform vec2 SRT_Translate;
 uniform float SRT_Rotate;
@@ -67,19 +93,20 @@ void main()
 
     vec4 objPos = vec4(vPosition.xyz, 1.0);
 
-    vec4 sampler1 = SamplerUV1;
     vec4 sampler2 = gsys_bake_st0;
     vec4 sampler3 = gsys_bake_st1;
 
     normal = normalize(mat3(modelview) * vNormal);
 
-    if(vBone.x != -1){
+
+	    if(vBone.x != -1){
         objPos = bones[boneList[index.x]] * vec4(vPosition, 1.0) * vWeight.x;
         objPos += bones[boneList[index.y]] * vec4(vPosition, 1.0) * vWeight.y;
         objPos += bones[boneList[index.z]] * vec4(vPosition, 1.0) * vWeight.z;
         if(vWeight.w < 1)
             objPos += bones[boneList[index.w]] * vec4(vPosition, 1.0) * vWeight.w;
     }
+
 
     gl_Position = modelview * vec4(objPos.xyz, 1.0);
 
@@ -88,19 +115,16 @@ void main()
 	if(vBone.x != -1.0)
 		normal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
 
-	if (RigidSkinning == 1){
-	    gl_Position = modelview * bonesfixed[boneList[index.x]] * vec4(vPosition, 1.0);
-		mat3 normalMatrix = mat3(modelview);
-	    normalMatrix = inverse(mat3(bonesfixed[boneList[index.x]]));
-	    normalMatrix = transpose(mat3(bonesfixed[boneList[index.x]]));
-		normal = normalize(vNormal * normalMatrix);
+
+     if (RigidSkinning == 1){
+	     gl_Position = modelview * bones[boneList[index.x]] * vec4(vPosition, 1.0);
+         normal = vNormal;
+		 normal = mat3(bones[boneList[index.x]]) * vNormal.xyz * 1;
 	}
 	if (NoSkinning == 1){
-	    gl_Position = modelview * TransformNoRig * vec4(vPosition, 1.0);
-		mat3 normalMatrix = mat3(modelview);
-	    normalMatrix = inverse(mat3(TransformNoRig));
-	    normalMatrix = transpose(mat3(TransformNoRig));
-		normal = normalize(vNormal * normalMatrix);
+	    gl_Position = modelview * bones[SingleBoneIndex] * vec4(vPosition, 1.0);
+        normal = vNormal;
+	    normal = mat3(bones[SingleBoneIndex]) * vNormal.xyz * 1;
 	}
 
     //gl_TexCoord[0] = vUV0;

@@ -11,31 +11,41 @@ using Syroot.NintenTools.Bfres;
 using Syroot.NintenTools.Bfres.GX2;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
+using WeifenLuo.WinFormsUI.Docking;
 
-namespace Smash_Forge.GUI.Editors
+namespace Smash_Forge
 {
-    public partial class BFRES_MaterialEditor : Form
+    public partial class BFRES_MaterialEditor : DockContent
     {
         public BFRES.Mesh poly;
         public BFRES.MaterialData mat;
         public int TexPanelHeight = 31;
         public PictureBox[] picboxArray;
+        public ImageList il = new ImageList();
+        public string SelectedMatParam = "";
 
         public List<string> ColorBoxMatParmList = new List<string>(new string[] {
            "edge_light_color",
         });
 
-        public BFRES_MaterialEditor(BFRES.Mesh p)
+        public BFRES_MaterialEditor()
         {
             InitializeComponent();
-            ResetParamDataTabs();
-
-
+            ResetParamUIData();
+        }
+        public void LoadMaterial(BFRES.Mesh p)
+         {
+            listView1.Items.Clear();
+            dataGridView3.Rows.Clear();
+            dataGridView4.Rows.Clear();
+            tabTextureMaps.Controls.Clear();
+            TexPanelHeight = 31;
 
             poly = p;
 
             Console.WriteLine("Material Editor");
             Console.WriteLine(p.Text);
+
 
             mat = p.material;
             textBox1.Text = mat.Name;
@@ -43,12 +53,25 @@ namespace Smash_Forge.GUI.Editors
             int CurParam = 0;
             foreach (var prm in mat.matparam)
             {
+                string DisplayValue = "";
 
                 //   listBox2.Items.Add(prm);
-                dataGridView1.Rows.Add(prm.Value);
+                var item = new ListViewItem(prm.Key);
 
+                Color SetColor = Color.White;
+
+                if (prm.Value.Type == ShaderParamType.Float)
+                {
+                    DisplayValue = mat.matparam[prm.Key].Value_float.ToString();
+                }
+                if (prm.Value.Type == ShaderParamType.Float2)
+                {
+                    DisplayValue = mat.matparam[prm.Key].Value_float2.ToString();
+                }
                 if (prm.Value.Type == ShaderParamType.Float3)
                 {
+                    DisplayValue = mat.matparam[prm.Key].Value_float3.ToString();
+
                     bool IsColor = prm.Key.Contains("Color") || prm.Key.Contains("color");
 
                     if (IsColor)
@@ -61,24 +84,30 @@ namespace Smash_Forge.GUI.Editors
                         {
                             Console.WriteLine($"{prm.Key} R {someIntX} G {someIntY} B {someIntZ}");
 
-                            dataGridView1.Rows[CurParam].Cells[1].Style.BackColor = Color.FromArgb(
+                            SetColor = Color.FromArgb(
                         255,
                         someIntX,
                         someIntY,
                         someIntZ
                         );
                         }
-              
+
                     }
-        
+
                 }
                 if (prm.Value.Type == ShaderParamType.Float4)
                 {
-                      bool IsColor = prm.Key.Contains("Color") || prm.Key.Contains("color");
+                    DisplayValue = mat.matparam[prm.Key].Value_float4.ToString();
+
+
+          
+
+                    bool IsColor = prm.Key.Contains("Color") || prm.Key.Contains("color") || prm.Key.Contains("konst0");
+
 
                     if (IsColor)
                     {
-                     
+
 
                         int someIntX = (int)Math.Ceiling(mat.matparam[prm.Key].Value_float4.X * 255);
                         int someIntY = (int)Math.Ceiling(mat.matparam[prm.Key].Value_float4.Y * 255);
@@ -88,7 +117,7 @@ namespace Smash_Forge.GUI.Editors
                         {
                             Console.WriteLine($"{prm.Key} R {someIntX} G {someIntY} B {someIntZ}");
 
-                            dataGridView1.Rows[CurParam].Cells[1].Style.BackColor = Color.FromArgb(
+                            SetColor = Color.FromArgb(
                          255,
                         someIntX,
                         someIntY,
@@ -96,14 +125,19 @@ namespace Smash_Forge.GUI.Editors
                         );
                         }
                     }
-
-                
-
                 }
-                dataGridView1.Rows[CurParam].Cells[2].Value = prm.Value.Type.ToString();
 
+                item.UseItemStyleForSubItems = false;
+                item.SubItems.Add(DisplayValue);
+                item.SubItems.Add("");
+                item.SubItems[2].BackColor = SetColor;
+                listView1.View = View.Details;
+                listView1.Items.Add(item);
                 CurParam++;
             }
+            il.ImageSize = new Size(10, 10);
+            listView1.SmallImageList = il;
+            listView1.FullRowSelect = true;
 
             foreach (var rnd in mat.renderinfo)
             {
@@ -175,6 +209,7 @@ namespace Smash_Forge.GUI.Editors
 
             PanelHide.Click += new System.EventHandler(panelHide_Click);
             picbox.Click += new System.EventHandler(TextureBoxClickedOn);
+            ChangeTex.Click += new System.EventHandler(ChangeTexClickedOn);
 
             Label TextueType = new Label();
             Label SamplerText = new Label();
@@ -202,18 +237,27 @@ namespace Smash_Forge.GUI.Editors
             tabTextureMaps.Controls.Add(panel);
             tabTextureMaps.Controls.Add(PanelHide);
         }
+        private void ChangeTexClickedOn(object sender, EventArgs e)
+        {
+            if (BFRES.IsSwitchBFRES)
+            {
+                BNTX_TextureList edit = new BNTX_TextureList();
+                edit.Show();
+            }
+        }
+
         private void TextureBoxClickedOn(object sender, EventArgs e)
         {
             BNTXMaterialTextureEditor edit = new BNTXMaterialTextureEditor();
             edit.Show();
-            if (BFRES.IsSwitchBFRES)
-                edit.LoadTexture(BNTX.textured[mat.textures[0].Name]);
+           if (BFRES.IsSwitchBFRES)
+               edit.LoadTexture(poly, BNTX.textured[mat.textures[0].Name]);
+           else
+                edit.LoadTexture(poly, null, BFRES.FTEXtextures[mat.textures[0].Name]);
         }
         private void OpenTextureEditor(BRTI tex)
         {
-            BNTXMaterialTextureEditor edit = new BNTXMaterialTextureEditor();
-            edit.Show();
-            edit.LoadTexture(tex);
+         
         }
         private void SetWrapModeItems(ComboBox c)
         {
@@ -222,11 +266,7 @@ namespace Smash_Forge.GUI.Editors
                 c.Items.Add(wr);
             }
         }
-        private void ParamHideTab(TabPage p)
-        {
-            ParamDataControl.TabPages.Remove(p);
-        }
-
+ 
         public Bitmap FTEXRGBA(FTEX.FTEX_Texture t, int id)
         {
             Bitmap bitmap = new Bitmap(t.width, t.height);
@@ -238,7 +278,7 @@ namespace Smash_Forge.GUI.Editors
 
             return bitmap;
         }
-        public Bitmap textureRGBA(BRTI.BRTI_Texture t, int id)
+        public static Bitmap textureRGBA(BRTI.BRTI_Texture t, int id)
         {
             Bitmap bitmap = new Bitmap(t.width, t.height);
             System.Drawing.Imaging.BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, t.width, t.height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
@@ -259,19 +299,6 @@ namespace Smash_Forge.GUI.Editors
         private void panelHide_Click(object sender, EventArgs e)
         {
 
-        }
-        private void ParamShowTab(TabPage p)
-        {
-            ParamDataControl.TabPages.Add(p);
-        }
-        private void ResetParamDataTabs()
-        {
-            ParamHideTab(FloatParam);
-            ParamHideTab(Float2Param);
-            ParamHideTab(Float3Param);
-            ParamHideTab(Float4Param);
-            ParamHideTab(SRTParam);
-            ParamHideTab(boolParam);
         }
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
@@ -303,42 +330,6 @@ namespace Smash_Forge.GUI.Editors
 
         }
 
-        private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
-        {
-            if (dataGridView1.CurrentRow != null)
-            {
-                Console.WriteLine("Test " + dataGridView1.SelectedRows.Count);
-                for (int index = 0; index < dataGridView1.SelectedRows.Count; index++)
-                {
-                    var selectedRow = dataGridView1.SelectedRows[index];
-                    var prm = (BFRES.ShaderParam)selectedRow.DataBoundItem;
-
-                    Console.WriteLine(prm.Name);
-
-
-                    ResetParamDataTabs();
-
-
-                    if (prm.Type == ShaderParamType.Float)
-                        ParamShowTab(FloatParam);
-                    if (prm.Type == ShaderParamType.Float2)
-                        ParamShowTab(Float2Param);
-                    if (prm.Type == ShaderParamType.Float3)
-                        ParamShowTab(Float3Param);
-                    if (prm.Type == ShaderParamType.Float4)
-                        ParamShowTab(Float4Param);
-                    if (prm.Type == ShaderParamType.TexSrt)
-                        ParamShowTab(SRTParam);
-                    if (prm.Type == ShaderParamType.Bool)
-                        ParamShowTab(boolParam);
-                }
-            }
-        }
-
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
 
         private void panel7_Paint(object sender, PaintEventArgs e)
         {
@@ -352,6 +343,218 @@ namespace Smash_Forge.GUI.Editors
         private void dataGridView3_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+        private void listView1_ColumnClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
+        {
+            if (listView1.Sorting == SortOrder.Ascending)         
+                listView1.Sorting = SortOrder.Descending;          
+            else
+                listView1.Sorting = SortOrder.Ascending;
+        }
+        private void ResetParamUIData()
+        {
+            FloatNumUD.Visible = false;
+            FloatNumUD2.Visible = false;
+            FloatNumUD3.Visible = false;
+            FloatNumUD4.Visible = false;
+            FloatNumUD5.Visible = false;
+            FloatNumUD6.Visible = false;
+            FloatNumUD7.Visible = false;
+            FloatNumUD8.Visible = false;
+            FloatLabel1.Visible = false;
+            FloatLabel2.Visible = false;
+            FloatLabel3.Visible = false;
+            FloatLabel4.Visible = false;
+            FloatLabel5.Visible = false;
+            FloatLabel6.Visible = false;
+            FloatLabel7.Visible = false;
+            FloatLabel8.Visible = false;
+            boolLabel.Visible = false;
+            boolParam.Visible = false;
+            colorboxLabel.Visible = false;
+            paramColorBox.Visible = false;
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                SelectedMatParam = listView1.SelectedItems[0].Text;
+
+                var prm = mat.matparam[SelectedMatParam];
+
+                ResetParamUIData();
+
+                if (prm.Type == ShaderParamType.Float)
+                {
+                    FloatNumUD.Value = (decimal)prm.Value_float;
+                    FloatLabel1.Text = "Float";
+                    FloatLabel1.Visible = true;
+                    FloatNumUD.Visible = true;
+                }
+                if (prm.Type == ShaderParamType.Float2)
+                {
+                    FloatNumUD.Value = (decimal)prm.Value_float2.X;
+                    FloatNumUD2.Value = (decimal)prm.Value_float2.Y;
+                    FloatLabel1.Text = "X";
+                    FloatLabel2.Text = "Y";
+                    FloatLabel1.Visible = true;
+                    FloatLabel2.Visible = true;
+                    FloatNumUD.Visible = true;
+                    FloatNumUD2.Visible = true;
+                }
+                if (prm.Type == ShaderParamType.Float3)
+                {
+                    FloatNumUD.Value = (decimal)prm.Value_float3.X;
+                    FloatNumUD2.Value = (decimal)prm.Value_float3.Y;
+                    FloatNumUD3.Value = (decimal)prm.Value_float3.Z;
+                    FloatLabel1.Text = "X";
+                    FloatLabel2.Text = "Y";
+                    FloatLabel3.Text = "Z";
+                    FloatLabel1.Visible = true;
+                    FloatLabel2.Visible = true;
+                    FloatLabel3.Visible = true;
+                    FloatNumUD.Visible = true;
+                    FloatNumUD2.Visible = true;
+                    FloatNumUD3.Visible = true;
+
+                    bool IsColor = listView1.SelectedItems[0].Text.Contains("Color") || listView1.SelectedItems[0].Text.Contains("color") || listView1.SelectedItems[0].Text.Contains("konst0");
+
+                    if (IsColor)
+                    {
+                        colorboxLabel.Visible = true;
+                        paramColorBox.BackColor = listView1.SelectedItems[0].SubItems[2].BackColor;
+                        paramColorBox.Visible = true;
+                    }
+
+                }
+                if (prm.Type == ShaderParamType.Float4)
+                {
+                    FloatNumUD.Value = (decimal)prm.Value_float4.X;
+                    FloatNumUD2.Value = (decimal)prm.Value_float4.Y;
+                    FloatNumUD3.Value = (decimal)prm.Value_float4.Z;
+                    FloatNumUD4.Value = (decimal)prm.Value_float4.W;
+                    FloatLabel1.Text = "X";
+                    FloatLabel2.Text = "Y";
+                    FloatLabel3.Text = "Z";
+                    FloatLabel4.Text = "W";
+                    FloatLabel1.Visible = true;
+                    FloatLabel2.Visible = true;
+                    FloatLabel3.Visible = true;
+                    FloatLabel4.Visible = true;
+                    FloatNumUD.Visible = true;
+                    FloatNumUD2.Visible = true;
+                    FloatNumUD3.Visible = true;
+                    FloatNumUD4.Visible = true;
+
+                    bool IsColor = listView1.SelectedItems[0].Text.Contains("Color") || listView1.SelectedItems[0].Text.Contains("color") || listView1.SelectedItems[0].Text.Contains("konst0");
+
+                    if (IsColor)
+                    {
+                        colorboxLabel.Visible = true;
+                        paramColorBox.BackColor = listView1.SelectedItems[0].SubItems[2].BackColor;
+                        paramColorBox.Visible = true;
+                    }
+                }
+                if (prm.Type == ShaderParamType.TexSrt)
+                {
+
+                }
+                if (prm.Type == ShaderParamType.Bool)
+                {
+
+                }
+            }
+        }
+
+        private void paramColorBox_Click(object sender, EventArgs e)
+        {
+            if (SelectedMatParam != "")
+            {
+                var prm = mat.matparam[SelectedMatParam];
+
+                ColorDialog clr = new ColorDialog();
+                if (clr.ShowDialog() == DialogResult.OK)
+                {
+                    paramColorBox.BackColor = clr.Color;
+
+                    string Value = "";
+
+                    if (prm.Type == ShaderParamType.Float4)
+                    {
+                        prm.Value_float4.X = (float)clr.Color.R / 255;
+                        prm.Value_float4.Y = (float)clr.Color.G / 255;
+                        prm.Value_float4.Z = (float)clr.Color.B / 255;
+                        prm.Value_float4.W = (float)clr.Color.A / 255;
+                        Value = prm.Value_float4.ToString();
+                    }
+                    if (prm.Type == ShaderParamType.Float3)
+                    {
+                        prm.Value_float3.X = (float)clr.Color.R / 255;
+                        prm.Value_float3.Y = (float)clr.Color.G / 255;
+                        prm.Value_float3.Z = (float)clr.Color.B / 255;
+                        Value = prm.Value_float3.ToString();
+                    }
+                    listView1.SelectedItems[0].SubItems[1].Text = Value;
+                    listView1.SelectedItems[0].SubItems[2].BackColor = clr.Color;
+                }
+
+                mat.matparam[SelectedMatParam] = prm;
+        
+            }
+        }
+
+        private void FloatNumUD_ValueChanged(object sender, EventArgs e)
+        {
+            if (SelectedMatParam != "")
+            {
+                string Value = "";
+
+                var prm = mat.matparam[SelectedMatParam];
+                if (prm.Type == ShaderParamType.Float)
+                {
+                    Value = prm.Value_float.ToString();
+
+                    if (sender == FloatNumUD)
+                        prm.Value_float = (float)FloatNumUD.Value;
+                }
+                if (prm.Type == ShaderParamType.Float2)
+                {
+                    Value = prm.Value_float2.ToString();
+
+                    if (sender == FloatNumUD)
+                        prm.Value_float2.X = (float)FloatNumUD.Value;
+                    if (sender == FloatNumUD2)
+                        prm.Value_float2.Y = (float)FloatNumUD2.Value;
+                }
+                if (prm.Type == ShaderParamType.Float3)
+                {
+                    Value = prm.Value_float3.ToString();
+
+                    if (sender == FloatNumUD)
+                        prm.Value_float3.X = (float)FloatNumUD.Value;
+                    if (sender == FloatNumUD2)
+                        prm.Value_float3.Y = (float)FloatNumUD2.Value;
+                    if (sender == FloatNumUD3)
+                        prm.Value_float3.Z = (float)FloatNumUD3.Value;
+                }
+                if (prm.Type == ShaderParamType.Float4)
+                {
+                    Value = prm.Value_float4.ToString();
+
+                    if (sender == FloatNumUD)
+                        prm.Value_float4.X = (float)FloatNumUD.Value;
+                    if (sender == FloatNumUD2)
+                        prm.Value_float4.Y = (float)FloatNumUD2.Value;
+                    if (sender == FloatNumUD3)
+                        prm.Value_float4.Z = (float)FloatNumUD3.Value;
+                    if (sender == FloatNumUD4)
+                        prm.Value_float4.W = (float)FloatNumUD4.Value;
+                }
+
+              mat.matparam[SelectedMatParam] = prm;
+              listView1.SelectedItems[0].SubItems[1].Text = Value;
+            }
         }
     }
 }

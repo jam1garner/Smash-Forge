@@ -78,6 +78,11 @@ namespace Smash_Forge
                 model.skeleton.reset();
                 model.skeleton.update();
 
+                foreach (int node in model.Node_Array)
+                {
+                    Console.WriteLine(model.skeleton.bones[node].Text);
+                }
+
                 //MeshTime!!
                 foreach (Shape shp in mdl.Shapes)
                 {
@@ -85,7 +90,8 @@ namespace Smash_Forge
                     poly.Text = shp.Name;
                     poly.MaterialIndex = shp.MaterialIndex;
                     poly.matrFlag = shp.VertexSkinCount;
-                    poly.fsklindx = shp.BoneIndex;
+                    poly.boneIndx = shp.BoneIndex;
+                    poly.fmdlIndx = ModelCur;
 
                     foreach (int bn in shp.SkinBoneIndices)
                     {
@@ -95,19 +101,25 @@ namespace Smash_Forge
                     TModels.Nodes[ModelCur].Nodes.Add(poly);
 
 
-                    ReadVertexBuffer(mdl, shp, poly);
-
-
-                    //  int LODCount = shp.Meshes.Count - 1; //For going to the lowest poly LOD mesh
-                    int LODCount = 0;
-
-                    uint FaceCount = FaceCount = shp.Meshes[LODCount].IndexCount;
-                    uint[] indicesArray = shp.Meshes[LODCount].GetIndices().ToArray();
+                    ReadVertexBuffer(mdl, shp, poly, model);
 
                     poly.BoundingCount = shp.SubMeshBoundings.Count;
 
-                    for (int face = 0; face < FaceCount; face++)
-                        poly.faces.Add((int)indicesArray[face] + (int)shp.Meshes[LODCount].FirstVertex);
+                    int CurLOD = 0;
+                    foreach (var lod in shp.Meshes)
+                    {
+                        Mesh.LOD_Mesh lodmsh = new Mesh.LOD_Mesh();
+                        lodmsh.index = CurLOD++;
+
+                        uint FaceCount = lod.IndexCount;
+                        uint[] indicesArray = lod.GetIndices().ToArray();
+
+
+                        for (int face = 0; face < FaceCount; face++)
+                            lodmsh.faces.Add((int)indicesArray[face] + (int)lod.FirstVertex);
+
+                        poly.lodMeshes.Add(lodmsh);
+                    }
 
                     foreach (Bounding bnd in shp.SubMeshBoundings)
                     {
@@ -151,7 +163,7 @@ namespace Smash_Forge
                     int sa = 0;
                     foreach (var smp in mat.ShaderAssign.SamplerAssignDict)
                     {
-                        Console.WriteLine($"{smp.Key} ---> {mat.ShaderAssign.SamplerAssigns[sa]}");
+                 //       Console.WriteLine($"{smp.Key} ---> {mat.ShaderAssign.SamplerAssigns[sa]}");
                         shaderassign.samplers.Add(smp.Key, mat.ShaderAssign.SamplerAssigns[sa]);
                         sa++;
                     }
@@ -225,12 +237,23 @@ namespace Smash_Forge
 
             }
         }
-        private void ReadVertexBuffer(Model mdl, Shape shp, Mesh poly)
+        private void ReadVertexBuffer(Model mdl, Shape shp, Mesh poly, FMDL_Model model)
         {
             //Create a buffer instance which stores all the buffer data
             VertexBufferHelper helper = new VertexBufferHelper(mdl.VertexBuffers[shp.VertexBufferIndex], TargetSwitchBFRES.ByteOrder);
 
-            Vertex v = new Vertex();
+            //Set each array first from the lib if exist. Then add the data all in one loop
+            Syroot.Maths.Vector4F[] vec4Positions = new Syroot.Maths.Vector4F[0];
+            Syroot.Maths.Vector4F[] vec4Normals = new Syroot.Maths.Vector4F[0];
+            Syroot.Maths.Vector4F[] vec4uv0 = new Syroot.Maths.Vector4F[0];
+            Syroot.Maths.Vector4F[] vec4uv1 = new Syroot.Maths.Vector4F[0];
+            Syroot.Maths.Vector4F[] vec4uv2 = new Syroot.Maths.Vector4F[0];
+            Syroot.Maths.Vector4F[] vec4c0 = new Syroot.Maths.Vector4F[0];
+            Syroot.Maths.Vector4F[] vec4t0 = new Syroot.Maths.Vector4F[0];
+            Syroot.Maths.Vector4F[] vec4b0 = new Syroot.Maths.Vector4F[0];
+            Syroot.Maths.Vector4F[] vec4w0 = new Syroot.Maths.Vector4F[0];
+            Syroot.Maths.Vector4F[] vec4i0 = new Syroot.Maths.Vector4F[0];
+
             foreach (VertexAttrib att in mdl.VertexBuffers[shp.VertexBufferIndex].Attributes)
             {
                 Mesh.VertexAttribute attr = new Mesh.VertexAttribute();
@@ -238,137 +261,86 @@ namespace Smash_Forge
                 attr.Format = att.Format;
 
                 if (att.Name == "_p0")
-                {
-                    VertexBufferHelperAttrib position = helper["_p0"];
-                    Syroot.Maths.Vector4F[] vec4Positions = position.Data;
-
-                    foreach (Syroot.Maths.Vector4F p in vec4Positions)
-                    {
-                        v.pos.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z });
-                    }
-                }
+                    vec4Positions = AttributeData(att, helper, "_p0");
                 if (att.Name == "_n0")
-                {
-                    VertexBufferHelperAttrib normal = helper["_n0"];
-                    Syroot.Maths.Vector4F[] vec4Normals = normal.Data;
-
-                    foreach (Syroot.Maths.Vector4F n in vec4Normals)
-                    {
-                        v.nrm.Add(new Vector3 { X = n.X, Y = n.Y, Z = n.Z });
-                    }
-                }
+                    vec4Normals = AttributeData(att, helper, "_n0");
                 if (att.Name == "_u0")
-                {
-                    VertexBufferHelperAttrib uv0 = helper["_u0"];
-                    Syroot.Maths.Vector4F[] vec4uv0 = uv0.Data;
-
-                    foreach (Syroot.Maths.Vector4F u in vec4uv0)
-                    {
-                        v.uv0.Add(new Vector2 { X = u.X, Y = u.Y });
-                    }
-                }
+                    vec4uv0 = AttributeData(att, helper, "_u0");
                 if (att.Name == "_u1")
-                {
-
-                    VertexBufferHelperAttrib uv1 = helper["_u1"];
-                    Syroot.Maths.Vector4F[] vec4uv1 = uv1.Data;
-
-                    foreach (Syroot.Maths.Vector4F u in vec4uv1)
-                    {
-                        v.uv1.Add(new Vector2 { X = u.X, Y = u.Y });
-                    }
-                }
+                    vec4uv1 = AttributeData(att, helper, "_u1");
                 if (att.Name == "_u2")
-                {
-                    VertexBufferHelperAttrib uv2 = helper["_u2"];
-                    Syroot.Maths.Vector4F[] vec4uv2 = uv2.Data;
-
-                    foreach (Syroot.Maths.Vector4F u in vec4uv2)
-                    {
-                        v.uv2.Add(new Vector2 { X = u.X, Y = u.Y });
-                    }
-                }
+                    vec4uv2 = AttributeData(att, helper, "_u2");
                 if (att.Name == "_c0")
-                {
-                    VertexBufferHelperAttrib c0 = helper["_c0"];
-                    Syroot.Maths.Vector4F[] vec4c0 = c0.Data;
-
-                    foreach (Syroot.Maths.Vector4F c in vec4c0)
-                    {
-                        v.col.Add(new Vector4 { X = c.X, Y = c.Y, Z = c.Z, W = c.W });
-                    }
-                }
+                    vec4c0 = AttributeData(att, helper, "_c0");
                 if (att.Name == "_t0")
-                {
-                    VertexBufferHelperAttrib t0 = helper["_t0"];
-                    Syroot.Maths.Vector4F[] vec4t0 = t0.Data;
-
-                    foreach (Syroot.Maths.Vector4F u in vec4t0)
-                    {
-                        v.tans.Add(new Vector4 { X = u.X, Y = u.Y, Z = u.Z, W = u.W });
-                    }
-                }
+                    vec4t0 = AttributeData(att, helper, "_t0");
                 if (att.Name == "_b0")
-                {
-
-                    VertexBufferHelperAttrib b0 = helper["_b0"];
-                    Syroot.Maths.Vector4F[] vec4b0 = b0.Data;
-
-                    foreach (Syroot.Maths.Vector4F u in vec4b0)
-                    {
-                        v.bitans.Add(new Vector4 { X = u.X, Y = u.Y, Z = u.Z, W = u.W });
-                    }
-                }
+                    vec4b0 = AttributeData(att, helper, "_b0");
                 if (att.Name == "_w0")
-                {
-
-                    VertexBufferHelperAttrib w0 = helper["_w0"];
-                    Syroot.Maths.Vector4F[] vec4w0 = w0.Data;
-
-                    foreach (Syroot.Maths.Vector4F w in vec4w0)
-                    {
-                        v.weights.Add(new Vector4 { X = w.X, Y = w.Y, Z = w.Z, W = w.W });
-                    }
-                }
+                    vec4w0 = AttributeData(att, helper, "_w0");
                 if (att.Name == "_i0")
-                {
-                    VertexBufferHelperAttrib i0 = helper["_i0"];
-                    Syroot.Maths.Vector4F[] vec4i0 = i0.Data;
+                    vec4i0 = AttributeData(att, helper, "_i0");
 
-                    foreach (Syroot.Maths.Vector4F i in vec4i0)
-                    {
-                        v.nodes.Add(new Vector4 { X = i.X, Y = i.Y, Z = i.Z, W = i.W });
-                    }
-                }
-
-                //Set these for morphing
-                //This is a test. I may put this in it's own VBO since it's not offten used
-
-                if (att.Name == "_p1")
-                {
-                    VertexBufferHelperAttrib p1 = helper["_p1"];
-                    Syroot.Maths.Vector4F[] vec4p1 = p1.Data;
-
-                    foreach (Syroot.Maths.Vector4F p in vec4p1)
-                    {
-                        v.pos1.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z});
-                    }
-                }
-
-                if (att.Name == "_p2")
-                {
-                    VertexBufferHelperAttrib p2 = helper["_p2"];
-                    Syroot.Maths.Vector4F[] vec4p2 = p2.Data;
-
-                    foreach (Syroot.Maths.Vector4F p in vec4p2)
-                    {
-                        v.pos2.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z });
-                    }
-                }
                 poly.vertexAttributes.Add(attr);
             }
-            poly.vertices = v;
+            for (int i = 0; i < vec4Positions.Length; i++)
+            {
+                Vertex v = new Vertex();
+                if (vec4Positions.Length > 0)
+                    v.pos = new Vector3(vec4Positions[i].X, vec4Positions[i].Y, vec4Positions[i].Z);
+                if (vec4Normals.Length > 0)
+                    v.nrm = new Vector3(vec4Normals[i].X, vec4Normals[i].Y, vec4Normals[i].Z);
+                if (vec4uv0.Length > 0)
+                    v.uv0 = new Vector2(vec4uv0[i].X, vec4uv0[i].Y);
+                if (vec4uv1.Length > 0)
+                    v.uv1 = new Vector2(vec4uv1[i].X, vec4uv1[i].Y);
+                if (vec4uv2.Length > 0)
+                    v.uv2 = new Vector2(vec4uv2[i].X, vec4uv2[i].Y);
+                if (vec4w0.Length > 0)
+                {
+                        v.boneWeights.Add(vec4w0[i].X);
+                        v.boneWeights.Add(vec4w0[i].Y);
+                        v.boneWeights.Add(vec4w0[i].Z);
+                        v.boneWeights.Add(vec4w0[i].W);
+                }
+                if (vec4i0.Length > 0)
+                {
+                        v.boneIds.Add((int)vec4i0[i].X);
+                        v.boneIds.Add((int)vec4i0[i].Y);
+                        v.boneIds.Add((int)vec4i0[i].Z);
+                        v.boneIds.Add((int)vec4i0[i].W);
+                }
+
+                if (vec4t0.Length > 0)
+                    v.tan = new Vector4(vec4t0[i].X, vec4t0[i].Y, vec4t0[i].Z, vec4t0[i].W);
+                if (vec4b0.Length > 0)
+                    v.bitan = new Vector4(vec4b0[i].X, vec4b0[i].Y, vec4b0[i].Z, vec4b0[i].W);
+                if (vec4c0.Length > 0)
+                    v.col = new Vector4(vec4c0[i].X, vec4c0[i].Y, vec4c0[i].Z, vec4c0[i].W);
+
+                if (poly.matrFlag == 1)
+                {
+                    Matrix4 sb = model.skeleton.bones[model.Node_Array[v.boneIds[0]]].transform;
+                  //  Console.WriteLine(model.skeleton.bones[model.Node_Array[v.boneIds[0]]].Text);
+                    v.pos = Vector3.TransformPosition(v.pos, sb);
+                    v.nrm = Vector3.TransformNormal(v.nrm, sb);
+                }
+                if (poly.matrFlag == 0)
+                {
+                    Matrix4 NoBindFix = model.skeleton.bones[poly.boneIndx].transform;
+                    v.pos = Vector3.TransformPosition(v.pos, NoBindFix);
+                    v.nrm = Vector3.TransformNormal(v.nrm, NoBindFix);
+                }
+
+                poly.vertices.Add(v);
+            }
         }
+        private static Syroot.Maths.Vector4F[] AttributeData(VertexAttrib att, VertexBufferHelper helper, string attName)
+        {
+            VertexBufferHelperAttrib attd = helper[attName];
+            return attd.Data;
+        }
+
         private void ReadTextureRefs(Material mat, Mesh poly)
         {
             int AlbedoCount = 0;
@@ -386,7 +358,7 @@ namespace Smash_Forge
                 texture.wrapModeT = (int)mat.Samplers[id].WrapModeV;
                 texture.wrapModeW = (int)mat.Samplers[id].WrapModeW;
                 texture.SamplerName = mat.SamplerDict.Keys.ElementAt(id);
-                try
+        /*        try
                 {
                     Console.WriteLine(poly.material.shaderassign.samplers[texture.SamplerName]);
                     texture.FragShaderSampler = poly.material.shaderassign.samplers[texture.SamplerName];
@@ -394,7 +366,7 @@ namespace Smash_Forge
                 catch
                 {
 
-                }
+                }*/
 
 
 
@@ -712,10 +684,17 @@ namespace Smash_Forge
                             texSRT.scale     = new Vector2(reader.ReadSingle(), reader.ReadSingle());
                             texSRT.rotate    = reader.ReadSingle();
                             texSRT.translate = new Vector2(reader.ReadSingle(), reader.ReadSingle());
-
                             prm.Value_TexSrt = texSRT;
                             break;
-                            
+                        case ShaderParamType.UInt:
+                            prm.Value_UInt = reader.ReadUInt32();
+                            break;
+                        case ShaderParamType.Bool:
+                            prm.Value_Bool = reader.ReadBoolean();
+                            break;
+                        case ShaderParamType.Float4x4:
+                            prm.Value_float4x4 = reader.ReadSingles(16);
+                            break;
                     }
                     poly.material.matparam.Add(param.Name, prm);
                 }
@@ -741,7 +720,7 @@ namespace Smash_Forge
 
                 BufferInjection(writer, reader);
                 BNTXInjectionSameSize(writer, reader);
-                FSKAInjection(writer);
+            //    FSKAInjection(writer);
                 FSKLInjection(writer);
 
                 int mdl = 0;
@@ -778,11 +757,12 @@ namespace Smash_Forge
                 int s = 0;
                 foreach (Shape shp in fmdl.Shapes)
                 {
-                    Vertex v = models[mdl].poly[s].vertices;
+                    Mesh msh = models[mdl].poly[s];
+
 
                     writer.Seek(shp.Meshes[0].DataOffset, SeekOrigin.Begin);
 
-                    int[] Faces = models[mdl].poly[s].getDisplayFace().ToArray();
+                    int[] Faces = msh.lodMeshes[msh.DisplayLODIndex].getDisplayFace().ToArray();
 
                     foreach (int f in Faces)
                     {
@@ -799,6 +779,29 @@ namespace Smash_Forge
 
                     for (int vt = 0; vt < fmdl.VertexBuffers[shp.VertexBufferIndex].VertexCount; vt++)
                     {
+                        if (vt < msh.vertices.Count)
+                        {
+                       
+                        }
+                        else
+                        {
+                            Vertex vtx = new Vertex();
+
+                            vtx.pos = new Vector3(0);
+                            vtx.nrm = new Vector3(0);
+                            vtx.col = new Vector4(1);
+                            vtx.uv0 = new Vector2(0);
+                            vtx.uv1 = new Vector2(0);
+                            vtx.uv2 = new Vector2(0);
+                            vtx.boneWeights.Add(1);
+                            vtx.boneIds.Add(0);
+                            vtx.tan = new Vector4(0);
+                            vtx.bitan = new Vector4(0);
+
+                            msh.vertices.Add(vtx);
+                        }
+                        Vertex v = msh.vertices[vt];
+
                         int at = 0;
                         foreach (VertexAttrib att in fmdl.VertexBuffers[shp.VertexBufferIndex].Attributes)
                         {
@@ -807,13 +810,13 @@ namespace Smash_Forge
                             {
                                 if (att.Format == AttribFormat.Format_32_32_32_Single)
                                 {
-                                    writer.Write(v.pos[vt].X);
-                                    writer.Write(v.pos[vt].Y);
-                                    writer.Write(v.pos[vt].Z);
+                                    writer.Write(v.pos.X);
+                                    writer.Write(v.pos.Y);
+                                    writer.Write(v.pos.Z);
                                 }
                                 else if (att.Format == AttribFormat.Format_16_16_16_16_Single)
                                 {
-                                    Syroot.Maths.Vector4F value = new Syroot.Maths.Vector4F(v.pos[vt].X, v.pos[vt].Y, v.pos[vt].Z, 0);
+                                    Syroot.Maths.Vector4F value = new Syroot.Maths.Vector4F(v.pos.X, v.pos.Y, v.pos.Z, 0);
 
                                     writer.Write((short)fromFloat(value.X));
                                     writer.Write((short)fromFloat(value.Y));
@@ -829,9 +832,9 @@ namespace Smash_Forge
                             {
                                 if (att.Format == AttribFormat.Format_10_10_10_2_SNorm)
                                 {
-                                    int x = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm[vt].X, -1, 1) * 511);
-                                    int y = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm[vt].Y, -1, 1) * 511);
-                                    int z = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm[vt].Z, -1, 1) * 511);
+                                    int x = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm.X, -1, 1) * 511);
+                                    int y = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm.Y, -1, 1) * 511);
+                                    int z = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm.Z, -1, 1) * 511);
                                     int w = SingleToInt2(Syroot.Maths.Algebra.Clamp(0, 0, 1));
                                     writer.Write(x | (y << 10) | (z << 20) | (w << 30));
                                 }
@@ -844,10 +847,10 @@ namespace Smash_Forge
                             {
                                 if (att.Format == AttribFormat.Format_8_8_8_8_SNorm)
                                 {
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].X, -1, 1) * 127));
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].Y, -1, 1) * 127));
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].Z, -1, 1) * 127));
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].W, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tan.X, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tan.Y, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tan.Z, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tan.W, -1, 1) * 127));
                                 }
                                 else
                                 {
@@ -858,10 +861,10 @@ namespace Smash_Forge
                             {
                                 if (att.Format == AttribFormat.Format_8_8_8_8_SNorm)
                                 {
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].X, -1, 1) * 127));
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].Y, -1, 1) * 127));
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].Z, -1, 1) * 127));
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].W, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitan.X, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitan.Y, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitan.Z, -1, 1) * 127));
+                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitan.W, -1, 1) * 127));
                                 }
                                 else
                                 {
@@ -872,10 +875,10 @@ namespace Smash_Forge
                             {
                                 if (att.Format == AttribFormat.Format_8_8_8_8_UNorm)
                                 {
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].X, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].Y, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].Z, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].W, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col.X, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col.Y, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col.Z, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col.W, 0, 1) * 255));
                                 }
                                 else
                                 {
@@ -886,30 +889,30 @@ namespace Smash_Forge
                             {
                                 if (att.Format == AttribFormat.Format_16_16_UNorm)
                                 {
-                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].X, 0, 1) * 65535));
-                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].Y, 0, 1) * 65535));
+                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv0.X, 0, 1) * 65535));
+                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv0.Y, 0, 1) * 65535));
                                 }
                                 else if (att.Format == AttribFormat.Format_32_32_Single)
                                 {
-                                    writer.Write(v.uv0[vt].X);
-                                    writer.Write(v.uv0[vt].Y);
+                                    writer.Write(v.uv0.X);
+                                    writer.Write(v.uv0.Y);
                                 }
                                 else if (att.Format == AttribFormat.Format_16_16_Single)
                                 {
-                                    Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0[vt].X, v.uv0[vt].Y);
+                                    Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0.X, v.uv0.Y);
 
                                     writer.Write((short)fromFloat(value.X));
                                     writer.Write((short)fromFloat(value.Y));
                                 }
                                 else if (att.Format == AttribFormat.Format_16_16_SNorm)
                                 {
-                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].X, -1, 1) * 32767));
-                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].Y, -1, 1) * 32767));
+                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv0.X, -1, 1) * 32767));
+                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv0.Y, -1, 1) * 32767));
                                 }
                                 else if (att.Format == AttribFormat.Format_8_8_UNorm)
                                 {
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].X, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].Y, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv0.X, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv0.Y, 0, 1) * 255));
                                 }
                                 else
                                 {
@@ -920,30 +923,30 @@ namespace Smash_Forge
                             {
                                 if (att.Format == AttribFormat.Format_16_16_UNorm)
                                 {
-                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].X, 0, 1) * 65535));
-                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].Y, 0, 1) * 65535));
+                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv1.X, 0, 1) * 65535));
+                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv1.Y, 0, 1) * 65535));
                                 }
                                 else if (att.Format == AttribFormat.Format_32_32_Single)
                                 {
-                                    writer.Write(v.uv1[vt].X);
-                                    writer.Write(v.uv1[vt].Y);
+                                    writer.Write(v.uv1.X);
+                                    writer.Write(v.uv1.Y);
                                 }
                                 else if (att.Format == AttribFormat.Format_16_16_Single)
                                 {
-                                    Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0[vt].X, v.uv0[vt].Y);
+                                    Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0.X, v.uv0.Y);
 
                                     writer.Write((short)fromFloat(value.X));
                                     writer.Write((short)fromFloat(value.Y));
                                 }
                                 else if (att.Format == AttribFormat.Format_16_16_SNorm)
                                 {
-                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].X, -1, 1) * 32767));
-                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].Y, -1, 1) * 32767));
+                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv1.X, -1, 1) * 32767));
+                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv1.Y, -1, 1) * 32767));
                                 }
                                 else if (att.Format == AttribFormat.Format_8_8_UNorm)
                                 {
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].X, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].Y, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv1.X, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv1.Y, 0, 1) * 255));
                                 }
                                 else
                                 {
@@ -954,30 +957,30 @@ namespace Smash_Forge
                             {
                                 if (att.Format == AttribFormat.Format_16_16_UNorm)
                                 {
-                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].X, 0, 1) * 65535));
-                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].Y, 0, 1) * 65535));
+                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv2.X, 0, 1) * 65535));
+                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv2.Y, 0, 1) * 65535));
                                 }
                                 else if (att.Format == AttribFormat.Format_32_32_Single)
                                 {
-                                    writer.Write(v.uv2[vt].X);
-                                    writer.Write(v.uv2[vt].Y);
+                                    writer.Write(v.uv2.X);
+                                    writer.Write(v.uv2.Y);
                                 }
                                 else if (att.Format == AttribFormat.Format_16_16_Single)
                                 {
-                                    Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0[vt].X, v.uv0[vt].Y);
+                                    Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0.X, v.uv0.Y);
 
                                     writer.Write((short)fromFloat(value.X));
                                     writer.Write((short)fromFloat(value.Y));
                                 }
                                 else if (att.Format == AttribFormat.Format_16_16_SNorm)
                                 {
-                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].X, -1, 1) * 32767));
-                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].Y, -1, 1) * 32767));
+                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv2.X, -1, 1) * 32767));
+                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv2.Y, -1, 1) * 32767));
                                 }
                                 else if (att.Format == AttribFormat.Format_8_8_UNorm)
                                 {
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].X, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].Y, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv2.X, 0, 1) * 255));
+                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv2.Y, 0, 1) * 255));
                                 }
                                 else
                                 {
@@ -988,19 +991,19 @@ namespace Smash_Forge
                             {
                                 if (att.Format == AttribFormat.Format_8_8_8_8_UInt)
                                 {
-                                    writer.Write((byte)v.nodes[vt].X);
-                                    writer.Write((byte)v.nodes[vt].Y);
-                                    writer.Write((byte)v.nodes[vt].Z);
-                                    writer.Write((byte)v.nodes[vt].W);
+                                    writer.Write(v.boneIds.Count > 0 ? (byte)v.boneIds[0] : (byte)0);
+                                    writer.Write(v.boneIds.Count > 1 ? (byte)v.boneIds[1] : (byte)0);
+                                    writer.Write(v.boneIds.Count > 2 ? (byte)v.boneIds[2] : (byte)0);
+                                    writer.Write(v.boneIds.Count > 3 ? (byte)v.boneIds[3] : (byte)0);
                                 }
                                 else if (att.Format == AttribFormat.Format_8_8_UInt)
                                 {
-                                    writer.Write((byte)v.nodes[vt].X);
-                                    writer.Write((byte)v.nodes[vt].Y);
+                                    writer.Write(v.boneIds.Count > 0 ? (byte)v.boneIds[0] : (byte)0);
+                                    writer.Write(v.boneIds.Count > 1 ? (byte)v.boneIds[1] : (byte)0);
                                 }
                                 else if (att.Format == AttribFormat.Format_8_UInt)
                                 {
-                                    writer.Write((byte)v.nodes[vt].X);
+                                    writer.Write(v.boneIds.Count > 0 ? (byte)v.boneIds[0] : (byte)0);
                                 }
                                 else
                                 {
@@ -1011,15 +1014,16 @@ namespace Smash_Forge
                             {
                                 if (att.Format == AttribFormat.Format_8_8_8_8_UNorm)
                                 {
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].X, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].Y, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].Z, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].W, 0, 1) * 255));
+                                    writer.Write(v.boneWeights.Count > 0 ? (byte)(Syroot.Maths.Algebra.Clamp(v.boneWeights[0], 0, 1) * 255) : (byte)0);
+                                    writer.Write(v.boneWeights.Count > 1 ? (byte)(Syroot.Maths.Algebra.Clamp(v.boneWeights[1], 0, 1) * 255) : (byte)0);
+                                    writer.Write(v.boneWeights.Count > 2 ? (byte)(Syroot.Maths.Algebra.Clamp(v.boneWeights[2], 0, 1) * 255) : (byte)0);
+                                    writer.Write(v.boneWeights.Count > 3 ? (byte)(Syroot.Maths.Algebra.Clamp(v.boneWeights[3], 0, 1) * 255) : (byte)0);
+
                                 }
                                 else if (att.Format == AttribFormat.Format_8_8_UNorm)
                                 {
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].X, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].Y, 0, 1) * 255));
+                                    writer.Write(v.boneWeights.Count > 0 ? (byte)(Syroot.Maths.Algebra.Clamp(v.boneWeights[0], 0, 1) * 255) : (byte)0);
+                                    writer.Write(v.boneWeights.Count > 1 ? (byte)(Syroot.Maths.Algebra.Clamp(v.boneWeights[1], 0, 1) * 255) : (byte)0);
                                 }
                                 else
                                 {
@@ -1076,8 +1080,20 @@ namespace Smash_Forge
                     Vector3 Scale = new Vector3(0);
                     Vector3 Rot = new Vector3(0);
 
+                    foreach (var defbn in HackyBoneDiffList)
+                    {
+                  //      Console.WriteLine("Names " + " " + defbn.Name + " " + bnanim.Text);
 
-                    if (bnanim.Text == "Hip")
+                        if (bnanim.Text == defbn.Name)
+                        {
+                            Pos = defbn.pos;
+                            Rot = defbn.rot;
+                            Console.WriteLine("New Pos " + Pos);
+                            Console.WriteLine("New Rot " + Rot);
+                        }
+                    }
+
+                 /*   if (bnanim.Text == "Hip")
                     {
                         Pos.Y = 1;
                     }
@@ -1121,7 +1137,7 @@ namespace Smash_Forge
                     if (bnanim.Text == "FootL" || bnanim.Text == "FootR")
                     {
                         Pos.Y = 8;
-                    }
+                    }*/
 
 
                     BoneAnim bnan = fska.BoneAnims[CurBnAnim];
@@ -1216,6 +1232,15 @@ namespace Smash_Forge
                             writer.Write(prm.Value_TexSrt.rotate);
                             writer.Write(prm.Value_TexSrt.translate.X);
                             writer.Write(prm.Value_TexSrt.translate.Y);
+                            break;
+                        case Syroot.NintenTools.Bfres.ShaderParamType.Float4x4:
+                            foreach (float f in prm.Value_float4x4)
+                            {
+                                writer.Write(f);
+                            }
+                            break;
+                        case Syroot.NintenTools.Bfres.ShaderParamType.UInt:
+                            writer.Write(prm.Value_UInt);
                             break;
                         default:
                             MessageBox.Show("Format not added to shader param saving " + prm.Type);

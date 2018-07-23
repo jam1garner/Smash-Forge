@@ -234,6 +234,9 @@ namespace Smash_Forge
                     }
                 }
 
+                Console.WriteLine(npoly.vertices.Count);
+                Console.WriteLine(npoly.faces.Count);
+
                 AddMaterialsForEachUvChannel(npoly);
             }
 
@@ -251,7 +254,7 @@ namespace Smash_Forge
 
             CreateBones(container, dae);
 
-       
+
             // controllers
             Dictionary<string, List<BFRES.Vertex>> vertices = new Dictionary<string, List<BFRES.Vertex>>();
             Dictionary<string, Matrix4> bindMatrix = new Dictionary<string, Matrix4>();
@@ -266,142 +269,358 @@ namespace Smash_Forge
                 }
 
                 List<BFRES.Vertex> verts = new List<BFRES.Vertex>();
-                vertices.Add(skin.source, verts);
+                List<float[]> Weights = new List<float[]>();
+                Dictionary<string[], float[]> GetBoneNamesAndWeights = new Dictionary<string[], float[]>();
+
                 bindMatrix.Add(skin.source, skin.mat);
 
-            //    SkinVerts(container, skin, sources, verts);
-            }
+                BFRESSkinVerts(container, skin, sources, verts, GetBoneNamesAndWeights);
 
-            int CurMesh = 0;
+                List<BFRES.Vertex> BoneFixIndex = new List<BFRES.Vertex>();
 
-            Dictionary<string, BFRES.Mesh> geometries = new Dictionary<string, BFRES.Mesh>();
-            foreach (ColladaGeometry geom in dae.library_geometries)
-            {
-                ColladaMesh mesh = geom.mesh;
-                ColladaPolygons colladaPoly = mesh.polygons[0];
+                string[] nodeArrStrings = new string[b.models[0].Node_Array.Length];
 
+                //So BFRES works like this
+                //Get all the bones in the index array (in FSKLH)
+                //Then using that list compare the names with the dae bone names.
+                // If it matches grab the index and weight value.
 
-                Dictionary<string, ColladaSource> sources = new Dictionary<string, ColladaSource>();
-                foreach (ColladaSource s in mesh.sources)
+                int CurNode = 0;
+                foreach (int thing in b.models[0].Node_Array)
                 {
-                    sources.Add("#" + s.id, s);
+                    nodeArrStrings[CurNode++] = b.models[0].skeleton.bones[thing].Text;
                 }
-                Console.WriteLine(geom.name);
 
-                foreach (BFRES.Mesh nmesh in b.models[FMDLIndex].poly)
+                int CurW = 0;
+                foreach (var bnArr in GetBoneNamesAndWeights)
                 {
-                    Console.WriteLine(nmesh.Text);
-                    if (geom.name == nmesh.Text)
+                    BFRES.Vertex vtx = new BFRES.Vertex();
+
+                    string[] bnNames = bnArr.Key;
+                    float[] bnWeights = bnArr.Value;
+                  
+                    int CurSkinIndx = 0;
+                    foreach (string bn in bnNames)
                     {
-                        nmesh.faces.Clear();
-
-
-                        Console.WriteLine("Found mesh match in dae");
-
-                        Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
-                        ColladaNode cnode = null;
-                        foreach (ColladaNode node in dae.scene.nodes)
+                        foreach (var defBn in nodeArrStrings.Select((Value, Index) => new { Value, Index }))
                         {
-                            if (node.geom_id.Equals(geom.id))
+                            if (defBn.Value == bn)
                             {
-                                cnode = node;
-                                nodeTrans = node.mat;
-                                break;
+                                vtx.boneIds.Add(defBn.Index);
+                                vtx.boneWeights.Add(bnWeights[CurSkinIndx]);
                             }
                         }
+                        CurSkinIndx++;
+                    }
+                    if (vtx.boneIds.Count == 0)
+                    {
+                        vtx.boneIds.Add(0);
+                        vtx.boneWeights.Add(1);
+                    }
 
-                        geometries.Add("#" + geom.id, nmesh);
+                    BoneFixIndex.Add(vtx);
+                }
+                vertices.Add(skin.source, BoneFixIndex);
+            }
 
-                        Console.WriteLine(nmesh.Text);
+            BFRES.FMDL_Model nmodel = new BFRES.FMDL_Model();
+            //  b.Nodes.Add(nmodel);
 
-                        BFRES.Vertex v = nmesh.vertices;
+            Dictionary<string, BRTI> texturemap = new Dictionary<string, BRTI>();
+            Dictionary<string, BFRES.Mesh> geometries = new Dictionary<string, BFRES.Mesh>();
 
-                        v.pos.Clear();
-                        v.nrm.Clear();
-                        v.tans.Clear();
-                        v.uv0.Clear();
-                        v.uv1.Clear();
-                        v.bitans.Clear();
-                        v.weights.Clear();
-                        v.nodes.Clear();
-
-                        for (int i = 0; i < colladaPoly.p.Length; i++)
+            foreach (BFRES.FMDL_Model mdl in b.models)
+            {
+                foreach (BFRES.Mesh nmesh in mdl.poly)
+                {
+                    foreach (ColladaGeometry geom in dae.library_geometries)
+                    {         
+                        if (nmesh.Text == geom.name)
                         {
-                            int maxoffset = 0;
-                            foreach (ColladaInput input in colladaPoly.inputs)
-                                if (input.offset > maxoffset) maxoffset = input.offset;
-                            maxoffset += 1;
-                            if (i * maxoffset >= colladaPoly.p.Length) break;
-                            foreach (ColladaInput input in colladaPoly.inputs)
+                            ColladaMesh mesh = geom.mesh;
+                            ColladaPolygons colladaPoly = mesh.polygons[0];
+
+                            nmesh.vertices.Clear();
+                            nmesh.lodMeshes[0].faces.Clear();
+
+                            Dictionary<string, ColladaSource> sources = new Dictionary<string, ColladaSource>();
+                            foreach (ColladaSource s in mesh.sources)
                             {
-                                if (input.semantic == SemanticType.POSITION)
+                                sources.Add("#" + s.id, s);
+                            }
+
+                            Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
+                            ColladaNode cnode = null;
+                            foreach (ColladaNode node in dae.scene.nodes)
+                            {
+                                if (node.geom_id.Equals(geom.id))
                                 {
-                                    if (dae.library_controllers.Count > 0)
+                                    cnode = node;
+                                    nodeTrans = node.mat;
+                                    break;
+                                }
+                            }
+
+                            geometries.Add("#" + geom.id, nmesh);
+                      //      nmodel.Nodes.Add(nmesh);
+                            nmesh.Text = geom.name;
+                            for (int i = 0; i < colladaPoly.p.Length; i++)
+                            {
+                                if (importTexture)
+                                {
+                                    if (colladaPoly.type == ColladaPrimitiveType.triangles)
                                     {
-                                        if (vertices.ContainsKey("#" + geom.id))
+                                        NutTexture tempTex = null;
+                                        ColladaMaterials mat = null;
+                                        ColladaEffects eff = null;
+                                        ColladaImages img = null;
+                                        string matId = null;
+
+                                        dae.scene.MaterialIds.TryGetValue(colladaPoly.materialid, out matId);
+
+                                        /*        if (matId != null && matId[0] == '#')
+                                                    materials.TryGetValue(matId.Substring(1, matId.Length - 1), out mat);
+                                                if (mat != null && mat.effecturl[0] == '#')
+                                                    effects.TryGetValue(mat.effecturl.Substring(1, mat.effecturl.Length - 1), out eff);
+                                                if (eff != null && eff.source[0] == '#')
+                                                    images.TryGetValue(eff.source.Substring(1, eff.source.Length - 1), out img);
+                                                if (img != null)
+                                                    existingTextures.TryGetValue(img.initref, out tempTex);
+
+                                                if (texturemap.ContainsKey(img.initref))
+                                                {
+                                                    tempTex = texturemap[img.initref];
+                                                }
+                                                else
+                                                if (tempTex == null && img != null && File.Exists(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))))
+                                                {
+                                                    NutTexture tex = null;
+                                                    if (img.initref.ToLower().EndsWith(".dds"))
+                                                    {
+                                                        DDS dds = new DDS(new FileData(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref))));
+                                                        tex = dds.toNUT_Texture();
+                                                    }
+                                                    if (img.initref.ToLower().EndsWith(".png"))
+                                                    {
+                                                        tex = NUTEditor.fromPNG(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), img.initref)), 1);
+                                                    }
+                                                    if (tex == null)
+                                                        continue;
+                                                    texturemap.Add(img.initref, tex);
+                                                    tex.HASHID = 0x40FFFF00;
+                                                    while (NUT.texIdUsed(tex.HASHID))
+                                                        tex.HASHID++;
+                                                    thisNut.Nodes.Add(tex);
+                                                    thisNut.draw.Add(tex.HASHID, NUT.loadImage(tex));
+                                                    existingTextures.Add(img.initref, tex);
+                                                    tempTex = tex;
+                                                }
+                                                if (tempTex != null)
+                                                {
+                                                    npoly.materials[0].textures[0].hash = tempTex.HASHID;
+                                                }*/
+                                    }
+                                }
+
+                                BFRES.Vertex v = new BFRES.Vertex();
+                                int maxoffset = 0;
+                                foreach (ColladaInput input in colladaPoly.inputs)
+                                    if (input.offset > maxoffset) maxoffset = input.offset;
+                                maxoffset += 1;
+                                if (i * maxoffset >= colladaPoly.p.Length) break;
+                                foreach (ColladaInput input in colladaPoly.inputs)
+                                {
+                                    if (input.semantic == SemanticType.POSITION)
+                                    {
+                                        if (dae.library_controllers.Count > 0)
                                         {
-                                            v.nodes = (vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].nodes);
-                                            v.weights = (vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].weights);
+                                            if (vertices.ContainsKey("#" + geom.id))
+                                            {
+                                                v.boneIds.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
+                                                v.boneWeights.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            v.boneIds.Add(-1);
+                                            v.boneWeights.Add(1);
+                                        }
+                                    }
+                                    if (input.semantic == SemanticType.VERTEX)
+                                    {
+                                        v = new BFRES.Vertex();
+
+                                        nmesh.vertices.Add(v);
+
+                                        nmesh.lodMeshes[0].faces.Add(nmesh.vertices.IndexOf(v));
+
+                                        foreach (ColladaInput vinput in mesh.vertices.inputs)
+                                        {
+                                            if (vinput.semantic == SemanticType.POSITION)
+                                            {
+                                                if (dae.library_controllers.Count > 0)
+                                                {
+                                                    if (vertices.ContainsKey("#" + geom.id))
+                                                    {
+                                                        v.boneIds.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
+                                                        v.boneWeights.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    v.boneIds.Add(-1);
+                                                    v.boneWeights.Add(1);
+                                                }
+                                            }
+                                            BFRESReadSemantic(vinput, v, colladaPoly.p[maxoffset * i], sources);
                                         }
                                     }
                                     else
-                                    {
-                                        v.nodes.Add(new Vector4(-1,0,0,0));
-                                        v.weights.Add(new Vector4(1, 1, 1, 1));
-                                    }
+                                        BFRESReadSemantic(input, v, colladaPoly.p[(maxoffset * i) + input.offset], sources);
                                 }
-                                if (input.semantic == SemanticType.VERTEX)
-                                {
-                                    nmesh.faces.Add(i);
-                                    foreach (ColladaInput vinput in mesh.vertices.inputs)
-                                    {
-                                        if (vinput.semantic == SemanticType.POSITION)
-                                        {
-                                            if (dae.library_controllers.Count > 0)
-                                            {
-                                                if (vertices.ContainsKey("#" + geom.id))
-                                                {
-                                                   v.nodes.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].nodes);
-                                                    v.weights.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].weights);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                v.nodes.Add(new Vector4(-1, 0, 0, 0));
-                                                v.weights.Add(new Vector4(1, 1, 1, 1));
-                                            }
-                                        }
-                                        BFRESReadSemantic(vinput, v, colladaPoly.p[maxoffset * i], sources, i);
-                                    }
-                                }
-                                else
-                                    BFRESReadSemantic(input, v, colladaPoly.p[(maxoffset * i) + input.offset], sources, i);
-                            }
 
-                        /*    v.pos = Vector3.TransformPosition(v.pos, nodeTrans);
-                            if (v.nrm != null)
-                                v.nrm = Vector3.TransformNormal(v.nrm, nodeTrans);
-
-                            if (dae.library_controllers.Count > 0)
-                            {
-                                if (!bindMatrix.ContainsKey("#" + geom.id))
-                                    continue;
-                                v.pos = Vector3.TransformPosition(v.pos, bindMatrix["#" + geom.id]);
+                                v.pos = Vector3.TransformPosition(v.pos, nodeTrans);
                                 if (v.nrm != null)
-                                    v.nrm = Vector3.TransformNormal(v.nrm, bindMatrix["#" + geom.id]);
-                            }*/
-                        }
+                                    v.nrm = Vector3.TransformNormal(v.nrm, nodeTrans);
+
+                                if (dae.library_controllers.Count > 0)
+                                {
+                                    if (!bindMatrix.ContainsKey("#" + geom.id))
+                                        continue;
+                                    v.pos = Vector3.TransformPosition(v.pos, bindMatrix["#" + geom.id]);
+                                    if (v.nrm != null)
+                                        v.nrm = Vector3.TransformNormal(v.nrm, bindMatrix["#" + geom.id]);
+                                }
+                            }
+                            Console.WriteLine(nmesh.vertices.Count);
                     }
                 }
-
-
-              
-
-
-                CurMesh++;
             }
+               
 
-            b.UpdateVertexData();
+                //For adding
+                /*    foreach (ColladaGeometry geom in dae.library_geometries)
+                    {
+                        ColladaMesh mesh = geom.mesh;
+                        ColladaPolygons colladaPoly = mesh.polygons[0];
+
+                            // first create vertices?
+
+                                            Dictionary<string, ColladaSource> sources = new Dictionary<string, ColladaSource>();
+                                            foreach (ColladaSource s in mesh.sources)
+                                            {
+                                                sources.Add("#" + s.id, s);
+                                            }
+
+                                            BFRES.Mesh nmesh = new BFRES.Mesh();
+                                            Matrix4 nodeTrans = Matrix4.CreateScale(1, 1, 1);
+                                            ColladaNode cnode = null;
+                                            foreach (ColladaNode node in dae.scene.nodes)
+                                            {
+                                                if (node.geom_id.Equals(geom.id))
+                                                {
+                                                    cnode = node;
+                                                    nodeTrans = node.mat;
+                                                    break;
+                                                }
+                                            }
+
+                                            geometries.Add("#" + geom.id, nmesh);
+                                            nmodel.Nodes.Add(nmesh);
+                                            nmesh.Text = geom.name;
+                                            for (int i = 0; i < colladaPoly.p.Length; i++)
+                                            {
+                                                if (importTexture)
+                                                {
+                                                    if (colladaPoly.type == ColladaPrimitiveType.triangles)
+                                                    {
+                                                        NutTexture tempTex = null;
+                                                        ColladaMaterials mat = null;
+                                                        ColladaEffects eff = null;
+                                                        ColladaImages img = null;
+                                                        string matId = null;
+
+                                                        dae.scene.MaterialIds.TryGetValue(colladaPoly.materialid, out matId);
+
+                                                    }
+                                                }
+
+                                                BFRES.Vertex v = new BFRES.Vertex();
+                                                int maxoffset = 0;
+                                                foreach (ColladaInput input in colladaPoly.inputs)
+                                                    if (input.offset > maxoffset) maxoffset = input.offset;
+                                                maxoffset += 1;
+                                                if (i * maxoffset >= colladaPoly.p.Length) break;
+                                                foreach (ColladaInput input in colladaPoly.inputs)
+                                                {
+                                                    if (input.semantic == SemanticType.POSITION)
+                                                    {
+                                                        if (dae.library_controllers.Count > 0)
+                                                        {
+                                                            if (vertices.ContainsKey("#" + geom.id))
+                                                            {
+                                                                v.boneIds.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
+                                                                v.boneWeights.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            v.boneIds.Add(-1);
+                                                            v.boneWeights.Add(1);
+                                                        }
+                                                    }
+                                                    if (input.semantic == SemanticType.VERTEX)
+                                                    {
+                                                        v = new BFRES.Vertex();
+
+                                                        nmesh.vertices.Add(v);
+
+                                                        BFRES.Mesh.LOD_Mesh lod = new BFRES.Mesh.LOD_Mesh();
+                                                        lod.faces.Add(nmesh.vertices.IndexOf(v));
+                                                        nmesh.lodMeshes.Add(lod);
+
+                                                        foreach (ColladaInput vinput in mesh.vertices.inputs)
+                                                        {
+                                                            if (vinput.semantic == SemanticType.POSITION)
+                                                            {
+                                                                if (dae.library_controllers.Count > 0)
+                                                                {
+                                                                    if (vertices.ContainsKey("#" + geom.id))
+                                                                    {
+                                                                        v.boneIds.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneIds);
+                                                                        v.boneWeights.AddRange(vertices["#" + geom.id][colladaPoly.p[maxoffset * i]].boneWeights);
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    v.boneIds.Add(-1);
+                                                                    v.boneWeights.Add(1);
+                                                                }
+                                                            }
+                                                            BFRESReadSemantic(vinput, v, colladaPoly.p[maxoffset * i], sources);
+                                                        }
+                                                    }
+                                                    else
+                                                       BFRESReadSemantic(input, v, colladaPoly.p[(maxoffset * i) + input.offset], sources);
+                                                }
+
+                                                v.pos = Vector3.TransformPosition(v.pos, nodeTrans);
+                                                if (v.nrm != null)
+                                                    v.nrm = Vector3.TransformNormal(v.nrm, nodeTrans);
+
+                                                if (dae.library_controllers.Count > 0)
+                                                {
+                                                    if (!bindMatrix.ContainsKey("#" + geom.id))
+                                                        continue;
+                                                    v.pos = Vector3.TransformPosition(v.pos, bindMatrix["#" + geom.id]);
+                                                    if (v.nrm != null)
+                                                        v.nrm = Vector3.TransformNormal(v.nrm, bindMatrix["#" + geom.id]);
+                                                }
+                                            }*/
+
+                // AddMaterialsForEachUvChannel(npoly);
+                b.UpdateVertexData();
+            }
         }
 
         private static void AddMaterialsForEachUvChannel(NUD.Polygon npoly)
@@ -414,6 +633,54 @@ namespace Smash_Forge
             }
         }
 
+        private static void BFRESSkinVerts(ModelContainer con, ColladaSkin skin, Dictionary<string, ColladaSource> sources, List<BFRES.Vertex> verts, Dictionary<string[], float[]> GetBoneNamesAndWeights)
+
+        {
+            int v = 0;
+            for (int i = 0; i < skin.weights.count; i++)
+            {
+                //basically, I need to find all verts that use this position and apply that.........
+
+
+                int count = skin.weights.vcount[i];
+                if (count > 4)
+                {
+                    MessageBox.Show("Error: More than 4 weights detected!");
+                    return;
+                }
+                string[] BoneNames = new string[count];
+                float[] weightArr = new float[count];
+
+                BFRES.Vertex newVertex = new BFRES.Vertex();
+
+                for (int j = 0; j < count; j++)
+                {
+                    foreach (ColladaInput input in skin.weights.inputs)
+                    {
+                        switch (input.semantic)
+                        {
+                            case SemanticType.JOINT:
+                                string bname = sources[input.source].data[skin.weights.v[v]];
+                                if (bname.StartsWith("_"))
+                                    bname = bname.Substring(6, bname.Length - 6);
+                                int index = con.VBN.boneIndex(bname);
+                                newVertex.boneIds.Add(index);
+                                BoneNames[j] = bname;
+                                break;
+                            case SemanticType.WEIGHT:
+                                float weight = float.Parse(sources[input.source].data[skin.weights.v[v]]);
+                                newVertex.boneWeights.Add(weight);
+                                weightArr[j] = weight;
+                                break;
+                        }
+                        v++;
+                    }
+                }
+                GetBoneNamesAndWeights.Add(BoneNames, weightArr);
+
+                verts.Add(newVertex);
+            }
+        }
         private static void SkinVerts(ModelContainer con, ColladaSkin skin, Dictionary<string, ColladaSource> sources, List<NUD.Vertex> verts)
         {
             int v = 0;
@@ -538,48 +805,37 @@ namespace Smash_Forge
             }
         }
 
-        private static void BFRESReadSemantic(ColladaInput input, BFRES.Vertex v, int p, Dictionary<string, ColladaSource> sources, int i = 0)
+        private static void BFRESReadSemantic(ColladaInput input, BFRES.Vertex v, int p, Dictionary<string, ColladaSource> sources)
         {
-            float X, Y, Z, W;
-
             switch (input.semantic)
             {
                 case SemanticType.POSITION:
-                    X = float.Parse(sources[input.source].data[p * 3 + 0]);
-                    Y = float.Parse(sources[input.source].data[p * 3 + 1]);
-                    Z = float.Parse(sources[input.source].data[p * 3 + 2]);
-                    v.pos.Add(new Vector3(X, Y, Z));
+                    v.pos.X = float.Parse(sources[input.source].data[p * 3 + 0]);
+                    v.pos.Y = float.Parse(sources[input.source].data[p * 3 + 1]);
+                    v.pos.Z = float.Parse(sources[input.source].data[p * 3 + 2]);
                     break;
                 case SemanticType.NORMAL:
-                    X = float.Parse(sources[input.source].data[p * 3 + 0]);
-                    Y = float.Parse(sources[input.source].data[p * 3 + 1]);
-                    Z = float.Parse(sources[input.source].data[p * 3 + 2]);
-                    v.nrm.Add(new Vector3(X, Y, Z));
+                    v.nrm.X = float.Parse(sources[input.source].data[p * 3 + 0]);
+                    v.nrm.Y = float.Parse(sources[input.source].data[p * 3 + 1]);
+                    v.nrm.Z = float.Parse(sources[input.source].data[p * 3 + 2]);
                     break;
                 case SemanticType.TEXCOORD:
                     Vector2 tx = new Vector2();
                     tx.X = float.Parse(sources[input.source].data[p * 2 + 0]);
                     tx.Y = float.Parse(sources[input.source].data[p * 2 + 1]);
-                    v.uv0.Add(tx);
+                    v.uv0 = tx;
                     break;
-               case SemanticType.COLOR:
+                case SemanticType.COLOR:
                     // Vertex colors are stored as integers [0,255]. (127,127,127) is white.
-                    X = float.Parse(sources[input.source].data[p * sources[input.source].stride + 0]) * 255;
-                    Y = float.Parse(sources[input.source].data[p * sources[input.source].stride + 1]) * 255;
-                    Z = float.Parse(sources[input.source].data[p * sources[input.source].stride + 2]) * 255;
+                    v.col.X = float.Parse(sources[input.source].data[p * sources[input.source].stride + 0]) * 255;
+                    v.col.Y = float.Parse(sources[input.source].data[p * sources[input.source].stride + 1]) * 255;
+                    v.col.Z = float.Parse(sources[input.source].data[p * sources[input.source].stride + 2]) * 255;
                     if (sources[input.source].stride > 3)
-                    {
-                        W = float.Parse(sources[input.source].data[p * sources[input.source].stride + 3]) * 127;
-                        v.col.Add(new Vector4(X, Y, Z, W));
-                    }
-                    else
-                    {
-                        v.col.Add(new Vector4(X, Y, Z, 1));
-                    }
+                        v.col.W = float.Parse(sources[input.source].data[p * sources[input.source].stride + 3]) * 127;
                     break;
             }
         }
-        public static void BFRES2DAESave(string fname, BFRES bfres)
+        public static void BFRES2DAESave(string fname, BFRES bfres, ModelContainer con)
         {
             Collada dae = new Collada();
             // bones
@@ -607,13 +863,12 @@ namespace Smash_Forge
             int num = 0;
             foreach (BFRES.FMDL_Model fmdl in bfres.models)
             {
-                foreach (BFRES.Mesh m in fmdl.poly)
+                foreach (BFRES.Mesh mesh in fmdl.poly)
                 {
                     ColladaGeometry geom = new ColladaGeometry();
                     dae.library_geometries.Add(geom);
-                    //     geom.name = m.Text;
-                    //    geom.id = m.Text + fmdl.Nodes.IndexOf(m);
-                    //     geom.id = "Mesh_" + m.displayList.IndexOf(da);
+                    geom.name = mesh.Text;
+                    geom.id = mesh.Text + fmdl.Nodes.IndexOf(mesh);
                     geom.mesh = new ColladaMesh();
 
                     // create a node for this
@@ -626,100 +881,57 @@ namespace Smash_Forge
                     colnode.instance = "instance_controller";
 
                     // create material
-                    /*      ColladaMaterials mat = new ColladaMaterials();
-                          mat.id = "VisualMaterial" + num;
-                          mat.name = bfres.models[0].mat[m.MaterialIndex].name;
-                          mat.effecturl = "#Effect" + num;
-                          dae.library_materials.Add(mat);
-                          colnode.materialSymbol = "Material" + num;
-                          colnode.materialTarget = "#" + mat.id;
+                    ColladaMaterials mat = new ColladaMaterials();
+                    mat.id = "VisualMaterial" + num;
+                    mat.effecturl = "#Effect" + num;
+                    dae.library_materials.Add(mat);
+                    colnode.materialSymbol = "Material" + num;
+                    colnode.materialTarget = "#" + mat.id;
 
-                          ColladaEffects eff = new ColladaEffects();
+                    ColladaEffects eff = new ColladaEffects();
+                    eff.id = "Effect" + num;
+                    eff.name = geom.name + "-effect";
+                    eff.source = eff.name + "tex";
+                    dae.library_effects.Add(eff);
 
+                    ColladaImages img = new ColladaImages();
+                    img.id = eff.source;
+                    img.initref = "./" + mesh.material.textures[0].Name + ".png";
+                    dae.library_images.Add(img);
 
-
-                          int id = 0;
-                          foreach(string tex in bfres.models[0].mat[m.MaterialIndex].TextureMaps)
-                          {
-                              if (tex.Contains("Alb"))
-                              {
-                                  ColladaSampler2D samp = new ColladaSampler2D();
-
-                                  BFRES.SamplerInfo smp = bfres.models[0].mat[m.MaterialIndex].samplerinfo[id];
-
-                                  eff.id = tex + "_png";
-                                  eff.name = geom.name + "-effect";
-                                  eff.source = eff.name + tex;
-
-                                  samp.url = $"{tex}";
-                                  Console.WriteLine("Sampler URL" + tex);
-
-                                  samp.source = tex;
-
-                                  eff.sampler = samp;
-
-                                  Dictionary<int, COLLADA_WRAPMODE> wraptranslate = new Dictionary<int, COLLADA_WRAPMODE>
-                              {
-                                  {0, COLLADA_WRAPMODE.REPEAT },
-                                  {1, COLLADA_WRAPMODE.MIRROR },
-                                  {2, COLLADA_WRAPMODE.CLAMP }
-                              };
-
-                                  samp.wrap_t = wraptranslate[smp.WrapModeU];
-                                  samp.wrap_s = wraptranslate[smp.WrapModeV];
-                              }
-
-
-                              id++;
-                          }
-
-                          dae.library_effects.Add(eff);*/
+                    ColladaSampler2D samp = new ColladaSampler2D();
+                    if (mesh.material != null)
+                        samp.url = $"Tex_0x"; //todo
+                    else
+                        samp.url = $"Tex_0x{0}";
+                    eff.sampler = samp;
+                    Dictionary<int, COLLADA_WRAPMODE> wraptranslate = new Dictionary<int, COLLADA_WRAPMODE>
+                {
+                    {0, COLLADA_WRAPMODE.CLAMP },
+                    {1, COLLADA_WRAPMODE.REPEAT },
+                    {2, COLLADA_WRAPMODE.MIRROR }
+                };
+                    //samp.wrap_t = wraptranslate[poly.materials[0].textures[0].WrapMode1];
+                    //samp.wrap_s = wraptranslate[poly.materials[0].textures[0].WrapMode2];
 
                     // create vertex object
                     ColladaVertices vertex = new ColladaVertices();
-                    vertex.id = geom.name + "_verts";
+                    vertex.id = mesh.Text + fmdl.Nodes.IndexOf(mesh) + "_verts";
                     geom.mesh.vertices = vertex;
-
-                    // create polygon objects (nud uses basically 1)
-                    ColladaPolygons p = new ColladaPolygons();
-                    ColladaInput inv = new ColladaInput();
-                    inv.offset = 0;
-                    inv.semantic = SemanticType.VERTEX;
-                    // inv.source = "#" + "Mesh_" + m.displayList.IndexOf(da) + "_verts";
-                    List<DAT.Vertex> usedVertices = new List<DAT.Vertex>();
-                    List<int> faces = new List<int>();
-                    p.materialid = "Material" + num;
-                    p.inputs.Add(inv);
-                    p.count = m.displayFaceSize;
-                    p.p = m.getDisplayFace().ToArray();
-                    geom.mesh.polygons.Add(p);
 
                     // create sources... this may take a minute
                     // POSITION
                     {
                         ColladaSource src = new ColladaSource();
                         geom.mesh.sources.Add(src);
-                        src.id = geom.name + "_pos";
+                        src.id = mesh.Text + fmdl.Nodes.IndexOf(mesh) + "_pos";
+                        //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.POSITION });
                         List<string> d = new List<string>();
-                        if (m.matrFlag == 1)
+                        foreach (BFRES.Vertex v in mesh.vertices)
                         {
-                            foreach (Vector3 v in m.vertices.pos)
-                            {
-                                //    float posX = bfres.sb[0].Row0 * v.pos.X;
-
-                                d.AddRange(new string[] { v.X.ToString(), v.Y.ToString(), v.Z.ToString() });
-                            }
+                            d.AddRange(new string[] { v.pos.X.ToString(), v.pos.Y.ToString(), v.pos.Z.ToString() });
                         }
-                        else
-                        {
-                            foreach (Vector3 v in m.vertices.pos)
-                            {
-                                d.AddRange(new string[] { v.X.ToString(), v.Y.ToString(), v.Z.ToString() });
-                            }
-                        }
-
-
                         src.accessor.Add("X");
                         src.accessor.Add("Y");
                         src.accessor.Add("Z");
@@ -730,12 +942,13 @@ namespace Smash_Forge
                     {
                         ColladaSource src = new ColladaSource();
                         geom.mesh.sources.Add(src);
-                        src.id = geom.name + "_nrm";
+                        src.id = mesh.Text + fmdl.Nodes.IndexOf(mesh) + "_nrm";
+                        //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.NORMAL });
                         List<string> d = new List<string>();
-                        foreach (Vector3 v in m.vertices.nrm)
+                        foreach (BFRES.Vertex v in mesh.vertices)
                         {
-                            d.AddRange(new string[] { v.X.ToString(), v.Y.ToString(), v.Z.ToString() });
+                            d.AddRange(new string[] { v.nrm.X.ToString(), v.nrm.Y.ToString(), v.nrm.Z.ToString() });
                         }
                         src.accessor.Add("X");
                         src.accessor.Add("Y");
@@ -747,13 +960,13 @@ namespace Smash_Forge
                     {
                         ColladaSource src = new ColladaSource();
                         geom.mesh.sources.Add(src);
-                        src.id = geom.name + "_tx0";
+                        src.id = mesh.Text + fmdl.Nodes.IndexOf(mesh) + "_tx0";
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.TEXCOORD });
                         List<string> d = new List<string>();
-                        foreach (Vector2 v in m.vertices.uv0)
+                        foreach (BFRES.Vertex v in mesh.vertices)
                         {
-                            d.AddRange(new string[] { v.X.ToString(), v.Y.ToString() });
+                            d.AddRange(new string[] { v.uv0.X.ToString(), v.uv0.Y.ToString() });
                         }
                         src.accessor.Add("S");
                         src.accessor.Add("T");
@@ -764,13 +977,13 @@ namespace Smash_Forge
                     {
                         ColladaSource src = new ColladaSource();
                         geom.mesh.sources.Add(src);
-                        src.id = geom.name + "_clr";
+                        src.id = mesh.Text + fmdl.Nodes.IndexOf(mesh) + "_clr";
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.COLOR });
                         List<string> d = new List<string>();
-                        foreach (Vector4 v in m.vertices.col)
+                        foreach (BFRES.Vertex v in mesh.vertices)
                         {
-                            d.AddRange(new string[] { (v.X * 255).ToString(), (v.Y * 255).ToString(), (v.Z * 255).ToString(), (v.W * 255).ToString() });
+                            d.AddRange(new string[] { (v.col.X / 128).ToString(), (v.col.Y / 128).ToString(), (v.col.Z / 128).ToString(), (v.col.W / 128).ToString() });
                         }
                         src.accessor.Add("R");
                         src.accessor.Add("G");
@@ -780,87 +993,120 @@ namespace Smash_Forge
                         src.count = d.Count * 4;
                     }
 
-                    /*        // create controllers too
-                            ColladaController control = new ColladaController();
-                            control.id = "Controller" + num;
-                            colnode.geomid = "#" + control.id;
-                            dae.library_controllers.Add(control);
-                            ColladaSkin skin = new ColladaSkin();
-                            control.skin = skin;
-                            skin.source = "#" + geom.id;
-                            skin.mat = Matrix4.CreateScale(1, 1, 1);
-                            skin.joints = new ColladaJoints();
+                    // create polygon objects (nud uses basically 1)
+                    ColladaPolygons p = new ColladaPolygons();
+                    ColladaInput inv = new ColladaInput();
+                    inv.offset = 0;
+                    inv.semantic = SemanticType.VERTEX;
+                    inv.source = "#" + mesh.Text + fmdl.Nodes.IndexOf(mesh) + "_verts";
+                    p.inputs.Add(inv);
+                    p.count = mesh.lodMeshes[mesh.DisplayLODIndex].displayFaceSize;
+                    p.p = mesh.lodMeshes[mesh.DisplayLODIndex].getDisplayFace().ToArray();
+                    geom.mesh.polygons.Add(p);
 
-                            ColladaVertexWeights weights = new ColladaVertexWeights();
-                            skin.weights = weights;
+                    // create controllers too
+                    ColladaController control = new ColladaController();
+                    control.id = "Controller" + num;
+                    colnode.geomid = "#" + control.id;
+                    dae.library_controllers.Add(control);
+                    ColladaSkin skin = new ColladaSkin();
+                    control.skin = skin;
+                    skin.source = "#" + geom.id;
+                    skin.mat = Matrix4.CreateScale(1, 1, 1);
+                    skin.joints = new ColladaJoints();
 
-                            // JOINT
+                    ColladaVertexWeights weights = new ColladaVertexWeights();
+                    skin.weights = weights;
+
+                    // JOINT
+
+                    {
+                        ColladaSource src = new ColladaSource();
+                        skin.sources.Add(src);
+                        src.id = control.id + "_joints";
+                        src.type = ArrayType.Name_array;
+                        //src.name = mesh.name + "src1";
+                        skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT });
+                        weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT, offset = 0 });
+                        List<string> d = new List<string>();
+                        if (con.VBN != null)
+                        {
+                            foreach (Bone b in con.VBN.bones)
+                                d.Add(b.Text);
+                        }
+                        else
+                        {
+                            d.Add("ROOT");
+                        }
+                        src.accessor.Add("JOINT");
+                        src.data = d.ToArray();
+                        src.count = d.Count;
+                    }
+                    // INVTRANSFORM
+
+                    {
+                        ColladaSource src = new ColladaSource();
+                        skin.sources.Add(src);
+                        src.id = control.id + "_trans";
+                        skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.INV_BIND_MATRIX });
+                        List<string> d = new List<string>();
+                        if (con.VBN != null)
+                        {
+
+
+                            foreach (Bone b in con.VBN.bones)
                             {
-                                ColladaSource src = new ColladaSource();
-                                skin.sources.Add(src);
-                                src.id = control.id + "_joints";
-                                src.type = ArrayType.Name_array;
-                                //src.name = mesh.name + "src1";
-                                skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT });
-                                weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.JOINT, offset = 0 });
-                                List<string> d = new List<string>();
-                                foreach (Bone b in bfres.models[0].skeleton.bones)
-                                    d.Add(b.Text);
-                                src.accessor.Add("JOINT");
-                                src.data = d.ToArray();
-                                src.count = d.Count;
+                                d.Add(b.invert.M11 + " " + b.invert.M21 + " " + b.invert.M31 + " " + b.invert.M41 + " "
+                                    + b.invert.M12 + " " + b.invert.M22 + " " + b.invert.M32 + " " + b.invert.M42 + " "
+                                    + b.invert.M13 + " " + b.invert.M23 + " " + b.invert.M33 + " " + b.invert.M43 + " "
+                                    + b.invert.M14 + " " + b.invert.M24 + " " + b.invert.M34 + " " + b.invert.M44);
                             }
-                            // INVTRANSFORM
-                            {
-                                ColladaSource src = new ColladaSource();
-                                skin.sources.Add(src);
-                                src.id = control.id + "_trans";
-                                skin.joints.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.INV_BIND_MATRIX });
-                                List<string> d = new List<string>();
-                                foreach (Bone b in bfres.models[0].skeleton.bones)
-                                {
-                                    d.Add(b.invert.M11 + " " + b.invert.M21 + " " + b.invert.M31 + " " + b.invert.M41 + " "
-                                        + b.invert.M12 + " " + b.invert.M22 + " " + b.invert.M32 + " " + b.invert.M42 + " "
-                                        + b.invert.M13 + " " + b.invert.M23 + " " + b.invert.M33 + " " + b.invert.M43 + " "
-                                        + b.invert.M14 + " " + b.invert.M24 + " " + b.invert.M34 + " " + b.invert.M44);
-                                }
-                                src.accessor.Add("TRANSFORM");
-                                src.data = d.ToArray();
-                                src.count = d.Count * 16;
-                            }
-                            // WEIGHT
-                            {
-                                ColladaSource src = new ColladaSource();
-                                skin.sources.Add(src);
-                                src.id = control.id + "_weights";
-                                weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.WEIGHT, offset = 1 });
-                                List<string> d = new List<string>();
-                                List<int> vcount = new List<int>();
-                                List<int> vert = new List<int>();
-                                BFRES.Vertex vtx = m.vertices;
-                                foreach (Vector4 v in m.vertices.weights)
-                                {
-                                    int vc = 0;
+                        }
+                        else
+                        {
+                            Bone b = new Bone(new VBN());
+                            d.Add(b.invert.M11 + " " + b.invert.M21 + " " + b.invert.M31 + " " + b.invert.M41 + " "
+                                    + b.invert.M12 + " " + b.invert.M22 + " " + b.invert.M32 + " " + b.invert.M42 + " "
+                                    + b.invert.M13 + " " + b.invert.M23 + " " + b.invert.M33 + " " + b.invert.M43 + " "
+                                    + b.invert.M14 + " " + b.invert.M24 + " " + b.invert.M34 + " " + b.invert.M44);
+                        }
 
-                                    for (int i = 0; i < vtx.nodes.Count; i++)
-                                    {
-                                        string w = v[i].ToString();
-                                        if (w.Equals("0")) continue;
-                                        vc++;
-                                        if (!d.Contains(w))
-                                            d.Add(w);
-                                        vert.Add((int)vtx.nodes[i].X);
-                                        vert.Add(d.IndexOf(w));
-                                    };
-                                    vcount.Add(vc);
-                                }
+                        src.accessor.Add("TRANSFORM");
+                        src.data = d.ToArray();
+                        src.count = d.Count * 16;
+                    }
+                    // WEIGHT
 
-                                weights.vcount = vcount.ToArray();
-                                weights.v = vert.ToArray();
-                                src.accessor.Add("WEIGHT");
-                                src.data = d.ToArray();
-                                src.count = d.Count;
-                            }*/
+                    {
+                        ColladaSource src = new ColladaSource();
+                        skin.sources.Add(src);
+                        src.id = control.id + "_weights";
+                        weights.inputs.Add(new ColladaInput() { source = "#" + src.id, semantic = SemanticType.WEIGHT, offset = 1 });
+                        List<string> d = new List<string>();
+                        List<int> vcount = new List<int>();
+                        List<int> vert = new List<int>();
+                        foreach (BFRES.Vertex v in mesh.vertices)
+                        {
+                            int vc = 0;
+                            for (int i = 0; i < v.boneIds.Count; i++)
+                            {
+                                string w = v.boneWeights[i].ToString();
+                                if (w.Equals("0")) continue;
+                                vc++;
+                                if (!d.Contains(w))
+                                    d.Add(w);
+                                vert.Add(v.boneIds[i]);
+                                vert.Add(d.IndexOf(w));
+                            };
+                            vcount.Add(vc);
+                        }
+                        weights.vcount = vcount.ToArray();
+                        weights.v = vert.ToArray();
+                        src.accessor.Add("WEIGHT");
+                        src.data = d.ToArray();
+                        src.count = d.Count;
+                    }
+
                     num++;
                 }
             }
@@ -1170,7 +1416,7 @@ namespace Smash_Forge
 
             if (con.BFRES != null)
             {
-                BFRES2DAESave(fname, con.BFRES);
+                BFRES2DAESave(fname, con.BFRES, con);
                 return;
             }
 

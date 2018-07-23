@@ -209,6 +209,9 @@ namespace Smash_Forge
                     case "render_swagZ":
                         bool.TryParse(node.InnerText, out Runtime.renderSwagZ);
                         break;
+                    case "reander_physicallyBasedRendering":
+                        bool.TryParse(node.InnerText, out Runtime.renderPhysicallyBasedRendering);
+                        break;
                     case "fighter_dir":
                         Runtime.fighterDir = node.InnerText;
                         break;
@@ -558,6 +561,7 @@ namespace Smash_Forge
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_otherLVDEntries", Runtime.renderOtherLVDEntries.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_swag", Runtime.renderSwagY.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_swagZ", Runtime.renderSwagZ.ToString()));
+            lvdRenderSettingsNode.AppendChild(createNode(doc, "reander_physicallyBasedRendering", Runtime.renderPhysicallyBasedRendering.ToString()));
         }
 
         private static void AppendDiscordSettings(XmlDocument doc, XmlNode parentNode)

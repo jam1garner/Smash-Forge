@@ -396,19 +396,19 @@ namespace Smash_Forge
                     {
                         texture.type = PixelInternalFormat.CompressedRedRgtc1;
 
-                        /*    byte[] fixBC4 = DecompressBC4(texture.data, texture.width, texture.height, false);
-                            texture.data = fixBC4;
-                            texture.type = PixelInternalFormat.Rgba;
-                            texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;*/
+                    //        byte[] fixBC4 = DecompressBC4(texture.data, texture.width, texture.height, false);
+                     //       texture.data = fixBC4;
+                      //      texture.type = PixelInternalFormat.Rgba;
+                       //     texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
                     {
                         texture.type = PixelInternalFormat.CompressedSignedRedRgtc1;
 
-                        /*     byte[] fixBC4 = DecompressBC4(texture.data, texture.width, texture.height, true);
-                             texture.data = fixBC4;
-                             texture.type = PixelInternalFormat.Rgba;
-                             texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;*/
+                     //       byte[] fixBC4 = DecompressBC4(texture.data, texture.width, texture.height, true);
+                      //       texture.data = fixBC4;
+                   //          texture.type = PixelInternalFormat.Rgba;
+                    //         texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else
                         throw new Exception("Unsupported data type for BC4");

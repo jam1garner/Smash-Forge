@@ -46,6 +46,9 @@ namespace Smash_Forge.GUI
             wireframeCB.Enabled = renderModelCB.Checked;
             modelSelectCB.Enabled = renderModelCB.Checked;
 
+            // BFRES Settings
+            PhysicallyBasedRenderingCheckBox.Checked = Runtime.renderPhysicallyBasedRendering;
+
             // Hitbox Settings
             renderHitboxesCB.Checked = Runtime.renderHitboxes;
             nudHitboxAlpha.Value = Runtime.hitboxAlpha;

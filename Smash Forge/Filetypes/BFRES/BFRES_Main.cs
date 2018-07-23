@@ -83,6 +83,25 @@ namespace Smash_Forge
         public static Vector3 rotation = new Vector3(0, 0, 0);
         public static Vector3 scale = new Vector3(1, 1, 1);
 
+     
+
+        public static List<DefaultBonePos> HackyBoneList = new List<DefaultBonePos>();
+        public class DefaultBonePos
+        {
+            public string Name;
+            public Vector3 pos;
+            public Vector3 rot;
+            public Vector3 scale;
+        }
+        public static List<NewBonePos> HackyBoneDiffList = new List<NewBonePos>();
+        public class NewBonePos
+        {
+            public string Name;
+            public Vector3 pos;
+            public Vector3 rot;
+            public Vector3 scale;
+        }
+
         #region Render BFRES
 
         public BFRES()
@@ -398,8 +417,6 @@ namespace Smash_Forge
                 {
                     GL.Uniform1(shader.getAttribute("boneList"), bind.Length, ref bind[0]);
                 }
-                sb = fmdl.skeleton.getShaderMatrixSingleBinded();
-                GL.UniformMatrix4(shader.getAttribute("bonesfixed"), sb.Length, false, ref sb[0].Row0.X);
 
                 foreach (Mesh m in fmdl.depthSortedMeshes)
                 {
@@ -413,7 +430,7 @@ namespace Smash_Forge
 
                 foreach (Mesh m in opaque)
                 {
-                    ApplyTransformFix(fmdl, m);
+                          ApplyTransformFix(fmdl, m);
 
                     if (m.Parent != null && (m.Parent).Checked)
                         DrawMesh(m, shader, m.material);
@@ -421,7 +438,7 @@ namespace Smash_Forge
 
                 foreach (Mesh m in transparent)
                 {
-                    ApplyTransformFix(fmdl, m);
+                           ApplyTransformFix(fmdl, m);
 
                     if (((FMDL_Model)m.Parent).Checked)
                     {
@@ -432,10 +449,6 @@ namespace Smash_Forge
 
       
             shader.disableAttrib();
-        }
-        private void BindSkeleton(Shader shader)
-        {
-
         }
 
         private void SetRenderSettings(Shader shader)
@@ -448,10 +461,11 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderG"), Runtime.renderG ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderB"), Runtime.renderB ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
+            GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
         }
         private void DrawMesh(Mesh m, Shader shader, MaterialData mat, bool drawSelection = false)
         {
-            if (m.faces.Count <= 3)
+            if (m.lodMeshes[m.DisplayLODIndex].faces.Count <= 3)
                 return;
 
             SetVertexAttributes(m, shader);
@@ -480,7 +494,7 @@ namespace Smash_Forge
 
                     if (Runtime.renderModel)
                     {
-                        GL.DrawElements(PrimitiveType.Triangles, m.displayFaceSize, DrawElementsType.UnsignedInt, m.Offset);
+                        GL.DrawElements(PrimitiveType.Triangles, m.lodMeshes[m.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, m.Offset);
                     }
                 }
 
@@ -494,7 +508,7 @@ namespace Smash_Forge
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+            GL.DrawElements(PrimitiveType.Triangles, p.lodMeshes[p.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             GL.Uniform1(shader.getAttribute("colorOverride"), 0);
         }
@@ -502,7 +516,7 @@ namespace Smash_Forge
         {
             //This part needs to be reworked for proper outline. Currently would make model disappear
 
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+            GL.DrawElements(PrimitiveType.Triangles, p.lodMeshes[p.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
 
             GL.Enable(EnableCap.StencilTest);
             // use vertex color for wireframe color
@@ -510,7 +524,7 @@ namespace Smash_Forge
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+            GL.DrawElements(PrimitiveType.Triangles, p.lodMeshes[p.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             GL.Uniform1(shader.getAttribute("colorOverride"), 0);
 
@@ -568,6 +582,7 @@ namespace Smash_Forge
             DisplayVertex[] Vertices;
             int[] Faces;
 
+            Console.WriteLine("Updating Verts");
             int poffset = 0;
             int voffset = 0;
             List<DisplayVertex> Vs = new List<DisplayVertex>();
@@ -580,11 +595,11 @@ namespace Smash_Forge
                     List<DisplayVertex> pv = m.CreateDisplayVertices();
                     Vs.AddRange(pv);
 
-                    for (int i = 0; i < m.displayFaceSize; i++)
+                    for (int i = 0; i < m.lodMeshes[m.DisplayLODIndex].displayFaceSize; i++)
                     {
                         Ds.Add(m.display[i] + voffset);
                     }
-                    poffset += m.displayFaceSize;
+                    poffset += m.lodMeshes[m.DisplayLODIndex].displayFaceSize;
                     voffset += pv.Count;
                 }
             }
@@ -592,6 +607,8 @@ namespace Smash_Forge
             // Binds
             Vertices = Vs.ToArray();
             Faces = Ds.ToArray();
+
+            Console.WriteLine(Faces.Length);
 
             // Bind only once!
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
@@ -603,8 +620,10 @@ namespace Smash_Forge
 
         private static void ApplyTransformFix(FMDL_Model fmdl, Mesh m)
         {
-            GL.Uniform1(shader.getAttribute("RigidSkinning"), 0);
             GL.Uniform1(shader.getAttribute("NoSkinning"), 0);
+            GL.Uniform1(shader.getAttribute("RigidSkinning"), 0);
+            //Some objects will have no weights or indices. These will weigh to the bone index in the shape section.
+            GL.Uniform1(shader.getAttribute("SingleBoneIndex"), m.boneIndx);
 
             if (m.matrFlag == 1)
             {
@@ -612,10 +631,8 @@ namespace Smash_Forge
             }
             if (m.matrFlag == 0)
             {
-                Matrix4 NoBindFix = fmdl.skeleton.bones[m.fsklindx].transform;
-
-                GL.UniformMatrix4(shader.getAttribute("TransformNoRig"), false, ref NoBindFix);
                 GL.Uniform1(shader.getAttribute("NoSkinning"), 1);
+
             }
         }
 
@@ -975,7 +992,7 @@ namespace Smash_Forge
 
                         //Find a matching bone if the matEntry uses bones instead of materials
                         //For visual anims simply get the mesh that is linked to the material and hide it
-                        if (mdl.skeleton.bones[mesh.fsklindx].Text == matEntry.Text)
+                        if (mdl.skeleton.bones[mesh.boneIndx].Text == matEntry.Text)
                         {
                             int FrameRate = 60;
                             int frm = (int)((frame * 60 / FrameRate) % (m.FrameCount));
@@ -1057,24 +1074,25 @@ namespace Smash_Forge
 
         #endregion
 
+        #region BFRES Data (Wii U and Switch)
+
         public class Vertex
         {
-            public List<Vector3> pos = new List<Vector3>();
-            public List<Vector3> nrm = new List<Vector3>();
-            public List<Vector4> col = new List<Vector4>();
-            public List<Vector2> uv0 = new List<Vector2>();
-            public List<Vector2> uv1 = new List<Vector2>();
-            public List<Vector2> uv2 = new List<Vector2>();
-            public List<Vector4> tans = new List<Vector4>();
-            public List<Vector4> bitans = new List<Vector4>();
-            public List<Vector4> nodes = new List<Vector4>();
-            public List<Vector4> weights = new List<Vector4>();
-            public List<Vector4> nodes1 = new List<Vector4>();
-            public List<Vector4> weights1 = new List<Vector4>();
+            public Vector3 pos = new Vector3(0);
+            public Vector3 nrm = new Vector3(0);
+            public Vector4 col = new Vector4(1);
+            public Vector2 uv0 = new Vector2(0);
+            public Vector2 uv1 = new Vector2(0);
+            public Vector2 uv2 = new Vector2(0);
+            public Vector4 tan = new Vector4(0);
+            public Vector4 bitan = new Vector4(0);
+
+            public List<int> boneIds = new List<int>();
+            public List<float> boneWeights = new List<float>();
 
             //For vertex morphing 
-            public List<Vector3> pos1 = new List<Vector3>();
-            public List<Vector3> pos2 = new List<Vector3>();
+            public Vector3 pos1 = new Vector3();
+            public Vector3 pos2 = new Vector3();
         }
 
         public struct DisplayVertex
@@ -1100,35 +1118,100 @@ namespace Smash_Forge
 
         public class Mesh : TreeNode
         {
-            private List<int> Faces = new List<int>();
-            public List<int> faces
-            {
-                get
-                { return Faces; }
-            }
-            public Vertex vertices = new Vertex();
+            public List<Vertex> vertices = new List<Vertex>();
             public List<int> texHashs = new List<int>();
             public string name;
             public int MaterialIndex;
             public List<string> TextureMapTypes = new List<string>();
-            public int[] SkinIndexList;
             public int matrFlag;
             public int[] BoneFixNode;
-            public int fsklindx;
-     //       public int[] Faces;
+            public int boneIndx;
+            public int fmdlIndx; //Just so we know what fmdl it's in
             public uint[] indicesArray;
 
-            public int BoundingCount;
 
             public bool isTransparent = false;
 
             public MaterialData material = new MaterialData();
 
+            public int BoundingCount;
             public List<float> radius = new List<float>();
-
             public List<BoundingBox> boundingBoxes = new List<BoundingBox>();
-
             public Dictionary<string, int> BoneIndexList = new Dictionary<string, int>();
+
+            public int DisplayLODIndex = 0;
+            public List<LOD_Mesh> lodMeshes = new List<LOD_Mesh>();
+            public class LOD_Mesh
+            {
+                public int index = 0;
+                public int strip = 0x40;
+                public int displayFaceSize = 0;
+
+                private List<int> Faces = new List<int>();
+                public List<int> faces
+                {
+                    get
+                    { return Faces; }
+                }
+                public override string ToString()
+                {
+                    return "LOD Mesh " + index;
+                }
+
+                public List<int> getDisplayFace()
+                {
+                    if ((strip >> 4) == 4)
+                    {
+                        displayFaceSize = faces.Count;
+                        return faces;
+                    }
+                    else
+                    {
+                        List<int> f = new List<int>();
+
+                        int startDirection = 1;
+                        int p = 0;
+                        int f1 = faces[p++];
+                        int f2 = faces[p++];
+                        int faceDirection = startDirection;
+                        int f3;
+                        do
+                        {
+                            f3 = faces[p++];
+                            if (f3 == 0xFFFF)
+                            {
+                                f1 = faces[p++];
+                                f2 = faces[p++];
+                                faceDirection = startDirection;
+                            }
+                            else
+                            {
+                                faceDirection *= -1;
+                                if ((f1 != f2) && (f2 != f3) && (f3 != f1))
+                                {
+                                    if (faceDirection > 0)
+                                    {
+                                        f.Add(f3);
+                                        f.Add(f2);
+                                        f.Add(f1);
+                                    }
+                                    else
+                                    {
+                                        f.Add(f2);
+                                        f.Add(f3);
+                                        f.Add(f1);
+                                    }
+                                }
+                                f1 = f2;
+                                f2 = f3;
+                            }
+                        } while (p < faces.Count);
+
+                        displayFaceSize = f.Count;
+                        return f;
+                    }
+                }
+            }
 
             public class BoundingBox
             {
@@ -1138,9 +1221,7 @@ namespace Smash_Forge
 
             public float sortingDistance = 0;
 
-            public int strip = 0x40;
-
-            public int displayFaceSize = 0;
+   
 
             public Mesh()
             {
@@ -1172,51 +1253,41 @@ namespace Smash_Forge
 
                 Vector3 distanceVector = new Vector3(cameraPosition - box.Center);
                 return distanceVector.Length + radius[0];
-            }
+            }     
 
             public List<DisplayVertex> CreateDisplayVertices()
             {
                 // rearrange faces
-                display = getDisplayFace().ToArray();
+
+                display = lodMeshes[DisplayLODIndex].getDisplayFace().ToArray();
 
                 List<DisplayVertex> displayVertList = new List<DisplayVertex>();
 
-                if (faces.Count <= 3)
+                if (lodMeshes[DisplayLODIndex].faces.Count <= 3)
                     return displayVertList;
-                Vertex v = vertices;
 
-
-                if (v.bitans.Count == 0)
-                {
-                    for (int p = 0; p < v.pos.Count; p++)
-                    {
-                        v.bitans.Add(new Vector4(0, 0, 0, 1));
-                    }                
-                }
-                if (v.tans.Count == 0)
-                {
-                    for (int p = 0; p < v.pos.Count; p++)
-                    {
-                        v.tans.Add(new Vector4(0, 0, 0, 1));
-                    }
-                }
-
-                for (int p = 0; p < v.pos.Count; p++)
+                foreach (Vertex v in vertices)
                 {
                     DisplayVertex displayVert = new DisplayVertex()
                     {
-                        pos = v.pos.Count > 0 ? v.pos[p] : new Vector3(0, 0, 0),
-                        nrm = v.nrm.Count > 0 ? v.nrm[p] : new Vector3(0, 0, 0),
-                        tan = v.tans[p].Xyz,
-                        bit = v.bitans[p].Xyz,
-                        col = v.col.Count > 0 ? v.col[p] : new Vector4(0.9f, 0.9f, 0.9f, 1.0f),
-                        uv = v.uv0.Count > 0 ? v.uv0[p] : new Vector2(0, 0),
-                        uv2 = v.uv1.Count > 0 ? v.uv1[p] : new Vector2(0, 0),
-                        uv3 = v.uv2.Count > 0 ? v.uv2[p] : new Vector2(0, 0),
-                        node = v.nodes.Count > 0 ? v.nodes[p] : new Vector4(-1, 0, 0, 0),
-                        weight = v.weights.Count > 0 ? v.weights[p] : new Vector4(0, 0, 0, 0),
-                        pos1 = v.pos1.Count > 0 ? v.pos1[p] : new Vector3(0, 0, 0),
-                        pos2 = v.pos2.Count > 0 ? v.pos2[p] : new Vector3(0, 0, 0),
+                        pos = v.pos,
+                        nrm = v.nrm,
+                        tan = v.tan.Xyz,
+                        bit = v.bitan.Xyz,
+                        col = v.col / 127,
+                        uv = v.uv0,
+                        uv2 = v.uv1,
+                        uv3 = v.uv2,
+                        node = new Vector4(
+                            v.boneIds.Count > 0 ? v.boneIds[0] : -1,
+                            v.boneIds.Count > 1 ? v.boneIds[1] : -1,
+                            v.boneIds.Count > 2 ? v.boneIds[2] : -1,
+                            v.boneIds.Count > 3 ? v.boneIds[3] : -1),
+                        weight = new Vector4(
+                            v.boneWeights.Count > 0 ? v.boneWeights[0] : 0,
+                            v.boneWeights.Count > 1 ? v.boneWeights[1] : 0,
+                            v.boneWeights.Count > 2 ? v.boneWeights[2] : 0,
+                            v.boneWeights.Count > 3 ? v.boneWeights[3] : 0),
                     };
 
 
@@ -1242,6 +1313,13 @@ namespace Smash_Forge
                 return displayVertList;
             }
 
+            public void SingleBindMesh()
+            {
+                MeshBoneList mshbl = new MeshBoneList();
+                mshbl.SetMeshBoneList(((FMDL_Model)Parent), this, true);
+                mshbl.Show();
+            }
+ 
             public void ExportMaterials2XML()
             {
                 Console.WriteLine("Wring XML");
@@ -1249,23 +1327,11 @@ namespace Smash_Forge
             }
             public void CopyUVChannel2()
             {
-                Vertex v = vertices;
-                if (v.uv1 != null)
+                foreach (Vertex v in vertices)
                 {
-                    for (int i = 0; i < vertices.uv1.Count; i++)
-                    {
-                        v.uv1[i] = v.uv0[i];
+                    v.uv1 = v.uv0;
+                }
 
-              
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < vertices.uv0.Count; i++)
-                    {
-                        v.uv1.Add(v.uv0[i]);
-                    }
-                }
                 //Reset bake coordinates. If you are using the first uv channel as the second these should be default values
                 if (material.matparam.ContainsKey("gsys_bake_st0"))
                     material.matparam["gsys_bake_st0"].Value_float4 = new Vector4(1, 1, 0, 0);
@@ -1276,9 +1342,9 @@ namespace Smash_Forge
 
             public void CalculateTangentBitangent()
             {
-                List<int> f = getDisplayFace();
-                Vector3[] tanArray = new Vector3[vertices.pos.Count];
-                Vector3[] bitanArray = new Vector3[vertices.pos.Count];
+                List<int> f = lodMeshes[DisplayLODIndex].getDisplayFace();
+                Vector3[] tanArray = new Vector3[vertices.Count];
+                Vector3[] bitanArray = new Vector3[vertices.Count];
 
                 CalculateTanBitanArrays(f, tanArray, bitanArray);
                 ApplyTanBitanArray(tanArray, bitanArray);
@@ -1286,27 +1352,29 @@ namespace Smash_Forge
 
             private void ApplyTanBitanArray(Vector3[] tanArray, Vector3[] bitanArray)
             {
-                for (int i = 0; i < vertices.pos.Count; i++)
+                for (int i = 0; i < vertices.Count; i++)
                 {
-                    Vertex v = vertices;
+                    Vertex v = vertices[i];
                     Vector3 newTan = tanArray[i];
                     Vector3 newBitan = bitanArray[i];
 
-                    Vector3 normal = v.nrm[i];
-
                     // The tangent and bitangent should be orthogonal to the normal. 
                     // Bitangents are not calculated with a cross product to prevent flipped shading  with mirrored normal maps.
-                    v.tans[i] = new Vector4(Vector3.Normalize(newTan - normal * Vector3.Dot(normal, newTan)), 1);
-                    v.bitans[i] = new Vector4(Vector3.Normalize(newBitan - normal * Vector3.Dot(normal, newBitan)), 1);
-                    v.bitans[i] *= -1;
+                    v.tan = new Vector4(Vector3.Normalize(newTan - v.nrm * Vector3.Dot(v.nrm, newTan)), 1);
+                    v.bitan = new Vector4(Vector3.Normalize(newBitan - v.nrm * Vector3.Dot(v.nrm, newBitan)), 1);
+                    v.bitan *= -1;
                 }
             }
 
             private void CalculateTanBitanArrays(List<int> faces, Vector3[] tanArray, Vector3[] bitanArray)
             {
-                for (int i = 0; i < displayFaceSize; i += 3)
+                for (int i = 0; i < lodMeshes[DisplayLODIndex].displayFaceSize; i += 3)
                 {
-                    List<Vector2> UV_Input = vertices.uv0;
+                    Vertex v1 = vertices[faces[i]];
+                    Vertex v2 = vertices[faces[i + 1]];
+                    Vertex v3 = vertices[faces[i + 2]];
+
+                    bool UseUVLayer2 = false;
 
                     //for BOTW if it uses UV layer 2 for normal maps use second UV map
                     if (material.shaderassign.options.ContainsKey("uking_texture2_texcoord"))
@@ -1315,33 +1383,34 @@ namespace Smash_Forge
 
                         if (value == 1)
                         {
-                            UV_Input = vertices.uv1;
+                            UseUVLayer2 = true;
                         }
                     }
 
+                    float x1 = v2.pos.X - v1.pos.X;
+                    float x2 = v3.pos.X - v1.pos.X;
+                    float y1 = v2.pos.Y - v1.pos.Y;
+                    float y2 = v3.pos.Y - v1.pos.Y;
+                    float z1 = v2.pos.Z - v1.pos.Z;
+                    float z2 = v3.pos.Z - v1.pos.Z;
 
-
-                    if (UV_Input.Count < 3) { MessageBox.Show("No UVs found to calculate"); return;}
-
-                    Vector2 v1 = UV_Input[faces[i]];
-                    Vector2 v2 = UV_Input[faces[i + 1]];
-                    Vector2 v3 = UV_Input[faces[i + 2]];
-
-                    Vector3 vpos1 = vertices.pos[faces[i]];
-                    Vector3 vpos2 = vertices.pos[faces[i + 1]];
-                    Vector3 vpos3 = vertices.pos[faces[i + 2]];
-
-                    float x1 = vpos2.X - vpos1.X;
-                    float x2 = vpos3.X - vpos1.X;
-                    float y1 = vpos2.Y - vpos1.Y;
-                    float y2 = vpos3.Y - vpos1.Y;
-                    float z1 = vpos2.Z - vpos1.Z;
-                    float z2 = vpos3.Z - vpos1.Z;
-
-                    float s1 = v2.X - v1.X;
-                    float s2 = v3.X - v1.X;
-                    float t1 = v2.Y - v1.Y;
-                    float t2 = v3.Y - v1.Y;
+                    float s1, s2, t1, t2;
+                    if (UseUVLayer2)
+                    {
+                        s1 = v2.uv1.X - v1.uv1.X;
+                        s2 = v3.uv1.X - v1.uv1.X;
+                        t1 = v2.uv1.Y - v1.uv1.Y;
+                        t2 = v3.uv1.Y - v1.uv1.Y;
+                    }
+                    else
+                    {
+                     
+                        s1 = v2.uv0.X - v1.uv0.X;
+                        s2 = v3.uv0.X - v1.uv0.X;
+                        t1 = v2.uv0.Y - v1.uv0.Y;
+                        t2 = v3.uv0.Y - v1.uv0.Y;
+                    }
+           
 
                     float div = (s1 * t2 - s2 * t1);
                     float r = 1.0f / div;
@@ -1362,8 +1431,18 @@ namespace Smash_Forge
 
                     // Prevents black tangents or bitangents due to having vertices with the same UV coordinates. 
                     float delta = 0.00075f;
-                    bool sameU = (Math.Abs(v1.X - v2.X) < delta) && (Math.Abs(v2.X - v3.X) < delta);
-                    bool sameV = (Math.Abs(v1.Y - v2.Y) < delta) && (Math.Abs(v2.Y - v3.Y) < delta);
+                    bool sameU, sameV;
+                    if (UseUVLayer2)
+                    {
+                        sameU = (Math.Abs(v1.uv1.X - v2.uv1.X) < delta) && (Math.Abs(v2.uv1.X - v3.uv1.X) < delta);
+                        sameV = (Math.Abs(v1.uv1.Y - v2.uv1.Y) < delta) && (Math.Abs(v2.uv1.Y - v3.uv1.Y) < delta);
+                    }
+                    else
+                    {
+                        sameU = (Math.Abs(v1.uv0.X - v2.uv0.X) < delta) && (Math.Abs(v2.uv0.X - v3.uv0.X) < delta);
+                        sameV = (Math.Abs(v1.uv0.Y - v2.uv0.Y) < delta) && (Math.Abs(v2.uv0.Y - v3.uv0.Y) < delta);
+                    }
+                
                     if (sameU || sameV)
                     {
                         // Let's pick some arbitrary tangent vectors.
@@ -1376,11 +1455,9 @@ namespace Smash_Forge
                     tanArray[faces[i + 1]] += s;
                     tanArray[faces[i + 2]] += s;
 
-
                     bitanArray[faces[i]] += t;
                     bitanArray[faces[i + 1]] += t;
                     bitanArray[faces[i + 2]] += t;
-
                 }
             }
 
@@ -1392,10 +1469,7 @@ namespace Smash_Forge
                 for (int i = 0; i < BoundingCount; i++)
                 {
 
-                    foreach (Vector3 p in vertices.pos)
-                    {
-
-                    }
+            
 
 
 
@@ -1407,15 +1481,15 @@ namespace Smash_Forge
 
             public void SmoothNormals()
             {
-                Vector3[] normals = new Vector3[vertices.pos.Count];
+                Vector3[] normals = new Vector3[vertices.Count];
 
-                List<int> f = getDisplayFace();
+                List<int> f = lodMeshes[DisplayLODIndex].getDisplayFace();
 
-                for (int i = 0; i < displayFaceSize; i += 3)
+                for (int i = 0; i < lodMeshes[DisplayLODIndex].displayFaceSize; i += 3)
                 {
-                    Vector3 v1 = vertices.pos[f[i]];
-                    Vector3 v2 = vertices.pos[f[i + 1]];
-                    Vector3 v3 = vertices.pos[f[i + 2]];
+                    Vertex v1 = vertices[f[i]];
+                    Vertex v2 = vertices[f[i + 1]];
+                    Vertex v3 = vertices[f[i + 2]];
                     Vector3 nrm = CalculateNormal(v1, v2, v3);
 
                     normals[f[i + 0]] += nrm;
@@ -1424,26 +1498,25 @@ namespace Smash_Forge
                 }
 
                 for (int i = 0; i < normals.Length; i++)
-                    vertices.nrm[i] = normals[i].Normalized();
+                    vertices[i].nrm = normals[i].Normalized();
 
                 // Compare each vertex with all the remaining vertices. This might skip some.
-                for (int i = 0; i < vertices.pos.Count; i++)
+                for (int i = 0; i < vertices.Count; i++)
                 {
-                    Vertex v = vertices;
+                    Vertex v = vertices[i];
 
-                    for (int j = i + 1; j < vertices.pos.Count; j++)
+                    for (int j = i + 1; j < vertices.Count; j++)
                     {
-                        Vertex v2 = vertices;
+                        Vertex v2 = vertices[j];
 
                         if (v == v2)
                             continue;
-                        float dis = (float)Math.Sqrt(Math.Pow(v.pos[i].X - v2.pos[j].X, 2) + Math.Pow(v.pos[i].Y - v2.pos[i].Y, 2) + Math.Pow(v.pos[i].Z - v2.pos[j].Z, 2));
- 
+                        float dis = (float)Math.Sqrt(Math.Pow(v.pos.X - v2.pos.X, 2) + Math.Pow(v.pos.Y - v2.pos.Y, 2) + Math.Pow(v.pos.Z - v2.pos.Z, 2));
                         if (dis <= 0f) // Extra smooth
                         {
-                            Vector3 nn = ((v2.nrm[j] + v.nrm[j]) / 2).Normalized();
-                            v.nrm[i] = nn;
-                            v2.nrm[j] = nn;
+                            Vector3 nn = ((v2.nrm + v.nrm) / 2).Normalized();
+                            v.nrm = nn;
+                            v2.nrm = nn;
                         }
                     }
                 }
@@ -1451,18 +1524,18 @@ namespace Smash_Forge
 
             public void CalculateNormals()
             {
-                Vector3[] normals = new Vector3[vertices.pos.Count];
+                Vector3[] normals = new Vector3[vertices.Count];
 
                 for (int i = 0; i < normals.Length; i++)
                     normals[i] = new Vector3(0, 0, 0);
 
-                List<int> f = getDisplayFace();
+                List<int> f = lodMeshes[DisplayLODIndex].getDisplayFace();
 
-                for (int i = 0; i < displayFaceSize; i += 3)
+                for (int i = 0; i < lodMeshes[DisplayLODIndex].displayFaceSize; i += 3)
                 {
-                    Vector3 v1 = vertices.pos[f[i]];
-                    Vector3 v2 = vertices.pos[f[i + 1]];
-                    Vector3 v3 = vertices.pos[f[i + 2]];
+                    Vertex v1 = vertices[f[i]];
+                    Vertex v2 = vertices[f[i + 1]];
+                    Vertex v3 = vertices[f[i + 2]];
                     Vector3 nrm = CalculateNormal(v1, v2, v3);
 
                     normals[f[i + 0]] += nrm * (nrm.Length / 2);
@@ -1471,15 +1544,13 @@ namespace Smash_Forge
                 }
 
                 for (int i = 0; i < normals.Length; i++)
-                    vertices.nrm[i] = normals[i].Normalized();
+                    vertices[i].nrm = normals[i].Normalized();
             }
 
-            private Vector3 CalculateNormal(Vector3 v1, Vector3 v2, Vector3 v3)
+            private Vector3 CalculateNormal(Vertex v1, Vertex v2, Vertex v3)
             {
-
-
-                Vector3 U = v2 - v1;
-                Vector3 V = v3 - v1;
+                Vector3 U = v2.pos - v1.pos;
+                Vector3 V = v3.pos - v1.pos;
 
                 // Don't normalize here, so surface area can be calculated. 
                 return Vector3.Cross(U, V);
@@ -1488,9 +1559,9 @@ namespace Smash_Forge
             public void SetVertexColor(Vector4 intColor)
             {
                 // (127, 127, 127, 255) is white.
-                for (int i = 0; i < vertices.col.Count; i++)
+                foreach (Vertex v in vertices)
                 {
-                    vertices.col[i] = intColor;
+                    v.col = intColor;
                 }
             }
 
@@ -1507,60 +1578,6 @@ namespace Smash_Forge
                     {
                         texHashs.Add(0);
                     }
-                }
-            }
-
-            public List<int> getDisplayFace()
-            {
-                if ((strip >> 4) == 4)
-                {
-                    displayFaceSize = faces.Count;
-                    return faces;
-                }
-                else
-                {
-                    List<int> f = new List<int>();
-
-                    int startDirection = 1;
-                    int p = 0;
-                    int f1 = faces[p++];
-                    int f2 = faces[p++];
-                    int faceDirection = startDirection;
-                    int f3;
-                    do
-                    {
-                        f3 = faces[p++];
-                        if (f3 == 0xFFFF)
-                        {
-                            f1 = faces[p++];
-                            f2 = faces[p++];
-                            faceDirection = startDirection;
-                        }
-                        else
-                        {
-                            faceDirection *= -1;
-                            if ((f1 != f2) && (f2 != f3) && (f3 != f1))
-                            {
-                                if (faceDirection > 0)
-                                {
-                                    f.Add(f3);
-                                    f.Add(f2);
-                                    f.Add(f1);
-                                }
-                                else
-                                {
-                                    f.Add(f2);
-                                    f.Add(f3);
-                                    f.Add(f1);
-                                }
-                            }
-                            f1 = f2;
-                            f2 = f3;
-                        }
-                    } while (p < faces.Count);
-
-                    displayFaceSize = f.Count;
-                    return f;
                 }
             }
         }
@@ -1741,6 +1758,11 @@ namespace Smash_Forge
             public bool Value_bool;
             public TextureSRT Value_TexSrt;
             public string Name = ""; //Used for lists
+            public float[] Value_float4x4 = new float[16];
+            public float[] Value_float2x2 = new float[8];
+            public float[] Value_float2x3 = new float[12];
+            public uint Value_UInt;
+            public bool Value_Bool;         
 
             public override string ToString()
             {
@@ -1988,5 +2010,6 @@ namespace Smash_Forge
 
             public int offset;
         }
+#endregion
     }
 }

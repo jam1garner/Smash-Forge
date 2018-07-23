@@ -190,7 +190,9 @@ namespace Smash_Forge
         LVDList LVDList = new LVDList();
         LVDEditor LVDEditor = new LVDEditor();
 
+        public BFRES_MaterialEditor bfresMatEditor = new BFRES_MaterialEditor();
 
+        //Binary YAML. Used in many Wii U/Switch games
         public BYAML BYAML
         {
             get
@@ -200,9 +202,14 @@ namespace Smash_Forge
             set
             {
                 byaml = value;
+                byamlEditor.TargetBYAML = byaml;
+                byamlList.TargetBYAML = byaml;
+                byamlList.fillList();
             }
         }
         private BYAML byaml;
+        BYAMLList byamlList = new BYAMLList();
+        BYAMLEditor byamlEditor = new BYAMLEditor();
 
         //Path
         public PathBin PathBin;
@@ -253,6 +260,19 @@ namespace Smash_Forge
             LVDEditor.MaximumSize = new Size(300, 2000);
             AddControl(LVDEditor);
 
+            bfresMatEditor.Dock = DockStyle.Left;
+            bfresMatEditor.MaximumSize = new Size(500, 2000);
+            AddControl(bfresMatEditor);
+
+            byamlList.Dock = DockStyle.Left;
+            byamlList.MaximumSize = new Size(300, 2000);
+            AddControl(byamlList);
+            byamlList.BYAMLEditor = byamlEditor;
+
+            byamlEditor.Dock = DockStyle.Right;
+            byamlEditor.MaximumSize = new Size(300, 2000);
+            AddControl(byamlEditor);
+
             VertexTool.Dock = DockStyle.Left;
             VertexTool.MaximumSize = new Size(300, 2000);
             AddControl(VertexTool);
@@ -283,6 +303,15 @@ namespace Smash_Forge
             RenderTools.Setup();
 
             SetupBuffersAndTextures();
+        }
+
+        public void bfresOpenMats(BFRES.Mesh poly, string name)
+        {
+            ViewComboBox.SelectedItem = "BFRES Material Editor";
+
+            bfresMatEditor.LoadMaterial(poly);
+            bfresMatEditor.Text = name;
+            bfresMatEditor.Show();
         }
 
         private void SetupBuffersAndTextures()
@@ -954,6 +983,9 @@ namespace Smash_Forge
         {
             LVDEditor.Visible = false;
             LVDList.Visible = false;
+            bfresMatEditor.Visible = false;
+            byamlEditor.Visible = false;
+            byamlList.Visible = false;
             MeshList.Visible = false;
             AnimList.Visible = false;
             ACMDEditor.Visible = false;
@@ -983,6 +1015,14 @@ namespace Smash_Forge
                     LVDEditor.Visible = true;
                     LVDList.Visible = true;
                     break;
+                case "BYAML Editor":
+                    byamlEditor.Visible = true;
+                    byamlList.Visible = true;
+                    break;
+                case "BFRES Material Editor":
+                    bfresMatEditor.Visible = true;
+                    MeshList.Visible = true;
+                    break;
                 case "ACMD Editor":
                     AnimList.Visible = true;
                     ACMDEditor.Visible = true;
@@ -990,6 +1030,9 @@ namespace Smash_Forge
                 case "Clean":
                     LVDEditor.Visible = false;
                     LVDList.Visible = false;
+                    bfresMatEditor.Visible = false;
+                    byamlEditor.Visible = false;
+                    byamlList.Visible = false;
                     MeshList.Visible = false;
                     AnimList.Visible = false;
                     ACMDEditor.Visible = false;
@@ -1866,18 +1909,6 @@ namespace Smash_Forge
             }
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox1.Checked)
-            {
-                Runtime.HasNoAnimationBaseValues = true;
-            }
-            else
-            {
-                Runtime.HasNoAnimationBaseValues = false;
-            }
-        }
-
         private void DrawNSWBFRESUvsForSelectedTexture(BRTI tex)
         {
             foreach (TreeNode node in MeshList.filesTreeView.Nodes)
@@ -1889,7 +1920,7 @@ namespace Smash_Forge
 
                 int textureHash = 0;
                 int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
-                RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.display, 4, Color.Red, 1, Color.White);
+             //   RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.Text, tex.display, 4, Color.Red, 1, Color.White);
             }
         }
 
@@ -1904,7 +1935,7 @@ namespace Smash_Forge
 
                 int textureHash = 0;
                 int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
-                RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.display, 4, Color.Red, 1, Color.White);
+         //       RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.Text, tex.display, 4, Color.Red, 1, Color.White);
             }
         }
 

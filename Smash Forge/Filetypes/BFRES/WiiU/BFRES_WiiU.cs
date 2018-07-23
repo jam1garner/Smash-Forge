@@ -106,7 +106,8 @@ namespace Smash_Forge
                     poly.Text = shp.Name;
                     poly.MaterialIndex = shp.MaterialIndex;
                     poly.matrFlag = shp.VertexSkinCount;
-                    poly.fsklindx = shp.BoneIndex;
+                    poly.boneIndx = shp.BoneIndex;
+                    poly.fmdlIndx = ModelCur;
 
                     foreach (int bn in shp.SkinBoneIndices)
                     {
@@ -118,153 +119,104 @@ namespace Smash_Forge
                     //Create a buffer instance which stores all the buffer data
                     VertexBufferHelper helper = new VertexBufferHelper(mdl.VertexBuffers[shp.VertexBufferIndex], TargetWiiUBFRES.ByteOrder);
 
-                    // VertexBufferHelperAttrib uv1 = helper["_u1"];
+                    //Set each array first from the lib if exist. Then add the data all in one loop
+                    Syroot.Maths.Vector4F[] vec4Positions = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4Normals = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4uv0 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4uv1 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4uv2 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4c0 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4t0 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4b0 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4w0 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4i0 = new Syroot.Maths.Vector4F[0];
 
 
-                    Vertex v = new Vertex();
                     foreach (VertexAttrib att in mdl.VertexBuffers[shp.VertexBufferIndex].Attributes.Values)
                     {
+                        Mesh.VertexAttribute attr = new Mesh.VertexAttribute();
+                        attr.Name = att.Name;
+                       // attr.Format = att.Format;
+
                         if (att.Name == "_p0")
-                        {
-                            VertexBufferHelperAttrib position = helper["_p0"];
-                            Syroot.Maths.Vector4F[] vec4Positions = position.Data;
-
-                            foreach (Syroot.Maths.Vector4F p in vec4Positions)
-                            {
-                                v.pos.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z });
-                            }
-                        }
+                            vec4Positions = WiiUAttributeData(att, helper, "_p0");
                         if (att.Name == "_n0")
-                        {
-                            VertexBufferHelperAttrib normal = helper["_n0"];
-                            Syroot.Maths.Vector4F[] vec4Normals = normal.Data;
-
-                            foreach (Syroot.Maths.Vector4F n in vec4Normals)
-                            {
-                                v.nrm.Add(new Vector3 { X = n.X, Y = n.Y, Z = n.Z });
-                            }
-                        }
+                            vec4Normals = WiiUAttributeData(att, helper, "_n0");
                         if (att.Name == "_u0")
-                        {
-                            VertexBufferHelperAttrib uv0 = helper["_u0"];
-                            Syroot.Maths.Vector4F[] vec4uv0 = uv0.Data;
-
-                            foreach (Syroot.Maths.Vector4F u in vec4uv0)
-                            {
-                                v.uv0.Add(new Vector2 { X = u.X, Y = u.Y });
-                            }
-                        }
+                            vec4uv0 = WiiUAttributeData(att, helper, "_u0");
                         if (att.Name == "_u1")
-                        {
-                            VertexBufferHelperAttrib uv1 = helper["_u1"];
-                            Syroot.Maths.Vector4F[] vec4uv1 = uv1.Data;
-
-                            foreach (Syroot.Maths.Vector4F u in vec4uv1)
-                            {
-                                v.uv1.Add(new Vector2 { X = u.X, Y = u.Y });
-                            }
-                        }
+                            vec4uv1 = WiiUAttributeData(att, helper, "_u1");
                         if (att.Name == "_u2")
-                        {
-                            VertexBufferHelperAttrib uv2 = helper["_u2"];
-                            Syroot.Maths.Vector4F[] vec4uv2 = uv2.Data;
-
-                            foreach (Syroot.Maths.Vector4F u in vec4uv2)
-                            {
-                                v.uv2.Add(new Vector2 { X = u.X, Y = u.Y });
-                            }
-                        }
+                            vec4uv2 = WiiUAttributeData(att, helper, "_u2");
                         if (att.Name == "_c0")
-                        {
-                            VertexBufferHelperAttrib c0 = helper["_c0"];
-                            Syroot.Maths.Vector4F[] vec4c0 = c0.Data;
-
-                            foreach (Syroot.Maths.Vector4F c in vec4c0)
-                            {
-                                v.col.Add(new Vector4 { X = c.X, Y = c.Y, Z = c.Z, W = c.W });
-                            }
-                        }
+                            vec4c0 = WiiUAttributeData(att, helper, "_c0");
                         if (att.Name == "_t0")
-                        {
-                            VertexBufferHelperAttrib t0 = helper["_t0"];
-                            Syroot.Maths.Vector4F[] vec4t0 = t0.Data;
-
-                            foreach (Syroot.Maths.Vector4F u in vec4t0)
-                            {
-                                v.tans.Add(new Vector4 { X = u.X, Y = u.Y, Z = u.Z, W = u.W });
-                            }
-                        }
+                            vec4t0 = WiiUAttributeData(att, helper, "_t0");
                         if (att.Name == "_b0")
-                        {
-                            VertexBufferHelperAttrib b0 = helper["_b0"];
-                            Syroot.Maths.Vector4F[] vec4b0 = b0.Data;
-
-                            foreach (Syroot.Maths.Vector4F u in vec4b0)
-                            {
-                                v.bitans.Add(new Vector4 { X = u.X, Y = u.Y, Z = u.Z, W = u.W });
-                            }
-                        }
+                            vec4b0 = WiiUAttributeData(att, helper, "_b0");
                         if (att.Name == "_w0")
-                        {
-                            VertexBufferHelperAttrib w0 = helper["_w0"];
-                            Syroot.Maths.Vector4F[] vec4w0 = w0.Data;
-
-                            foreach (Syroot.Maths.Vector4F w in vec4w0)
-                            {
-                                v.weights.Add(new Vector4 { X = w.X, Y = w.Y, Z = w.Z, W = w.W });
-                            }
-                        }
+                            vec4w0 = WiiUAttributeData(att, helper, "_w0");
                         if (att.Name == "_i0")
+                            vec4i0 = WiiUAttributeData(att, helper, "_i0");
+
+                        poly.vertexAttributes.Add(attr);
+                    }
+                    for (int i = 0; i < vec4Positions.Length; i++)
+                    {
+                        Vertex v = new Vertex();
+                        if (vec4Positions.Length > 0)
+                            v.pos = new Vector3(vec4Positions[i].X, vec4Positions[i].Y, vec4Positions[i].Z);
+                        if (vec4Normals.Length > 0)
+                            v.nrm = new Vector3(vec4Normals[i].X, vec4Normals[i].Y, vec4Normals[i].Z);
+                        if (vec4uv0.Length > 0)
+                            v.uv0 = new Vector2(vec4uv0[i].X, vec4uv0[i].Y);
+                        if (vec4uv1.Length > 0)
+                            v.uv1 = new Vector2(vec4uv1[i].X, vec4uv1[i].Y);
+                        if (vec4uv2.Length > 0)
+                            v.uv2 = new Vector2(vec4uv2[i].X, vec4uv2[i].Y);
+                        if (vec4w0.Length > 0)
                         {
-                            VertexBufferHelperAttrib i0 = helper["_i0"];
-                            Syroot.Maths.Vector4F[] vec4i0 = i0.Data;
-
-                            foreach (Syroot.Maths.Vector4F i in vec4i0)
-                            {
-                                v.nodes.Add(new Vector4 { X = i.X, Y = i.Y, Z = i.Z, W = i.W });
-                            }
+                            v.boneWeights.Add(vec4w0[i].X);
+                            v.boneWeights.Add(vec4w0[i].Y);
+                            v.boneWeights.Add(vec4w0[i].Z);
+                            v.boneWeights.Add(vec4w0[i].W);
                         }
-
-                        //Set these for morphing
-                        //This is a test. I may put this in it's own VBO since it's not offten used
-
-                        if (att.Name == "_p1")
+                        if (vec4i0.Length > 0)
                         {
-                            VertexBufferHelperAttrib p1 = helper["_p1"];
-                            Syroot.Maths.Vector4F[] vec4p1 = p1.Data;
-
-                            foreach (Syroot.Maths.Vector4F p in vec4p1)
-                            {
-                                v.pos1.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z });
-                            }
+                            v.boneIds.Add((int)vec4i0[i].X);
+                            v.boneIds.Add((int)vec4i0[i].Y);
+                            v.boneIds.Add((int)vec4i0[i].Z);
+                            v.boneIds.Add((int)vec4i0[i].W);
                         }
+                        if (vec4t0.Length > 0)
+                            v.tan = new Vector4(vec4t0[i].X, vec4t0[i].Y, vec4t0[i].Z, vec4t0[i].W);
+                        if (vec4b0.Length > 0)
+                            v.bitan = new Vector4(vec4b0[i].X, vec4b0[i].Y, vec4b0[i].Z, vec4b0[i].W);
+                        if (vec4c0.Length > 0)
+                            v.col = new Vector4(vec4c0[i].X, vec4c0[i].Y, vec4c0[i].Z, vec4c0[i].W);
 
-                        if (att.Name == "_p2")
-                        {
-                            VertexBufferHelperAttrib p2 = helper["_p2"];
-                            Syroot.Maths.Vector4F[] vec4p2 = p2.Data;
-
-                            foreach (Syroot.Maths.Vector4F p in vec4p2)
-                            {
-                                v.pos2.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z });
-                            }
-                        }
+                        poly.vertices.Add(v);
 
                     }
-                    poly.vertices = v;
 
                     //shp.Meshes.Count - 1 //For going to the lowest poly LOD mesh
 
-                    int LODCount = 0;
-
-                    uint FaceCount = shp.Meshes[LODCount].IndexCount;
-                    uint[] indicesArray = shp.Meshes[LODCount].GetIndices().ToArray();
 
                     poly.BoundingCount = shp.SubMeshBoundings.Count;
 
-                    for (int face = 0; face < FaceCount; face++)
+                    int CurLOD = 0;
+                    foreach (var lod in shp.Meshes)
                     {
-                        poly.faces.Add((int)indicesArray[face] + (int)shp.Meshes[LODCount].FirstVertex);
+                        Mesh.LOD_Mesh lodmsh = new Mesh.LOD_Mesh();
+                        lodmsh.index = CurLOD++;
+
+                        uint FaceCount = lod.IndexCount;
+                        uint[] indicesArray = lod.GetIndices().ToArray();
+
+                        for (int face = 0; face < FaceCount; face++)
+                            lodmsh.faces.Add((int)indicesArray[face] + (int)lod.FirstVertex);
+
+                        poly.lodMeshes.Add(lodmsh);
                     }
 
                     foreach (Bounding bnd in shp.SubMeshBoundings)
@@ -461,6 +413,12 @@ namespace Smash_Forge
             }
         }
 
+        private static Syroot.Maths.Vector4F[] WiiUAttributeData(VertexAttrib att, VertexBufferHelper helper, string attName)
+        {
+            VertexBufferHelperAttrib attd = helper[attName];
+            return attd.Data;
+        }
+
         #region HackyInject (No rebuild)
 
         public void InjectToWiiUBFRES(string FileName)
@@ -477,249 +435,6 @@ namespace Smash_Forge
                     int s = 0;
                     foreach (Shape shp in fmdl.Shapes.Values)
                     {
-                        Vertex v = models[mdl].poly[s].vertices;
-
-                        VertexBufferHelper helper = new VertexBufferHelper(fmdl.VertexBuffers[shp.VertexBufferIndex], TargetWiiUBFRES.ByteOrder);
-
-
-                        foreach (VertexAttrib att in fmdl.VertexBuffers[shp.VertexBufferIndex].Attributes.Values)
-                        {
-                            int test = (int)fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].BufferOffset + att.Offset + fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].Stride;
-                        //    Console.WriteLine(test + " " + att.Format + " " + (int)att.Format);
-                        }
-
-                        for (int vt = 0; vt < fmdl.VertexBuffers[shp.VertexBufferIndex].VertexCount; vt++)
-                        {
-                            int at = 0;
-                            foreach (VertexAttrib att in fmdl.VertexBuffers[shp.VertexBufferIndex].Attributes.Values)
-                            {
-                                writer.Seek(fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].BufferOffset + att.Offset + fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].Stride * vt, SeekOrigin.Begin);
-                    /*            if (att.Name == "_p0")
-                                {
-                                    if (att.Format == GX2AttribFormat.Format_32_32_32_Single)
-                                    {
-                                        writer.Write(v.pos[vt].X);
-                                        writer.Write(v.pos[vt].Y);
-                                        writer.Write(v.pos[vt].Z);
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_16_16_16_16_Single)
-                                    {
-                                        Syroot.Maths.Vector4F value = new Syroot.Maths.Vector4F(v.pos[vt].X, v.pos[vt].Y, v.pos[vt].Z, 0);
-
-                                        writer.Write((short)fromFloat(value.X));
-                                        writer.Write((short)fromFloat(value.Y));
-                                        writer.Write((short)fromFloat(value.Z));
-                                        writer.Write((short)fromFloat(value.W));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for bitans " + att.Format);
-                                    }
-                                }*/
-                                if (att.Name == "_n0")
-                                {
-                                    if (att.Format == GX2AttribFormat.Format_10_10_10_2_SNorm)
-                                    {
-                                        int x = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm[vt].X, -1, 1) * 511);
-                                        int y = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm[vt].Y, -1, 1) * 511);
-                                        int z = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm[vt].Z, -1, 1) * 511);
-                                        int w = SingleToInt2(Syroot.Maths.Algebra.Clamp(0, 0, 1));
-                                        writer.Write(x | (y << 10) | (z << 20) | (w << 30));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for normals " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_t0")
-                                {
-                                    if (att.Format == GX2AttribFormat.Format_8_8_8_8_SNorm)
-                                    {
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].X, -1, 1) * 127));
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].Y, -1, 1) * 127));
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].Z, -1, 1) * 127));
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tans[vt].W, -1, 1) * 127));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for tangents " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_b0")
-                                {
-                                    if (att.Format == GX2AttribFormat.Format_8_8_8_8_SNorm)
-                                    {
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].X, -1, 1) * 127));
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].Y, -1, 1) * 127));
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].Z, -1, 1) * 127));
-                                        writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitans[vt].W, -1, 1) * 127));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for bitans " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_c0")
-                                {
-                                    if (att.Format == GX2AttribFormat.Format_8_8_8_8_UNorm)
-                                    {
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].X, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].Y, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].Z, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col[vt].W, 0, 1) * 255));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for bitans " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_u0")
-                                {
-                                    if (att.Format == GX2AttribFormat.Format_16_16_UNorm)
-                                    {
-                                        writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].X, 0, 1) * 65535));
-                                        writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].Y, 0, 1) * 65535));
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_32_32_Single)
-                                    {
-                                        writer.Write(v.uv0[vt].X);
-                                        writer.Write(v.uv0[vt].Y);
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_16_16_Single)
-                                    {
-                                        Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0[vt].X, v.uv0[vt].Y);
-
-                                        writer.Write((short)fromFloat(value.X));
-                                        writer.Write((short)fromFloat(value.Y));
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_16_16_SNorm)
-                                    {
-                                        writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].X, -1, 1) * 32767));
-                                        writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].Y, -1, 1) * 32767));
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_8_8_UNorm)
-                                    {
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].X, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv0[vt].Y, 0, 1) * 255));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for uv0 " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_u1")
-                                {
-                                    if (att.Format == GX2AttribFormat.Format_16_16_UNorm)
-                                    {
-                                        writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].X, 0, 1) * 65535));
-                                        writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].Y, 0, 1) * 65535));
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_32_32_Single)
-                                    {
-                                        writer.Write(v.uv1[vt].X);
-                                        writer.Write(v.uv1[vt].Y);
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_16_16_Single)
-                                    {
-                                        Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0[vt].X, v.uv0[vt].Y);
-
-                                        writer.Write((short)fromFloat(value.X));
-                                        writer.Write((short)fromFloat(value.Y));
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_16_16_SNorm)
-                                    {
-                                        writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].X, -1, 1) * 32767));
-                                        writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].Y, -1, 1) * 32767));
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_8_8_UNorm)
-                                    {
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].X, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv1[vt].Y, 0, 1) * 255));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for uv1 " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_u2")
-                                {
-                                    if (att.Format == GX2AttribFormat.Format_16_16_UNorm)
-                                    {
-                                        writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].X, 0, 1) * 65535));
-                                        writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].Y, 0, 1) * 65535));
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_32_32_Single)
-                                    {
-                                        writer.Write(v.uv2[vt].X);
-                                        writer.Write(v.uv2[vt].Y);
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_16_16_Single)
-                                    {
-                                        Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0[vt].X, v.uv0[vt].Y);
-
-                                        writer.Write((short)fromFloat(value.X));
-                                        writer.Write((short)fromFloat(value.Y));
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_16_16_SNorm)
-                                    {
-                                        writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].X, -1, 1) * 32767));
-                                        writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].Y, -1, 1) * 32767));
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_8_8_UNorm)
-                                    {
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].X, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv2[vt].Y, 0, 1) * 255));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported  format for uv2 " + att.Format);
-                                    }
-                                }
-                      /*          if (att.Name == "_i0")
-                                {
-                                    if (att.Format == GX2AttribFormat.Format_8_8_8_8_UInt)
-                                    {
-                                        writer.Write((byte)v.nodes[vt].X);
-                                        writer.Write((byte)v.nodes[vt].Y);
-                                        writer.Write((byte)v.nodes[vt].Z);
-                                        writer.Write((byte)v.nodes[vt].W);
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_8_8_UInt)
-                                    {
-                                        writer.Write((byte)v.nodes[vt].X);
-                                        writer.Write((byte)v.nodes[vt].Y);
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_8_UInt)
-                                    {
-                                        writer.Write((byte)v.nodes[vt].X);
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported format for indices " + att.Format);
-                                    }
-                                }
-                                if (att.Name == "_w0")
-                                {
-                                    if (att.Format == GX2AttribFormat.Format_8_8_8_8_UNorm)
-                                    {
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].X, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].Y, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].Z, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].W, 0, 1) * 255));
-                                    }
-                                    else if (att.Format == GX2AttribFormat.Format_8_8_UNorm)
-                                    {
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].X, 0, 1) * 255));
-                                        writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.weights[vt].Y, 0, 1) * 255));
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("Unsupported format for weights " + att.Format);
-                                    }
-                                }*/
-                            }
-                            at++;
-                        }
 
                         s++;
                     }
@@ -749,35 +464,17 @@ namespace Smash_Forge
                         {
                             case "_n0":
                                 {
-                                    VertexBufferHelperAttrib tangents = helper["_n0"]; // Access by name
-                                    int t = 0;
-                                    foreach (Vector3 n in models[mdl].poly[s].vertices.nrm)
-                                    {
-                                        tangents.Data[t] = new Syroot.Maths.Vector4F(n.X, n.Y, n.Z, 0);
-                                        t++;
-                                    }
+                                    VertexBufferHelperAttrib normals = helper["_n0"]; // Access by name                             
                                 }
                                 break;
                             case "_t0":
                             {
-                                    VertexBufferHelperAttrib tangents = helper["_t0"]; // Access by name
-                                    int t = 0;
-                                    foreach (Vector4 tan in models[mdl].poly[s].vertices.tans)
-                                    {
-                                        tangents.Data[t] = new Syroot.Maths.Vector4F(tan.X, tan.Y, tan.Z, tan.W);
-                                        t++;
-                                    }
+                                    VertexBufferHelperAttrib tangents = helper["_t0"]; // Access by name                                
                                 }
                                 break;
                             case "_b0":
                                 {
-                                    VertexBufferHelperAttrib bitangents = helper["_b0"]; // Access by name
-                                    int b = 0;
-                                    foreach (Vector4 bitan in models[mdl].poly[s].vertices.bitans)
-                                    {
-                                        bitangents.Data[b] = new Syroot.Maths.Vector4F(bitan.X, bitan.Y, bitan.Z, bitan.W);
-                                        b++;
-                                    }
+                                    VertexBufferHelperAttrib bitangents = helper["_b0"]; // Access by name                                 
                                 }
                                 break;
                         }
@@ -825,11 +522,9 @@ namespace Smash_Forge
                     Mesh poly = b.models[CurMdl].poly[CurShape];
 
                     //Create a buffer instance which stores all the buffer data
-                    VertexBufferHelper helper = new VertexBufferHelper(mdl.VertexBuffers[shp.VertexBufferIndex], TargetWiiUBFRES.ByteOrder);
-
                     // VertexBufferHelperAttrib uv1 = helper["_u1"];
 
-                    int TotalCount = poly.vertices.pos.Count;
+                    int TotalCount = poly.vertices.Count;
 
                     int LODCount = 0;
 
@@ -837,179 +532,111 @@ namespace Smash_Forge
                     uint[] indicesArray = shp.Meshes[LODCount].GetIndices().ToArray();
 
 
-                    int TotalFaceCount = poly.faces.Count;
+                    int TotalFaceCount = poly.lodMeshes[poly.DisplayLODIndex].faces.Count;
 
-                    poly.faces.Clear();
+                    poly.lodMeshes[poly.DisplayLODIndex].faces.Clear();
 
                     for (int face = 0; face < FaceCount; face++)
                     {
-                        poly.faces.Add((int)indicesArray[face] + (int)shp.Meshes[LODCount].FirstVertex);
+                        poly.lodMeshes[poly.DisplayLODIndex].faces.Add((int)indicesArray[face] + (int)shp.Meshes[LODCount].FirstVertex);
                     }
 
-                    if (TotalFaceCount != poly.faces.Count)
+                    if (TotalFaceCount != poly.lodMeshes[poly.DisplayLODIndex].faces.Count)
                     {
                         MessageBox.Show("Error F");
                     }
 
-                    Vertex v = poly.vertices;
-                    v.pos.Clear();
-                    v.nrm.Clear();
-                    v.tans.Clear();
-                    v.uv0.Clear();
-                    v.uv1.Clear();
-                    v.bitans.Clear();
-                    v.weights.Clear();
-                    v.nodes.Clear();
+                    poly.vertices.Clear();
+
+
+                    //Create a buffer instance which stores all the buffer data
+                    VertexBufferHelper helper = new VertexBufferHelper(mdl.VertexBuffers[shp.VertexBufferIndex], TargetWiiUBFRES.ByteOrder);
+
+                    //Set each array first from the lib if exist. Then add the data all in one loop
+                    Syroot.Maths.Vector4F[] vec4Positions = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4Normals = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4uv0 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4uv1 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4uv2 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4c0 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4t0 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4b0 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4w0 = new Syroot.Maths.Vector4F[0];
+                    Syroot.Maths.Vector4F[] vec4i0 = new Syroot.Maths.Vector4F[0];
+
+
                     foreach (VertexAttrib att in mdl.VertexBuffers[shp.VertexBufferIndex].Attributes.Values)
                     {
+                        Mesh.VertexAttribute attr = new Mesh.VertexAttribute();
+                        attr.Name = att.Name;
+                        // attr.Format = att.Format;
+
                         if (att.Name == "_p0")
-                        {
-                            VertexBufferHelperAttrib position = helper["_p0"];
-                            Syroot.Maths.Vector4F[] vec4Positions = position.Data;
-
-                            foreach (Syroot.Maths.Vector4F p in vec4Positions)
-                            {
-                                v.pos.Add(new Vector3 { X = p.X, Y = p.Y, Z = p.Z });
-                            }
-                            for (int i = 0; i < TotalCount - v.pos.Count; i++)
-                            {
-                                v.pos.Add(new Vector3 { X = 0, Y = 0, Z = 0 });
-                            }
-                        }
+                            vec4Positions = WiiUAttributeData(att, helper, "_p0");
                         if (att.Name == "_n0")
-                        {
-                            VertexBufferHelperAttrib normal = helper["_n0"];
-                            Syroot.Maths.Vector4F[] vec4Normals = normal.Data;
-
-                            foreach (Syroot.Maths.Vector4F n in vec4Normals)
-                            {
-                                v.nrm.Add(new Vector3 { X = n.X, Y = n.Y, Z = n.Z });
-                            }
-                            for (int i = 0; i < TotalCount - v.nrm.Count; i++)
-                            {
-                                v.nrm.Add(new Vector3 { X = 0, Y = 0, Z = 0 });
-                            }
-                        }
+                            vec4Normals = WiiUAttributeData(att, helper, "_n0");
                         if (att.Name == "_u0")
-                        {
-                            VertexBufferHelperAttrib uv0 = helper["_u0"];
-                            Syroot.Maths.Vector4F[] vec4uv0 = uv0.Data;
-
-                            foreach (Syroot.Maths.Vector4F u in vec4uv0)
-                            {
-                                v.uv0.Add(new Vector2 { X = u.X, Y = u.Y });
-                            }
-                            for (int i = 0; i < TotalCount - v.uv0.Count; i++)
-                            {
-                                v.uv0.Add(new Vector2 { X = 0, Y = 0 });
-                            }
-                        }
+                            vec4uv0 = WiiUAttributeData(att, helper, "_u0");
                         if (att.Name == "_u1")
-                        {
-                            VertexBufferHelperAttrib uv1 = helper["_u1"];
-                            Syroot.Maths.Vector4F[] vec4uv1 = uv1.Data;
-
-                            foreach (Syroot.Maths.Vector4F u in vec4uv1)
-                            {
-                                v.uv1.Add(new Vector2 { X = u.X, Y = u.Y });
-                            }
-                            for (int i = 0; i < TotalCount - v.uv1.Count; i++)
-                            {
-                                v.uv1.Add(new Vector2 { X = 0, Y = 0 });
-                            }
-                        }
+                            vec4uv1 = WiiUAttributeData(att, helper, "_u1");
                         if (att.Name == "_u2")
-                        {
-                            VertexBufferHelperAttrib uv2 = helper["_u2"];
-                            Syroot.Maths.Vector4F[] vec4uv2 = uv2.Data;
-
-                            foreach (Syroot.Maths.Vector4F u in vec4uv2)
-                            {
-                                v.uv2.Add(new Vector2 { X = u.X, Y = u.Y });
-                            }
-                            for (int i = 0; i < TotalCount - v.uv2.Count; i++)
-                            {
-                                v.uv2.Add(new Vector2 { X = 0, Y = 0 });
-
-                            }
-                        }
+                            vec4uv2 = WiiUAttributeData(att, helper, "_u2");
                         if (att.Name == "_c0")
-                        {
-                            VertexBufferHelperAttrib c0 = helper["_c0"];
-                            Syroot.Maths.Vector4F[] vec4c0 = c0.Data;
-
-                            foreach (Syroot.Maths.Vector4F c in vec4c0)
-                            {
-                                v.col.Add(new Vector4 { X = c.X, Y = c.Y, Z = c.Z, W = c.W });
-                            }
-                            for (int i = 0; i < TotalCount - v.col.Count; i++)
-                            {
-                                v.col.Add(new Vector4 { X = 0, Y = 0, Z = 0, W = 0 });
-                            }
-                        }
+                            vec4c0 = WiiUAttributeData(att, helper, "_c0");
                         if (att.Name == "_t0")
-                        {
-                            VertexBufferHelperAttrib t0 = helper["_t0"];
-                            Syroot.Maths.Vector4F[] vec4t0 = t0.Data;
-
-                            foreach (Syroot.Maths.Vector4F u in vec4t0)
-                            {
-                                v.tans.Add(new Vector4 { X = u.X, Y = u.Y, Z = u.Z, W = u.W });
-                            }
-                            for (int i = 0; i < TotalCount - v.tans.Count; i++)
-                            {
-                                v.tans.Add(new Vector4 { X = 0, Y = 0, Z = 0, W = 0 });
-                            }
-                        }
+                            vec4t0 = WiiUAttributeData(att, helper, "_t0");
                         if (att.Name == "_b0")
-                        {
-                            VertexBufferHelperAttrib b0 = helper["_b0"];
-                            Syroot.Maths.Vector4F[] vec4b0 = b0.Data;
-
-                            foreach (Syroot.Maths.Vector4F u in vec4b0)
-                            {
-                                v.bitans.Add(new Vector4 { X = u.X, Y = u.Y, Z = u.Z, W = u.W });
-                            }
-                            for (int i = 0; i < TotalCount - v.tans.Count; i++)
-                            {
-                                v.tans.Add(new Vector4 { X = 0, Y = 0, Z = 0, W = 0 });
-                            }
-                        }
+                            vec4b0 = WiiUAttributeData(att, helper, "_b0");
                         if (att.Name == "_w0")
-                        {
-                            VertexBufferHelperAttrib w0 = helper["_w0"];
-                            Syroot.Maths.Vector4F[] vec4w0 = w0.Data;
-
-                            foreach (Syroot.Maths.Vector4F w in vec4w0)
-                            {
-                                v.weights.Add(new Vector4 { X = w.X, Y = w.Y, Z = w.Z, W = w.W });
-                            }
-                            for (int i = 0; i < TotalCount - v.weights.Count; i++)
-                            {
-                                v.weights.Add(new Vector4 { X = 0, Y = 0, Z = 0, W = 0 });
-                            }
-                        }
+                            vec4w0 = WiiUAttributeData(att, helper, "_w0");
                         if (att.Name == "_i0")
-                        {
-                            VertexBufferHelperAttrib i0 = helper["_i0"];
-                            Syroot.Maths.Vector4F[] vec4i0 = i0.Data;
+                            vec4i0 = WiiUAttributeData(att, helper, "_i0");
 
-                            foreach (Syroot.Maths.Vector4F i in vec4i0)
-                            {
-                                v.nodes.Add(new Vector4 { X = i.X, Y = i.Y, Z = i.Z, W = i.W });
-                            }
-                            for (int i = 0; i < TotalCount - v.nodes.Count; i++)
-                            {
-                                v.nodes.Add(new Vector4 { X = 0, Y = 0, Z = 0, W = 0 });
-                            }
-                        }
+                        poly.vertexAttributes.Add(attr);
                     }
+                    for (int i = 0; i < vec4Positions.Length; i++)
+                    {
+                        Vertex v = new Vertex();
+                        if (vec4Positions.Length > 0)
+                            v.pos = new Vector3(vec4Positions[i].X, vec4Positions[i].Y, vec4Positions[i].Z);
+                        if (vec4Normals.Length > 0)
+                            v.nrm = new Vector3(vec4Normals[i].X, vec4Normals[i].Y, vec4Normals[i].Z);
+                        if (vec4uv0.Length > 0)
+                            v.uv0 = new Vector2(vec4uv0[i].X, vec4uv0[i].Y);
+                        if (vec4uv1.Length > 0)
+                            v.uv1 = new Vector2(vec4uv1[i].X, vec4uv1[i].Y);
+                        if (vec4uv2.Length > 0)
+                            v.uv2 = new Vector2(vec4uv2[i].X, vec4uv2[i].Y);
+                        if (vec4w0.Length > 0)
+                        {
+                            v.boneWeights.Add(vec4w0[i].X);
+                            v.boneWeights.Add(vec4w0[i].Y);
+                            v.boneWeights.Add(vec4w0[i].Z);
+                            v.boneWeights.Add(vec4w0[i].W);
+                        }
+                        if (vec4i0.Length > 0)
+                        {
+                            v.boneIds.Add((int)vec4i0[i].X);
+                            v.boneIds.Add((int)vec4i0[i].Y);
+                            v.boneIds.Add((int)vec4i0[i].Z);
+                            v.boneIds.Add((int)vec4i0[i].W);
+                        }
+                        if (vec4t0.Length > 0)
+                            v.tan = new Vector4(vec4t0[i].X, vec4t0[i].Y, vec4t0[i].Z, vec4t0[i].W);
+                        if (vec4b0.Length > 0)
+                            v.bitan = new Vector4(vec4b0[i].X, vec4b0[i].Y, vec4b0[i].Z, vec4b0[i].W);
+                        if (vec4c0.Length > 0)
+                            v.col = new Vector4(vec4c0[i].X, vec4c0[i].Y, vec4c0[i].Z, vec4c0[i].W);
+
+                        poly.vertices.Add(v);
+
+                    }
+
                     CurShape++;
 
                 }
                 CurMdl++;
             }
-
             b.UpdateVertexData();
         }
     }

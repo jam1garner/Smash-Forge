@@ -205,6 +205,28 @@
     <Compile Include="GUI\Editors\BFRES Editors\BFRES_MeshEditor.Designer.cs">
       <DependentUpon>BFRES_MeshEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\BNTX_TextureList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\BNTX_TextureList.Designer.cs" />
+    <Compile Include="GUI\Editors\BFRES Editors\ImportTexture.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\ImportTexture.Designer.cs">
+      <DependentUpon>ImportTexture.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\MeshBoneList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\MeshBoneList.Designer.cs">
+      <DependentUpon>MeshBoneList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\BufferList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\BufferList.Designer.cs">
+      <DependentUpon>BufferList.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\BFRES Editors\FSKLTree.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -605,6 +627,16 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BFRES Editors\BFRES_MaterialEditor.resx">
       <DependentUpon>BFRES_MaterialEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BNTX_TextureList.resx" />
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\ImportTexture.resx">
+      <DependentUpon>ImportTexture.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\MeshBoneList.resx">
+      <DependentUpon>MeshBoneList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BufferList.resx">
+      <DependentUpon>BufferList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BFRES Editors\FSKLTree.resx">
       <DependentUpon>FSKLTree.cs</DependentUpon>

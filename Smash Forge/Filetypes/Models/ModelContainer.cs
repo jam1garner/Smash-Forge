@@ -14,7 +14,8 @@ namespace Smash_Forge
 {
     public class ModelContainer : TreeNode
     {
-        public NUD NUD {
+        public NUD NUD
+        {
             get
             {
                 return nud;
@@ -111,7 +112,7 @@ namespace Smash_Forge
             set
             {
                 jtb = value;
-                if(VBN != null)
+                if (VBN != null)
                     VBN.JointTable = jtb;
                 Refresh();
             }
@@ -299,7 +300,7 @@ namespace Smash_Forge
             GL.UseProgram(shader.programID);
 
             int renderType = (int)Runtime.renderType;
-            
+
             Matrix4 mvpMatrix = camera.mvpMatrix;
             GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mvpMatrix);
 
@@ -333,7 +334,7 @@ namespace Smash_Forge
             LightColor ambientColor = Runtime.lightSetParam.characterDiffuse.ambientColor;
             GL.Uniform3(shader.getAttribute("difLightColor"), diffuseColor.R, diffuseColor.G, diffuseColor.B);
             GL.Uniform3(shader.getAttribute("ambLightColor"), ambientColor.R, ambientColor.G, ambientColor.B);
-            
+
             if (BCH != null)
             {
                 foreach (BCH_Model mo in BCH.Models.Nodes)
@@ -354,22 +355,25 @@ namespace Smash_Forge
             if (BFRES != null && Runtime.shaders["BFRES"].CompiledSuccessfully() && Runtime.shaders["BFRES_PBR"].CompiledSuccessfully())
             {
                 if (Runtime.renderPhysicallyBasedRendering == true)
-                {
                     shader = Runtime.shaders["BFRES_PBR"];
-                    GL.UseProgram(shader.programID);
-
-                    GL.Uniform3(shader.getAttribute("difLightColor"), diffuseColor.R, diffuseColor.G, diffuseColor.B);
-                    GL.Uniform3(shader.getAttribute("ambLightColor"), ambientColor.R, ambientColor.G, ambientColor.B);
-                }
                 else
-                {
                     shader = Runtime.shaders["BFRES"];
-                    GL.UseProgram(shader.programID);
 
-                    GL.Uniform3(shader.getAttribute("difLightColor"), diffuseColor.R, diffuseColor.G, diffuseColor.B);
-                    GL.Uniform3(shader.getAttribute("ambLightColor"), ambientColor.R, ambientColor.G, ambientColor.B);
-                }
 
+                GL.UseProgram(shader.programID);
+
+                GL.Uniform3(shader.getAttribute("difLightColor"), diffuseColor.R, diffuseColor.G, diffuseColor.B);
+                GL.Uniform3(shader.getAttribute("ambLightColor"), ambientColor.R, ambientColor.G, ambientColor.B);
+
+                Matrix4 invertedCamera = camera.mvpMatrix.Inverted();
+                Vector3 lightDirection = new Vector3(0f, 0f, -1f);
+                GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+                GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+
+                //This cube map is for a quick test
+                GL.ActiveTexture(TextureUnit.Texture2);
+                GL.BindTexture(TextureTarget.TextureCubeMap, RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh]);
+                GL.Uniform1(shader.getAttribute("cmap"), 2);
 
                 BFRES.Render(camera.mvpMatrix);
             }
@@ -452,7 +456,7 @@ namespace Smash_Forge
                 {
                     RenderTools.DrawVBN(mo.skeleton);
                 }
-                   
+
             }
 
             if (DAT_MELEE != null)
@@ -513,7 +517,7 @@ namespace Smash_Forge
             float refR, refG, refB = 1.0f;
             ColorTools.HsvToRgb(Runtime.reflectionHue, Runtime.reflectionSaturation, Runtime.reflectionIntensity, out refR, out refG, out refB);
             GL.Uniform3(shader.getAttribute("refLightColor"), refR, refG, refB);
-            
+
             // character diffuse lights
             GL.Uniform3(shader.getAttribute("difLightColor"), Runtime.lightSetParam.characterDiffuse.diffuseColor.R, Runtime.lightSetParam.characterDiffuse.diffuseColor.G, Runtime.lightSetParam.characterDiffuse.diffuseColor.B);
             GL.Uniform3(shader.getAttribute("ambLightColor"), Runtime.lightSetParam.characterDiffuse.ambientColor.R, Runtime.lightSetParam.characterDiffuse.ambientColor.G, Runtime.lightSetParam.characterDiffuse.ambientColor.B);
@@ -523,17 +527,17 @@ namespace Smash_Forge
 
             GL.Uniform3(shader.getAttribute("difLightColor3"), Runtime.lightSetParam.characterDiffuse3.diffuseColor.R, Runtime.lightSetParam.characterDiffuse3.diffuseColor.G, Runtime.lightSetParam.characterDiffuse3.diffuseColor.B);
             GL.Uniform3(shader.getAttribute("ambLightColor3"), Runtime.lightSetParam.characterDiffuse3.ambientColor.R, Runtime.lightSetParam.characterDiffuse3.ambientColor.G, Runtime.lightSetParam.characterDiffuse3.ambientColor.B);
-            
+
             // character specular light
             GL.Uniform3(shader.getAttribute("specLightColor"), LightTools.specularLight.diffuseColor.R, LightTools.specularLight.diffuseColor.G, LightTools.specularLight.diffuseColor.B);
-            
+
             // stage fog
             GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
 
             GL.Uniform3(shader.getAttribute("difLight2Direction"), Runtime.lightSetParam.characterDiffuse2.direction);
             GL.Uniform3(shader.getAttribute("difLight3Direction"), Runtime.lightSetParam.characterDiffuse2.direction);
 
-            if (Runtime.cameraLight) 
+            if (Runtime.cameraLight)
             {
                 // Camera light should only affect character lighting.
                 Matrix4 invertedCamera = camera.mvpMatrix.Inverted();
@@ -602,7 +606,7 @@ namespace Smash_Forge
                             selected.Add(ray.Distance(closest), mesh);
                     }
                 }
-              
+
             }
             return selected;
         }

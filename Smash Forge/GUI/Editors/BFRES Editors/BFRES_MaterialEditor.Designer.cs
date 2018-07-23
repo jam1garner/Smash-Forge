@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge.GUI.Editors
+﻿namespace Smash_Forge
 {
     partial class BFRES_MaterialEditor
     {
@@ -30,7 +30,6 @@
         {
             this.MaterialsTab = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridView4 = new System.Windows.Forms.DataGridView();
@@ -39,39 +38,31 @@
             this.Column10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabTextureMaps = new System.Windows.Forms.TabPage();
             this.MaterialParamsTab = new System.Windows.Forms.TabPage();
-            this.ParamDataControl = new System.Windows.Forms.TabControl();
-            this.FloatParam = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.Float2Param = new System.Windows.Forms.TabPage();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.numericUpDown4 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown5 = new System.Windows.Forms.NumericUpDown();
-            this.Float3Param = new System.Windows.Forms.TabPage();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.numericUpDown3 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown6 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown10 = new System.Windows.Forms.NumericUpDown();
-            this.Float4Param = new System.Windows.Forms.TabPage();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown11 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown12 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown13 = new System.Windows.Forms.NumericUpDown();
-            this.boolParam = new System.Windows.Forms.TabPage();
-            this.panel5 = new System.Windows.Forms.Panel();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.SRTParam = new System.Windows.Forms.TabPage();
-            this.panel6 = new System.Windows.Forms.Panel();
-            this.numericUpDown17 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown16 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown8 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown7 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown15 = new System.Windows.Forms.NumericUpDown();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.colorboxLabel = new System.Windows.Forms.Label();
+            this.paramColorBox = new System.Windows.Forms.PictureBox();
+            this.boolLabel = new System.Windows.Forms.Label();
+            this.FloatLabel8 = new System.Windows.Forms.Label();
+            this.FloatLabel6 = new System.Windows.Forms.Label();
+            this.FloatLabel4 = new System.Windows.Forms.Label();
+            this.FloatLabel2 = new System.Windows.Forms.Label();
+            this.FloatLabel7 = new System.Windows.Forms.Label();
+            this.FloatLabel5 = new System.Windows.Forms.Label();
+            this.FloatLabel3 = new System.Windows.Forms.Label();
+            this.FloatLabel1 = new System.Windows.Forms.Label();
+            this.FloatNumUD2 = new System.Windows.Forms.NumericUpDown();
+            this.FloatNumUD8 = new System.Windows.Forms.NumericUpDown();
+            this.FloatNumUD6 = new System.Windows.Forms.NumericUpDown();
+            this.FloatNumUD4 = new System.Windows.Forms.NumericUpDown();
+            this.FloatNumUD7 = new System.Windows.Forms.NumericUpDown();
+            this.FloatNumUD5 = new System.Windows.Forms.NumericUpDown();
+            this.FloatNumUD3 = new System.Windows.Forms.NumericUpDown();
+            this.boolParam = new System.Windows.Forms.ComboBox();
+            this.FloatNumUD = new System.Windows.Forms.NumericUpDown();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
             this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -81,35 +72,16 @@
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).BeginInit();
             this.MaterialParamsTab.SuspendLayout();
-            this.ParamDataControl.SuspendLayout();
-            this.FloatParam.SuspendLayout();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-            this.Float2Param.SuspendLayout();
-            this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
-            this.Float3Param.SuspendLayout();
-            this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown10)).BeginInit();
-            this.Float4Param.SuspendLayout();
-            this.panel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown11)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown12)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown13)).BeginInit();
-            this.boolParam.SuspendLayout();
-            this.panel5.SuspendLayout();
-            this.SRTParam.SuspendLayout();
-            this.panel6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown17)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown16)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown8)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown7)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown15)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.paramColorBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD8)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD4)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD7)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD)).BeginInit();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
             this.SuspendLayout();
@@ -125,38 +97,26 @@
             this.MaterialsTab.Location = new System.Drawing.Point(0, 0);
             this.MaterialsTab.Name = "MaterialsTab";
             this.MaterialsTab.SelectedIndex = 0;
-            this.MaterialsTab.Size = new System.Drawing.Size(395, 567);
+            this.MaterialsTab.Size = new System.Drawing.Size(382, 567);
             this.MaterialsTab.TabIndex = 0;
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.textBox1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(883, 541);
+            this.tabPage1.Size = new System.Drawing.Size(374, 541);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Material Info";
             this.tabPage1.UseVisualStyleBackColor = true;
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
             // 
-            // button1
-            // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(269, 515);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Apply";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // textBox1
             // 
             this.textBox1.Location = new System.Drawing.Point(3, 6);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.Size = new System.Drawing.Size(363, 20);
             this.textBox1.TabIndex = 0;
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
@@ -166,7 +126,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(883, 541);
+            this.tabPage2.Size = new System.Drawing.Size(374, 541);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Render Info";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -179,9 +139,10 @@
             this.Column9,
             this.Column10});
             this.dataGridView4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView4.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dataGridView4.Location = new System.Drawing.Point(3, 3);
             this.dataGridView4.Name = "dataGridView4";
-            this.dataGridView4.Size = new System.Drawing.Size(877, 535);
+            this.dataGridView4.Size = new System.Drawing.Size(368, 535);
             this.dataGridView4.TabIndex = 0;
             // 
             // Column8
@@ -205,7 +166,7 @@
             this.tabTextureMaps.Location = new System.Drawing.Point(4, 22);
             this.tabTextureMaps.Name = "tabTextureMaps";
             this.tabTextureMaps.Padding = new System.Windows.Forms.Padding(3);
-            this.tabTextureMaps.Size = new System.Drawing.Size(387, 541);
+            this.tabTextureMaps.Size = new System.Drawing.Size(374, 541);
             this.tabTextureMaps.TabIndex = 2;
             this.tabTextureMaps.Text = "Texture Maps";
             this.tabTextureMaps.UseVisualStyleBackColor = true;
@@ -213,304 +174,395 @@
             // 
             // MaterialParamsTab
             // 
-            this.MaterialParamsTab.Controls.Add(this.ParamDataControl);
-            this.MaterialParamsTab.Controls.Add(this.dataGridView1);
+            this.MaterialParamsTab.Controls.Add(this.panel1);
+            this.MaterialParamsTab.Controls.Add(this.listView1);
             this.MaterialParamsTab.Location = new System.Drawing.Point(4, 22);
             this.MaterialParamsTab.Name = "MaterialParamsTab";
             this.MaterialParamsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.MaterialParamsTab.Size = new System.Drawing.Size(387, 541);
+            this.MaterialParamsTab.Size = new System.Drawing.Size(374, 541);
             this.MaterialParamsTab.TabIndex = 3;
             this.MaterialParamsTab.Text = "Material Params";
             this.MaterialParamsTab.UseVisualStyleBackColor = true;
             // 
-            // ParamDataControl
-            // 
-            this.ParamDataControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ParamDataControl.Controls.Add(this.FloatParam);
-            this.ParamDataControl.Controls.Add(this.Float2Param);
-            this.ParamDataControl.Controls.Add(this.Float3Param);
-            this.ParamDataControl.Controls.Add(this.Float4Param);
-            this.ParamDataControl.Controls.Add(this.boolParam);
-            this.ParamDataControl.Controls.Add(this.SRTParam);
-            this.ParamDataControl.Location = new System.Drawing.Point(8, 447);
-            this.ParamDataControl.Name = "ParamDataControl";
-            this.ParamDataControl.SelectedIndex = 0;
-            this.ParamDataControl.Size = new System.Drawing.Size(371, 91);
-            this.ParamDataControl.TabIndex = 1;
-            // 
-            // FloatParam
-            // 
-            this.FloatParam.Controls.Add(this.panel1);
-            this.FloatParam.Location = new System.Drawing.Point(4, 22);
-            this.FloatParam.Name = "FloatParam";
-            this.FloatParam.Padding = new System.Windows.Forms.Padding(3);
-            this.FloatParam.Size = new System.Drawing.Size(363, 65);
-            this.FloatParam.TabIndex = 0;
-            this.FloatParam.Text = "Float";
-            this.FloatParam.UseVisualStyleBackColor = true;
-            // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.numericUpDown1);
-            this.panel1.Location = new System.Drawing.Point(6, 3);
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.colorboxLabel);
+            this.panel1.Controls.Add(this.paramColorBox);
+            this.panel1.Controls.Add(this.boolLabel);
+            this.panel1.Controls.Add(this.FloatLabel8);
+            this.panel1.Controls.Add(this.FloatLabel6);
+            this.panel1.Controls.Add(this.FloatLabel4);
+            this.panel1.Controls.Add(this.FloatLabel2);
+            this.panel1.Controls.Add(this.FloatLabel7);
+            this.panel1.Controls.Add(this.FloatLabel5);
+            this.panel1.Controls.Add(this.FloatLabel3);
+            this.panel1.Controls.Add(this.FloatLabel1);
+            this.panel1.Controls.Add(this.FloatNumUD2);
+            this.panel1.Controls.Add(this.FloatNumUD8);
+            this.panel1.Controls.Add(this.FloatNumUD6);
+            this.panel1.Controls.Add(this.FloatNumUD4);
+            this.panel1.Controls.Add(this.FloatNumUD7);
+            this.panel1.Controls.Add(this.FloatNumUD5);
+            this.panel1.Controls.Add(this.FloatNumUD3);
+            this.panel1.Controls.Add(this.boolParam);
+            this.panel1.Controls.Add(this.FloatNumUD);
+            this.panel1.Location = new System.Drawing.Point(6, 333);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(322, 65);
+            this.panel1.Size = new System.Drawing.Size(362, 205);
             this.panel1.TabIndex = 1;
             // 
-            // numericUpDown1
+            // colorboxLabel
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(3, 21);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown1.TabIndex = 0;
+            this.colorboxLabel.AutoSize = true;
+            this.colorboxLabel.Location = new System.Drawing.Point(272, 114);
+            this.colorboxLabel.Name = "colorboxLabel";
+            this.colorboxLabel.Size = new System.Drawing.Size(31, 13);
+            this.colorboxLabel.TabIndex = 27;
+            this.colorboxLabel.Text = "Color";
             // 
-            // Float2Param
+            // paramColorBox
             // 
-            this.Float2Param.Controls.Add(this.panel2);
-            this.Float2Param.Location = new System.Drawing.Point(4, 22);
-            this.Float2Param.Name = "Float2Param";
-            this.Float2Param.Padding = new System.Windows.Forms.Padding(3);
-            this.Float2Param.Size = new System.Drawing.Size(334, 65);
-            this.Float2Param.TabIndex = 1;
-            this.Float2Param.Text = "Float2";
-            this.Float2Param.UseVisualStyleBackColor = true;
+            this.paramColorBox.Location = new System.Drawing.Point(275, 131);
+            this.paramColorBox.Name = "paramColorBox";
+            this.paramColorBox.Size = new System.Drawing.Size(45, 45);
+            this.paramColorBox.TabIndex = 26;
+            this.paramColorBox.TabStop = false;
+            this.paramColorBox.Click += new System.EventHandler(this.paramColorBox_Click);
             // 
-            // panel2
+            // boolLabel
             // 
-            this.panel2.Controls.Add(this.numericUpDown4);
-            this.panel2.Controls.Add(this.numericUpDown5);
-            this.panel2.Location = new System.Drawing.Point(6, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(326, 65);
-            this.panel2.TabIndex = 2;
+            this.boolLabel.AutoSize = true;
+            this.boolLabel.Location = new System.Drawing.Point(272, 6);
+            this.boolLabel.Name = "boolLabel";
+            this.boolLabel.Size = new System.Drawing.Size(35, 13);
+            this.boolLabel.TabIndex = 25;
+            this.boolLabel.Text = "label9";
             // 
-            // numericUpDown4
+            // FloatLabel8
             // 
-            this.numericUpDown4.Location = new System.Drawing.Point(129, 21);
-            this.numericUpDown4.Name = "numericUpDown4";
-            this.numericUpDown4.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown4.TabIndex = 1;
+            this.FloatLabel8.AutoSize = true;
+            this.FloatLabel8.Location = new System.Drawing.Point(144, 140);
+            this.FloatLabel8.Name = "FloatLabel8";
+            this.FloatLabel8.Size = new System.Drawing.Size(35, 13);
+            this.FloatLabel8.TabIndex = 24;
+            this.FloatLabel8.Text = "label8";
             // 
-            // numericUpDown5
+            // FloatLabel6
             // 
-            this.numericUpDown5.Location = new System.Drawing.Point(3, 21);
-            this.numericUpDown5.Name = "numericUpDown5";
-            this.numericUpDown5.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown5.TabIndex = 0;
+            this.FloatLabel6.AutoSize = true;
+            this.FloatLabel6.Location = new System.Drawing.Point(144, 98);
+            this.FloatLabel6.Name = "FloatLabel6";
+            this.FloatLabel6.Size = new System.Drawing.Size(35, 13);
+            this.FloatLabel6.TabIndex = 23;
+            this.FloatLabel6.Text = "label7";
             // 
-            // Float3Param
+            // FloatLabel4
             // 
-            this.Float3Param.Controls.Add(this.panel3);
-            this.Float3Param.Location = new System.Drawing.Point(4, 22);
-            this.Float3Param.Name = "Float3Param";
-            this.Float3Param.Padding = new System.Windows.Forms.Padding(3);
-            this.Float3Param.Size = new System.Drawing.Size(334, 65);
-            this.Float3Param.TabIndex = 2;
-            this.Float3Param.Text = "Float3";
-            this.Float3Param.UseVisualStyleBackColor = true;
+            this.FloatLabel4.AutoSize = true;
+            this.FloatLabel4.Location = new System.Drawing.Point(144, 50);
+            this.FloatLabel4.Name = "FloatLabel4";
+            this.FloatLabel4.Size = new System.Drawing.Size(35, 13);
+            this.FloatLabel4.TabIndex = 22;
+            this.FloatLabel4.Text = "label6";
             // 
-            // panel3
+            // FloatLabel2
             // 
-            this.panel3.Controls.Add(this.numericUpDown3);
-            this.panel3.Controls.Add(this.numericUpDown6);
-            this.panel3.Controls.Add(this.numericUpDown10);
-            this.panel3.Location = new System.Drawing.Point(6, 0);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(322, 65);
-            this.panel3.TabIndex = 2;
+            this.FloatLabel2.AutoSize = true;
+            this.FloatLabel2.Location = new System.Drawing.Point(144, 7);
+            this.FloatLabel2.Name = "FloatLabel2";
+            this.FloatLabel2.Size = new System.Drawing.Size(35, 13);
+            this.FloatLabel2.TabIndex = 21;
+            this.FloatLabel2.Text = "label5";
             // 
-            // numericUpDown3
+            // FloatLabel7
             // 
-            this.numericUpDown3.Location = new System.Drawing.Point(255, 21);
-            this.numericUpDown3.Name = "numericUpDown3";
-            this.numericUpDown3.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown3.TabIndex = 2;
+            this.FloatLabel7.AutoSize = true;
+            this.FloatLabel7.Location = new System.Drawing.Point(11, 140);
+            this.FloatLabel7.Name = "FloatLabel7";
+            this.FloatLabel7.Size = new System.Drawing.Size(35, 13);
+            this.FloatLabel7.TabIndex = 20;
+            this.FloatLabel7.Text = "label4";
             // 
-            // numericUpDown6
+            // FloatLabel5
             // 
-            this.numericUpDown6.Location = new System.Drawing.Point(129, 21);
-            this.numericUpDown6.Name = "numericUpDown6";
-            this.numericUpDown6.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown6.TabIndex = 1;
+            this.FloatLabel5.AutoSize = true;
+            this.FloatLabel5.Location = new System.Drawing.Point(11, 98);
+            this.FloatLabel5.Name = "FloatLabel5";
+            this.FloatLabel5.Size = new System.Drawing.Size(35, 13);
+            this.FloatLabel5.TabIndex = 19;
+            this.FloatLabel5.Text = "label3";
             // 
-            // numericUpDown10
+            // FloatLabel3
             // 
-            this.numericUpDown10.Location = new System.Drawing.Point(3, 21);
-            this.numericUpDown10.Name = "numericUpDown10";
-            this.numericUpDown10.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown10.TabIndex = 0;
+            this.FloatLabel3.AutoSize = true;
+            this.FloatLabel3.Location = new System.Drawing.Point(11, 50);
+            this.FloatLabel3.Name = "FloatLabel3";
+            this.FloatLabel3.Size = new System.Drawing.Size(35, 13);
+            this.FloatLabel3.TabIndex = 18;
+            this.FloatLabel3.Text = "label2";
             // 
-            // Float4Param
+            // FloatLabel1
             // 
-            this.Float4Param.Controls.Add(this.panel4);
-            this.Float4Param.Location = new System.Drawing.Point(4, 22);
-            this.Float4Param.Name = "Float4Param";
-            this.Float4Param.Padding = new System.Windows.Forms.Padding(3);
-            this.Float4Param.Size = new System.Drawing.Size(334, 65);
-            this.Float4Param.TabIndex = 3;
-            this.Float4Param.Text = "Float4";
-            this.Float4Param.UseVisualStyleBackColor = true;
+            this.FloatLabel1.AutoSize = true;
+            this.FloatLabel1.Location = new System.Drawing.Point(11, 7);
+            this.FloatLabel1.Name = "FloatLabel1";
+            this.FloatLabel1.Size = new System.Drawing.Size(35, 13);
+            this.FloatLabel1.TabIndex = 17;
+            this.FloatLabel1.Text = "label1";
             // 
-            // panel4
+            // FloatNumUD2
             // 
-            this.panel4.Controls.Add(this.numericUpDown2);
-            this.panel4.Controls.Add(this.numericUpDown11);
-            this.panel4.Controls.Add(this.numericUpDown12);
-            this.panel4.Controls.Add(this.numericUpDown13);
-            this.panel4.Location = new System.Drawing.Point(6, 0);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(336, 65);
-            this.panel4.TabIndex = 2;
+            this.FloatNumUD2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FloatNumUD2.DecimalPlaces = 3;
+            this.FloatNumUD2.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.FloatNumUD2.Location = new System.Drawing.Point(147, 25);
+            this.FloatNumUD2.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.FloatNumUD2.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.FloatNumUD2.Name = "FloatNumUD2";
+            this.FloatNumUD2.Size = new System.Drawing.Size(113, 20);
+            this.FloatNumUD2.TabIndex = 16;
+            this.FloatNumUD2.ValueChanged += new System.EventHandler(this.FloatNumUD_ValueChanged);
             // 
-            // numericUpDown2
+            // FloatNumUD8
             // 
-            this.numericUpDown2.Location = new System.Drawing.Point(381, 21);
-            this.numericUpDown2.Name = "numericUpDown2";
-            this.numericUpDown2.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown2.TabIndex = 3;
+            this.FloatNumUD8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FloatNumUD8.DecimalPlaces = 3;
+            this.FloatNumUD8.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.FloatNumUD8.Location = new System.Drawing.Point(147, 158);
+            this.FloatNumUD8.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.FloatNumUD8.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.FloatNumUD8.Name = "FloatNumUD8";
+            this.FloatNumUD8.Size = new System.Drawing.Size(113, 20);
+            this.FloatNumUD8.TabIndex = 15;
+            this.FloatNumUD8.ValueChanged += new System.EventHandler(this.FloatNumUD_ValueChanged);
             // 
-            // numericUpDown11
+            // FloatNumUD6
             // 
-            this.numericUpDown11.Location = new System.Drawing.Point(255, 21);
-            this.numericUpDown11.Name = "numericUpDown11";
-            this.numericUpDown11.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown11.TabIndex = 2;
+            this.FloatNumUD6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FloatNumUD6.DecimalPlaces = 3;
+            this.FloatNumUD6.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.FloatNumUD6.Location = new System.Drawing.Point(147, 116);
+            this.FloatNumUD6.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.FloatNumUD6.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.FloatNumUD6.Name = "FloatNumUD6";
+            this.FloatNumUD6.Size = new System.Drawing.Size(113, 20);
+            this.FloatNumUD6.TabIndex = 14;
+            this.FloatNumUD6.ValueChanged += new System.EventHandler(this.FloatNumUD_ValueChanged);
             // 
-            // numericUpDown12
+            // FloatNumUD4
             // 
-            this.numericUpDown12.Location = new System.Drawing.Point(129, 21);
-            this.numericUpDown12.Name = "numericUpDown12";
-            this.numericUpDown12.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown12.TabIndex = 1;
+            this.FloatNumUD4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FloatNumUD4.DecimalPlaces = 3;
+            this.FloatNumUD4.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.FloatNumUD4.Location = new System.Drawing.Point(147, 68);
+            this.FloatNumUD4.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.FloatNumUD4.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.FloatNumUD4.Name = "FloatNumUD4";
+            this.FloatNumUD4.Size = new System.Drawing.Size(113, 20);
+            this.FloatNumUD4.TabIndex = 13;
+            this.FloatNumUD4.ValueChanged += new System.EventHandler(this.FloatNumUD_ValueChanged);
             // 
-            // numericUpDown13
+            // FloatNumUD7
             // 
-            this.numericUpDown13.Location = new System.Drawing.Point(3, 21);
-            this.numericUpDown13.Name = "numericUpDown13";
-            this.numericUpDown13.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown13.TabIndex = 0;
+            this.FloatNumUD7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FloatNumUD7.DecimalPlaces = 3;
+            this.FloatNumUD7.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.FloatNumUD7.Location = new System.Drawing.Point(14, 158);
+            this.FloatNumUD7.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.FloatNumUD7.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.FloatNumUD7.Name = "FloatNumUD7";
+            this.FloatNumUD7.Size = new System.Drawing.Size(113, 20);
+            this.FloatNumUD7.TabIndex = 12;
+            this.FloatNumUD7.ValueChanged += new System.EventHandler(this.FloatNumUD_ValueChanged);
+            // 
+            // FloatNumUD5
+            // 
+            this.FloatNumUD5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FloatNumUD5.DecimalPlaces = 3;
+            this.FloatNumUD5.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.FloatNumUD5.Location = new System.Drawing.Point(14, 116);
+            this.FloatNumUD5.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.FloatNumUD5.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.FloatNumUD5.Name = "FloatNumUD5";
+            this.FloatNumUD5.Size = new System.Drawing.Size(113, 20);
+            this.FloatNumUD5.TabIndex = 11;
+            this.FloatNumUD5.ValueChanged += new System.EventHandler(this.FloatNumUD_ValueChanged);
+            // 
+            // FloatNumUD3
+            // 
+            this.FloatNumUD3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FloatNumUD3.DecimalPlaces = 3;
+            this.FloatNumUD3.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.FloatNumUD3.Location = new System.Drawing.Point(14, 68);
+            this.FloatNumUD3.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.FloatNumUD3.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.FloatNumUD3.Name = "FloatNumUD3";
+            this.FloatNumUD3.Size = new System.Drawing.Size(113, 20);
+            this.FloatNumUD3.TabIndex = 10;
+            this.FloatNumUD3.ValueChanged += new System.EventHandler(this.FloatNumUD_ValueChanged);
             // 
             // boolParam
             // 
-            this.boolParam.Controls.Add(this.panel5);
-            this.boolParam.Location = new System.Drawing.Point(4, 22);
+            this.boolParam.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.boolParam.FormattingEnabled = true;
+            this.boolParam.Location = new System.Drawing.Point(275, 22);
             this.boolParam.Name = "boolParam";
-            this.boolParam.Padding = new System.Windows.Forms.Padding(3);
-            this.boolParam.Size = new System.Drawing.Size(334, 65);
-            this.boolParam.TabIndex = 4;
-            this.boolParam.Text = "Bool";
-            this.boolParam.UseVisualStyleBackColor = true;
+            this.boolParam.Size = new System.Drawing.Size(84, 21);
+            this.boolParam.TabIndex = 9;
             // 
-            // panel5
+            // FloatNumUD
             // 
-            this.panel5.Controls.Add(this.comboBox1);
-            this.panel5.Location = new System.Drawing.Point(6, 0);
-            this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(326, 65);
-            this.panel5.TabIndex = 2;
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(3, 21);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
-            this.comboBox1.TabIndex = 1;
-            // 
-            // SRTParam
-            // 
-            this.SRTParam.Controls.Add(this.panel6);
-            this.SRTParam.Location = new System.Drawing.Point(4, 22);
-            this.SRTParam.Name = "SRTParam";
-            this.SRTParam.Padding = new System.Windows.Forms.Padding(3);
-            this.SRTParam.Size = new System.Drawing.Size(334, 65);
-            this.SRTParam.TabIndex = 5;
-            this.SRTParam.Text = "SRT";
-            this.SRTParam.UseVisualStyleBackColor = true;
-            // 
-            // panel6
-            // 
-            this.panel6.Controls.Add(this.numericUpDown17);
-            this.panel6.Controls.Add(this.numericUpDown16);
-            this.panel6.Controls.Add(this.numericUpDown8);
-            this.panel6.Controls.Add(this.numericUpDown7);
-            this.panel6.Controls.Add(this.numericUpDown15);
-            this.panel6.Location = new System.Drawing.Point(6, 0);
-            this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(332, 65);
-            this.panel6.TabIndex = 2;
-            // 
-            // numericUpDown17
-            // 
-            this.numericUpDown17.Location = new System.Drawing.Point(267, 32);
-            this.numericUpDown17.Name = "numericUpDown17";
-            this.numericUpDown17.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown17.TabIndex = 5;
-            // 
-            // numericUpDown16
-            // 
-            this.numericUpDown16.Location = new System.Drawing.Point(267, 6);
-            this.numericUpDown16.Name = "numericUpDown16";
-            this.numericUpDown16.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown16.TabIndex = 4;
-            // 
-            // numericUpDown8
-            // 
-            this.numericUpDown8.Location = new System.Drawing.Point(129, 6);
-            this.numericUpDown8.Name = "numericUpDown8";
-            this.numericUpDown8.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown8.TabIndex = 2;
-            // 
-            // numericUpDown7
-            // 
-            this.numericUpDown7.Location = new System.Drawing.Point(3, 32);
-            this.numericUpDown7.Name = "numericUpDown7";
-            this.numericUpDown7.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown7.TabIndex = 1;
-            // 
-            // numericUpDown15
-            // 
-            this.numericUpDown15.Location = new System.Drawing.Point(3, 6);
-            this.numericUpDown15.Name = "numericUpDown15";
-            this.numericUpDown15.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown15.TabIndex = 0;
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.FloatNumUD.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column1,
-            this.Column2,
-            this.Column3});
-            this.dataGridView1.Location = new System.Drawing.Point(6, 4);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(373, 437);
-            this.dataGridView1.TabIndex = 0;
-            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick_1);
+            this.FloatNumUD.DecimalPlaces = 3;
+            this.FloatNumUD.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.FloatNumUD.Location = new System.Drawing.Point(14, 25);
+            this.FloatNumUD.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.FloatNumUD.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.FloatNumUD.Name = "FloatNumUD";
+            this.FloatNumUD.Size = new System.Drawing.Size(113, 20);
+            this.FloatNumUD.TabIndex = 8;
+            this.FloatNumUD.ValueChanged += new System.EventHandler(this.FloatNumUD_ValueChanged);
             // 
-            // Column1
+            // listView1
             // 
-            this.Column1.HeaderText = "Name";
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
+            this.listView1.AllowColumnReorder = true;
+            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader4,
+            this.columnHeader6,
+            this.columnHeader1});
+            this.listView1.GridLines = true;
+            this.listView1.Location = new System.Drawing.Point(6, 6);
+            this.listView1.MultiSelect = false;
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(365, 321);
+            this.listView1.TabIndex = 3;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listView1_ColumnClick);
+            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
             // 
-            // Column2
+            // columnHeader4
             // 
-            this.Column2.HeaderText = "Color (If Used)";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
+            this.columnHeader4.Text = "Name";
+            this.columnHeader4.Width = 140;
             // 
-            // Column3
+            // columnHeader6
             // 
-            this.Column3.HeaderText = "Type";
-            this.Column3.Name = "Column3";
-            this.Column3.ReadOnly = true;
+            this.columnHeader6.Text = "Value";
+            this.columnHeader6.Width = 90;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Color";
+            this.columnHeader1.Width = 40;
             // 
             // tabPage3
             // 
@@ -518,7 +570,7 @@
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(387, 541);
+            this.tabPage3.Size = new System.Drawing.Size(374, 541);
             this.tabPage3.TabIndex = 4;
             this.tabPage3.Text = "Shader Assign";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -530,9 +582,10 @@
             this.Column6,
             this.Column7});
             this.dataGridView3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView3.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dataGridView3.Location = new System.Drawing.Point(3, 3);
             this.dataGridView3.Name = "dataGridView3";
-            this.dataGridView3.Size = new System.Drawing.Size(381, 535);
+            this.dataGridView3.Size = new System.Drawing.Size(368, 535);
             this.dataGridView3.TabIndex = 0;
             this.dataGridView3.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView3_CellContentClick);
             // 
@@ -540,6 +593,7 @@
             // 
             this.Column6.HeaderText = "Name";
             this.Column6.Name = "Column6";
+            this.Column6.Width = 222;
             // 
             // Column7
             // 
@@ -550,10 +604,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(395, 567);
+            this.ClientSize = new System.Drawing.Size(382, 567);
             this.Controls.Add(this.MaterialsTab);
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "BFRES_MaterialEditor";
-            this.Text = "BFRES_MaterialEditor";
+            this.Text = "Material Editor";
             this.Load += new System.EventHandler(this.BFRES_MaterialEditor_Load);
             this.MaterialsTab.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -561,35 +616,17 @@
             this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).EndInit();
             this.MaterialParamsTab.ResumeLayout(false);
-            this.ParamDataControl.ResumeLayout(false);
-            this.FloatParam.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-            this.Float2Param.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).EndInit();
-            this.Float3Param.ResumeLayout(false);
-            this.panel3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown10)).EndInit();
-            this.Float4Param.ResumeLayout(false);
-            this.panel4.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown11)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown12)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown13)).EndInit();
-            this.boolParam.ResumeLayout(false);
-            this.panel5.ResumeLayout(false);
-            this.SRTParam.ResumeLayout(false);
-            this.panel6.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown17)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown16)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown8)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown7)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown15)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.paramColorBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD8)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD4)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD7)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD3)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.FloatNumUD)).EndInit();
             this.tabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).EndInit();
             this.ResumeLayout(false);
@@ -602,49 +639,40 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TabPage tabTextureMaps;
         private System.Windows.Forms.TabPage MaterialParamsTab;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.TabControl ParamDataControl;
-        private System.Windows.Forms.TabPage FloatParam;
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
-        private System.Windows.Forms.TabPage Float2Param;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.NumericUpDown numericUpDown4;
-        private System.Windows.Forms.NumericUpDown numericUpDown5;
-        private System.Windows.Forms.TabPage Float3Param;
-        private System.Windows.Forms.Panel panel3;
-        private System.Windows.Forms.NumericUpDown numericUpDown3;
-        private System.Windows.Forms.NumericUpDown numericUpDown6;
-        private System.Windows.Forms.NumericUpDown numericUpDown10;
-        private System.Windows.Forms.TabPage Float4Param;
-        private System.Windows.Forms.Panel panel4;
-        private System.Windows.Forms.NumericUpDown numericUpDown2;
-        private System.Windows.Forms.NumericUpDown numericUpDown11;
-        private System.Windows.Forms.NumericUpDown numericUpDown12;
-        private System.Windows.Forms.NumericUpDown numericUpDown13;
-        private System.Windows.Forms.TabPage boolParam;
-        private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.TabPage SRTParam;
-        private System.Windows.Forms.Panel panel6;
-        private System.Windows.Forms.NumericUpDown numericUpDown17;
-        private System.Windows.Forms.NumericUpDown numericUpDown16;
-        private System.Windows.Forms.NumericUpDown numericUpDown8;
-        private System.Windows.Forms.NumericUpDown numericUpDown7;
-        private System.Windows.Forms.NumericUpDown numericUpDown15;
-        private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.DataGridView dataGridView3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
         private System.Windows.Forms.DataGridView dataGridView4;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column10;
+        private System.Windows.Forms.NumericUpDown FloatNumUD;
+        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ComboBox boolParam;
+        private System.Windows.Forms.NumericUpDown FloatNumUD2;
+        private System.Windows.Forms.NumericUpDown FloatNumUD8;
+        private System.Windows.Forms.NumericUpDown FloatNumUD4;
+        private System.Windows.Forms.NumericUpDown FloatNumUD7;
+        private System.Windows.Forms.NumericUpDown FloatNumUD5;
+        private System.Windows.Forms.NumericUpDown FloatNumUD3;
+        private System.Windows.Forms.Label FloatLabel8;
+        private System.Windows.Forms.Label FloatLabel6;
+        private System.Windows.Forms.Label FloatLabel4;
+        private System.Windows.Forms.Label FloatLabel2;
+        private System.Windows.Forms.Label FloatLabel7;
+        private System.Windows.Forms.Label FloatLabel5;
+        private System.Windows.Forms.Label FloatLabel3;
+        private System.Windows.Forms.Label FloatLabel1;
+        private System.Windows.Forms.Label boolLabel;
+        private System.Windows.Forms.Label colorboxLabel;
+        private System.Windows.Forms.PictureBox paramColorBox;
+        private System.Windows.Forms.NumericUpDown FloatNumUD6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
     }
 }

@@ -94,10 +94,9 @@ namespace Smash_Forge
         {
             MainForm.Instance.openMats(poly,name);
         }
-
         private void bfresShapeSelected(BFRES.Mesh poly, string name)
         {
-            MainForm.Instance.bfresOpenMats(poly, name);
+            MainForm.Instance.openBFRESMats(poly, name);
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
@@ -890,22 +889,34 @@ namespace Smash_Forge
 
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
-                if(ofd.ShowDialog() == DialogResult.OK)
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    DAEImportSettings daeImport = new DAEImportSettings();
-                    daeImport.ShowDialog();
-                    if (daeImport.exitStatus == DAEImportSettings.ExitStatus.Opened)
+                    ModelContainer con = (ModelContainer)filesTreeView.SelectedNode;
+
+                    if (con.BFRES != null)
                     {
-                        ModelContainer con = (ModelContainer)filesTreeView.SelectedNode;
-                        
-                        con.VBN = daeImport.getVBN();
-
-                        Collada.DaetoNud(ofd.FileName, con, daeImport.importTexCB.Checked);
-
-                        // apply settings
-                        daeImport.Apply(con.NUD);
-                        con.NUD.MergePoly();
+                        for (int p = 0; p < con.BFRES.models.Count; p++)
+                        {
+                            Collada.DaetoBfresReplace(ofd.FileName, con, p, false);
+                        }
                     }
+                    else
+                    {
+                        DAEImportSettings daeImport = new DAEImportSettings();
+                        daeImport.ShowDialog();
+                        if (daeImport.exitStatus == DAEImportSettings.ExitStatus.Opened)
+                        {
+                            con.VBN = daeImport.getVBN();
+
+
+
+                            Collada.DaetoNud(ofd.FileName, con, daeImport.importTexCB.Checked);
+
+                            // apply settings
+                            daeImport.Apply(con.NUD);
+                            con.NUD.MergePoly();
+                        }
+                    }           
                 }
             }
         }
@@ -1455,7 +1466,7 @@ namespace Smash_Forge
 
         private void openPolygonEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MainForm.Instance.bfresOpenMeshEditor((BFRES.Mesh)filesTreeView.SelectedNode, $"");
+            MainForm.Instance.bfresOpenMeshEditor((BFRES.Mesh)filesTreeView.SelectedNode, (BFRES.FMDL_Model)filesTreeView.SelectedNode.Parent, (BFRES)filesTreeView.SelectedNode.Parent.Parent.Parent, $"");
         }
 
         private void bfresSaveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1488,11 +1499,11 @@ namespace Smash_Forge
         {
             if (filesTreeView.SelectedNode is BFRES.Mesh)
             {
-                BFRES.Mesh p = (BFRES.Mesh)filesTreeView.SelectedNode;
+                BFRES.Mesh msh = (BFRES.Mesh)filesTreeView.SelectedNode;
 
-                for (int i = 0; i < p.vertices.uv0.Count; i++)
+                foreach (BFRES.Vertex v in msh.vertices)
                 {
-                    p.vertices.uv0[i] = new OpenTK.Vector2(p.vertices.uv0[i].X, 1 - p.vertices.uv0[i].Y);
+                    v.uv0 = new OpenTK.Vector2(v.uv0.X, 1 - v.uv0.Y);
                 }
 
                 foreach (TreeNode con in filesTreeView.Nodes)
@@ -1510,11 +1521,11 @@ namespace Smash_Forge
         {
             if (filesTreeView.SelectedNode is BFRES.Mesh)
             {
-                BFRES.Mesh p = (BFRES.Mesh)filesTreeView.SelectedNode;
+                BFRES.Mesh msh = (BFRES.Mesh)filesTreeView.SelectedNode;
 
-                for (int i = 0; i < p.vertices.uv0.Count; i++)
+                foreach (BFRES.Vertex v in msh.vertices)
                 {
-                    p.vertices.uv0[i] = new OpenTK.Vector2(1 - p.vertices.uv0[i].X, p.vertices.uv0[i].Y);
+                    v.uv0 = new OpenTK.Vector2(1 - v.uv0.X, v.uv0.Y);
                 }
 
                 foreach (TreeNode con in filesTreeView.Nodes)
@@ -1625,8 +1636,6 @@ namespace Smash_Forge
                     colorDialog1.Color.A / 255.0f));
             }
 
-
-
             // Update the data for rendering.
             foreach (TreeNode con in filesTreeView.Nodes)
             {
@@ -1682,9 +1691,7 @@ namespace Smash_Forge
                         {
                             foreach (BFRES.Mesh m in mdl.poly)
                             {
-                                Console.WriteLine("Updating mesh " + m.Text);
                                 ((ModelContainer)con).BFRES.UpdateVertexData();
-                                m.UpdateTexIDs();
                             }
                         }
                     }
@@ -1781,6 +1788,26 @@ namespace Smash_Forge
             UpdateBFRESMeshList();
         }
 
+        private void singleBindToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh m = (BFRES.Mesh)filesTreeView.SelectedNode;
+
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).BFRES != null)
+                    {
+                        m.SingleBindMesh(); //Add BFRES instance so we can use the fmdl and skeleton classes
+                        ((ModelContainer)con).BFRES.UpdateVertexData();
+                    }
+                }
+            }
+        }
+
         #endregion
 
         private void KCLtoolStripMenuItem2_Click(object sender, EventArgs e)
@@ -1794,6 +1821,7 @@ namespace Smash_Forge
                 OBJ.KCL2OBJ(save.FileName, (KCL)filesTreeView.SelectedNode);
             }
         }
+
 
     }
 }

@@ -39,8 +39,8 @@
             // 
             // previewGroupBox
             // 
-            this.previewGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.previewGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.previewGroupBox.Controls.Add(this.glControl1);
             this.previewGroupBox.Location = new System.Drawing.Point(30, 43);
@@ -60,22 +60,30 @@
             this.glControl1.TabIndex = 7;
             this.glControl1.VSync = false;
             this.glControl1.Load += new System.EventHandler(this.glControl1_Load);
+            this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
+            this.glControl1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseUp);
+            this.glControl1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.OnMouseWheel);
+            this.glControl1.Resize += new System.EventHandler(this.glControl1_Resize);
             // 
             // comboBox1
             // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(398, 32);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 21);
             this.comboBox1.TabIndex = 33;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // comboBox2
             // 
+            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Location = new System.Drawing.Point(271, 32);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 21);
             this.comboBox2.TabIndex = 34;
+            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -106,7 +114,8 @@
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.previewGroupBox);
             this.Name = "BNTXMaterialTextureEditor";
-            this.Text = "BNTXMaterialTextureEditor";
+            this.Text = "UV Viewer";
+            this.Load += new System.EventHandler(this.BNTXMaterialTextureEditor_Load);
             this.previewGroupBox.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();

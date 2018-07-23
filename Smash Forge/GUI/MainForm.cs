@@ -31,8 +31,11 @@ namespace Smash_Forge
         {
             get { return _instance != null ? _instance : (_instance = new MainForm()); }
         }
+        
+       
 
         private static MainForm _instance;
+
 
         public static string executableDir = null;
         public static csvHashes Hashes;
@@ -57,7 +60,8 @@ namespace Smash_Forge
         public CameraSettings cameraForm = null;
         public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockLeft };
         public BYAMLEditor byamlEditor = new BYAMLEditor() { ShowHint = DockState.DockLeft };
-        
+        public BFRES_MaterialEditor bfresMatEditor = new BFRES_MaterialEditor() { ShowHint = DockState.DockLeft };
+
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
         public List<MTAEditor> mtaEditors = new List<MTAEditor>() { };
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
@@ -250,6 +254,10 @@ namespace Smash_Forge
             if (lvdEditor.IsDisposed)
             {
                 lvdEditor = new LVDEditor();
+            }    
+            if (bfresMatEditor.IsDisposed)
+            {
+                bfresMatEditor = new BFRES_MaterialEditor();
             }
             if (byamlEditor.IsDisposed)
             {
@@ -441,6 +449,13 @@ namespace Smash_Forge
 
                     if (modelContainer.BFRES.FSKACount != 0)
                     {
+                        DialogResult dialogResult = MessageBox.Show("Import Base Animation data? For BOTW say No!", "", MessageBoxButtons.YesNo);
+
+                        if (dialogResult == DialogResult.Yes)
+                            Runtime.HasNoAnimationBaseValues = false;
+                        else
+                            Runtime.HasNoAnimationBaseValues = true;
+
                         BFRES.FSKA fska = new BFRES.FSKA();
                         fska.Read(modelContainer.BFRES.TargetWiiUBFRES, anim, modelContainer.BFRES.TargetSwitchBFRES);
                     }
@@ -666,14 +681,15 @@ namespace Smash_Forge
         {
             (new NUDMaterialEditor(poly) { ShowHint = DockState.DockLeft, Text = name }).Show();
         }
-
-        public void bfresOpenMats(BFRES.Mesh poly, string name)
+        
+        public void openBFRESMats(BFRES.Mesh poly, string name)
         {
-            (new BFRES_MaterialEditor(poly) { Text = name }).Show();
+            ModelViewport mvp = (ModelViewport)dockPanel1.ActiveContent;
+            mvp.bfresOpenMats(poly, name);
         }
-        public void bfresOpenMeshEditor(BFRES.Mesh poly, string name)
+        public void bfresOpenMeshEditor(BFRES.Mesh mesh, BFRES.FMDL_Model mdl, BFRES bfres, string name)
         {
-            (new BFRES_MeshEditor(poly) { Text = name }).Show();
+            (new BFRES_MeshEditor(mesh, mdl, bfres) { Text = name }).Show();
         }
         private void clearWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1089,6 +1105,7 @@ namespace Smash_Forge
                 Runtime.TargetBYAML.Rebuild(filename);
 
         }
+
 
         ///<summary>
         ///Open a file based on the filename
