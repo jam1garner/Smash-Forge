@@ -367,8 +367,11 @@ namespace Smash_Forge
 
                 Matrix4 invertedCamera = camera.mvpMatrix.Inverted();
                 Vector3 lightDirection = new Vector3(0f, 0f, -1f);
+
+                //Todo. Maybe change direction via AAMP file (configs shader data)
                 GL.Uniform3(shader.getAttribute("lightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
                 GL.Uniform3(shader.getAttribute("specLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+                GL.Uniform3(shader.getAttribute("difLightDirection"), Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
 
                 GL.Uniform1(shader.getAttribute("debugOption"), (int)Runtime.uvChannel);
 

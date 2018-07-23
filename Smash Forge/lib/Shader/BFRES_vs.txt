@@ -169,8 +169,8 @@ void main()
 	}
 	if (NoSkinning == 1){
 	    gl_Position = modelview * bones[SingleBoneIndex] * vec4(vPosition, 1.0);
-        normal = vNormal;
 	    normal = mat3(bones[SingleBoneIndex]) * vNormal.xyz * 1;
+		normal = normalize(normal);
 	}
 
     //gl_TexCoord[0] = vUV0;

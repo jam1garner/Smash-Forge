@@ -8,7 +8,7 @@
 
 uniform mat4 modelview;
 uniform vec3 specLightDirection;
-
+uniform vec3 difLightDirection;
 
 //------------------------------------------------------------------------------------
 //
@@ -34,7 +34,6 @@ in vec3 boneWeightsColored;
 //------------------------------------------------------------------------------------
 
 uniform int uvChannel;
-uniform vec3 difLightDirection;
 uniform int renderType;
 uniform int useNormalMap;
 uniform vec4 colorSamplerUV;
