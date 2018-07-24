@@ -10,6 +10,10 @@ uniform mat4 modelview;
 uniform vec3 specLightDirection;
 uniform vec3 difLightDirection;
 
+uniform int enableCellShading;
+
+const float levels = 3.0;
+
 //------------------------------------------------------------------------------------
 //
 //      Verex Attributes
@@ -100,11 +104,13 @@ uniform float enable_emission;
 uniform int HasNormalMap;
 uniform int HasSpecularMap;
 uniform int HasShadowMap;
+uniform int HasAmbientOcclusionMap;
 uniform int HasLightMap;
 uniform int HasTransparencyMap;
 uniform int HasEmissionMap;
 uniform int HasDiffuseLayer;
 uniform int isTransparent;
+
 
 
 out vec4 FragColor;
@@ -250,8 +256,30 @@ void main()
 		alpha = alpha.rgba * vec4(0.5);
 	}
 
+	//Cell Shade
+	float nDot1 = dot(bumpMapNormal, difLightDirection);
 
-	vec4 outputColor =  (vec4(texture(tex0, displayTexCoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * normalBnW );
+	float brightness = 0;
+
+	if (enableCellShading == 1)
+	{
+	    brightness = max(nDot1, 0.0);
+		float level = floor(brightness * levels);
+		brightness = level / levels;
+		brightness = brightness * 5;
+	}
+	else
+	{
+        float normals = dot(vec4(bumpMapNormal * mat3(modelview), 1.0), vec4(0.25,0.25,0.25,1.0));
+
+		float halfLambert = dot(difLightDirection, bumpMapNormal) * 0.5 + 0.5;
+		halfLambert = (halfLambert + 1) / 2;
+
+		brightness = normals;
+	}
+
+
+	vec4 outputColor =  (vec4(texture(tex0, displayTexCoord).rgb, 1) * vec4(0.85,0.85,0.85,1.0) * brightness);
 
 
 //----------------------------------------------------------------------
@@ -312,6 +340,17 @@ void main()
 //
 //----------------------------------------------------------------------
 
+    if (HasAmbientOcclusionMap == 1)
+    {
+         vec4 A0Tex = vec4(1);
+
+         if (uking_texture2_texcoord == 1)
+               A0Tex = vec4(texture(BakeShadowMap, f_texcoord1).rrr, 1);
+		 else
+		      A0Tex = vec4(texture(BakeShadowMap, displayTexCoord).rrr, 1);
+
+	  //   FragColor *= A0Tex;    
+    }
 	if (HasShadowMap == 1)
 	{
 	     if (bake_shadow_type == 0)
@@ -326,7 +365,6 @@ void main()
 
 			   //For this it will need a frame buffer to be used
 			   vec4 ShadowTex = vec4(texture(BakeShadowMap, f_texcoord1).ggg, 1);
-
 		 }
 	}
 

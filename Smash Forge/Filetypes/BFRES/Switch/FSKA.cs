@@ -152,18 +152,27 @@ namespace Smash_Forge
 
                                     //Set base/start values for bones.
                                     //Note. BOTW doesn't use base values as it uses havok engine. Need to add option to disable these
-                                    if (Frame == 0 && Runtime.HasNoAnimationBaseValues == false)
+                                    if (Frame == 0)
                                     {
-                                        bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = 1 });
-                                        bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = 1 });
-                                        bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = 1 });
-                                        bone.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
-                                        bone.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
-                                        bone.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
-                                        bone.WROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.W });
-                                        bone.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
-                                        bone.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
-                                        bone.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
+                                        switch (bn.FlagsBase)
+                                        {
+                                            case ResNSW.BoneAnimFlagsBase.Scale:
+                                                bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
+                                                bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
+                                                bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
+                                                break;
+                                                case ResNSW.BoneAnimFlagsBase.Rotate:
+                                                bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
+                                                bone.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
+                                                bone.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
+                                                bone.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
+                                                break;
+                                            case ResNSW.BoneAnimFlagsBase.Translate:
+                                                bone.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
+                                                bone.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
+                                                bone.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
+                                                break;
+                                        }
                                     }
                                     foreach (FSKATrack track in bonean.tracks)
                                     {
@@ -319,15 +328,25 @@ namespace Smash_Forge
                                     //Note. BOTW doesn't use base values as it uses havok engine. Need to add option to disable these
                                     if (Frame == 0 && Runtime.HasNoAnimationBaseValues == false)
                                     {
-                                        bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
-                                        bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
-                                        bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
-                                        bone.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
-                                        bone.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
-                                        bone.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
-                                        bone.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
-                                        bone.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
-                                        bone.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
+                                        switch (bn.FlagsBase)
+                                        {
+                                            case BoneAnimFlagsBase.Scale:
+                                                bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
+                                                bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
+                                                bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
+                                                break;
+                                            case BoneAnimFlagsBase.Rotate:
+                                                bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
+                                                bone.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
+                                                bone.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
+                                                bone.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
+                                                break;
+                                            case BoneAnimFlagsBase.Translate:
+                                                bone.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
+                                                bone.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
+                                                bone.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
+                                                break;
+                                        }
                                     }
                                     foreach (FSKATrack track in bonean.tracks)
                                     {

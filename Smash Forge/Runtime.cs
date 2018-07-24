@@ -112,7 +112,6 @@ namespace Smash_Forge
         public static bool renderHitboxesNoOverlap;
         public static bool useFrameDuration = true;
         public static bool useFAFasAnimationLength = false;
-        public static bool HasNoAnimationBaseValues = false;
         public static bool Is2DView = false;
 
         public static Color counterBubbleColor = Color.FromArgb(0x89, 0x89, 0x89);

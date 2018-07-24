@@ -661,6 +661,7 @@ namespace Smash_Forge
                         {
                             case SemanticType.JOINT:
                                 string bname = sources[input.source].data[skin.weights.v[v]];
+                                Console.WriteLine(bname);
                                 if (bname.StartsWith("_"))
                                     bname = bname.Substring(6, bname.Length - 6);
                                 int index = con.VBN.boneIndex(bname);
@@ -1090,13 +1091,28 @@ namespace Smash_Forge
                             int vc = 0;
                             for (int i = 0; i < v.boneIds.Count; i++)
                             {
-                                string w = v.boneWeights[i].ToString();
-                                if (w.Equals("0")) continue;
-                                vc++;
-                                if (!d.Contains(w))
-                                    d.Add(w);
-                                vert.Add(v.boneIds[i]);
-                                vert.Add(d.IndexOf(w));
+                                if (mesh.VertexSkinCount > 1)
+                                {
+                                    string w = v.boneWeights[i].ToString();
+                                    if (w.Equals("0")) continue;
+                                    vc++;
+                                    if (!d.Contains(w))
+                                        d.Add(w);
+                                    vert.Add(v.boneIds[i]);
+                                    vert.Add(d.IndexOf(w));
+                                }
+                                else if (mesh.VertexSkinCount == 1)
+                                {
+                                    int weight = 1;
+                                    string w = weight.ToString();
+                                    if (w.Equals("0")) continue;
+                                    vc++;
+                                    if (!d.Contains(w))
+                                        d.Add(w);
+                                    vert.Add(v.boneIds[i]);
+                                    vert.Add(d.IndexOf(w));
+                                    break; //Only do one bone
+                                }
                             };
                             vcount.Add(vc);
                         }

@@ -263,6 +263,10 @@ namespace Smash_Forge
             Syroot.Maths.Vector4F[] vec4w0 = new Syroot.Maths.Vector4F[0];
             Syroot.Maths.Vector4F[] vec4i0 = new Syroot.Maths.Vector4F[0];
 
+            //For shape morphing
+            Syroot.Maths.Vector4F[] vec4Positions1 = new Syroot.Maths.Vector4F[0];
+            Syroot.Maths.Vector4F[] vec4Positions2 = new Syroot.Maths.Vector4F[0];
+
             foreach (VertexAttrib att in mdl.VertexBuffers[shp.VertexBufferIndex].Attributes)
             {
                 Mesh.VertexAttribute attr = new Mesh.VertexAttribute();
@@ -290,6 +294,11 @@ namespace Smash_Forge
                 if (att.Name == "_i0")
                     vec4i0 = AttributeData(att, helper, "_i0");
 
+                if (att.Name == "_p1")
+                    vec4Positions1 = AttributeData(att, helper, "_p1");
+                if (att.Name == "_p2")
+                    vec4Positions2 = AttributeData(att, helper, "_p2");
+
                 poly.vertexAttributes.Add(attr);
             }
             for (int i = 0; i < vec4Positions.Length; i++)
@@ -297,6 +306,10 @@ namespace Smash_Forge
                 Vertex v = new Vertex();
                 if (vec4Positions.Length > 0)
                     v.pos = new Vector3(vec4Positions[i].X, vec4Positions[i].Y, vec4Positions[i].Z);
+                if (vec4Positions1.Length > 0)
+                    v.pos1 = new Vector3(vec4Positions1[i].X, vec4Positions1[i].Y, vec4Positions1[i].Z);
+                if (vec4Positions2.Length > 0)
+                    v.pos2 = new Vector3(vec4Positions2[i].X, vec4Positions2[i].Y, vec4Positions2[i].Z);
                 if (vec4Normals.Length > 0)
                     v.nrm = new Vector3(vec4Normals[i].X, vec4Normals[i].Y, vec4Normals[i].Z);
                 if (vec4uv0.Length > 0)
@@ -425,7 +438,13 @@ namespace Smash_Forge
                     poly.material.HasShadowMap = true;
                     texture.Type = MatTexture.TextureType.Shadow;
                 }
-                else if (TextureName.Contains("b01") || TextureName.Contains("Moc"))
+                else if (TextureName.Contains("Moc") || TextureName.Contains("AO"))
+                {
+                    texture.hash = 2;
+                    poly.material.HasAmbientOcclusionMap = true;
+                    texture.Type = MatTexture.TextureType.AO;
+                }
+                else if (TextureName.Contains("b01"))
                 {
                     texture.hash = 3;
                     poly.material.HasLightMap = true;

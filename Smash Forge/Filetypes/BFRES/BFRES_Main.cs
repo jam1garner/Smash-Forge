@@ -641,6 +641,13 @@ namespace Smash_Forge
             GL.Uniform4(shader.getAttribute("SamplerUV1"), new Vector4(1, 1, 0, 0));
             GL.Uniform4(shader.getAttribute("gsys_bake_st0"), new Vector4(1, 1, 0, 0));
             GL.Uniform4(shader.getAttribute("gsys_bake_st1"), new Vector4(1, 1, 0, 0));
+            GL.Uniform1(shader.getAttribute("enableCellShading"), 0);
+
+
+
+            if (m.material.shaderassign.ShaderModel == "uking_mat")
+                GL.Uniform1(shader.getAttribute("enableCellShading"), 1);
+
 
             GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
@@ -812,6 +819,7 @@ namespace Smash_Forge
             ShaderTools.BoolToIntShaderUniform(shader, mat.HasEmissionMap, "HasEmissionMap");
             ShaderTools.BoolToIntShaderUniform(shader, mat.HasLightMap, "HasLightMap");
             ShaderTools.BoolToIntShaderUniform(shader, mat.HasShadowMap, "HasShadowMap");
+            ShaderTools.BoolToIntShaderUniform(shader, mat.HasAmbientOcclusionMap, "HasAmbientOcclusionMap");
             ShaderTools.BoolToIntShaderUniform(shader, mat.HasSpecularMap, "HasSpecularMap");
             ShaderTools.BoolToIntShaderUniform(shader, mat.HasTeamColorMap, "HasTeamColorMap");
             ShaderTools.BoolToIntShaderUniform(shader, mat.HasTransparencyMap, "hasDummyRamp");

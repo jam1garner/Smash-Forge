@@ -449,13 +449,6 @@ namespace Smash_Forge
 
                     if (modelContainer.BFRES.FSKACount != 0)
                     {
-                        DialogResult dialogResult = MessageBox.Show("Import Base Animation data? For BOTW say No!", "", MessageBoxButtons.YesNo);
-
-                        if (dialogResult == DialogResult.Yes)
-                            Runtime.HasNoAnimationBaseValues = false;
-                        else
-                            Runtime.HasNoAnimationBaseValues = true;
-
                         BFRES.FSKA fska = new BFRES.FSKA();
                         fska.Read(modelContainer.BFRES.TargetWiiUBFRES, anim, modelContainer.BFRES.TargetSwitchBFRES);
                     }

@@ -31,7 +31,7 @@ namespace Smash_Forge
             SelectedImageKey = "bfres";
 
             FSKACount = TargetWiiUBFRES.SkeletalAnims.Count;
-            FTXPCount = TargetWiiUBFRES.TexPatternAnims.Count;
+            //FTXPCount = TargetWiiUBFRES.TexPatternAnims.Count;
 
             AnimationCountTotal = FSKACount + FTXPCount;
 
@@ -194,6 +194,20 @@ namespace Smash_Forge
                             v.bitan = new Vector4(vec4b0[i].X, vec4b0[i].Y, vec4b0[i].Z, vec4b0[i].W);
                         if (vec4c0.Length > 0)
                             v.col = new Vector4(vec4c0[i].X, vec4c0[i].Y, vec4c0[i].Z, vec4c0[i].W);
+
+                        if (poly.VertexSkinCount == 1)
+                        {
+                            Matrix4 sb = model.skeleton.bones[model.Node_Array[v.boneIds[0]]].transform;
+                            //  Console.WriteLine(model.skeleton.bones[model.Node_Array[v.boneIds[0]]].Text);
+                            v.pos = Vector3.TransformPosition(v.pos, sb);
+                            v.nrm = Vector3.TransformNormal(v.nrm, sb);
+                        }
+                        if (poly.VertexSkinCount == 0)
+                        {
+                            Matrix4 NoBindFix = model.skeleton.bones[poly.boneIndx].transform;
+                            v.pos = Vector3.TransformPosition(v.pos, NoBindFix);
+                            v.nrm = Vector3.TransformNormal(v.nrm, NoBindFix);
+                        }
 
                         poly.vertices.Add(v);
 
