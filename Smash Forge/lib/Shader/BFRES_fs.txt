@@ -395,7 +395,6 @@ void main()
     if (dot(bitangent, vec3(1)) == 0)
         displayBitangent = vec3(0);
 
-
     if (renderVertColor == 1)
 	    FragColor *= min(color, vec4(1));
 

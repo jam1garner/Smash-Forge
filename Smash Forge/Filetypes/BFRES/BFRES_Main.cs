@@ -1283,7 +1283,7 @@ namespace Smash_Forge
                         nrm = v.nrm,
                         tan = v.tan.Xyz,
                         bit = v.bitan.Xyz,
-                        col = v.col / 127,
+                        col = v.col,
                         uv = v.uv0,
                         uv2 = v.uv1,
                         uv3 = v.uv2,
