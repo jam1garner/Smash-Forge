@@ -326,7 +326,7 @@ namespace Smash_Forge
 
                                     //Set base/start values for bones.
                                     //Note. BOTW doesn't use base values as it uses havok engine. Need to add option to disable these
-                                    if (Frame == 0 && Runtime.HasNoAnimationBaseValues == false)
+                                    if (Frame == 0)
                                     {
                                         switch (bn.FlagsBase)
                                         {
