@@ -108,10 +108,21 @@ namespace Smash_Forge
                     if (IsColor)
                     {
 
+                        Vector4 col = mat.matparam[prm.Key].Value_float4;
 
-                        int someIntX = (int)Math.Ceiling(mat.matparam[prm.Key].Value_float4.X * 255);
-                        int someIntY = (int)Math.Ceiling(mat.matparam[prm.Key].Value_float4.Y * 255);
-                        int someIntZ = (int)Math.Ceiling(mat.matparam[prm.Key].Value_float4.Z * 255);
+                        int someIntX = (int)Math.Ceiling(col.X);
+                        int someIntY = (int)Math.Ceiling(col.Y);
+                        int someIntZ = (int)Math.Ceiling(col.Z);
+
+                        if (mat.shaderassign.ShaderArchive == "uking_mat") //BOTW uses gamma correction
+                        {
+                            someIntX = MathHelper.Clamp((int)((255.0 * System.Math.Pow(255.0, 1.0 / mat.matparam[prm.Key].Value_float4.X)) + 0.5), 255, 0);
+                            someIntY = MathHelper.Clamp((int)((255.0 * System.Math.Pow(255.0, 1.0 / mat.matparam[prm.Key].Value_float4.Y)) + 0.5), 255, 0);
+                            someIntZ = MathHelper.Clamp((int)((255.0 * System.Math.Pow(255.0, 1.0 / mat.matparam[prm.Key].Value_float4.Z)) + 0.5), 255, 0);
+                        }
+             
+
+
 
                         if (someIntX <= 255 && someIntY <= 255 && someIntZ <= 255)
                         {
@@ -480,12 +491,20 @@ namespace Smash_Forge
 
                     string Value = "";
 
+                 
+
                     if (prm.Type == ShaderParamType.Float4)
                     {
                         prm.Value_float4.X = (float)clr.Color.R / 255;
                         prm.Value_float4.Y = (float)clr.Color.G / 255;
                         prm.Value_float4.Z = (float)clr.Color.B / 255;
                         prm.Value_float4.W = (float)clr.Color.A / 255;
+
+                        if (mat.shaderassign.ShaderArchive == "")
+                        {
+
+                        }
+
                         Value = prm.Value_float4.ToString();
                     }
                     if (prm.Type == ShaderParamType.Float3)

@@ -134,7 +134,7 @@ namespace Smash_Forge
                         i++;
                         try
                         {
-                            foreach (Syroot.NintenTools.NSW.Bfres.BoneAnim bn in ska.BoneAnims)
+                            foreach (ResNSW.BoneAnim bn in ska.BoneAnims)
                             {
                                 FSKANode bonean = new FSKANode(bn);
 
@@ -154,24 +154,24 @@ namespace Smash_Forge
                                     //Note. BOTW doesn't use base values as it uses havok engine. Need to add option to disable these
                                     if (Frame == 0)
                                     {
-                                        switch (bn.FlagsBase)
+                                        if (bn.FlagsBase.HasFlag(ResNSW.BoneAnimFlagsBase.Scale))
                                         {
-                                            case ResNSW.BoneAnimFlagsBase.Scale:
-                                                bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
-                                                bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
-                                                bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
-                                                break;
-                                                case ResNSW.BoneAnimFlagsBase.Rotate:
-                                                bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
-                                                bone.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
-                                                bone.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
-                                                bone.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
-                                                break;
-                                            case ResNSW.BoneAnimFlagsBase.Translate:
-                                                bone.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
-                                                bone.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
-                                                bone.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
-                                                break;
+                                            bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
+                                            bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
+                                            bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
+                                        }
+                                        if (bn.FlagsBase.HasFlag(ResNSW.BoneAnimFlagsBase.Rotate))
+                                        {
+                                            bone.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
+                                            bone.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
+                                            bone.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
+                                            bone.WROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.W });
+                                        }
+                                        if (bn.FlagsBase.HasFlag(ResNSW.BoneAnimFlagsBase.Translate))
+                                        {
+                                            bone.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
+                                            bone.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
+                                            bone.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
                                         }
                                     }
                                     foreach (FSKATrack track in bonean.tracks)
@@ -328,24 +328,24 @@ namespace Smash_Forge
                                     //Note. BOTW doesn't use base values as it uses havok engine. Need to add option to disable these
                                     if (Frame == 0)
                                     {
-                                        switch (bn.FlagsBase)
+                                        if (bn.FlagsBase.HasFlag(BoneAnimFlagsBase.Scale))
                                         {
-                                            case BoneAnimFlagsBase.Scale:
-                                                bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
-                                                bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
-                                                bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
-                                                break;
-                                            case BoneAnimFlagsBase.Rotate:
-                                                bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
-                                                bone.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
-                                                bone.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
-                                                bone.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
-                                                break;
-                                            case BoneAnimFlagsBase.Translate:
-                                                bone.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
-                                                bone.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
-                                                bone.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
-                                                break;
+                                            bone.XSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.X });
+                                            bone.YSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Y });
+                                            bone.ZSCA.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.sca.Z });
+                                        }
+                                        if (bn.FlagsBase.HasFlag(BoneAnimFlagsBase.Rotate))
+                                        {
+                                            bone.XROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.X });
+                                            bone.YROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Y });
+                                            bone.ZROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.Z });
+                                            bone.WROT.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.rot.W });
+                                        }
+                                        if (bn.FlagsBase.HasFlag(BoneAnimFlagsBase.Translate))
+                                        {
+                                            bone.XPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.X });
+                                            bone.YPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Y });
+                                            bone.ZPOS.Keys.Add(new Animation.KeyFrame() { Frame = 0, Value = bonean.pos.Z });
                                         }
                                     }
                                     foreach (FSKATrack track in bonean.tracks)
@@ -404,43 +404,23 @@ namespace Smash_Forge
                 public Vector4 rot;
                 public List<FSKATrack> tracks = new List<FSKATrack>();
 
-                public FSKANode(Syroot.NintenTools.NSW.Bfres.BoneAnim b)
+                public FSKANode(ResNSW.BoneAnim b)
                 {
                     Text = b.Name;
 
-                    // offset 1 is base positions
-                    //Console.WriteLine(off1.ToString("x"));
-                    if (b.BaseData.Scale != new Syroot.Maths.Vector3F(0f, 0f, 0f))
-                    {
+                    if (b.BaseData.Scale != Syroot.Maths.Vector3F.Zero)
                         sca = new Vector3(b.BaseData.Scale.X, b.BaseData.Scale.Y, b.BaseData.Scale.Z);
+                    if (b.BaseData.Rotate != Syroot.Maths.Vector4F.Zero)
                         rot = new Vector4(b.BaseData.Rotate.X, b.BaseData.Rotate.Y, b.BaseData.Rotate.Z, b.BaseData.Rotate.W);
+                    if (b.BaseData.Translate != Syroot.Maths.Vector3F.Zero)
                         pos = new Vector3(b.BaseData.Translate.X, b.BaseData.Translate.Y, b.BaseData.Translate.Z);
-                    }
-                    else
+
+                    foreach (ResNSW.AnimCurve tr in b.Curves)
                     {
-                        sca = new Vector3(1, 1, 1);
-                        rot = new Vector4(0, 0, 0, 1);
-                        pos = new Vector3(0, 0, 0);
-
-                    }
-
-                    //       Console.WriteLine("Name = " + b.Name);
-
-                    foreach (Syroot.NintenTools.NSW.Bfres.AnimCurve tr in b.Curves)
-                    {
-
-                        //  Console.WriteLine(tr.AnimDataOffset);
 
                         FSKATrack t = new FSKATrack();
                         t.flag = (int)tr.AnimDataOffset;
                         tracks.Add(t);
-
-
-
-                        //     Console.WriteLine("Flag = " + (int)tr.AnimDataOffset + " Offset = " + tr.Offset + "  Scale = " + tr.Scale);
-
-
-                        //   Console.WriteLine();
 
                         float tanscale = tr.Delta;
                         if (tanscale == 0)
@@ -448,15 +428,13 @@ namespace Smash_Forge
 
                         for (int i = 0; i < (ushort)tr.Frames.Length; i++)
                         {
-                            if (tr.CurveType == Syroot.NintenTools.NSW.Bfres.AnimCurveType.Cubic)
+                            if (tr.CurveType == ResNSW.AnimCurveType.Cubic)
                             {
                                 int framedata = (int)tr.Frames[i];
                                 float keydata = tr.Offset + ((tr.Keys[i, 0] * tr.Scale));
                                 float keydata2 = tr.Offset + ((tr.Keys[i, 1] * tr.Scale));
                                 float keydata3 = tr.Offset + ((tr.Keys[i, 2] * tr.Scale));
                                 float keydata4 = tr.Offset + ((tr.Keys[i, 3] * tr.Scale));
-                                //    Console.WriteLine($"{framedata} {keydata} {keydata2} {keydata3} {keydata4} ");
-                                //     Console.WriteLine($"Raw Data = " + tr.Keys[i, 0]);
 
                             }
                             if (tr.KeyType == ResNSW.AnimCurveKeyType.Int16)
@@ -505,39 +483,18 @@ namespace Smash_Forge
                 {
                     Text = b.Name;
 
-                    // offset 1 is base positions
-                    //Console.WriteLine(off1.ToString("x"));
-                    if (b.BaseData.Scale != null && b.BaseData.Translate != null && b.BaseData.Rotate != null)
-                    {
+                    if (b.BaseData.Scale != Syroot.Maths.Vector3F.Zero)
                         sca = new Vector3(b.BaseData.Scale.X, b.BaseData.Scale.Y, b.BaseData.Scale.Z);
+                    if (b.BaseData.Rotate != Syroot.Maths.Vector4F.Zero)
                         rot = new Vector4(b.BaseData.Rotate.X, b.BaseData.Rotate.Y, b.BaseData.Rotate.Z, b.BaseData.Rotate.W);
+                    if (b.BaseData.Translate != Syroot.Maths.Vector3F.Zero)
                         pos = new Vector3(b.BaseData.Translate.X, b.BaseData.Translate.Y, b.BaseData.Translate.Z);
-                    }
-                    else
-                    {
-                        sca = new Vector3(1, 1, 1);
-                        rot = new Vector4(0, 0, 0, 1);
-                        pos = new Vector3(0, 0, 0);
-
-                    }
-
-                    //       Console.WriteLine("Name = " + b.Name);
-
+                
                     foreach (AnimCurve tr in b.Curves)
                     {
-
-                        //  Console.WriteLine(tr.AnimDataOffset);
-
                         FSKATrack t = new FSKATrack();
                         t.flag = (int)tr.AnimDataOffset;
                         tracks.Add(t);
-
-
-
-                        //     Console.WriteLine("Flag = " + (int)tr.AnimDataOffset + " Offset = " + tr.Offset + "  Scale = " + tr.Scale);
-
-
-                        //   Console.WriteLine();
 
                         float tanscale = tr.Delta;
                         if (tanscale == 0)
@@ -552,9 +509,6 @@ namespace Smash_Forge
                                 float keydata2 = tr.Offset + ((tr.Keys[i, 1] * tr.Scale));
                                 float keydata3 = tr.Offset + ((tr.Keys[i, 2] * tr.Scale));
                                 float keydata4 = tr.Offset + ((tr.Keys[i, 3] * tr.Scale));
-                                //    Console.WriteLine($"{framedata} {keydata} {keydata2} {keydata3} {keydata4} ");
-                                //     Console.WriteLine($"Raw Data = " + tr.Keys[i, 0]);
-
                             }
 
                             t.keys.Add(new FSKAKey()

@@ -644,7 +644,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("enableCellShading"), 0);
 
 
-
+            //BOTW uses this shader so lets add in cell shading
             if (m.material.shaderassign.ShaderModel == "uking_mat")
                 GL.Uniform1(shader.getAttribute("enableCellShading"), 1);
 
