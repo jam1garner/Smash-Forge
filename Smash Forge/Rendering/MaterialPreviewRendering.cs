@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using SFGraphics.GLObjects;
@@ -43,7 +40,7 @@ namespace Smash_Forge.Rendering
             using (GameWindow gameWindow = RenderTools.CreateGameWindowContext(width, height))
             {
                 // Resource creation.
-                screenVbo = RenderTools.CreateScreenQuadBuffer();
+                screenVbo = ScreenDrawing.CreateScreenQuadBuffer();
                 shader = Runtime.shaders["NudSphere"];
 
                 // Skip thumbnail generation if the shader didn't compile.
@@ -51,7 +48,7 @@ namespace Smash_Forge.Rendering
                     return;
 
                 // HACK: This isn't a very clean way to pass resources around.
-                RenderTools.LoadMaterialSphereTextures();
+                NudMatSphereDrawing.LoadMaterialSphereTextures();
                 Dictionary<NUD.DummyTextures, Texture> dummyTextures = RenderTools.CreateNudDummyTextures();
 
                 CreateNudSphereShader();
@@ -91,7 +88,7 @@ namespace Smash_Forge.Rendering
             framebuffer.Bind();
 
             // Draw the material to a textured quad.
-            RenderTools.DrawNudMaterialSphere(shader, material, screenVbo, dummyTextures);
+            NudMatSphereDrawing.DrawNudMaterialSphere(shader, material, screenVbo, dummyTextures);
 
             // Save output.
             using (Bitmap image = framebuffer.ReadImagePixels(true))

@@ -289,7 +289,7 @@ namespace Smash_Forge
 
             // Draw the texture to the screen.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            Rendering.RenderTools.DrawTexturedQuad(textureToRender.Id, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
+            Rendering.ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
                 currentMipLevel);
 
             glControl1.SwapBuffers();

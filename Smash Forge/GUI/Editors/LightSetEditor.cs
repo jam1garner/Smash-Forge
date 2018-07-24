@@ -282,14 +282,14 @@ namespace Smash_Forge.GUI.Editors
 
         private void RenderCharacterLightGradient(LightColor topColor, LightColor bottomColor)
         {
-            RenderTools.DrawQuadGradient(new Vector3(topColor.R, topColor.G, topColor.B), new Vector3(bottomColor.R, bottomColor.G, bottomColor.B), RenderTools.screenQuadVbo);
+            ScreenDrawing.DrawQuadGradient(new Vector3(topColor.R, topColor.G, topColor.B), new Vector3(bottomColor.R, bottomColor.G, bottomColor.B), ScreenDrawing.screenQuadVbo);
         }
 
         private void RenderAreaLightColor()
         {
             Vector3 topColor = new Vector3(selectedAreaLight.skyR, selectedAreaLight.skyG, selectedAreaLight.skyB);
             Vector3 bottomColor = new Vector3(selectedAreaLight.groundR, selectedAreaLight.groundG, selectedAreaLight.groundB);
-            RenderTools.DrawQuadGradient(topColor, bottomColor, RenderTools.screenQuadVbo);
+            ScreenDrawing.DrawQuadGradient(topColor, bottomColor, ScreenDrawing.screenQuadVbo);
         }
 
         private void RenderLightMapColor()
@@ -299,7 +299,7 @@ namespace Smash_Forge.GUI.Editors
 
             Vector3 topColor = new Vector3(1);
             Vector3 bottomColor = new Vector3(1);
-            RenderTools.DrawQuadGradient(topColor, bottomColor, RenderTools.screenQuadVbo);
+            ScreenDrawing.DrawQuadGradient(topColor, bottomColor, ScreenDrawing.screenQuadVbo);
 
             lightMapGLControl.SwapBuffers();
         }

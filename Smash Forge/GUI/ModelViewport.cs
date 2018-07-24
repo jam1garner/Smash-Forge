@@ -1460,13 +1460,13 @@ namespace Smash_Forge
                 // Draw the texture to the screen into a smaller FBO.
                 imageBrightHdrFbo.Bind();
                 GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
-                RenderTools.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1].Id, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
+                ScreenDrawing.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1].Id, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, width, height);
 
-                RenderTools.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id);
+                ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id);
             }
 
             FixedFunctionRendering();
@@ -1527,9 +1527,9 @@ namespace Smash_Forge
 
             // Only use the top color for solid color rendering.
             if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
-                RenderTools.DrawQuadGradient(topColor, topColor, RenderTools.screenQuadVbo);
+                ScreenDrawing.DrawQuadGradient(topColor, topColor, ScreenDrawing.screenQuadVbo);
             else
-                RenderTools.DrawQuadGradient(topColor, bottomColor, RenderTools.screenQuadVbo);
+                ScreenDrawing.DrawQuadGradient(topColor, bottomColor, ScreenDrawing.screenQuadVbo);
         }
 
         private void SetupViewport(int width, int height)
@@ -1800,14 +1800,14 @@ namespace Smash_Forge
         {
             GL.PopAttrib();
             NutTexture tex = ((NutTexture)meshList.filesTreeView.SelectedNode);
-            RenderTools.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HASHID].Id, tex.Width, tex.Height);
+            ScreenDrawing.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HASHID].Id, tex.Width, tex.Height);
         }
 
         private void DrawBchTex()
         {
             GL.PopAttrib();
             BCH_Texture tex = ((BCH_Texture)meshList.filesTreeView.SelectedNode);
-            RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+            ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
         }
 
         private void DrawAreaLightBoundingBoxes()

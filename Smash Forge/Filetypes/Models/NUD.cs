@@ -1016,7 +1016,7 @@ namespace Smash_Forge
             if (mat.hasDiffuse && textureUnitIndexOffset < mat.textures.Count)
             {
                 GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereDifTex.Id);
+                GL.BindTexture(TextureTarget.Texture2D, NudMatSphereDrawing.sphereDifTex.Id);
                 GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), nutTextureUnitOffset + textureUnitIndexOffset);
                 textureUnitIndexOffset++;
             }
@@ -1033,7 +1033,7 @@ namespace Smash_Forge
                 if (mat.hasNormalMap)
                 {
                     GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
-                    GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereNrmMapTex.Id);
+                    GL.BindTexture(TextureTarget.Texture2D, NudMatSphereDrawing.sphereNrmMapTex.Id);
                     GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), nutTextureUnitOffset + textureUnitIndexOffset);
                     textureUnitIndexOffset++;
                 }
@@ -1101,7 +1101,7 @@ namespace Smash_Forge
                 if (mat.hasNormalMap)
                 {
                     GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
-                    GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereNrmMapTex.Id);
+                    GL.BindTexture(TextureTarget.Texture2D, NudMatSphereDrawing.sphereNrmMapTex.Id);
                     GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), nutTextureUnitOffset + textureUnitIndexOffset);
                     textureUnitIndexOffset++;
                 }

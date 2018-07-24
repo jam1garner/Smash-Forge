@@ -24,32 +24,11 @@ namespace Smash_Forge.Rendering
         public static Texture floorTexture;
         public static Texture backgroundTexture;
 
-        // A triangle that extends past the screen.
-        // Avoids the need for a second triangle to fill a rectangular screen.
-        public static BufferObject screenQuadVbo;
-        private static float[] screenQuadVertices = 
-        {
-            -1f, -1f, 0.0f,
-             3f, -1f, 0.0f,
-            -1f,  3f, 0.0f
-        };
-
         public static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>(); 
 
         public static Texture uvTestPattern;
         public static Texture boneWeightGradient;
         public static Texture boneWeightGradient2;
-
-        // Nud Material Sphere Textures.
-        public static Texture sphereDifTex;
-        public static Texture sphereNrmMapTex;
-
-        // Nud Material Sphere Vert Attribute Textures.
-        private static Texture sphereNrmTex;
-        private static Texture sphereUvTex;
-        private static Texture sphereTanTex;
-        private static Texture sphereBitanTex;
-        private static ForgeCamera nudSphereCamera = new ForgeCamera();
 
         // Keep a context around to avoid setting up after making each context.
         public static GameWindow dummyResourceWindow;
@@ -70,9 +49,8 @@ namespace Smash_Forge.Rendering
                 EnableOpenTKDebugOutput();
             }
 
-            nudSphereCamera.UpdateFromMouse(); // Update matrices for shader.
             LoadTextures();
-            screenQuadVbo = CreateScreenQuadBuffer();
+            ScreenDrawing.screenQuadVbo = ScreenDrawing.CreateScreenQuadBuffer();
             GetOpenGLSystemInfo();
             ShaderTools.SetupShaders();
 
@@ -111,21 +89,11 @@ namespace Smash_Forge.Rendering
             return gameWindow;
         }
 
-        public static BufferObject CreateScreenQuadBuffer()
-        {
-            // Create buffer for vertex positions. The data won't change, so only initialize once.
-            BufferObject screenQuad = new BufferObject(BufferTarget.ArrayBuffer);
-            screenQuad.Bind();
-            GL.BufferData(screenQuad.BufferTarget, (IntPtr)(sizeof(float) * screenQuadVertices.Length), 
-                screenQuadVertices, BufferUsageHint.StaticDraw);
-            return screenQuad;
-        }
-
         public static void LoadTextures()
         {
             dummyTextures = CreateNudDummyTextures();
 
-            LoadMaterialSphereTextures();
+            NudMatSphereDrawing.LoadMaterialSphereTextures();
 
             // Helpful textures. 
             uvTestPattern = new Texture2D(Properties.Resources.UVPattern);
@@ -172,18 +140,6 @@ namespace Smash_Forge.Rendering
             dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
 
             return dummyTextures;
-        }
-
-        public static void LoadMaterialSphereTextures()
-        {
-            // Sphere Default Textures.
-            sphereDifTex = new Texture2D(Properties.Resources.defaultDif);
-            sphereNrmMapTex = new Texture2D(Properties.Resources.nrmMap);
-            // Sphere Mesh Attributes.
-            sphereNrmTex = new Texture2D(Properties.Resources.nrm);
-            sphereUvTex = new Texture2D(Properties.Resources.uv);
-            sphereTanTex = new Texture2D(Properties.Resources.tan);
-            sphereBitanTex = new Texture2D(Properties.Resources.bitan);
         }
 
         private static void GetOpenGLSystemInfo()
@@ -1090,64 +1046,6 @@ namespace Smash_Forge.Rendering
             return false;
         }
 
-        private static void DrawUVTriangleAndGrid(NUD.Vertex v1, NUD.Vertex v2, NUD.Vertex v3, int divisions, Color uvColor, float lineWidth, Color gridColor)
-        {
-            // No shaders
-            GL.UseProgram(0);
-
-            float bounds = 1;
-            Vector2 scaleUv = new Vector2(1, 1);
-
-            SetUpUvRendering(lineWidth);
-
-            // Draw Grid
-            GL.Color3(gridColor);
-            DrawHorizontalGrid(divisions, bounds, scaleUv);
-            DrawVerticalGrid(divisions, bounds, scaleUv);
-        }
-
-        private static void SetUpUvRendering(float lineWidth)
-        {
-            // Go to 2D
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.PushMatrix();
-            GL.LoadIdentity();
-            GL.Ortho(0, 1, 1, 0, 0, 1);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.PushMatrix();
-            GL.LoadIdentity();
-            GL.LineWidth(lineWidth);
-
-            // Draw over everything
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-        }
-
-        private static void DrawVerticalGrid(int divisions, float bounds, Vector2 scaleUv)
-        {
-            int verticalCount = divisions;
-            for (int i = 0; i < verticalCount * bounds; i++)
-            {
-                GL.Begin(PrimitiveType.Lines);
-                GL.Vertex2(new Vector2((1.0f / verticalCount) * i, -bounds) * scaleUv);
-                GL.Vertex2(new Vector2((1.0f / verticalCount) * i, bounds) * scaleUv);
-                GL.End();
-            }
-        }
-
-        private static void DrawHorizontalGrid(int divisions, float bounds, Vector2 scaleUv)
-        {
-            int horizontalCount = divisions;
-            for (int i = 0; i < horizontalCount * bounds; i++)
-            {
-                GL.Begin(PrimitiveType.Lines);
-                GL.Vertex2(new Vector2(-bounds, (1.0f / horizontalCount) * i) * scaleUv);
-                GL.Vertex2(new Vector2(bounds, (1.0f / horizontalCount) * i) * scaleUv);
-                GL.End();
-            }
-        }
-
         public static void DrawCircle(float x, float y, float z, float radius, uint precision)
         {
             DrawCircle(new Vector3(x, y, z), radius, precision);
@@ -1522,138 +1420,6 @@ namespace Smash_Forge.Rendering
                 if (vbn.SwingBones != null && (Runtime.renderSwagY || Runtime.renderSwagZ))
                     vbn.update();
             }
-        }
-
-        public static void DrawQuadGradient(Vector3 topColor, Vector3 bottomColor, BufferObject screenVbo)
-        {
-            // draw RGB and alpha channels of texture to screen quad
-            Shader shader = Runtime.shaders["Gradient"];
-            shader.UseProgram();
-
-            SetUp2DRendering();
-
-            shader.SetVector3("topColor", topColor);
-            shader.SetVector3("bottomColor", bottomColor);
-
-            DrawScreenTriangle(shader, screenVbo);          
-        }
-
-        public static void DrawTexturedQuad(int texture, int width, int height, bool renderR = true, bool renderG = true, bool renderB = true,
-            bool renderA = false, bool keepAspectRatio = false, float intensity = 1, int currentMipLevel = 0)
-        {
-            // Draws RGB and alpha channels of texture to screen quad.
-            Shader shader = Runtime.shaders["Texture"];
-            shader.UseProgram();
-
-            SetUp2DRendering();
-
-            // Single texture uniform.
-            shader.SetTexture("image", texture, TextureTarget.Texture2D, 0);
-
-            // Channel toggle uniforms. 
-            shader.SetBoolToInt("renderR",     renderR);
-            shader.SetBoolToInt("renderG",     renderG);
-            shader.SetBoolToInt("renderB",     renderB);
-            shader.SetBoolToInt("renderAlpha", renderA);
-
-            shader.SetFloat("intensity", intensity);
-
-            bool alphaOverride = renderA && !renderR && !renderG && !renderB;
-            shader.SetBoolToInt("alphaOverride", alphaOverride);
-
-            // Perform aspect ratio calculations in shader. 
-            // This only displays correctly if the viewport is square.
-            shader.SetBoolToInt("preserveAspectRatio", keepAspectRatio);
-            shader.SetFloat("width", width);
-            shader.SetFloat("height", height);
-
-            // Display certain mip levels.
-            shader.SetInt("currentMipLevel", currentMipLevel);
-
-            // Draw full screen "quad" (big triangle)
-            DrawScreenTriangle(shader, screenQuadVbo);
-        }
-
-        public static void DrawTexturedQuad(int texture, float intensity)
-        {
-            DrawTexturedQuad(texture, 1, 1, true, true, true, true, false, intensity, 0);
-        }
-
-        public static void DrawScreenQuadPostProcessing(int texture0, int texture1)
-        {
-            // Draws RGB and alpha channels of texture to screen quad.
-            Shader shader = Runtime.shaders["ScreenQuad"];
-            shader.UseProgram();
-
-            shader.SetTexture("image0", texture0, TextureTarget.Texture2D, 0);
-            shader.SetTexture("image1", texture1, TextureTarget.Texture2D, 1);
-
-            shader.SetBoolToInt("renderBloom", Runtime.renderBloom);
-            shader.SetFloat("bloomIntensity", Runtime.bloomIntensity);
-
-            ShaderTools.SystemColorVector3Uniform(shader, Runtime.backgroundGradientBottom, "backgroundBottomColor");
-            ShaderTools.SystemColorVector3Uniform(shader, Runtime.backgroundGradientTop, "backgroundTopColor");
-
-            // Draw full screen "quad" (big triangle)
-            DrawScreenTriangle(shader, screenQuadVbo);
-        }
-
-        public static void DrawNudMaterialSphere(Shader shader, NUD.Material material, BufferObject screenVbo, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
-        {
-            if (!shader.ProgramCreatedSuccessfully())
-                return;
-
-            shader.UseProgram();
-
-            // Use the same uniforms as the NUD shader. 
-            NUD.SetMaterialPropertyUniforms(shader, material);
-            NUD.SetStageLightingUniforms(shader, 0);
-            ModelContainer.SetRenderSettingsUniforms(shader);
-            ModelContainer.SetLightingUniforms(shader, nudSphereCamera);
-            ModelContainer.SetCameraMatrixUniforms(nudSphereCamera, shader);
-
-            // Use default textures rather than textures from the NUT.
-            NUD.SetTextureUniformsNudMatSphere(shader, material, dummyTextures);
-
-            // These values aren't needed in the shader currently.
-            shader.SetVector3("cameraPosition", 0, 0, 0);
-            shader.SetFloat("zBufferOffset", 0);
-            shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
-
-            bool isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
-            shader.SetBoolToInt("isTransparent", isTransparent);
-
-            // Set texture uniforms for the mesh attributes. 
-            shader.SetTexture("normalTex", sphereNrmTex.Id, TextureTarget.Texture2D, 15);
-            shader.SetTexture("uvTex", sphereUvTex.Id, TextureTarget.Texture2D, 16);
-            shader.SetTexture("tanTex", sphereTanTex.Id, TextureTarget.Texture2D, 17);
-            shader.SetTexture("bitanTex", sphereBitanTex.Id, TextureTarget.Texture2D, 18);
-
-            // Draw full screen "quad" (big triangle)
-            DrawScreenTriangle(shader, screenVbo);
-        }
-
-        public static void SetUp2DRendering()
-        {
-            // Set up OpenGL settings for basic 2D rendering.
-            GL.ClearColor(Color.White);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            // Allow for alpha blending.
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-        }
-
-        private static void DrawScreenTriangle(Shader shader, BufferObject vbo)
-        {
-            shader.EnableVertexAttributes();
-            vbo.Bind();
-
-            // Set everytime because multiple shaders use this for drawing.
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
-
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-            shader.DisableVertexAttributes();
         }
 
         public static byte[] DXT5ScreenShot(GLControl gc, int x, int y, int width, int height)

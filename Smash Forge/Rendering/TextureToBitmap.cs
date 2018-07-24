@@ -57,13 +57,13 @@ namespace Smash_Forge.Rendering
 
         private static Framebuffer DrawTextureToNewFbo(Texture2D texture, int width, int height, bool r, bool g, bool b, bool a)
         {
-            BufferObject screenVbo = RenderTools.CreateScreenQuadBuffer();
+            BufferObject screenVbo = ScreenDrawing.CreateScreenQuadBuffer();
             Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
             framebuffer.Bind();
 
             // Draw the specified color channels.
             GL.Viewport(0, 0, width, height);
-            RenderTools.DrawTexturedQuad(texture.Id, 1, 1, r, g, b, a);
+            ScreenDrawing.DrawTexturedQuad(texture.Id, 1, 1, r, g, b, a);
             return framebuffer;
         }
     }
