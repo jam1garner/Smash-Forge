@@ -413,7 +413,7 @@ namespace Smash_Forge
             }
 
             shader = Runtime.shaders["Mbn"];
-            GL.UseProgram(shader.Id);
+            shader.UseProgram();
 
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderType"), (int)Runtime.renderType);

@@ -129,11 +129,23 @@
     <Compile Include="GUI\Controls\VertexTool.Designer.cs">
       <DependentUpon>VertexTool.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\TextureSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\TextureSelector.Designer.cs">
+      <DependentUpon>TextureSelector.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Menus\UvViewer.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\Menus\UvViewer.Designer.cs">
       <DependentUpon>UvViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Menus\XmbViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\XmbViewer.Designer.cs">
+      <DependentUpon>XmbViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="lib\DiscordController.cs" />
     <Compile Include="lib\DiscordRpc.cs" />
@@ -478,6 +490,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\NudMatSphereDrawing.cs" />
+    <Compile Include="Rendering\ScreenDrawing.cs" />
     <Compile Include="Rendering\ForgeCamera.cs" />
     <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
@@ -487,9 +501,12 @@
     <Compile Include="Rendering\Lights\LightMap.cs" />
     <Compile Include="Rendering\Lights\LightTools.cs" />
     <Compile Include="Rendering\MaterialPreviewRendering.cs" />
+    <Compile Include="Rendering\Mesh3D.cs" />
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\Shader\ShaderTools.cs" />
     <Compile Include="Rendering\NudUvRendering.cs" />
+    <Compile Include="Rendering\ShapeDrawing.cs" />
+    <Compile Include="Rendering\TextureToBitmap.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
@@ -640,8 +657,14 @@
     <EmbeddedResource Include="GUI\Menus\ROM_Injector.resx">
       <DependentUpon>ROM_Injector.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\TextureSelector.resx">
+      <DependentUpon>TextureSelector.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\UvViewer.resx">
       <DependentUpon>UvViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\XmbViewer.resx">
+      <DependentUpon>XmbViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\ModelViewport.resx">
       <DependentUpon>ModelViewport.cs</DependentUpon>
@@ -754,6 +777,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Shader\Shadow.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\SolidColor3D.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\SolidColor3D.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Shader\Texture.frag">

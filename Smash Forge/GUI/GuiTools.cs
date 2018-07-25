@@ -64,5 +64,13 @@ namespace Smash_Forge
 
             return result;
         }
+
+        public static void ScaleControlsHorizontallyToLayoutWidth(Control containerControl)
+        {
+            foreach (Control control in containerControl.Controls)
+            {
+                control.Width = containerControl.Width - containerControl.Margin.Horizontal;
+            }
+        }
     }
 }

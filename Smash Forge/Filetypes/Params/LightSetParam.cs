@@ -81,15 +81,15 @@ namespace Smash_Forge.Params
 
         public static HemisphereFresnel CreateFresnelLightFromLightSet(ParamFile lightSet)
         {
-            Vector3 hsvGround = new Vector3(0);
-            hsvGround.X = (float)ParamTools.GetParamValue(lightSet, 0, 0, 8);
-            hsvGround.Y = (float)ParamTools.GetParamValue(lightSet, 0, 0, 9);
-            hsvGround.Z = (float)ParamTools.GetParamValue(lightSet, 0, 0, 10);
-
             Vector3 hsvSky = new Vector3(0);
-            hsvSky.X = (float)ParamTools.GetParamValue(lightSet, 0, 0, 11);
-            hsvSky.Y = (float)ParamTools.GetParamValue(lightSet, 0, 0, 12);
-            hsvSky.Z = (float)ParamTools.GetParamValue(lightSet, 0, 0, 13);
+            hsvSky.X = (float)ParamTools.GetParamValue(lightSet, 0, 0, 8);
+            hsvSky.Y = (float)ParamTools.GetParamValue(lightSet, 0, 0, 9);
+            hsvSky.Z = (float)ParamTools.GetParamValue(lightSet, 0, 0, 10);
+
+            Vector3 hsvGround = new Vector3(0);
+            hsvGround.X = (float)ParamTools.GetParamValue(lightSet, 0, 0, 11);
+            hsvGround.Y = (float)ParamTools.GetParamValue(lightSet, 0, 0, 12);
+            hsvGround.Z = (float)ParamTools.GetParamValue(lightSet, 0, 0, 13);
 
             float skyAngle = (float)ParamTools.GetParamValue(lightSet, 0, 0, 14);
             float groundAngle = (float)ParamTools.GetParamValue(lightSet, 0, 0, 15);
@@ -99,14 +99,13 @@ namespace Smash_Forge.Params
 
         private void SaveFresnelLight()
         {
-            ParamTools.ModifyParamValue(paramFile, 0, 0, 8, fresnelLight.groundColor.H);
-            ParamTools.ModifyParamValue(paramFile, 0, 0, 9, fresnelLight.groundColor.S);
-            ParamTools.ModifyParamValue(paramFile, 0, 0, 10, fresnelLight.groundColor.V);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 8, fresnelLight.skyColor.H);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 9, fresnelLight.skyColor.S);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 10, fresnelLight.skyColor.V);
 
-            ParamTools.ModifyParamValue(paramFile, 0, 0, 11, fresnelLight.skyColor.H);
-            ParamTools.ModifyParamValue(paramFile, 0, 0, 12, fresnelLight.skyColor.S);
-            ParamTools.ModifyParamValue(paramFile, 0, 0, 13, fresnelLight.skyColor.V);
-
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 11, fresnelLight.groundColor.H);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 12, fresnelLight.groundColor.S);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 13, fresnelLight.groundColor.V);
         }
 
         public static DirectionalLight CreateCharDiffuseLightFromLightSet(ParamFile lightSet)

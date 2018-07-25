@@ -304,7 +304,7 @@ namespace Smash_Forge
             GL.ClearColor(Color.Black);
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadIdentity();
@@ -312,7 +312,7 @@ namespace Smash_Forge
 
             foreach(NutTexture tex in nut.Nodes)
             {
-                RenderTools.DrawTexturedQuad(nut.glTexByHashId[tex.HASHID].Id, tex.Width, tex.Height, true, true, true, true, true);
+                ScreenDrawing.DrawTexturedQuad(nut.glTexByHashId[tex.HASHID].Id, tex.Width, tex.Height, true, true, true, true, true);
             }
 
             glControl1.SwapBuffers();

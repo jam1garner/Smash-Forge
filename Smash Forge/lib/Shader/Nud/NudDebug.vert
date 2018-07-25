@@ -121,7 +121,7 @@ void main()
 {
     // Vertex Skinning
     vec4 objPos = vec4(vPosition.xyz, 1.0);
-    if(useBones == 1)
+    if (useBones == 1 && vBone.x != -1)
        objPos = skin(vPosition, ivec4(vBone));
 
     objPos.z *= zScale;
@@ -165,7 +165,7 @@ void main()
     geomBoneWeightsColored = BoneWeightColor(totalWeight);
 
     geomNormal = vNormal;
-	if(useBones == 1)
+    if (useBones == 1 && vBone.x != -1)
 		geomNormal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
 
     geomViewNormal = mat3(sphereMapMatrix) * geomNormal.xyz;

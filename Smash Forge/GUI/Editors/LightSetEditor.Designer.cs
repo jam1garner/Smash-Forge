@@ -88,51 +88,12 @@
             this.lightMapGLControl = new OpenTK.GLControl();
             this.lightmapListBox = new System.Windows.Forms.ListBox();
             this.areaTab = new System.Windows.Forms.TabPage();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
-            this.areaRotXTrackBar = new System.Windows.Forms.TrackBar();
-            this.areaRotYTrackBar = new System.Windows.Forms.TrackBar();
-            this.areaRotZTrackBar = new System.Windows.Forms.TrackBar();
-            this.label27 = new System.Windows.Forms.Label();
-            this.label28 = new System.Windows.Forms.Label();
-            this.label29 = new System.Windows.Forms.Label();
-            this.areaRotX = new System.Windows.Forms.TextBox();
-            this.areaRotY = new System.Windows.Forms.TextBox();
-            this.areaRotZ = new System.Windows.Forms.TextBox();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
-            this.areaScaleXTrackBar = new System.Windows.Forms.TrackBar();
-            this.areaScaleYTrackBar = new System.Windows.Forms.TrackBar();
-            this.areaScaleZTrackBar = new System.Windows.Forms.TrackBar();
-            this.label24 = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
-            this.areaScaleXTB = new System.Windows.Forms.TextBox();
-            this.areaScaleYTB = new System.Windows.Forms.TextBox();
-            this.areaScaleZTB = new System.Windows.Forms.TextBox();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
-            this.areaPosXTrackBar = new System.Windows.Forms.TrackBar();
-            this.areaPosYTrackBar = new System.Windows.Forms.TrackBar();
-            this.areaPosZTrackBar = new System.Windows.Forms.TrackBar();
-            this.label21 = new System.Windows.Forms.Label();
-            this.label22 = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
-            this.areaPosXTB = new System.Windows.Forms.TextBox();
-            this.areaPosYTB = new System.Windows.Forms.TextBox();
-            this.areaPosZTB = new System.Windows.Forms.TextBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.areaGroundRedTrackBar = new System.Windows.Forms.TrackBar();
-            this.areaGroundGreenTrackBar = new System.Windows.Forms.TrackBar();
-            this.areaGroundBlueTrackBar = new System.Windows.Forms.TrackBar();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.areaGroundRedTB = new System.Windows.Forms.TextBox();
-            this.areaGroundGreenTB = new System.Windows.Forms.TextBox();
-            this.areaGroundBlueTB = new System.Windows.Forms.TextBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.areaLightFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+            this.areaLightColorPreviewButton = new System.Windows.Forms.Button();
+            this.areaLightPreviewPanel = new System.Windows.Forms.Panel();
+            this.areaColorGLControl = new OpenTK.GLControl();
+            this.colCeilButton = new System.Windows.Forms.Button();
+            this.areaLightColCeilPanel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.areaCeilRedTrackBar = new System.Windows.Forms.TrackBar();
             this.areaCeilGreenTrackBar = new System.Windows.Forms.TrackBar();
@@ -143,23 +104,60 @@
             this.areaCeilRedTB = new System.Windows.Forms.TextBox();
             this.areaCeilGreenTB = new System.Windows.Forms.TextBox();
             this.areaCeilBlueTB = new System.Windows.Forms.TextBox();
-            this.areaColorGLControl = new OpenTK.GLControl();
+            this.colGroundButton = new System.Windows.Forms.Button();
+            this.areaLightColGroundPanel = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.areaGroundRedTrackBar = new System.Windows.Forms.TrackBar();
+            this.areaGroundGreenTrackBar = new System.Windows.Forms.TrackBar();
+            this.areaGroundBlueTrackBar = new System.Windows.Forms.TrackBar();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.areaGroundRedTB = new System.Windows.Forms.TextBox();
+            this.areaGroundGreenTB = new System.Windows.Forms.TextBox();
+            this.areaGroundBlueTB = new System.Windows.Forms.TextBox();
+            this.areaLightPosButton = new System.Windows.Forms.Button();
+            this.areaLightPosPanel = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
+            this.areaPosXTrackBar = new System.Windows.Forms.TrackBar();
+            this.areaPosYTrackBar = new System.Windows.Forms.TrackBar();
+            this.areaPosZTrackBar = new System.Windows.Forms.TrackBar();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label22 = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.areaPosXTB = new System.Windows.Forms.TextBox();
+            this.areaPosYTB = new System.Windows.Forms.TextBox();
+            this.areaPosZTB = new System.Windows.Forms.TextBox();
+            this.areaLightScaleButton = new System.Windows.Forms.Button();
+            this.areaLightScalePanel = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
+            this.areaScaleXTrackBar = new System.Windows.Forms.TrackBar();
+            this.areaScaleYTrackBar = new System.Windows.Forms.TrackBar();
+            this.areaScaleZTrackBar = new System.Windows.Forms.TrackBar();
+            this.label24 = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label26 = new System.Windows.Forms.Label();
+            this.areaScaleXTB = new System.Windows.Forms.TextBox();
+            this.areaScaleYTB = new System.Windows.Forms.TextBox();
+            this.areaScaleZTB = new System.Windows.Forms.TextBox();
+            this.areaLightRotButton = new System.Windows.Forms.Button();
+            this.areaLightRotPanel = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
+            this.areaRotXTrackBar = new System.Windows.Forms.TrackBar();
+            this.areaRotYTrackBar = new System.Windows.Forms.TrackBar();
+            this.areaRotZTrackBar = new System.Windows.Forms.TrackBar();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
+            this.areaRotX = new System.Windows.Forms.TextBox();
+            this.areaRotY = new System.Windows.Forms.TextBox();
+            this.areaRotZ = new System.Windows.Forms.TextBox();
             this.areaLightListBox = new System.Windows.Forms.ListBox();
             this.stageLightsTab = new System.Windows.Forms.TabPage();
-            this.stageLightSetTreeView = new System.Windows.Forms.TreeView();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.stageRotXTrackBar = new System.Windows.Forms.TrackBar();
-            this.stageRotYTrackBar = new System.Windows.Forms.TrackBar();
-            this.stageRotZTrackBar = new System.Windows.Forms.TrackBar();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.stageDifRotXTB = new System.Windows.Forms.TextBox();
-            this.stageDifRotYTB = new System.Windows.Forms.TextBox();
-            this.stageDifRotZTB = new System.Windows.Forms.TextBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.lightSetFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+            this.stageDifColorPanelButton = new System.Windows.Forms.Button();
+            this.stageLightColorPanel = new System.Windows.Forms.Panel();
+            this.stageColorTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.label4 = new System.Windows.Forms.Label();
             this.stageDifHueTrackBar = new System.Windows.Forms.TrackBar();
             this.stageDifSatTrackBar = new System.Windows.Forms.TrackBar();
@@ -171,19 +169,38 @@
             this.stageDifSatTB = new System.Windows.Forms.TextBox();
             this.stageDifIntensityTB = new System.Windows.Forms.TextBox();
             this.stageDifColorButton = new System.Windows.Forms.Button();
+            this.stageRotButton = new System.Windows.Forms.Button();
+            this.stageLightRotPanel = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.stageRotXTrackBar = new System.Windows.Forms.TrackBar();
+            this.stageRotYTrackBar = new System.Windows.Forms.TrackBar();
+            this.stageRotZTrackBar = new System.Windows.Forms.TrackBar();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.stageDifRotXTB = new System.Windows.Forms.TextBox();
+            this.stageDifRotYTB = new System.Windows.Forms.TextBox();
+            this.stageDifRotZTB = new System.Windows.Forms.TextBox();
+            this.stageLightSetTreeView = new System.Windows.Forms.TreeView();
             this.charLightsTab = new System.Windows.Forms.TabPage();
-            this.groupBox13 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel15 = new System.Windows.Forms.TableLayoutPanel();
-            this.trackBar16 = new System.Windows.Forms.TrackBar();
-            this.trackBar17 = new System.Windows.Forms.TrackBar();
-            this.trackBar18 = new System.Windows.Forms.TrackBar();
-            this.label44 = new System.Windows.Forms.Label();
-            this.label45 = new System.Windows.Forms.Label();
-            this.label46 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.charColor2GroupBox = new System.Windows.Forms.GroupBox();
+            this.charLightsFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+            this.charLightPanelExpander = new System.Windows.Forms.Button();
+            this.charLightGlControlPanel = new System.Windows.Forms.Panel();
+            this.charDifColorGLControl = new OpenTK.GLControl();
+            this.charColor1Button = new System.Windows.Forms.Button();
+            this.charColor1Panel = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.charColor1XTrackBar = new System.Windows.Forms.TrackBar();
+            this.charColor1YTrackBar = new System.Windows.Forms.TrackBar();
+            this.charColor1ZTrackBar = new System.Windows.Forms.TrackBar();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.charColor1XTB = new System.Windows.Forms.TextBox();
+            this.charColor1YTB = new System.Windows.Forms.TextBox();
+            this.charColor1ZTB = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.charColor2Button = new System.Windows.Forms.Button();
+            this.charColor2Panel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.charColor2XTrackBar = new System.Windows.Forms.TrackBar();
             this.charColor2YTrackBar = new System.Windows.Forms.TrackBar();
@@ -194,23 +211,23 @@
             this.charColor2XTB = new System.Windows.Forms.TextBox();
             this.charColor2YTB = new System.Windows.Forms.TextBox();
             this.charColor2ZTB = new System.Windows.Forms.TextBox();
-            this.charColor1GroupBox = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.charColor1XTrackBar = new System.Windows.Forms.TrackBar();
-            this.charColor1YTrackBar = new System.Windows.Forms.TrackBar();
-            this.charColor1ZTrackBar = new System.Windows.Forms.TrackBar();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.charColor1XTB = new System.Windows.Forms.TextBox();
-            this.charColor1YTB = new System.Windows.Forms.TextBox();
-            this.charColor1ZTB = new System.Windows.Forms.TextBox();
-            this.charDifColorGLControl = new OpenTK.GLControl();
+            this.charAngleButton = new System.Windows.Forms.Button();
+            this.charAngleTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.charAngle1TrackBar = new System.Windows.Forms.TrackBar();
+            this.charAngle2TrackBar = new System.Windows.Forms.TrackBar();
+            this.charAngle3TrackBar = new System.Windows.Forms.TrackBar();
+            this.label44 = new System.Windows.Forms.Label();
+            this.label45 = new System.Windows.Forms.Label();
+            this.label46 = new System.Windows.Forms.Label();
+            this.charAngle1TB = new System.Windows.Forms.TextBox();
+            this.charAngle2TB = new System.Windows.Forms.TextBox();
+            this.charAngle3TB = new System.Windows.Forms.TextBox();
             this.charLightsListBox = new System.Windows.Forms.ListBox();
             this.stageLightingTabControl = new System.Windows.Forms.TabControl();
             this.stageFogTab = new System.Windows.Forms.TabPage();
-            this.stageFogListBox = new System.Windows.Forms.ListBox();
-            this.groupBox15 = new System.Windows.Forms.GroupBox();
+            this.fogFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+            this.stageFogPanelButton = new System.Windows.Forms.Button();
+            this.stageFogColorPanel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel17 = new System.Windows.Forms.TableLayoutPanel();
             this.label50 = new System.Windows.Forms.Label();
             this.fogHueTrackBar = new System.Windows.Forms.TrackBar();
@@ -223,6 +240,7 @@
             this.fogSaturationTB = new System.Windows.Forms.TextBox();
             this.fogIntensityTB = new System.Windows.Forms.TextBox();
             this.fogColorButton = new System.Windows.Forms.Button();
+            this.stageFogListBox = new System.Windows.Forms.ListBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -256,61 +274,66 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBar14)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar15)).BeginInit();
             this.areaTab.SuspendLayout();
-            this.groupBox7.SuspendLayout();
-            this.tableLayoutPanel9.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.areaRotXTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaRotYTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaRotZTrackBar)).BeginInit();
-            this.groupBox6.SuspendLayout();
-            this.tableLayoutPanel8.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.areaScaleXTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaScaleYTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaScaleZTrackBar)).BeginInit();
-            this.groupBox5.SuspendLayout();
-            this.tableLayoutPanel7.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.areaPosXTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaPosYTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaPosZTrackBar)).BeginInit();
-            this.groupBox3.SuspendLayout();
-            this.tableLayoutPanel5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.areaGroundRedTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaGroundGreenTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaGroundBlueTrackBar)).BeginInit();
-            this.groupBox4.SuspendLayout();
+            this.areaLightFlowLayout.SuspendLayout();
+            this.areaLightPreviewPanel.SuspendLayout();
+            this.areaLightColCeilPanel.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.areaCeilRedTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.areaCeilGreenTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.areaCeilBlueTrackBar)).BeginInit();
+            this.areaLightColGroundPanel.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.areaGroundRedTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaGroundGreenTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaGroundBlueTrackBar)).BeginInit();
+            this.areaLightPosPanel.SuspendLayout();
+            this.tableLayoutPanel7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.areaPosXTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaPosYTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaPosZTrackBar)).BeginInit();
+            this.areaLightScalePanel.SuspendLayout();
+            this.tableLayoutPanel8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.areaScaleXTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaScaleYTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaScaleZTrackBar)).BeginInit();
+            this.areaLightRotPanel.SuspendLayout();
+            this.tableLayoutPanel9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.areaRotXTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaRotYTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaRotZTrackBar)).BeginInit();
             this.stageLightsTab.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.lightSetFlowLayout.SuspendLayout();
+            this.stageLightColorPanel.SuspendLayout();
+            this.stageColorTableLayoutPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.stageDifHueTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stageDifSatTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stageDifIntensityTrackBar)).BeginInit();
+            this.stageLightRotPanel.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.stageRotXTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stageRotYTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.stageRotZTrackBar)).BeginInit();
-            this.groupBox1.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.stageDifHueTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.stageDifSatTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.stageDifIntensityTrackBar)).BeginInit();
             this.charLightsTab.SuspendLayout();
-            this.groupBox13.SuspendLayout();
-            this.tableLayoutPanel15.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar16)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar17)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar18)).BeginInit();
-            this.charColor2GroupBox.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.charColor2XTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.charColor2YTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.charColor2ZTrackBar)).BeginInit();
-            this.charColor1GroupBox.SuspendLayout();
+            this.charLightsFlowLayout.SuspendLayout();
+            this.charLightGlControlPanel.SuspendLayout();
+            this.charColor1Panel.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.charColor1XTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.charColor1YTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.charColor1ZTrackBar)).BeginInit();
+            this.charColor2Panel.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.charColor2XTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.charColor2YTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.charColor2ZTrackBar)).BeginInit();
+            this.charAngleTableLayout.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.charAngle1TrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.charAngle2TrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.charAngle3TrackBar)).BeginInit();
             this.stageLightingTabControl.SuspendLayout();
             this.stageFogTab.SuspendLayout();
-            this.groupBox15.SuspendLayout();
+            this.fogFlowLayout.SuspendLayout();
+            this.stageFogColorPanel.SuspendLayout();
             this.tableLayoutPanel17.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fogHueTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fogSaturationTrackBar)).BeginInit();
@@ -330,7 +353,7 @@
             this.lightMapTab.Location = new System.Drawing.Point(4, 22);
             this.lightMapTab.Name = "lightMapTab";
             this.lightMapTab.Padding = new System.Windows.Forms.Padding(3);
-            this.lightMapTab.Size = new System.Drawing.Size(842, 549);
+            this.lightMapTab.Size = new System.Drawing.Size(917, 957);
             this.lightMapTab.TabIndex = 4;
             this.lightMapTab.Text = "Light Maps";
             this.lightMapTab.UseVisualStyleBackColor = true;
@@ -350,7 +373,7 @@
             this.tableLayoutPanel10.ColumnCount = 3;
             this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.75221F));
             this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.24779F));
-            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 208F));
+            this.tableLayoutPanel10.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 216F));
             this.tableLayoutPanel10.Controls.Add(this.trackBar1, 2, 0);
             this.tableLayoutPanel10.Controls.Add(this.trackBar2, 2, 1);
             this.tableLayoutPanel10.Controls.Add(this.trackBar3, 2, 2);
@@ -371,7 +394,7 @@
             // 
             // trackBar1
             // 
-            this.trackBar1.Location = new System.Drawing.Point(118, 3);
+            this.trackBar1.Location = new System.Drawing.Point(110, 3);
             this.trackBar1.Maximum = 360;
             this.trackBar1.Name = "trackBar1";
             this.trackBar1.Size = new System.Drawing.Size(198, 33);
@@ -381,7 +404,7 @@
             // 
             // trackBar2
             // 
-            this.trackBar2.Location = new System.Drawing.Point(118, 42);
+            this.trackBar2.Location = new System.Drawing.Point(110, 42);
             this.trackBar2.Maximum = 360;
             this.trackBar2.Name = "trackBar2";
             this.trackBar2.Size = new System.Drawing.Size(198, 33);
@@ -391,7 +414,7 @@
             // 
             // trackBar3
             // 
-            this.trackBar3.Location = new System.Drawing.Point(118, 81);
+            this.trackBar3.Location = new System.Drawing.Point(110, 81);
             this.trackBar3.Maximum = 360;
             this.trackBar3.Name = "trackBar3";
             this.trackBar3.Size = new System.Drawing.Size(198, 37);
@@ -403,9 +426,9 @@
             // 
             this.label14.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(3, 13);
+            this.label14.Location = new System.Drawing.Point(3, 6);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(57, 13);
+            this.label14.Size = new System.Drawing.Size(50, 26);
             this.label14.TabIndex = 3;
             this.label14.Text = "Rotation X";
             // 
@@ -413,9 +436,9 @@
             // 
             this.label30.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(3, 52);
+            this.label30.Location = new System.Drawing.Point(3, 45);
             this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(57, 13);
+            this.label30.Size = new System.Drawing.Size(50, 26);
             this.label30.TabIndex = 4;
             this.label30.Text = "Rotation Y";
             // 
@@ -423,34 +446,34 @@
             // 
             this.label31.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(3, 93);
+            this.label31.Location = new System.Drawing.Point(3, 86);
             this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(57, 13);
+            this.label31.Size = new System.Drawing.Size(50, 26);
             this.label31.TabIndex = 5;
             this.label31.Text = "Rotation Z";
             // 
             // lightMapRotXTB
             // 
             this.lightMapRotXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lightMapRotXTB.Location = new System.Drawing.Point(67, 9);
+            this.lightMapRotXTB.Location = new System.Drawing.Point(63, 9);
             this.lightMapRotXTB.Name = "lightMapRotXTB";
-            this.lightMapRotXTB.Size = new System.Drawing.Size(45, 20);
+            this.lightMapRotXTB.Size = new System.Drawing.Size(41, 20);
             this.lightMapRotXTB.TabIndex = 6;
             // 
             // lightMapRotYTB
             // 
             this.lightMapRotYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lightMapRotYTB.Location = new System.Drawing.Point(67, 48);
+            this.lightMapRotYTB.Location = new System.Drawing.Point(63, 48);
             this.lightMapRotYTB.Name = "lightMapRotYTB";
-            this.lightMapRotYTB.Size = new System.Drawing.Size(45, 20);
+            this.lightMapRotYTB.Size = new System.Drawing.Size(41, 20);
             this.lightMapRotYTB.TabIndex = 7;
             // 
             // lightMapRotZTB
             // 
             this.lightMapRotZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lightMapRotZTB.Location = new System.Drawing.Point(67, 89);
+            this.lightMapRotZTB.Location = new System.Drawing.Point(63, 89);
             this.lightMapRotZTB.Name = "lightMapRotZTB";
-            this.lightMapRotZTB.Size = new System.Drawing.Size(45, 20);
+            this.lightMapRotZTB.Size = new System.Drawing.Size(41, 20);
             this.lightMapRotZTB.TabIndex = 8;
             // 
             // groupBox9
@@ -468,7 +491,7 @@
             this.tableLayoutPanel11.ColumnCount = 3;
             this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 53.38983F));
             this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 46.61017F));
-            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 210F));
+            this.tableLayoutPanel11.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 218F));
             this.tableLayoutPanel11.Controls.Add(this.trackBar4, 2, 0);
             this.tableLayoutPanel11.Controls.Add(this.trackBar5, 2, 1);
             this.tableLayoutPanel11.Controls.Add(this.trackBar6, 2, 2);
@@ -489,7 +512,7 @@
             // 
             // trackBar4
             // 
-            this.trackBar4.Location = new System.Drawing.Point(116, 3);
+            this.trackBar4.Location = new System.Drawing.Point(108, 3);
             this.trackBar4.Maximum = 360;
             this.trackBar4.Name = "trackBar4";
             this.trackBar4.Size = new System.Drawing.Size(200, 33);
@@ -498,7 +521,7 @@
             // 
             // trackBar5
             // 
-            this.trackBar5.Location = new System.Drawing.Point(116, 42);
+            this.trackBar5.Location = new System.Drawing.Point(108, 42);
             this.trackBar5.Maximum = 360;
             this.trackBar5.Name = "trackBar5";
             this.trackBar5.Size = new System.Drawing.Size(200, 33);
@@ -507,7 +530,7 @@
             // 
             // trackBar6
             // 
-            this.trackBar6.Location = new System.Drawing.Point(116, 81);
+            this.trackBar6.Location = new System.Drawing.Point(108, 81);
             this.trackBar6.Maximum = 360;
             this.trackBar6.Name = "trackBar6";
             this.trackBar6.Size = new System.Drawing.Size(200, 37);
@@ -547,25 +570,25 @@
             // lightMapScaleXTB
             // 
             this.lightMapScaleXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lightMapScaleXTB.Location = new System.Drawing.Point(63, 9);
+            this.lightMapScaleXTB.Location = new System.Drawing.Point(59, 9);
             this.lightMapScaleXTB.Name = "lightMapScaleXTB";
-            this.lightMapScaleXTB.Size = new System.Drawing.Size(47, 20);
+            this.lightMapScaleXTB.Size = new System.Drawing.Size(43, 20);
             this.lightMapScaleXTB.TabIndex = 6;
             // 
             // lightMapScaleYTB
             // 
             this.lightMapScaleYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lightMapScaleYTB.Location = new System.Drawing.Point(63, 48);
+            this.lightMapScaleYTB.Location = new System.Drawing.Point(59, 48);
             this.lightMapScaleYTB.Name = "lightMapScaleYTB";
-            this.lightMapScaleYTB.Size = new System.Drawing.Size(47, 20);
+            this.lightMapScaleYTB.Size = new System.Drawing.Size(43, 20);
             this.lightMapScaleYTB.TabIndex = 7;
             // 
             // lightMapScaleZTB
             // 
             this.lightMapScaleZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lightMapScaleZTB.Location = new System.Drawing.Point(63, 89);
+            this.lightMapScaleZTB.Location = new System.Drawing.Point(59, 89);
             this.lightMapScaleZTB.Name = "lightMapScaleZTB";
-            this.lightMapScaleZTB.Size = new System.Drawing.Size(47, 20);
+            this.lightMapScaleZTB.Size = new System.Drawing.Size(43, 20);
             this.lightMapScaleZTB.TabIndex = 8;
             // 
             // groupBox10
@@ -583,7 +606,7 @@
             this.tableLayoutPanel12.ColumnCount = 3;
             this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54.86726F));
             this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45.13274F));
-            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 211F));
+            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 220F));
             this.tableLayoutPanel12.Controls.Add(this.trackBar7, 2, 0);
             this.tableLayoutPanel12.Controls.Add(this.trackBar8, 2, 1);
             this.tableLayoutPanel12.Controls.Add(this.trackBar9, 2, 2);
@@ -604,7 +627,7 @@
             // 
             // trackBar7
             // 
-            this.trackBar7.Location = new System.Drawing.Point(115, 3);
+            this.trackBar7.Location = new System.Drawing.Point(106, 3);
             this.trackBar7.Maximum = 360;
             this.trackBar7.Name = "trackBar7";
             this.trackBar7.Size = new System.Drawing.Size(201, 33);
@@ -614,7 +637,7 @@
             // 
             // trackBar8
             // 
-            this.trackBar8.Location = new System.Drawing.Point(115, 42);
+            this.trackBar8.Location = new System.Drawing.Point(106, 42);
             this.trackBar8.Maximum = 360;
             this.trackBar8.Name = "trackBar8";
             this.trackBar8.Size = new System.Drawing.Size(201, 33);
@@ -624,7 +647,7 @@
             // 
             // trackBar9
             // 
-            this.trackBar9.Location = new System.Drawing.Point(115, 81);
+            this.trackBar9.Location = new System.Drawing.Point(106, 81);
             this.trackBar9.Maximum = 360;
             this.trackBar9.Name = "trackBar9";
             this.trackBar9.Size = new System.Drawing.Size(201, 37);
@@ -636,9 +659,9 @@
             // 
             this.label35.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(3, 13);
+            this.label35.Location = new System.Drawing.Point(3, 6);
             this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(54, 13);
+            this.label35.Size = new System.Drawing.Size(47, 26);
             this.label35.TabIndex = 3;
             this.label35.Text = "Position X";
             // 
@@ -646,9 +669,9 @@
             // 
             this.label36.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(3, 52);
+            this.label36.Location = new System.Drawing.Point(3, 45);
             this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(54, 13);
+            this.label36.Size = new System.Drawing.Size(47, 26);
             this.label36.TabIndex = 4;
             this.label36.Text = "Position Y";
             // 
@@ -656,34 +679,34 @@
             // 
             this.label37.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(3, 93);
+            this.label37.Location = new System.Drawing.Point(3, 86);
             this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(54, 13);
+            this.label37.Size = new System.Drawing.Size(47, 26);
             this.label37.TabIndex = 5;
             this.label37.Text = "Position Z";
             // 
             // lightMapPosXTB
             // 
             this.lightMapPosXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lightMapPosXTB.Location = new System.Drawing.Point(65, 9);
+            this.lightMapPosXTB.Location = new System.Drawing.Point(60, 9);
             this.lightMapPosXTB.Name = "lightMapPosXTB";
-            this.lightMapPosXTB.Size = new System.Drawing.Size(44, 20);
+            this.lightMapPosXTB.Size = new System.Drawing.Size(40, 20);
             this.lightMapPosXTB.TabIndex = 6;
             // 
             // lightMapPosYTB
             // 
             this.lightMapPosYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lightMapPosYTB.Location = new System.Drawing.Point(65, 48);
+            this.lightMapPosYTB.Location = new System.Drawing.Point(60, 48);
             this.lightMapPosYTB.Name = "lightMapPosYTB";
-            this.lightMapPosYTB.Size = new System.Drawing.Size(44, 20);
+            this.lightMapPosYTB.Size = new System.Drawing.Size(40, 20);
             this.lightMapPosYTB.TabIndex = 7;
             // 
             // lightMapPosZTB
             // 
             this.lightMapPosZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.lightMapPosZTB.Location = new System.Drawing.Point(65, 89);
+            this.lightMapPosZTB.Location = new System.Drawing.Point(60, 89);
             this.lightMapPosZTB.Name = "lightMapPosZTB";
-            this.lightMapPosZTB.Size = new System.Drawing.Size(44, 20);
+            this.lightMapPosZTB.Size = new System.Drawing.Size(40, 20);
             this.lightMapPosZTB.TabIndex = 8;
             // 
             // groupBox11
@@ -939,527 +962,93 @@
             // 
             // areaTab
             // 
-            this.areaTab.Controls.Add(this.groupBox7);
-            this.areaTab.Controls.Add(this.groupBox6);
-            this.areaTab.Controls.Add(this.groupBox5);
-            this.areaTab.Controls.Add(this.groupBox3);
-            this.areaTab.Controls.Add(this.groupBox4);
-            this.areaTab.Controls.Add(this.areaColorGLControl);
+            this.areaTab.Controls.Add(this.areaLightFlowLayout);
             this.areaTab.Controls.Add(this.areaLightListBox);
             this.areaTab.Location = new System.Drawing.Point(4, 22);
             this.areaTab.Name = "areaTab";
             this.areaTab.Padding = new System.Windows.Forms.Padding(3);
-            this.areaTab.Size = new System.Drawing.Size(842, 549);
+            this.areaTab.Size = new System.Drawing.Size(917, 957);
             this.areaTab.TabIndex = 3;
             this.areaTab.Text = "Area Lights";
             this.areaTab.UseVisualStyleBackColor = true;
             // 
-            // groupBox7
-            // 
-            this.groupBox7.Controls.Add(this.tableLayoutPanel9);
-            this.groupBox7.Location = new System.Drawing.Point(489, 158);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(339, 146);
-            this.groupBox7.TabIndex = 32;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Rotation";
-            // 
-            // tableLayoutPanel9
-            // 
-            this.tableLayoutPanel9.ColumnCount = 3;
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.75221F));
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.24779F));
-            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 207F));
-            this.tableLayoutPanel9.Controls.Add(this.areaRotXTrackBar, 2, 0);
-            this.tableLayoutPanel9.Controls.Add(this.areaRotYTrackBar, 2, 1);
-            this.tableLayoutPanel9.Controls.Add(this.areaRotZTrackBar, 2, 2);
-            this.tableLayoutPanel9.Controls.Add(this.label27, 0, 0);
-            this.tableLayoutPanel9.Controls.Add(this.label28, 0, 1);
-            this.tableLayoutPanel9.Controls.Add(this.label29, 0, 2);
-            this.tableLayoutPanel9.Controls.Add(this.areaRotX, 1, 0);
-            this.tableLayoutPanel9.Controls.Add(this.areaRotY, 1, 1);
-            this.tableLayoutPanel9.Controls.Add(this.areaRotZ, 1, 2);
-            this.tableLayoutPanel9.Location = new System.Drawing.Point(6, 19);
-            this.tableLayoutPanel9.Name = "tableLayoutPanel9";
-            this.tableLayoutPanel9.RowCount = 3;
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
-            this.tableLayoutPanel9.Size = new System.Drawing.Size(324, 121);
-            this.tableLayoutPanel9.TabIndex = 0;
-            // 
-            // areaRotXTrackBar
-            // 
-            this.areaRotXTrackBar.Location = new System.Drawing.Point(119, 3);
-            this.areaRotXTrackBar.Maximum = 360;
-            this.areaRotXTrackBar.Name = "areaRotXTrackBar";
-            this.areaRotXTrackBar.Size = new System.Drawing.Size(197, 33);
-            this.areaRotXTrackBar.TabIndex = 0;
-            this.areaRotXTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.areaRotXTrackBar.Value = 180;
-            this.areaRotXTrackBar.Scroll += new System.EventHandler(this.areaRotXTrackBar_Scroll);
-            // 
-            // areaRotYTrackBar
-            // 
-            this.areaRotYTrackBar.Location = new System.Drawing.Point(119, 42);
-            this.areaRotYTrackBar.Maximum = 360;
-            this.areaRotYTrackBar.Name = "areaRotYTrackBar";
-            this.areaRotYTrackBar.Size = new System.Drawing.Size(197, 33);
-            this.areaRotYTrackBar.TabIndex = 1;
-            this.areaRotYTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.areaRotYTrackBar.Value = 180;
-            this.areaRotYTrackBar.Scroll += new System.EventHandler(this.areaRotYTrackBar_Scroll);
-            // 
-            // areaRotZTrackBar
-            // 
-            this.areaRotZTrackBar.Location = new System.Drawing.Point(119, 81);
-            this.areaRotZTrackBar.Maximum = 360;
-            this.areaRotZTrackBar.Name = "areaRotZTrackBar";
-            this.areaRotZTrackBar.Size = new System.Drawing.Size(197, 37);
-            this.areaRotZTrackBar.TabIndex = 2;
-            this.areaRotZTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.areaRotZTrackBar.Value = 180;
-            this.areaRotZTrackBar.Scroll += new System.EventHandler(this.areaRotZTrackBar_Scroll);
-            // 
-            // label27
-            // 
-            this.label27.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(3, 13);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(57, 13);
-            this.label27.TabIndex = 3;
-            this.label27.Text = "Rotation X";
-            // 
-            // label28
-            // 
-            this.label28.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(3, 52);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(57, 13);
-            this.label28.TabIndex = 4;
-            this.label28.Text = "Rotation Y";
-            // 
-            // label29
-            // 
-            this.label29.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(3, 93);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(57, 13);
-            this.label29.TabIndex = 5;
-            this.label29.Text = "Rotation Z";
-            // 
-            // areaRotX
-            // 
-            this.areaRotX.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaRotX.Location = new System.Drawing.Point(68, 9);
-            this.areaRotX.Name = "areaRotX";
-            this.areaRotX.Size = new System.Drawing.Size(45, 20);
-            this.areaRotX.TabIndex = 6;
-            this.areaRotX.TextChanged += new System.EventHandler(this.areaRotX_TextChanged);
-            // 
-            // areaRotY
-            // 
-            this.areaRotY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaRotY.Location = new System.Drawing.Point(68, 48);
-            this.areaRotY.Name = "areaRotY";
-            this.areaRotY.Size = new System.Drawing.Size(45, 20);
-            this.areaRotY.TabIndex = 7;
-            this.areaRotY.TextChanged += new System.EventHandler(this.areaRotY_TextChanged);
-            // 
-            // areaRotZ
-            // 
-            this.areaRotZ.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaRotZ.Location = new System.Drawing.Point(68, 89);
-            this.areaRotZ.Name = "areaRotZ";
-            this.areaRotZ.Size = new System.Drawing.Size(45, 20);
-            this.areaRotZ.TabIndex = 8;
-            this.areaRotZ.TextChanged += new System.EventHandler(this.areaRotZ_TextChanged);
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.tableLayoutPanel8);
-            this.groupBox6.Location = new System.Drawing.Point(132, 310);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(339, 146);
-            this.groupBox6.TabIndex = 31;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Scale";
-            // 
-            // tableLayoutPanel8
-            // 
-            this.tableLayoutPanel8.ColumnCount = 3;
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54.86726F));
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45.13274F));
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 213F));
-            this.tableLayoutPanel8.Controls.Add(this.areaScaleXTrackBar, 2, 0);
-            this.tableLayoutPanel8.Controls.Add(this.areaScaleYTrackBar, 2, 1);
-            this.tableLayoutPanel8.Controls.Add(this.areaScaleZTrackBar, 2, 2);
-            this.tableLayoutPanel8.Controls.Add(this.label24, 0, 0);
-            this.tableLayoutPanel8.Controls.Add(this.label25, 0, 1);
-            this.tableLayoutPanel8.Controls.Add(this.label26, 0, 2);
-            this.tableLayoutPanel8.Controls.Add(this.areaScaleXTB, 1, 0);
-            this.tableLayoutPanel8.Controls.Add(this.areaScaleYTB, 1, 1);
-            this.tableLayoutPanel8.Controls.Add(this.areaScaleZTB, 1, 2);
-            this.tableLayoutPanel8.Location = new System.Drawing.Point(6, 19);
-            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
-            this.tableLayoutPanel8.RowCount = 3;
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(324, 121);
-            this.tableLayoutPanel8.TabIndex = 0;
-            // 
-            // areaScaleXTrackBar
-            // 
-            this.areaScaleXTrackBar.Location = new System.Drawing.Point(113, 3);
-            this.areaScaleXTrackBar.Maximum = 360;
-            this.areaScaleXTrackBar.Name = "areaScaleXTrackBar";
-            this.areaScaleXTrackBar.Size = new System.Drawing.Size(203, 33);
-            this.areaScaleXTrackBar.TabIndex = 0;
-            this.areaScaleXTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.areaScaleXTrackBar.Scroll += new System.EventHandler(this.areaScaleXTrackBar_Scroll);
-            // 
-            // areaScaleYTrackBar
-            // 
-            this.areaScaleYTrackBar.Location = new System.Drawing.Point(113, 42);
-            this.areaScaleYTrackBar.Maximum = 360;
-            this.areaScaleYTrackBar.Name = "areaScaleYTrackBar";
-            this.areaScaleYTrackBar.Size = new System.Drawing.Size(203, 33);
-            this.areaScaleYTrackBar.TabIndex = 1;
-            this.areaScaleYTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.areaScaleYTrackBar.Scroll += new System.EventHandler(this.areaScaleYTrackBar_Scroll);
-            // 
-            // areaScaleZTrackBar
-            // 
-            this.areaScaleZTrackBar.Location = new System.Drawing.Point(113, 81);
-            this.areaScaleZTrackBar.Maximum = 360;
-            this.areaScaleZTrackBar.Name = "areaScaleZTrackBar";
-            this.areaScaleZTrackBar.Size = new System.Drawing.Size(203, 37);
-            this.areaScaleZTrackBar.TabIndex = 2;
-            this.areaScaleZTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.areaScaleZTrackBar.Scroll += new System.EventHandler(this.areaScaleZTrackBar_Scroll);
-            // 
-            // label24
-            // 
-            this.label24.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(3, 13);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(44, 13);
-            this.label24.TabIndex = 3;
-            this.label24.Text = "Scale X";
-            // 
-            // label25
-            // 
-            this.label25.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(3, 52);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(44, 13);
-            this.label25.TabIndex = 4;
-            this.label25.Text = "Scale Y";
-            // 
-            // label26
-            // 
-            this.label26.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(3, 93);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(44, 13);
-            this.label26.TabIndex = 5;
-            this.label26.Text = "Scale Z";
-            // 
-            // areaScaleXTB
-            // 
-            this.areaScaleXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaScaleXTB.Location = new System.Drawing.Point(63, 9);
-            this.areaScaleXTB.Name = "areaScaleXTB";
-            this.areaScaleXTB.Size = new System.Drawing.Size(44, 20);
-            this.areaScaleXTB.TabIndex = 6;
-            this.areaScaleXTB.TextChanged += new System.EventHandler(this.areaScaleXTB_TextChanged);
-            // 
-            // areaScaleYTB
-            // 
-            this.areaScaleYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaScaleYTB.Location = new System.Drawing.Point(63, 48);
-            this.areaScaleYTB.Name = "areaScaleYTB";
-            this.areaScaleYTB.Size = new System.Drawing.Size(44, 20);
-            this.areaScaleYTB.TabIndex = 7;
-            this.areaScaleYTB.TextChanged += new System.EventHandler(this.areaScaleYTB_TextChanged);
-            // 
-            // areaScaleZTB
-            // 
-            this.areaScaleZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaScaleZTB.Location = new System.Drawing.Point(63, 89);
-            this.areaScaleZTB.Name = "areaScaleZTB";
-            this.areaScaleZTB.Size = new System.Drawing.Size(44, 20);
-            this.areaScaleZTB.TabIndex = 8;
-            this.areaScaleZTB.TextChanged += new System.EventHandler(this.areaScaleZTB_TextChanged);
-            // 
-            // groupBox5
-            // 
-            this.groupBox5.Controls.Add(this.tableLayoutPanel7);
-            this.groupBox5.Location = new System.Drawing.Point(132, 158);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(339, 146);
-            this.groupBox5.TabIndex = 30;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "Position";
-            // 
-            // tableLayoutPanel7
-            // 
-            this.tableLayoutPanel7.ColumnCount = 3;
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54.86726F));
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 45.13274F));
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 212F));
-            this.tableLayoutPanel7.Controls.Add(this.areaPosXTrackBar, 2, 0);
-            this.tableLayoutPanel7.Controls.Add(this.areaPosYTrackBar, 2, 1);
-            this.tableLayoutPanel7.Controls.Add(this.areaPosZTrackBar, 2, 2);
-            this.tableLayoutPanel7.Controls.Add(this.label21, 0, 0);
-            this.tableLayoutPanel7.Controls.Add(this.label22, 0, 1);
-            this.tableLayoutPanel7.Controls.Add(this.label23, 0, 2);
-            this.tableLayoutPanel7.Controls.Add(this.areaPosXTB, 1, 0);
-            this.tableLayoutPanel7.Controls.Add(this.areaPosYTB, 1, 1);
-            this.tableLayoutPanel7.Controls.Add(this.areaPosZTB, 1, 2);
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(6, 19);
-            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
-            this.tableLayoutPanel7.RowCount = 3;
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(324, 121);
-            this.tableLayoutPanel7.TabIndex = 0;
-            // 
-            // areaPosXTrackBar
-            // 
-            this.areaPosXTrackBar.Location = new System.Drawing.Point(114, 3);
-            this.areaPosXTrackBar.Maximum = 360;
-            this.areaPosXTrackBar.Name = "areaPosXTrackBar";
-            this.areaPosXTrackBar.Size = new System.Drawing.Size(202, 33);
-            this.areaPosXTrackBar.TabIndex = 0;
-            this.areaPosXTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.areaPosXTrackBar.Value = 180;
-            this.areaPosXTrackBar.Scroll += new System.EventHandler(this.areaPosXTrackBar_Scroll);
-            // 
-            // areaPosYTrackBar
-            // 
-            this.areaPosYTrackBar.Location = new System.Drawing.Point(114, 42);
-            this.areaPosYTrackBar.Maximum = 360;
-            this.areaPosYTrackBar.Name = "areaPosYTrackBar";
-            this.areaPosYTrackBar.Size = new System.Drawing.Size(202, 33);
-            this.areaPosYTrackBar.TabIndex = 1;
-            this.areaPosYTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.areaPosYTrackBar.Value = 180;
-            this.areaPosYTrackBar.Scroll += new System.EventHandler(this.areaPosYTrackBar_Scroll);
-            // 
-            // areaPosZTrackBar
-            // 
-            this.areaPosZTrackBar.Location = new System.Drawing.Point(114, 81);
-            this.areaPosZTrackBar.Maximum = 360;
-            this.areaPosZTrackBar.Name = "areaPosZTrackBar";
-            this.areaPosZTrackBar.Size = new System.Drawing.Size(202, 37);
-            this.areaPosZTrackBar.TabIndex = 2;
-            this.areaPosZTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.areaPosZTrackBar.Value = 180;
-            this.areaPosZTrackBar.Scroll += new System.EventHandler(this.areaPosZTrackBar_Scroll);
-            // 
-            // label21
-            // 
-            this.label21.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(3, 13);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(54, 13);
-            this.label21.TabIndex = 3;
-            this.label21.Text = "Position X";
-            // 
-            // label22
-            // 
-            this.label22.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(3, 52);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(54, 13);
-            this.label22.TabIndex = 4;
-            this.label22.Text = "Position Y";
-            // 
-            // label23
-            // 
-            this.label23.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(3, 93);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(54, 13);
-            this.label23.TabIndex = 5;
-            this.label23.Text = "Position Z";
-            // 
-            // areaPosXTB
-            // 
-            this.areaPosXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaPosXTB.Location = new System.Drawing.Point(64, 9);
-            this.areaPosXTB.Name = "areaPosXTB";
-            this.areaPosXTB.Size = new System.Drawing.Size(44, 20);
-            this.areaPosXTB.TabIndex = 6;
-            this.areaPosXTB.TextChanged += new System.EventHandler(this.areaPosXTB_TextChanged);
-            // 
-            // areaPosYTB
-            // 
-            this.areaPosYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaPosYTB.Location = new System.Drawing.Point(64, 48);
-            this.areaPosYTB.Name = "areaPosYTB";
-            this.areaPosYTB.Size = new System.Drawing.Size(44, 20);
-            this.areaPosYTB.TabIndex = 7;
-            this.areaPosYTB.TextChanged += new System.EventHandler(this.areaPosYTB_TextChanged);
-            // 
-            // areaPosZTB
-            // 
-            this.areaPosZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaPosZTB.Location = new System.Drawing.Point(64, 89);
-            this.areaPosZTB.Name = "areaPosZTB";
-            this.areaPosZTB.Size = new System.Drawing.Size(44, 20);
-            this.areaPosZTB.TabIndex = 8;
-            this.areaPosZTB.TextChanged += new System.EventHandler(this.areaPosZTB_TextChanged);
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.tableLayoutPanel5);
-            this.groupBox3.Location = new System.Drawing.Point(549, 6);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(279, 146);
-            this.groupBox3.TabIndex = 29;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "col_ground";
-            // 
-            // tableLayoutPanel5
-            // 
-            this.tableLayoutPanel5.ColumnCount = 3;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47F));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 53F));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 165F));
-            this.tableLayoutPanel5.Controls.Add(this.areaGroundRedTrackBar, 2, 0);
-            this.tableLayoutPanel5.Controls.Add(this.areaGroundGreenTrackBar, 2, 1);
-            this.tableLayoutPanel5.Controls.Add(this.areaGroundBlueTrackBar, 2, 2);
-            this.tableLayoutPanel5.Controls.Add(this.label15, 0, 0);
-            this.tableLayoutPanel5.Controls.Add(this.label16, 0, 1);
-            this.tableLayoutPanel5.Controls.Add(this.label17, 0, 2);
-            this.tableLayoutPanel5.Controls.Add(this.areaGroundRedTB, 1, 0);
-            this.tableLayoutPanel5.Controls.Add(this.areaGroundGreenTB, 1, 1);
-            this.tableLayoutPanel5.Controls.Add(this.areaGroundBlueTB, 1, 2);
-            this.tableLayoutPanel5.Location = new System.Drawing.Point(6, 19);
-            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.RowCount = 3;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(265, 121);
-            this.tableLayoutPanel5.TabIndex = 0;
-            // 
-            // areaGroundRedTrackBar
-            // 
-            this.areaGroundRedTrackBar.Location = new System.Drawing.Point(103, 3);
-            this.areaGroundRedTrackBar.Maximum = 100;
-            this.areaGroundRedTrackBar.Name = "areaGroundRedTrackBar";
-            this.areaGroundRedTrackBar.Size = new System.Drawing.Size(158, 33);
-            this.areaGroundRedTrackBar.TabIndex = 0;
-            this.areaGroundRedTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.areaGroundRedTrackBar.Scroll += new System.EventHandler(this.areaGroundRedTrackBar_Scroll);
-            // 
-            // areaGroundGreenTrackBar
-            // 
-            this.areaGroundGreenTrackBar.Location = new System.Drawing.Point(103, 42);
-            this.areaGroundGreenTrackBar.Maximum = 100;
-            this.areaGroundGreenTrackBar.Name = "areaGroundGreenTrackBar";
-            this.areaGroundGreenTrackBar.Size = new System.Drawing.Size(158, 33);
-            this.areaGroundGreenTrackBar.TabIndex = 1;
-            this.areaGroundGreenTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.areaGroundGreenTrackBar.Scroll += new System.EventHandler(this.areaGroundGreenTrackBar_Scroll);
-            // 
-            // areaGroundBlueTrackBar
-            // 
-            this.areaGroundBlueTrackBar.Location = new System.Drawing.Point(103, 81);
-            this.areaGroundBlueTrackBar.Maximum = 100;
-            this.areaGroundBlueTrackBar.Name = "areaGroundBlueTrackBar";
-            this.areaGroundBlueTrackBar.Size = new System.Drawing.Size(158, 37);
-            this.areaGroundBlueTrackBar.TabIndex = 2;
-            this.areaGroundBlueTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.areaGroundBlueTrackBar.Scroll += new System.EventHandler(this.areaGroundBlueTrackBar_Scroll);
-            // 
-            // label15
-            // 
-            this.label15.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(3, 13);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(27, 13);
-            this.label15.TabIndex = 3;
-            this.label15.Text = "Red";
-            // 
-            // label16
-            // 
-            this.label16.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(3, 52);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(36, 13);
-            this.label16.TabIndex = 4;
-            this.label16.Text = "Green";
-            // 
-            // label17
-            // 
-            this.label17.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(3, 93);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(28, 13);
-            this.label17.TabIndex = 5;
-            this.label17.Text = "Blue";
-            // 
-            // areaGroundRedTB
-            // 
-            this.areaGroundRedTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaGroundRedTB.Location = new System.Drawing.Point(50, 9);
-            this.areaGroundRedTB.Name = "areaGroundRedTB";
-            this.areaGroundRedTB.Size = new System.Drawing.Size(47, 20);
-            this.areaGroundRedTB.TabIndex = 6;
-            this.areaGroundRedTB.TextChanged += new System.EventHandler(this.areaGroundRedTB_TextChanged);
-            // 
-            // areaGroundGreenTB
-            // 
-            this.areaGroundGreenTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaGroundGreenTB.Location = new System.Drawing.Point(50, 48);
-            this.areaGroundGreenTB.Name = "areaGroundGreenTB";
-            this.areaGroundGreenTB.Size = new System.Drawing.Size(47, 20);
-            this.areaGroundGreenTB.TabIndex = 7;
-            this.areaGroundGreenTB.TextChanged += new System.EventHandler(this.areaGroundGreenTB_TextChanged);
-            // 
-            // areaGroundBlueTB
-            // 
-            this.areaGroundBlueTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaGroundBlueTB.Location = new System.Drawing.Point(50, 89);
-            this.areaGroundBlueTB.Name = "areaGroundBlueTB";
-            this.areaGroundBlueTB.Size = new System.Drawing.Size(47, 20);
-            this.areaGroundBlueTB.TabIndex = 8;
-            this.areaGroundBlueTB.TextChanged += new System.EventHandler(this.areaGroundBlueTB_TextChanged);
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.tableLayoutPanel6);
-            this.groupBox4.Location = new System.Drawing.Point(264, 6);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(279, 146);
-            this.groupBox4.TabIndex = 28;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "col_ceiling";
+            // areaLightFlowLayout
+            // 
+            this.areaLightFlowLayout.Controls.Add(this.areaLightColorPreviewButton);
+            this.areaLightFlowLayout.Controls.Add(this.areaLightPreviewPanel);
+            this.areaLightFlowLayout.Controls.Add(this.colCeilButton);
+            this.areaLightFlowLayout.Controls.Add(this.areaLightColCeilPanel);
+            this.areaLightFlowLayout.Controls.Add(this.colGroundButton);
+            this.areaLightFlowLayout.Controls.Add(this.areaLightColGroundPanel);
+            this.areaLightFlowLayout.Controls.Add(this.areaLightPosButton);
+            this.areaLightFlowLayout.Controls.Add(this.areaLightPosPanel);
+            this.areaLightFlowLayout.Controls.Add(this.areaLightScaleButton);
+            this.areaLightFlowLayout.Controls.Add(this.areaLightScalePanel);
+            this.areaLightFlowLayout.Controls.Add(this.areaLightRotButton);
+            this.areaLightFlowLayout.Controls.Add(this.areaLightRotPanel);
+            this.areaLightFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaLightFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.areaLightFlowLayout.Location = new System.Drawing.Point(123, 3);
+            this.areaLightFlowLayout.Name = "areaLightFlowLayout";
+            this.areaLightFlowLayout.Size = new System.Drawing.Size(791, 951);
+            this.areaLightFlowLayout.TabIndex = 33;
+            this.areaLightFlowLayout.WrapContents = false;
+            this.areaLightFlowLayout.Resize += new System.EventHandler(this.areaLightFlowLayout_Resize);
+            // 
+            // areaLightColorPreviewButton
+            // 
+            this.areaLightColorPreviewButton.Location = new System.Drawing.Point(3, 3);
+            this.areaLightColorPreviewButton.Name = "areaLightColorPreviewButton";
+            this.areaLightColorPreviewButton.Size = new System.Drawing.Size(786, 23);
+            this.areaLightColorPreviewButton.TabIndex = 34;
+            this.areaLightColorPreviewButton.Text = "Color Gradient Preview";
+            this.areaLightColorPreviewButton.UseVisualStyleBackColor = true;
+            this.areaLightColorPreviewButton.Click += new System.EventHandler(this.areaLightColorPreviewButton_Click);
+            // 
+            // areaLightPreviewPanel
+            // 
+            this.areaLightPreviewPanel.Controls.Add(this.areaColorGLControl);
+            this.areaLightPreviewPanel.Location = new System.Drawing.Point(3, 32);
+            this.areaLightPreviewPanel.Name = "areaLightPreviewPanel";
+            this.areaLightPreviewPanel.Size = new System.Drawing.Size(786, 100);
+            this.areaLightPreviewPanel.TabIndex = 41;
+            // 
+            // areaColorGLControl
+            // 
+            this.areaColorGLControl.BackColor = System.Drawing.Color.Black;
+            this.areaColorGLControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaColorGLControl.Location = new System.Drawing.Point(0, 0);
+            this.areaColorGLControl.Margin = new System.Windows.Forms.Padding(6);
+            this.areaColorGLControl.Name = "areaColorGLControl";
+            this.areaColorGLControl.Size = new System.Drawing.Size(786, 100);
+            this.areaColorGLControl.TabIndex = 27;
+            this.areaColorGLControl.VSync = false;
+            this.areaColorGLControl.Paint += new System.Windows.Forms.PaintEventHandler(this.areaColorGLControl_Paint);
+            // 
+            // colCeilButton
+            // 
+            this.colCeilButton.Location = new System.Drawing.Point(3, 138);
+            this.colCeilButton.Name = "colCeilButton";
+            this.colCeilButton.Size = new System.Drawing.Size(786, 23);
+            this.colCeilButton.TabIndex = 0;
+            this.colCeilButton.Text = "col_ceiling";
+            this.colCeilButton.UseVisualStyleBackColor = true;
+            this.colCeilButton.Click += new System.EventHandler(this.colCeilButton_Click);
+            // 
+            // areaLightColCeilPanel
+            // 
+            this.areaLightColCeilPanel.Controls.Add(this.tableLayoutPanel6);
+            this.areaLightColCeilPanel.Location = new System.Drawing.Point(3, 167);
+            this.areaLightColCeilPanel.Name = "areaLightColCeilPanel";
+            this.areaLightColCeilPanel.Size = new System.Drawing.Size(786, 131);
+            this.areaLightColCeilPanel.TabIndex = 1;
             // 
             // tableLayoutPanel6
             // 
             this.tableLayoutPanel6.ColumnCount = 3;
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 53F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 165F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
             this.tableLayoutPanel6.Controls.Add(this.areaCeilRedTrackBar, 2, 0);
             this.tableLayoutPanel6.Controls.Add(this.areaCeilGreenTrackBar, 2, 1);
             this.tableLayoutPanel6.Controls.Add(this.areaCeilBlueTrackBar, 2, 2);
@@ -1469,50 +1058,54 @@
             this.tableLayoutPanel6.Controls.Add(this.areaCeilRedTB, 1, 0);
             this.tableLayoutPanel6.Controls.Add(this.areaCeilGreenTB, 1, 1);
             this.tableLayoutPanel6.Controls.Add(this.areaCeilBlueTB, 1, 2);
-            this.tableLayoutPanel6.Location = new System.Drawing.Point(6, 19);
+            this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel6.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 3;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(265, 121);
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(786, 131);
             this.tableLayoutPanel6.TabIndex = 0;
             // 
             // areaCeilRedTrackBar
             // 
-            this.areaCeilRedTrackBar.Location = new System.Drawing.Point(103, 3);
+            this.areaCeilRedTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaCeilRedTrackBar.Location = new System.Drawing.Point(237, 3);
             this.areaCeilRedTrackBar.Maximum = 100;
             this.areaCeilRedTrackBar.Name = "areaCeilRedTrackBar";
-            this.areaCeilRedTrackBar.Size = new System.Drawing.Size(159, 33);
+            this.areaCeilRedTrackBar.Size = new System.Drawing.Size(546, 37);
             this.areaCeilRedTrackBar.TabIndex = 0;
             this.areaCeilRedTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.areaCeilRedTrackBar.Scroll += new System.EventHandler(this.areaCeilRedTrackBar_Scroll);
             // 
             // areaCeilGreenTrackBar
             // 
-            this.areaCeilGreenTrackBar.Location = new System.Drawing.Point(103, 42);
+            this.areaCeilGreenTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaCeilGreenTrackBar.Location = new System.Drawing.Point(237, 46);
             this.areaCeilGreenTrackBar.Maximum = 100;
             this.areaCeilGreenTrackBar.Name = "areaCeilGreenTrackBar";
-            this.areaCeilGreenTrackBar.Size = new System.Drawing.Size(159, 33);
+            this.areaCeilGreenTrackBar.Size = new System.Drawing.Size(546, 37);
             this.areaCeilGreenTrackBar.TabIndex = 1;
             this.areaCeilGreenTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.areaCeilGreenTrackBar.Scroll += new System.EventHandler(this.areaCeilGreenTrackBar_Scroll);
             // 
             // areaCeilBlueTrackBar
             // 
-            this.areaCeilBlueTrackBar.Location = new System.Drawing.Point(103, 81);
+            this.areaCeilBlueTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaCeilBlueTrackBar.Location = new System.Drawing.Point(237, 89);
             this.areaCeilBlueTrackBar.Maximum = 100;
             this.areaCeilBlueTrackBar.Name = "areaCeilBlueTrackBar";
-            this.areaCeilBlueTrackBar.Size = new System.Drawing.Size(159, 37);
+            this.areaCeilBlueTrackBar.Size = new System.Drawing.Size(546, 39);
             this.areaCeilBlueTrackBar.TabIndex = 2;
             this.areaCeilBlueTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.areaCeilBlueTrackBar.Scroll += new System.EventHandler(this.areaCeilBlueTrackBar_Scroll);
             // 
             // label18
             // 
-            this.label18.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label18.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(3, 13);
+            this.label18.Location = new System.Drawing.Point(87, 15);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(27, 13);
             this.label18.TabIndex = 3;
@@ -1520,9 +1113,9 @@
             // 
             // label19
             // 
-            this.label19.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label19.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(3, 52);
+            this.label19.Location = new System.Drawing.Point(78, 58);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(36, 13);
             this.label19.TabIndex = 4;
@@ -1530,9 +1123,9 @@
             // 
             // label20
             // 
-            this.label20.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label20.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(3, 93);
+            this.label20.Location = new System.Drawing.Point(86, 102);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(28, 13);
             this.label20.TabIndex = 5;
@@ -1541,88 +1134,786 @@
             // areaCeilRedTB
             // 
             this.areaCeilRedTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaCeilRedTB.Location = new System.Drawing.Point(50, 9);
+            this.areaCeilRedTB.Location = new System.Drawing.Point(120, 11);
             this.areaCeilRedTB.Name = "areaCeilRedTB";
-            this.areaCeilRedTB.Size = new System.Drawing.Size(47, 20);
+            this.areaCeilRedTB.Size = new System.Drawing.Size(111, 20);
             this.areaCeilRedTB.TabIndex = 6;
             this.areaCeilRedTB.TextChanged += new System.EventHandler(this.areaCeilRedTB_TextChanged);
             // 
             // areaCeilGreenTB
             // 
             this.areaCeilGreenTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaCeilGreenTB.Location = new System.Drawing.Point(50, 48);
+            this.areaCeilGreenTB.Location = new System.Drawing.Point(120, 54);
             this.areaCeilGreenTB.Name = "areaCeilGreenTB";
-            this.areaCeilGreenTB.Size = new System.Drawing.Size(47, 20);
+            this.areaCeilGreenTB.Size = new System.Drawing.Size(111, 20);
             this.areaCeilGreenTB.TabIndex = 7;
             this.areaCeilGreenTB.TextChanged += new System.EventHandler(this.areaCeilGreenTB_TextChanged);
             // 
             // areaCeilBlueTB
             // 
             this.areaCeilBlueTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.areaCeilBlueTB.Location = new System.Drawing.Point(50, 89);
+            this.areaCeilBlueTB.Location = new System.Drawing.Point(120, 98);
             this.areaCeilBlueTB.Name = "areaCeilBlueTB";
-            this.areaCeilBlueTB.Size = new System.Drawing.Size(47, 20);
+            this.areaCeilBlueTB.Size = new System.Drawing.Size(111, 20);
             this.areaCeilBlueTB.TabIndex = 8;
             this.areaCeilBlueTB.TextChanged += new System.EventHandler(this.areaCeilBlueTB_TextChanged);
             // 
-            // areaColorGLControl
+            // colGroundButton
             // 
-            this.areaColorGLControl.BackColor = System.Drawing.Color.Black;
-            this.areaColorGLControl.Location = new System.Drawing.Point(132, 12);
-            this.areaColorGLControl.Margin = new System.Windows.Forms.Padding(6);
-            this.areaColorGLControl.Name = "areaColorGLControl";
-            this.areaColorGLControl.Size = new System.Drawing.Size(126, 134);
-            this.areaColorGLControl.TabIndex = 27;
-            this.areaColorGLControl.VSync = false;
+            this.colGroundButton.Location = new System.Drawing.Point(3, 304);
+            this.colGroundButton.Name = "colGroundButton";
+            this.colGroundButton.Size = new System.Drawing.Size(786, 23);
+            this.colGroundButton.TabIndex = 2;
+            this.colGroundButton.Text = "col_ground";
+            this.colGroundButton.UseVisualStyleBackColor = true;
+            this.colGroundButton.Click += new System.EventHandler(this.colGroundButton_Click);
+            // 
+            // areaLightColGroundPanel
+            // 
+            this.areaLightColGroundPanel.Controls.Add(this.tableLayoutPanel5);
+            this.areaLightColGroundPanel.Location = new System.Drawing.Point(3, 333);
+            this.areaLightColGroundPanel.Name = "areaLightColGroundPanel";
+            this.areaLightColGroundPanel.Size = new System.Drawing.Size(786, 135);
+            this.areaLightColGroundPanel.TabIndex = 3;
+            // 
+            // tableLayoutPanel5
+            // 
+            this.tableLayoutPanel5.ColumnCount = 3;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.tableLayoutPanel5.Controls.Add(this.areaGroundRedTrackBar, 2, 0);
+            this.tableLayoutPanel5.Controls.Add(this.areaGroundGreenTrackBar, 2, 1);
+            this.tableLayoutPanel5.Controls.Add(this.areaGroundBlueTrackBar, 2, 2);
+            this.tableLayoutPanel5.Controls.Add(this.label15, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.label16, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.label17, 0, 2);
+            this.tableLayoutPanel5.Controls.Add(this.areaGroundRedTB, 1, 0);
+            this.tableLayoutPanel5.Controls.Add(this.areaGroundGreenTB, 1, 1);
+            this.tableLayoutPanel5.Controls.Add(this.areaGroundBlueTB, 1, 2);
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.RowCount = 3;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 26.88574F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 38.83495F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34.27931F));
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(786, 135);
+            this.tableLayoutPanel5.TabIndex = 0;
+            // 
+            // areaGroundRedTrackBar
+            // 
+            this.areaGroundRedTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaGroundRedTrackBar.Location = new System.Drawing.Point(237, 3);
+            this.areaGroundRedTrackBar.Maximum = 100;
+            this.areaGroundRedTrackBar.Name = "areaGroundRedTrackBar";
+            this.areaGroundRedTrackBar.Size = new System.Drawing.Size(546, 30);
+            this.areaGroundRedTrackBar.TabIndex = 0;
+            this.areaGroundRedTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.areaGroundRedTrackBar.Scroll += new System.EventHandler(this.areaGroundRedTrackBar_Scroll);
+            // 
+            // areaGroundGreenTrackBar
+            // 
+            this.areaGroundGreenTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaGroundGreenTrackBar.Location = new System.Drawing.Point(237, 39);
+            this.areaGroundGreenTrackBar.Maximum = 100;
+            this.areaGroundGreenTrackBar.Name = "areaGroundGreenTrackBar";
+            this.areaGroundGreenTrackBar.Size = new System.Drawing.Size(546, 46);
+            this.areaGroundGreenTrackBar.TabIndex = 1;
+            this.areaGroundGreenTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.areaGroundGreenTrackBar.Scroll += new System.EventHandler(this.areaGroundGreenTrackBar_Scroll);
+            // 
+            // areaGroundBlueTrackBar
+            // 
+            this.areaGroundBlueTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaGroundBlueTrackBar.Location = new System.Drawing.Point(237, 91);
+            this.areaGroundBlueTrackBar.Maximum = 100;
+            this.areaGroundBlueTrackBar.Name = "areaGroundBlueTrackBar";
+            this.areaGroundBlueTrackBar.Size = new System.Drawing.Size(546, 41);
+            this.areaGroundBlueTrackBar.TabIndex = 2;
+            this.areaGroundBlueTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.areaGroundBlueTrackBar.Scroll += new System.EventHandler(this.areaGroundBlueTrackBar_Scroll);
+            // 
+            // label15
+            // 
+            this.label15.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(87, 11);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(27, 13);
+            this.label15.TabIndex = 3;
+            this.label15.Text = "Red";
+            // 
+            // label16
+            // 
+            this.label16.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(78, 55);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(36, 13);
+            this.label16.TabIndex = 4;
+            this.label16.Text = "Green";
+            // 
+            // label17
+            // 
+            this.label17.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(86, 105);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(28, 13);
+            this.label17.TabIndex = 5;
+            this.label17.Text = "Blue";
+            // 
+            // areaGroundRedTB
+            // 
+            this.areaGroundRedTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.areaGroundRedTB.Location = new System.Drawing.Point(120, 8);
+            this.areaGroundRedTB.Name = "areaGroundRedTB";
+            this.areaGroundRedTB.Size = new System.Drawing.Size(111, 20);
+            this.areaGroundRedTB.TabIndex = 6;
+            this.areaGroundRedTB.TextChanged += new System.EventHandler(this.areaGroundRedTB_TextChanged);
+            // 
+            // areaGroundGreenTB
+            // 
+            this.areaGroundGreenTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.areaGroundGreenTB.Location = new System.Drawing.Point(120, 52);
+            this.areaGroundGreenTB.Name = "areaGroundGreenTB";
+            this.areaGroundGreenTB.Size = new System.Drawing.Size(111, 20);
+            this.areaGroundGreenTB.TabIndex = 7;
+            this.areaGroundGreenTB.TextChanged += new System.EventHandler(this.areaGroundGreenTB_TextChanged);
+            // 
+            // areaGroundBlueTB
+            // 
+            this.areaGroundBlueTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.areaGroundBlueTB.Location = new System.Drawing.Point(120, 101);
+            this.areaGroundBlueTB.Name = "areaGroundBlueTB";
+            this.areaGroundBlueTB.Size = new System.Drawing.Size(111, 20);
+            this.areaGroundBlueTB.TabIndex = 8;
+            this.areaGroundBlueTB.TextChanged += new System.EventHandler(this.areaGroundBlueTB_TextChanged);
+            // 
+            // areaLightPosButton
+            // 
+            this.areaLightPosButton.Location = new System.Drawing.Point(3, 474);
+            this.areaLightPosButton.Name = "areaLightPosButton";
+            this.areaLightPosButton.Size = new System.Drawing.Size(786, 23);
+            this.areaLightPosButton.TabIndex = 35;
+            this.areaLightPosButton.Text = "Position";
+            this.areaLightPosButton.UseVisualStyleBackColor = true;
+            this.areaLightPosButton.Click += new System.EventHandler(this.areaLightPosButton_Click);
+            // 
+            // areaLightPosPanel
+            // 
+            this.areaLightPosPanel.Controls.Add(this.tableLayoutPanel7);
+            this.areaLightPosPanel.Location = new System.Drawing.Point(3, 503);
+            this.areaLightPosPanel.Name = "areaLightPosPanel";
+            this.areaLightPosPanel.Size = new System.Drawing.Size(786, 134);
+            this.areaLightPosPanel.TabIndex = 36;
+            // 
+            // tableLayoutPanel7
+            // 
+            this.tableLayoutPanel7.ColumnCount = 3;
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.tableLayoutPanel7.Controls.Add(this.areaPosXTrackBar, 2, 0);
+            this.tableLayoutPanel7.Controls.Add(this.areaPosYTrackBar, 2, 1);
+            this.tableLayoutPanel7.Controls.Add(this.areaPosZTrackBar, 2, 2);
+            this.tableLayoutPanel7.Controls.Add(this.label21, 0, 0);
+            this.tableLayoutPanel7.Controls.Add(this.label22, 0, 1);
+            this.tableLayoutPanel7.Controls.Add(this.label23, 0, 2);
+            this.tableLayoutPanel7.Controls.Add(this.areaPosXTB, 1, 0);
+            this.tableLayoutPanel7.Controls.Add(this.areaPosYTB, 1, 1);
+            this.tableLayoutPanel7.Controls.Add(this.areaPosZTB, 1, 2);
+            this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
+            this.tableLayoutPanel7.RowCount = 3;
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(786, 134);
+            this.tableLayoutPanel7.TabIndex = 0;
+            // 
+            // areaPosXTrackBar
+            // 
+            this.areaPosXTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaPosXTrackBar.Location = new System.Drawing.Point(237, 3);
+            this.areaPosXTrackBar.Maximum = 360;
+            this.areaPosXTrackBar.Name = "areaPosXTrackBar";
+            this.areaPosXTrackBar.Size = new System.Drawing.Size(546, 38);
+            this.areaPosXTrackBar.TabIndex = 0;
+            this.areaPosXTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.areaPosXTrackBar.Value = 180;
+            this.areaPosXTrackBar.Scroll += new System.EventHandler(this.areaPosXTrackBar_Scroll);
+            // 
+            // areaPosYTrackBar
+            // 
+            this.areaPosYTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaPosYTrackBar.Location = new System.Drawing.Point(237, 47);
+            this.areaPosYTrackBar.Maximum = 360;
+            this.areaPosYTrackBar.Name = "areaPosYTrackBar";
+            this.areaPosYTrackBar.Size = new System.Drawing.Size(546, 38);
+            this.areaPosYTrackBar.TabIndex = 1;
+            this.areaPosYTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.areaPosYTrackBar.Value = 180;
+            this.areaPosYTrackBar.Scroll += new System.EventHandler(this.areaPosYTrackBar_Scroll);
+            // 
+            // areaPosZTrackBar
+            // 
+            this.areaPosZTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaPosZTrackBar.Location = new System.Drawing.Point(237, 91);
+            this.areaPosZTrackBar.Maximum = 360;
+            this.areaPosZTrackBar.Name = "areaPosZTrackBar";
+            this.areaPosZTrackBar.Size = new System.Drawing.Size(546, 40);
+            this.areaPosZTrackBar.TabIndex = 2;
+            this.areaPosZTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.areaPosZTrackBar.Value = 180;
+            this.areaPosZTrackBar.Scroll += new System.EventHandler(this.areaPosZTrackBar_Scroll);
+            // 
+            // label21
+            // 
+            this.label21.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(60, 15);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(54, 13);
+            this.label21.TabIndex = 3;
+            this.label21.Text = "Position X";
+            // 
+            // label22
+            // 
+            this.label22.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(60, 59);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(54, 13);
+            this.label22.TabIndex = 4;
+            this.label22.Text = "Position Y";
+            // 
+            // label23
+            // 
+            this.label23.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(60, 104);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(54, 13);
+            this.label23.TabIndex = 5;
+            this.label23.Text = "Position Z";
+            // 
+            // areaPosXTB
+            // 
+            this.areaPosXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.areaPosXTB.Location = new System.Drawing.Point(120, 12);
+            this.areaPosXTB.Name = "areaPosXTB";
+            this.areaPosXTB.Size = new System.Drawing.Size(111, 20);
+            this.areaPosXTB.TabIndex = 6;
+            this.areaPosXTB.TextChanged += new System.EventHandler(this.areaPosXTB_TextChanged);
+            // 
+            // areaPosYTB
+            // 
+            this.areaPosYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.areaPosYTB.Location = new System.Drawing.Point(120, 56);
+            this.areaPosYTB.Name = "areaPosYTB";
+            this.areaPosYTB.Size = new System.Drawing.Size(111, 20);
+            this.areaPosYTB.TabIndex = 7;
+            this.areaPosYTB.TextChanged += new System.EventHandler(this.areaPosYTB_TextChanged);
+            // 
+            // areaPosZTB
+            // 
+            this.areaPosZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.areaPosZTB.Location = new System.Drawing.Point(120, 101);
+            this.areaPosZTB.Name = "areaPosZTB";
+            this.areaPosZTB.Size = new System.Drawing.Size(111, 20);
+            this.areaPosZTB.TabIndex = 8;
+            this.areaPosZTB.TextChanged += new System.EventHandler(this.areaPosZTB_TextChanged);
+            // 
+            // areaLightScaleButton
+            // 
+            this.areaLightScaleButton.Location = new System.Drawing.Point(3, 643);
+            this.areaLightScaleButton.Name = "areaLightScaleButton";
+            this.areaLightScaleButton.Size = new System.Drawing.Size(786, 23);
+            this.areaLightScaleButton.TabIndex = 37;
+            this.areaLightScaleButton.Text = "Scale";
+            this.areaLightScaleButton.UseVisualStyleBackColor = true;
+            this.areaLightScaleButton.Click += new System.EventHandler(this.areaLightScaleButton_Click);
+            // 
+            // areaLightScalePanel
+            // 
+            this.areaLightScalePanel.Controls.Add(this.tableLayoutPanel8);
+            this.areaLightScalePanel.Location = new System.Drawing.Point(3, 672);
+            this.areaLightScalePanel.Name = "areaLightScalePanel";
+            this.areaLightScalePanel.Size = new System.Drawing.Size(786, 100);
+            this.areaLightScalePanel.TabIndex = 38;
+            // 
+            // tableLayoutPanel8
+            // 
+            this.tableLayoutPanel8.ColumnCount = 3;
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.tableLayoutPanel8.Controls.Add(this.areaScaleXTrackBar, 2, 0);
+            this.tableLayoutPanel8.Controls.Add(this.areaScaleYTrackBar, 2, 1);
+            this.tableLayoutPanel8.Controls.Add(this.areaScaleZTrackBar, 2, 2);
+            this.tableLayoutPanel8.Controls.Add(this.label24, 0, 0);
+            this.tableLayoutPanel8.Controls.Add(this.label25, 0, 1);
+            this.tableLayoutPanel8.Controls.Add(this.label26, 0, 2);
+            this.tableLayoutPanel8.Controls.Add(this.areaScaleXTB, 1, 0);
+            this.tableLayoutPanel8.Controls.Add(this.areaScaleYTB, 1, 1);
+            this.tableLayoutPanel8.Controls.Add(this.areaScaleZTB, 1, 2);
+            this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel8.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
+            this.tableLayoutPanel8.RowCount = 3;
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(786, 100);
+            this.tableLayoutPanel8.TabIndex = 0;
+            // 
+            // areaScaleXTrackBar
+            // 
+            this.areaScaleXTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaScaleXTrackBar.Location = new System.Drawing.Point(237, 3);
+            this.areaScaleXTrackBar.Maximum = 360;
+            this.areaScaleXTrackBar.Name = "areaScaleXTrackBar";
+            this.areaScaleXTrackBar.Size = new System.Drawing.Size(546, 27);
+            this.areaScaleXTrackBar.TabIndex = 0;
+            this.areaScaleXTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.areaScaleXTrackBar.Scroll += new System.EventHandler(this.areaScaleXTrackBar_Scroll);
+            // 
+            // areaScaleYTrackBar
+            // 
+            this.areaScaleYTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaScaleYTrackBar.Location = new System.Drawing.Point(237, 36);
+            this.areaScaleYTrackBar.Maximum = 360;
+            this.areaScaleYTrackBar.Name = "areaScaleYTrackBar";
+            this.areaScaleYTrackBar.Size = new System.Drawing.Size(546, 27);
+            this.areaScaleYTrackBar.TabIndex = 1;
+            this.areaScaleYTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.areaScaleYTrackBar.Scroll += new System.EventHandler(this.areaScaleYTrackBar_Scroll);
+            // 
+            // areaScaleZTrackBar
+            // 
+            this.areaScaleZTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaScaleZTrackBar.Location = new System.Drawing.Point(237, 69);
+            this.areaScaleZTrackBar.Maximum = 360;
+            this.areaScaleZTrackBar.Name = "areaScaleZTrackBar";
+            this.areaScaleZTrackBar.Size = new System.Drawing.Size(546, 28);
+            this.areaScaleZTrackBar.TabIndex = 2;
+            this.areaScaleZTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.areaScaleZTrackBar.Scroll += new System.EventHandler(this.areaScaleZTrackBar_Scroll);
+            // 
+            // label24
+            // 
+            this.label24.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(70, 10);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(44, 13);
+            this.label24.TabIndex = 3;
+            this.label24.Text = "Scale X";
+            // 
+            // label25
+            // 
+            this.label25.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(70, 43);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(44, 13);
+            this.label25.TabIndex = 4;
+            this.label25.Text = "Scale Y";
+            // 
+            // label26
+            // 
+            this.label26.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label26.AutoSize = true;
+            this.label26.Location = new System.Drawing.Point(70, 76);
+            this.label26.Name = "label26";
+            this.label26.Size = new System.Drawing.Size(44, 13);
+            this.label26.TabIndex = 5;
+            this.label26.Text = "Scale Z";
+            // 
+            // areaScaleXTB
+            // 
+            this.areaScaleXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.areaScaleXTB.Location = new System.Drawing.Point(120, 6);
+            this.areaScaleXTB.Name = "areaScaleXTB";
+            this.areaScaleXTB.Size = new System.Drawing.Size(111, 20);
+            this.areaScaleXTB.TabIndex = 6;
+            this.areaScaleXTB.TextChanged += new System.EventHandler(this.areaScaleXTB_TextChanged);
+            // 
+            // areaScaleYTB
+            // 
+            this.areaScaleYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.areaScaleYTB.Location = new System.Drawing.Point(120, 39);
+            this.areaScaleYTB.Name = "areaScaleYTB";
+            this.areaScaleYTB.Size = new System.Drawing.Size(111, 20);
+            this.areaScaleYTB.TabIndex = 7;
+            this.areaScaleYTB.TextChanged += new System.EventHandler(this.areaScaleYTB_TextChanged);
+            // 
+            // areaScaleZTB
+            // 
+            this.areaScaleZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.areaScaleZTB.Location = new System.Drawing.Point(120, 73);
+            this.areaScaleZTB.Name = "areaScaleZTB";
+            this.areaScaleZTB.Size = new System.Drawing.Size(111, 20);
+            this.areaScaleZTB.TabIndex = 8;
+            this.areaScaleZTB.TextChanged += new System.EventHandler(this.areaScaleZTB_TextChanged);
+            // 
+            // areaLightRotButton
+            // 
+            this.areaLightRotButton.Location = new System.Drawing.Point(3, 778);
+            this.areaLightRotButton.Name = "areaLightRotButton";
+            this.areaLightRotButton.Size = new System.Drawing.Size(786, 23);
+            this.areaLightRotButton.TabIndex = 39;
+            this.areaLightRotButton.Text = "Rotation";
+            this.areaLightRotButton.UseVisualStyleBackColor = true;
+            this.areaLightRotButton.Click += new System.EventHandler(this.areaLightRotButton_Click);
+            // 
+            // areaLightRotPanel
+            // 
+            this.areaLightRotPanel.Controls.Add(this.tableLayoutPanel9);
+            this.areaLightRotPanel.Location = new System.Drawing.Point(3, 807);
+            this.areaLightRotPanel.Name = "areaLightRotPanel";
+            this.areaLightRotPanel.Size = new System.Drawing.Size(786, 158);
+            this.areaLightRotPanel.TabIndex = 40;
+            // 
+            // tableLayoutPanel9
+            // 
+            this.tableLayoutPanel9.ColumnCount = 3;
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel9.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.tableLayoutPanel9.Controls.Add(this.areaRotXTrackBar, 2, 0);
+            this.tableLayoutPanel9.Controls.Add(this.areaRotYTrackBar, 2, 1);
+            this.tableLayoutPanel9.Controls.Add(this.areaRotZTrackBar, 2, 2);
+            this.tableLayoutPanel9.Controls.Add(this.label27, 0, 0);
+            this.tableLayoutPanel9.Controls.Add(this.label28, 0, 1);
+            this.tableLayoutPanel9.Controls.Add(this.label29, 0, 2);
+            this.tableLayoutPanel9.Controls.Add(this.areaRotX, 1, 0);
+            this.tableLayoutPanel9.Controls.Add(this.areaRotY, 1, 1);
+            this.tableLayoutPanel9.Controls.Add(this.areaRotZ, 1, 2);
+            this.tableLayoutPanel9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel9.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel9.Name = "tableLayoutPanel9";
+            this.tableLayoutPanel9.RowCount = 3;
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 29.79965F));
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 36.13999F));
+            this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34.06036F));
+            this.tableLayoutPanel9.Size = new System.Drawing.Size(786, 158);
+            this.tableLayoutPanel9.TabIndex = 0;
+            // 
+            // areaRotXTrackBar
+            // 
+            this.areaRotXTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaRotXTrackBar.Location = new System.Drawing.Point(237, 3);
+            this.areaRotXTrackBar.Maximum = 360;
+            this.areaRotXTrackBar.Name = "areaRotXTrackBar";
+            this.areaRotXTrackBar.Size = new System.Drawing.Size(546, 41);
+            this.areaRotXTrackBar.TabIndex = 0;
+            this.areaRotXTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.areaRotXTrackBar.Value = 180;
+            this.areaRotXTrackBar.Scroll += new System.EventHandler(this.areaRotXTrackBar_Scroll);
+            // 
+            // areaRotYTrackBar
+            // 
+            this.areaRotYTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaRotYTrackBar.Location = new System.Drawing.Point(237, 50);
+            this.areaRotYTrackBar.Maximum = 360;
+            this.areaRotYTrackBar.Name = "areaRotYTrackBar";
+            this.areaRotYTrackBar.Size = new System.Drawing.Size(546, 51);
+            this.areaRotYTrackBar.TabIndex = 1;
+            this.areaRotYTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.areaRotYTrackBar.Value = 180;
+            this.areaRotYTrackBar.Scroll += new System.EventHandler(this.areaRotYTrackBar_Scroll);
+            // 
+            // areaRotZTrackBar
+            // 
+            this.areaRotZTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.areaRotZTrackBar.Location = new System.Drawing.Point(237, 107);
+            this.areaRotZTrackBar.Maximum = 360;
+            this.areaRotZTrackBar.Name = "areaRotZTrackBar";
+            this.areaRotZTrackBar.Size = new System.Drawing.Size(546, 48);
+            this.areaRotZTrackBar.TabIndex = 2;
+            this.areaRotZTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.areaRotZTrackBar.Value = 180;
+            this.areaRotZTrackBar.Scroll += new System.EventHandler(this.areaRotZTrackBar_Scroll);
+            // 
+            // label27
+            // 
+            this.label27.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(57, 17);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(57, 13);
+            this.label27.TabIndex = 3;
+            this.label27.Text = "Rotation X";
+            // 
+            // label28
+            // 
+            this.label28.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(57, 69);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(57, 13);
+            this.label28.TabIndex = 4;
+            this.label28.Text = "Rotation Y";
+            // 
+            // label29
+            // 
+            this.label29.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(57, 124);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(57, 13);
+            this.label29.TabIndex = 5;
+            this.label29.Text = "Rotation Z";
+            // 
+            // areaRotX
+            // 
+            this.areaRotX.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.areaRotX.Location = new System.Drawing.Point(120, 13);
+            this.areaRotX.Name = "areaRotX";
+            this.areaRotX.Size = new System.Drawing.Size(111, 20);
+            this.areaRotX.TabIndex = 6;
+            this.areaRotX.TextChanged += new System.EventHandler(this.areaRotX_TextChanged);
+            // 
+            // areaRotY
+            // 
+            this.areaRotY.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.areaRotY.Location = new System.Drawing.Point(120, 65);
+            this.areaRotY.Name = "areaRotY";
+            this.areaRotY.Size = new System.Drawing.Size(111, 20);
+            this.areaRotY.TabIndex = 7;
+            this.areaRotY.TextChanged += new System.EventHandler(this.areaRotY_TextChanged);
+            // 
+            // areaRotZ
+            // 
+            this.areaRotZ.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.areaRotZ.Location = new System.Drawing.Point(120, 121);
+            this.areaRotZ.Name = "areaRotZ";
+            this.areaRotZ.Size = new System.Drawing.Size(111, 20);
+            this.areaRotZ.TabIndex = 8;
+            this.areaRotZ.TextChanged += new System.EventHandler(this.areaRotZ_TextChanged);
             // 
             // areaLightListBox
             // 
+            this.areaLightListBox.Dock = System.Windows.Forms.DockStyle.Left;
             this.areaLightListBox.FormattingEnabled = true;
-            this.areaLightListBox.Location = new System.Drawing.Point(6, 6);
+            this.areaLightListBox.Location = new System.Drawing.Point(3, 3);
             this.areaLightListBox.Name = "areaLightListBox";
-            this.areaLightListBox.Size = new System.Drawing.Size(120, 537);
+            this.areaLightListBox.Size = new System.Drawing.Size(120, 951);
             this.areaLightListBox.TabIndex = 0;
             this.areaLightListBox.SelectedIndexChanged += new System.EventHandler(this.areaLightListBox_SelectedIndexChanged);
             // 
             // stageLightsTab
             // 
+            this.stageLightsTab.Controls.Add(this.lightSetFlowLayout);
             this.stageLightsTab.Controls.Add(this.stageLightSetTreeView);
-            this.stageLightsTab.Controls.Add(this.groupBox2);
-            this.stageLightsTab.Controls.Add(this.groupBox1);
             this.stageLightsTab.Location = new System.Drawing.Point(4, 22);
             this.stageLightsTab.Name = "stageLightsTab";
             this.stageLightsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.stageLightsTab.Size = new System.Drawing.Size(842, 549);
+            this.stageLightsTab.Size = new System.Drawing.Size(917, 957);
             this.stageLightsTab.TabIndex = 2;
             this.stageLightsTab.Text = "Stage Light Set";
             this.stageLightsTab.UseVisualStyleBackColor = true;
             // 
-            // stageLightSetTreeView
+            // lightSetFlowLayout
             // 
-            this.stageLightSetTreeView.CheckBoxes = true;
-            this.stageLightSetTreeView.Location = new System.Drawing.Point(6, 6);
-            this.stageLightSetTreeView.Name = "stageLightSetTreeView";
-            this.stageLightSetTreeView.Size = new System.Drawing.Size(144, 537);
-            this.stageLightSetTreeView.TabIndex = 6;
-            this.stageLightSetTreeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.stageLightSetTreeView_AfterCheck);
-            this.stageLightSetTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.stageLightSetTreeView_AfterSelect);
+            this.lightSetFlowLayout.Controls.Add(this.stageDifColorPanelButton);
+            this.lightSetFlowLayout.Controls.Add(this.stageLightColorPanel);
+            this.lightSetFlowLayout.Controls.Add(this.stageRotButton);
+            this.lightSetFlowLayout.Controls.Add(this.stageLightRotPanel);
+            this.lightSetFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lightSetFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.lightSetFlowLayout.Location = new System.Drawing.Point(147, 3);
+            this.lightSetFlowLayout.Margin = new System.Windows.Forms.Padding(2);
+            this.lightSetFlowLayout.Name = "lightSetFlowLayout";
+            this.lightSetFlowLayout.Size = new System.Drawing.Size(767, 951);
+            this.lightSetFlowLayout.TabIndex = 7;
+            this.lightSetFlowLayout.Resize += new System.EventHandler(this.lightSetFlowLayout_Resize);
             // 
-            // groupBox2
+            // stageDifColorPanelButton
             // 
-            this.groupBox2.Controls.Add(this.tableLayoutPanel2);
-            this.groupBox2.Location = new System.Drawing.Point(156, 194);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(384, 146);
-            this.groupBox2.TabIndex = 3;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Rotation";
+            this.stageDifColorPanelButton.Location = new System.Drawing.Point(2, 2);
+            this.stageDifColorPanelButton.Margin = new System.Windows.Forms.Padding(2);
+            this.stageDifColorPanelButton.Name = "stageDifColorPanelButton";
+            this.stageDifColorPanelButton.Size = new System.Drawing.Size(761, 23);
+            this.stageDifColorPanelButton.TabIndex = 0;
+            this.stageDifColorPanelButton.Text = "Diffuse Color";
+            this.stageDifColorPanelButton.UseVisualStyleBackColor = true;
+            this.stageDifColorPanelButton.Click += new System.EventHandler(this.stageDifColorPanelButton_Click);
+            // 
+            // stageLightColorPanel
+            // 
+            this.stageLightColorPanel.Controls.Add(this.stageColorTableLayoutPanel);
+            this.stageLightColorPanel.Location = new System.Drawing.Point(2, 29);
+            this.stageLightColorPanel.Margin = new System.Windows.Forms.Padding(2);
+            this.stageLightColorPanel.Name = "stageLightColorPanel";
+            this.stageLightColorPanel.Size = new System.Drawing.Size(761, 165);
+            this.stageLightColorPanel.TabIndex = 1;
+            // 
+            // stageColorTableLayoutPanel
+            // 
+            this.stageColorTableLayoutPanel.ColumnCount = 3;
+            this.stageColorTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.stageColorTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.stageColorTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.stageColorTableLayoutPanel.Controls.Add(this.label4, 0, 0);
+            this.stageColorTableLayoutPanel.Controls.Add(this.stageDifHueTrackBar, 2, 1);
+            this.stageColorTableLayoutPanel.Controls.Add(this.stageDifSatTrackBar, 2, 2);
+            this.stageColorTableLayoutPanel.Controls.Add(this.stageDifIntensityTrackBar, 2, 3);
+            this.stageColorTableLayoutPanel.Controls.Add(this.label1, 0, 1);
+            this.stageColorTableLayoutPanel.Controls.Add(this.label2, 0, 2);
+            this.stageColorTableLayoutPanel.Controls.Add(this.label3, 0, 3);
+            this.stageColorTableLayoutPanel.Controls.Add(this.stageDifHueTB, 1, 1);
+            this.stageColorTableLayoutPanel.Controls.Add(this.stageDifSatTB, 1, 2);
+            this.stageColorTableLayoutPanel.Controls.Add(this.stageDifIntensityTB, 1, 3);
+            this.stageColorTableLayoutPanel.Controls.Add(this.stageDifColorButton, 1, 0);
+            this.stageColorTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stageColorTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            this.stageColorTableLayoutPanel.Name = "stageColorTableLayoutPanel";
+            this.stageColorTableLayoutPanel.RowCount = 4;
+            this.stageColorTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.stageColorTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.stageColorTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.stageColorTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.stageColorTableLayoutPanel.Size = new System.Drawing.Size(761, 165);
+            this.stageColorTableLayoutPanel.TabIndex = 0;
+            // 
+            // label4
+            // 
+            this.label4.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(80, 14);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(31, 13);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "Color";
+            // 
+            // stageDifHueTrackBar
+            // 
+            this.stageDifHueTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stageDifHueTrackBar.Location = new System.Drawing.Point(231, 44);
+            this.stageDifHueTrackBar.Maximum = 360;
+            this.stageDifHueTrackBar.Name = "stageDifHueTrackBar";
+            this.stageDifHueTrackBar.Size = new System.Drawing.Size(527, 35);
+            this.stageDifHueTrackBar.TabIndex = 0;
+            this.stageDifHueTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.stageDifHueTrackBar.Scroll += new System.EventHandler(this.stageDifHueTrackBar_Scroll);
+            // 
+            // stageDifSatTrackBar
+            // 
+            this.stageDifSatTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stageDifSatTrackBar.Location = new System.Drawing.Point(231, 85);
+            this.stageDifSatTrackBar.Maximum = 100;
+            this.stageDifSatTrackBar.Name = "stageDifSatTrackBar";
+            this.stageDifSatTrackBar.Size = new System.Drawing.Size(527, 35);
+            this.stageDifSatTrackBar.TabIndex = 1;
+            this.stageDifSatTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.stageDifSatTrackBar.Scroll += new System.EventHandler(this.stageDifSatTrackBar_Scroll);
+            // 
+            // stageDifIntensityTrackBar
+            // 
+            this.stageDifIntensityTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stageDifIntensityTrackBar.Location = new System.Drawing.Point(231, 126);
+            this.stageDifIntensityTrackBar.Maximum = 200;
+            this.stageDifIntensityTrackBar.Name = "stageDifIntensityTrackBar";
+            this.stageDifIntensityTrackBar.Size = new System.Drawing.Size(527, 36);
+            this.stageDifIntensityTrackBar.TabIndex = 2;
+            this.stageDifIntensityTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.stageDifIntensityTrackBar.Scroll += new System.EventHandler(this.stageDifIntensityTrackBar_Scroll);
+            // 
+            // label1
+            // 
+            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(84, 55);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(27, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Hue";
+            // 
+            // label2
+            // 
+            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(56, 96);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(55, 13);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Saturation";
+            // 
+            // label3
+            // 
+            this.label3.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(65, 137);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(46, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "Intensity";
+            // 
+            // stageDifHueTB
+            // 
+            this.stageDifHueTB.Location = new System.Drawing.Point(117, 44);
+            this.stageDifHueTB.Name = "stageDifHueTB";
+            this.stageDifHueTB.Size = new System.Drawing.Size(108, 20);
+            this.stageDifHueTB.TabIndex = 6;
+            this.stageDifHueTB.TextChanged += new System.EventHandler(this.stageDifHueTB_TextChanged);
+            // 
+            // stageDifSatTB
+            // 
+            this.stageDifSatTB.Location = new System.Drawing.Point(117, 85);
+            this.stageDifSatTB.Name = "stageDifSatTB";
+            this.stageDifSatTB.Size = new System.Drawing.Size(108, 20);
+            this.stageDifSatTB.TabIndex = 7;
+            this.stageDifSatTB.TextChanged += new System.EventHandler(this.stageDifSatTB_TextChanged);
+            // 
+            // stageDifIntensityTB
+            // 
+            this.stageDifIntensityTB.Location = new System.Drawing.Point(117, 126);
+            this.stageDifIntensityTB.Name = "stageDifIntensityTB";
+            this.stageDifIntensityTB.Size = new System.Drawing.Size(108, 20);
+            this.stageDifIntensityTB.TabIndex = 8;
+            this.stageDifIntensityTB.TextChanged += new System.EventHandler(this.stageDifIntensityTB_TextChanged);
+            // 
+            // stageDifColorButton
+            // 
+            this.stageDifColorButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stageDifColorButton.Enabled = false;
+            this.stageDifColorButton.Location = new System.Drawing.Point(117, 3);
+            this.stageDifColorButton.Name = "stageDifColorButton";
+            this.stageDifColorButton.Size = new System.Drawing.Size(108, 35);
+            this.stageDifColorButton.TabIndex = 10;
+            this.stageDifColorButton.UseVisualStyleBackColor = true;
+            // 
+            // stageRotButton
+            // 
+            this.stageRotButton.Location = new System.Drawing.Point(2, 198);
+            this.stageRotButton.Margin = new System.Windows.Forms.Padding(2);
+            this.stageRotButton.Name = "stageRotButton";
+            this.stageRotButton.Size = new System.Drawing.Size(761, 23);
+            this.stageRotButton.TabIndex = 2;
+            this.stageRotButton.Text = "Rotation";
+            this.stageRotButton.UseVisualStyleBackColor = true;
+            this.stageRotButton.Click += new System.EventHandler(this.stageRotButton_Click);
+            // 
+            // stageLightRotPanel
+            // 
+            this.stageLightRotPanel.Controls.Add(this.tableLayoutPanel2);
+            this.stageLightRotPanel.Location = new System.Drawing.Point(2, 225);
+            this.stageLightRotPanel.Margin = new System.Windows.Forms.Padding(2);
+            this.stageLightRotPanel.Name = "stageLightRotPanel";
+            this.stageLightRotPanel.Size = new System.Drawing.Size(761, 153);
+            this.stageLightRotPanel.TabIndex = 8;
             // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 3;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.41401F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.58599F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 256F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
             this.tableLayoutPanel2.Controls.Add(this.stageRotXTrackBar, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.stageRotYTrackBar, 2, 1);
             this.tableLayoutPanel2.Controls.Add(this.stageRotZTrackBar, 2, 2);
@@ -1632,21 +1923,23 @@
             this.tableLayoutPanel2.Controls.Add(this.stageDifRotXTB, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.stageDifRotYTB, 1, 1);
             this.tableLayoutPanel2.Controls.Add(this.stageDifRotZTB, 1, 2);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(6, 19);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 3;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(396, 121);
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(761, 153);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // stageRotXTrackBar
             // 
-            this.stageRotXTrackBar.Location = new System.Drawing.Point(142, 3);
+            this.stageRotXTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stageRotXTrackBar.Location = new System.Drawing.Point(231, 3);
             this.stageRotXTrackBar.Maximum = 360;
             this.stageRotXTrackBar.Name = "stageRotXTrackBar";
-            this.stageRotXTrackBar.Size = new System.Drawing.Size(233, 33);
+            this.stageRotXTrackBar.Size = new System.Drawing.Size(527, 45);
             this.stageRotXTrackBar.TabIndex = 0;
             this.stageRotXTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.stageRotXTrackBar.Value = 180;
@@ -1654,10 +1947,11 @@
             // 
             // stageRotYTrackBar
             // 
-            this.stageRotYTrackBar.Location = new System.Drawing.Point(142, 42);
+            this.stageRotYTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stageRotYTrackBar.Location = new System.Drawing.Point(231, 54);
             this.stageRotYTrackBar.Maximum = 360;
             this.stageRotYTrackBar.Name = "stageRotYTrackBar";
-            this.stageRotYTrackBar.Size = new System.Drawing.Size(233, 33);
+            this.stageRotYTrackBar.Size = new System.Drawing.Size(527, 45);
             this.stageRotYTrackBar.TabIndex = 1;
             this.stageRotYTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.stageRotYTrackBar.Value = 180;
@@ -1665,10 +1959,11 @@
             // 
             // stageRotZTrackBar
             // 
-            this.stageRotZTrackBar.Location = new System.Drawing.Point(142, 81);
+            this.stageRotZTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stageRotZTrackBar.Location = new System.Drawing.Point(231, 105);
             this.stageRotZTrackBar.Maximum = 360;
             this.stageRotZTrackBar.Name = "stageRotZTrackBar";
-            this.stageRotZTrackBar.Size = new System.Drawing.Size(233, 37);
+            this.stageRotZTrackBar.Size = new System.Drawing.Size(527, 45);
             this.stageRotZTrackBar.TabIndex = 2;
             this.stageRotZTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.stageRotZTrackBar.Value = 180;
@@ -1676,9 +1971,9 @@
             // 
             // label6
             // 
-            this.label6.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label6.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(3, 13);
+            this.label6.Location = new System.Drawing.Point(54, 19);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(57, 13);
             this.label6.TabIndex = 3;
@@ -1686,9 +1981,9 @@
             // 
             // label7
             // 
-            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(3, 52);
+            this.label7.Location = new System.Drawing.Point(54, 70);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(57, 13);
             this.label7.TabIndex = 4;
@@ -1696,9 +1991,9 @@
             // 
             // label8
             // 
-            this.label8.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label8.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(3, 93);
+            this.label8.Location = new System.Drawing.Point(54, 121);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(57, 13);
             this.label8.TabIndex = 5;
@@ -1707,320 +2002,260 @@
             // stageDifRotXTB
             // 
             this.stageDifRotXTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.stageDifRotXTB.Location = new System.Drawing.Point(80, 9);
+            this.stageDifRotXTB.Location = new System.Drawing.Point(117, 15);
             this.stageDifRotXTB.Name = "stageDifRotXTB";
-            this.stageDifRotXTB.Size = new System.Drawing.Size(56, 20);
+            this.stageDifRotXTB.Size = new System.Drawing.Size(108, 20);
             this.stageDifRotXTB.TabIndex = 6;
             this.stageDifRotXTB.TextChanged += new System.EventHandler(this.stageDifRotXTB_TextChanged);
             // 
             // stageDifRotYTB
             // 
             this.stageDifRotYTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.stageDifRotYTB.Location = new System.Drawing.Point(80, 48);
+            this.stageDifRotYTB.Location = new System.Drawing.Point(117, 66);
             this.stageDifRotYTB.Name = "stageDifRotYTB";
-            this.stageDifRotYTB.Size = new System.Drawing.Size(56, 20);
+            this.stageDifRotYTB.Size = new System.Drawing.Size(108, 20);
             this.stageDifRotYTB.TabIndex = 7;
             this.stageDifRotYTB.TextChanged += new System.EventHandler(this.stageDifRotYTB_TextChanged);
             // 
             // stageDifRotZTB
             // 
             this.stageDifRotZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.stageDifRotZTB.Location = new System.Drawing.Point(80, 89);
+            this.stageDifRotZTB.Location = new System.Drawing.Point(117, 117);
             this.stageDifRotZTB.Name = "stageDifRotZTB";
-            this.stageDifRotZTB.Size = new System.Drawing.Size(56, 20);
+            this.stageDifRotZTB.Size = new System.Drawing.Size(108, 20);
             this.stageDifRotZTB.TabIndex = 8;
             this.stageDifRotZTB.TextChanged += new System.EventHandler(this.stageDifRotZTB_TextChanged);
             // 
-            // groupBox1
+            // stageLightSetTreeView
             // 
-            this.groupBox1.Controls.Add(this.tableLayoutPanel1);
-            this.groupBox1.Location = new System.Drawing.Point(156, 6);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(384, 182);
-            this.groupBox1.TabIndex = 2;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Color";
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 3;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.76923F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.23077F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 258F));
-            this.tableLayoutPanel1.Controls.Add(this.label4, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.stageDifHueTrackBar, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.stageDifSatTrackBar, 2, 2);
-            this.tableLayoutPanel1.Controls.Add(this.stageDifIntensityTrackBar, 2, 3);
-            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label3, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.stageDifHueTB, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.stageDifSatTB, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.stageDifIntensityTB, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.stageDifColorButton, 1, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(6, 19);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 4;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 39F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(396, 157);
-            this.tableLayoutPanel1.TabIndex = 0;
-            // 
-            // label4
-            // 
-            this.label4.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(3, 13);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(31, 13);
-            this.label4.TabIndex = 9;
-            this.label4.Text = "Color";
-            // 
-            // stageDifHueTrackBar
-            // 
-            this.stageDifHueTrackBar.Location = new System.Drawing.Point(140, 42);
-            this.stageDifHueTrackBar.Maximum = 360;
-            this.stageDifHueTrackBar.Name = "stageDifHueTrackBar";
-            this.stageDifHueTrackBar.Size = new System.Drawing.Size(234, 33);
-            this.stageDifHueTrackBar.TabIndex = 0;
-            this.stageDifHueTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.stageDifHueTrackBar.Scroll += new System.EventHandler(this.stageDifHueTrackBar_Scroll);
-            // 
-            // stageDifSatTrackBar
-            // 
-            this.stageDifSatTrackBar.Location = new System.Drawing.Point(140, 81);
-            this.stageDifSatTrackBar.Maximum = 100;
-            this.stageDifSatTrackBar.Name = "stageDifSatTrackBar";
-            this.stageDifSatTrackBar.Size = new System.Drawing.Size(234, 34);
-            this.stageDifSatTrackBar.TabIndex = 1;
-            this.stageDifSatTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.stageDifSatTrackBar.Scroll += new System.EventHandler(this.stageDifSatTrackBar_Scroll);
-            // 
-            // stageDifIntensityTrackBar
-            // 
-            this.stageDifIntensityTrackBar.Location = new System.Drawing.Point(140, 121);
-            this.stageDifIntensityTrackBar.Maximum = 200;
-            this.stageDifIntensityTrackBar.Name = "stageDifIntensityTrackBar";
-            this.stageDifIntensityTrackBar.Size = new System.Drawing.Size(234, 33);
-            this.stageDifIntensityTrackBar.TabIndex = 2;
-            this.stageDifIntensityTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.stageDifIntensityTrackBar.Scroll += new System.EventHandler(this.stageDifIntensityTrackBar_Scroll);
-            // 
-            // label1
-            // 
-            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 52);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(27, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Hue";
-            // 
-            // label2
-            // 
-            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 91);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(55, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Saturation";
-            // 
-            // label3
-            // 
-            this.label3.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 131);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(46, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Intensity";
-            // 
-            // stageDifHueTB
-            // 
-            this.stageDifHueTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.stageDifHueTB.Location = new System.Drawing.Point(79, 48);
-            this.stageDifHueTB.Name = "stageDifHueTB";
-            this.stageDifHueTB.Size = new System.Drawing.Size(55, 20);
-            this.stageDifHueTB.TabIndex = 6;
-            this.stageDifHueTB.TextChanged += new System.EventHandler(this.stageDifHueTB_TextChanged);
-            // 
-            // stageDifSatTB
-            // 
-            this.stageDifSatTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.stageDifSatTB.Location = new System.Drawing.Point(79, 88);
-            this.stageDifSatTB.Name = "stageDifSatTB";
-            this.stageDifSatTB.Size = new System.Drawing.Size(55, 20);
-            this.stageDifSatTB.TabIndex = 7;
-            this.stageDifSatTB.TextChanged += new System.EventHandler(this.stageDifSatTB_TextChanged);
-            // 
-            // stageDifIntensityTB
-            // 
-            this.stageDifIntensityTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.stageDifIntensityTB.Location = new System.Drawing.Point(79, 127);
-            this.stageDifIntensityTB.Name = "stageDifIntensityTB";
-            this.stageDifIntensityTB.Size = new System.Drawing.Size(55, 20);
-            this.stageDifIntensityTB.TabIndex = 8;
-            this.stageDifIntensityTB.TextChanged += new System.EventHandler(this.stageDifIntensityTB_TextChanged);
-            // 
-            // stageDifColorButton
-            // 
-            this.stageDifColorButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.stageDifColorButton.Enabled = false;
-            this.stageDifColorButton.Location = new System.Drawing.Point(79, 4);
-            this.stageDifColorButton.Name = "stageDifColorButton";
-            this.stageDifColorButton.Size = new System.Drawing.Size(55, 31);
-            this.stageDifColorButton.TabIndex = 10;
-            this.stageDifColorButton.UseVisualStyleBackColor = true;
+            this.stageLightSetTreeView.CheckBoxes = true;
+            this.stageLightSetTreeView.Dock = System.Windows.Forms.DockStyle.Left;
+            this.stageLightSetTreeView.Location = new System.Drawing.Point(3, 3);
+            this.stageLightSetTreeView.Name = "stageLightSetTreeView";
+            this.stageLightSetTreeView.Size = new System.Drawing.Size(144, 951);
+            this.stageLightSetTreeView.TabIndex = 6;
+            this.stageLightSetTreeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.stageLightSetTreeView_AfterCheck);
+            this.stageLightSetTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.stageLightSetTreeView_AfterSelect);
             // 
             // charLightsTab
             // 
-            this.charLightsTab.Controls.Add(this.groupBox13);
-            this.charLightsTab.Controls.Add(this.charColor2GroupBox);
-            this.charLightsTab.Controls.Add(this.charColor1GroupBox);
-            this.charLightsTab.Controls.Add(this.charDifColorGLControl);
+            this.charLightsTab.Controls.Add(this.charLightsFlowLayout);
             this.charLightsTab.Controls.Add(this.charLightsListBox);
             this.charLightsTab.Location = new System.Drawing.Point(4, 22);
             this.charLightsTab.Name = "charLightsTab";
             this.charLightsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.charLightsTab.Size = new System.Drawing.Size(842, 549);
+            this.charLightsTab.Size = new System.Drawing.Size(917, 957);
             this.charLightsTab.TabIndex = 1;
             this.charLightsTab.Text = "Character Lights";
             this.charLightsTab.UseVisualStyleBackColor = true;
+            this.charLightsTab.Click += new System.EventHandler(this.charLightsTab_Click);
             // 
-            // groupBox13
+            // charLightsFlowLayout
             // 
-            this.groupBox13.Controls.Add(this.tableLayoutPanel15);
-            this.groupBox13.Location = new System.Drawing.Point(132, 158);
-            this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(279, 146);
-            this.groupBox13.TabIndex = 27;
-            this.groupBox13.TabStop = false;
-            this.groupBox13.Text = "Rotation";
+            this.charLightsFlowLayout.Controls.Add(this.charLightPanelExpander);
+            this.charLightsFlowLayout.Controls.Add(this.charLightGlControlPanel);
+            this.charLightsFlowLayout.Controls.Add(this.charColor1Button);
+            this.charLightsFlowLayout.Controls.Add(this.charColor1Panel);
+            this.charLightsFlowLayout.Controls.Add(this.charColor2Button);
+            this.charLightsFlowLayout.Controls.Add(this.charColor2Panel);
+            this.charLightsFlowLayout.Controls.Add(this.charAngleButton);
+            this.charLightsFlowLayout.Controls.Add(this.charAngleTableLayout);
+            this.charLightsFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charLightsFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.charLightsFlowLayout.Location = new System.Drawing.Point(123, 3);
+            this.charLightsFlowLayout.Name = "charLightsFlowLayout";
+            this.charLightsFlowLayout.Size = new System.Drawing.Size(791, 951);
+            this.charLightsFlowLayout.TabIndex = 28;
+            this.charLightsFlowLayout.WrapContents = false;
+            this.charLightsFlowLayout.Resize += new System.EventHandler(this.charLightsFlowLayout_Resize);
             // 
-            // tableLayoutPanel15
+            // charLightPanelExpander
             // 
-            this.tableLayoutPanel15.ColumnCount = 3;
-            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel15.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel15.Controls.Add(this.trackBar16, 2, 0);
-            this.tableLayoutPanel15.Controls.Add(this.trackBar17, 2, 1);
-            this.tableLayoutPanel15.Controls.Add(this.trackBar18, 2, 2);
-            this.tableLayoutPanel15.Controls.Add(this.label44, 0, 0);
-            this.tableLayoutPanel15.Controls.Add(this.label45, 0, 1);
-            this.tableLayoutPanel15.Controls.Add(this.label46, 0, 2);
-            this.tableLayoutPanel15.Controls.Add(this.textBox1, 1, 0);
-            this.tableLayoutPanel15.Controls.Add(this.textBox2, 1, 1);
-            this.tableLayoutPanel15.Controls.Add(this.textBox3, 1, 2);
-            this.tableLayoutPanel15.Location = new System.Drawing.Point(6, 19);
-            this.tableLayoutPanel15.Name = "tableLayoutPanel15";
-            this.tableLayoutPanel15.RowCount = 3;
-            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
-            this.tableLayoutPanel15.Size = new System.Drawing.Size(265, 121);
-            this.tableLayoutPanel15.TabIndex = 0;
+            this.charLightPanelExpander.Location = new System.Drawing.Point(3, 3);
+            this.charLightPanelExpander.Name = "charLightPanelExpander";
+            this.charLightPanelExpander.Size = new System.Drawing.Size(786, 23);
+            this.charLightPanelExpander.TabIndex = 29;
+            this.charLightPanelExpander.Text = "Color Gradient Preview";
+            this.charLightPanelExpander.UseVisualStyleBackColor = true;
+            this.charLightPanelExpander.Click += new System.EventHandler(this.charLightPanelExpander_Click);
             // 
-            // trackBar16
+            // charLightGlControlPanel
             // 
-            this.trackBar16.Location = new System.Drawing.Point(135, 3);
-            this.trackBar16.Maximum = 360;
-            this.trackBar16.Name = "trackBar16";
-            this.trackBar16.Size = new System.Drawing.Size(126, 33);
-            this.trackBar16.TabIndex = 0;
-            this.trackBar16.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.charLightGlControlPanel.Controls.Add(this.charDifColorGLControl);
+            this.charLightGlControlPanel.Location = new System.Drawing.Point(3, 32);
+            this.charLightGlControlPanel.Name = "charLightGlControlPanel";
+            this.charLightGlControlPanel.Size = new System.Drawing.Size(786, 146);
+            this.charLightGlControlPanel.TabIndex = 30;
             // 
-            // trackBar17
+            // charDifColorGLControl
             // 
-            this.trackBar17.Location = new System.Drawing.Point(135, 42);
-            this.trackBar17.Maximum = 100;
-            this.trackBar17.Name = "trackBar17";
-            this.trackBar17.Size = new System.Drawing.Size(126, 33);
-            this.trackBar17.TabIndex = 1;
-            this.trackBar17.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.charDifColorGLControl.BackColor = System.Drawing.Color.Black;
+            this.charDifColorGLControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charDifColorGLControl.Location = new System.Drawing.Point(0, 0);
+            this.charDifColorGLControl.Margin = new System.Windows.Forms.Padding(6);
+            this.charDifColorGLControl.Name = "charDifColorGLControl";
+            this.charDifColorGLControl.Size = new System.Drawing.Size(786, 146);
+            this.charDifColorGLControl.TabIndex = 24;
+            this.charDifColorGLControl.VSync = false;
+            this.charDifColorGLControl.Load += new System.EventHandler(this.charDifColorGLControl_Load);
+            this.charDifColorGLControl.Paint += new System.Windows.Forms.PaintEventHandler(this.charDifColorGLControl_Paint);
             // 
-            // trackBar18
+            // charColor1Button
             // 
-            this.trackBar18.Location = new System.Drawing.Point(135, 81);
-            this.trackBar18.Maximum = 100;
-            this.trackBar18.Name = "trackBar18";
-            this.trackBar18.Size = new System.Drawing.Size(126, 37);
-            this.trackBar18.TabIndex = 2;
-            this.trackBar18.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.charColor1Button.Location = new System.Drawing.Point(3, 184);
+            this.charColor1Button.Name = "charColor1Button";
+            this.charColor1Button.Size = new System.Drawing.Size(786, 23);
+            this.charColor1Button.TabIndex = 28;
+            this.charColor1Button.Text = "Diffuse Color";
+            this.charColor1Button.UseVisualStyleBackColor = true;
+            this.charColor1Button.Click += new System.EventHandler(this.charColor1Button_Click);
             // 
-            // label44
+            // charColor1Panel
             // 
-            this.label44.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(3, 13);
-            this.label44.Name = "label44";
-            this.label44.Size = new System.Drawing.Size(55, 13);
-            this.label44.TabIndex = 3;
-            this.label44.Text = "Sky Angle";
+            this.charColor1Panel.Controls.Add(this.tableLayoutPanel3);
+            this.charColor1Panel.Location = new System.Drawing.Point(3, 213);
+            this.charColor1Panel.Name = "charColor1Panel";
+            this.charColor1Panel.Size = new System.Drawing.Size(786, 100);
+            this.charColor1Panel.TabIndex = 31;
             // 
-            // label45
+            // tableLayoutPanel3
             // 
-            this.label45.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(3, 52);
-            this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(72, 13);
-            this.label45.TabIndex = 4;
-            this.label45.Text = "Ground Angle";
+            this.tableLayoutPanel3.ColumnCount = 3;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.tableLayoutPanel3.Controls.Add(this.charColor1XTrackBar, 2, 0);
+            this.tableLayoutPanel3.Controls.Add(this.charColor1YTrackBar, 2, 1);
+            this.tableLayoutPanel3.Controls.Add(this.charColor1ZTrackBar, 2, 2);
+            this.tableLayoutPanel3.Controls.Add(this.label9, 0, 1);
+            this.tableLayoutPanel3.Controls.Add(this.label10, 0, 2);
+            this.tableLayoutPanel3.Controls.Add(this.charColor1XTB, 1, 0);
+            this.tableLayoutPanel3.Controls.Add(this.charColor1YTB, 1, 1);
+            this.tableLayoutPanel3.Controls.Add(this.charColor1ZTB, 1, 2);
+            this.tableLayoutPanel3.Controls.Add(this.label5, 0, 0);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 3;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(786, 100);
+            this.tableLayoutPanel3.TabIndex = 0;
             // 
-            // label46
+            // charColor1XTrackBar
             // 
-            this.label46.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label46.AutoSize = true;
-            this.label46.Location = new System.Drawing.Point(3, 93);
-            this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(46, 13);
-            this.label46.TabIndex = 5;
-            this.label46.Text = "Intensity";
+            this.charColor1XTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charColor1XTrackBar.Location = new System.Drawing.Point(237, 3);
+            this.charColor1XTrackBar.Maximum = 360;
+            this.charColor1XTrackBar.Name = "charColor1XTrackBar";
+            this.charColor1XTrackBar.Size = new System.Drawing.Size(546, 27);
+            this.charColor1XTrackBar.TabIndex = 0;
+            this.charColor1XTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.charColor1XTrackBar.Scroll += new System.EventHandler(this.charColor1XTrackBar_Scroll);
             // 
-            // textBox1
+            // charColor1YTrackBar
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Location = new System.Drawing.Point(82, 9);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(47, 20);
-            this.textBox1.TabIndex = 6;
+            this.charColor1YTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charColor1YTrackBar.Location = new System.Drawing.Point(237, 36);
+            this.charColor1YTrackBar.Maximum = 100;
+            this.charColor1YTrackBar.Name = "charColor1YTrackBar";
+            this.charColor1YTrackBar.Size = new System.Drawing.Size(546, 27);
+            this.charColor1YTrackBar.TabIndex = 1;
+            this.charColor1YTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.charColor1YTrackBar.Scroll += new System.EventHandler(this.charColor1YTrackBar_Scroll);
             // 
-            // textBox2
+            // charColor1ZTrackBar
             // 
-            this.textBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox2.Location = new System.Drawing.Point(82, 48);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(47, 20);
-            this.textBox2.TabIndex = 7;
+            this.charColor1ZTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charColor1ZTrackBar.Location = new System.Drawing.Point(237, 69);
+            this.charColor1ZTrackBar.Maximum = 100;
+            this.charColor1ZTrackBar.Name = "charColor1ZTrackBar";
+            this.charColor1ZTrackBar.Size = new System.Drawing.Size(546, 28);
+            this.charColor1ZTrackBar.TabIndex = 2;
+            this.charColor1ZTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.charColor1ZTrackBar.Scroll += new System.EventHandler(this.charColor1ZTrackBar_Scroll);
             // 
-            // textBox3
+            // label9
             // 
-            this.textBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox3.Location = new System.Drawing.Point(82, 89);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(47, 20);
-            this.textBox3.TabIndex = 8;
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(59, 43);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(55, 13);
+            this.label9.TabIndex = 4;
+            this.label9.Text = "Saturation";
             // 
-            // charColor2GroupBox
+            // label10
             // 
-            this.charColor2GroupBox.Controls.Add(this.tableLayoutPanel4);
-            this.charColor2GroupBox.Location = new System.Drawing.Point(549, 6);
-            this.charColor2GroupBox.Name = "charColor2GroupBox";
-            this.charColor2GroupBox.Size = new System.Drawing.Size(279, 146);
-            this.charColor2GroupBox.TabIndex = 26;
-            this.charColor2GroupBox.TabStop = false;
-            this.charColor2GroupBox.Text = "Ambient Color";
+            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(68, 76);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(46, 13);
+            this.label10.TabIndex = 5;
+            this.label10.Text = "Intensity";
+            // 
+            // charColor1XTB
+            // 
+            this.charColor1XTB.Location = new System.Drawing.Point(120, 3);
+            this.charColor1XTB.Name = "charColor1XTB";
+            this.charColor1XTB.Size = new System.Drawing.Size(111, 20);
+            this.charColor1XTB.TabIndex = 6;
+            this.charColor1XTB.TextChanged += new System.EventHandler(this.charColor1XTB_TextChanged);
+            // 
+            // charColor1YTB
+            // 
+            this.charColor1YTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.charColor1YTB.Location = new System.Drawing.Point(120, 39);
+            this.charColor1YTB.Name = "charColor1YTB";
+            this.charColor1YTB.Size = new System.Drawing.Size(111, 20);
+            this.charColor1YTB.TabIndex = 7;
+            this.charColor1YTB.TextChanged += new System.EventHandler(this.charColor1YTB_TextChanged);
+            // 
+            // charColor1ZTB
+            // 
+            this.charColor1ZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.charColor1ZTB.Location = new System.Drawing.Point(120, 73);
+            this.charColor1ZTB.Name = "charColor1ZTB";
+            this.charColor1ZTB.Size = new System.Drawing.Size(111, 20);
+            this.charColor1ZTB.TabIndex = 8;
+            this.charColor1ZTB.TextChanged += new System.EventHandler(this.charColor1ZTB_TextChanged);
+            // 
+            // label5
+            // 
+            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(87, 10);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(27, 13);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "Hue";
+            // 
+            // charColor2Button
+            // 
+            this.charColor2Button.Location = new System.Drawing.Point(3, 319);
+            this.charColor2Button.Name = "charColor2Button";
+            this.charColor2Button.Size = new System.Drawing.Size(786, 23);
+            this.charColor2Button.TabIndex = 32;
+            this.charColor2Button.Text = "Ambient Color";
+            this.charColor2Button.UseVisualStyleBackColor = true;
+            this.charColor2Button.Click += new System.EventHandler(this.charColor2Button_Click);
+            // 
+            // charColor2Panel
+            // 
+            this.charColor2Panel.Controls.Add(this.tableLayoutPanel4);
+            this.charColor2Panel.Location = new System.Drawing.Point(3, 348);
+            this.charColor2Panel.Name = "charColor2Panel";
+            this.charColor2Panel.Size = new System.Drawing.Size(786, 100);
+            this.charColor2Panel.TabIndex = 33;
             // 
             // tableLayoutPanel4
             // 
             this.tableLayoutPanel4.ColumnCount = 3;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
             this.tableLayoutPanel4.Controls.Add(this.charColor2XTrackBar, 2, 0);
             this.tableLayoutPanel4.Controls.Add(this.charColor2YTrackBar, 2, 1);
             this.tableLayoutPanel4.Controls.Add(this.charColor2ZTrackBar, 2, 2);
@@ -2030,50 +2265,54 @@
             this.tableLayoutPanel4.Controls.Add(this.charColor2XTB, 1, 0);
             this.tableLayoutPanel4.Controls.Add(this.charColor2YTB, 1, 1);
             this.tableLayoutPanel4.Controls.Add(this.charColor2ZTB, 1, 2);
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(6, 19);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 3;
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(265, 121);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(786, 100);
             this.tableLayoutPanel4.TabIndex = 0;
             // 
             // charColor2XTrackBar
             // 
-            this.charColor2XTrackBar.Location = new System.Drawing.Point(135, 3);
+            this.charColor2XTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charColor2XTrackBar.Location = new System.Drawing.Point(237, 3);
             this.charColor2XTrackBar.Maximum = 360;
             this.charColor2XTrackBar.Name = "charColor2XTrackBar";
-            this.charColor2XTrackBar.Size = new System.Drawing.Size(126, 33);
+            this.charColor2XTrackBar.Size = new System.Drawing.Size(546, 27);
             this.charColor2XTrackBar.TabIndex = 0;
             this.charColor2XTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.charColor2XTrackBar.Scroll += new System.EventHandler(this.charColor2XTrackBar_Scroll);
             // 
             // charColor2YTrackBar
             // 
-            this.charColor2YTrackBar.Location = new System.Drawing.Point(135, 42);
+            this.charColor2YTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charColor2YTrackBar.Location = new System.Drawing.Point(237, 36);
             this.charColor2YTrackBar.Maximum = 100;
             this.charColor2YTrackBar.Name = "charColor2YTrackBar";
-            this.charColor2YTrackBar.Size = new System.Drawing.Size(126, 33);
+            this.charColor2YTrackBar.Size = new System.Drawing.Size(546, 27);
             this.charColor2YTrackBar.TabIndex = 1;
             this.charColor2YTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.charColor2YTrackBar.Scroll += new System.EventHandler(this.charColor2YTrackBar_Scroll);
             // 
             // charColor2ZTrackBar
             // 
-            this.charColor2ZTrackBar.Location = new System.Drawing.Point(135, 81);
+            this.charColor2ZTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charColor2ZTrackBar.Location = new System.Drawing.Point(237, 69);
             this.charColor2ZTrackBar.Maximum = 100;
             this.charColor2ZTrackBar.Name = "charColor2ZTrackBar";
-            this.charColor2ZTrackBar.Size = new System.Drawing.Size(126, 37);
+            this.charColor2ZTrackBar.Size = new System.Drawing.Size(546, 28);
             this.charColor2ZTrackBar.TabIndex = 2;
             this.charColor2ZTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.charColor2ZTrackBar.Scroll += new System.EventHandler(this.charColor2ZTrackBar_Scroll);
             // 
             // label11
             // 
-            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(3, 13);
+            this.label11.Location = new System.Drawing.Point(87, 10);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(27, 13);
             this.label11.TabIndex = 3;
@@ -2081,9 +2320,9 @@
             // 
             // label12
             // 
-            this.label12.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label12.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(3, 52);
+            this.label12.Location = new System.Drawing.Point(59, 43);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(55, 13);
             this.label12.TabIndex = 4;
@@ -2091,9 +2330,9 @@
             // 
             // label13
             // 
-            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(3, 93);
+            this.label13.Location = new System.Drawing.Point(68, 76);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(46, 13);
             this.label13.TabIndex = 5;
@@ -2102,168 +2341,163 @@
             // charColor2XTB
             // 
             this.charColor2XTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.charColor2XTB.Location = new System.Drawing.Point(82, 9);
+            this.charColor2XTB.Location = new System.Drawing.Point(120, 6);
             this.charColor2XTB.Name = "charColor2XTB";
-            this.charColor2XTB.Size = new System.Drawing.Size(47, 20);
+            this.charColor2XTB.Size = new System.Drawing.Size(111, 20);
             this.charColor2XTB.TabIndex = 6;
             this.charColor2XTB.TextChanged += new System.EventHandler(this.charColor2XTB_TextChanged);
             // 
             // charColor2YTB
             // 
             this.charColor2YTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.charColor2YTB.Location = new System.Drawing.Point(82, 48);
+            this.charColor2YTB.Location = new System.Drawing.Point(120, 39);
             this.charColor2YTB.Name = "charColor2YTB";
-            this.charColor2YTB.Size = new System.Drawing.Size(47, 20);
+            this.charColor2YTB.Size = new System.Drawing.Size(111, 20);
             this.charColor2YTB.TabIndex = 7;
             this.charColor2YTB.TextChanged += new System.EventHandler(this.charColor2YTB_TextChanged);
             // 
             // charColor2ZTB
             // 
             this.charColor2ZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.charColor2ZTB.Location = new System.Drawing.Point(82, 89);
+            this.charColor2ZTB.Location = new System.Drawing.Point(120, 73);
             this.charColor2ZTB.Name = "charColor2ZTB";
-            this.charColor2ZTB.Size = new System.Drawing.Size(47, 20);
+            this.charColor2ZTB.Size = new System.Drawing.Size(111, 20);
             this.charColor2ZTB.TabIndex = 8;
             this.charColor2ZTB.TextChanged += new System.EventHandler(this.charColor2ZTB_TextChanged);
             // 
-            // charColor1GroupBox
+            // charAngleButton
             // 
-            this.charColor1GroupBox.Controls.Add(this.tableLayoutPanel3);
-            this.charColor1GroupBox.Location = new System.Drawing.Point(264, 6);
-            this.charColor1GroupBox.Name = "charColor1GroupBox";
-            this.charColor1GroupBox.Size = new System.Drawing.Size(279, 146);
-            this.charColor1GroupBox.TabIndex = 25;
-            this.charColor1GroupBox.TabStop = false;
-            this.charColor1GroupBox.Text = "Diffuse Color";
+            this.charAngleButton.Location = new System.Drawing.Point(3, 454);
+            this.charAngleButton.Name = "charAngleButton";
+            this.charAngleButton.Size = new System.Drawing.Size(786, 23);
+            this.charAngleButton.TabIndex = 34;
+            this.charAngleButton.Text = "Rotation";
+            this.charAngleButton.UseVisualStyleBackColor = true;
+            this.charAngleButton.Click += new System.EventHandler(this.charAngleButton_Click);
             // 
-            // tableLayoutPanel3
+            // charAngleTableLayout
             // 
-            this.tableLayoutPanel3.ColumnCount = 3;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Controls.Add(this.charColor1XTrackBar, 2, 0);
-            this.tableLayoutPanel3.Controls.Add(this.charColor1YTrackBar, 2, 1);
-            this.tableLayoutPanel3.Controls.Add(this.charColor1ZTrackBar, 2, 2);
-            this.tableLayoutPanel3.Controls.Add(this.label5, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.label9, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.label10, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.charColor1XTB, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.charColor1YTB, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.charColor1ZTB, 1, 2);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(6, 19);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(265, 121);
-            this.tableLayoutPanel3.TabIndex = 0;
+            this.charAngleTableLayout.ColumnCount = 3;
+            this.charAngleTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.charAngleTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.charAngleTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.charAngleTableLayout.Controls.Add(this.charAngle1TrackBar, 2, 0);
+            this.charAngleTableLayout.Controls.Add(this.charAngle2TrackBar, 2, 1);
+            this.charAngleTableLayout.Controls.Add(this.charAngle3TrackBar, 2, 2);
+            this.charAngleTableLayout.Controls.Add(this.label44, 0, 0);
+            this.charAngleTableLayout.Controls.Add(this.label45, 0, 1);
+            this.charAngleTableLayout.Controls.Add(this.label46, 0, 2);
+            this.charAngleTableLayout.Controls.Add(this.charAngle1TB, 1, 0);
+            this.charAngleTableLayout.Controls.Add(this.charAngle2TB, 1, 1);
+            this.charAngleTableLayout.Controls.Add(this.charAngle3TB, 1, 2);
+            this.charAngleTableLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charAngleTableLayout.Enabled = false;
+            this.charAngleTableLayout.Location = new System.Drawing.Point(3, 483);
+            this.charAngleTableLayout.Name = "charAngleTableLayout";
+            this.charAngleTableLayout.RowCount = 3;
+            this.charAngleTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.charAngleTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
+            this.charAngleTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 34F));
+            this.charAngleTableLayout.Size = new System.Drawing.Size(786, 100);
+            this.charAngleTableLayout.TabIndex = 35;
             // 
-            // charColor1XTrackBar
+            // charAngle1TrackBar
             // 
-            this.charColor1XTrackBar.Location = new System.Drawing.Point(135, 3);
-            this.charColor1XTrackBar.Maximum = 360;
-            this.charColor1XTrackBar.Name = "charColor1XTrackBar";
-            this.charColor1XTrackBar.Size = new System.Drawing.Size(126, 33);
-            this.charColor1XTrackBar.TabIndex = 0;
-            this.charColor1XTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.charColor1XTrackBar.Scroll += new System.EventHandler(this.charColor1XTrackBar_Scroll);
+            this.charAngle1TrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charAngle1TrackBar.Location = new System.Drawing.Point(237, 3);
+            this.charAngle1TrackBar.Maximum = 360;
+            this.charAngle1TrackBar.Name = "charAngle1TrackBar";
+            this.charAngle1TrackBar.Size = new System.Drawing.Size(546, 27);
+            this.charAngle1TrackBar.TabIndex = 0;
+            this.charAngle1TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.charAngle1TrackBar.Scroll += new System.EventHandler(this.charAngle1TrackBar_Scroll);
             // 
-            // charColor1YTrackBar
+            // charAngle2TrackBar
             // 
-            this.charColor1YTrackBar.Location = new System.Drawing.Point(135, 42);
-            this.charColor1YTrackBar.Maximum = 100;
-            this.charColor1YTrackBar.Name = "charColor1YTrackBar";
-            this.charColor1YTrackBar.Size = new System.Drawing.Size(126, 33);
-            this.charColor1YTrackBar.TabIndex = 1;
-            this.charColor1YTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.charColor1YTrackBar.Scroll += new System.EventHandler(this.charColor1YTrackBar_Scroll);
+            this.charAngle2TrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charAngle2TrackBar.Location = new System.Drawing.Point(237, 36);
+            this.charAngle2TrackBar.Maximum = 100;
+            this.charAngle2TrackBar.Name = "charAngle2TrackBar";
+            this.charAngle2TrackBar.Size = new System.Drawing.Size(546, 27);
+            this.charAngle2TrackBar.TabIndex = 1;
+            this.charAngle2TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.charAngle2TrackBar.Scroll += new System.EventHandler(this.charAngle2TrackBar_Scroll);
             // 
-            // charColor1ZTrackBar
+            // charAngle3TrackBar
             // 
-            this.charColor1ZTrackBar.Location = new System.Drawing.Point(135, 81);
-            this.charColor1ZTrackBar.Maximum = 100;
-            this.charColor1ZTrackBar.Name = "charColor1ZTrackBar";
-            this.charColor1ZTrackBar.Size = new System.Drawing.Size(126, 37);
-            this.charColor1ZTrackBar.TabIndex = 2;
-            this.charColor1ZTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.charColor1ZTrackBar.Scroll += new System.EventHandler(this.charColor1ZTrackBar_Scroll);
+            this.charAngle3TrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.charAngle3TrackBar.Location = new System.Drawing.Point(237, 69);
+            this.charAngle3TrackBar.Maximum = 100;
+            this.charAngle3TrackBar.Name = "charAngle3TrackBar";
+            this.charAngle3TrackBar.Size = new System.Drawing.Size(546, 28);
+            this.charAngle3TrackBar.TabIndex = 2;
+            this.charAngle3TrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.charAngle3TrackBar.Scroll += new System.EventHandler(this.charAngle3TrackBar_Scroll);
             // 
-            // label5
+            // label44
             // 
-            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 13);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(27, 13);
-            this.label5.TabIndex = 3;
-            this.label5.Text = "Hue";
+            this.label44.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(57, 10);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(57, 13);
+            this.label44.TabIndex = 3;
+            this.label44.Text = "Rotation X";
             // 
-            // label9
+            // label45
             // 
-            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(3, 52);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(55, 13);
-            this.label9.TabIndex = 4;
-            this.label9.Text = "Saturation";
+            this.label45.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(57, 43);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(57, 13);
+            this.label45.TabIndex = 4;
+            this.label45.Text = "Rotation Y";
             // 
-            // label10
+            // label46
             // 
-            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(3, 93);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(46, 13);
-            this.label10.TabIndex = 5;
-            this.label10.Text = "Intensity";
+            this.label46.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(57, 76);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(57, 13);
+            this.label46.TabIndex = 5;
+            this.label46.Text = "Rotation Z";
             // 
-            // charColor1XTB
+            // charAngle1TB
             // 
-            this.charColor1XTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.charColor1XTB.Location = new System.Drawing.Point(82, 9);
-            this.charColor1XTB.Name = "charColor1XTB";
-            this.charColor1XTB.Size = new System.Drawing.Size(47, 20);
-            this.charColor1XTB.TabIndex = 6;
-            this.charColor1XTB.TextChanged += new System.EventHandler(this.charColor1XTB_TextChanged);
+            this.charAngle1TB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.charAngle1TB.Location = new System.Drawing.Point(120, 6);
+            this.charAngle1TB.Name = "charAngle1TB";
+            this.charAngle1TB.Size = new System.Drawing.Size(111, 20);
+            this.charAngle1TB.TabIndex = 6;
+            this.charAngle1TB.TextChanged += new System.EventHandler(this.charAngle1TB_TextChanged);
             // 
-            // charColor1YTB
+            // charAngle2TB
             // 
-            this.charColor1YTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.charColor1YTB.Location = new System.Drawing.Point(82, 48);
-            this.charColor1YTB.Name = "charColor1YTB";
-            this.charColor1YTB.Size = new System.Drawing.Size(47, 20);
-            this.charColor1YTB.TabIndex = 7;
-            this.charColor1YTB.TextChanged += new System.EventHandler(this.charColor1YTB_TextChanged);
+            this.charAngle2TB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.charAngle2TB.Location = new System.Drawing.Point(120, 39);
+            this.charAngle2TB.Name = "charAngle2TB";
+            this.charAngle2TB.Size = new System.Drawing.Size(111, 20);
+            this.charAngle2TB.TabIndex = 7;
+            this.charAngle2TB.TextChanged += new System.EventHandler(this.charAngle2TB_TextChanged);
             // 
-            // charColor1ZTB
+            // charAngle3TB
             // 
-            this.charColor1ZTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.charColor1ZTB.Location = new System.Drawing.Point(82, 89);
-            this.charColor1ZTB.Name = "charColor1ZTB";
-            this.charColor1ZTB.Size = new System.Drawing.Size(47, 20);
-            this.charColor1ZTB.TabIndex = 8;
-            this.charColor1ZTB.TextChanged += new System.EventHandler(this.charColor1ZTB_TextChanged);
-            // 
-            // charDifColorGLControl
-            // 
-            this.charDifColorGLControl.BackColor = System.Drawing.Color.Black;
-            this.charDifColorGLControl.Location = new System.Drawing.Point(132, 12);
-            this.charDifColorGLControl.Margin = new System.Windows.Forms.Padding(6);
-            this.charDifColorGLControl.Name = "charDifColorGLControl";
-            this.charDifColorGLControl.Size = new System.Drawing.Size(126, 134);
-            this.charDifColorGLControl.TabIndex = 24;
-            this.charDifColorGLControl.VSync = false;
-            this.charDifColorGLControl.Load += new System.EventHandler(this.charDifColorGLControl_Load);
+            this.charAngle3TB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.charAngle3TB.Location = new System.Drawing.Point(120, 73);
+            this.charAngle3TB.Name = "charAngle3TB";
+            this.charAngle3TB.Size = new System.Drawing.Size(111, 20);
+            this.charAngle3TB.TabIndex = 8;
+            this.charAngle3TB.TextChanged += new System.EventHandler(this.charAngle3TB_TextChanged);
             // 
             // charLightsListBox
             // 
+            this.charLightsListBox.Dock = System.Windows.Forms.DockStyle.Left;
             this.charLightsListBox.FormattingEnabled = true;
-            this.charLightsListBox.Location = new System.Drawing.Point(6, 6);
+            this.charLightsListBox.Location = new System.Drawing.Point(3, 3);
             this.charLightsListBox.Name = "charLightsListBox";
-            this.charLightsListBox.Size = new System.Drawing.Size(120, 537);
+            this.charLightsListBox.Size = new System.Drawing.Size(120, 951);
             this.charLightsListBox.TabIndex = 0;
             this.charLightsListBox.SelectedIndexChanged += new System.EventHandler(this.charLightsListBox_SelectedIndexChanged);
             // 
@@ -2274,50 +2508,62 @@
             this.stageLightingTabControl.Controls.Add(this.stageFogTab);
             this.stageLightingTabControl.Controls.Add(this.areaTab);
             this.stageLightingTabControl.Controls.Add(this.lightMapTab);
-            this.stageLightingTabControl.Location = new System.Drawing.Point(12, 27);
+            this.stageLightingTabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.stageLightingTabControl.Location = new System.Drawing.Point(0, 24);
             this.stageLightingTabControl.Name = "stageLightingTabControl";
             this.stageLightingTabControl.SelectedIndex = 0;
-            this.stageLightingTabControl.Size = new System.Drawing.Size(850, 575);
+            this.stageLightingTabControl.Size = new System.Drawing.Size(925, 983);
             this.stageLightingTabControl.TabIndex = 0;
             this.stageLightingTabControl.SelectedIndexChanged += new System.EventHandler(this.stageLightingTabControl_SelectedIndexChanged);
             // 
             // stageFogTab
             // 
+            this.stageFogTab.Controls.Add(this.fogFlowLayout);
             this.stageFogTab.Controls.Add(this.stageFogListBox);
-            this.stageFogTab.Controls.Add(this.groupBox15);
             this.stageFogTab.Location = new System.Drawing.Point(4, 22);
             this.stageFogTab.Name = "stageFogTab";
             this.stageFogTab.Padding = new System.Windows.Forms.Padding(3);
-            this.stageFogTab.Size = new System.Drawing.Size(842, 549);
+            this.stageFogTab.Size = new System.Drawing.Size(917, 957);
             this.stageFogTab.TabIndex = 5;
             this.stageFogTab.Text = "Stage Fog Set";
             this.stageFogTab.UseVisualStyleBackColor = true;
             // 
-            // stageFogListBox
+            // fogFlowLayout
             // 
-            this.stageFogListBox.FormattingEnabled = true;
-            this.stageFogListBox.Location = new System.Drawing.Point(6, 6);
-            this.stageFogListBox.Name = "stageFogListBox";
-            this.stageFogListBox.Size = new System.Drawing.Size(120, 537);
-            this.stageFogListBox.TabIndex = 1;
-            this.stageFogListBox.SelectedIndexChanged += new System.EventHandler(this.stageFogListBox_SelectedIndexChanged);
+            this.fogFlowLayout.Controls.Add(this.stageFogPanelButton);
+            this.fogFlowLayout.Controls.Add(this.stageFogColorPanel);
+            this.fogFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fogFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+            this.fogFlowLayout.Location = new System.Drawing.Point(123, 3);
+            this.fogFlowLayout.Name = "fogFlowLayout";
+            this.fogFlowLayout.Size = new System.Drawing.Size(791, 951);
+            this.fogFlowLayout.TabIndex = 8;
+            this.fogFlowLayout.Resize += new System.EventHandler(this.fogFlowLayout_Resize);
             // 
-            // groupBox15
+            // stageFogPanelButton
             // 
-            this.groupBox15.Controls.Add(this.tableLayoutPanel17);
-            this.groupBox15.Location = new System.Drawing.Point(132, 6);
-            this.groupBox15.Name = "groupBox15";
-            this.groupBox15.Size = new System.Drawing.Size(408, 182);
-            this.groupBox15.TabIndex = 7;
-            this.groupBox15.TabStop = false;
-            this.groupBox15.Text = "Color";
+            this.stageFogPanelButton.Location = new System.Drawing.Point(3, 3);
+            this.stageFogPanelButton.Name = "stageFogPanelButton";
+            this.stageFogPanelButton.Size = new System.Drawing.Size(786, 23);
+            this.stageFogPanelButton.TabIndex = 0;
+            this.stageFogPanelButton.Text = "Fog Color";
+            this.stageFogPanelButton.UseVisualStyleBackColor = true;
+            this.stageFogPanelButton.Click += new System.EventHandler(this.stageFogPanelButton_Click);
+            // 
+            // stageFogColorPanel
+            // 
+            this.stageFogColorPanel.Controls.Add(this.tableLayoutPanel17);
+            this.stageFogColorPanel.Location = new System.Drawing.Point(3, 32);
+            this.stageFogColorPanel.Name = "stageFogColorPanel";
+            this.stageFogColorPanel.Size = new System.Drawing.Size(786, 228);
+            this.stageFogColorPanel.TabIndex = 1;
             // 
             // tableLayoutPanel17
             // 
             this.tableLayoutPanel17.ColumnCount = 3;
-            this.tableLayoutPanel17.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 55.76923F));
-            this.tableLayoutPanel17.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 44.23077F));
-            this.tableLayoutPanel17.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 258F));
+            this.tableLayoutPanel17.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel17.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 15F));
+            this.tableLayoutPanel17.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
             this.tableLayoutPanel17.Controls.Add(this.label50, 0, 0);
             this.tableLayoutPanel17.Controls.Add(this.fogHueTrackBar, 2, 1);
             this.tableLayoutPanel17.Controls.Add(this.fogSaturationTrackBar, 2, 2);
@@ -2329,21 +2575,22 @@
             this.tableLayoutPanel17.Controls.Add(this.fogSaturationTB, 1, 2);
             this.tableLayoutPanel17.Controls.Add(this.fogIntensityTB, 1, 3);
             this.tableLayoutPanel17.Controls.Add(this.fogColorButton, 1, 0);
-            this.tableLayoutPanel17.Location = new System.Drawing.Point(6, 19);
+            this.tableLayoutPanel17.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel17.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel17.Name = "tableLayoutPanel17";
             this.tableLayoutPanel17.RowCount = 4;
-            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 39F));
-            this.tableLayoutPanel17.Size = new System.Drawing.Size(396, 157);
+            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel17.Size = new System.Drawing.Size(786, 228);
             this.tableLayoutPanel17.TabIndex = 0;
             // 
             // label50
             // 
-            this.label50.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label50.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label50.AutoSize = true;
-            this.label50.Location = new System.Drawing.Point(3, 13);
+            this.label50.Location = new System.Drawing.Point(83, 22);
             this.label50.Name = "label50";
             this.label50.Size = new System.Drawing.Size(31, 13);
             this.label50.TabIndex = 9;
@@ -2351,39 +2598,42 @@
             // 
             // fogHueTrackBar
             // 
-            this.fogHueTrackBar.Location = new System.Drawing.Point(140, 42);
+            this.fogHueTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fogHueTrackBar.Location = new System.Drawing.Point(237, 60);
             this.fogHueTrackBar.Maximum = 360;
             this.fogHueTrackBar.Name = "fogHueTrackBar";
-            this.fogHueTrackBar.Size = new System.Drawing.Size(234, 33);
+            this.fogHueTrackBar.Size = new System.Drawing.Size(546, 51);
             this.fogHueTrackBar.TabIndex = 0;
             this.fogHueTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.fogHueTrackBar.Scroll += new System.EventHandler(this.fogHueTrackBar_Scroll);
             // 
             // fogSaturationTrackBar
             // 
-            this.fogSaturationTrackBar.Location = new System.Drawing.Point(140, 81);
+            this.fogSaturationTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fogSaturationTrackBar.Location = new System.Drawing.Point(237, 117);
             this.fogSaturationTrackBar.Maximum = 100;
             this.fogSaturationTrackBar.Name = "fogSaturationTrackBar";
-            this.fogSaturationTrackBar.Size = new System.Drawing.Size(234, 34);
+            this.fogSaturationTrackBar.Size = new System.Drawing.Size(546, 51);
             this.fogSaturationTrackBar.TabIndex = 1;
             this.fogSaturationTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.fogSaturationTrackBar.Scroll += new System.EventHandler(this.fogSaturationTrackBar_Scroll);
             // 
             // fogIntensityTrackBar
             // 
-            this.fogIntensityTrackBar.Location = new System.Drawing.Point(140, 121);
+            this.fogIntensityTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fogIntensityTrackBar.Location = new System.Drawing.Point(237, 174);
             this.fogIntensityTrackBar.Maximum = 200;
             this.fogIntensityTrackBar.Name = "fogIntensityTrackBar";
-            this.fogIntensityTrackBar.Size = new System.Drawing.Size(234, 33);
+            this.fogIntensityTrackBar.Size = new System.Drawing.Size(546, 51);
             this.fogIntensityTrackBar.TabIndex = 2;
             this.fogIntensityTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
             this.fogIntensityTrackBar.Scroll += new System.EventHandler(this.fogIntensityTrackBar_Scroll);
             // 
             // label51
             // 
-            this.label51.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label51.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label51.AutoSize = true;
-            this.label51.Location = new System.Drawing.Point(3, 52);
+            this.label51.Location = new System.Drawing.Point(87, 79);
             this.label51.Name = "label51";
             this.label51.Size = new System.Drawing.Size(27, 13);
             this.label51.TabIndex = 3;
@@ -2391,9 +2641,9 @@
             // 
             // label52
             // 
-            this.label52.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label52.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label52.AutoSize = true;
-            this.label52.Location = new System.Drawing.Point(3, 91);
+            this.label52.Location = new System.Drawing.Point(59, 136);
             this.label52.Name = "label52";
             this.label52.Size = new System.Drawing.Size(55, 13);
             this.label52.TabIndex = 4;
@@ -2401,9 +2651,9 @@
             // 
             // label53
             // 
-            this.label53.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label53.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label53.AutoSize = true;
-            this.label53.Location = new System.Drawing.Point(3, 131);
+            this.label53.Location = new System.Drawing.Point(68, 193);
             this.label53.Name = "label53";
             this.label53.Size = new System.Drawing.Size(46, 13);
             this.label53.TabIndex = 5;
@@ -2412,47 +2662,58 @@
             // fogHueTB
             // 
             this.fogHueTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.fogHueTB.Location = new System.Drawing.Point(79, 48);
+            this.fogHueTB.Location = new System.Drawing.Point(120, 75);
             this.fogHueTB.Name = "fogHueTB";
-            this.fogHueTB.Size = new System.Drawing.Size(55, 20);
+            this.fogHueTB.Size = new System.Drawing.Size(111, 20);
             this.fogHueTB.TabIndex = 6;
             this.fogHueTB.TextChanged += new System.EventHandler(this.fogHueTB_TextChanged);
             // 
             // fogSaturationTB
             // 
             this.fogSaturationTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.fogSaturationTB.Location = new System.Drawing.Point(79, 88);
+            this.fogSaturationTB.Location = new System.Drawing.Point(120, 132);
             this.fogSaturationTB.Name = "fogSaturationTB";
-            this.fogSaturationTB.Size = new System.Drawing.Size(55, 20);
+            this.fogSaturationTB.Size = new System.Drawing.Size(111, 20);
             this.fogSaturationTB.TabIndex = 7;
             this.fogSaturationTB.TextChanged += new System.EventHandler(this.fogSaturationTB_TextChanged);
             // 
             // fogIntensityTB
             // 
             this.fogIntensityTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.fogIntensityTB.Location = new System.Drawing.Point(79, 127);
+            this.fogIntensityTB.Location = new System.Drawing.Point(120, 189);
             this.fogIntensityTB.Name = "fogIntensityTB";
-            this.fogIntensityTB.Size = new System.Drawing.Size(55, 20);
+            this.fogIntensityTB.Size = new System.Drawing.Size(111, 20);
             this.fogIntensityTB.TabIndex = 8;
             this.fogIntensityTB.TextChanged += new System.EventHandler(this.fogIntensityTB_TextChanged);
             // 
             // fogColorButton
             // 
-            this.fogColorButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.fogColorButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fogColorButton.Enabled = false;
-            this.fogColorButton.Location = new System.Drawing.Point(79, 4);
+            this.fogColorButton.Location = new System.Drawing.Point(120, 3);
             this.fogColorButton.Name = "fogColorButton";
-            this.fogColorButton.Size = new System.Drawing.Size(55, 31);
+            this.fogColorButton.Size = new System.Drawing.Size(111, 51);
             this.fogColorButton.TabIndex = 10;
             this.fogColorButton.UseVisualStyleBackColor = true;
             // 
+            // stageFogListBox
+            // 
+            this.stageFogListBox.Dock = System.Windows.Forms.DockStyle.Left;
+            this.stageFogListBox.FormattingEnabled = true;
+            this.stageFogListBox.Location = new System.Drawing.Point(3, 3);
+            this.stageFogListBox.Name = "stageFogListBox";
+            this.stageFogListBox.Size = new System.Drawing.Size(120, 951);
+            this.stageFogListBox.TabIndex = 1;
+            this.stageFogListBox.SelectedIndexChanged += new System.EventHandler(this.stageFogListBox_SelectedIndexChanged);
+            // 
             // menuStrip1
             // 
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(874, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(925, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -2499,12 +2760,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(874, 607);
+            this.ClientSize = new System.Drawing.Size(925, 1007);
             this.Controls.Add(this.stageLightingTabControl);
             this.Controls.Add(this.menuStrip1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
+            this.MinimumSize = new System.Drawing.Size(580, 380);
             this.Name = "LightSetEditor";
             this.Text = "Stage Lighting";
             this.lightMapTab.ResumeLayout(false);
@@ -2539,71 +2800,76 @@
             ((System.ComponentModel.ISupportInitialize)(this.trackBar14)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar15)).EndInit();
             this.areaTab.ResumeLayout(false);
-            this.groupBox7.ResumeLayout(false);
-            this.tableLayoutPanel9.ResumeLayout(false);
-            this.tableLayoutPanel9.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.areaRotXTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaRotYTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaRotZTrackBar)).EndInit();
-            this.groupBox6.ResumeLayout(false);
-            this.tableLayoutPanel8.ResumeLayout(false);
-            this.tableLayoutPanel8.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.areaScaleXTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaScaleYTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaScaleZTrackBar)).EndInit();
-            this.groupBox5.ResumeLayout(false);
-            this.tableLayoutPanel7.ResumeLayout(false);
-            this.tableLayoutPanel7.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.areaPosXTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaPosYTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaPosZTrackBar)).EndInit();
-            this.groupBox3.ResumeLayout(false);
-            this.tableLayoutPanel5.ResumeLayout(false);
-            this.tableLayoutPanel5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.areaGroundRedTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaGroundGreenTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.areaGroundBlueTrackBar)).EndInit();
-            this.groupBox4.ResumeLayout(false);
+            this.areaLightFlowLayout.ResumeLayout(false);
+            this.areaLightPreviewPanel.ResumeLayout(false);
+            this.areaLightColCeilPanel.ResumeLayout(false);
             this.tableLayoutPanel6.ResumeLayout(false);
             this.tableLayoutPanel6.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.areaCeilRedTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.areaCeilGreenTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.areaCeilBlueTrackBar)).EndInit();
+            this.areaLightColGroundPanel.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.areaGroundRedTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaGroundGreenTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaGroundBlueTrackBar)).EndInit();
+            this.areaLightPosPanel.ResumeLayout(false);
+            this.tableLayoutPanel7.ResumeLayout(false);
+            this.tableLayoutPanel7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.areaPosXTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaPosYTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaPosZTrackBar)).EndInit();
+            this.areaLightScalePanel.ResumeLayout(false);
+            this.tableLayoutPanel8.ResumeLayout(false);
+            this.tableLayoutPanel8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.areaScaleXTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaScaleYTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaScaleZTrackBar)).EndInit();
+            this.areaLightRotPanel.ResumeLayout(false);
+            this.tableLayoutPanel9.ResumeLayout(false);
+            this.tableLayoutPanel9.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.areaRotXTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaRotYTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.areaRotZTrackBar)).EndInit();
             this.stageLightsTab.ResumeLayout(false);
-            this.groupBox2.ResumeLayout(false);
+            this.lightSetFlowLayout.ResumeLayout(false);
+            this.stageLightColorPanel.ResumeLayout(false);
+            this.stageColorTableLayoutPanel.ResumeLayout(false);
+            this.stageColorTableLayoutPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.stageDifHueTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stageDifSatTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.stageDifIntensityTrackBar)).EndInit();
+            this.stageLightRotPanel.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.stageRotXTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.stageRotYTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.stageRotZTrackBar)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.stageDifHueTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.stageDifSatTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.stageDifIntensityTrackBar)).EndInit();
             this.charLightsTab.ResumeLayout(false);
-            this.groupBox13.ResumeLayout(false);
-            this.tableLayoutPanel15.ResumeLayout(false);
-            this.tableLayoutPanel15.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar16)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar17)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar18)).EndInit();
-            this.charColor2GroupBox.ResumeLayout(false);
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.tableLayoutPanel4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.charColor2XTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.charColor2YTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.charColor2ZTrackBar)).EndInit();
-            this.charColor1GroupBox.ResumeLayout(false);
+            this.charLightsFlowLayout.ResumeLayout(false);
+            this.charLightGlControlPanel.ResumeLayout(false);
+            this.charColor1Panel.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.charColor1XTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.charColor1YTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.charColor1ZTrackBar)).EndInit();
+            this.charColor2Panel.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.tableLayoutPanel4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.charColor2XTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.charColor2YTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.charColor2ZTrackBar)).EndInit();
+            this.charAngleTableLayout.ResumeLayout(false);
+            this.charAngleTableLayout.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.charAngle1TrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.charAngle2TrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.charAngle3TrackBar)).EndInit();
             this.stageLightingTabControl.ResumeLayout(false);
             this.stageFogTab.ResumeLayout(false);
-            this.groupBox15.ResumeLayout(false);
+            this.fogFlowLayout.ResumeLayout(false);
+            this.stageFogColorPanel.ResumeLayout(false);
             this.tableLayoutPanel17.ResumeLayout(false);
             this.tableLayoutPanel17.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fogHueTrackBar)).EndInit();
@@ -2677,7 +2943,6 @@
         private OpenTK.GLControl lightMapGLControl;
         private System.Windows.Forms.ListBox lightmapListBox;
         private System.Windows.Forms.TabPage areaTab;
-        private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel9;
         private System.Windows.Forms.TrackBar areaRotXTrackBar;
         private System.Windows.Forms.TrackBar areaRotYTrackBar;
@@ -2688,7 +2953,6 @@
         private System.Windows.Forms.TextBox areaRotX;
         private System.Windows.Forms.TextBox areaRotY;
         private System.Windows.Forms.TextBox areaRotZ;
-        private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel8;
         private System.Windows.Forms.TrackBar areaScaleXTrackBar;
         private System.Windows.Forms.TrackBar areaScaleYTrackBar;
@@ -2699,7 +2963,6 @@
         private System.Windows.Forms.TextBox areaScaleXTB;
         private System.Windows.Forms.TextBox areaScaleYTB;
         private System.Windows.Forms.TextBox areaScaleZTB;
-        private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
         private System.Windows.Forms.TrackBar areaPosXTrackBar;
         private System.Windows.Forms.TrackBar areaPosYTrackBar;
@@ -2710,7 +2973,6 @@
         private System.Windows.Forms.TextBox areaPosXTB;
         private System.Windows.Forms.TextBox areaPosYTB;
         private System.Windows.Forms.TextBox areaPosZTB;
-        private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.TrackBar areaGroundRedTrackBar;
         private System.Windows.Forms.TrackBar areaGroundGreenTrackBar;
@@ -2721,7 +2983,6 @@
         private System.Windows.Forms.TextBox areaGroundRedTB;
         private System.Windows.Forms.TextBox areaGroundGreenTB;
         private System.Windows.Forms.TextBox areaGroundBlueTB;
-        private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.TrackBar areaCeilRedTrackBar;
         private System.Windows.Forms.TrackBar areaCeilGreenTrackBar;
@@ -2735,7 +2996,6 @@
         private OpenTK.GLControl areaColorGLControl;
         private System.Windows.Forms.ListBox areaLightListBox;
         private System.Windows.Forms.TabPage stageLightsTab;
-        private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.TrackBar stageRotXTrackBar;
         private System.Windows.Forms.TrackBar stageRotYTrackBar;
@@ -2746,8 +3006,7 @@
         private System.Windows.Forms.TextBox stageDifRotXTB;
         private System.Windows.Forms.TextBox stageDifRotYTB;
         private System.Windows.Forms.TextBox stageDifRotZTB;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel stageColorTableLayoutPanel;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TrackBar stageDifHueTrackBar;
         private System.Windows.Forms.TrackBar stageDifSatTrackBar;
@@ -2760,18 +3019,6 @@
         private System.Windows.Forms.TextBox stageDifIntensityTB;
         private System.Windows.Forms.Button stageDifColorButton;
         private System.Windows.Forms.TabPage charLightsTab;
-        private System.Windows.Forms.GroupBox groupBox13;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel15;
-        private System.Windows.Forms.TrackBar trackBar16;
-        private System.Windows.Forms.TrackBar trackBar17;
-        private System.Windows.Forms.TrackBar trackBar18;
-        private System.Windows.Forms.Label label44;
-        private System.Windows.Forms.Label label45;
-        private System.Windows.Forms.Label label46;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.GroupBox charColor2GroupBox;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.TrackBar charColor2XTrackBar;
         private System.Windows.Forms.TrackBar charColor2YTrackBar;
@@ -2782,7 +3029,6 @@
         private System.Windows.Forms.TextBox charColor2XTB;
         private System.Windows.Forms.TextBox charColor2YTB;
         private System.Windows.Forms.TextBox charColor2ZTB;
-        private System.Windows.Forms.GroupBox charColor1GroupBox;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.TrackBar charColor1XTrackBar;
         private System.Windows.Forms.TrackBar charColor1YTrackBar;
@@ -2802,7 +3048,6 @@
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.TabPage stageFogTab;
-        private System.Windows.Forms.GroupBox groupBox15;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel17;
         private System.Windows.Forms.Label label50;
         private System.Windows.Forms.TrackBar fogHueTrackBar;
@@ -2818,5 +3063,44 @@
         private System.Windows.Forms.ListBox stageFogListBox;
         private System.Windows.Forms.ToolStripMenuItem openLightsetparamToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveLightsetparamToolStripMenuItem;
+        private System.Windows.Forms.FlowLayoutPanel charLightsFlowLayout;
+        private System.Windows.Forms.Button charColor1Button;
+        private System.Windows.Forms.Button charLightPanelExpander;
+        private System.Windows.Forms.Panel charLightGlControlPanel;
+        private System.Windows.Forms.Panel charColor1Panel;
+        private System.Windows.Forms.Button charColor2Button;
+        private System.Windows.Forms.Panel charColor2Panel;
+        private System.Windows.Forms.FlowLayoutPanel lightSetFlowLayout;
+        private System.Windows.Forms.Button stageDifColorPanelButton;
+        private System.Windows.Forms.Panel stageLightColorPanel;
+        private System.Windows.Forms.Button stageRotButton;
+        private System.Windows.Forms.Panel stageLightRotPanel;
+        private System.Windows.Forms.FlowLayoutPanel fogFlowLayout;
+        private System.Windows.Forms.Button stageFogPanelButton;
+        private System.Windows.Forms.Panel stageFogColorPanel;
+        private System.Windows.Forms.FlowLayoutPanel areaLightFlowLayout;
+        private System.Windows.Forms.Button colCeilButton;
+        private System.Windows.Forms.Panel areaLightColCeilPanel;
+        private System.Windows.Forms.Button colGroundButton;
+        private System.Windows.Forms.Button areaLightColorPreviewButton;
+        private System.Windows.Forms.Panel areaLightColGroundPanel;
+        private System.Windows.Forms.Button areaLightPosButton;
+        private System.Windows.Forms.Panel areaLightPosPanel;
+        private System.Windows.Forms.Button areaLightScaleButton;
+        private System.Windows.Forms.Panel areaLightScalePanel;
+        private System.Windows.Forms.Panel areaLightPreviewPanel;
+        private System.Windows.Forms.Button areaLightRotButton;
+        private System.Windows.Forms.Panel areaLightRotPanel;
+        private System.Windows.Forms.Button charAngleButton;
+        private System.Windows.Forms.TableLayoutPanel charAngleTableLayout;
+        private System.Windows.Forms.TrackBar charAngle1TrackBar;
+        private System.Windows.Forms.TrackBar charAngle2TrackBar;
+        private System.Windows.Forms.TrackBar charAngle3TrackBar;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.Label label46;
+        private System.Windows.Forms.TextBox charAngle1TB;
+        private System.Windows.Forms.TextBox charAngle2TB;
+        private System.Windows.Forms.TextBox charAngle3TB;
     }
 }

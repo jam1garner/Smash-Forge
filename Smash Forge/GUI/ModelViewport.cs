@@ -34,36 +34,30 @@ namespace Smash_Forge
 {
     public partial class ModelViewport : EditorBase
     {
-        // setup
-        bool readyToRender = false;
-
         // View controls
         public ForgeCamera camera = new ForgeCamera();
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
         // Rendering Stuff
-        int colorHdrFbo;
-        int colorHdrTex0;
-        int colorHdrTex1;
-        int hdrDepthRbo;
+        private Framebuffer colorHdrFbo;
 
         // The texture that will be blurred for bloom.
-        Framebuffer imageBrightHdrFbo;
+        private Framebuffer imageBrightHdrFbo;
 
         // Used for screen renders and color picking.
-        Framebuffer offscreenRenderFbo;
+        private Framebuffer offscreenRenderFbo;
 
         // Shadow Mapping
-        Framebuffer depthMapFbo;
-        Texture2D depthMap;
-        int shadowWidth = 2048;
-        int shadowHeight = 2048;
-        Matrix4 lightMatrix = Matrix4.Identity;
+        private Framebuffer depthMapFbo;
+        private DepthTexture depthMap;
+        private int shadowWidth = 2048;
+        private int shadowHeight = 2048;
+        private Matrix4 lightMatrix = Matrix4.Identity;
 
         // The viewport dimensions should be used for FBOs visible on screen.
         // Larger dimensions can be used for higher quality outputs for FBOs.
-        int fboRenderWidth;
-        int fboRenderHeight;
+        private int fboRenderWidth;
+        private int fboRenderHeight;
 
         // Functions of Viewer
         public enum Mode
@@ -74,8 +68,8 @@ namespace Smash_Forge
         }
         public Mode currentMode = Mode.Normal;
 
-        VertexTool vertexTool = new VertexTool();
-        TransformTool transformTool = new TransformTool();
+        private VertexTool vertexTool = new VertexTool();
+        private TransformTool transformTool = new TransformTool();
 
         //Animation
         private Animation currentAnimation;
@@ -312,7 +306,7 @@ namespace Smash_Forge
             fboRenderHeight = glViewport.Height;
 
             // Render bright and normal images to separate textures.
-            FramebufferTools.CreateHdrFboTwoTextures(out colorHdrFbo, out hdrDepthRbo, out colorHdrTex0, out colorHdrTex1, glViewport.Width, glViewport.Height);
+            colorHdrFbo = new Framebuffer(FramebufferTarget.Framebuffer, glViewport.Width, glViewport.Height, PixelInternalFormat.Rgba16f, 2);
 
             // Smaller FBO/texture for the brighter, blurred portions.
             int brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
@@ -320,7 +314,7 @@ namespace Smash_Forge
             imageBrightHdrFbo = new Framebuffer(FramebufferTarget.Framebuffer, brightTexWidth, brightTexHeight, PixelInternalFormat.Rgba16f);
 
             // Screen Rendering
-            offscreenRenderFbo = new Framebuffer(FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight);
+            offscreenRenderFbo = new Framebuffer(FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, PixelInternalFormat.Rgba);
 
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -335,26 +329,11 @@ namespace Smash_Forge
             depthMapFbo.Bind();
 
             // Set up the depth map texture.
-            depthMap = new Texture2D(glViewport.Width, glViewport.Height);
-            ResizeDepthMap();
-            GL.DrawBuffer(DrawBufferMode.None);
-            GL.ReadBuffer(ReadBufferMode.None);
-        }
-
-        private void ResizeDepthMap()
-        {
-            depthMap.Bind();
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent24, shadowWidth, shadowHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-            depthMap.MagFilter = TextureMagFilter.Nearest;
-            depthMap.MinFilter = TextureMinFilter.Nearest;
-            // Use white for values outside shadow map.
-            depthMap.TextureWrapS = TextureWrapMode.ClampToBorder;
-            depthMap.TextureWrapT = TextureWrapMode.ClampToBorder;
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, new float[] { 1, 1, 1, 1 });
-
-            // Attach the depth map to the fbo.
+            depthMap = new DepthTexture(shadowWidth, shadowHeight, PixelInternalFormat.DepthComponent24);
             depthMapFbo.Bind();
             GL.FramebufferTexture2D(depthMapFbo.FramebufferTarget, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthMap.Id, 0);
+            GL.DrawBuffer(DrawBufferMode.None);
+            GL.ReadBuffer(ReadBufferMode.None);
         }
 
         public Camera GetCamera()
@@ -427,7 +406,7 @@ namespace Smash_Forge
             if (this.IsDisposed)
                 return;
 
-            if (readyToRender)
+            if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
             {
                 if (isPlaying)
                 {
@@ -452,7 +431,7 @@ namespace Smash_Forge
 
         private void MouseClickItemSelect(System.Windows.Forms.MouseEventArgs e)
         {
-            if (!readyToRender || glViewport == null)
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded || glViewport == null)
                 return;
 
             //Mesh Selection Test
@@ -584,7 +563,8 @@ namespace Smash_Forge
 
         private void glViewport_Resize(object sender, EventArgs e)
         {
-            if (readyToRender && currentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
+            if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded
+                && currentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
             {
                 GL.LoadIdentity();
                 GL.Viewport(0, 0, glViewport.Width, glViewport.Height);
@@ -602,36 +582,24 @@ namespace Smash_Forge
         private void ResizeTexturesAndBuffers()
         {
             // FBOs manage their own resizing.
-            imageBrightHdrFbo.Width = (int)(fboRenderWidth * Runtime.bloomTexScale);
-            imageBrightHdrFbo.Height = (int)(fboRenderHeight * Runtime.bloomTexScale);
+            // FBOs may not be initialized yet.
+            if (imageBrightHdrFbo != null)
+            {
+                imageBrightHdrFbo.Width = (int)(fboRenderWidth * Runtime.bloomTexScale);
+                imageBrightHdrFbo.Height = (int)(fboRenderHeight * Runtime.bloomTexScale);
+            }
 
-            offscreenRenderFbo.Width = fboRenderWidth;
-            offscreenRenderFbo.Height = fboRenderHeight;
+            if (offscreenRenderFbo != null)
+            {
+                offscreenRenderFbo.Width = fboRenderWidth;
+                offscreenRenderFbo.Height = fboRenderHeight;
+            }
 
-            // Resize manually created fbos.
-            ResizeDepthMap();
-            ResizeHdrFboRboTwoColorAttachments();
-        }
-
-        private void ResizeHdrFboRboTwoColorAttachments()
-        {
-            // Resize the textures and buffers everytime the dimensions change.
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
-
-            int textureWidth = glViewport.Width;
-            int textureHeight = glViewport.Height;
-
-            // First color attachment.
-            GL.BindTexture(TextureTarget.Texture2D, colorHdrTex0);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-
-            // Second color attachment.
-            GL.BindTexture(TextureTarget.Texture2D, colorHdrTex1);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-
-            // Render buffer for the depth attachment.
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, hdrDepthRbo);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, textureWidth, textureHeight);
+            if (colorHdrFbo != null)
+            {
+                colorHdrFbo.Width = glViewport.Width;
+                colorHdrFbo.Height = glViewport.Height;
+            }
         }
 
         #region Animation Events
@@ -1416,7 +1384,7 @@ namespace Smash_Forge
         {
             // Don't render if the context and resources aren't set up properly.
             // Watching textures suddenly appear looks weird.
-            if (!readyToRender || Runtime.glTexturesNeedRefreshing)
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded || Runtime.glTexturesNeedRefreshing)
                 return;
 
             SetupViewport(width, height);
@@ -1449,7 +1417,7 @@ namespace Smash_Forge
             if (Runtime.usePostProcessing)
             {
                 // Render models and background into an HDR buffer. 
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
+                colorHdrFbo.Bind();
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             }
 
@@ -1484,7 +1452,7 @@ namespace Smash_Forge
                 DrawModelsIntoShadowMap();
 
             if (Runtime.usePostProcessing)
-                DrawModelsNormally(width, height, colorHdrFbo);
+                DrawModelsNormally(width, height, colorHdrFbo.Id);
             else
                 DrawModelsNormally(width, height, defaultFbo);
 
@@ -1493,19 +1461,58 @@ namespace Smash_Forge
                 // Draw the texture to the screen into a smaller FBO.
                 imageBrightHdrFbo.Bind();
                 GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
-                RenderTools.DrawTexturedQuad(colorHdrTex1, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
+                ScreenDrawing.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1].Id, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, width, height);
 
-                RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, imageBrightHdrFbo.ColorAttachment0.Id);
+                ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id);
             }
 
             FixedFunctionRendering();
 
             GL.PopAttrib();
             glViewport.SwapBuffers();
+        }
+
+        private void BenchmarkShapeDrawing()
+        {
+            int count = 2000;
+            ShapeDrawing.SetUp();
+
+            // Depth testing has a huge performance impact.
+            GL.Disable(EnableCap.DepthTest);
+
+            Mesh3D cubeMesh = new Mesh3D(new Vector4(1, 0, 1, 1));
+            cubeMesh.Color = ColorTools.Vector4FromColor(Color.Aquamarine);
+            cubeMesh.ScaleX = 5;
+            cubeMesh.ScaleY = 2;
+            cubeMesh.ScaleZ = 3;
+
+            Vector3[] vertices = ShapeDrawing.GetRectangularPrismPositions();
+            foreach (Vector3 vert in vertices)
+            {
+                cubeMesh.AddVertex(vert);
+            }
+
+            // Test shader rendering.
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            for (int i = 1; i < count; i++)
+            {
+                // Identical speeds to fixed function pipeline for small scale values.
+                cubeMesh.Draw(camera.MvpMatrix);               
+                //GL.Begin(PrimitiveType.TriangleStrip);
+                //foreach (Vector3 vert in vertices)
+                //{
+                //    GL.Vertex3(vert * 15);
+                //}
+                //GL.End();
+                
+            }
+            stopwatch.Stop();
+
+            Debug.WriteLine(String.Format("{0}", stopwatch.ElapsedMilliseconds));
         }
 
         private void DrawModelsNormally(int width, int height, int defaultFbo)
@@ -1560,9 +1567,9 @@ namespace Smash_Forge
 
             // Only use the top color for solid color rendering.
             if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
-                RenderTools.DrawQuadGradient(topColor, topColor, RenderTools.screenQuadVbo);
+                ScreenDrawing.DrawQuadGradient(topColor, topColor, ScreenDrawing.screenQuadVbo);
             else
-                RenderTools.DrawQuadGradient(topColor, bottomColor, RenderTools.screenQuadVbo);
+                ScreenDrawing.DrawQuadGradient(topColor, bottomColor, ScreenDrawing.screenQuadVbo);
         }
 
         private void SetupViewport(int width, int height)
@@ -1833,14 +1840,14 @@ namespace Smash_Forge
         {
             GL.PopAttrib();
             NutTexture tex = ((NutTexture)meshList.filesTreeView.SelectedNode);
-            RenderTools.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HASHID].Id, tex.Width, tex.Height);
+            ScreenDrawing.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HASHID].Id, tex.Width, tex.Height);
         }
 
         private void DrawBchTex()
         {
             GL.PopAttrib();
             BCH_Texture tex = ((BCH_Texture)meshList.filesTreeView.SelectedNode);
-            RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+            ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
         }
 
         private void DrawAreaLightBoundingBoxes()
@@ -1905,7 +1912,13 @@ namespace Smash_Forge
             {
                 RenderTools.SetUpOpenTkRendering();
                 SetupBuffersAndTextures();
-                readyToRender = true;
+
+                // TODO: Might be redundant.
+                glViewport.MakeCurrent();
+                if (Runtime.enableOpenTKDebugOutput)
+                {
+                    RenderTools.EnableOpenTKDebugOutput();
+                }
             }
         }
 

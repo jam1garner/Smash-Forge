@@ -221,7 +221,7 @@ namespace Smash_Forge
             header.flags = (uint)(DDSD.CAPS | DDSD.HEIGHT | DDSD.WIDTH | DDSD.PIXELFORMAT | DDSD.MIPMAPCOUNT | DDSD.LINEARSIZE);
             header.width = (uint)tex.Width;
             header.height = (uint)tex.Height;
-            header.pitchOrLinearSize = (uint)tex.Size;
+            header.pitchOrLinearSize = (uint)tex.ImageSize;
             header.mipmapCount = (uint)tex.surfaces[0].mipmaps.Count;
             header.caps2 = tex.DdsCaps2;
             bool isCubemap = (header.caps2 & (uint)DDSCAPS2.CUBEMAP) == (uint)DDSCAPS2.CUBEMAP;

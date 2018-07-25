@@ -383,7 +383,7 @@ namespace Smash_Forge
                 return;
 
             shader = Runtime.shaders["Dat"];
-            GL.UseProgram(shader.Id);
+            shader.UseProgram();
 
             GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelview"), false, ref modelview);
             GL.ActiveTexture(TextureUnit.Texture10);

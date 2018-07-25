@@ -7,6 +7,8 @@ in vec4 vBoneHash;
 
 uniform mat4 lightMatrix;
 
+uniform int useBones;
+
 uniform bones {
     mat4 transforms[200];
 } bones_;
@@ -36,7 +38,7 @@ vec3 skinNRM(vec3 nr, ivec4 index) {
 void main() {
     // Vertex Skinning
     vec4 objPos = vec4(vPosition.xyz, 1.0);
-    if(vBone.x != -1.0)
+    if (useBones == 1 && vBone.x != -1)
        objPos = skin(vPosition, ivec4(vBone));
 
     objPos = lightMatrix * vec4(objPos.xyz, 1.0);

@@ -39,7 +39,7 @@ namespace Smash_Forge.GUI.Menus
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
             // Draw darker to make the UVs visible.
-            RenderTools.DrawTexturedQuad(RenderTools.uvTestPattern.Id, 0.5f);
+            ScreenDrawing.DrawTexturedQuad(RenderTools.uvTestPattern.Id, 0.5f);
             NudUvRendering.DrawUv(polygonToRender, glControl1.Width, glControl1.Height);
             glControl1.SwapBuffers();
         }

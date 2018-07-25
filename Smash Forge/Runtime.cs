@@ -259,6 +259,8 @@ namespace Smash_Forge
         public static bool debug1 = false;
         public static bool debug2 = false;
 
+        public static bool enableOpenTKDebugOutput = false;
+
         // ETC
         public static string fighterDir = "";
         public static string paramDir = "";

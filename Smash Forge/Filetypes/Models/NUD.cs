@@ -57,22 +57,21 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
-        private static readonly Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>()
+        private static readonly Dictionary<int, BlendingFactor> srcFactorsByMatValue = new Dictionary<int, BlendingFactor>()
         {
-            { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
-            { 0x02, BlendingFactorDest.One},
-            { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
-            { 0x04, BlendingFactorDest.OneMinusConstantAlpha},
-            { 0x05, BlendingFactorDest.ConstantAlpha},
+            { 0x00, BlendingFactor.One },
+            { 0x01, BlendingFactor.SrcAlpha},
+            { 0x02, BlendingFactor.One},
+            { 0x03, BlendingFactor.SrcAlpha},
+            { 0x04, BlendingFactor.SrcAlpha},
         };
 
-        private static readonly Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>()
+        private static readonly Dictionary<int, BlendingFactor> dstFactorsByMatValue = new Dictionary<int, BlendingFactor>()
         {
-            { 0x01, BlendingFactorSrc.SrcAlpha},
-            { 0x02, BlendingFactorSrc.SrcAlpha},
-            { 0x03, BlendingFactorSrc.SrcAlpha},
-            { 0x04, BlendingFactorSrc.SrcAlpha},
-            { 0x0a, BlendingFactorSrc.Zero}
+            { 0x00, BlendingFactor.Zero },
+            { 0x01, BlendingFactor.OneMinusSrcAlpha},
+            { 0x02, BlendingFactor.One},
+            { 0x03, BlendingFactor.One},
         };
 
         private static readonly Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
@@ -343,7 +342,7 @@ namespace Smash_Forge
                 shader = Runtime.shaders["Nud"];
 
             // Render using the selected shader.
-            GL.UseProgram(shader.Id);
+            shader.UseProgram();
             shader.EnableVertexAttributes();
             UpdateBonesBuffer(vbn, shader, bonesUbo);
 
@@ -619,7 +618,7 @@ namespace Smash_Forge
 
             // Set Shader Values.
             SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
-            SetVertexAttributes(shader);
+            SetVertexAttributes(shader, positionVbo);
 
             // Set OpenTK Render Options.
             SetAlphaBlending(material);
@@ -660,25 +659,48 @@ namespace Smash_Forge
 
         private void SetAlphaBlending(Material material)
         {
+            // Disable alpha blending for debug shading.
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
             {
-                // Disable alpha blending for debug shading.
                 GL.Disable(EnableCap.Blend);
                 return;
             }
 
+            // Src and dst of 0 don't use alpha blending.
             if (material.srcFactor == 0 && material.dstFactor == 0)
             {
-                // Src and dst of 0 don't use alpha blending.
                 GL.Disable(EnableCap.Blend);
                 return;
             }
 
+            // Set the alpha blending based on the material.
+            // If the values are not researched, use a default blending mode.
             GL.Enable(EnableCap.Blend);
-            BlendingFactorSrc blendSrc = srcFactor.Keys.Contains(material.srcFactor) ? srcFactor[material.srcFactor] : BlendingFactorSrc.SrcAlpha;
-            BlendingFactorDest blendDst = dstFactor.Keys.Contains(material.dstFactor) ? dstFactor[material.dstFactor] : BlendingFactorDest.OneMinusSrcAlpha;
-            GL.BlendFuncSeparate(blendSrc, blendDst, BlendingFactorSrc.One, BlendingFactorDest.One);
-            GL.BlendEquationSeparate(BlendEquationMode.FuncAdd, BlendEquationMode.FuncAdd);
+
+            // Hacks for Game & Watch.
+            if ((material.srcFactor == 4) || (material.srcFactor == 51) || (material.srcFactor == 50))
+                GL.DepthMask(false);
+            else
+                GL.DepthMask(true);
+
+            // Set the source factor.
+            BlendingFactor blendSrc = BlendingFactor.SrcAlpha;
+            if (srcFactorsByMatValue.ContainsKey(material.srcFactor))
+                blendSrc = srcFactorsByMatValue[material.srcFactor];
+
+            // Set the destination factor.
+            BlendingFactor blendDst = BlendingFactor.OneMinusSrcAlpha;
+            if (dstFactorsByMatValue.ContainsKey(material.dstFactor))
+                blendDst = dstFactorsByMatValue[material.dstFactor];
+
+            // The dstFactor can also set the blending equation.
+            BlendEquationMode blendEquation = BlendEquationMode.FuncAdd;
+            if (material.dstFactor == 3)
+                blendEquation = BlendEquationMode.FuncReverseSubtract;
+
+            // Use separate equations for better alpha value blending.
+            GL.BlendFunc(blendSrc, blendDst);
+            GL.BlendEquationSeparate(blendEquation, BlendEquationMode.FuncAdd);
         }
 
         private static void SetAlphaTesting(Material material)
@@ -690,24 +712,18 @@ namespace Smash_Forge
                 return;
             }
 
-            GL.Enable(EnableCap.AlphaTest);
-            if (material.alphaTest == 0)
+            if (material.alphaTest == (int)Material.AlphaTest.Enabled)
+                GL.Enable(EnableCap.AlphaTest);
+            else
                 GL.Disable(EnableCap.AlphaTest);
 
+            AlphaFunction alphaFunction = AlphaFunction.Always;
+            if (Material.alphaFunctionByMatValue.ContainsKey(material.alphaFunction))
+                alphaFunction = Material.alphaFunctionByMatValue[material.alphaFunction];
+
             float refAlpha = material.RefAlpha / 255f;
-            GL.AlphaFunc(AlphaFunction.Gequal, 0.1f);
-            switch (material.alphaFunction)
-            {
-                case 0x0:
-                    GL.AlphaFunc(AlphaFunction.Never, refAlpha);
-                    break;
-                case 0x4:
-                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
-                    break;
-                case 0x6:
-                    GL.AlphaFunc(AlphaFunction.Gequal, refAlpha);
-                    break;
-            }
+
+            GL.AlphaFunc(alphaFunction, refAlpha);
         }
 
         private static void SetFaceCulling(Material material)
@@ -801,23 +817,57 @@ namespace Smash_Forge
             }
         }
 
-        private void SetVertexAttributes(Shader shader)
+        private void SetVertexAttributes(Shader shader, BufferObject bufferObject)
         {
-            positionVbo.Bind();
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBiTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 36);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 48);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vColor"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 56);
-            GL.VertexAttribIPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribIntegerType.Int, DisplayVertex.Size, new IntPtr(72));
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV3"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
+            bufferObject.Bind();
+
+            // Check indices in case the vertex attributes were optimized out by the shader compiler.
+            int posIndex = shader.GetVertexAttributeUniformLocation("vPosition");
+            if (posIndex != -1)
+                GL.VertexAttribPointer(posIndex, 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
+
+            int normalIndex = shader.GetVertexAttributeUniformLocation("vNormal");
+            if (normalIndex != -1)
+                GL.VertexAttribPointer(normalIndex, 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
+
+            int tanIndex = shader.GetVertexAttributeUniformLocation("vTangent");
+            if (tanIndex != -1)
+                GL.VertexAttribPointer(tanIndex, 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
+
+            int bitanIndex = shader.GetVertexAttributeUniformLocation("vBiTangent");
+            if (bitanIndex != -1)
+                GL.VertexAttribPointer(bitanIndex, 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 36);
+
+            int uvIndex = shader.GetVertexAttributeUniformLocation("vUV");
+            if (uvIndex != -1)
+                GL.VertexAttribPointer(uvIndex, 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 48);
+
+            int colIndex = shader.GetVertexAttributeUniformLocation("vColor");
+            if (colIndex != -1)
+                GL.VertexAttribPointer(colIndex, 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 56);
+
+            int boneIndex = shader.GetVertexAttributeUniformLocation("vBone");
+            if (boneIndex != -1)
+                GL.VertexAttribIPointer(boneIndex, 4, VertexAttribIntegerType.Int, DisplayVertex.Size, new IntPtr(72));
+
+            int weightIndex = shader.GetVertexAttributeUniformLocation("vWeight");
+            if (weightIndex != -1)
+                GL.VertexAttribPointer(weightIndex, 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
+
+            int uv2Index = shader.GetVertexAttributeUniformLocation("vUV2");
+            if (uv2Index != -1)
+                GL.VertexAttribPointer(uv2Index, 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
+
+            int uv3Index = shader.GetVertexAttributeUniformLocation("vUV3");
+            if (uv3Index != -1)
+                GL.VertexAttribPointer(uv3Index, 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
         }
 
         private static void DrawModelSelection(Polygon p, Shader shader)
         {
+            // This might have been changed to reverse subtract.
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
             GL.Disable(EnableCap.DepthTest);
@@ -966,7 +1016,7 @@ namespace Smash_Forge
             if (mat.hasDiffuse && textureUnitIndexOffset < mat.textures.Count)
             {
                 GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereDifTex.Id);
+                GL.BindTexture(TextureTarget.Texture2D, NudMatSphereDrawing.sphereDifTex.Id);
                 GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), nutTextureUnitOffset + textureUnitIndexOffset);
                 textureUnitIndexOffset++;
             }
@@ -983,7 +1033,7 @@ namespace Smash_Forge
                 if (mat.hasNormalMap)
                 {
                     GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
-                    GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereNrmMapTex.Id);
+                    GL.BindTexture(TextureTarget.Texture2D, NudMatSphereDrawing.sphereNrmMapTex.Id);
                     GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), nutTextureUnitOffset + textureUnitIndexOffset);
                     textureUnitIndexOffset++;
                 }
@@ -1051,7 +1101,7 @@ namespace Smash_Forge
                 if (mat.hasNormalMap)
                 {
                     GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
-                    GL.BindTexture(TextureTarget.Texture2D, RenderTools.sphereNrmMapTex.Id);
+                    GL.BindTexture(TextureTarget.Texture2D, NudMatSphereDrawing.sphereNrmMapTex.Id);
                     GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), nutTextureUnitOffset + textureUnitIndexOffset);
                     textureUnitIndexOffset++;
                 }
@@ -1180,7 +1230,7 @@ namespace Smash_Forge
         public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)
         {
             Shader shader = Runtime.shaders["Point"];
-            GL.UseProgram(shader.Id);
+            shader.UseProgram();
             Matrix4 mat = camera.MvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref mat);
 
@@ -1298,7 +1348,7 @@ namespace Smash_Forge
                             if (matHashFloat != null)
                             {
                                 byte[] bytes = new byte[4];
-                                Buffer.BlockCopy(matHashFloat, 0, bytes, 0, 4);
+                                System.Buffer.BlockCopy(matHashFloat, 0, bytes, 0, 4);
                                 int matHash = BitConverter.ToInt32(bytes, 0);
 
                                 int frm = (int)((frame * 60 / m.frameRate) % (m.frameCount));
@@ -2335,12 +2385,26 @@ namespace Smash_Forge
 
         public class Material
         {
+            public enum AlphaTest
+            {
+                Enabled = 0x02,
+                Disabled = 0x00
+            }
+
+            // TODO: How are 0x4 and 0x6 different?
             public enum AlphaFunction
             {
                 Never = 0x0,
                 GequalRefAlpha1 = 0x4,
                 GequalRefAlpha2 = 0x6
             }
+
+            public static Dictionary<int, OpenTK.Graphics.OpenGL.AlphaFunction> alphaFunctionByMatValue = new Dictionary<int, OpenTK.Graphics.OpenGL.AlphaFunction>()
+            {
+                { 0x0, OpenTK.Graphics.OpenGL.AlphaFunction.Never },
+                { 0x4, OpenTK.Graphics.OpenGL.AlphaFunction.Gequal },
+                { 0x6, OpenTK.Graphics.OpenGL.AlphaFunction.Gequal },
+            };
 
             public Dictionary<string, float[]> entries = new Dictionary<string, float[]>();
             public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();

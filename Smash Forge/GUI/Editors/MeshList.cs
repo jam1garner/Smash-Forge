@@ -330,27 +330,28 @@ namespace Smash_Forge
             if (e.Button == MouseButtons.Right)
             {
                 filesTreeView.SelectedNode = filesTreeView.GetNodeAt(e.Location);
+
                 if (filesTreeView.SelectedNode is NUD.Mesh)
                 {
                     meshContextMenu.Show(this, e.X, e.Y);
                 }
-                else
-                if (filesTreeView.SelectedNode is NUD.Polygon)
+                else if (filesTreeView.SelectedNode is NUD.Polygon)
                 {
                     polyContextMenu.Show(this, e.X, e.Y);
                 }
-                else
-                if (filesTreeView.SelectedNode is NUD)
+                else if (filesTreeView.SelectedNode is NUD)
                 {
                     nudContextMenu.Show(this, e.X, e.Y);
                 }
-                else
-                if (filesTreeView.SelectedNode is ModelContainer)
+                else if (filesTreeView.SelectedNode.Tag is SALT.Graphics.XMBFile)
+                {
+                    xmbContextMenu.Show(this, e.X, e.Y);
+                }
+                else if (filesTreeView.SelectedNode is ModelContainer)
                 {
                     ModelContainerContextMenu.Show(this, e.X, e.Y);
                 }
-                else
-                if(filesTreeView.SelectedNode == null)
+                else if(filesTreeView.SelectedNode == null)
                 {
                     MainContextMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
                 }
@@ -1437,6 +1438,23 @@ namespace Smash_Forge
             NUD nud = (NUD)poly.Parent.Parent;
             UvViewer uvViewer = new UvViewer(nud, poly);
             uvViewer.Show();
+        }
+
+        private void openViewerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode.Tag is SALT.Graphics.XMBFile))
+                return;
+
+            try
+            {
+                SALT.Graphics.XMBFile xmb = (SALT.Graphics.XMBFile)filesTreeView.SelectedNode.Tag;
+                XmbViewer xmbViewer = new XmbViewer(xmb);
+                xmbViewer.Show();
+            }
+            catch (Exception)
+            {
+                // Something broke. Let's just pretend it didn't happen.
+            }
         }
     }
 }

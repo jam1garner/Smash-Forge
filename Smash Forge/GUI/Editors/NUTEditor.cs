@@ -13,6 +13,7 @@ using OpenTK.Graphics.OpenGL;
 using System.IO;
 using System.Threading;
 using WeifenLuo.WinFormsUI.Docking;
+using Smash_Forge.Rendering;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using SFGraphics.GLObjects.Textures;
@@ -37,7 +38,6 @@ namespace Smash_Forge
         private bool renderAlpha = true;
         private bool keepAspectRatio = false;
         private int currentMipLevel = 0;
-        private bool readyToRender = false;
 
         private bool dontModify;
 
@@ -127,10 +127,7 @@ namespace Smash_Forge
             }
             FileOutput fileOutput = new FileOutput();
             byte[] n = currentNut.Rebuild();
-            //Temporarily disabling this prompt until zlib works properly
-            /*DialogResult dialogResult = MessageBox.Show("Would you like to compress this NUT file with zlib?\nIf you are unsure, select \"No\".", "zlib Compression", MessageBoxButtons.YesNo);
-            if (dialogResult == DialogResult.Yes)
-                n = FileData.DeflateZLIB(n);*/
+
             fileOutput.writeBytes(n);
             fileOutput.save(FilePath);
             Edited = false;
@@ -272,7 +269,7 @@ namespace Smash_Forge
 
         private void RenderTexture()
         {
-            if (!readyToRender || glControl1 == null)
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded || glControl1 == null)
                 return;
 
             if (!Runtime.shaders["Texture"].ProgramCreatedSuccessfully())
@@ -292,42 +289,23 @@ namespace Smash_Forge
 
             // Draw the texture to the screen.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            Rendering.RenderTools.DrawTexturedQuad(textureToRender.Id, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
+            Rendering.ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
                 currentMipLevel);
 
             glControl1.SwapBuffers();
         }
 
-        private void RenderTextureToPng(NutTexture nutTexture, string outputPath, bool renderR = true, bool renderG = true, bool renderB = true, bool renderAlpha = false)
+        private void RenderTextureToPng(NutTexture nutTexture, string outputPath, bool r = true, bool g = true, bool b = true, bool a = false)
         {
-            if (!readyToRender || glControl1 == null)
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded || glControl1 == null)
                 return;
 
-            // Load the OpenGL texture.
-            int width = nutTexture.Width;
-            int height = nutTexture.Height;
-            int texture = currentNut.glTexByHashId[nutTexture.HASHID].Id;
-
-            // Setup and reuse the same buffer for each image.
-            glControl1.MakeCurrent();
-            GL.Disable(EnableCap.ScissorTest);
-            pngExportFramebuffer.Width = width;
-            pngExportFramebuffer.Height = height;
-            GL.Viewport(0, 0, width, height);
-
-            // Render the texture to the fbo.
-            pngExportFramebuffer.Bind();
-            Rendering.RenderTools.DrawTexturedQuad(texture, width, height, renderR, renderG, renderB, renderAlpha);
-
-            // Save the image.
-            Bitmap image = pngExportFramebuffer.ReadImagePixels();
-            image.Save(outputPath);
-
-            // Cleanup
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.Viewport(glControl1.ClientRectangle);
-            image.Dispose();
-            GL.DeleteBuffer(pngExportFramebuffer.Id);
+            // Load the OpenGL texture and export the image data.
+            Texture2D texture = (Texture2D)currentNut.glTexByHashId[nutTexture.HASHID];
+            using (Bitmap image = Rendering.TextureToBitmap.RenderBitmap(texture, r, g, b, a))
+            {
+                image.Save(outputPath);
+            }
         }
 
         private void exportNutAsPngToolStripMenuItem_Click(object sender, EventArgs e)
@@ -929,12 +907,6 @@ namespace Smash_Forge
             glControl1.Invalidate();           
         }
 
-        private void aspectRatioCB_CheckedChanged(object sender, EventArgs e)
-        {
-            keepAspectRatio = preserveAspectRatioCB.Checked;
-            glControl1.Invalidate();
-        }
-
         private void glControl1_KeyPress(object sender, KeyPressEventArgs e)
         {
             // toggle channel rendering
@@ -953,10 +925,9 @@ namespace Smash_Forge
             if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
             {
                 // Make sure the shaders and textures are ready for rendering.
-                Rendering.RenderTools.SetUpOpenTkRendering();
+                RenderTools.SetUpOpenTkRendering();
                 pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
                 currentNut.RefreshGlTexturesByHashId();
-                readyToRender = true;
             }
         }
 
@@ -986,7 +957,8 @@ namespace Smash_Forge
 
         private void previewBox_Resize(object sender, EventArgs e)
         {
-            int size = Math.Min(previewGroupBox.Width, previewGroupBox.Height);
+            int padding = 25;
+            int size = Math.Min(previewGroupBox.Width - padding, previewGroupBox.Height - padding);
             glControl1.Width = size;
             glControl1.Height = size;
         }
