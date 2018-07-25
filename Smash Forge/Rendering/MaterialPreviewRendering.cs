@@ -29,6 +29,10 @@ namespace Smash_Forge.Rendering
 
         public static void RenderMaterialPresetPreviewsToFilesThreaded()
         {
+            // Shaders weren't loaded.
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+                return;
+
             renderAllPresetsToFiles = Task.Run(() =>
             {
                 RenderPresetsToFiles();

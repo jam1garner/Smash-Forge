@@ -144,6 +144,10 @@ namespace Smash_Forge
 
         private static void RenderMaterialTexturesAddToImageList(ImageList imageList, NUD.Material mat)
         {
+            // Shaders weren't initialized.
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+                return;
+
             // Generate thumbnails for all textures in case the material's texture IDs are changed.
             foreach (NUT nut in Runtime.TextureContainers)
             {
@@ -829,6 +833,9 @@ namespace Smash_Forge
 
         private void RenderTexture(bool justRenderAlpha = false)
         {
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+                return;
+
             if (!tabControl1.SelectedTab.Text.Equals("Textures"))
                 return;
 

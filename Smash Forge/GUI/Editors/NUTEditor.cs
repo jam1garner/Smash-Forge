@@ -13,6 +13,7 @@ using OpenTK.Graphics.OpenGL;
 using System.IO;
 using System.Threading;
 using WeifenLuo.WinFormsUI.Docking;
+using Smash_Forge.Rendering;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using SFGraphics.GLObjects.Textures;
@@ -37,7 +38,6 @@ namespace Smash_Forge
         private bool renderAlpha = true;
         private bool keepAspectRatio = false;
         private int currentMipLevel = 0;
-        private bool readyToRender = false;
 
         private bool dontModify;
 
@@ -269,7 +269,7 @@ namespace Smash_Forge
 
         private void RenderTexture()
         {
-            if (!readyToRender || glControl1 == null)
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded || glControl1 == null)
                 return;
 
             if (!Runtime.shaders["Texture"].ProgramCreatedSuccessfully())
@@ -297,7 +297,7 @@ namespace Smash_Forge
 
         private void RenderTextureToPng(NutTexture nutTexture, string outputPath, bool r = true, bool g = true, bool b = true, bool a = false)
         {
-            if (!readyToRender || glControl1 == null)
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded || glControl1 == null)
                 return;
 
             // Load the OpenGL texture and export the image data.
@@ -925,10 +925,9 @@ namespace Smash_Forge
             if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
             {
                 // Make sure the shaders and textures are ready for rendering.
-                Rendering.RenderTools.SetUpOpenTkRendering();
+                RenderTools.SetUpOpenTkRendering();
                 pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
                 currentNut.RefreshGlTexturesByHashId();
-                readyToRender = true;
             }
         }
 

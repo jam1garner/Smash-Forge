@@ -34,9 +34,6 @@ namespace Smash_Forge
 {
     public partial class ModelViewport : EditorBase
     {
-        // setup
-        private bool readyToRender = false;
-
         // View controls
         public ForgeCamera camera = new ForgeCamera();
         public GUI.Menus.CameraSettings cameraPosForm = null;
@@ -409,7 +406,7 @@ namespace Smash_Forge
             if (this.IsDisposed)
                 return;
 
-            if (readyToRender)
+            if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
             {
                 if (isPlaying)
                 {
@@ -434,7 +431,7 @@ namespace Smash_Forge
 
         private void MouseClickItemSelect(System.Windows.Forms.MouseEventArgs e)
         {
-            if (!readyToRender || glViewport == null)
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded || glViewport == null)
                 return;
 
             //Mesh Selection Test
@@ -566,7 +563,8 @@ namespace Smash_Forge
 
         private void glViewport_Resize(object sender, EventArgs e)
         {
-            if (readyToRender && currentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
+            if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded
+                && currentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
             {
                 GL.LoadIdentity();
                 GL.Viewport(0, 0, glViewport.Width, glViewport.Height);
@@ -584,21 +582,24 @@ namespace Smash_Forge
         private void ResizeTexturesAndBuffers()
         {
             // FBOs manage their own resizing.
-            imageBrightHdrFbo.Width = (int)(fboRenderWidth * Runtime.bloomTexScale);
-            imageBrightHdrFbo.Height = (int)(fboRenderHeight * Runtime.bloomTexScale);
+            // FBOs may not be initialized yet.
+            if (imageBrightHdrFbo != null)
+            {
+                imageBrightHdrFbo.Width = (int)(fboRenderWidth * Runtime.bloomTexScale);
+                imageBrightHdrFbo.Height = (int)(fboRenderHeight * Runtime.bloomTexScale);
+            }
 
-            offscreenRenderFbo.Width = fboRenderWidth;
-            offscreenRenderFbo.Height = fboRenderHeight;
+            if (offscreenRenderFbo != null)
+            {
+                offscreenRenderFbo.Width = fboRenderWidth;
+                offscreenRenderFbo.Height = fboRenderHeight;
+            }
 
-            // Resize manually created fbos.
-            ResizeHdrFboRboTwoColorAttachments();
-        }
-
-        private void ResizeHdrFboRboTwoColorAttachments()
-        {
-            // Resize the textures and buffers everytime the dimensions change.
-            colorHdrFbo.Width = glViewport.Width;
-            colorHdrFbo.Height = glViewport.Height;
+            if (colorHdrFbo != null)
+            {
+                colorHdrFbo.Width = glViewport.Width;
+                colorHdrFbo.Height = glViewport.Height;
+            }
         }
 
         #region Animation Events
@@ -1383,7 +1384,7 @@ namespace Smash_Forge
         {
             // Don't render if the context and resources aren't set up properly.
             // Watching textures suddenly appear looks weird.
-            if (!readyToRender || Runtime.glTexturesNeedRefreshing)
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded || Runtime.glTexturesNeedRefreshing)
                 return;
 
             SetupViewport(width, height);
@@ -1873,12 +1874,12 @@ namespace Smash_Forge
                 RenderTools.SetUpOpenTkRendering();
                 SetupBuffersAndTextures();
 
+                // TODO: Might be redundant.
                 glViewport.MakeCurrent();
                 if (Runtime.enableOpenTKDebugOutput)
                 {
                     RenderTools.EnableOpenTKDebugOutput();
                 }
-                readyToRender = true;
             }
         }
 
