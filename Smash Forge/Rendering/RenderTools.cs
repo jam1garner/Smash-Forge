@@ -1,18 +1,14 @@
 ﻿using System;
-using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Drawing;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using System.Drawing.Imaging;
 using System.Diagnostics;
-using System.Reflection;
 using SALT.PARAMS;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
-using SFGraphics.GLObjects.Shaders;
-using SFGraphics.GLObjects;
 using SFGraphics.Cameras;
 
 
@@ -32,29 +28,49 @@ namespace Smash_Forge.Rendering
 
         // Keep a context around to avoid setting up after making each context.
         public static GameWindow dummyResourceWindow;
-        private static bool hasSetUpOpenTK = false;
+
+        public enum OpenTKSetupStatus
+        {
+            Succeeded,
+            Failed,
+            Unitialized
+        }
+
+        public static OpenTKSetupStatus OpenTKStatus
+        {
+            get { return openTKStatus; }
+        }
+        private static OpenTKSetupStatus openTKStatus = OpenTKSetupStatus.Unitialized;
+
         private static DebugProc debugProc;
 
+        [HandleProcessCorruptedStateExceptions]
         public static void SetUpOpenTkRendering()
         {
-            if (hasSetUpOpenTK)
+            if (openTKStatus == OpenTKSetupStatus.Succeeded)
                 return;
 
-            // Make a dummy context so shaders, textures, etc don't become unloaded.
-            GraphicsContext.ShareContexts = true;
-            dummyResourceWindow = CreateGameWindowContext();
-
-            if (Runtime.enableOpenTKDebugOutput)
+            try
             {
-                EnableOpenTKDebugOutput();
+                // Make a permanent context to share resources.
+                GraphicsContext.ShareContexts = true;
+                dummyResourceWindow = CreateGameWindowContext();
+
+                if (Runtime.enableOpenTKDebugOutput)
+                    EnableOpenTKDebugOutput();
+
+                LoadTextures();
+                ScreenDrawing.screenQuadVbo = ScreenDrawing.CreateScreenQuadBuffer();
+                GetOpenGLSystemInfo();
+                ShaderTools.SetupShaders();
+
+                openTKStatus = OpenTKSetupStatus.Succeeded;
             }
-
-            LoadTextures();
-            ScreenDrawing.screenQuadVbo = ScreenDrawing.CreateScreenQuadBuffer();
-            GetOpenGLSystemInfo();
-            ShaderTools.SetupShaders();
-
-            hasSetUpOpenTK = true;
+            catch (AccessViolationException)
+            {
+                // Context creation failed.
+                openTKStatus = OpenTKSetupStatus.Failed;
+            }
         }
 
         // This isn't free, so skip this step when not debugging.

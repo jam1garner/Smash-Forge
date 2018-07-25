@@ -2,26 +2,17 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
-using System.Linq;
-using OpenTK;
-using System.Data;
-using Octokit;
 using System.Diagnostics;
-using System.Drawing.Imaging;
 using System.Threading;
-using Microsoft.VisualBasic.Devices;
 using Smash_Forge.GUI.Menus;
 using Smash_Forge.GUI.Editors;
 using SALT.PARAMS;
 using SALT.Graphics;
-using OpenTK.Graphics.OpenGL;
 using System.ComponentModel;
+using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Lights;
-using System.Text;
-using System.Drawing;
 
 namespace Smash_Forge
 {
@@ -75,6 +66,11 @@ namespace Smash_Forge
             if (Smash_Forge.Update.Downloaded && Instance.greenArrowPictureBox.Image == null)
                 Instance.greenArrowPictureBox.Image = Resources.Resources.sexy_green_down_arrow;
             DiscordSettings.Update();
+
+            // Avoid constantly failing slow setup.
+            // It may work again when creating a GLControl.
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Failed)
+                RenderTools.SetUpOpenTkRendering();
         }
 
         ~MainForm()
