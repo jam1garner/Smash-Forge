@@ -266,7 +266,7 @@ void main()
 	    brightness = max(nDot1, 0.0);
 		float level = floor(brightness * levels);
 		brightness = level / levels;
-		brightness = brightness * 5;
+		brightness = brightness;
 	}
 	else
 	{

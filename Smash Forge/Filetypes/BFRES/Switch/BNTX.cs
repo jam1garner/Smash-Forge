@@ -365,11 +365,13 @@ namespace Smash_Forge
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SRGB)
                     {
-                        texture.type = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext;
+                        byte[] fixBC1 = DDS_Decompress.DecompressBC1(texture.data, texture.width, texture.height, true);
+                        texture.data = fixBC1;
+                        texture.type = PixelInternalFormat.Rgba;
+                        texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else
                         throw new Exception("Unsupported data type for BC1");
-
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC2):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
@@ -423,7 +425,7 @@ namespace Smash_Forge
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
                     {
-                        byte[] fixBC5 = DecompressBC5(texture.data, texture.width, texture.height, true);
+                        byte[] fixBC5 = DDS_Decompress.DecompressBC5(texture.data, texture.width, texture.height, true);
                         texture.data = fixBC5;
                         texture.type = PixelInternalFormat.Rgba;
                         texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
@@ -452,254 +454,6 @@ namespace Smash_Forge
 
             RenderableTex.Add(texture);
 
-        }
-
-
-
-        //Huge thanks to gdkchan and AbooodXD for the method of decomp BC5/BC4.
-
-        //Todo. Add these to DDS code and add in methods to compress and decode more formats
-        //BC7 also needs to be decompressed properly since OpenTK can't decompress those
-
-        //BC4 actually breaks a bit with artifacts so i'll need to go back and fix
-        internal static byte[] DecompressBC4(Byte[] data, int width, int height, bool IsSNORM)
-        {
-            int W = (width + 3) / 4;
-            int H = (height + 3) / 4;
-
-            byte[] Output = new byte[width * height * 4];
-
-            for (int Y = 0; Y < H; Y++)
-            {
-                for (int X = 0; X < W; X++)
-                {
-                    int IOffs = (Y * W + X) * 8;
-
-                    byte[] Red = new byte[8];
-
-                    Red[0] = data[IOffs + 0];
-                    Red[1] = data[IOffs + 1];
-
-                    CalculateBC3Alpha(Red);
-
-                    int RedLow = Get32(data, IOffs + 2);
-                    int RedHigh = Get16(data, IOffs + 6);
-
-                    ulong RedCh = (uint)RedLow | (ulong)RedHigh << 32;
-
-                    int TOffset = 0;
-                    int TW = Math.Min(width - X * 4, 4);
-                    int TH = Math.Min(height - Y * 4, 4);
-
-                    for (int TY = 0; TY < TH; TY++)
-                    {
-                        for (int TX = 0; TX < TW; TX++)
-                        {
-                            int OOffset = ((Y * 4 + TY) * width + (X * 4 + TX)) * 4;
-
-                            byte RedPx = Red[(RedCh >> (TY * 12 + TX * 3)) & 7];
-
-                            Output[OOffset + 0] = RedPx;
-                            Output[OOffset + 1] = RedPx;
-                            Output[OOffset + 2] = RedPx;
-                            Output[OOffset + 3] = 0xff;
-
-                            TOffset += 4;
-                        }
-                    }
-                }
-            }
-
-            return Output;
-        }
-
-        internal static byte[] DecompressBC5(Byte[] data, int width, int height, bool IsSNORM)
-        {
-            int W = (width + 3) / 4;
-            int H = (height + 3) / 4;
-
-
-            byte[] Output = new byte[width * height * 4];
-
-            for (int Y = 0; Y < H; Y++)
-            {
-                for (int X = 0; X < W; X++)
-
-                {
-                    int IOffs = (Y * W + X) * 16;
-                    byte[] Red = new byte[8];
-                    byte[] Green = new byte[8];
-
-                    Red[0] = data[IOffs + 0];
-                    Red[1] = data[IOffs + 1];
-
-                    Green[0] = data[IOffs + 8];
-                    Green[1] = data[IOffs + 9];
-
-                    if (IsSNORM == true)
-                    {
-                        CalculateBC3AlphaS(Red);
-                        CalculateBC3AlphaS(Green);
-                    }
-                    else
-                    {
-                        CalculateBC3Alpha(Red);
-                        CalculateBC3Alpha(Green);
-                    }
-
-                    int RedLow = Get32(data, IOffs + 2);
-                    int RedHigh = Get16(data, IOffs + 6);
-
-                    int GreenLow = Get32(data, IOffs + 10);
-                    int GreenHigh = Get16(data, IOffs + 14);
-
-                    ulong RedCh = (uint)RedLow | (ulong)RedHigh << 32;
-                    ulong GreenCh = (uint)GreenLow | (ulong)GreenHigh << 32;
-
-                    int TW = Math.Min(width - X * 4, 4);
-                    int TH = Math.Min(height - Y * 4, 4);
-
-
-                    if (IsSNORM == true)
-                    {
-                        for (int TY = 0; TY < TH; TY++)
-                        {
-                            for (int TX = 0; TX < TW; TX++)
-                            {
-
-                                int Shift = TY * 12 + TX * 3;
-                                int OOffset = ((Y * 4 + TY) * width + (X * 4 + TX)) * 4;
-
-                                byte RedPx = Red[(RedCh >> Shift) & 7];
-                                byte GreenPx = Green[(GreenCh >> Shift) & 7];
-
-                                if (IsSNORM == true)
-                                {
-                                    RedPx += 0x80;
-                                    GreenPx += 0x80;
-                                }
-
-                                float NX = (RedPx / 255f) * 2 - 1;
-                                float NY = (GreenPx / 255f) * 2 - 1;
-                                float NZ = (float)Math.Sqrt(1 - (NX * NX + NY * NY));
-
-                                Output[OOffset + 0] = Clamp((NX + 1) * 0.5f);
-                                Output[OOffset + 1] = Clamp((NY + 1) * 0.5f);
-                                Output[OOffset + 2] = Clamp((NZ + 1) * 0.5f);
-                                Output[OOffset + 3] = 0xff;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        for (int TY = 0; TY < TH; TY++)
-                        {
-                            for (int TX = 0; TX < TW; TX++)
-                            {
-
-                                int Shift = TY * 12 + TX * 3;
-                                int OOffset = ((Y * 4 + TY) * width + (X * 4 + TX)) * 4;
-
-                                byte RedPx = Red[(RedCh >> Shift) & 7];
-                                byte GreenPx = Green[(GreenCh >> Shift) & 7];
-
-                                Output[OOffset + 0] = RedPx;
-                                Output[OOffset + 1] = GreenPx;
-                                Output[OOffset + 2] = 255;
-                                Output[OOffset + 3] = 255;
-
-                            }
-                        }
-                    }
-                }
-            }
-            return Output;
-        }
-
-        public static int Get16(byte[] Data, int Address)
-        {
-            return
-                Data[Address + 0] << 0 |
-                Data[Address + 1] << 8;
-        }
-
-        public static int Get32(byte[] Data, int Address)
-        {
-            return
-                Data[Address + 0] << 0 |
-                Data[Address + 1] << 8 |
-                Data[Address + 2] << 16 |
-                Data[Address + 3] << 24;
-        }
-
-        private static byte Clamp(float Value)
-        {
-            if (Value > 1)
-            {
-                return 0xff;
-            }
-            else if (Value < 0)
-            {
-                return 0;
-            }
-            else
-            {
-                return (byte)(Value * 0xff);
-            }
-        }
-
-        private static void CalculateBC3Alpha(byte[] Alpha)
-        {
-            for (int i = 2; i < 8; i++)
-            {
-                if (Alpha[0] > Alpha[1])
-                {
-                    Alpha[i] = (byte)(((8 - i) * Alpha[0] + (i - 1) * Alpha[1]) / 7);
-                }
-                else if (i < 6)
-                {
-                    Alpha[i] = (byte)(((6 - i) * Alpha[0] + (i - 1) * Alpha[1]) / 7);
-                }
-                else if (i == 6)
-                {
-                    Alpha[i] = 0;
-                }
-                else /* i == 7 */
-                {
-                    Alpha[i] = 0xff;
-                }
-            }
-        }
-        private static void CalculateBC3AlphaS(byte[] Alpha)
-        {
-            for (int i = 2; i < 8; i++)
-            {
-                if ((sbyte)Alpha[0] > (sbyte)Alpha[1])
-                {
-                    Alpha[i] = (byte)(((8 - i) * (sbyte)Alpha[0] + (i - 1) * (sbyte)Alpha[1]) / 7);
-                }
-                else if (i < 6)
-                {
-                    Alpha[i] = (byte)(((6 - i) * (sbyte)Alpha[0] + (i - 1) * (sbyte)Alpha[1]) / 7);
-                }
-                else if (i == 6)
-                {
-                    Alpha[i] = 0x80;
-                }
-                else /* i == 7 */
-                {
-                    Alpha[i] = 0x7f;
-                }
-            }
-        }
-
-        public static byte[] DecodeBC7(int X, int Y, int block)
-        {
-            byte[] result = null;
-
-            //Alright so BC7 decompression as multple modes
-
-            return result;
         }
 
         public class BRTI_Texture

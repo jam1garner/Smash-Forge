@@ -452,35 +452,36 @@ namespace Smash_Forge
                         BFRES.FSKA fska = new BFRES.FSKA();
                         fska.Read(modelContainer.BFRES.TargetWiiUBFRES, anim, modelContainer.BFRES.TargetSwitchBFRES);
                     }
+
+                    if (modelContainer.BFRES.FSHUCount != 0)
+                    {
+                        BFRES.FSHU fshu = new BFRES.FSHU();
+                        fshu.Read(modelContainer.BFRES.TargetWiiUBFRES, anim, modelContainer);
+                    }
+                    
                     if (modelContainer.BFRES.FMAACount != 0)
                     {
-                        FMAA fmaa = new FMAA();
+                        BFRES.FMAA fmaa = new BFRES.FMAA();
                         fmaa.Read(modelContainer.BFRES.TargetSwitchBFRES, anim, modelContainer);
                     }
                     if (modelContainer.BFRES.FTXPCount != 0)
                     {
-                        FTXP ftxp = new FTXP();
+                        BFRES.FTXP ftxp = new BFRES.FTXP();
                         ftxp.Read(modelContainer.BFRES.TargetWiiUBFRES, anim, modelContainer);
                     }
                     if (modelContainer.BFRES.FSHACount != 0)
                     {
-                        FSHA fsha = new FSHA();
+                        BFRES.FSHA fsha = new BFRES.FSHA();
                         fsha.Read(modelContainer.BFRES.TargetSwitchBFRES, anim, modelContainer);
                     }
                     if (modelContainer.BFRES.FVISCount != 0)
                     {
-                        FVIS fvis = new FVIS();
+                        BFRES.FVIS fvis = new BFRES.FVIS();
                         fvis.Read(modelContainer.BFRES.TargetSwitchBFRES, anim, modelContainer);
 
                     }
                     mvp.AnimList.treeView1.Nodes.Add(anim);
                 }
-            }
-
-            if (modelContainer.BFRES.models.Count != 0)
-            {
-             //   FSKLTreePanel editor = new FSKLTreePanel(Runtime.TargetVBN);
-             //   AddDockedControl(editor);
             }
 
             // Reset the camera. 

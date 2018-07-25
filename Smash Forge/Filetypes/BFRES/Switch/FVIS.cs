@@ -13,78 +13,80 @@ using Syroot.NintenTools.Yaz0;
 
 namespace Smash_Forge
 {
-
-    public class FVIS
+    public partial class BFRES : TreeNode
     {
-        public static AnimationGroupNode ThisAnimation;
-
-        public void Read(Syroot.NintenTools.NSW.Bfres.ResFile b, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
+        public class FVIS
         {
+            public static AnimationGroupNode ThisAnimation;
 
-            TreeNode BoneVISAnimation = new TreeNode() { Text = "Bone Visual Animations" };
-            ThisAnimation.Nodes.Add(BoneVISAnimation);
-
-            int i = 0;
-            foreach (Syroot.NintenTools.NSW.Bfres.VisibilityAnim vis in b.BoneVisibilityAnims)
+            public void Read(Syroot.NintenTools.NSW.Bfres.ResFile b, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
             {
-                modelContainer.BFRES_MTA = new BFRES.MTA();
 
-                ReadVIS(modelContainer.BFRES_MTA, vis);
+                TreeNode BoneVISAnimation = new TreeNode() { Text = "Bone Visual Animations" };
+                ThisAnimation.Nodes.Add(BoneVISAnimation);
 
-                BoneVISAnimation.Nodes.Add(modelContainer.BFRES_MTA);
-
-                i++;
-            }
-        }
-        public void ReadVIS(BFRES.MTA mta, Syroot.NintenTools.NSW.Bfres.VisibilityAnim vis)
-        {
-            mta.Text = vis.Name;
-            mta.FrameCount = (uint)vis.FrameCount;
-
-            int boneindx = 0;
-            if (vis.Names != null)
-            {
-                foreach (string nm in vis.Names) //Loop through every bone. Not all have base and curve data
+                int i = 0;
+                foreach (Syroot.NintenTools.NSW.Bfres.VisibilityAnim vis in b.BoneVisibilityAnims)
                 {
-                    BFRES.MatAnimEntry bone = new BFRES.MatAnimEntry();
-                    bone.Text = vis.Names[boneindx];
+                    modelContainer.BFRES_MTA = new BFRES.MTA();
 
+                    ReadVIS(modelContainer.BFRES_MTA, vis);
 
+                    BoneVISAnimation.Nodes.Add(modelContainer.BFRES_MTA);
 
-                    if (boneindx < vis.BaseDataList.Length)
+                    i++;
+                }
+            }
+            public void ReadVIS(BFRES.MTA mta, Syroot.NintenTools.NSW.Bfres.VisibilityAnim vis)
+            {
+                mta.Text = vis.Name;
+                mta.FrameCount = (uint)vis.FrameCount;
+
+                int boneindx = 0;
+                if (vis.Names != null)
+                {
+                    foreach (string nm in vis.Names) //Loop through every bone. Not all have base and curve data
                     {
-                        BFRES.MatAnimData md = new BFRES.MatAnimData();
-
-                        bool bas = vis.BaseDataList[boneindx];
-                        md.VIS_State = bas;
-                        md.Frame = 0;
-
-                        bone.matCurves.Add(md);
-                    }
+                        BFRES.MatAnimEntry bone = new BFRES.MatAnimEntry();
+                        bone.Text = vis.Names[boneindx];
 
 
-                    if (vis.Curves.Count != 0)
-                    {
-                        if (boneindx < vis.Curves.Count)
+
+                        if (boneindx < vis.BaseDataList.Length)
                         {
-                            Syroot.NintenTools.NSW.Bfres.AnimCurve cr = vis.Curves[boneindx];
+                            BFRES.MatAnimData md = new BFRES.MatAnimData();
+
+                            bool bas = vis.BaseDataList[boneindx];
+                            md.VIS_State = bas;
+                            md.Frame = 0;
+
+                            bone.matCurves.Add(md);
+                        }
 
 
-                            int frm = 0;
-                            foreach (bool bn in cr.KeyStepBoolData)
+                        if (vis.Curves.Count != 0)
+                        {
+                            if (boneindx < vis.Curves.Count)
                             {
-                                BFRES.MatAnimData md = new BFRES.MatAnimData();
-                                md.Frame = (int)cr.Frames[frm];
-                                md.VIS_State = bn;
+                                Syroot.NintenTools.NSW.Bfres.AnimCurve cr = vis.Curves[boneindx];
 
-                                bone.matCurves.Add(md);
-                                frm++;
+
+                                int frm = 0;
+                                foreach (bool bn in cr.KeyStepBoolData)
+                                {
+                                    BFRES.MatAnimData md = new BFRES.MatAnimData();
+                                    md.Frame = (int)cr.Frames[frm];
+                                    md.VIS_State = bn;
+
+                                    bone.matCurves.Add(md);
+                                    frm++;
+                                }
                             }
                         }
-                    }
-                    mta.matEntries.Add(bone);
+                        mta.matEntries.Add(bone);
 
-                    boneindx++;
+                        boneindx++;
+                    }
                 }
             }
         }

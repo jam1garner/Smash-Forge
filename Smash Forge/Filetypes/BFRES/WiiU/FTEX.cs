@@ -73,7 +73,7 @@ namespace Smash_Forge
                     break;
                 case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_SNORM):
                     //OpenTK doesn't load BC5 SNORM textures right so I'll use the same decompress method bntx has
-                    byte[] fixBC5 = BRTI.DecompressBC5(texture.data, texture.width, texture.height, true);
+                    byte[] fixBC5 = DDS_Decompress.DecompressBC5(texture.data, texture.width, texture.height, true);
                     texture.data = fixBC5;
                     texture.type = PixelInternalFormat.Rgba;
                     texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;

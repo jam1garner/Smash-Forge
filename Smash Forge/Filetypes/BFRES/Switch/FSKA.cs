@@ -36,7 +36,7 @@ namespace Smash_Forge
 
             public void Read(ResFile TargetWiiUBFRES, AnimationGroupNode ThisAnimation, ResNSW.ResFile b)
             {
-                Console.WriteLine("Reading Animations ...");
+                Console.WriteLine("Reading Skeleton Animations ...");
 
                 if (b != null)
                 {

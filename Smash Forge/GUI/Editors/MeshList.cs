@@ -84,10 +84,25 @@ namespace Smash_Forge
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
         {
             if (e.Node is NUD) {
-                
+
                 foreach (TreeNode n in e.Node.Nodes) n.Checked = e.Node.Checked;
-                
+
             }
+            if (e.Node is BFRES)
+            {
+                foreach (TreeNode n in e.Node.Nodes)
+                {
+                    n.Checked = e.Node.Checked;
+                    foreach (TreeNode m in n.Nodes)
+                    {
+                        m.Checked = e.Node.Checked;
+                    }
+                }
+            }      
+            if (e.Node is BFRES.FMDL_Model)
+                foreach (TreeNode n in e.Node.Nodes) n.Checked = e.Node.Checked;
+            if (e.Node is BFRES.Mesh)
+                foreach (TreeNode n in e.Node.Nodes) n.Checked = e.Node.Checked;
         }
 
         private void polySelected(NUD.Polygon poly, string name)

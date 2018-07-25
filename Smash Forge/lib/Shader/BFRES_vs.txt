@@ -51,8 +51,8 @@ uniform vec4 gsys_bake_st1;
 //
 //------------------------------------------------------------------------------------
 
-uniform mat4 bones[200];
-uniform int boneList[200];
+uniform mat4 bones[150];
+uniform int boneList[150];
 uniform int NoSkinning;
 uniform int RigidSkinning;
 uniform int SingleBoneIndex;
@@ -73,7 +73,6 @@ uniform vec2 SRT_Translate;
 uniform float SRT_Rotate;
 
 uniform int debugOption;
-
 
 
 vec3 skinNRM(vec3 nr, ivec4 index)

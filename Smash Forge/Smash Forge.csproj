@@ -117,6 +117,7 @@
     <Compile Include="Filetypes\BFRES\BFRES_Main.cs" />
     <Compile Include="Filetypes\BFRES\Switch\BFRES_NSW.cs" />
     <Compile Include="Filetypes\BFRES\Switch\BNTX.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\DDS_Decompress.cs" />
     <Compile Include="Filetypes\BFRES\Switch\Exporter_BFRES_XML.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FSHA.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FSKA.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="Filetypes\BFRES\Switch\Swizzle.cs" />
     <Compile Include="Filetypes\BFRES\WiiU\BFRES_WiiU.cs" />
     <Compile Include="Filetypes\BFRES\WiiU\FTEX.cs" />
+    <Compile Include="Filetypes\BFRES\WiiU\FSHU.cs" />
     <Compile Include="Filetypes\BFRES\WiiU\FTXP.cs" />
     <Compile Include="Filetypes\BYAML\BYAML.cs" />
     <Compile Include="Filetypes\BYAML\LIB\ByamlException.cs" />

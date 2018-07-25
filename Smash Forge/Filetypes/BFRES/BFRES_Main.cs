@@ -428,9 +428,11 @@ namespace Smash_Forge
                         opaque.Add(m);
                 }
 
+           
+
                 foreach (Mesh m in opaque)
                 {
-                          ApplyTransformFix(fmdl, m);
+                     ApplyTransformFix(fmdl, m);
 
                     if (m.Parent != null && (m.Parent).Checked)
                         DrawMesh(m, shader, m.material);
@@ -438,17 +440,24 @@ namespace Smash_Forge
 
                 foreach (Mesh m in transparent)
                 {
-                           ApplyTransformFix(fmdl, m);
+                     ApplyTransformFix(fmdl, m);
 
                     if (((FMDL_Model)m.Parent).Checked)
-                    {
                         DrawMesh(m, shader, m.material);
-                    }
                 }
             }
 
       
             shader.disableAttrib();
+        }
+
+        private void CheckChildren(TreeNode rootNode, bool isChecked)
+        {
+            foreach (TreeNode node in rootNode.Nodes)
+            {
+                CheckChildren(node, isChecked);
+                node.Checked = isChecked;
+            }
         }
 
         private void SetRenderSettings(Shader shader)
@@ -645,7 +654,7 @@ namespace Smash_Forge
 
 
             //BOTW uses this shader so lets add in cell shading
-            if (m.material.shaderassign.ShaderModel == "uking_mat")
+            if (mat.shaderassign.ShaderModel == "uking_mat")
                 GL.Uniform1(shader.getAttribute("enableCellShading"), 1);
 
 
@@ -969,7 +978,39 @@ namespace Smash_Forge
                                         //Set key data used by uniform and SRT data
                                         if (md.keys != null)
                                         {
+                                            Console.WriteLine(md.Value);
+                                            Console.WriteLine(md.AnimColorType);
 
+                                            //Do shader param animations. (Color, SRT, ect)
+                                            if (mesh.material.matparam.ContainsKey(md.shaderParamName))
+                                            {
+                                                ShaderParam prm = mesh.material.matparam[md.shaderParamName];
+
+
+
+
+                                                switch (prm.Type)
+                                                {
+                                                    case ShaderParamType.TexSrt:
+
+                                                        break;
+                                                    case ShaderParamType.Float:
+
+                                                        break;
+                                                    case ShaderParamType.Float2:
+
+                                                        break;
+                                                    case ShaderParamType.Float3:
+
+                                                        break;
+                                                    case ShaderParamType.Float4:
+                                                        
+
+                                                        break;
+                                                    default:
+                                                        break;
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1915,6 +1956,52 @@ namespace Smash_Forge
 
             public List<MatAnimData> matCurves = new List<MatAnimData>();
 
+
+            public void InterpolateWU(AnimCurve cr)
+            {
+                MatAnimData md = new MatAnimData();
+
+                md.Frames = new int[cr.Frames.Length];
+
+                for (int i = 0; i < (ushort)cr.Frames.Length; i++)
+                {
+                    md.Frames[i] = i;
+
+                    if (cr.CurveType == AnimCurveType.Cubic)
+                    {
+                        md.keys.Add(new AnimKey()
+                        {
+                            frame = (int)cr.Frames[i],
+                            unk1 = cr.Offset + ((cr.Keys[i, 0] * cr.Scale)),
+                            unk2 = cr.Offset + ((cr.Keys[i, 1] * cr.Scale)),
+                            unk3 = cr.Offset + ((cr.Keys[i, 2] * cr.Scale)),
+                            unk4 = cr.Offset + ((cr.Keys[i, 3] * cr.Scale)),
+                        });
+                    }
+                    if (cr.CurveType == AnimCurveType.Linear)
+                    {
+                        md.keys.Add(new AnimKey()
+                        {
+                            frame = (int)cr.Frames[i],
+                            unk1 = cr.Offset + ((cr.Keys[i, 0] * cr.Scale)),
+                            unk2 = cr.Offset + ((cr.Keys[i, 1] * cr.Scale)),
+                        });
+                    }
+                    else if (cr.CurveType == AnimCurveType.StepInt)
+                    {
+                        md.keys.Add(new AnimKey()
+                        {
+                            frame = (int)cr.Frames[i],
+                            unk1 = cr.Offset + ((cr.Keys[i, 0] * cr.Scale)),
+                        });
+                    }
+                    else if (cr.CurveType == AnimCurveType.StepBool)
+                    {
+
+                    }
+                }
+                matCurves.Add(md);
+            }
             public void Interpolate(ResNSW.AnimCurve cr)
             {
                 MatAnimData md = new MatAnimData();
@@ -1973,8 +2060,28 @@ namespace Smash_Forge
             public string MaterialName;
 
             //Pat0 data
-            public string Pat0Tex;
-            public string SamplerName;
+            public string Pat0Tex = "";
+            public string SamplerName = "";
+            public string shaderParamName = "";
+
+            public ColorType AnimColorType;
+            public enum ColorType
+            {
+                Red = 0,
+                Blue = 1,
+                Green = 2,
+                Alpha = 3,
+            }
+
+            public SRTType AnimSRTType;
+            public enum SRTType
+            {
+                ScaleX = 0,
+                ScaleY = 1,
+                Rotate = 2,
+                TranslateX = 3,
+                TranslateY = 4,
+            }
 
             public float Value;
 

@@ -13,145 +13,147 @@ using Syroot.NintenTools.Yaz0;
 
 namespace Smash_Forge
 {
-
-    public class FTXP
+    public partial class BFRES : TreeNode
     {
-        public static AnimationGroupNode ThisAnimation;
-        public static int FrameCount;
-
-        public List<BFRES.MTA> matanims = new List<BFRES.MTA>();
-
-        public void Read(ResFile b, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
+        public class FTXP
         {
-            Console.WriteLine("Reading Textue Pattern Animations ...");
+            public static AnimationGroupNode ThisAnimation;
+            public static int FrameCount;
 
-            TreeNode TexAnimation = new TreeNode() { Text = "Textue Pattern Animations" };
-            ThisAnimation.Nodes.Add(TexAnimation);
+            public List<MTA> matanims = new List<MTA>();
 
-            TreeNode dummy = new TreeNode() { Text = "Animation Set" };
-
-            foreach (TexPatternAnim tex in b.TexPatternAnims.Values)
+            public void Read(ResFile b, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
             {
-                modelContainer.BFRES_MTA = new BFRES.MTA();
+                Console.WriteLine("Reading Textue Pattern Animations ...");
 
-                BFRES_FVTX FVTX = new BFRES_FVTX(modelContainer.BFRES_MTA, tex, b);
+                TreeNode TexAnimation = new TreeNode() { Text = "Textue Pattern Animations" };
+                ThisAnimation.Nodes.Add(TexAnimation);
+
+                TreeNode dummy = new TreeNode() { Text = "Animation Set" };
+
+                foreach (TexPatternAnim tex in b.TexPatternAnims.Values)
+                {
+                    modelContainer.BFRES_MTA = new MTA();
+
+                    BFRES_FVTX FVTX = new BFRES_FVTX(modelContainer.BFRES_MTA, tex, b);
 
 
-                TexAnimation.Nodes.Add(modelContainer.BFRES_MTA);
+                    TexAnimation.Nodes.Add(modelContainer.BFRES_MTA);
+                }
             }
         }
-    }
 
-    public class BFRES_FVTX
-    {
-
-
-        public BFRES_FVTX(BFRES.MTA mta, TexPatternAnim tex, ResFile b)
+        public class BFRES_FVTX
         {
 
-            mta.Text = tex.Name;
 
-            mta.FrameCount = (uint)tex.FrameCount;
-
-
-            if (tex.TextureRefs != null || tex.TextureRefNames != null) 
+            public BFRES_FVTX(BFRES.MTA mta, TexPatternAnim tex, ResFile b)
             {
-                if (b.Version >= 0x03040000)
+
+                mta.Text = tex.Name;
+
+                mta.FrameCount = (uint)tex.FrameCount;
+
+
+                if (tex.TextureRefs != null || tex.TextureRefNames != null)
                 {
-                    foreach (var tx in tex.TextureRefs)
+                    if (b.Version >= 0x03040000)
                     {
-                        mta.Pat0.Add(tx.Key);
+                        foreach (var tx in tex.TextureRefs)
+                        {
+                            mta.Pat0.Add(tx.Key);
+                        }
                     }
-                }
-                else
-                {
-                    foreach (var tx in tex.TextureRefNames)
+                    else
                     {
-                        mta.Pat0.Add(tx.Name);
-                        Console.WriteLine(tx.Name);
+                        foreach (var tx in tex.TextureRefNames)
+                        {
+                            mta.Pat0.Add(tx.Name);
+                            Console.WriteLine(tx.Name);
+                        }
                     }
+
                 }
-           
-            }
 
-            foreach (TexPatternMatAnim matanim in tex.TexPatternMatAnims)
-            {
-                BFRES.MatAnimEntry mat = new BFRES.MatAnimEntry();
-
-                mat.Text = matanim.Name;
-                Console.WriteLine($"MatAnim = {mat.Text}");
-                Console.WriteLine($"Curve Count = {matanim.Curves.Count}");
-
-                if (matanim.Curves.Count == 0)
+                foreach (TexPatternMatAnim matanim in tex.TexPatternMatAnims)
                 {
-                    int CurTex = 0;
-                    foreach (PatternAnimInfo inf in matanim.PatternAnimInfos)
+                    BFRES.MatAnimEntry mat = new BFRES.MatAnimEntry();
+
+                    mat.Text = matanim.Name;
+                    Console.WriteLine($"MatAnim = {mat.Text}");
+                    Console.WriteLine($"Curve Count = {matanim.Curves.Count}");
+
+                    if (matanim.Curves.Count == 0)
                     {
-                        if (tex.TextureRefs != null || tex.TextureRefNames != null)
+                        int CurTex = 0;
+                        foreach (PatternAnimInfo inf in matanim.PatternAnimInfos)
+                        {
+                            if (tex.TextureRefs != null || tex.TextureRefNames != null)
+                            {
+                                BFRES.MatAnimData md = new BFRES.MatAnimData();
+
+                                md.Pat0Tex = mta.Pat0[CurTex];
+                                md.SamplerName = inf.Name;
+                                md.Frame = 0;
+
+                                mat.matCurves.Add(md);
+                            }
+                            CurTex++;
+                        }
+                    }
+
+                    int CurCurve = 0;
+                    foreach (AnimCurve cr in matanim.Curves)
+                    {
+                        for (int i = 0; i < (ushort)cr.Frames.Length; i++)
                         {
                             BFRES.MatAnimData md = new BFRES.MatAnimData();
 
-                            md.Pat0Tex = mta.Pat0[CurTex];
-                            md.SamplerName = inf.Name;
-                            md.Frame = 0;
+                            foreach (PatternAnimInfo inf in matanim.PatternAnimInfos)
+                            {
+                                if (inf.CurveIndex == CurCurve)
+                                {
+                                    md.SamplerName = inf.Name;
+                                }
+                            }
 
+                            if (tex.TextureRefs != null || tex.TextureRefNames != null)
+                            {
+                                if (cr.KeyType == AnimCurveKeyType.SByte)
+                                {
+                                    md.CurveIndex = CurCurve;
+
+                                    if (cr.Scale != 0)
+                                    {
+                                        int test = (int)cr.Keys[i, 0];
+                                        float key = cr.Offset + test * cr.Scale;
+                                        md.Pat0Tex = (mta.Pat0[(int)key]);
+                                        md.Frame = (int)cr.Frames[i];
+
+                                    }
+                                    else
+                                    {
+                                        int test = (int)cr.Keys[i, 0];
+                                        int key = cr.Offset + test;
+                                        md.Pat0Tex = (mta.Pat0[(int)key]);
+                                        md.Frame = (int)cr.Frames[i];
+                                        Console.WriteLine($"{md.Frame} {md.Pat0Tex}");
+
+                                    }
+                                }
+                            }
                             mat.matCurves.Add(md);
                         }
-                        CurTex++;
+                        CurCurve++;
                     }
-                }
 
-                int CurCurve = 0;
-                foreach (AnimCurve cr in matanim.Curves)
-                {
-                    for (int i = 0; i < (ushort)cr.Frames.Length; i++)
+                    foreach (BFRES.MatAnimData md in mat.matCurves)
                     {
-                        BFRES.MatAnimData md = new BFRES.MatAnimData();
-
-                        foreach (PatternAnimInfo inf in matanim.PatternAnimInfos)
-                        {
-                            if (inf.CurveIndex == CurCurve)
-                            {
-                                md.SamplerName = inf.Name;
-                            }
-                        }
-
-                        if (tex.TextureRefs != null || tex.TextureRefNames != null)
-                        {
-                            if (cr.KeyType == AnimCurveKeyType.SByte)
-                            {
-                                md.CurveIndex = CurCurve;
-
-                                if (cr.Scale != 0)
-                                {
-                                    int test = (int)cr.Keys[i, 0];
-                                    float key = cr.Offset + test * cr.Scale;
-                                    md.Pat0Tex = (mta.Pat0[(int)key]);
-                                    md.Frame = (int)cr.Frames[i];
-
-                                }
-                                else
-                                {
-                                    int test = (int)cr.Keys[i, 0];
-                                    int key = cr.Offset + test;
-                                    md.Pat0Tex = (mta.Pat0[(int)key]);
-                                    md.Frame = (int)cr.Frames[i];
-                                    Console.WriteLine($"{md.Frame} {md.Pat0Tex}");
-
-                                }
-                            }
-                        }
-                        mat.matCurves.Add(md);
+                        Console.WriteLine($"At frame {md.Frame} show {md.Pat0Tex} {md.SamplerName}");
                     }
-                    CurCurve++;
-                }
 
-                foreach (BFRES.MatAnimData md in mat.matCurves)
-                {
-                    Console.WriteLine($"At frame {md.Frame} show {md.Pat0Tex} {md.SamplerName}");
+                    mta.matEntries.Add(mat);
                 }
-
-                mta.matEntries.Add(mat);
             }
         }
     }

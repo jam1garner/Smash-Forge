@@ -67,6 +67,8 @@
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
             this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ShaderArchivelabel1 = new System.Windows.Forms.Label();
+            this.ShaderMdllabel2 = new System.Windows.Forms.Label();
             this.MaterialsTab.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -102,6 +104,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.ShaderMdllabel2);
+            this.tabPage1.Controls.Add(this.ShaderArchivelabel1);
             this.tabPage1.Controls.Add(this.textBox1);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
@@ -572,7 +576,7 @@
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage3.Size = new System.Drawing.Size(374, 541);
             this.tabPage3.TabIndex = 4;
-            this.tabPage3.Text = "Shader Assign";
+            this.tabPage3.Text = "Shader Options";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // dataGridView3
@@ -599,6 +603,24 @@
             // 
             this.Column7.HeaderText = "Value";
             this.Column7.Name = "Column7";
+            // 
+            // ShaderArchivelabel1
+            // 
+            this.ShaderArchivelabel1.AutoSize = true;
+            this.ShaderArchivelabel1.Location = new System.Drawing.Point(4, 33);
+            this.ShaderArchivelabel1.Name = "ShaderArchivelabel1";
+            this.ShaderArchivelabel1.Size = new System.Drawing.Size(80, 13);
+            this.ShaderArchivelabel1.TabIndex = 1;
+            this.ShaderArchivelabel1.Text = "Shader Archive";
+            // 
+            // ShaderMdllabel2
+            // 
+            this.ShaderMdllabel2.AutoSize = true;
+            this.ShaderMdllabel2.Location = new System.Drawing.Point(4, 56);
+            this.ShaderMdllabel2.Name = "ShaderMdllabel2";
+            this.ShaderMdllabel2.Size = new System.Drawing.Size(73, 13);
+            this.ShaderMdllabel2.TabIndex = 2;
+            this.ShaderMdllabel2.Text = "Shader Model";
             // 
             // BFRES_MaterialEditor
             // 
@@ -674,5 +696,7 @@
         private System.Windows.Forms.NumericUpDown FloatNumUD6;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
+        private System.Windows.Forms.Label ShaderMdllabel2;
+        private System.Windows.Forms.Label ShaderArchivelabel1;
     }
 }

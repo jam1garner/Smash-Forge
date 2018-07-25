@@ -49,6 +49,8 @@ namespace Smash_Forge
 
             mat = p.material;
             textBox1.Text = mat.Name;
+            ShaderArchivelabel1.Text += $" {mat.shaderassign.ShaderArchive}";
+            ShaderMdllabel2.Text += $" {mat.shaderassign.ShaderModel}";
 
             int CurParam = 0;
             foreach (var prm in mat.matparam)

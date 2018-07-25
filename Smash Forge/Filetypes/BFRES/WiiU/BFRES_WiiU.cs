@@ -31,9 +31,10 @@ namespace Smash_Forge
             SelectedImageKey = "bfres";
 
             FSKACount = TargetWiiUBFRES.SkeletalAnims.Count;
-            //FTXPCount = TargetWiiUBFRES.TexPatternAnims.Count;
+            FTXPCount = TargetWiiUBFRES.TexPatternAnims.Count;
+            FSHUCount = TargetWiiUBFRES.ColorAnims.Count + TargetWiiUBFRES.TexSrtAnims.Count + TargetWiiUBFRES.ShaderParamAnims.Count;
 
-            AnimationCountTotal = FSKACount + FTXPCount;
+            AnimationCountTotal = FSKACount + FTXPCount + FSHUCount;
 
             foreach (Texture tex in TargetWiiUBFRES.Textures.Values)
             {
@@ -111,7 +112,8 @@ namespace Smash_Forge
 
                     foreach (int bn in shp.SkinBoneIndices)
                     {
-                        poly.BoneIndexList.Add(model.skeleton.bones[bn].Text, bn);
+                        if (!poly.BoneIndexList.ContainsKey(model.skeleton.bones[bn].Text))
+                            poly.BoneIndexList.Add(model.skeleton.bones[bn].Text, bn);
                     }
 
                     TModels.Nodes[ModelCur].Nodes.Add(poly);
@@ -264,11 +266,11 @@ namespace Smash_Forge
 
                     MaterialData.ShaderAssign shaderassign = new MaterialData.ShaderAssign();
 
-              //      shaderassign.ShaderModel = mat.ShaderAssign.ShadingModelName;
-               //     shaderassign.ShaderArchive = mat.ShaderAssign.ShaderArchiveName;
-
                     if (mat.ShaderAssign != null) //Some special cases (env models) have none
                     {
+                        shaderassign.ShaderModel = mat.ShaderAssign.ShadingModelName;
+                        shaderassign.ShaderArchive = mat.ShaderAssign.ShaderArchiveName;
+
 
                         int o = 0;
                         foreach (var op in mat.ShaderAssign.ShaderOptions)

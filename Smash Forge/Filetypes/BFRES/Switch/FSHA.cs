@@ -13,75 +13,77 @@ using Syroot.NintenTools.Yaz0;
 
 namespace Smash_Forge
 {
-
-    public class FSHA
+    public partial class BFRES : TreeNode
     {
-        public static AnimationGroupNode ThisAnimation;
-        public static int FrameCount;
-
-        public List<BFRES.MTA> matanims = new List<BFRES.MTA>();
-
-
-
-        public void Read(ResFile b, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
+        public class FSHA
         {
-            Console.WriteLine("Reading Shape Animations ...");
+            public static AnimationGroupNode ThisAnimation;
+            public static int FrameCount;
 
-            TreeNode ShapeAnimation = new TreeNode() { Text = "Shape Animations" };
-            ThisAnimation.Nodes.Add(ShapeAnimation);
+            public List<BFRES.MTA> matanims = new List<BFRES.MTA>();
 
-            int i = 0;
-            foreach (ShapeAnim fsha in b.ShapeAnims)
+
+
+            public void Read(ResFile b, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
             {
-                modelContainer.BFRES_MTA = new BFRES.MTA();
+                Console.WriteLine("Reading Shape Animations ...");
 
-                PerShapeAnim perAnim = new PerShapeAnim(modelContainer.BFRES_MTA, fsha);
+                TreeNode ShapeAnimation = new TreeNode() { Text = "Shape Animations" };
+                ThisAnimation.Nodes.Add(ShapeAnimation);
 
-                ShapeAnimation.Nodes.Add(modelContainer.BFRES_MTA);
+                int i = 0;
+                foreach (ShapeAnim fsha in b.ShapeAnims)
+                {
+                    modelContainer.BFRES_MTA = new BFRES.MTA();
+
+                    PerShapeAnim perAnim = new PerShapeAnim(modelContainer.BFRES_MTA, fsha);
+
+                    ShapeAnimation.Nodes.Add(modelContainer.BFRES_MTA);
+                }
             }
         }
-    }
 
-    public class PerShapeAnim
-    {
-        public PerShapeAnim(BFRES.MTA mta, ShapeAnim vis)
+        public class PerShapeAnim
         {
-
-            mta.Text = vis.Name;
-            mta.ImageKey = "mesh";
-            mta.SelectedImageKey = "mesh";
-
-            mta.FrameCount = (uint)vis.FrameCount;
-
-
-            foreach (VertexShapeAnim vtxanim in vis.VertexShapeAnims)
+            public PerShapeAnim(BFRES.MTA mta, ShapeAnim vis)
             {
-                BFRES.MatAnimEntry mat = new BFRES.MatAnimEntry();
 
-                mat.ImageKey = "bone";
-                mat.SelectedImageKey = "bone";
+                mta.Text = vis.Name;
+                mta.ImageKey = "mesh";
+                mta.SelectedImageKey = "mesh";
+
+                mta.FrameCount = (uint)vis.FrameCount;
 
 
-                //First set the data then iterpolate
-                mat.Text = vtxanim.Name;
-                foreach (AnimCurve cr in vtxanim.Curves)
+                foreach (VertexShapeAnim vtxanim in vis.VertexShapeAnims)
                 {
-                    mat.Interpolate(cr);
-                }
-                mta.matEntries.Add(mat);
+                    BFRES.MatAnimEntry mat = new BFRES.MatAnimEntry();
 
-                for (int Frame = 0; Frame < vis.FrameCount; Frame++)
-                {
-                    foreach (BFRES.MatAnimData track in mat.matCurves)
+                    mat.ImageKey = "bone";
+                    mat.SelectedImageKey = "bone";
+
+
+                    //First set the data then iterpolate
+                    mat.Text = vtxanim.Name;
+                    foreach (AnimCurve cr in vtxanim.Curves)
                     {
-
-                        BFRES.AnimKey left = track.GetLeft(Frame);
-                        BFRES.AnimKey right = track.GetRight(Frame);
-
-
-
-                        track.Value = Animation.Hermite(Frame, left.frame, right.frame, 0, 0, left.unk1, right.unk1);
+                        mat.Interpolate(cr);
                     }
+
+                    for (int Frame = 0; Frame < vis.FrameCount; Frame++)
+                    {
+                        foreach (BFRES.MatAnimData track in mat.matCurves)
+                        {
+
+                            BFRES.AnimKey left = track.GetLeft(Frame);
+                            BFRES.AnimKey right = track.GetRight(Frame);
+
+
+
+                            track.Value = Animation.Hermite(Frame, left.frame, right.frame, 0, 0, left.unk1, right.unk1);
+                        }
+                    }
+                    mta.matEntries.Add(mat);
                 }
             }
         }
