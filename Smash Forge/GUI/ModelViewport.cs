@@ -1476,6 +1476,45 @@ namespace Smash_Forge
             glViewport.SwapBuffers();
         }
 
+        private void BenchmarkShapeDrawing()
+        {
+            int count = 2000;
+            ShapeDrawing.SetUp();
+
+            // Depth testing has a huge performance impact.
+            GL.Disable(EnableCap.DepthTest);
+
+            Mesh3D cubeMesh = new Mesh3D(new Vector4(1, 0, 1, 1));
+            cubeMesh.Color = ColorTools.Vector4FromColor(Color.Aquamarine);
+            cubeMesh.ScaleX = 5;
+            cubeMesh.ScaleY = 2;
+            cubeMesh.ScaleZ = 3;
+
+            Vector3[] vertices = ShapeDrawing.GetRectangularPrismPositions();
+            foreach (Vector3 vert in vertices)
+            {
+                cubeMesh.AddVertex(vert);
+            }
+
+            // Test shader rendering.
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            for (int i = 1; i < count; i++)
+            {
+                // Identical speeds to fixed function pipeline for small scale values.
+                cubeMesh.Draw(camera.MvpMatrix);               
+                //GL.Begin(PrimitiveType.TriangleStrip);
+                //foreach (Vector3 vert in vertices)
+                //{
+                //    GL.Vertex3(vert * 15);
+                //}
+                //GL.End();
+                
+            }
+            stopwatch.Stop();
+
+            Debug.WriteLine(String.Format("{0}", stopwatch.ElapsedMilliseconds));
+        }
+
         private void DrawModelsNormally(int width, int height, int defaultFbo)
         {
             // Draw the models normally.

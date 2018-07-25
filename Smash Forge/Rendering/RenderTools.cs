@@ -1437,7 +1437,6 @@ namespace Smash_Forge.Rendering
                     vbn.update();
             }
         }
-
         public static byte[] DXT5ScreenShot(GLControl gc, int x, int y, int width, int height)
         {
             int newtex;
