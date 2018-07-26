@@ -181,14 +181,16 @@ namespace Smash_Forge
                     return;
 
                 // Render the selected texture.
-                textureToRender = currentNut.glTexByHashId[tex.HASHID];
+                if (currentNut.glTexByHashId.ContainsKey(tex.HashId))
+                    textureToRender = currentNut.glTexByHashId[tex.HashId];
 
                 SetGeneralAndDimensionsText(tex);
 
                 if (tex.surfaces.Count == 6)
                 {
                     SetCubeMapText(tex);
-                    Rendering.RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh] = NUT.CreateTextureCubeMap(tex);
+                    if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+                        RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh] = NUT.CreateTextureCubeMap(tex);
                 }
                 else
                 {
@@ -301,7 +303,7 @@ namespace Smash_Forge
                 return;
 
             // Load the OpenGL texture and export the image data.
-            Texture2D texture = (Texture2D)currentNut.glTexByHashId[nutTexture.HASHID];
+            Texture2D texture = (Texture2D)currentNut.glTexByHashId[nutTexture.HashId];
             using (Bitmap image = Rendering.TextureToBitmap.RenderBitmap(texture, r, g, b, a))
             {
                 image.Save(outputPath);
@@ -319,7 +321,7 @@ namespace Smash_Forge
 
                     foreach (NutTexture texture in currentNut.Nodes)
                     {
-                        string texId = texture.HASHID.ToString("X");
+                        string texId = texture.HashId.ToString("X");
                         RenderTextureToPng(texture, f.SelectedPath + "\\" + texId + ".png", true, true, true, true);
                     }
                 }
@@ -337,7 +339,7 @@ namespace Smash_Forge
 
                     foreach (NutTexture texture in currentNut.Nodes)
                     {
-                        string texId = texture.HASHID.ToString("X");
+                        string texId = texture.HashId.ToString("X");
                         RenderTextureToPng(texture, f.SelectedPath + "\\" + texId + "_rgb.png");
                         RenderTextureToPng(texture, f.SelectedPath + "\\" + texId + "_alpha.png", false, false, false, true);
                     }
@@ -410,7 +412,7 @@ namespace Smash_Forge
             {
                 NutTexture tex = ((NutTexture)textureListBox.SelectedItem);
                 //GL.DeleteTexture(NUT.glTexByHashId[tex.HASHID]);
-                currentNut.glTexByHashId.Remove(tex.HASHID);
+                currentNut.glTexByHashId.Remove(tex.HashId);
                 currentNut.Nodes.Remove(tex);
                 FillForm();
             }
@@ -435,7 +437,7 @@ namespace Smash_Forge
 
                     if (isTex)
                         foreach (NutTexture te in currentNut.Nodes)
-                            if (texId == te.HASHID)
+                            if (texId == te.HashId)
                                 isTex = false;
 
                     NutTexture tex = null;
@@ -457,15 +459,15 @@ namespace Smash_Forge
                     Edited = true;
 
                     if (isTex)
-                        tex.HASHID = texId;
+                        tex.HashId = texId;
                     else
-                        tex.HASHID = 0x40FFFF00 | (currentNut.Nodes.Count);
+                        tex.HashId = 0x40FFFF00 | (currentNut.Nodes.Count);
 
-                    if (currentNut.glTexByHashId.ContainsKey(tex.HASHID))
-                        currentNut.glTexByHashId.Remove(tex.HASHID);
+                    if (currentNut.glTexByHashId.ContainsKey(tex.HashId))
+                        currentNut.glTexByHashId.Remove(tex.HashId);
 
                     currentNut.Nodes.Add(tex);
-                    currentNut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
+                    currentNut.glTexByHashId.Add(tex.HashId, NUT.CreateTexture2D(tex));
                     FillForm();
                 }
             }
@@ -527,19 +529,24 @@ namespace Smash_Forge
 
         private void UpdateSelectedTexId()
         {
-            int oldid = ((NutTexture)textureListBox.SelectedItem).HASHID;
+            int oldid = ((NutTexture)textureListBox.SelectedItem).HashId;
             int newid = -1;
             int.TryParse(textureIdTB.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out newid);
             if (newid == -1)
-                textureIdTB.Text = ((NutTexture)textureListBox.SelectedItem).HASHID.ToString("x");
+                textureIdTB.Text = ((NutTexture)textureListBox.SelectedItem).HashId.ToString("x");
             if (oldid != newid)
             {
                 Edited = true;
                 if (!currentNut.glTexByHashId.ContainsKey(newid))
                 {
-                    ((NutTexture)textureListBox.SelectedItem).HASHID = newid;
-                    currentNut.glTexByHashId.Add(newid, currentNut.glTexByHashId[oldid]);
-                    currentNut.glTexByHashId.Remove(oldid);
+                    ((NutTexture)textureListBox.SelectedItem).HashId = newid;
+
+                    // Update the OpenGL textures. 
+                    if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+                    {
+                        currentNut.glTexByHashId.Add(newid, currentNut.glTexByHashId[oldid]);
+                        currentNut.glTexByHashId.Remove(oldid);
+                    }
                 }
                 else
                 {
@@ -592,8 +599,8 @@ namespace Smash_Forge
                     Edited = true;
                     
                     //GL.DeleteTexture(NUT.glTexByHashId[texture.HASHID]);
-                    currentNut.glTexByHashId.Remove(texture.HASHID);
-                    currentNut.glTexByHashId.Add(texture.HASHID, NUT.CreateTexture2D(texture));
+                    currentNut.glTexByHashId.Remove(texture.HashId);
+                    currentNut.glTexByHashId.Add(texture.HashId, NUT.CreateTexture2D(texture));
 
                     FillForm();
                 }
@@ -705,8 +712,8 @@ namespace Smash_Forge
                 tex.pixelFormat = ntex.pixelFormat;
 
                 //GL.DeleteTexture(NUT.glTexByHashId[tex.HASHID]);
-                currentNut.glTexByHashId.Remove(tex.HASHID);
-                currentNut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
+                currentNut.glTexByHashId.Remove(tex.HashId);
+                currentNut.glTexByHashId.Add(tex.HashId, NUT.CreateTexture2D(tex));
 
                 FillForm();
                 textureListBox.SelectedItem = tex;
@@ -735,11 +742,11 @@ namespace Smash_Forge
                     {
                         if(tex.pixelInternalFormat == PixelInternalFormat.Rgba)
                         {
-                            string filename = Path.Combine(f.SelectedPath, $"{tex.HASHID.ToString("X")}.png");
+                            string filename = Path.Combine(f.SelectedPath, $"{tex.HashId.ToString("X")}.png");
                             ExportPNG(filename, tex);
                         }else
                         {
-                            string filename = Path.Combine(f.SelectedPath, $"{tex.HASHID.ToString("X")}.dds");
+                            string filename = Path.Combine(f.SelectedPath, $"{tex.HashId.ToString("X")}.dds");
                             DDS dds = new DDS();
                             dds.FromNutTexture(tex);
                             dds.Save(filename);
@@ -775,7 +782,7 @@ namespace Smash_Forge
                         NutTexture texture = null;
                         if (isTex)
                             foreach (NutTexture tex in nut.Nodes)
-                                if (tex.HASHID == texId)
+                                if (tex.HashId == texId)
                                     texture = tex;
 
                         if (texture == null)
@@ -793,11 +800,11 @@ namespace Smash_Forge
                             }
 
                             if (isTex)
-                                tex.HASHID = texId;
+                                tex.HashId = texId;
                             else
-                                tex.HASHID = nut.Nodes.Count;
+                                tex.HashId = nut.Nodes.Count;
                             nut.Nodes.Add(tex);
-                            currentNut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
+                            currentNut.glTexByHashId.Add(tex.HashId, NUT.CreateTexture2D(tex));
                             FillForm();
                         }
                         else
@@ -823,8 +830,8 @@ namespace Smash_Forge
                             tex.pixelFormat = ntex.pixelFormat;
 
                             //GL.DeleteTexture(NUT.glTexByHashId[tex.HASHID]);
-                            currentNut.glTexByHashId.Remove(tex.HASHID);
-                            currentNut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
+                            currentNut.glTexByHashId.Remove(tex.HashId);
+                            currentNut.glTexByHashId.Add(tex.HashId, NUT.CreateTexture2D(tex));
                             FillForm();
                         }
                     }
@@ -863,7 +870,7 @@ namespace Smash_Forge
 
                 using (var texIdSelector = new TexIdSelector())
                 {
-                    texIdSelector.Set(((NutTexture)currentNut.Nodes[0]).HASHID);
+                    texIdSelector.Set(((NutTexture)currentNut.Nodes[0]).HashId);
                     texIdSelector.ShowDialog();
                     if (texIdSelector.exitStatus == TexIdSelector.ExitStatus.Opened)
                     {
@@ -926,8 +933,11 @@ namespace Smash_Forge
             {
                 // Make sure the shaders and textures are ready for rendering.
                 RenderTools.SetUpOpenTkRendering();
-                pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
-                currentNut.RefreshGlTexturesByHashId();
+                if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+                {
+                    pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
+                    currentNut.RefreshGlTexturesByHashId();
+                }
             }
         }
 

@@ -31,7 +31,7 @@ namespace Smash_Forge
             get { return (byte)surfaces[0].mipmaps.Count; }
         }
 
-        public int HASHID
+        public int HashId
         {
             get
             {
@@ -120,7 +120,7 @@ namespace Smash_Forge
         
         public override string ToString()
         {
-            return HASHID.ToString("x").ToUpper();
+            return HashId.ToString("x").ToUpper();
         }
 
         public int ImageSize
@@ -259,7 +259,7 @@ namespace Smash_Forge
         {
             suc = null;
             foreach (NutTexture t in Nodes)
-                if (t.HASHID == hash)
+                if (t.HashId == hash)
                 {
                     suc = t;
                     return true;
@@ -321,9 +321,9 @@ namespace Smash_Forge
                 byte surfaceCount = (byte)texture.surfaces.Count;
                 bool isCubemap = surfaceCount == 6;
                 if (surfaceCount < 1 || surfaceCount > 6)
-                    throw new NotImplementedException($"Unsupported surface amount {surfaceCount} for texture with hash 0x{texture.HASHID:X}. 1 to 6 faces are required.");
+                    throw new NotImplementedException($"Unsupported surface amount {surfaceCount} for texture with hash 0x{texture.HashId:X}. 1 to 6 faces are required.");
                 else if (surfaceCount > 1 && surfaceCount < 6)
-                    throw new NotImplementedException($"Unsupported cubemap face amount for texture with hash 0x{texture.HASHID:X}. Six faces are required.");
+                    throw new NotImplementedException($"Unsupported cubemap face amount for texture with hash 0x{texture.HashId:X}. Six faces are required.");
                 byte mipmapCount = (byte)texture.surfaces[0].mipmaps.Count;
 
                 ushort headerSize = 0x50;
@@ -428,7 +428,7 @@ namespace Smash_Forge
 
                 o.writeUInt(0x47494458); // "GIDX"
                 o.writeInt(0x10);
-                o.writeInt(texture.HASHID);
+                o.writeInt(texture.HashId);
                 o.writeInt(0);
             }
             o.writeOutput(data);
@@ -510,7 +510,7 @@ namespace Smash_Forge
                     }
                     else
                     {
-                        throw new NotImplementedException($"Unsupported cubemap face amount for texture {i} with hash 0x{tex.HASHID:X}. Six faces are required.");
+                        throw new NotImplementedException($"Unsupported cubemap face amount for texture {i} with hash 0x{tex.HashId:X}. Six faces are required.");
                     }
                 }
 
@@ -550,7 +550,7 @@ namespace Smash_Forge
 
                 d.skip(4); //GIDX
                 d.readInt(); //Always 0x10
-                tex.HASHID = d.readInt();
+                tex.HashId = d.readInt();
                 d.skip(4); // padding align 8
 
                 if (Version == 0x100)
@@ -623,7 +623,7 @@ namespace Smash_Forge
                     }
                     else
                     {
-                        throw new NotImplementedException($"Unsupported cubemap face amount for texture {i} with hash 0x{tex.HASHID:X}. Six faces are required.");
+                        throw new NotImplementedException($"Unsupported cubemap face amount for texture {i} with hash 0x{tex.HashId:X}. Six faces are required.");
                     }
                 }
 
@@ -662,7 +662,7 @@ namespace Smash_Forge
 
                 d.skip(4); //GIDX
                 d.readInt(); //Always 0x10
-                tex.HASHID = d.readInt();
+                tex.HashId = d.readInt();
                 d.skip(4); // padding align 8
 
                 d.seek(gtxHeaderOffset);
@@ -759,13 +759,13 @@ namespace Smash_Forge
 
             foreach (NutTexture tex in Nodes)
             {
-                if (!glTexByHashId.ContainsKey(tex.HASHID))
+                if (!glTexByHashId.ContainsKey(tex.HashId))
                 {
                     // Check if the texture is a cube map.
                     if (tex.surfaces.Count == 6)
-                        glTexByHashId.Add(tex.HASHID, CreateTextureCubeMap(tex));
+                        glTexByHashId.Add(tex.HashId, CreateTextureCubeMap(tex));
                     else
-                        glTexByHashId.Add(tex.HASHID, CreateTexture2D(tex));
+                        glTexByHashId.Add(tex.HashId, CreateTexture2D(tex));
                 }
             }
         }
@@ -774,7 +774,7 @@ namespace Smash_Forge
         {
             foreach (var nut in Runtime.TextureContainers)
                 foreach(NutTexture tex in nut.Nodes)
-                    if (tex.HASHID == texId)
+                    if (tex.HashId == texId)
                         return true;
             return false;
         }
@@ -791,15 +791,15 @@ namespace Smash_Forge
 
             foreach (NutTexture tex in Nodes)
             {
-                Texture originalTexture = glTexByHashId[tex.HASHID];
-                glTexByHashId.Remove(tex.HASHID);
+                Texture originalTexture = glTexByHashId[tex.HashId];
+                glTexByHashId.Remove(tex.HashId);
 
                 // Only change the first 3 bytes.
-                tex.HASHID = tex.HASHID & 0xFF;
+                tex.HashId = tex.HashId & 0xFF;
                 int first3Bytes = (int)(newTexId & 0xFFFFFF00);
-                tex.HASHID = tex.HASHID | first3Bytes;
+                tex.HashId = tex.HashId | first3Bytes;
 
-                glTexByHashId.Add(tex.HASHID, originalTexture);
+                glTexByHashId.Add(tex.HashId, originalTexture);
             }
         }
 
@@ -809,7 +809,7 @@ namespace Smash_Forge
             List<byte> previous4thBytes = new List<byte>();
             foreach (NutTexture tex in Nodes)
             {
-                byte fourthByte = (byte) (tex.HASHID & 0xFF);
+                byte fourthByte = (byte) (tex.HashId & 0xFF);
                 if (!(previous4thBytes.Contains(fourthByte)))
                     previous4thBytes.Add(fourthByte);
                 else

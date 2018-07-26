@@ -203,7 +203,7 @@ namespace Smash_Forge
                             // Checks to see if the texture is in the nut. 
                             foreach (NutTexture nutTex in nut.Nodes)
                             {
-                                if (matTex.hash == nutTex.HASHID)
+                                if (matTex.hash == nutTex.HashId)
                                 {
                                     validTextureId = true;
                                     break;

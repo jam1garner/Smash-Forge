@@ -70,7 +70,7 @@ namespace Smash_Forge
             if (n == null) return;
 
             byte[] data = RenderTools.DXT5ScreenShot(view.glViewport, view.shootX, view.shootY, view.shootWidth, view.shootHeight);
-            int id = n.Nodes.Count > 0 ? ((NutTexture)n.Nodes[0]).HASHID : 0x280052B7;
+            int id = n.Nodes.Count > 0 ? ((NutTexture)n.Nodes[0]).HashId : 0x280052B7;
             n.Nodes.Clear();
             n.glTexByHashId.Clear();
 
@@ -80,9 +80,9 @@ namespace Smash_Forge
             tex.surfaces.Add(new TextureSurface());
             tex.surfaces[0].mipmaps.Add(FlipDXT5(data, tex.Width, tex.Height));
             tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
-            tex.HASHID = id;
+            tex.HashId = id;
             n.Nodes.Add(tex);
-            n.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
+            n.glTexByHashId.Add(tex.HashId, NUT.CreateTexture2D(tex));
             ((MenuItem)sender).GetContextMenu().SourceControl.Invalidate();
 
             if (((MenuItem)sender).GetContextMenu().SourceControl == stock_90_renderer)
@@ -255,17 +255,17 @@ namespace Smash_Forge
         {
             if (tex.Width == width && tex.Height == height)
             {
-                tex.HASHID = 0x280052B7;
+                tex.HashId = 0x280052B7;
                 if (nut != null && nut.Nodes.Count > 0)
                 {
-                    tex.HASHID = ((NutTexture)nut.Nodes[0]).HASHID;
+                    tex.HashId = ((NutTexture)nut.Nodes[0]).HashId;
                 }
                 if(nut == null)
                     nut = new NUT();
                 nut.Nodes.Clear();
                 nut.glTexByHashId.Clear();
                 nut.Nodes.Add(tex);
-                nut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
+                nut.glTexByHashId.Add(tex.HashId, NUT.CreateTexture2D(tex));
             }
             else
             {
@@ -312,7 +312,7 @@ namespace Smash_Forge
 
             foreach(NutTexture tex in nut.Nodes)
             {
-                ScreenDrawing.DrawTexturedQuad(nut.glTexByHashId[tex.HASHID].Id, tex.Width, tex.Height, true, true, true, true, true);
+                ScreenDrawing.DrawTexturedQuad(nut.glTexByHashId[tex.HashId].Id, tex.Width, tex.Height, true, true, true, true, true);
             }
 
             glControl1.SwapBuffers();

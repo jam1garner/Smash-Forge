@@ -281,7 +281,7 @@ namespace Smash_Forge
         {
             NutTexture tex = new NutTexture();
             tex.isDds = true;
-            tex.HASHID = 0x48415348;
+            tex.HashId = 0x48415348;
             tex.Height = (int)header.height;
             tex.Width = (int)header.width;
             byte surfaceCount = 1;

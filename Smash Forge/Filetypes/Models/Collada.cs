@@ -277,17 +277,17 @@ namespace Smash_Forge
                 if (tex == null)
                     //continue;
                     texturemap.Add(image.initref, tex);
-                tex.HASHID = 0x40FFFF00;
-                while (NUT.texIdUsed(tex.HASHID))
-                    tex.HASHID++;
+                tex.HashId = 0x40FFFF00;
+                while (NUT.texIdUsed(tex.HashId))
+                    tex.HashId++;
                 nut.Nodes.Add(tex);
-                nut.glTexByHashId.Add(tex.HASHID, NUT.CreateTexture2D(tex));
+                nut.glTexByHashId.Add(tex.HashId, NUT.CreateTexture2D(tex));
                 existingTextures.Add(image.initref, tex);
                 tempTex = tex;
             }
             if (tempTex != null)
             {
-                npoly.materials[0].textures[0].hash = tempTex.HASHID;
+                npoly.materials[0].textures[0].hash = tempTex.HashId;
             }
         }
 
