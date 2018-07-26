@@ -54,22 +54,20 @@ namespace Smash_Forge
             Text = "New NUT";
 
             SetUpFileSystemWatcher();
-            SetUpRendering();
             SetUpContextMenus();
         }
 
-        private void SetUpRendering()
+        public NUTEditor(NUT nut) : this()
         {
-            if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
-            {
-                // Make sure the shaders and textures are ready for rendering.
-                OpenTKSharedResources.InitializeSharedResources();
-                if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
-                {
-                    pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
-                    currentNut.RefreshGlTexturesByHashId();
-                }
-            }
+            SelectNUT(nut);
+        }
+
+        public NUTEditor(string filePath) : this()
+        {
+            NUT nut = new NUT(filePath);
+            FilePath = filePath;
+            Edited = false;
+            SelectNUT(nut);
         }
 
         private void SetUpFileSystemWatcher()
@@ -128,19 +126,6 @@ namespace Smash_Forge
                 exportAllPng.Enabled = false;
                 exportAllPngAlpha.Enabled = false;
             }
-        }
-
-        public NUTEditor(NUT nut) : this()
-        {
-            SelectNUT(nut);
-        }
-
-        public NUTEditor(string filePath) : this()
-        {
-            NUT nut = new NUT(filePath);
-            FilePath = filePath;
-            Edited = false;
-            SelectNUT(nut);
         }
 
         public override void Save()
@@ -316,8 +301,11 @@ namespace Smash_Forge
 
             // Draw the texture to the screen.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            Rendering.ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
-                currentMipLevel);
+            if (textureToRender != null)
+            {
+                ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
+                    currentMipLevel);
+            }
 
             glControl1.SwapBuffers();
         }
@@ -1033,7 +1021,18 @@ namespace Smash_Forge
 
         private void glControl1_Load(object sender, EventArgs e)
         {
+            SetUpRendering();
+        }
 
+        private void SetUpRendering()
+        {
+            // Make sure the shaders and textures are ready for rendering.
+            OpenTKSharedResources.InitializeSharedResources();
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            {
+                currentNut.RefreshGlTexturesByHashId();
+                pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
+            }
         }
     }
 }
