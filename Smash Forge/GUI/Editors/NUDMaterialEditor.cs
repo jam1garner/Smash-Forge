@@ -839,7 +839,7 @@ namespace Smash_Forge
             if (!tabControl1.SelectedTab.Text.Equals("Textures"))
                 return;
 
-            if (!OpenTKSharedResources.shaders["Texture"].ProgramCreatedSuccessfully())
+            if (!OpenTKSharedResources.shaders["Texture"].ProgramCreatedSuccessfully)
                 return;
 
             // Get the selected NUT texture.

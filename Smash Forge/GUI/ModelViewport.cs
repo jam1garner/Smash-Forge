@@ -1915,7 +1915,15 @@ namespace Smash_Forge
             {
                 OpenTKSharedResources.InitializeSharedResources();
                 if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+                {
                     SetupBuffersAndTextures();
+
+                    if (Runtime.enableOpenTKDebugOutput)
+                    {
+                        glViewport.MakeCurrent();
+                        OpenTKSharedResources.EnableOpenTKDebugOutput();
+                    }
+                }
             }
         }
 

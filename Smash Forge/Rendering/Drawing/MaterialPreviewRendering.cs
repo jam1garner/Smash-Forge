@@ -48,7 +48,7 @@ namespace Smash_Forge.Rendering
                 shader = OpenTKSharedResources.shaders["NudSphere"];
 
                 // Skip thumbnail generation if the shader didn't compile.
-                if (!shader.ProgramCreatedSuccessfully())
+                if (!shader.ProgramCreatedSuccessfully)
                     return;
 
                 // HACK: This isn't a very clean way to pass resources around.

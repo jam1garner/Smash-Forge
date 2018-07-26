@@ -25,7 +25,7 @@ namespace Smash_Forge.Rendering
 
         public static void DrawNudMaterialSphere(Shader shader, NUD.Material material, BufferObject screenVbo, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
         {
-            if (!shader.ProgramCreatedSuccessfully())
+            if (!shader.ProgramCreatedSuccessfully)
                 return;
 
             shader.UseProgram();

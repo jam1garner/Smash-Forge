@@ -152,7 +152,7 @@ namespace Smash_Forge.Rendering
             int successfulCompilations = OpenTKSharedResources.shaders.Count;
             foreach (string shaderName in OpenTKSharedResources.shaders.Keys)
             {
-                if (!OpenTKSharedResources.shaders[shaderName].ProgramCreatedSuccessfully())
+                if (!OpenTKSharedResources.shaders[shaderName].ProgramCreatedSuccessfully)
                 {
                     compileErrorList.Add(shaderName);
                     successfulCompilations -= 1;

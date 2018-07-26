@@ -63,17 +63,21 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        // This isn't free, so skip this step when not debugging.
         public static void EnableOpenTKDebugOutput()
         {
 #if DEBUG
-            GL.Enable(EnableCap.DebugOutput);
-            GL.Enable(EnableCap.DebugOutputSynchronous);
-            debugProc = DebugCallback;
-            GL.DebugMessageCallback(debugProc, IntPtr.Zero);
-            int[] ids = { };
-            GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare,
-                DebugSeverityControl.DontCare, 0, ids, true);
+            // This isn't free, so skip this step when not debugging.
+            // TODO: Only works with Intel integrated.
+            if (SFGraphics.Tools.OpenTKExtensionTools.IsAvailable("GL_KHR_debug"))
+            {
+                GL.Enable(EnableCap.DebugOutput);
+                GL.Enable(EnableCap.DebugOutputSynchronous);
+                debugProc = DebugCallback;
+                GL.DebugMessageCallback(debugProc, IntPtr.Zero);
+                int[] ids = { };
+                GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare,
+                    DebugSeverityControl.DontCare, 0, ids, true);
+            }
 #endif
         }
 

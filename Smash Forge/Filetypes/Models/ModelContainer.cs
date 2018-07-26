@@ -246,12 +246,12 @@ namespace Smash_Forge
                 }
             }
 
-            if (DatMelee != null && OpenTKSharedResources.shaders["Dat"].ProgramCreatedSuccessfully())
+            if (DatMelee != null && OpenTKSharedResources.shaders["Dat"].ProgramCreatedSuccessfully)
             {
                 DatMelee.Render(camera.MvpMatrix);
             }
 
-            if (NUD != null && OpenTKSharedResources.shaders["Nud"].ProgramCreatedSuccessfully() && OpenTKSharedResources.shaders["NudDebug"].ProgramCreatedSuccessfully())
+            if (NUD != null && OpenTKSharedResources.shaders["Nud"].ProgramCreatedSuccessfully && OpenTKSharedResources.shaders["NudDebug"].ProgramCreatedSuccessfully)
             {
                 // Choose the appropriate shader.
                 if (drawShadow)

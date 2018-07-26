@@ -353,7 +353,7 @@ namespace Smash_Forge
 
             facedata = face.ToArray();
 
-            if (Rendering.OpenTKSharedResources.shaders["Dat"].ProgramCreatedSuccessfully())
+            if (Rendering.OpenTKSharedResources.shaders["Dat"].ProgramCreatedSuccessfully)
                 SetupShader();
         }
 

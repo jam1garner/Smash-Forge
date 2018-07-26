@@ -96,7 +96,7 @@ namespace Smash_Forge.Rendering
         public void Draw(Matrix4 mvpMatrix)
         {
             Shader shader = OpenTKSharedResources.shaders["SolidColor3D"];
-            if (!shader.ProgramCreatedSuccessfully())
+            if (!shader.ProgramCreatedSuccessfully)
                 return;
 
             // Set up.
