@@ -315,7 +315,7 @@ namespace Smash_Forge
 
         public void UpdateVertexBuffers()
         {
-            if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
                 UpdateVertexBuffers(positionVbo, elementsIbo);
         }
 
@@ -336,11 +336,11 @@ namespace Smash_Forge
             // Choose the correct shader.
             Shader shader;
             if (drawShadow)
-                shader = Runtime.shaders["Shadow"];
+                shader = OpenTKSharedResources.shaders["Shadow"];
             else if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                shader = Runtime.shaders["NudDebug"];
+                shader = OpenTKSharedResources.shaders["NudDebug"];
             else
-                shader = Runtime.shaders["Nud"];
+                shader = OpenTKSharedResources.shaders["Nud"];
 
             // Render using the selected shader.
             shader.UseProgram();
@@ -1230,7 +1230,7 @@ namespace Smash_Forge
 
         public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)
         {
-            Shader shader = Runtime.shaders["Point"];
+            Shader shader = OpenTKSharedResources.shaders["Point"];
             shader.UseProgram();
             Matrix4 mat = camera.MvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref mat);

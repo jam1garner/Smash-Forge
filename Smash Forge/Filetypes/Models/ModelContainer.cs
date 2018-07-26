@@ -229,12 +229,12 @@ namespace Smash_Forge
             Shader shader;
 
             // 3DS MBN
-            shader = Runtime.shaders["Mbn"];
+            shader = OpenTKSharedResources.shaders["Mbn"];
             shader.UseProgram();
             SetMbnUniforms(camera, shader);
 
             // Melee DAT
-            shader = Runtime.shaders["Dat"];
+            shader = OpenTKSharedResources.shaders["Dat"];
             shader.UseProgram();
             SetDatUniforms(shader);
 
@@ -246,20 +246,20 @@ namespace Smash_Forge
                 }
             }
 
-            if (DatMelee != null && Runtime.shaders["Dat"].ProgramCreatedSuccessfully())
+            if (DatMelee != null && OpenTKSharedResources.shaders["Dat"].ProgramCreatedSuccessfully())
             {
                 DatMelee.Render(camera.MvpMatrix);
             }
 
-            if (NUD != null && Runtime.shaders["Nud"].ProgramCreatedSuccessfully() && Runtime.shaders["NudDebug"].ProgramCreatedSuccessfully())
+            if (NUD != null && OpenTKSharedResources.shaders["Nud"].ProgramCreatedSuccessfully() && OpenTKSharedResources.shaders["NudDebug"].ProgramCreatedSuccessfully())
             {
                 // Choose the appropriate shader.
                 if (drawShadow)
-                    shader = Runtime.shaders["Shadow"];
+                    shader = OpenTKSharedResources.shaders["Shadow"];
                 else if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                    shader = Runtime.shaders["NudDebug"];
+                    shader = OpenTKSharedResources.shaders["NudDebug"];
                 else
-                    shader = Runtime.shaders["Nud"];
+                    shader = OpenTKSharedResources.shaders["Nud"];
 
                 shader.UseProgram();
 

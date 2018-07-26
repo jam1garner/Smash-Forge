@@ -68,7 +68,7 @@ namespace Smash_Forge.Rendering
         public static void DrawRectangularPrism(Matrix4 mvpMatrix, float scaleX = 1, float scaleY = 1, float scaleZ = 1,
             float centerX = 0, float centerY = 0, float centerZ = 0)
         {
-            Shader shader = Runtime.shaders["SolidColor3D"];
+            Shader shader = OpenTKSharedResources.shaders["SolidColor3D"];
             if (!shader.ProgramCreatedSuccessfully())
                 return;
 

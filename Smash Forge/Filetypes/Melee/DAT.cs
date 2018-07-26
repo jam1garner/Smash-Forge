@@ -353,7 +353,7 @@ namespace Smash_Forge
 
             facedata = face.ToArray();
 
-            if (Runtime.shaders["Dat"].ProgramCreatedSuccessfully())
+            if (Rendering.OpenTKSharedResources.shaders["Dat"].ProgramCreatedSuccessfully())
                 SetupShader();
         }
 
@@ -366,7 +366,7 @@ namespace Smash_Forge
             if (shader == null)
             {
                 shader = new Shader();
-                shader = Runtime.shaders["Dat"];
+                shader = Rendering.OpenTKSharedResources.shaders["Dat"];
             }
             
             GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
@@ -382,7 +382,7 @@ namespace Smash_Forge
             if (shader == null)
                 return;
 
-            shader = Runtime.shaders["Dat"];
+            shader = Rendering.OpenTKSharedResources.shaders["Dat"];
             shader.UseProgram();
 
             GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelview"), false, ref modelview);

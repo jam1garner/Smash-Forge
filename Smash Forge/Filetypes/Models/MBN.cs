@@ -147,7 +147,7 @@ namespace Smash_Forge
             if (shader == null)
             {
                 shader = new Shader();
-                shader = Runtime.shaders["Mbn"];
+                shader = Rendering.OpenTKSharedResources.shaders["Mbn"];
             }
         }
 

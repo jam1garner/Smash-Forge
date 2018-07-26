@@ -26,8 +26,6 @@ namespace Smash_Forge
             Animnames = new Dictionary<uint, string>();
         }
 
-        public static Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
-
         public static List<NUT> TextureContainers = new List<NUT>();
         public static List<NUS3BANK> SoundContainers = new List<NUS3BANK>();
 

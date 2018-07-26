@@ -63,8 +63,8 @@ namespace Smash_Forge
             if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
             {
                 // Make sure the shaders and textures are ready for rendering.
-                RenderTools.SetUpOpenTkRendering();
-                if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+                OpenTKSharedResources.InitializeSharedResources();
+                if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
                 {
                     pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
                     currentNut.RefreshGlTexturesByHashId();
@@ -123,7 +123,7 @@ namespace Smash_Forge
             NUTMenu.MenuItems.Add(texid);
 
             // Disable unavailable options.
-            if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Failed)
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Failed)
             {
                 exportAllPng.Enabled = false;
                 exportAllPngAlpha.Enabled = false;
@@ -214,7 +214,7 @@ namespace Smash_Forge
                 if (tex.surfaces.Count == 6)
                 {
                     SetCubeMapText(tex);
-                    if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+                    if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
                         RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh] = NUT.CreateTextureCubeMap(tex);
                 }
                 else
@@ -296,10 +296,10 @@ namespace Smash_Forge
 
         private void RenderTexture()
         {
-            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded || glControl1 == null)
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || glControl1 == null)
                 return;
 
-            if (!Runtime.shaders["Texture"].ProgramCreatedSuccessfully())
+            if (!OpenTKSharedResources.shaders["Texture"].ProgramCreatedSuccessfully())
                 return;
 
             glControl1.MakeCurrent();
@@ -324,7 +324,7 @@ namespace Smash_Forge
 
         private void RenderTextureToPng(NutTexture nutTexture, string outputPath, bool r = true, bool g = true, bool b = true, bool a = false)
         {
-            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded || glControl1 == null)
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || glControl1 == null)
                 return;
 
             // Load the OpenGL texture and export the image data.
@@ -384,7 +384,7 @@ namespace Smash_Forge
                 sfd.FileName = tex.ToString() + ".dds";
 
                 // OpenGL is used for simplifying conversion to PNG.
-                if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+                if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
                 {
                     sfd.Filter = "Supported Formats|*.dds;*.png|" +
                                  "DirectDraw Surface (.dds)|*.dds|" +
@@ -577,7 +577,7 @@ namespace Smash_Forge
                     ((NutTexture)textureListBox.SelectedItem).HashId = newid;
 
                     // Update the OpenGL textures. 
-                    if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+                    if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
                     {
                         currentNut.glTexByHashId.Add(newid, currentNut.glTexByHashId[oldid]);
                         currentNut.glTexByHashId.Remove(oldid);

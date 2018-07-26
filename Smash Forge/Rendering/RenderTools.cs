@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Runtime.ExceptionServices;
 using System.Drawing;
 using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Diagnostics;
 using SALT.PARAMS;
@@ -25,85 +23,6 @@ namespace Smash_Forge.Rendering
         public static Texture uvTestPattern;
         public static Texture boneWeightGradient;
         public static Texture boneWeightGradient2;
-
-        // Keep a context around to avoid setting up after making each context.
-        public static GameWindow dummyResourceWindow;
-
-        public enum OpenTKSetupStatus
-        {
-            Succeeded,
-            Failed,
-            Unitialized
-        }
-
-        public static OpenTKSetupStatus OpenTKStatus
-        {
-            get { return openTKStatus; }
-        }
-        private static OpenTKSetupStatus openTKStatus = OpenTKSetupStatus.Unitialized;
-
-        private static DebugProc debugProc;
-
-        [HandleProcessCorruptedStateExceptions]
-        public static void SetUpOpenTkRendering()
-        {
-            if (openTKStatus == OpenTKSetupStatus.Succeeded)
-                return;
-
-            try
-            {
-                // Make a permanent context to share resources.
-                GraphicsContext.ShareContexts = true;
-                dummyResourceWindow = CreateGameWindowContext();
-
-                if (Runtime.enableOpenTKDebugOutput)
-                    EnableOpenTKDebugOutput();
-
-                LoadTextures();
-                ScreenDrawing.screenQuadVbo = ScreenDrawing.CreateScreenQuadBuffer();
-                GetOpenGLSystemInfo();
-                ShaderTools.SetupShaders();
-
-                openTKStatus = OpenTKSetupStatus.Succeeded;
-            }
-            catch (AccessViolationException)
-            {
-                // Context creation failed.
-                openTKStatus = OpenTKSetupStatus.Failed;
-            }
-        }
-
-        // This isn't free, so skip this step when not debugging.
-        public static void EnableOpenTKDebugOutput()
-        {
-#if DEBUG
-            GL.Enable(EnableCap.DebugOutput);
-            GL.Enable(EnableCap.DebugOutputSynchronous);
-            debugProc = DebugCallback;
-            GL.DebugMessageCallback(debugProc, IntPtr.Zero);
-            int[] ids = { };
-            GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare,
-                DebugSeverityControl.DontCare, 0, ids, true);
-#endif
-        }
-
-        private static void DebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
-        {
-            string debugMessage = Marshal.PtrToStringAnsi(message, length);
-            Debug.WriteLine(String.Format("{0} {1} {2}", severity, type, debugMessage));
-        }
-
-        public static GameWindow CreateGameWindowContext(int width = 640, int height = 480)
-        {
-            GraphicsMode mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
-
-            // TODO: Versions higher than 300 do not work for some reason.
-            GameWindow gameWindow = new GameWindow(width, height, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
-
-            gameWindow.Visible = false;
-            gameWindow.MakeCurrent();
-            return gameWindow;
-        }
 
         public static void LoadTextures()
         {
@@ -156,13 +75,6 @@ namespace Smash_Forge.Rendering
             dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
 
             return dummyTextures;
-        }
-
-        private static void GetOpenGLSystemInfo()
-        {
-            Runtime.renderer = GL.GetString(StringName.Renderer);
-            Runtime.openGLVersion = GL.GetString(StringName.Version);
-            Runtime.GLSLVersion = GL.GetString(StringName.ShadingLanguageVersion);
         }
 
         public static void drawTranslator(Matrix4 view)

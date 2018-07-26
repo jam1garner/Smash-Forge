@@ -27,8 +27,8 @@ namespace Smash_Forge.GUI.Menus
 
         private void glControl1_Load(object sender, EventArgs e)
         {
-            RenderTools.SetUpOpenTkRendering();
-            if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+            OpenTKSharedResources.InitializeSharedResources();
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
             {
                 if (sourceNud != null)
                 {
@@ -39,7 +39,7 @@ namespace Smash_Forge.GUI.Menus
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
-            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             glControl1.MakeCurrent();

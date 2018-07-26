@@ -69,8 +69,8 @@ namespace Smash_Forge
 
             // Avoid constantly failing slow setup.
             // It may work again when creating a GLControl.
-            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Failed)
-                RenderTools.SetUpOpenTkRendering();
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Failed)
+                OpenTKSharedResources.InitializeSharedResources();
             else
             {
                 // Disable options that would cause crashes.
