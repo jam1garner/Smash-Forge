@@ -101,7 +101,7 @@
             this.uvCountUpDown.Margin = new System.Windows.Forms.Padding(2);
             this.uvCountUpDown.DecimalPlaces = 0;
             this.uvCountUpDown.Minimum = 0x0;
-            this.uvCountUpDown.Maximum = 0xF;
+            this.uvCountUpDown.Maximum = 0x4;
             this.uvCountUpDown.Value = 0;
             this.uvCountUpDown.Name = "uvCountUpDown";
             this.uvCountUpDown.Size = new System.Drawing.Size(40, 17);
