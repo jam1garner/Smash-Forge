@@ -654,7 +654,7 @@ namespace Smash_Forge
                 NutTexture tex = new NutTexture();
                 tex.Width = texturesLinker[key].Width;
                 tex.Height = texturesLinker[key].Height;
-                tex.HASHID = 0x401B1000 + texid;
+                tex.HashId = 0x401B1000 + texid;
                 tex.surfaces.Add(new TextureSurface());
                 byte[] mip1 = ConvertBitmapToByteArray(texturesLinker[key]);
                 Console.WriteLine(mip1.Length);

@@ -1840,7 +1840,7 @@ namespace Smash_Forge
         {
             GL.PopAttrib();
             NutTexture tex = ((NutTexture)meshList.filesTreeView.SelectedNode);
-            ScreenDrawing.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HASHID].Id, tex.Width, tex.Height);
+            ScreenDrawing.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HashId].Id, tex.Width, tex.Height);
         }
 
         private void DrawBchTex()
@@ -1863,6 +1863,9 @@ namespace Smash_Forge
 
         private void glViewport_Paint(object sender, PaintEventArgs e)
         {
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+                return;
+
             Render(sender, e, glViewport.Width, glViewport.Height);
 
             // Make sure unused resources get cleaned up.
@@ -1911,14 +1914,8 @@ namespace Smash_Forge
             if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
             {
                 RenderTools.SetUpOpenTkRendering();
-                SetupBuffersAndTextures();
-
-                // TODO: Might be redundant.
-                glViewport.MakeCurrent();
-                if (Runtime.enableOpenTKDebugOutput)
-                {
-                    RenderTools.EnableOpenTKDebugOutput();
-                }
+                if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+                    SetupBuffersAndTextures();
             }
         }
 

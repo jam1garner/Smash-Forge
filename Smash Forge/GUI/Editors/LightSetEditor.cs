@@ -724,7 +724,7 @@ namespace Smash_Forge.GUI.Editors
 
         private void stageLightingTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Render solid black to avoid displaying the stage light text from the other tabs.
+            // TODO: Use tab name instead of index.
             switch (stageLightingTabControl.SelectedIndex)
             {
                 case 0:
@@ -734,7 +734,7 @@ namespace Smash_Forge.GUI.Editors
                     areaColorGLControl.Invalidate();
                     break;
                 case 4:
-                    RenderLightMapColor();
+                    //RenderLightMapColor();
                     break;
             }
         }
@@ -942,6 +942,9 @@ namespace Smash_Forge.GUI.Editors
 
         private void charDifColorGLControl_Paint(object sender, PaintEventArgs e)
         {
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+                return;
+
             charDifColorGLControl.MakeCurrent();
             GL.Viewport(charDifColorGLControl.ClientRectangle);
 
@@ -957,6 +960,9 @@ namespace Smash_Forge.GUI.Editors
 
         private void areaColorGLControl_Paint(object sender, PaintEventArgs e)
         {
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+                return;
+
             areaColorGLControl.MakeCurrent();
             GL.Viewport(areaColorGLControl.ClientRectangle);
 

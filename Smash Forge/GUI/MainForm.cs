@@ -1898,7 +1898,7 @@ namespace Smash_Forge
                         cmd.WaitForExit();
 
                         NutTexture tex = new DDS(new FileData("TexConv/temp.dds")).ToNutTexture();
-                        tex.HASHID = fileNum;
+                        tex.HashId = fileNum;
                         n.glTexByHashId.Add(fileNum, NUT.CreateTexture2D(tex));
                         n.Nodes.Add(tex);
                     }
