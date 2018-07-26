@@ -32,11 +32,14 @@ namespace Smash_Forge
         // Rendering Stuff
         private Texture textureToRender = null;
         Framebuffer pngExportFramebuffer;
+
         private bool renderR = true;
         private bool renderG = true;
         private bool renderB = true;
         private bool renderAlpha = true;
+
         private bool keepAspectRatio = false;
+
         private int currentMipLevel = 0;
 
         private bool dontModify;
@@ -50,11 +53,26 @@ namespace Smash_Forge
             FilePath = "";
             Text = "New NUT";
 
-            SetupFileSystemWatcher();
-            SetupContextMenus();
+            SetUpFileSystemWatcher();
+            SetUpRendering();
+            SetUpContextMenus();
         }
 
-        private void SetupFileSystemWatcher()
+        private void SetUpRendering()
+        {
+            if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
+            {
+                // Make sure the shaders and textures are ready for rendering.
+                RenderTools.SetUpOpenTkRendering();
+                if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+                {
+                    pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
+                    currentNut.RefreshGlTexturesByHashId();
+                }
+            }
+        }
+
+        private void SetUpFileSystemWatcher()
         {
             fw = new FileSystemWatcher();
             fw.Path = Path.GetTempPath();
@@ -64,7 +82,7 @@ namespace Smash_Forge
             fw.Filter = "";
         }
 
-        private void SetupContextMenus()
+        private void SetUpContextMenus()
         {
             // Texture Context Menu
             MenuItem replace = new MenuItem("Replace");
@@ -103,6 +121,13 @@ namespace Smash_Forge
             MenuItem texid = new MenuItem("Set TEXID for NUT");
             texid.Click += texIDToolStripMenuItem_Click;
             NUTMenu.MenuItems.Add(texid);
+
+            // Disable unavailable options.
+            if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Failed)
+            {
+                exportAllPng.Enabled = false;
+                exportAllPngAlpha.Enabled = false;
+            }
         }
 
         public NUTEditor(NUT nut) : this()
@@ -351,15 +376,26 @@ namespace Smash_Forge
         {
             if (currentNut == null || textureListBox.SelectedItem == null)
                 return;
+
             using (var sfd = new SaveFileDialog())
             {
                 NutTexture tex = (NutTexture)(textureListBox.SelectedItem);
 
                 sfd.FileName = tex.ToString() + ".dds";
-                sfd.Filter = "Supported Formats|*.dds;*.png|" +
-                             "DirectDraw Surface (.dds)|*.dds|" +
-                             "Portable Network Graphics (.png)|*.png|" +
-                             "All files(*.*)|*.*";
+
+                // OpenGL is used for simplifying conversion to PNG.
+                if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+                {
+                    sfd.Filter = "Supported Formats|*.dds;*.png|" +
+                                 "DirectDraw Surface (.dds)|*.dds|" +
+                                 "Portable Network Graphics (.png)|*.png|" +
+                                 "All files(*.*)|*.*";
+                }
+                else
+                {
+                    sfd.Filter = "DirectDraw Surface (.dds)|*.dds|" +
+                                 "All files(*.*)|*.*";
+                }
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
@@ -411,7 +447,6 @@ namespace Smash_Forge
             if (textureListBox.SelectedIndex >= 0 && currentNut != null)
             {
                 NutTexture tex = ((NutTexture)textureListBox.SelectedItem);
-                //GL.DeleteTexture(NUT.glTexByHashId[tex.HASHID]);
                 currentNut.glTexByHashId.Remove(tex.HashId);
                 currentNut.Nodes.Remove(tex);
                 FillForm();
@@ -929,16 +964,7 @@ namespace Smash_Forge
 
         private void NUTEditor_Load(object sender, EventArgs e)
         {
-            if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
-            {
-                // Make sure the shaders and textures are ready for rendering.
-                RenderTools.SetUpOpenTkRendering();
-                if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
-                {
-                    pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
-                    currentNut.RefreshGlTexturesByHashId();
-                }
-            }
+
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)

@@ -71,11 +71,17 @@ namespace Smash_Forge
             // It may work again when creating a GLControl.
             if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Failed)
                 RenderTools.SetUpOpenTkRendering();
+            else
+            {
+                // Disable options that would cause crashes.
+                reloadShadersToolStripMenuItem.Enabled = false;
+                exportErrorLogToolStripMenuItem.Enabled = false;
+            }
         }
 
         ~MainForm()
         {
-            System.Windows.Forms.Application.Idle -= AppIdle;
+            Application.Idle -= AppIdle;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -94,7 +100,7 @@ namespace Smash_Forge
             if(File.Exists(Path.Combine(executableDir, "version.txt")))
                 Text = "Smash Forge | Build: " + File.ReadAllText(Path.Combine(executableDir, "version.txt"));
 
-            System.Windows.Forms.Application.Idle += AppIdle;
+            Application.Idle += AppIdle;
 
             allViewsPreset(new Object(), new EventArgs());
 
@@ -1705,7 +1711,7 @@ namespace Smash_Forge
 
         private void reloadShadersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Rendering.ShaderTools.SetupShaders();
+            ShaderTools.SetupShaders();
         }
 
         private void open3DSCharacterToolStripMenuItem_Click(object sender, EventArgs e)

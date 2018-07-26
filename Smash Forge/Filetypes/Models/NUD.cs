@@ -315,7 +315,8 @@ namespace Smash_Forge
 
         public void UpdateVertexBuffers()
         {
-            UpdateVertexBuffers(positionVbo, elementsIbo);
+            if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+                UpdateVertexBuffers(positionVbo, elementsIbo);
         }
 
         public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)

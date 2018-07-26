@@ -28,14 +28,20 @@ namespace Smash_Forge.GUI.Menus
         private void glControl1_Load(object sender, EventArgs e)
         {
             RenderTools.SetUpOpenTkRendering();
-            if (sourceNud != null)
+            if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
             {
-                NudUvRendering.InitializeUVBufferData(sourceNud);
+                if (sourceNud != null)
+                {
+                    NudUvRendering.InitializeUVBufferData(sourceNud);
+                }
             }
         }
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
+            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+                return;
+
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
             // Draw darker to make the UVs visible.
