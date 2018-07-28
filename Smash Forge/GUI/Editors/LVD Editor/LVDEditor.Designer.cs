@@ -80,6 +80,8 @@
             this.pointShapeZUpDown = new System.Windows.Forms.NumericUpDown();
             this.pointShapeYUpDown = new System.Windows.Forms.NumericUpDown();
             this.pointShapeXUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label31 = new System.Windows.Forms.Label();
+            this.pointShapeIdUpDown = new System.Windows.Forms.NumericUpDown();
             this.point2dGroup = new System.Windows.Forms.GroupBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
@@ -116,16 +118,26 @@
             this.label27 = new System.Windows.Forms.Label();
             this.rectUpperY = new System.Windows.Forms.NumericUpDown();
             this.rectUpperX = new System.Windows.Forms.NumericUpDown();
-            this.label29 = new System.Windows.Forms.Label();
             this.treeViewPath = new System.Windows.Forms.TreeView();
-            this.label32 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
             this.button8 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
+            this.label29 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
             this.pathNodeY = new System.Windows.Forms.NumericUpDown();
             this.pathNodeX = new System.Windows.Forms.NumericUpDown();
-            this.label30 = new System.Windows.Forms.Label();
-            this.label31 = new System.Windows.Forms.Label();
+            this.damageShapeGroup = new System.Windows.Forms.GroupBox();
+            this.label53 = new System.Windows.Forms.Label();
+            this.label54 = new System.Windows.Forms.Label();
+            this.label55 = new System.Windows.Forms.Label();
+            this.damageShapeXUpDown = new System.Windows.Forms.NumericUpDown();
+            this.damageShapeYUpDown = new System.Windows.Forms.NumericUpDown();
+            this.damageShapeZUpDown = new System.Windows.Forms.NumericUpDown();
+            this.damageShapeX2UpDown = new System.Windows.Forms.NumericUpDown();
+            this.damageShapeY2UpDown = new System.Windows.Forms.NumericUpDown();
+            this.damageShapeZ2UpDown = new System.Windows.Forms.NumericUpDown();
+            this.label56 = new System.Windows.Forms.Label();
+            this.damageShapeRadiusUpDown = new System.Windows.Forms.NumericUpDown();
             this.meleeCollisionGroup = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -192,6 +204,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeZUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeYUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeXUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pointShapeIdUpDown)).BeginInit();
             this.point2dGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yPointUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xPointUpDown)).BeginInit();
@@ -210,6 +223,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.rectUpperX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeX)).BeginInit();
+            this.damageShapeGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeXUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeYUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeZUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeX2UpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeY2UpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeZ2UpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeRadiusUpDown)).BeginInit();
             this.meleeCollisionGroup.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -239,6 +260,7 @@
             this.flowLayoutPanel1.Controls.Add(this.boundsGroup);
             this.flowLayoutPanel1.Controls.Add(this.itemSpawnerGroup);
             this.flowLayoutPanel1.Controls.Add(this.shapeGroup);
+            this.flowLayoutPanel1.Controls.Add(this.damageShapeGroup);
             this.flowLayoutPanel1.Controls.Add(this.meleeCollisionGroup);
             this.flowLayoutPanel1.Controls.Add(this.groupBox1);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -775,26 +797,15 @@
             // 
             // cliffLineIndexUpDown
             // 
+            this.cliffLineIndexUpDown.DecimalPlaces = 0;
             this.cliffLineIndexUpDown.Location = new System.Drawing.Point(40, 73);
             this.cliffLineIndexUpDown.Margin = new System.Windows.Forms.Padding(2);
-            this.cliffLineIndexUpDown.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.cliffLineIndexUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.cliffLineIndexUpDown.Maximum = 1;
+            this.cliffLineIndexUpDown.Minimum = 1;
             this.cliffLineIndexUpDown.Name = "cliffLineIndexUpDown";
             this.cliffLineIndexUpDown.Size = new System.Drawing.Size(36, 20);
             this.cliffLineIndexUpDown.TabIndex = 34;
-            this.cliffLineIndexUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.cliffLineIndexUpDown.Value = 1;
             this.cliffLineIndexUpDown.ValueChanged += new System.EventHandler(this.cliff_ValueChanged);
             // 
             // cliffAngleUpDown
@@ -865,11 +876,13 @@
             this.point3dGroup.Controls.Add(this.pointShapeZUpDown);
             this.point3dGroup.Controls.Add(this.pointShapeYUpDown);
             this.point3dGroup.Controls.Add(this.pointShapeXUpDown);
+            this.point3dGroup.Controls.Add(this.label31);
+            this.point3dGroup.Controls.Add(this.pointShapeIdUpDown);
             this.point3dGroup.Location = new System.Drawing.Point(2, 753);
             this.point3dGroup.Margin = new System.Windows.Forms.Padding(2);
             this.point3dGroup.Name = "point3dGroup";
             this.point3dGroup.Padding = new System.Windows.Forms.Padding(2);
-            this.point3dGroup.Size = new System.Drawing.Size(276, 46);
+            this.point3dGroup.Size = new System.Drawing.Size(276, 80);
             this.point3dGroup.TabIndex = 34;
             this.point3dGroup.TabStop = false;
             this.point3dGroup.Text = "3D Point";
@@ -964,6 +977,29 @@
             this.pointShapeXUpDown.Size = new System.Drawing.Size(56, 20);
             this.pointShapeXUpDown.TabIndex = 32;
             this.pointShapeXUpDown.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(6, 52);
+            this.label31.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(14, 13);
+            this.label31.TabIndex = 32;
+            this.label31.Text = "ID";
+            // 
+            // pointShapeIdUpDown
+            // 
+            this.pointShapeIdUpDown.DecimalPlaces = 0;
+            this.pointShapeIdUpDown.Location = new System.Drawing.Point(32, 50);
+            this.pointShapeIdUpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.pointShapeIdUpDown.Maximum = 2147483647;
+            this.pointShapeIdUpDown.Minimum = -2147483648;
+            this.pointShapeIdUpDown.Name = "pointShapeIdUpDown";
+            this.pointShapeIdUpDown.Size = new System.Drawing.Size(86, 20);
+            this.pointShapeIdUpDown.TabIndex = 34;
+            this.pointShapeIdUpDown.Value = 0;
+            this.pointShapeIdUpDown.ValueChanged += new System.EventHandler(this.pointShape_ValueChanged);
             // 
             // point2dGroup
             // 
@@ -1357,24 +1393,22 @@
             this.shapeGroup.Controls.Add(this.label27);
             this.shapeGroup.Controls.Add(this.rectUpperY);
             this.shapeGroup.Controls.Add(this.rectUpperX);
-            this.shapeGroup.Controls.Add(this.label29);
             this.shapeGroup.Controls.Add(this.treeViewPath);
-            this.shapeGroup.Controls.Add(this.label32);
             this.shapeGroup.Controls.Add(this.label28);
             this.shapeGroup.Controls.Add(this.button8);
             this.shapeGroup.Controls.Add(this.button9);
+            this.shapeGroup.Controls.Add(this.label29);
+            this.shapeGroup.Controls.Add(this.label30);
             this.shapeGroup.Controls.Add(this.pathNodeY);
             this.shapeGroup.Controls.Add(this.pathNodeX);
-            this.shapeGroup.Controls.Add(this.label30);
-            this.shapeGroup.Controls.Add(this.label31);
             this.shapeGroup.Location = new System.Drawing.Point(2, 1228);
             this.shapeGroup.Margin = new System.Windows.Forms.Padding(2);
             this.shapeGroup.Name = "shapeGroup";
             this.shapeGroup.Padding = new System.Windows.Forms.Padding(2);
-            this.shapeGroup.Size = new System.Drawing.Size(276, 224);
+            this.shapeGroup.Size = new System.Drawing.Size(276, 230);
             this.shapeGroup.TabIndex = 38;
             this.shapeGroup.TabStop = false;
-            this.shapeGroup.Text = "Rectangle (Shape)";
+            this.shapeGroup.Text = "Shape";
             this.shapeGroup.Visible = false;
             // 
             // label24
@@ -1497,16 +1531,6 @@
             this.rectUpperX.TabIndex = 32;
             this.rectUpperX.ValueChanged += new System.EventHandler(this.rectValueChanged);
             // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(79, 203);
-            this.label29.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(14, 13);
-            this.label29.TabIndex = 47;
-            this.label29.Text = "Y";
-            // 
             // treeViewPath
             // 
             this.treeViewPath.HideSelection = false;
@@ -1516,16 +1540,6 @@
             this.treeViewPath.Size = new System.Drawing.Size(180, 103);
             this.treeViewPath.TabIndex = 45;
             this.treeViewPath.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewPath_AfterSelect);
-            // 
-            // label32
-            // 
-            this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(9, 203);
-            this.label32.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(14, 13);
-            this.label32.TabIndex = 46;
-            this.label32.Text = "X";
             // 
             // label28
             // 
@@ -1558,6 +1572,26 @@
             this.button9.Text = "-";
             this.button9.UseVisualStyleBackColor = true;
             this.button9.Click += new System.EventHandler(this.removePathPointButton_Click);
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(79, 203);
+            this.label29.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(14, 13);
+            this.label29.TabIndex = 47;
+            this.label29.Text = "Y";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(9, 203);
+            this.label30.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(14, 13);
+            this.label30.TabIndex = 46;
+            this.label30.Text = "X";
             // 
             // pathNodeY
             // 
@@ -1599,25 +1633,208 @@
             this.pathNodeX.TabIndex = 40;
             this.pathNodeX.ValueChanged += new System.EventHandler(this.pathValueChanged);
             // 
-            // label30
+            // damageShapeGroup
             // 
-            this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(76, 338);
-            this.label30.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(14, 13);
-            this.label30.TabIndex = 38;
-            this.label30.Text = "Y";
+            this.damageShapeGroup.Controls.Add(this.label53);
+            this.damageShapeGroup.Controls.Add(this.label54);
+            this.damageShapeGroup.Controls.Add(this.label55);
+            this.damageShapeGroup.Controls.Add(this.damageShapeXUpDown);
+            this.damageShapeGroup.Controls.Add(this.damageShapeYUpDown);
+            this.damageShapeGroup.Controls.Add(this.damageShapeZUpDown);
+            this.damageShapeGroup.Controls.Add(this.damageShapeX2UpDown);
+            this.damageShapeGroup.Controls.Add(this.damageShapeY2UpDown);
+            this.damageShapeGroup.Controls.Add(this.damageShapeZ2UpDown);
+            this.damageShapeGroup.Controls.Add(this.label56);
+            this.damageShapeGroup.Controls.Add(this.damageShapeRadiusUpDown);
+            this.damageShapeGroup.Location = new System.Drawing.Point(2, 1228);
+            this.damageShapeGroup.Margin = new System.Windows.Forms.Padding(2);
+            this.damageShapeGroup.Name = "damageShapeGroup";
+            this.damageShapeGroup.Padding = new System.Windows.Forms.Padding(2);
+            this.damageShapeGroup.Size = new System.Drawing.Size(276, 107);
+            this.damageShapeGroup.TabIndex = 38;
+            this.damageShapeGroup.TabStop = false;
+            this.damageShapeGroup.Text = "Damage Shape";
+            this.damageShapeGroup.Visible = false;
             // 
-            // label31
+            // label53
             // 
-            this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(7, 338);
-            this.label31.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(14, 13);
-            this.label31.TabIndex = 37;
-            this.label31.Text = "X";
+            this.label53.AutoSize = true;
+            this.label53.Location = new System.Drawing.Point(6, 20);
+            this.label53.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label53.Name = "label53";
+            this.label53.Size = new System.Drawing.Size(14, 13);
+            this.label53.TabIndex = 32;
+            this.label53.Text = "X";
+            // 
+            // label54
+            // 
+            this.label54.AutoSize = true;
+            this.label54.Location = new System.Drawing.Point(84, 20);
+            this.label54.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label54.Name = "label54";
+            this.label54.Size = new System.Drawing.Size(14, 13);
+            this.label54.TabIndex = 32;
+            this.label54.Text = "Y";
+            // 
+            // label55
+            // 
+            this.label55.AutoSize = true;
+            this.label55.Location = new System.Drawing.Point(162, 20);
+            this.label55.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label55.Name = "label55";
+            this.label55.Size = new System.Drawing.Size(14, 13);
+            this.label55.TabIndex = 32;
+            this.label55.Text = "Z";
+            // 
+            // damageShapeXUpDown
+            // 
+            this.damageShapeXUpDown.DecimalPlaces = 4;
+            this.damageShapeXUpDown.Location = new System.Drawing.Point(22, 18);
+            this.damageShapeXUpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.damageShapeXUpDown.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.damageShapeXUpDown.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.damageShapeXUpDown.Name = "damageShapeXUpDown";
+            this.damageShapeXUpDown.Size = new System.Drawing.Size(56, 20);
+            this.damageShapeXUpDown.TabIndex = 32;
+            this.damageShapeXUpDown.ValueChanged += new System.EventHandler(this.damageShape_ValueChanged);
+            // 
+            // damageShapeYUpDown
+            // 
+            this.damageShapeYUpDown.DecimalPlaces = 4;
+            this.damageShapeYUpDown.Location = new System.Drawing.Point(100, 18);
+            this.damageShapeYUpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.damageShapeYUpDown.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.damageShapeYUpDown.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.damageShapeYUpDown.Name = "damageShapeYUpDown";
+            this.damageShapeYUpDown.Size = new System.Drawing.Size(56, 20);
+            this.damageShapeYUpDown.TabIndex = 33;
+            this.damageShapeYUpDown.ValueChanged += new System.EventHandler(this.damageShape_ValueChanged);
+            // 
+            // damageShapeZUpDown
+            // 
+            this.damageShapeZUpDown.DecimalPlaces = 4;
+            this.damageShapeZUpDown.Location = new System.Drawing.Point(178, 18);
+            this.damageShapeZUpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.damageShapeZUpDown.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.damageShapeZUpDown.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.damageShapeZUpDown.Name = "damageShapeZUpDown";
+            this.damageShapeZUpDown.Size = new System.Drawing.Size(56, 20);
+            this.damageShapeZUpDown.TabIndex = 34;
+            this.damageShapeZUpDown.ValueChanged += new System.EventHandler(this.damageShape_ValueChanged);
+            // 
+            // damageShapeX2UpDown
+            // 
+            this.damageShapeX2UpDown.DecimalPlaces = 4;
+            this.damageShapeX2UpDown.Location = new System.Drawing.Point(22, 42);
+            this.damageShapeX2UpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.damageShapeX2UpDown.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.damageShapeX2UpDown.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.damageShapeX2UpDown.Name = "damageShapeX2UpDown";
+            this.damageShapeX2UpDown.Size = new System.Drawing.Size(56, 20);
+            this.damageShapeX2UpDown.TabIndex = 32;
+            this.damageShapeX2UpDown.ValueChanged += new System.EventHandler(this.damageShape_ValueChanged);
+            // 
+            // damageShapeY2UpDown
+            // 
+            this.damageShapeY2UpDown.DecimalPlaces = 4;
+            this.damageShapeY2UpDown.Location = new System.Drawing.Point(100, 42);
+            this.damageShapeY2UpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.damageShapeY2UpDown.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.damageShapeY2UpDown.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.damageShapeY2UpDown.Name = "damageShapeY2UpDown";
+            this.damageShapeY2UpDown.Size = new System.Drawing.Size(56, 20);
+            this.damageShapeY2UpDown.TabIndex = 33;
+            this.damageShapeY2UpDown.ValueChanged += new System.EventHandler(this.damageShape_ValueChanged);
+            // 
+            // damageShapeZ2UpDown
+            // 
+            this.damageShapeZ2UpDown.DecimalPlaces = 4;
+            this.damageShapeZ2UpDown.Location = new System.Drawing.Point(178, 42);
+            this.damageShapeZ2UpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.damageShapeZ2UpDown.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.damageShapeZ2UpDown.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.damageShapeZ2UpDown.Name = "damageShapeZ2UpDown";
+            this.damageShapeZ2UpDown.Size = new System.Drawing.Size(56, 20);
+            this.damageShapeZ2UpDown.TabIndex = 34;
+            this.damageShapeZ2UpDown.ValueChanged += new System.EventHandler(this.damageShape_ValueChanged);
+            // 
+            // label56
+            // 
+            this.label56.AutoSize = true;
+            this.label56.Location = new System.Drawing.Point(6, 78);
+            this.label56.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label56.Name = "label56";
+            this.label56.Size = new System.Drawing.Size(14, 13);
+            this.label56.TabIndex = 32;
+            this.label56.Text = "Radius";
+            // 
+            // damageShapeRadiusUpDown
+            // 
+            this.damageShapeRadiusUpDown.DecimalPlaces = 4;
+            this.damageShapeRadiusUpDown.Location = new System.Drawing.Point(48, 76);
+            this.damageShapeRadiusUpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.damageShapeRadiusUpDown.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.damageShapeRadiusUpDown.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.damageShapeRadiusUpDown.Name = "damageShapeRadiusUpDown";
+            this.damageShapeRadiusUpDown.Size = new System.Drawing.Size(56, 20);
+            this.damageShapeRadiusUpDown.TabIndex = 32;
+            this.damageShapeRadiusUpDown.ValueChanged += new System.EventHandler(this.damageShape_ValueChanged);
             // 
             // meleeCollisionGroup
             // 
@@ -2322,6 +2539,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeZUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeYUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pointShapeXUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pointShapeIdUpDown)).EndInit();
             this.point2dGroup.ResumeLayout(false);
             this.point2dGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yPointUpDown)).EndInit();
@@ -2344,6 +2562,15 @@
             ((System.ComponentModel.ISupportInitialize)(this.rectUpperX)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeX)).EndInit();
+            this.damageShapeGroup.ResumeLayout(false);
+            this.damageShapeGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeXUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeYUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeZUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeX2UpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeY2UpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeZ2UpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeRadiusUpDown)).EndInit();
             this.meleeCollisionGroup.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -2450,6 +2677,8 @@
         private System.Windows.Forms.NumericUpDown pointShapeZUpDown;
         private System.Windows.Forms.NumericUpDown pointShapeYUpDown;
         private System.Windows.Forms.NumericUpDown pointShapeXUpDown;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.NumericUpDown pointShapeIdUpDown;
         private System.Windows.Forms.GroupBox shapeGroup;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label label25;
@@ -2463,12 +2692,22 @@
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.Label label30;
         private System.Windows.Forms.NumericUpDown pathNodeY;
         private System.Windows.Forms.NumericUpDown pathNodeX;
-        private System.Windows.Forms.Label label30;
-        private System.Windows.Forms.Label label31;
-        private System.Windows.Forms.Label label29;
-        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.GroupBox damageShapeGroup;
+        private System.Windows.Forms.Label label53;
+        private System.Windows.Forms.Label label54;
+        private System.Windows.Forms.Label label55;
+        private System.Windows.Forms.NumericUpDown damageShapeXUpDown;
+        private System.Windows.Forms.NumericUpDown damageShapeYUpDown;
+        private System.Windows.Forms.NumericUpDown damageShapeZUpDown;
+        private System.Windows.Forms.NumericUpDown damageShapeX2UpDown;
+        private System.Windows.Forms.NumericUpDown damageShapeY2UpDown;
+        private System.Windows.Forms.NumericUpDown damageShapeZ2UpDown;
+        private System.Windows.Forms.Label label56;
+        private System.Windows.Forms.NumericUpDown damageShapeRadiusUpDown;
         private System.Windows.Forms.GroupBox meleeCollisionGroup;
         private System.Windows.Forms.NumericUpDown meleeY;
         private System.Windows.Forms.NumericUpDown meleeX;

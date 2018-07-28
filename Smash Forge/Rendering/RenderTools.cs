@@ -1126,7 +1126,7 @@ namespace Smash_Forge.Rendering
             float y = 0;
 
             GL.Begin(PrimitiveType.LineStrip);
-            for (int i = 0; i < precision; i++)
+            for (int i = 0; i < precision + 1; i++)
             {
                 GL.Vertex3(x + center.X, y + center.Y, center.Z);
 
@@ -1148,7 +1148,7 @@ namespace Smash_Forge.Rendering
             float y = 0;
 
             GL.Begin(PrimitiveType.LineStrip);
-            for (int i = 0; i < precision; i++)
+            for (int i = 0; i < precision + 1; i++)
             {
                 GL.Vertex3(Vector3.TransformPosition(new Vector3(x, y, 0), transform) + center);
 
