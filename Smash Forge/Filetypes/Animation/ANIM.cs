@@ -72,10 +72,10 @@ namespace Smash_Forge
 						isHeader = false;
 					else if (args [0].Equals ("angularUnit"))
 						angularUnit = args [1];
-					else if (args [0].Equals ("endTime"))
-						endTime = (int)Math.Ceiling(float.Parse (args [1]));
 					else if (args [0].Equals ("startTime"))
 						startTime = (int)Math.Ceiling(float.Parse (args [1]));
+					else if (args [0].Equals ("endTime"))
+						endTime = (int)Math.Ceiling(float.Parse (args [1]));
 				}
 
 				if (!isHeader) {
@@ -169,7 +169,7 @@ namespace Smash_Forge
 				}
 			}
 
-            a.FrameCount = endTime-1;
+            a.FrameCount = (endTime + 1) - startTime;
 
             reader.Close();
 			return a;

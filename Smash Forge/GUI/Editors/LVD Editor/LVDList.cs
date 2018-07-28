@@ -129,6 +129,14 @@ namespace Smash_Forge
                 };
                 node.ContextMenu.MenuItems.Add(AddPoint);
 
+                MenuItem AddCircle = new MenuItem("Add New General Shape (Circle)");
+                AddCircle.Click += delegate
+                {
+                    TargetLVD.generalShapes.Add(new GeneralShape() { name = "GeneralCircle_NEW", subname = "00_NEW", type = 2 });
+                    fillList();
+                };
+                node.ContextMenu.MenuItems.Add(AddCircle);
+
                 MenuItem AddRect = new MenuItem("Add New General Shape (Rectangle)");
                 AddRect.Click += delegate
                 {
