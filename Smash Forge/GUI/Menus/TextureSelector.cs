@@ -39,7 +39,7 @@ namespace Smash_Forge.GUI.Menus
         private void AddImagesFromAllTextureContainers()
         {
             // Reuse the same context to avoid CPU bottlenecks.
-            using (OpenTK.GameWindow window = Rendering.RenderTools.CreateGameWindowContext(imageWidth, imageHeight))
+            using (OpenTK.GameWindow window = Rendering.OpenTKSharedResources.CreateGameWindowContext(imageWidth, imageHeight))
             {
                 RenderTexturesAddToImageList();
             }

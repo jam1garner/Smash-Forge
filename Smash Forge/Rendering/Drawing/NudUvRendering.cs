@@ -29,7 +29,7 @@ namespace Smash_Forge.Rendering
 
         private static void DrawPolygonUv(NUD.Polygon p, int windowWidth, int windowHeight)
         {
-            Shader shader = Runtime.shaders["UV"];
+            Shader shader = OpenTKSharedResources.shaders["UV"];
             shader.UseProgram();
             shader.EnableVertexAttributes();
             uvPositionVbo.Bind();

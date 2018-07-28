@@ -856,7 +856,7 @@ namespace Smash_Forge.GUI.Editors
 
         private void charDifColorGLControl_Load(object sender, EventArgs e)
         {
-            RenderTools.SetUpOpenTkRendering();
+            OpenTKSharedResources.InitializeSharedResources();
         }
 
         private void charLightsTab_Click(object sender, EventArgs e)
@@ -942,7 +942,7 @@ namespace Smash_Forge.GUI.Editors
 
         private void charDifColorGLControl_Paint(object sender, PaintEventArgs e)
         {
-            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             charDifColorGLControl.MakeCurrent();
@@ -960,7 +960,7 @@ namespace Smash_Forge.GUI.Editors
 
         private void areaColorGLControl_Paint(object sender, PaintEventArgs e)
         {
-            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             areaColorGLControl.MakeCurrent();

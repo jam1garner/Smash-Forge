@@ -120,7 +120,7 @@ namespace Smash_Forge
             RefreshTexturesImageList();
 
             // The dummy textures will be used later. 
-            RenderTools.SetUpOpenTkRendering();
+            OpenTKSharedResources.InitializeSharedResources();
 
             // Only happens once.
             UpdateMaterialThumbnails();
@@ -135,7 +135,7 @@ namespace Smash_Forge
         private void AddTextureThumbnails(ImageList imageList)
         {
             // Reuse the same context to avoid CPU bottlenecks.
-            using (OpenTK.GameWindow gameWindow = RenderTools.CreateGameWindowContext(64, 64))
+            using (OpenTK.GameWindow gameWindow = OpenTKSharedResources.CreateGameWindowContext(64, 64))
             {
                 NUD.Material mat = currentMaterialList[currentMatIndex];
                 RenderMaterialTexturesAddToImageList(imageList, mat);
@@ -145,7 +145,7 @@ namespace Smash_Forge
         private static void RenderMaterialTexturesAddToImageList(ImageList imageList, NUD.Material mat)
         {
             // Shaders weren't initialized.
-            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             // Generate thumbnails for all textures in case the material's texture IDs are changed.
@@ -833,13 +833,13 @@ namespace Smash_Forge
 
         private void RenderTexture(bool justRenderAlpha = false)
         {
-            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             if (!tabControl1.SelectedTab.Text.Equals("Textures"))
                 return;
 
-            if (!Runtime.shaders["Texture"].ProgramCreatedSuccessfully())
+            if (!OpenTKSharedResources.shaders["Texture"].ProgramCreatedSuccessfully)
                 return;
 
             // Get the selected NUT texture.
