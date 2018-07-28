@@ -294,7 +294,7 @@ void main() {
         // ambient occlusion
         resultingColor.rgb = pow(texture(normalMap, texCoord).aaa, vec3(1));
         if (debug1 == 1)
-            resultingColor.rgb = pow(aoBlend.rgb, vec3(1));
+            resultingColor.rgb = pow(aoBlend.rgb, vec3(1 / 2.2));
     } else if (renderType == 7) {
         // uv coords
         resultingColor.rgb = vec3(displayTexCoord, 1);

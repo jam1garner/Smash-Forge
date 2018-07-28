@@ -406,7 +406,7 @@ namespace Smash_Forge
             if (this.IsDisposed)
                 return;
 
-            if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
             {
                 if (isPlaying)
                 {
@@ -431,7 +431,7 @@ namespace Smash_Forge
 
         private void MouseClickItemSelect(System.Windows.Forms.MouseEventArgs e)
         {
-            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded || glViewport == null)
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || glViewport == null)
                 return;
 
             //Mesh Selection Test
@@ -563,7 +563,7 @@ namespace Smash_Forge
 
         private void glViewport_Resize(object sender, EventArgs e)
         {
-            if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized
                 && currentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
             {
                 GL.LoadIdentity();
@@ -1384,7 +1384,7 @@ namespace Smash_Forge
         {
             // Don't render if the context and resources aren't set up properly.
             // Watching textures suddenly appear looks weird.
-            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded || Runtime.glTexturesNeedRefreshing)
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || Runtime.glTexturesNeedRefreshing)
                 return;
 
             SetupViewport(width, height);
@@ -1863,7 +1863,7 @@ namespace Smash_Forge
 
         private void glViewport_Paint(object sender, PaintEventArgs e)
         {
-            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             Render(sender, e, glViewport.Width, glViewport.Height);
@@ -1913,9 +1913,17 @@ namespace Smash_Forge
             glViewport.MakeCurrent();
             if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
             {
-                RenderTools.SetUpOpenTkRendering();
-                if (RenderTools.OpenTKStatus == RenderTools.OpenTKSetupStatus.Succeeded)
+                OpenTKSharedResources.InitializeSharedResources();
+                if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+                {
                     SetupBuffersAndTextures();
+
+                    if (Runtime.enableOpenTKDebugOutput)
+                    {
+                        glViewport.MakeCurrent();
+                        OpenTKSharedResources.EnableOpenTKDebugOutput();
+                    }
+                }
             }
         }
 

@@ -30,7 +30,7 @@ namespace Smash_Forge.Rendering
         public static void RenderMaterialPresetPreviewsToFilesThreaded()
         {
             // Shaders weren't loaded.
-            if (RenderTools.OpenTKStatus != RenderTools.OpenTKSetupStatus.Succeeded)
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             renderAllPresetsToFiles = Task.Run(() =>
@@ -41,14 +41,14 @@ namespace Smash_Forge.Rendering
 
         private static void RenderPresetsToFiles()
         {
-            using (GameWindow gameWindow = RenderTools.CreateGameWindowContext(width, height))
+            using (GameWindow gameWindow = OpenTKSharedResources.CreateGameWindowContext(width, height))
             {
                 // Resource creation.
                 screenVbo = ScreenDrawing.CreateScreenQuadBuffer();
-                shader = Runtime.shaders["NudSphere"];
+                shader = OpenTKSharedResources.shaders["NudSphere"];
 
                 // Skip thumbnail generation if the shader didn't compile.
-                if (!shader.ProgramCreatedSuccessfully())
+                if (!shader.ProgramCreatedSuccessfully)
                     return;
 
                 // HACK: This isn't a very clean way to pass resources around.
@@ -79,7 +79,7 @@ namespace Smash_Forge.Rendering
                     "Nud\\SmashShader.frag",
                     "Utility\\Utility.frag"
             };
-            Runtime.shaders.Remove("NudSphere");
+            OpenTKSharedResources.shaders.Remove("NudSphere");
             ShaderTools.CreateAndAddShader("NudSphere", nudMatShaders);
         }
 

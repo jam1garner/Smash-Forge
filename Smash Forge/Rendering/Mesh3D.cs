@@ -68,21 +68,21 @@ namespace Smash_Forge.Rendering
 
         private void SetColorUniform()
         {
-            Shader shader = Runtime.shaders["SolidColor3D"];
+            Shader shader = OpenTKSharedResources.shaders["SolidColor3D"];
             shader.UseProgram();
             shader.SetVector4("color", color);
         }
 
         private void SetScaleUniform()
         {
-            Shader shader = Runtime.shaders["SolidColor3D"];
+            Shader shader = OpenTKSharedResources.shaders["SolidColor3D"];
             shader.UseProgram();
             shader.SetVector3("scale", scaleX, scaleY, scaleZ);
         }
 
         private void SetCenterUniform(float centerX, float centerY, float centerZ)
         {
-            Shader shader = Runtime.shaders["SolidColor3D"];
+            Shader shader = OpenTKSharedResources.shaders["SolidColor3D"];
             shader.UseProgram();
             shader.SetVector3("center", centerX, centerY, centerZ);
         }
@@ -95,8 +95,8 @@ namespace Smash_Forge.Rendering
 
         public void Draw(Matrix4 mvpMatrix)
         {
-            Shader shader = Runtime.shaders["SolidColor3D"];
-            if (!shader.ProgramCreatedSuccessfully())
+            Shader shader = OpenTKSharedResources.shaders["SolidColor3D"];
+            if (!shader.ProgramCreatedSuccessfully)
                 return;
 
             // Set up.
@@ -120,7 +120,7 @@ namespace Smash_Forge.Rendering
             positionBuffer.Bind();
             UpdateBufferData();
 
-            Shader shader = Runtime.shaders["SolidColor3D"];
+            Shader shader = OpenTKSharedResources.shaders["SolidColor3D"];
             SetVertexAttributes(shader);
         }
 

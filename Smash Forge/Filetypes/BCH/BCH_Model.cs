@@ -412,7 +412,7 @@ namespace Smash_Forge
                 GenerateBuffers();
             }
 
-            shader = Runtime.shaders["Mbn"];
+            shader = OpenTKSharedResources.shaders["Mbn"];
             shader.UseProgram();
 
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderVertColor"), Runtime.renderVertColor ? 1 : 0);

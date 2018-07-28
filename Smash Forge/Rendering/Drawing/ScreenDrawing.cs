@@ -34,7 +34,7 @@ namespace Smash_Forge.Rendering
             bool renderA = false, bool keepAspectRatio = false, float intensity = 1, int currentMipLevel = 0)
         {
             // Draws RGB and alpha channels of texture to screen quad.
-            Shader shader = Runtime.shaders["Texture"];
+            Shader shader = OpenTKSharedResources.shaders["Texture"];
             shader.UseProgram();
 
             EnableAlphaBlendingWhiteBackground();
@@ -74,7 +74,7 @@ namespace Smash_Forge.Rendering
         public static void DrawScreenQuadPostProcessing(int texture0, int texture1)
         {
             // Draws RGB and alpha channels of texture to screen quad.
-            Shader shader = Runtime.shaders["ScreenQuad"];
+            Shader shader = OpenTKSharedResources.shaders["ScreenQuad"];
             shader.UseProgram();
 
             shader.SetTexture("image0", texture0, TextureTarget.Texture2D, 0);
@@ -93,7 +93,7 @@ namespace Smash_Forge.Rendering
         public static void DrawQuadGradient(Vector3 topColor, Vector3 bottomColor, BufferObject screenVbo)
         {
             // draw RGB and alpha channels of texture to screen quad
-            Shader shader = Runtime.shaders["Gradient"];
+            Shader shader = OpenTKSharedResources.shaders["Gradient"];
             shader.UseProgram();
 
             EnableAlphaBlendingWhiteBackground();
