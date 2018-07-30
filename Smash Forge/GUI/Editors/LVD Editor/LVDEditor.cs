@@ -62,6 +62,7 @@ namespace Smash_Forge
             itemSpawnerGroup.Visible = false;
             point3dGroup.Visible = false;
             shapeGroup.Visible = false;
+            damageShapeGroup.Visible = false;
             meleeCollisionGroup.Visible = false;
         }
 
@@ -135,6 +136,11 @@ namespace Smash_Forge
                 GeneralShape s = (GeneralShape)entry;
                 OpenGeneralShape(s);
             }
+            else if (entry is DamageShape)
+            {
+                DamageShape s = (DamageShape)entry;
+                OpenDamageShape(s);
+            }
             else if (entry is DAT.COLL_DATA)
             {
                 OpenDatCollData(entry);
@@ -175,6 +181,14 @@ namespace Smash_Forge
                 treeViewPath.Nodes.Add(new TreeNode());
             renamePathTreeview();
 
+            if (shape.type == (int)LVDShapeType.Point)
+                shapeGroup.Text = "Point (Shape)";
+            else if (shape.type == (int)LVDShapeType.Circle)
+                shapeGroup.Text = "Circle (Shape)";
+            else if (shape.type == (int)LVDShapeType.Rectangle)
+                shapeGroup.Text = "Rectangle (Shape)";
+            else if (shape.type == (int)LVDShapeType.Path)
+                shapeGroup.Text = "Path (Shape)";
             /*if (shape.type == (int)LVDShapeType.Point)
             {
                 point2dGroup.Visible = true;
@@ -201,9 +215,23 @@ namespace Smash_Forge
             }*/
         }
 
+        private void OpenDamageShape(DamageShape shape)
+        {
+            damageShapeGroup.Visible = true;
+            damageShapeXUpDown.Value = (Decimal)shape.x;
+            damageShapeYUpDown.Value = (Decimal)shape.y;
+            damageShapeZUpDown.Value = (Decimal)shape.z;
+            damageShapeX2UpDown.Value = (Decimal)shape.dx;
+            damageShapeY2UpDown.Value = (Decimal)shape.dy;
+            damageShapeZ2UpDown.Value = (Decimal)shape.dz;
+            damageShapeRadiusUpDown.Value = (Decimal)shape.radius;
+            damageShapeUnknownUpDown.Value = (Decimal)shape.unk;
+        }
+
         private void OpenGeneralPoint(GeneralPoint point)
         {
             point3dGroup.Visible = true;
+            pointShapeIdUpDown.Value = point.id;
             pointShapeXUpDown.Value = (Decimal)point.x;
             pointShapeYUpDown.Value = (Decimal)point.y;
             pointShapeZUpDown.Value = (Decimal)point.z;
@@ -639,6 +667,8 @@ namespace Smash_Forge
         {
             GeneralPoint point = (GeneralPoint)currentEntry;
 
+            if (sender == pointShapeIdUpDown)
+                point.id = (int)pointShapeIdUpDown.Value;
             if (sender == pointShapeXUpDown)
                 point.x = (float)pointShapeXUpDown.Value;
             if (sender == pointShapeYUpDown)
@@ -726,6 +756,28 @@ namespace Smash_Forge
             shape.points.RemoveAt(selectionIndex);
             treeViewPath.Nodes.RemoveAt(selectionIndex);
             renamePathTreeview();
+        }
+
+        private void damageShape_ValueChanged(object sender, EventArgs e)
+        {
+            DamageShape shape = (DamageShape)currentEntry;
+
+            if (sender == damageShapeXUpDown)
+                shape.x = (float)damageShapeXUpDown.Value;
+            if (sender == damageShapeYUpDown)
+                shape.y = (float)damageShapeYUpDown.Value;
+            if (sender == damageShapeZUpDown)
+                shape.z = (float)damageShapeZUpDown.Value;
+            if (sender == damageShapeX2UpDown)
+                shape.dx = (float)damageShapeX2UpDown.Value;
+            if (sender == damageShapeY2UpDown)
+                shape.dy = (float)damageShapeY2UpDown.Value;
+            if (sender == damageShapeZ2UpDown)
+                shape.dz = (float)damageShapeZ2UpDown.Value;
+            if (sender == damageShapeRadiusUpDown)
+                shape.radius = (float)damageShapeRadiusUpDown.Value;
+            if (sender == damageShapeUnknownUpDown)
+                shape.unk = (float)damageShapeUnknownUpDown.Value;
         }
 
         #region meleeCollisions

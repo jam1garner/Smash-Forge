@@ -129,6 +129,14 @@ namespace Smash_Forge
                 };
                 node.ContextMenu.MenuItems.Add(AddPoint);
 
+                MenuItem AddCircle = new MenuItem("Add New General Shape (Circle)");
+                AddCircle.Click += delegate
+                {
+                    TargetLVD.generalShapes.Add(new GeneralShape() { name = "GeneralCircle_NEW", subname = "00_NEW", type = 2 });
+                    fillList();
+                };
+                node.ContextMenu.MenuItems.Add(AddCircle);
+
                 MenuItem AddRect = new MenuItem("Add New General Shape (Rectangle)");
                 AddRect.Click += delegate
                 {
@@ -191,42 +199,58 @@ namespace Smash_Forge
                 node.ContextMenu.MenuItems.Add(Add);
             }
 
-            ElementCM = new ContextMenu();
-            MenuItem Delete = new MenuItem("Delete Entry");
-            Delete.Click += delegate
             {
-                deleteSelected();
-            };
-            ElementCM.MenuItems.Add(Delete);
+                ElementCM = new ContextMenu();
 
-            CollisionCM = new ContextMenu();
-
-            Delete = new MenuItem("Delete Entry");
-            Delete.Click += delegate
-            {
-                deleteSelected();
-            };
-            CollisionCM.MenuItems.Add(Delete);
-
-            MenuItem GenPassthru = new MenuItem("Regenerate Passthrough Angles");
-            GenPassthru.Click += delegate
-            {
-                if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag is Collision)
+                MenuItem Delete = new MenuItem("Delete Entry");
+                Delete.Click += delegate
                 {
-                    LVD.GeneratePassthroughs((Collision)treeView1.SelectedNode.Tag, true);
-                }
-            };
-            CollisionCM.MenuItems.Add(GenPassthru);
+                    deleteSelected();
+                };
+                ElementCM.MenuItems.Add(Delete);
+            }
 
-            MenuItem FlipNormals = new MenuItem("Flip Passthrough Angles");
-            FlipNormals.Click += delegate
             {
-                if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag is Collision)
+                CollisionCM = new ContextMenu();
+
+                MenuItem Delete = new MenuItem("Delete Entry");
+                Delete.Click += delegate
                 {
-                    LVD.FlipPassthroughs((Collision)treeView1.SelectedNode.Tag);
-                }
-            };
-            CollisionCM.MenuItems.Add(FlipNormals);
+                    deleteSelected();
+                };
+                CollisionCM.MenuItems.Add(Delete);
+
+                MenuItem GenPassthru = new MenuItem("Regenerate Passthrough Angles");
+                GenPassthru.Click += delegate
+                {
+                    if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag is Collision)
+                    {
+                        LVD.GeneratePassthroughs((Collision)treeView1.SelectedNode.Tag, true);
+                    }
+                };
+                CollisionCM.MenuItems.Add(GenPassthru);
+
+                MenuItem FlipNormals = new MenuItem("Flip Passthrough Angles");
+                FlipNormals.Click += delegate
+                {
+                    if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag is Collision)
+                    {
+                        LVD.FlipPassthroughs((Collision)treeView1.SelectedNode.Tag);
+                    }
+                };
+                CollisionCM.MenuItems.Add(FlipNormals);
+
+                MenuItem GenCliffs = new MenuItem("Regenerate Cliffs");
+                GenCliffs.Click += delegate
+                {
+                    if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag is Collision)
+                    {
+                        LVD.GenerateCliffs((Collision)treeView1.SelectedNode.Tag);
+                    }
+                    fillList();
+                };
+                CollisionCM.MenuItems.Add(GenCliffs);
+            }
 
             treeView1.NodeMouseClick += (sender, args) => treeView1.SelectedNode = args.Node;
         }

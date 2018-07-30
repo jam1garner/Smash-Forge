@@ -404,6 +404,7 @@ namespace Smash_Forge
     public enum LVDShapeType : int
     {
         Point = 1,
+        Circle = 2,
         Rectangle = 3,
         Path = 4
     }
@@ -440,7 +441,7 @@ namespace Smash_Forge
         {
             f.readByte();
             type = f.readInt();
-            if ((type != 1) && (type != 3) && (type != 4))
+            if ((type != 1) && (type != 2) && (type != 3) && (type != 4))
                 throw new NotImplementedException($"Unknown shape type {type} at offset {f.pos()-4}");
 
             x1 = f.readFloat();
@@ -650,7 +651,7 @@ namespace Smash_Forge
 
             f.readByte();
             type = f.readInt();
-            if ((type != 1) && (type != 3) && (type != 4))
+            if ((type != 1) && (type != 2) && (type != 3) && (type != 4))
                 throw new NotImplementedException($"Unknown shape type {type} at offset {f.pos()-4}");
 
             x1 = f.readFloat();
@@ -1358,6 +1359,13 @@ namespace Smash_Forge
                     Rendering.RenderTools.DrawCube(sPos, 3, true);
                 else
                     Rendering.RenderTools.DrawCube(new Vector3(s.x1, s.y1, 0), 3, true);
+            }
+            if(s.type == 2)
+            {
+                if (useStartPos)
+                    Rendering.RenderTools.drawCircleOutline(sPos, s.x2, 24);
+                else
+                    Rendering.RenderTools.drawCircleOutline(new Vector3(s.x1, s.y1, 0), s.x2, 24);
             }
             if(s.type == 3)
             {
