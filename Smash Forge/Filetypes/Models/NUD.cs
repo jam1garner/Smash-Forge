@@ -1085,7 +1085,7 @@ namespace Smash_Forge
                             if (matHashFloat != null) {
 
                                 byte[] bytes = new byte[4];
-                                Buffer.BlockCopy(matHashFloat, 0, bytes, 0, 4);
+                                System.Buffer.BlockCopy(matHashFloat, 0, bytes, 0, 4);
                                 int matHash = BitConverter.ToInt32(bytes, 0);
 
                                 int frm = (int)((frame * 60 / m.frameRate) % (m.numFrames));

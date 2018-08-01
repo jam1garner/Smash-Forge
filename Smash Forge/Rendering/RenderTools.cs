@@ -1452,7 +1452,7 @@ namespace Smash_Forge.Rendering
             GL.Enable(EnableCap.RescaleNormal);
 
             GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Lequal);
@@ -1634,7 +1634,7 @@ namespace Smash_Forge.Rendering
 
             // Allow for alpha blending.
             GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         }
 
         private static void DrawScreenTriangle(Shader shader)
@@ -1670,7 +1670,7 @@ namespace Smash_Forge.Rendering
             GL.BindTexture(TextureTarget.Texture2D, newtex);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.CompressedRgba, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
 
-            GL.CopyTexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.CompressedRgba, x, y, width, height, 0);
+            GL.CopyTexImage2D(TextureTarget.Texture2D, 0, InternalFormat.CompressedRgba, x, y, width, height, 0);
 
             int size;
             GL.GetTexLevelParameter(TextureTarget.Texture2D, 0, GetTextureParameter.TextureCompressedImageSize, out size);

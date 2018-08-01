@@ -496,7 +496,7 @@ namespace Smash_Forge
 
             if (t.type != PixelInternalFormat.Rgba)
             {
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type,
+                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, (InternalFormat)t.type,
                     t.width, t.height, 0, getImageSize(t), t.data);
                 //Debug.WriteLine(GL.GetError());
             }

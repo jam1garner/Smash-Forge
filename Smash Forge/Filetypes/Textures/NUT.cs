@@ -787,7 +787,7 @@ namespace Smash_Forge
                 || t.type == PixelInternalFormat.CompressedRedRgtc1
                 || t.type == PixelInternalFormat.CompressedRgRgtc2)
             {
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, t.type,
+                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, (InternalFormat)t.type,
                     t.Width, t.Height, 0, t.Size, t.mipmaps[0]);
                 
                 if (t.mipmaps.Count > 1 && DDS)
@@ -796,7 +796,7 @@ namespace Smash_Forge
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
                     for (int i = 0; i <t.mipmaps.Count; i++)
-                        GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, i, t.type,
+                        GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, i, (InternalFormat)t.type,
                         t.Width / (int)Math.Pow(2,i), t.Height / (int)Math.Pow(2, i), 0, t.mipmaps[i].Length, t.mipmaps[i]);
                 }
                 else
