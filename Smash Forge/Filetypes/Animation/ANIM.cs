@@ -8,6 +8,31 @@ namespace Smash_Forge
 {
     public class ANIM
     {
+        private class AnimHeader
+        {
+            public string animVersion;
+            public string mayaVersion;
+            public float startTime;
+            public float endTime;
+            public float startUnitless;
+            public float endUnitless;
+            public string timeUnit;
+            public string linearUnit;
+            public string angularUnit;
+
+            public AnimHeader()
+            {
+                animVersion = "1.1";
+                mayaVersion = "2015";
+                startTime = 0;
+                endTime = 0;
+                startUnitless = 0;
+                endUnitless = 0;
+                timeUnit = "ntscf";
+                linearUnit = "cm";
+                angularUnit = "deg";
+            }
+        }
 
         private class AnimKey{
             public float input, output;
@@ -47,40 +72,51 @@ namespace Smash_Forge
             public List<AnimData> atts = new List<AnimData>();
         }
 
-        public static Animation read(string filename, VBN vbn){
+        public static Animation read(string filename, VBN vbn)
+        {
+            Animation a = new Animation(filename);
+            Animation.KeyNode current = null;
+            Animation.KeyFrame att = new Animation.KeyFrame();
+
             StreamReader reader = File.OpenText(filename);
             string line;
 
-            bool isHeader = true;
-
-            string angularUnit, linearUnit, timeUnit;
-            int startTime = 0;
-            int endTime = 0;
-            List<AnimBone> bones = new List<AnimBone>();
-            Animation.KeyNode current = null;
-            Animation.KeyFrame att = new Animation.KeyFrame();
+            AnimHeader header = new AnimHeader();
+            bool inHeader = true;
             bool inKeys = false;
             string type = "";
-            
-            Animation a = new Animation(filename);
 
-            while ((line = reader.ReadLine()) != null) {
-                string[] args = line.Replace (";", "").TrimStart().Split (' ');
+            while ((line = reader.ReadLine()) != null)
+            {
+                string[] args = line.Replace(";", "").TrimStart().Split(' ');
 
-                if (isHeader) {
-                    if (args [0].Equals ("anim"))
-                        isHeader = false;
-                    else if (args [0].Equals ("angularUnit"))
-                        angularUnit = args [1];
-                    else if (args [0].Equals ("endTime"))
-                        endTime = (int)Math.Ceiling(float.Parse (args [1]));
-                    else if (args [0].Equals ("startTime"))
-                        startTime = (int)Math.Ceiling(float.Parse (args [1]));
+                if (inHeader)
+                {
+                    if (args[0].Equals("anim"))
+                        inHeader = false;
+                    else if (args[0].Equals("animVersion"))
+                        header.animVersion = args[1];
+                    else if (args[0].Equals("mayaVersion"))
+                        header.mayaVersion = args[1];
+                    else if (args[0].Equals("startTime"))
+                        header.startTime = float.Parse(args[1]);
+                    else if (args[0].Equals("endTime"))
+                        header.endTime = float.Parse(args[1]);
+                    else if (args[0].Equals("startUnitless"))
+                        header.startUnitless = float.Parse(args[1]);
+                    else if (args[0].Equals("endUnitless"))
+                        header.endUnitless = float.Parse(args[1]);
+                    else if (args[0].Equals("timeUnit"))
+                        header.timeUnit = args[1];
+                    else if (args[0].Equals("linearUnit"))
+                        header.linearUnit = args[1];
+                    else if (args[0].Equals("angularUnit"))
+                        header.angularUnit = args[1];
                 }
-
-                if (!isHeader) {
-
-                    if (inKeys) {
+                if (!inHeader)
+                {
+                    if (inKeys)
+                    {
                         if(args[0].Equals("}")){
                             inKeys = false;
                             continue;
@@ -169,7 +205,9 @@ namespace Smash_Forge
                 }
             }
 
-            a.FrameCount = endTime-1;
+            int startTime = (int)Math.Ceiling(header.startTime);
+            int endTime = (int)Math.Ceiling(header.endTime);
+            a.FrameCount = (endTime + 1) - startTime;
 
             reader.Close();
             return a;
@@ -179,8 +217,14 @@ namespace Smash_Forge
         {
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(@fname))
             {
-                file.WriteLine("animVersion 1.1;");
-                file.WriteLine("mayaVersion 2014 x64;\ntimeUnit ntscf;\nlinearUnit cm;\nangularUnit deg;\nstartTime 1;\nendTime " + (a.FrameCount+1) + ";");
+                AnimHeader header = new AnimHeader();
+                file.WriteLine("animVersion " + header.animVersion + ";");
+                file.WriteLine("mayaVersion " + header.mayaVersion + ";");
+                file.WriteLine("timeUnit " + header.timeUnit + ";");
+                file.WriteLine("linearUnit " + header.linearUnit + ";");
+                file.WriteLine("angularUnit " + header.angularUnit + ";");
+                file.WriteLine("startTime " + 1 + ";");
+                file.WriteLine("endTime " + a.FrameCount + ";");
 
                 a.SetFrame(a.FrameCount - 1); //from last frame
                 for (int li = 0; li < a.FrameCount; ++li) //go through each frame with nextFrame
