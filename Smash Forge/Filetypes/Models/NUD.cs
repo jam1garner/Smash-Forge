@@ -21,12 +21,12 @@ namespace Smash_Forge
         {
             if (!Runtime.shaders.ContainsKey("NUD"))
             {
-                ShaderTools.CreateShader("NUD", "/lib/Shader/Legacy/", "/lib/Shader/");
+                ShaderTools.CreateShader("NUD", "/lib/Shader/");
             }
 
             if (!Runtime.shaders.ContainsKey("NUD_Debug"))
             {
-                ShaderTools.CreateShader("NUD_Debug", "/lib/Shader/Legacy/", "/lib/Shader/");
+                ShaderTools.CreateShader("NUD_Debug", "/lib/Shader/");
             }
 
             Runtime.shaders["NUD"].DisplayCompilationWarning("NUD");

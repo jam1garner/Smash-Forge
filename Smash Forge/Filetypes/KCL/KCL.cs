@@ -98,7 +98,7 @@ namespace Smash_Forge
             if (!Runtime.shaders.ContainsKey("KCL"))
             {
                 Console.WriteLine("Creating shader");
-                ShaderTools.CreateShader("KCL", "/lib/Shader/Legacy/", "/lib/Shader/");
+                ShaderTools.CreateShader("KCL", "/lib/Shader/");
             }
  
             Runtime.shaders["KCL"].DisplayCompilationWarning("KCL");

@@ -111,11 +111,11 @@ namespace Smash_Forge
 
             if (!Runtime.shaders.ContainsKey("BFRES"))
             {
-               ShaderTools.CreateShader("BFRES", "/lib/Shader/Legacy/", "/lib/Shader/");
+               ShaderTools.CreateShader("BFRES", "/lib/Shader/");
             }
             if (!Runtime.shaders.ContainsKey("BFRES_PBR"))
             {
-                ShaderTools.CreateShader("BFRES_PBR", "/lib/Shader/Legacy/", "/lib/Shader/");
+                ShaderTools.CreateShader("BFRES_PBR", "/lib/Shader/");
             }
 
 
