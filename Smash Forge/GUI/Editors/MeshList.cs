@@ -331,7 +331,12 @@ namespace Smash_Forge
             {
                 filesTreeView.SelectedNode = filesTreeView.GetNodeAt(e.Location);
 
-                if (filesTreeView.SelectedNode is NUD.Mesh)
+                // Check for null first to avoid exceptions.
+                if (filesTreeView.SelectedNode == null)
+                {
+                    MainContextMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
+                }
+                else if (filesTreeView.SelectedNode is NUD.Mesh)
                 {
                     meshContextMenu.Show(this, e.X, e.Y);
                 }
@@ -350,10 +355,6 @@ namespace Smash_Forge
                 else if (filesTreeView.SelectedNode is ModelContainer)
                 {
                     ModelContainerContextMenu.Show(this, e.X, e.Y);
-                }
-                else if(filesTreeView.SelectedNode == null)
-                {
-                    MainContextMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
                 }
             }
         }
