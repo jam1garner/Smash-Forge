@@ -258,7 +258,7 @@ namespace Smash_Forge
             }
 
             //Prepare Shader
-            Shader shader = Runtime.shaders["NUD"];
+            ShaderOld shader = Runtime.shaders["NUD"];
 
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NUD_Debug"];
@@ -463,7 +463,7 @@ namespace Smash_Forge
             }
         }
 
-        public void Render(Shader shader, Camera camera)
+        public void Render(ShaderOld shader, Camera camera)
         {
             // For proper alpha blending, draw in reverse order and draw opaque objects first. 
             List<Polygon> opaque = new List<Polygon>();
@@ -506,7 +506,7 @@ namespace Smash_Forge
             }
         }
 
-        private void DrawPolygon(Polygon p, Shader shader, Camera camera, bool drawSelection = false)
+        private void DrawPolygon(Polygon p, ShaderOld shader, Camera camera, bool drawSelection = false)
         {
             if (p.faces.Count <= 3)
                 return;
@@ -543,7 +543,7 @@ namespace Smash_Forge
             }
         }
 
-        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material)
+        private void SetShaderUniforms(Polygon p, ShaderOld shader, Camera camera, Material material)
         {
             GL.Uniform1(shader.getAttribute("flags"), material.Flags);
             GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
@@ -620,7 +620,7 @@ namespace Smash_Forge
             }
         }
 
-        private void SetLightingUniforms(Shader shader)
+        private void SetLightingUniforms(ShaderOld shader)
         {
             for (int i = 0; i < 4; i++)
             {
@@ -630,7 +630,7 @@ namespace Smash_Forge
             ShaderTools.LightColorVector3Uniform(shader, Runtime.lightSetParam.stageFogSet[lightSetNumber], "stageFogColor");
         }
 
-        private void SetStageLightUniform(Shader shader, int lightIndex)
+        private void SetStageLightUniform(ShaderOld shader, int lightIndex)
         {
             int index = lightIndex + (4 * lightSetNumber);
             DirectionalLight stageLight = Runtime.lightSetParam.stageDiffuseLights[index];
@@ -645,7 +645,7 @@ namespace Smash_Forge
             GL.Uniform3(shader.getAttribute(uniformDirectionName), stageLight.direction);
         }
 
-        private static void SetNscUniform(Polygon p, Shader shader)
+        private static void SetNscUniform(Polygon p, ShaderOld shader)
         {
             Matrix4 nscMatrix = Matrix4.Identity;
 
@@ -663,7 +663,7 @@ namespace Smash_Forge
             GL.UniformMatrix4(shader.getAttribute("nscMatrix"), false, ref nscMatrix);
         }
         
-        private void SetXMBUniforms(Shader shader, Polygon p)
+        private void SetXMBUniforms(ShaderOld shader, Polygon p)
         {
             ShaderTools.BoolToIntShaderUniform(shader, modelType.Equals("stage"), "isStage");
 
@@ -673,7 +673,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("lightSet"), lightSetNumber);
         }
 
-        private void SetVertexAttributes(Polygon p, Shader shader)
+        private void SetVertexAttributes(Polygon p, ShaderOld shader)
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
             GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
@@ -689,7 +689,7 @@ namespace Smash_Forge
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
         }
 
-        private static void DrawModelWireframe(Polygon p, Shader shader)
+        private static void DrawModelWireframe(Polygon p, ShaderOld shader)
         {
             // use vertex color for wireframe color
             GL.Uniform1(shader.getAttribute("colorOverride"), 1);
@@ -701,7 +701,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("colorOverride"), 0);
         }
 
-        private static void DrawModelSelection(Polygon p, Shader shader)
+        private static void DrawModelSelection(Polygon p, ShaderOld shader)
         {
             GL.Enable(EnableCap.StencilTest);
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
@@ -737,7 +737,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.DepthTest);
         }
 
-        private static void SetMaterialPropertyUniforms(Shader shader, Material mat)
+        private static void SetMaterialPropertyUniforms(ShaderOld shader, Material mat)
         {
             // UV samplers
             MatPropertyShaderUniform(shader, mat, "NU_colorSamplerUV",   1, 1, 0, 0);
@@ -804,7 +804,7 @@ namespace Smash_Forge
             HasMatPropertyShaderUniform(shader, mat, "NU_effUniverseParam",       "hasUniverseParam");
         }
 
-        private static void SetTextureUniforms(Shader shader, Material mat)
+        private static void SetTextureUniforms(ShaderOld shader, Material mat)
         {
             ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse,         "hasDif");
             ShaderTools.BoolToIntShaderUniform(shader, mat.hasDiffuse2,        "hasDif2");
@@ -878,7 +878,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void MatPropertyShaderUniform(Shader shader, Material mat, string propertyName, float default1,
+        private static void MatPropertyShaderUniform(ShaderOld shader, Material mat, string propertyName, float default1,
             float default2, float default3, float default4)
         {
             float[] values;
@@ -897,7 +897,7 @@ namespace Smash_Forge
                 Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
 
-        private static void TextureUniform(Shader shader, Material mat, bool hasTex, string name, ref int texid)
+        private static void TextureUniform(ShaderOld shader, Material mat, bool hasTex, string name, ref int texid)
         {
             // Bind the texture and create the uniform if the material has the right textures and flags. 
             if (hasTex && texid < mat.textures.Count)
@@ -921,7 +921,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void HasMatPropertyShaderUniform(Shader shader, Material mat, string propertyName, string uniformName)
+        private static void HasMatPropertyShaderUniform(ShaderOld shader, Material mat, string propertyName, string uniformName)
         {
             float[] values;
             mat.entries.TryGetValue(propertyName, out values);
@@ -937,7 +937,7 @@ namespace Smash_Forge
 
         public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)
         {
-            Shader shader = Runtime.shaders["Point"];
+            ShaderOld shader = Runtime.shaders["Point"];
             GL.UseProgram(shader.programID);
             Matrix4 mat = camera.mvpMatrix;
             GL.UniformMatrix4(shader.getAttribute("mvpMatrix"), false, ref mat);

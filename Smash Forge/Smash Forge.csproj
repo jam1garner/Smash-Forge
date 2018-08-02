@@ -598,6 +598,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\ForgeCamera.cs" />
+    <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
     <Compile Include="Rendering\BatchRenderTools.cs" />
     <Compile Include="Rendering\Camera.cs" />
@@ -608,8 +610,13 @@
     <Compile Include="Rendering\Lights\LightColor.cs" />
     <Compile Include="Rendering\Lights\LightMap.cs" />
     <Compile Include="Rendering\Lights\LightTools.cs" />
+    <Compile Include="Rendering\Mesh3D.cs" />
+    <Compile Include="Rendering\OpenTKSharedResources.cs" />
     <Compile Include="Rendering\Ray.cs" />
+    <Compile Include="Rendering\Drawing\ScreenDrawing.cs" />
     <Compile Include="Rendering\ShaderTools.cs" />
+    <Compile Include="Rendering\Drawing\ShapeDrawing.cs" />
+    <Compile Include="Rendering\Drawing\TextureToBitmap.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Editors\BFRES Editors\BFRES_MeshEditor.resx">
@@ -1371,7 +1378,7 @@
     <PostBuildEvent>del *.dll
 del *.pdb</PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

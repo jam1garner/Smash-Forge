@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Smash_Forge
 {
-	public class Shader
+	public class ShaderOld
 	{
 		public int programID;
 		private int vsID;
@@ -23,7 +23,7 @@ namespace Smash_Forge
 
 		Dictionary<string, int> attributes = new Dictionary<string, int>();
 
-		public Shader ()
+		public ShaderOld ()
 		{
 			programID = GL.CreateProgram();
 

@@ -39,7 +39,7 @@ namespace Smash_Forge.Rendering
             GetOpenGLSystemInfo();
         }
 
-        private static void LoadTextures()
+        public static void LoadTextures()
         {
             // Dummy textures. 
             stageMapHigh = LoadCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
@@ -1542,7 +1542,7 @@ namespace Smash_Forge.Rendering
         public static void DrawQuadGradient(Vector3 topColor, Vector3 bottomColor)
         {
             // draw RGB and alpha channels of texture to screen quad
-            Shader shader = Runtime.shaders["Gradient"];
+            ShaderOld shader = Runtime.shaders["Gradient"];
             GL.UseProgram(shader.programID);
 
             Setup2DRendering();
@@ -1557,7 +1557,7 @@ namespace Smash_Forge.Rendering
             bool renderA = false, bool keepAspectRatio = false, int currentMipLevel = 0)
         {
             // Draws RGB and alpha channels of texture to screen quad.
-            Shader shader = Runtime.shaders["Texture"];
+            ShaderOld shader = Runtime.shaders["Texture"];
             GL.UseProgram(shader.programID);
 
             Setup2DRendering();
@@ -1595,7 +1595,7 @@ namespace Smash_Forge.Rendering
         public static void DrawScreenQuadPostProcessing(int texture0, int texture1)
         {
             // Draws RGB and alpha channels of texture to screen quad.
-            Shader shader = Runtime.shaders["Screen_Quad"];
+            ShaderOld shader = Runtime.shaders["Screen_Quad"];
             GL.UseProgram(shader.programID);
 
             GL.ActiveTexture(TextureUnit.Texture0);
@@ -1637,7 +1637,7 @@ namespace Smash_Forge.Rendering
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         }
 
-        private static void DrawScreenTriangle(Shader shader)
+        private static void DrawScreenTriangle(ShaderOld shader)
         {
             float[] vertices =
             {

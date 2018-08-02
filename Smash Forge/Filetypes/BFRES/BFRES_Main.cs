@@ -24,7 +24,7 @@ namespace Smash_Forge
 
         public FSKA SkeletonAnimation;
 
-        public static Shader shader = null;
+        public static ShaderOld shader = null;
 
         public Matrix4[] sb;
 
@@ -460,7 +460,7 @@ namespace Smash_Forge
             }
         }
 
-        private void SetRenderSettings(Shader shader)
+        private void SetRenderSettings(ShaderOld shader)
         {
             GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
@@ -472,7 +472,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
         }
-        private void DrawMesh(Mesh m, Shader shader, MaterialData mat, bool drawSelection = false)
+        private void DrawMesh(Mesh m, ShaderOld shader, MaterialData mat, bool drawSelection = false)
         {
             if (m.lodMeshes[m.DisplayLODIndex].faces.Count <= 3)
                 return;
@@ -510,7 +510,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void DrawModelWireframe(Mesh p, Shader shader)
+        private static void DrawModelWireframe(Mesh p, ShaderOld shader)
         {
             // use vertex color for wireframe color
             GL.Uniform1(shader.getAttribute("colorOverride"), 1);
@@ -521,7 +521,7 @@ namespace Smash_Forge
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             GL.Uniform1(shader.getAttribute("colorOverride"), 0);
         }
-        private static void DrawModelSelection(Mesh p, Shader shader)
+        private static void DrawModelSelection(Mesh p, ShaderOld shader)
         {
             //This part needs to be reworked for proper outline. Currently would make model disappear
 
@@ -539,7 +539,7 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.DepthTest);
         }
-        private void SetVertexAttributes(Mesh m, Shader shader)
+        private void SetVertexAttributes(Mesh m, ShaderOld shader)
         {
             //Note on these buffers
             // - vBone and vWeight have 2 attributes since bfres has 4 weights/bones per vertice. Additional one can allow up to a max of 8
@@ -645,7 +645,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void RenderUniformParams(MaterialData mat, Shader shader, Mesh m)
+        private static void RenderUniformParams(MaterialData mat, ShaderOld shader, Mesh m)
         {
             GL.Uniform4(shader.getAttribute("SamplerUV1"), new Vector4(1, 1, 0, 0));
             GL.Uniform4(shader.getAttribute("gsys_bake_st0"), new Vector4(1, 1, 0, 0));
@@ -694,7 +694,7 @@ namespace Smash_Forge
             ShaderTools.BoolToIntShaderUniform(shader, m.isTransparent, "isTransparent");
         }
 
-        private static void SetUnifromData(MaterialData mat, Shader shader, string propertyName)
+        private static void SetUnifromData(MaterialData mat, ShaderOld shader, string propertyName)
         {
             //Note uniform data has so many types so it's messy atm
 
@@ -890,7 +890,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void TextureUniform(Shader shader, MaterialData mat, bool hasTex, string name, MatTexture mattex)
+        private static void TextureUniform(ShaderOld shader, MaterialData mat, bool hasTex, string name, MatTexture mattex)
         {
             // Bind the texture and create the uniform if the material has the right textures. 
             if (hasTex)

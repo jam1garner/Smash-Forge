@@ -13,7 +13,7 @@ namespace Smash_Forge
 {
     public class BCH_Model : TreeNode
     {
-        public static Shader shader = null;
+        public static ShaderOld shader = null;
 
         int vbo_vert;
         int vbo_bone;
@@ -78,7 +78,7 @@ namespace Smash_Forge
 
             if (shader == null)
             {
-                shader = new Shader();
+                shader = new ShaderOld();
                 shader = Runtime.shaders["MBN"];
             }
         }

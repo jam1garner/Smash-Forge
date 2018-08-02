@@ -292,7 +292,7 @@ namespace Smash_Forge
             if (!Checked)
                 return;
 
-            Shader shader;
+            ShaderOld shader;
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = Runtime.shaders["NUD_Debug"];
             else
@@ -420,7 +420,7 @@ namespace Smash_Forge
             }
         }
 
-        private void SetElapsedDirectUvTime(Shader shader)
+        private void SetElapsedDirectUvTime(ShaderOld shader)
         {
             float elapsedSeconds = 0;
             if (NUD.useDirectUVTime)
@@ -470,7 +470,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void SetRenderSettingsUniforms(Shader shader)
+        private static void SetRenderSettingsUniforms(ShaderOld shader)
         {
             GL.Uniform1(shader.getAttribute("renderStageLighting"), Runtime.renderStageLighting ? 1 : 0);
             GL.Uniform1(shader.getAttribute("renderLighting"), Runtime.renderMaterialLighting ? 1 : 0);
@@ -510,7 +510,7 @@ namespace Smash_Forge
 
         }
 
-        private static void SetLightingUniforms(Shader shader, Camera camera)
+        private static void SetLightingUniforms(ShaderOld shader, Camera camera)
         {
             // fresnel sky/ground color for characters & stages
             ShaderTools.LightColorVector3Uniform(shader, Runtime.lightSetParam.fresnelLight.groundColor, "fresGroundColor");

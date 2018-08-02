@@ -25,7 +25,7 @@ namespace Smash_Forge
         public List<Vertex> vertices = new List<Vertex>();
         public List<string> nameTable = new List<string>();
 
-        public static Shader shader = null;
+        public static ShaderOld shader = null;
 
         public List<Descriptor> descript = new List<Descriptor>(); // Descriptors are used to describe the vertex data...
 
@@ -152,7 +152,7 @@ namespace Smash_Forge
 
             if (shader == null)
             {
-                shader = new Shader();
+                shader = new ShaderOld();
                 shader = Runtime.shaders["MBN"];
             }
         }

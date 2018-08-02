@@ -53,7 +53,7 @@ namespace Smash_Forge
         int ibo_elements;
         public int testtex;
 
-        public static Shader shader = null;
+        public static ShaderOld shader = null;
 
         Dictionary<int, JOBJ> jobjOffsetLinker = new Dictionary<int, JOBJ>();
         public Dictionary<int, Bitmap> texturesLinker = new Dictionary<int, Bitmap>();
@@ -369,7 +369,7 @@ namespace Smash_Forge
 
             if (shader == null)
             {
-                shader = new Shader();
+                shader = new ShaderOld();
                 shader = Runtime.shaders["DAT"];
             }
             

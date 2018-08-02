@@ -25,7 +25,7 @@ namespace Smash_Forge
 
         public static string MarioOdysseyGamePath = "";
 
-        public static Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
+        public static Dictionary<string, ShaderOld> shaders = new Dictionary<string, ShaderOld>();
 
         //public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
         public static List<NUT> TextureContainers = new List<NUT>();
@@ -220,6 +220,8 @@ namespace Smash_Forge
         public static bool useDebugShading = false;
         public static bool debug1 = false;
         public static bool debug2 = false;
+
+        public static bool enableOpenTKDebugOutput = false;
 
         // ETC
         public static string fighterDir = "";
