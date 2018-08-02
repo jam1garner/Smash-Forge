@@ -8,6 +8,8 @@ using System.Drawing;
 using System.Xml;
 using OpenTK.Graphics.OpenGL;
 using SALT.PARAMS;
+using SFGraphics.Tools;
+
 
 namespace Smash_Forge
 {
@@ -114,6 +116,34 @@ namespace Smash_Forge
         public static bool useFAFasAnimationLength = false;
         public static bool Is2DView = false;
 
+        // See https://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
+        // for a really good overview of how to use distinct colors.
+        public enum DistinctColors : uint
+        {
+            VividYellow = 0xFFFFB300,
+            StrongPurple = 0xFF803E75,
+            VividOrange = 0xFFFF6800,
+            VeryLightBlue = 0xFFA6BDD7,
+            VividRed = 0xFFC10020,
+            GrayishYellow = 0xFFCEA262,
+            MediumGray = 0xFF817066,
+
+            // The following will not be good for people with defective color vision.
+            VividGreen = 0xFF007D34,
+            StrongPurplishPink = 0xFFF6768E,
+            StrongBlue = 0xFF00538A,
+            StrongYellowishPink = 0xFFFF7A5C,
+            StrongViolet = 0xFF53377A,
+            VividOrangeYellow = 0xFFFF8E00,
+            StrongPurplishRed = 0xFFB32851,
+            VividGreenishYellow = 0xFFF4C800,
+            StrongReddishBrown = 0xFF7F180D,
+            VividYellowishGreen = 0xFF93AA00,
+            DeepYellowishBrown = 0xFF593315,
+            VividReddishOrange = 0xFFF13A13,
+            DarkOliveGreen = 0xFF232C16
+        }
+
         public static Color counterBubbleColor = Color.FromArgb(0x89, 0x89, 0x89);
         public static Color reflectBubbleColor = Color.Cyan;
         public static Color shieldBubbleColor = Color.Red;
@@ -123,22 +153,22 @@ namespace Smash_Forge
         public static List<Color> hitboxKnockbackColors = new List<Color>();
         public static readonly List<Color> defaultHitboxKnockbackColors = new List<Color>()
         {
-            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.VividGreen),
-            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.VividYellow),
-            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.VividOrange),
-            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.VividRed)     
+            Color.FromArgb(unchecked((int)DistinctColors.VividGreen)),
+            Color.FromArgb(unchecked((int)DistinctColors.VividYellow)),
+            Color.FromArgb(unchecked((int)DistinctColors.VividOrange)),
+            Color.FromArgb(unchecked((int)DistinctColors.VividRed))
         };
 
         public static List<Color> hitboxIdColors = new List<Color>();
         public static readonly List<Color> defaultHitboxIdColors = new List<Color>()
         {
-            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.VividYellow), 
-            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.StrongPurple), 
-            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.VividRed),
-            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.GrayishYellow), 
-            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.MediumGray), 
-            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.StrongBlue), 
-            ColorTools.ColorFromUint((uint)ColorTools.DistinctColors.DeepYellowishBrown)
+            Color.FromArgb(unchecked((int)DistinctColors.VividYellow)),
+            Color.FromArgb(unchecked((int)DistinctColors.StrongPurple)),
+            Color.FromArgb(unchecked((int)DistinctColors.VividRed)),
+            Color.FromArgb(unchecked((int)DistinctColors.GrayishYellow)),
+            Color.FromArgb(unchecked((int)DistinctColors.MediumGray)),
+            Color.FromArgb(unchecked((int)DistinctColors.StrongBlue)),
+            Color.FromArgb(unchecked((int)DistinctColors.DeepYellowishBrown))
         };
 
         public static string FloorURL = "";

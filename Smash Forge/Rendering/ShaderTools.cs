@@ -8,6 +8,8 @@ using OpenTK.Graphics.OpenGL;
 using System.IO;
 using Smash_Forge.Rendering.Lights;
 using SFGraphics.GLObjects.Shaders;
+using SFGraphics.Tools;
+
 
 namespace Smash_Forge.Rendering
 {

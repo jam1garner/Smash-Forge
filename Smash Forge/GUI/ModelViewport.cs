@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 using System.Security.Cryptography;
 using SALT.Moveset.AnimCMD;
 using System.IO;
@@ -19,10 +20,13 @@ using Gif.Components;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Threading;
 using Smash_Forge.Rendering.Lights;
-using OpenTK.Input;
 using Smash_Forge.Rendering;
 using Smash_Forge.Params;
+using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects;
+using SFGraphics.Tools;
 
 namespace Smash_Forge
 {
@@ -55,7 +59,6 @@ namespace Smash_Forge
         }
         public Mode CurrentMode = Mode.Normal;
 
-        FrameTimer frameTime = new FrameTimer();
 
         VertexTool VertexTool = new VertexTool();
         TransformTool TransformTool = new TransformTool();
@@ -442,7 +445,7 @@ namespace Smash_Forge
         private void ModelViewport_Load(object sender, EventArgs e)
         {
             ReadyToRender = true;
-            var timer = new Timer();
+            var timer = new System.Windows.Forms.Timer();
             timer.Interval = 1000 / 120;
             timer.Tick += new EventHandler(Application_Idle);
             timer.Start();

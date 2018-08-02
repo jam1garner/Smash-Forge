@@ -14,6 +14,8 @@ using SALT.PARAMS;
 using System.Diagnostics;
 using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
+using SFGraphics.Tools;
+
 
 namespace Smash_Forge.GUI.Editors
 {

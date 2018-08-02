@@ -603,9 +603,7 @@
     <Compile Include="Rendering\Lights\AreaLight.cs" />
     <Compile Include="Rendering\BatchRenderTools.cs" />
     <Compile Include="Rendering\Camera.cs" />
-    <Compile Include="Rendering\ColorTools.cs" />
     <Compile Include="Rendering\Lights\DirectionalLight.cs" />
-    <Compile Include="Rendering\FrameTimer.cs" />
     <Compile Include="Rendering\Lights\HemisphereFresnel.cs" />
     <Compile Include="Rendering\Lights\LightColor.cs" />
     <Compile Include="Rendering\Lights\LightMap.cs" />
@@ -1305,6 +1303,9 @@
     <None Include="lib\Shader\BFRES_PBR_vs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="lib\SFGraphics.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\Shader\KCL_fs.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -10,6 +10,7 @@ using System.Reflection;
 using SALT.PARAMS;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using SFGraphics.Tools;
 
 namespace Smash_Forge.Rendering
 {
