@@ -19,7 +19,7 @@ namespace Smash_Forge.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -123,6 +123,16 @@ namespace Smash_Forge.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap bitan {
+            get {
+                object obj = ResourceManager.GetObject("bitan", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap boneWeightGradient {
             get {
                 object obj = ResourceManager.GetObject("boneWeightGradient", resourceCulture);
@@ -136,6 +146,16 @@ namespace Smash_Forge.Properties {
         internal static System.Drawing.Bitmap boneWeightGradient2 {
             get {
                 object obj = ResourceManager.GetObject("boneWeightGradient2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap defaultDif {
+            get {
+                object obj = ResourceManager.GetObject("defaultDif", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -303,6 +323,26 @@ namespace Smash_Forge.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap nrm {
+            get {
+                object obj = ResourceManager.GetObject("nrm", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap nrmMap {
+            get {
+                object obj = ResourceManager.GetObject("nrmMap", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap sexy_green_down_arrow {
             get {
                 object obj = ResourceManager.GetObject("sexy_green_down_arrow", resourceCulture);
@@ -376,6 +416,26 @@ namespace Smash_Forge.Properties {
         internal static System.Drawing.Bitmap strip_sca {
             get {
                 object obj = ResourceManager.GetObject("strip_sca", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tan {
+            get {
+                object obj = ResourceManager.GetObject("tan", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap uv {
+            get {
+                object obj = ResourceManager.GetObject("uv", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
