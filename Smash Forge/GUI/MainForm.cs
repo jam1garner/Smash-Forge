@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Security.Cryptography;
@@ -24,10 +25,7 @@ namespace Smash_Forge
             get { return _instance != null ? _instance : (_instance = new MainForm()); }
         }
         
-       
-
         private static MainForm _instance;
-
 
         public static string executableDir = null;
         public static csvHashes Hashes;
@@ -482,7 +480,7 @@ namespace Smash_Forge
                         fvis.Read(modelContainer.BFRES.TargetSwitchBFRES, anim, modelContainer);
 
                     }
-                    mvp.AnimList.treeView1.Nodes.Add(anim);
+                    mvp.animListPanel.treeView1.Nodes.Add(anim);
                 }
             }
 
@@ -2226,6 +2224,7 @@ namespace Smash_Forge
             OdysseyCostumeSelector OCS = new OdysseyCostumeSelector();
             OCS.ShowDialog(this);
         }
+
         public void LoadCostumes(string fileName)
         {
             fileName = Path.ChangeExtension(fileName, null);
@@ -2233,10 +2232,6 @@ namespace Smash_Forge
             // Reassigned if a valid model file is opened. 
             ModelViewport mvp = new ModelViewport();
             AddDockedControl(mvp);
-
-            glControl1.MakeCurrent();
-
-         
 
             List<string> CostumeNames = new List<string>();
             CostumeNames.Add($"{fileName}.szs");

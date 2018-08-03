@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,7 +19,7 @@ namespace Smash_Forge
 {
     public partial class MeshList : DockContent
     {
-        
+
         public static ImageList iconList = new ImageList();
         private ContextMenu MainContextMenu;
 
@@ -101,7 +101,7 @@ namespace Smash_Forge
                         m.Checked = e.Node.Checked;
                     }
                 }
-            }      
+            }
             if (e.Node is BFRES.FMDL_Model)
                 foreach (TreeNode n in e.Node.Nodes) n.Checked = e.Node.Checked;
             if (e.Node is BFRES.Mesh)
@@ -264,7 +264,7 @@ namespace Smash_Forge
                         if (newMeshes[i] == null)
                         {
                             newMeshes[i] = new NUD.Mesh();
-                            newMeshes[i].Text = "dummy";  
+                            newMeshes[i].Text = "dummy";
                         }
                     }
 
@@ -281,7 +281,7 @@ namespace Smash_Forge
         {
             //if (e.Node is NUD.Mesh)
             //    ((NUD.Mesh) e.Node).Text = e.Label;
-            
+
         }
 
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
@@ -373,32 +373,23 @@ namespace Smash_Forge
                 {
                     xmbContextMenu.Show(this, e.X, e.Y);
                 }
-<<<<<<< HEAD
-                else
-                if (filesTreeView.SelectedNode is BFRES.Mesh)
+                else if (filesTreeView.SelectedNode is BFRES.Mesh)
                 {
                     bfresMeshContextMenu.Show(this, e.X, e.Y);
                 }
-                else
-                if (filesTreeView.SelectedNode is BFRES)
+                else if (filesTreeView.SelectedNode is BFRES)
                 {
                     bfresToolStripMenu.Show(this, e.X, e.Y);
                 }
-                else
-                if (filesTreeView.SelectedNode is BFRES.FMDL_Model)
+                else if (filesTreeView.SelectedNode is BFRES.FMDL_Model)
                 {
                     bfresFmdlcontextMenuStrip1.Show(this, e.X, e.Y);
                 }
-                else
-                if (filesTreeView.SelectedNode is KCL)
+                else if (filesTreeView.SelectedNode is KCL)
                 {
                     kclContextMenuStrip1.Show(this, e.X, e.Y);
                 }
-                else
-                if(filesTreeView.SelectedNode == null)
-=======
                 else if (filesTreeView.SelectedNode is ModelContainer)
->>>>>>> 1648edfbd21782869aebf5132a785daa518b48e9
                 {
                     ModelContainerContextMenu.Show(this, e.X, e.Y);
                 }
@@ -505,15 +496,15 @@ namespace Smash_Forge
         {
             ModelContainer originalModelContainer = (ModelContainer)filesTreeView.SelectedNode;
             ModelContainer newModelContainer = (ModelContainer)n;
-            
-            // Remove nodes from original and add to the new model container. 
+
+            // Remove nodes from original and add to the new model container.
             int count = originalModelContainer.NUD.Nodes.Count;
             for (int i = 0; i < count; i++)
             {
                 TreeNode node = originalModelContainer.NUD.Nodes[0];
                 originalModelContainer.NUD.Nodes.Remove(node);
 
-                // TODO: Account for merging single bound meshes. 
+                // TODO: Account for merging single bound meshes.
 
                 newModelContainer.NUD.Nodes.Add(node);
             }
@@ -596,7 +587,7 @@ namespace Smash_Forge
                     foreach (NUD.Material m in ((NUD.Polygon)filesTreeView.SelectedNode).materials)
                         poly.materials.Add(m.Clone());
                 }
-         
+
             }
         }
 
@@ -668,7 +659,7 @@ namespace Smash_Forge
             if (targetMeshIndex >= nud.Nodes.Count || targetMeshIndex < 0)
                 return;
 
-            // Merge the selected mesh onto the next mesh. 
+            // Merge the selected mesh onto the next mesh.
             NUD.Mesh targetMesh = (NUD.Mesh)nud.Nodes[targetMeshIndex];
             nud.Nodes.Remove(sourceMesh);
             TransferMeshPolygons(sourceMesh, targetMesh);
@@ -690,7 +681,7 @@ namespace Smash_Forge
             // Check single bind.
             if (sourceMesh.singlebind != targetMesh.singlebind)
             {
-                // Change bone flag and generate weights. 
+                // Change bone flag and generate weights.
             }
         }
 
@@ -705,7 +696,7 @@ namespace Smash_Forge
                     for (int i = 0; i < v.uv.Count; i++)
                         v.uv[i] = new OpenTK.Vector2(1 - v.uv[i].X, v.uv[i].Y);
                 }
-                
+
                 foreach (TreeNode con in filesTreeView.Nodes)
                 {
                     if (con is ModelContainer)
@@ -779,7 +770,7 @@ namespace Smash_Forge
                 NUD nud = (NUD)filesTreeView.SelectedNode;
 
                 NUD.Mesh m = new NUD.Mesh();
-                
+
                 int i = 0;
                 bool foundName = false;
                 while (!foundName)
@@ -826,7 +817,7 @@ namespace Smash_Forge
         {
             if (!(filesTreeView.SelectedNode is NUD.Polygon))
                 return;
-            
+
             NUD.Polygon poly = ((NUD.Polygon)filesTreeView.SelectedNode);
             GenerateTanBitanAndFixVertType(poly);
 
@@ -837,7 +828,7 @@ namespace Smash_Forge
 
         private void calculateNormalsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-   
+
         }
 
         private void calculateNormalsToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -937,22 +928,13 @@ namespace Smash_Forge
                         {
                             con.VBN = daeImport.getVBN();
 
-
-<<<<<<< HEAD
-
                             Collada.DaetoNud(ofd.FileName, con, daeImport.importTexCB.Checked);
 
                             // apply settings
-                            daeImport.Apply(con.NUD);
-                            con.NUD.MergePoly();
+                            if (con.NUD != null)
+                                daeImport.Apply(con.NUD);
                         }
-                    }           
-=======
-                        // apply settings
-                        if (con.NUD != null)
-                            daeImport.Apply(con.NUD);
                     }
->>>>>>> 1648edfbd21782869aebf5132a785daa518b48e9
                 }
             }
         }
@@ -1060,7 +1042,7 @@ namespace Smash_Forge
         {
             if (!(filesTreeView.SelectedNode is NUD.Mesh))
                 return;
-            
+
             string meshName = filesTreeView.SelectedNode.Text;
             var messageBox = MessageBox.Show("If the vertex type does not support tangents/bitangents, \n" +
                 "the vertex type will be changed to Normals, Tan, Bi-Tan (Float). \n" +
@@ -1077,7 +1059,7 @@ namespace Smash_Forge
                 // Update the data for rendering.
                 NUD n = (NUD)mesh.Parent;
                 n.UpdateVertexBuffers();
-            }               
+            }
         }
 
         private static void GenerateTanBitanAndFixVertType(NUD.Polygon poly)
@@ -1090,7 +1072,7 @@ namespace Smash_Forge
                 poly.vertSize |= 7;
             }
 
-            // This already checks for the appropriate vertex type. 
+            // This already checks for the appropriate vertex type.
             poly.CalculateTangentBitangent();
         }
 
@@ -1112,7 +1094,7 @@ namespace Smash_Forge
             if (!(filesTreeView.SelectedNode is NUD.Polygon))
                 return;
 
-            // Use a dialog so the color isn't set until the color editor is closed. 
+            // Use a dialog so the color isn't set until the color editor is closed.
             ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
             colorEditor.ShowDialog();
 
@@ -1225,7 +1207,7 @@ namespace Smash_Forge
             if (!(filesTreeView.SelectedNode is NUD.Mesh))
                 return;
 
-            // Use a dialog so the color isn't set until the color editor is closed. 
+            // Use a dialog so the color isn't set until the color editor is closed.
             ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
             colorEditor.ShowDialog();
 
@@ -1438,7 +1420,7 @@ namespace Smash_Forge
 
             NUD n = (NUD)filesTreeView.SelectedNode;
 
-            // Use a dialog so the color isn't set until the color editor is closed. 
+            // Use a dialog so the color isn't set until the color editor is closed.
             ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
             colorEditor.ShowDialog();
 
@@ -1465,7 +1447,7 @@ namespace Smash_Forge
             NUD n = (NUD)filesTreeView.SelectedNode;
 
             using (var texIdSelector = new TexIdSelector())
-            {              
+            {
                 texIdSelector.Set(n.GetFirstTexId());
                 texIdSelector.ShowDialog();
                 if (texIdSelector.exitStatus == TexIdSelector.ExitStatus.Opened)
@@ -1497,13 +1479,6 @@ namespace Smash_Forge
                 }
             }
         }
-
-<<<<<<< HEAD
-        private void contextMenuStrip1_Opening_1(object sender, CancelEventArgs e)
-        {
-
-        }
-
 
 #region BFRES Menus
 
@@ -1538,7 +1513,7 @@ namespace Smash_Forge
                         ((BFRES)filesTreeView.SelectedNode).InjectToWiiUBFRES(filename);
                     }
 
-              
+
                 }
             }
         }
@@ -1608,7 +1583,7 @@ namespace Smash_Forge
 
         private static void BFRESGenerateTanBitanAndFixVertType(BFRES.Mesh mesh)
         {
-            // This already checks for the appropriate vertex type. 
+            // This already checks for the appropriate vertex type.
             mesh.CalculateTangentBitangent();
         }
 
@@ -1664,7 +1639,7 @@ namespace Smash_Forge
 
         private void bfresSetVertexColors_Click(object sender, EventArgs e)
         {
-      
+
         }
 
         private void setColorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1676,7 +1651,7 @@ namespace Smash_Forge
 
             ColorDialog colorDialog1 = new ColorDialog();
             if (colorDialog1.ShowDialog() == DialogResult.OK)
-            {               
+            {
                 mesh.SetVertexColor(new OpenTK.Vector4(
                     colorDialog1.Color.R / 255.0f,
                     colorDialog1.Color.G / 255.0f,
@@ -1870,8 +1845,6 @@ namespace Smash_Forge
             }
         }
 
-
-=======
         private void uvViewerMenuItem_Click(object sender, EventArgs e)
         {
             if (!(filesTreeView.SelectedNode is NUD.Polygon))
@@ -1899,6 +1872,5 @@ namespace Smash_Forge
                 // Something broke. Let's just pretend it didn't happen.
             }
         }
->>>>>>> 1648edfbd21782869aebf5132a785daa518b48e9
     }
 }

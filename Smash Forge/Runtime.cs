@@ -97,6 +97,8 @@ namespace Smash_Forge
         // The messages are annoying when batch rendering.
         public static bool checkNudTexIdOnOpen = true;
 
+        public static bool drawUv;
+
         public static float RenderBoneNodeSize = 0.1f;
         public static float RenderLineSize = 2;
         public static bool renderLVD = true;

@@ -11,6 +11,7 @@ using Syroot.NintenTools.Bfres.GX2;
 using Syroot.NintenTools.Bfres.Helpers;
 using ResNSW = Syroot.NintenTools.NSW.Bfres;
 using Smash_Forge.Rendering;
+using SFGraphics.GLObjects.Shaders;
 
 namespace Smash_Forge
 {
@@ -24,7 +25,7 @@ namespace Smash_Forge
 
         public FSKA SkeletonAnimation;
 
-        public static ShaderOld shader = null;
+        public static Shader shader = null;
 
         public Matrix4[] sb;
 
@@ -108,22 +109,7 @@ namespace Smash_Forge
         {
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out ibo_elements);
-
-            if (!Runtime.shaders.ContainsKey("BFRES"))
-            {
-               ShaderTools.CreateShader("BFRES", "/lib/Shader/");
-            }
-            if (!Runtime.shaders.ContainsKey("BFRES_PBR"))
-            {
-                ShaderTools.CreateShader("BFRES_PBR", "/lib/Shader/");
-            }
-
-
-            Runtime.shaders["BFRES_PBR"].DisplayCompilationWarning("BFRES_PBR");
-            Runtime.shaders["BFRES"].DisplayCompilationWarning("BFRES");
         }
-
-
 
         public BFRES(string fname, byte[] file_data) : this()
         {
@@ -386,12 +372,13 @@ namespace Smash_Forge
         public void Render(Matrix4 view)
         {
             if (Runtime.renderPhysicallyBasedRendering == true)
-                shader = Runtime.shaders["BFRES_PBR"];
+                shader = OpenTKSharedResources.shaders["BFRES_PBR"];
             else
-                shader = Runtime.shaders["BFRES"];
-            GL.UseProgram(shader.programID);
+                shader = OpenTKSharedResources.shaders["BFRES"];
 
-            shader.enableAttrib();
+            shader.UseProgram();
+
+            shader.EnableVertexAttributes();
 
             if (Runtime.renderBoundingSphere)
             {
@@ -400,7 +387,7 @@ namespace Smash_Forge
 
             SetRenderSettings(shader);
 
-            GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref view);
+            shader.SetMatrix4x4("modelview", ref view);
 
             foreach (FMDL_Model fmdl in models)
             {
@@ -412,10 +399,10 @@ namespace Smash_Forge
                 //Render Skeleton
                 Matrix4[] f = fmdl.skeleton.getShaderMatrix();
                 int[] bind = fmdl.Node_Array; //Now bind each bone
-                GL.UniformMatrix4(shader.getAttribute("bones"), f.Length, false, ref f[0].Row0.X);
+                GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("bones"), f.Length, false, ref f[0].Row0.X);
                 if (bind.Length != 0)
                 {
-                    GL.Uniform1(shader.getAttribute("boneList"), bind.Length, ref bind[0]);
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("boneList"), bind.Length, ref bind[0]);
                 }
 
                 foreach (Mesh m in fmdl.depthSortedMeshes)
@@ -448,7 +435,7 @@ namespace Smash_Forge
             }
 
       
-            shader.disableAttrib();
+            shader.DisableVertexAttributes();
         }
 
         private void CheckChildren(TreeNode rootNode, bool isChecked)
@@ -460,19 +447,19 @@ namespace Smash_Forge
             }
         }
 
-        private void SetRenderSettings(ShaderOld shader)
+        private void SetRenderSettings(Shader shader)
         {
-            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
-            GL.Uniform1(shader.getAttribute("uvChannel"), (int)Runtime.uvChannel);
-            GL.Uniform1(shader.getAttribute("useNormalMap"), Runtime.renderNormalMap ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderR"), Runtime.renderR ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderG"), Runtime.renderG ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderB"), Runtime.renderB ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderAlpha"), Runtime.renderAlpha ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderFog"), Runtime.renderFog ? 1 : 0);
+            shader.SetBoolToInt("renderVertColor", Runtime.renderVertColor);
+            shader.SetInt("renderType", (int)Runtime.renderType);
+            shader.SetInt("uvChannel", (int)Runtime.uvChannel);
+            shader.SetBoolToInt("useNormalMap", Runtime.renderNormalMap);
+            shader.SetBoolToInt("renderR", Runtime.renderR);
+            shader.SetBoolToInt("renderG", Runtime.renderG);
+            shader.SetBoolToInt("renderB", Runtime.renderB);
+            shader.SetBoolToInt("renderAlpha", Runtime.renderAlpha);
+            shader.SetBoolToInt("renderFog", Runtime.renderFog);
         }
-        private void DrawMesh(Mesh m, ShaderOld shader, MaterialData mat, bool drawSelection = false)
+        private void DrawMesh(Mesh m, Shader shader, MaterialData mat, bool drawSelection = false)
         {
             if (m.lodMeshes[m.DisplayLODIndex].faces.Count <= 3)
                 return;
@@ -510,18 +497,18 @@ namespace Smash_Forge
             }
         }
 
-        private static void DrawModelWireframe(Mesh p, ShaderOld shader)
+        private static void DrawModelWireframe(Mesh p, Shader shader)
         {
             // use vertex color for wireframe color
-            GL.Uniform1(shader.getAttribute("colorOverride"), 1);
+            shader.SetInt("colorOverride", 1);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
             GL.DrawElements(PrimitiveType.Triangles, p.lodMeshes[p.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            GL.Uniform1(shader.getAttribute("colorOverride"), 0);
+            shader.SetInt("colorOverride", 0);
         }
-        private static void DrawModelSelection(Mesh p, ShaderOld shader)
+        private static void DrawModelSelection(Mesh p, Shader shader)
         {
             //This part needs to be reworked for proper outline. Currently would make model disappear
 
@@ -529,33 +516,33 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.StencilTest);
             // use vertex color for wireframe color
-            GL.Uniform1(shader.getAttribute("colorOverride"), 1);
+            shader.SetInt("colorOverride", 1);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
             GL.DrawElements(PrimitiveType.Triangles, p.lodMeshes[p.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            GL.Uniform1(shader.getAttribute("colorOverride"), 0);
+            shader.SetInt("colorOverride", 0);
 
             GL.Enable(EnableCap.DepthTest);
         }
-        private void SetVertexAttributes(Mesh m, ShaderOld shader)
+        private void SetVertexAttributes(Mesh m, Shader shader)
         {
             //Note on these buffers
             // - vBone and vWeight have 2 attributes since bfres has 4 weights/bones per vertice. Additional one can allow up to a max of 8
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-            GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
-            GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
-            GL.VertexAttribPointer(shader.getAttribute("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
-            GL.VertexAttribPointer(shader.getAttribute("vBitangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 36);
-            GL.VertexAttribPointer(shader.getAttribute("vUV0"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 48);
-            GL.VertexAttribPointer(shader.getAttribute("vColor"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 56);
-            GL.VertexAttribIPointer(shader.getAttribute("vBone"), 4, VertexAttribIntegerType.Int, DisplayVertex.Size, new IntPtr(72));
-            GL.VertexAttribPointer(shader.getAttribute("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
-            GL.VertexAttribPointer(shader.getAttribute("vUV1"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
-            GL.VertexAttribPointer(shader.getAttribute("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
-            GL.VertexAttribPointer(shader.getAttribute("vPosition2"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 124);
-            GL.VertexAttribPointer(shader.getAttribute("vPosition3"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 136);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBitangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 36);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV0"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 48);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vColor"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 56);
+            GL.VertexAttribIPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribIntegerType.Int, DisplayVertex.Size, new IntPtr(72));
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV1"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition2"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 124);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition3"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 136);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
 
             // Disabled these untill I fix transform stuff manually without shaders
@@ -629,36 +616,36 @@ namespace Smash_Forge
 
         private static void ApplyTransformFix(FMDL_Model fmdl, Mesh m)
         {
-            GL.Uniform1(shader.getAttribute("NoSkinning"), 0);
-            GL.Uniform1(shader.getAttribute("RigidSkinning"), 0);
+            shader.SetInt("NoSkinning", 0);
+            shader.SetInt("RigidSkinning", 0);
             //Some objects will have no weights or indices. These will weigh to the bone index in the shape section.
-            GL.Uniform1(shader.getAttribute("SingleBoneIndex"), m.boneIndx);
+            shader.SetInt("SingleBoneIndex", m.boneIndx);
 
             if (m.VertexSkinCount == 1)
             {
-                GL.Uniform1(shader.getAttribute("RigidSkinning"), 1);
+                shader.SetInt("RigidSkinning", 1);
             }
             if (m.VertexSkinCount == 0)
             {
-                GL.Uniform1(shader.getAttribute("NoSkinning"), 1);
+                shader.SetInt("NoSkinning", 1);
 
             }
         }
 
-        private static void RenderUniformParams(MaterialData mat, ShaderOld shader, Mesh m)
+        private static void RenderUniformParams(MaterialData mat, Shader shader, Mesh m)
         {
-            GL.Uniform4(shader.getAttribute("SamplerUV1"), new Vector4(1, 1, 0, 0));
-            GL.Uniform4(shader.getAttribute("gsys_bake_st0"), new Vector4(1, 1, 0, 0));
-            GL.Uniform4(shader.getAttribute("gsys_bake_st1"), new Vector4(1, 1, 0, 0));
-            GL.Uniform1(shader.getAttribute("enableCellShading"), 0);
+            shader.SetVector4("SamplerUV1", new Vector4(1, 1, 0, 0));
+            shader.SetVector4("gsys_bake_st0", new Vector4(1, 1, 0, 0));
+            shader.SetVector4("gsys_bake_st1", new Vector4(1, 1, 0, 0));
+            shader.SetInt("enableCellShading", 0);
 
 
             //BOTW uses this shader so lets add in cell shading
             if (mat.shaderassign.ShaderModel == "uking_mat")
-                GL.Uniform1(shader.getAttribute("enableCellShading"), 1);
+                shader.SetInt("enableCellShading", 1);
 
 
-            GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
+            shader.SetInt("selectedBoneIndex", Runtime.selectedBoneIndex);
 
             //This uniform is set so I can do SRT anims.
             SetUnifromData(mat, shader, "tex_mtx0");
@@ -689,12 +676,11 @@ namespace Smash_Forge
 
             SetUnifromData(mat, shader, "enable_fresnel");
             SetUnifromData(mat, shader, "enable_emission");
-            
 
-            ShaderTools.BoolToIntShaderUniform(shader, m.isTransparent, "isTransparent");
+            shader.SetBoolToInt("isTransparent", m.isTransparent);
         }
 
-        private static void SetUnifromData(MaterialData mat, ShaderOld shader, string propertyName)
+        private static void SetUnifromData(MaterialData mat, Shader shader, string propertyName)
         {
             //Note uniform data has so many types so it's messy atm
 
@@ -702,7 +688,7 @@ namespace Smash_Forge
             {
                 float value = float.Parse(mat.shaderassign.options[propertyName]);
 
-                GL.Uniform1(shader.getAttribute(propertyName), value);
+                shader.SetFloat(propertyName, value);
             }
 
             if (mat.matparam.ContainsKey(propertyName))
@@ -711,7 +697,7 @@ namespace Smash_Forge
                 {
                     if (mat.anims.ContainsKey(propertyName))
                         mat.matparam[propertyName].Value_float = mat.anims[propertyName][0];
-                    GL.Uniform1(shader.getAttribute(propertyName), mat.matparam[propertyName].Value_float);
+                    shader.SetFloat(propertyName, mat.matparam[propertyName].Value_float);
                 }
                 if (mat.matparam[propertyName].Type == ShaderParamType.Float2)
                 {
@@ -721,7 +707,7 @@ namespace Smash_Forge
                                         mat.anims[propertyName][0], mat.anims[propertyName][1]);
                     }
 
-                    GL.Uniform2(shader.getAttribute(propertyName), mat.matparam[propertyName].Value_float2);
+                    shader.SetVector2(propertyName, mat.matparam[propertyName].Value_float2);
                 }
                 if (mat.matparam[propertyName].Type == ShaderParamType.Float3)
                 {
@@ -732,7 +718,7 @@ namespace Smash_Forge
                                          mat.anims[propertyName][2]);
                     }
 
-                    GL.Uniform3(shader.getAttribute(propertyName), mat.matparam[propertyName].Value_float3);
+                    shader.SetVector3(propertyName, mat.matparam[propertyName].Value_float3);
                 }
                 if (mat.matparam[propertyName].Type == ShaderParamType.Float4)
                 {
@@ -743,7 +729,7 @@ namespace Smash_Forge
                                      mat.anims[propertyName][2], mat.anims[propertyName][3]);
                     }
 
-                    GL.Uniform4(shader.getAttribute(propertyName), mat.matparam[propertyName].Value_float4);
+                    shader.SetVector4(propertyName, mat.matparam[propertyName].Value_float4);
                 }
                 if (mat.matparam[propertyName].Type == ShaderParamType.TexSrt)
                 {
@@ -752,9 +738,9 @@ namespace Smash_Forge
                     // Vector2 translate
                     ShaderParam.TextureSRT texSRT = mat.matparam[propertyName].Value_TexSrt;
 
-                    GL.Uniform2(shader.getAttribute("SRT_Scale"), texSRT.scale);
-                    GL.Uniform1(shader.getAttribute("SRT_Rotate"), texSRT.rotate);
-                    GL.Uniform2(shader.getAttribute("SRT_Translate"), texSRT.translate);
+                    shader.SetVector2("SRT_Scale", texSRT.scale);
+                    shader.SetFloat("SRT_Rotate", texSRT.rotate);
+                    shader.SetVector2("SRT_Translate", texSRT.translate);
                 }
             }         
         }
@@ -822,20 +808,20 @@ namespace Smash_Forge
  
         private static void SetDefaultTextureAttributes(MaterialData mat)
         {            
-            ShaderTools.BoolToIntShaderUniform(shader, mat.HasDiffuseMap, "HasDiffuseLayer");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.HasDiffuseLayer, "HasDiffuseLayer");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.HasNormalMap, "HasNormalMap");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.HasEmissionMap, "HasEmissionMap");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.HasLightMap, "HasLightMap");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.HasShadowMap, "HasShadowMap");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.HasAmbientOcclusionMap, "HasAmbientOcclusionMap");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.HasSpecularMap, "HasSpecularMap");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.HasTeamColorMap, "HasTeamColorMap");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.HasTransparencyMap, "hasDummyRamp");
+            shader.SetBoolToInt("HasDiffuseLayer", mat.HasDiffuseMap);
+            shader.SetBoolToInt("HasDiffuseLayer", mat.HasDiffuseLayer);
+            shader.SetBoolToInt("HasNormalMap", mat.HasNormalMap);
+            shader.SetBoolToInt("HasEmissionMap", mat.HasEmissionMap);
+            shader.SetBoolToInt("HasLightMap", mat.HasLightMap);
+            shader.SetBoolToInt("HasShadowMap", mat.HasShadowMap);
+            shader.SetBoolToInt("HasAmbientOcclusionMap", mat.HasAmbientOcclusionMap);
+            shader.SetBoolToInt("HasSpecularMap", mat.HasSpecularMap);
+            shader.SetBoolToInt("HasTeamColorMap", mat.HasTeamColorMap);
+            shader.SetBoolToInt("hasDummyRamp", mat.HasTransparencyMap);
 
             //Unused atm untill I do PBR shader
-            ShaderTools.BoolToIntShaderUniform(shader, mat.HasMetalnessMap, "HasMetalnessMap");
-            ShaderTools.BoolToIntShaderUniform(shader, mat.HasRoughnessMap, "HasRoughnessMap");
+            shader.SetBoolToInt("HasMetalnessMap" ,mat.HasMetalnessMap);
+            shader.SetBoolToInt("HasRoughnessMap", mat.HasRoughnessMap);
         }
 
         private static void SetTextureUniforms(MaterialData mat, Mesh m)
@@ -843,23 +829,13 @@ namespace Smash_Forge
             SetDefaultTextureAttributes(mat);
 
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex.Id);
 
-            GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern);
-            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
-
-            GL.ActiveTexture(TextureUnit.Texture11);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient);
-            GL.Uniform1(shader.getAttribute("weightRamp1"), 11);
-
-            GL.ActiveTexture(TextureUnit.Texture12);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.boneWeightGradient2);
-            GL.Uniform1(shader.getAttribute("weightRamp2"), 12);
-
-
-            GL.Uniform1(shader.getAttribute("nrm"), 0);
-            GL.Uniform1(shader.getAttribute("BakeShadowMap"), 0);
+            shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 10);
+            shader.SetTexture("weightRamp1", RenderTools.boneWeightGradient.Id, TextureTarget.Texture2D, 11);
+            shader.SetTexture("weightRamp2", RenderTools.boneWeightGradient2.Id, TextureTarget.Texture2D, 12);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("nrm"), 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("BakeShadowMap"), 0);
 
             //So this loops through each type and maps by tex hash. This is done because there is no particular order in the list
 
@@ -890,19 +866,19 @@ namespace Smash_Forge
             }
         }
 
-        private static void TextureUniform(ShaderOld shader, MaterialData mat, bool hasTex, string name, MatTexture mattex)
+        private static void TextureUniform(Shader shader, MaterialData mat, bool hasTex, string name, MatTexture mattex)
         {
             // Bind the texture and create the uniform if the material has the right textures. 
             if (hasTex)
             {
-                GL.Uniform1(shader.getAttribute(name), BindTexture(mattex));
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation(name), BindTexture(mattex));
             }
         }
 
         public static int BindTexture(MatTexture tex)
         {
             GL.ActiveTexture(TextureUnit.Texture0 + tex.hash + 1);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex);
+            GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex.Id);
 
             if (IsSwitchBFRES == true)
             {

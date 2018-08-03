@@ -328,15 +328,10 @@ namespace Smash_Forge
 
             int texture = ((BRTI)textureListBox.SelectedItem).display;
 
-            Rendering.RenderTools.DrawTexturedQuad(texture, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio,
+            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio,
                           currentMipLevel);
 
             glControl1.SwapBuffers();
-
-            if (!Runtime.shaders["Texture"].hasCheckedCompilation())
-            {
-                Runtime.shaders["Texture"].DisplayCompilationWarning("Texture");
-            }
         }
         private void groupBox1_Enter(object sender, EventArgs e)
         {

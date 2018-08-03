@@ -142,7 +142,7 @@ namespace Smash_Forge
             set
             {
                 ResetModels();
-                Animation = null;
+                currentAnimation = null;
                 BFRESMaterialAnimation = value;
                 totalFrame.Value = value.FrameCount;
                 animationTrackBar.TickFrequency = 1;

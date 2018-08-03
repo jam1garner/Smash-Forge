@@ -282,6 +282,12 @@
     <Compile Include="GUI\Menus\XmbViewer.Designer.cs">
       <DependentUpon>XmbViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Menus\PolygonFormatEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\PolygonFormatEditor.Designer.cs">
+      <DependentUpon>PolygonFormatEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="lib\DiscordController.cs" />
     <Compile Include="lib\DiscordRpc.cs" />
     <Compile Include="GUI\EditorBase.cs">
@@ -829,6 +835,9 @@
     <EmbeddedResource Include="GUI\Menus\XmbViewer.resx">
       <DependentUpon>XmbViewer.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\PolygonFormatEditor.resx">
+      <DependentUpon>PolygonFormatEditor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\ModelViewport.resx">
       <DependentUpon>ModelViewport.cs</DependentUpon>
     </EmbeddedResource>
@@ -1310,43 +1319,13 @@
     <None Include="Resources\UVPattern.png" />
     <None Include="Resources\10102000.png" />
     <None Include="Resources\10101000.png" />
-    <None Include="Preview Images\Mat01 [Beginners Material].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat02 [Standard Nrm Map].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat03 [Skin Ramp].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat04 [Metal NUD].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat08 [Material Colored Hair].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Preview Images\Character.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Preview Images\Dummy.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Preview Images\Mat06 [Metal Reflectivity Map].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat07 [Cel-Shade].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Preview Images\Stage.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat05 [Metal Ganon Armor].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat09 [Satin Material].png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Preview Images\Mat11 [JoeTE Glow].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Shader\BFRES.frag">

@@ -87,11 +87,6 @@ namespace Smash_Forge
             Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, true, true, true, false);
 
             glControl1.SwapBuffers();
-
-            if (!Runtime.shaders["Texture"].hasCheckedCompilation())
-            {
-                Runtime.shaders["Texture"].DisplayCompilationWarning("Texture");
-            }
         }
         private void RenderTextureAlpha(BRTI tex)
         {
@@ -115,11 +110,6 @@ namespace Smash_Forge
             Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, false, false, false, true);
 
             glControl2.SwapBuffers();
-
-            if (!Runtime.shaders["Texture"].hasCheckedCompilation())
-            {
-                Runtime.shaders["Texture"].DisplayCompilationWarning("Texture");
-            }
         }
 
         private void previewBox_Resize(object sender, EventArgs e)

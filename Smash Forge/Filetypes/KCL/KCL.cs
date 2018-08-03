@@ -11,6 +11,7 @@ using Smash_Forge.Rendering;
 using System.Windows.Forms;
 using System.Windows;
 using System.Drawing;
+using SFGraphics.GLObjects.Shaders;
 
 namespace Smash_Forge
 {
@@ -85,23 +86,13 @@ namespace Smash_Forge
         }
 
         public KclFile kcl = null;
-        public static ShaderOld shader = null;
+        public static Shader shader = null;
         public List<KCLModel> models = new List<KCLModel>();
 
         public KCL()
         {
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out ibo_elements);
-
-            Console.WriteLine("Loading shader");
-
-            if (!Runtime.shaders.ContainsKey("KCL"))
-            {
-                Console.WriteLine("Creating shader");
-                ShaderTools.CreateShader("KCL", "/lib/Shader/");
-            }
- 
-            Runtime.shaders["KCL"].DisplayCompilationWarning("KCL");
         }
 
         public KCL(byte[] file_data) : this()
@@ -249,8 +240,8 @@ namespace Smash_Forge
             int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
             if (shader == null)
             {
-                shader = new ShaderOld();
-                shader = Runtime.shaders["KCL"];
+                shader = new Shader();
+                shader = OpenTKSharedResources.shaders["KCL"];
             }
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
@@ -258,28 +249,27 @@ namespace Smash_Forge
 
         public void Render(Matrix4 view)
         {
-            shader = Runtime.shaders["KCL"];
+            shader = OpenTKSharedResources.shaders["KCL"];
 
-            GL.UseProgram(shader.programID);
-
-            shader.enableAttrib();
+            shader.UseProgram();
+            shader.EnableVertexAttributes();
             SetRenderSettings(shader);
 
-            GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref view);
+            shader.SetMatrix4x4("modelview", ref view);
 
             foreach (KCLModel mdl in models)
             {
                  DrawModel(mdl, shader);
             }
 
-            shader.disableAttrib();
+            shader.DisableVertexAttributes();
         }
-        private void SetRenderSettings(ShaderOld shader)
+        private void SetRenderSettings(Shader shader)
         {
-            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
+            shader.SetBoolToInt("renderVertColor", Runtime.renderVertColor);
+            shader.SetInt("renderType", (int)Runtime.renderType);
         }
-        private void DrawModel(KCLModel m, ShaderOld shader, bool drawSelection = false)
+        private void DrawModel(KCLModel m, Shader shader, bool drawSelection = false)
         {
             if (m.faces.Count <= 3)
                 return;
@@ -344,27 +334,27 @@ namespace Smash_Forge
             GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
         }
 
-        private void SetVertexAttributes(KCLModel m, ShaderOld shader)
+        private void SetVertexAttributes(KCLModel m, Shader shader)
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
-            GL.VertexAttribPointer(shader.getAttribute("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
-            GL.VertexAttribPointer(shader.getAttribute("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
-            GL.VertexAttribPointer(shader.getAttribute("vColor"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vColor"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
         }
 
-        private static void DrawModelWireframe(KCLModel p, ShaderOld shader)
+        private static void DrawModelWireframe(KCLModel p, Shader shader)
         {
             // use vertex color for wireframe color
-            GL.Uniform1(shader.getAttribute("colorOverride"), 1);
+            shader.SetInt("colorOverride", 1);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            GL.Uniform1(shader.getAttribute("colorOverride"), 0);
+            shader.SetInt("colorOverride", 0);
         }
-        private static void DrawModelSelection(KCLModel p, ShaderOld shader)
+        private static void DrawModelSelection(KCLModel p, Shader shader)
         {
             //This part needs to be reworked for proper outline. Currently would make model disappear
 
@@ -372,13 +362,13 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.StencilTest);
             // use vertex color for wireframe color
-            GL.Uniform1(shader.getAttribute("colorOverride"), 1);
+            shader.SetInt("colorOverride", 1);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            GL.Uniform1(shader.getAttribute("colorOverride"), 0);
+            shader.SetInt("colorOverride", 0);
 
             GL.Enable(EnableCap.DepthTest);
         }
