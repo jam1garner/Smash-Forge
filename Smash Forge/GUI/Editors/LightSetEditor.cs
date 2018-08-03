@@ -34,48 +34,92 @@ namespace Smash_Forge.GUI.Editors
             InitAreaLightListBox();
             InitLightMapListBox();
             InitFogListBox();
+            InitStageLightTreeView();
 
-            for (int groupIndex = 1; groupIndex < 17; groupIndex++)
+            // Make sure the panels all fit on the form initially.
+            areaLightRotPanel.Visible = false;
+            areaLightScalePanel.Visible = false;
+            areaLightPosPanel.Visible = false;
+            areaLightColGroundPanel.Visible = false;
+        }
+
+        private void InitStageLightTreeView()
+        {
+            // Use solid color thumbnails to avoid confusion between color names.
+            stageLightSetTreeView.ImageList = new ImageList();
+            stageLightSetTreeView.ImageList.ColorDepth = ColorDepth.Depth32Bit;
+
+            // There are 16 groups of 4 stage lights stored in a single array.
+            for (int groupIndex = 0; groupIndex < 16; groupIndex++)
             {
-                string name = (groupIndex - 1) + "";
-                switch (groupIndex)
-                {
-                    case 0:
-                        name += " black";
-                        break;
-                    case 1:
-                        name += " cyan";
-                        break;
-                    case 2:
-                        name += " blue";
-                        break;
-                    case 3:
-                        name += " yellow";
-                        break;
-                    case 4:
-                        name += " magenta";
-                        break;
-                    case 5:
-                        name += " green";
-                        break;
-                    default:
-                        name += "";
-                        break;
-                }
-
-                TreeNode[] children = new TreeNode[4];
-                for (int lightIndex = 0; lightIndex < 4; lightIndex++)
-                {
-                    DirectionalLight currentLight = Runtime.lightSetParam.stageDiffuseLights[((groupIndex) * 4) + lightIndex];
-                    children[lightIndex] = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
-                    children[lightIndex].Checked = currentLight.enabled;
-                }
+                // Add the group and the 4 child lights.
+                TreeNode[] children = GetChildLightsForLightSet(groupIndex);
+                string name = GetGroupAndColorName(groupIndex);
                 TreeNode parent = new TreeNode(name, children);
-
                 stageLightSetTreeView.Nodes.Add(parent);
+
+                AddLightSetGroupThumbnail(groupIndex, parent);
+            }
+        }
+
+        private void AddLightSetGroupThumbnail(int groupIndex, TreeNode parent)
+        {
+            // Add color thumbnail.
+            parent.ImageIndex = groupIndex;
+            parent.SelectedImageIndex = groupIndex;
+            Bitmap colorImage = GetLightSetIndexColorThumbnail(groupIndex);
+            stageLightSetTreeView.ImageList.Images.Add(colorImage);
+        }
+
+        private static Bitmap GetLightSetIndexColorThumbnail(int groupIndex)
+        {
+            Bitmap colorImage = new Bitmap(64, 64);
+            using (Graphics graph = Graphics.FromImage(colorImage))
+            {
+                Rectangle ImageSize = new Rectangle(0, 0, 64, 64);
+                graph.Clear(NUD.lightSetColorByIndex[groupIndex]);
             }
 
+            return colorImage;
+        }
 
+        private static TreeNode[] GetChildLightsForLightSet(int groupIndex)
+        {
+            // The first 4 lights are used for characters.
+            // We only need the stage lights. #ihatearrayindices
+            int offset = 1;
+
+            TreeNode[] children = new TreeNode[4];
+            for (int lightIndex = 0; lightIndex < 4; lightIndex++)
+            {
+                // Create a node from the current stage light.
+                DirectionalLight currentLight = Runtime.lightSetParam.stageDiffuseLights[((groupIndex + offset) * 4) + lightIndex];
+                TreeNode childLight = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
+                childLight = new TreeNode(lightIndex.ToString()) { Tag = currentLight };
+                childLight.Checked = currentLight.enabled;
+
+                // Don't use an image. This will leave a blank space.
+                childLight.ImageIndex = 99;
+                childLight.SelectedImageIndex = 99;
+
+                children[lightIndex] = childLight;
+            }
+
+            return children;
+        }
+
+        private string GetGroupAndColorName(int groupIndex)
+        {
+            string name = groupIndex + "";
+            try
+            {
+                string colorName = NUD.lightSetColorByIndex[groupIndex].Name;
+                name += String.Format(" {0}", colorName);
+            }
+            catch (KeyNotFoundException)
+            {
+            }
+            return name;
         }
 
         private void InitLightMapListBox()
@@ -98,7 +142,8 @@ namespace Smash_Forge.GUI.Editors
         {
             for (int i = 0; i < Runtime.lightSetParam.stageFogSet.Length; i++)
             {
-                stageFogListBox.Items.Add(i);
+                string name = GetGroupAndColorName(i);
+                stageFogListBox.Items.Add(name);
             }
         }
 
@@ -112,47 +157,72 @@ namespace Smash_Forge.GUI.Editors
 
         private void charLightsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // The additional character diffuse lights don't have ambient color.
+            if (charLightsListBox.SelectedItems.Count == 0)
+                return;
+
             switch (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString())
             {
                 default:
                     break;
                 case "Diffuse":
                     selectedCharDiffuseLight = Runtime.lightSetParam.characterDiffuse;
-                    charColor2GroupBox.Enabled = true;
+                    SetUpCharDiffuseLight();
+                    // The additional character diffuse lights don't have ambient color.
+                    charColor2Button.Visible = true;
+                    charColor2Panel.Visible = true;
                     break;
                 case "Diffuse2":
                     selectedCharDiffuseLight = Runtime.lightSetParam.characterDiffuse2;
-                    charColor2GroupBox.Enabled = false;
+                    SetUpCharDiffuseLight();
                     break;
                 case "Diffuse3":
                     selectedCharDiffuseLight = Runtime.lightSetParam.characterDiffuse3;
-                    charColor2GroupBox.Enabled = false;
+                    SetUpCharDiffuseLight();
                     break;
                 case "Fresnel":
-                    charColor2GroupBox.Enabled = true;
+                    charColor2Panel.Enabled = true;
+                    SetUpCharFresnelLight();
                     break;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
+        }
+
+        private void SetUpCharFresnelLight()
+        {
+            charColor1Button.Text = "Fresnel Sky Color";
+            charColor2Button.Text = "Fresnel Ground Color";
+
+            charColor2Panel.Visible = true;
+            charColor2Button.Visible = true;
+
+            UpdateCharFresnelValues();
+        }
+
+        private void SetUpCharDiffuseLight()
+        {
+            charColor1Button.Text = "Diffuse Color";
+            charColor2Button.Text = "Ambient Color";
+
+            charColor2Panel.Visible = false;
+            charColor2Button.Visible = false;
+
+            UpdateCharDiffuseValues();
         }
 
         private void RenderCharacterLightColors()
         {
-            if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString() == "Fresnel")
-            {
-                charColor1GroupBox.Text = "Fresnel Sky Color";
-                charColor2GroupBox.Text = "Fresnel Ground Color";
-                RenderCharacterLightGradient(Runtime.lightSetParam.fresnelLight.skyColor, Runtime.lightSetParam.fresnelLight.groundColor);
-                UpdateCharFresnelValues();
-            }
-            else if (charLightsListBox.Items[charLightsListBox.SelectedIndex].ToString().Contains("Diffuse"))
-            {
-                charColor1GroupBox.Text = "Diffuse Color";
-                charColor2GroupBox.Text = "Ambient Color";
+            if (charLightsListBox.SelectedItems.Count == 0)
+                return;
 
+            string name = charLightsListBox.SelectedItems[0].ToString();
+            if (name.Contains("Fresnel"))
+            {
+                RenderCharacterLightGradient(Runtime.lightSetParam.fresnelLight.skyColor, Runtime.lightSetParam.fresnelLight.groundColor);
+            }
+            else if (name.Contains("Diffuse"))
+            {
                 RenderCharacterLightGradient(selectedCharDiffuseLight.diffuseColor, selectedCharDiffuseLight.ambientColor);
-                UpdateCharDiffuseValues();
             }
         }
 
@@ -181,9 +251,9 @@ namespace Smash_Forge.GUI.Editors
             stageDifHueTB.Text = selectedStageLight.diffuseColor.H + "";
             stageDifSatTB.Text = selectedStageLight.diffuseColor.S + "";
             stageDifIntensityTB.Text = selectedStageLight.diffuseColor.V + "";
-            stageDifRotXTB.Text = selectedStageLight.rotX + "";
-            stageDifRotYTB.Text = selectedStageLight.rotY + "";
-            stageDifRotZTB.Text = selectedStageLight.rotZ + "";
+            stageDifRotXTB.Text = selectedStageLight.RotationXDegrees + "";
+            stageDifRotYTB.Text = selectedStageLight.RotationYDegrees + "";
+            stageDifRotZTB.Text = selectedStageLight.RotationZDegrees + "";
         }
 
         private void lightSetLightListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -194,42 +264,32 @@ namespace Smash_Forge.GUI.Editors
 
         private void UpdateStageButtonColor()
         {
-            int red = ColorTools.ClampInt((int)(selectedStageLight.diffuseColor.R * 255));
-            int green = ColorTools.ClampInt((int)(selectedStageLight.diffuseColor.G * 255));
-            int blue = ColorTools.ClampInt((int)(selectedStageLight.diffuseColor.B * 255));
+            int red = ColorTools.FloatToIntClamp(selectedStageLight.diffuseColor.R);
+            int green = ColorTools.FloatToIntClamp(selectedStageLight.diffuseColor.G);
+            int blue = ColorTools.FloatToIntClamp(selectedStageLight.diffuseColor.B);
             Color stageColor = Color.FromArgb(255, red, green, blue);
             stageDifColorButton.BackColor = stageColor;
         }
 
         private void UpdateFogButtonColor()
         {
-            int red = ColorTools.ClampInt((int)(selectedFogColor.R * 255));
-            int green = ColorTools.ClampInt((int)(selectedFogColor.G * 255));
-            int blue = ColorTools.ClampInt((int)(selectedFogColor.B * 255));
+            int red = ColorTools.FloatToIntClamp(selectedFogColor.R);
+            int green = ColorTools.FloatToIntClamp(selectedFogColor.G);
+            int blue = ColorTools.FloatToIntClamp(selectedFogColor.B);
             Color fogColor = Color.FromArgb(255, red, green, blue);
             fogColorButton.BackColor = fogColor;
         }
 
         private void RenderCharacterLightGradient(LightColor topColor, LightColor bottomColor)
         {
-            charDifColorGLControl.MakeCurrent();
-            GL.Viewport(charDifColorGLControl.ClientRectangle);
-          
-            RenderTools.DrawQuadGradient(new Vector3(topColor.R, topColor.G, topColor.B), new Vector3(bottomColor.R, bottomColor.G, bottomColor.B));
-
-            charDifColorGLControl.SwapBuffers();
+            ScreenDrawing.DrawQuadGradient(new Vector3(topColor.R, topColor.G, topColor.B), new Vector3(bottomColor.R, bottomColor.G, bottomColor.B), ScreenDrawing.screenQuadVbo);
         }
 
         private void RenderAreaLightColor()
         {
-            areaColorGLControl.MakeCurrent();
-            GL.Viewport(areaColorGLControl.ClientRectangle);
-
             Vector3 topColor = new Vector3(selectedAreaLight.skyR, selectedAreaLight.skyG, selectedAreaLight.skyB);
             Vector3 bottomColor = new Vector3(selectedAreaLight.groundR, selectedAreaLight.groundG, selectedAreaLight.groundB);
-            RenderTools.DrawQuadGradient(topColor, bottomColor);
-
-            areaColorGLControl.SwapBuffers();
+            ScreenDrawing.DrawQuadGradient(topColor, bottomColor, ScreenDrawing.screenQuadVbo);
         }
 
         private void RenderLightMapColor()
@@ -239,7 +299,7 @@ namespace Smash_Forge.GUI.Editors
 
             Vector3 topColor = new Vector3(1);
             Vector3 bottomColor = new Vector3(1);
-            RenderTools.DrawQuadGradient(topColor, bottomColor);
+            ScreenDrawing.DrawQuadGradient(topColor, bottomColor, ScreenDrawing.screenQuadVbo);
 
             lightMapGLControl.SwapBuffers();
         }
@@ -286,21 +346,21 @@ namespace Smash_Forge.GUI.Editors
         private void stageDifRotXTB_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(stageDifRotXTB);
-            selectedStageLight.rotX = value;
+            selectedStageLight.RotationXDegrees = value;
             stageRotXTrackBar.Value = (int)(value + 180.0f);
         }
 
         private void stageDifRotYTB_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(stageDifRotYTB);
-            selectedStageLight.rotY = value;
+            selectedStageLight.RotationYDegrees = value;
             stageRotYTrackBar.Value = (int)(value + 180.0f);
         }
 
         private void stageDifRotZTB_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(stageDifRotZTB);
-            selectedStageLight.rotZ = value;
+            selectedStageLight.RotationZDegrees = value;
             stageRotZTrackBar.Value = (int)(value + 180.0f);
         }
 
@@ -331,7 +391,7 @@ namespace Smash_Forge.GUI.Editors
                 selectedCharDiffuseLight.diffuseColor.H = value;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, charColor1XTrackBar, 0, 360.0f);
         }
 
@@ -347,7 +407,7 @@ namespace Smash_Forge.GUI.Editors
                 selectedCharDiffuseLight.diffuseColor.S = value;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, charColor1YTrackBar, 0, 1);
         }
 
@@ -363,7 +423,7 @@ namespace Smash_Forge.GUI.Editors
                 selectedCharDiffuseLight.diffuseColor.V = value;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, charColor1ZTrackBar, 0, 1);
         }
 
@@ -379,7 +439,7 @@ namespace Smash_Forge.GUI.Editors
                 Runtime.lightSetParam.characterDiffuse.ambientColor.H = value;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, charColor2XTrackBar, 0, 360);
         }
 
@@ -395,7 +455,7 @@ namespace Smash_Forge.GUI.Editors
                 Runtime.lightSetParam.characterDiffuse.ambientColor.S = value;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, charColor2YTrackBar, 0, 1);
         }
 
@@ -411,7 +471,7 @@ namespace Smash_Forge.GUI.Editors
                 Runtime.lightSetParam.characterDiffuse.ambientColor.V = value;
             }
 
-            RenderCharacterLightColors();
+            charDifColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, charColor2ZTrackBar, 0, 1);
         }
 
@@ -448,7 +508,7 @@ namespace Smash_Forge.GUI.Editors
         private void areaLightListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateCurrentAreaLightValues();
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
         }
 
         private void UpdateCurrentAreaLightValues()
@@ -463,9 +523,9 @@ namespace Smash_Forge.GUI.Editors
             areaGroundGreenTB.Text = selectedAreaLight.groundG + "";
             areaGroundBlueTB.Text = selectedAreaLight.groundB + "";
 
-            areaRotX.Text = selectedAreaLight.rotX + "";
-            areaRotY.Text = selectedAreaLight.rotY + "";
-            areaRotZ.Text = selectedAreaLight.rotZ + "";
+            areaRotX.Text = selectedAreaLight.RotationXDegrees + "";
+            areaRotY.Text = selectedAreaLight.RotationYDegrees + "";
+            areaRotZ.Text = selectedAreaLight.RotationZDegrees + "";
 
             areaPosXTB.Text = selectedAreaLight.positionX + "";
             areaPosYTB.Text = selectedAreaLight.positionY + "";
@@ -480,7 +540,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaCeilRedTB);
             selectedAreaLight.skyR = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaCeilRedTrackBar, 0, 2);
         }
 
@@ -488,7 +548,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaCeilGreenTB);
             selectedAreaLight.skyG = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaCeilGreenTrackBar, 0, 2);
         }
 
@@ -496,7 +556,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaCeilBlueTB);
             selectedAreaLight.skyB = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaCeilBlueTrackBar, 0, 2);
         }
 
@@ -504,7 +564,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaGroundRedTB); 
             selectedAreaLight.groundR = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaGroundRedTrackBar, 0, 2);
         }
 
@@ -512,7 +572,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaGroundGreenTB);
             selectedAreaLight.groundG = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaGroundGreenTrackBar, 0, 2);
         }
 
@@ -520,7 +580,7 @@ namespace Smash_Forge.GUI.Editors
         {
             float value = GuiTools.TryParseTBFloat(areaGroundBlueTB);
             selectedAreaLight.groundB = value;
-            RenderAreaLightColor();
+            areaColorGLControl.Invalidate();
             GuiTools.UpdateTrackBarFromValue(value, areaGroundBlueTrackBar, 0, 2);
         }
 
@@ -599,21 +659,21 @@ namespace Smash_Forge.GUI.Editors
         private void areaRotX_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(areaRotX);
-            selectedAreaLight.rotX = value;
+            selectedAreaLight.RotationXDegrees = value;
             GuiTools.UpdateTrackBarFromValue(value, areaRotXTrackBar, -180, 180);
         }
 
         private void areaRotY_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(areaRotY);
-            selectedAreaLight.rotY = value;
+            selectedAreaLight.RotationYDegrees = value;
             GuiTools.UpdateTrackBarFromValue(value, areaRotYTrackBar, -180, 180);
         }
 
         private void areaRotZ_TextChanged(object sender, EventArgs e)
         {
             float value = GuiTools.TryParseTBFloat(areaRotZ);
-            selectedAreaLight.rotZ = value;
+            selectedAreaLight.RotationZDegrees = value;
             GuiTools.UpdateTrackBarFromValue(value, areaRotZTrackBar, -180, 180);
         }
 
@@ -664,17 +724,17 @@ namespace Smash_Forge.GUI.Editors
 
         private void stageLightingTabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Render solid black to avoid displaying the stage light text from the other tabs.
+            // TODO: Use tab name instead of index.
             switch (stageLightingTabControl.SelectedIndex)
             {
                 case 0:
                     RenderCharacterLightGradient(new LightColor(0, 0, 1), new LightColor(0, 0, 1));                    
                     break;
                 case 3:
-                    RenderAreaLightColor();
+                    areaColorGLControl.Invalidate();
                     break;
                 case 4:
-                    RenderLightMapColor();
+                    //RenderLightMapColor();
                     break;
             }
         }
@@ -702,13 +762,6 @@ namespace Smash_Forge.GUI.Editors
 
         private void stageLightSetTreeView_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            /*if (e.Node.Tag is DirectionalLight)
-            {
-                foreach (TreeNode node in stageLightSetTreeView.SelectedNode.Nodes)
-                {
-                    node.Checked = stageLightSetTreeView.SelectedNode.Checked;
-                }
-            }*/
         }
 
         public static bool OpenLightSet()
@@ -799,6 +852,158 @@ namespace Smash_Forge.GUI.Editors
         private void saveLightsetparamToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveLightSet();
+        }
+
+        private void charDifColorGLControl_Load(object sender, EventArgs e)
+        {
+            OpenTKSharedResources.InitializeSharedResources();
+        }
+
+        private void charLightsTab_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charLightPanelExpander_Click(object sender, EventArgs e)
+        {
+            charLightGlControlPanel.Visible = !charLightGlControlPanel.Visible;
+            // TODO: Redraw the glControl.
+        }
+
+        private void charColor1Button_Click(object sender, EventArgs e)
+        {
+            charColor1Panel.Visible = !charColor1Panel.Visible;
+        }
+
+        private void charColor2Button_Click(object sender, EventArgs e)
+        {
+            charColor2Panel.Visible = !charColor2Panel.Visible;
+        }
+
+        private void stageDifColorPanelButton_Click(object sender, EventArgs e)
+        {
+            stageLightColorPanel.Visible = !stageLightColorPanel.Visible;
+        }
+
+        private void stageRotButton_Click(object sender, EventArgs e)
+        {
+            stageLightRotPanel.Visible = !stageLightRotPanel.Visible;
+        }
+
+        private void stageFogPanelButton_Click(object sender, EventArgs e)
+        {
+            stageFogColorPanel.Visible = !stageFogColorPanel.Visible;
+        }
+
+        private void charLightsFlowLayout_Resize(object sender, EventArgs e)
+        {
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(charLightsFlowLayout);
+        }
+
+        private void lightSetFlowLayout_Resize(object sender, EventArgs e)
+        {
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(lightSetFlowLayout);
+        }
+
+        private void fogFlowLayout_Resize(object sender, EventArgs e)
+        {
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(fogFlowLayout);
+        }
+
+        private void areaLightColorPreviewButton_Click(object sender, EventArgs e)
+        {
+            areaLightPreviewPanel.Visible = !areaLightPreviewPanel.Visible;
+        }
+
+        private void colCeilButton_Click(object sender, EventArgs e)
+        {
+            areaLightColCeilPanel.Visible = !areaLightColCeilPanel.Visible;
+        }
+
+        private void colGroundButton_Click(object sender, EventArgs e)
+        {
+            areaLightColGroundPanel.Visible = !areaLightColGroundPanel.Visible;
+        }
+
+        private void areaLightPosButton_Click(object sender, EventArgs e)
+        {
+            areaLightPosPanel.Visible = !areaLightPosPanel.Visible;
+        }
+
+        private void areaLightScaleButton_Click(object sender, EventArgs e)
+        {
+            areaLightScalePanel.Visible = !areaLightScalePanel.Visible;
+        }
+
+        private void areaLightRotButton_Click(object sender, EventArgs e)
+        {
+            areaLightRotPanel.Visible = !areaLightRotPanel.Visible;
+        }
+
+        private void charDifColorGLControl_Paint(object sender, PaintEventArgs e)
+        {
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+                return;
+
+            charDifColorGLControl.MakeCurrent();
+            GL.Viewport(charDifColorGLControl.ClientRectangle);
+
+            RenderCharacterLightColors();
+
+            charDifColorGLControl.SwapBuffers();
+        }
+
+        private void areaLightFlowLayout_Resize(object sender, EventArgs e)
+        {
+            GuiTools.ScaleControlsHorizontallyToLayoutWidth(areaLightFlowLayout);
+        }
+
+        private void areaColorGLControl_Paint(object sender, PaintEventArgs e)
+        {
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+                return;
+
+            areaColorGLControl.MakeCurrent();
+            GL.Viewport(areaColorGLControl.ClientRectangle);
+
+            RenderAreaLightColor();
+
+            areaColorGLControl.SwapBuffers();
+        }
+
+        private void charAngle1TB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charAngle2TB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charAngle3TB_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charAngleButton_Click(object sender, EventArgs e)
+        {
+            charAngleTableLayout.Visible = !charAngleTableLayout.Visible;
+        }
+
+        private void charAngle1TrackBar_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charAngle2TrackBar_Scroll(object sender, EventArgs e)
+        {
+
+        }
+
+        private void charAngle3TrackBar_Scroll(object sender, EventArgs e)
+        {
+
         }
     }
 }
