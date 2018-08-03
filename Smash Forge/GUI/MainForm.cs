@@ -1200,6 +1200,7 @@ namespace Smash_Forge
                     OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
                 }
             }
+
             if (fileName.EndsWith(".byaml") || fileName.EndsWith(".sprm") || fileName.EndsWith(".byml"))
             {
                 if (CheckCurrentViewport(out mvp))
@@ -1214,6 +1215,7 @@ namespace Smash_Forge
              //       mvp.BYAML = new BYAML(fileName);
                 }
             }
+
             if (fileName.EndsWith(".kcl"))
             {
 
@@ -1239,6 +1241,7 @@ namespace Smash_Forge
                 }
 
             }
+
             if (fileName.EndsWith(".szs") || fileName.EndsWith(".sbfres"))
             {
                 FileData f = new FileData(fileName);
@@ -1252,8 +1255,6 @@ namespace Smash_Forge
                     data = EveryFileExplorer.YAZ0.Decompress(fileName);
                 }
           
-
-
                 FileData t = new FileData(data);
 
                 int HexM = t.readInt();
@@ -1490,7 +1491,6 @@ namespace Smash_Forge
                 }
             }
 
-
             if (fileName.EndsWith(".smd"))
             {
                 ModelContainer modelContainer = new ModelContainer();
@@ -1510,7 +1510,6 @@ namespace Smash_Forge
                     mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
                 }
             }
-
 
             if (fileName.ToLower().EndsWith(".dae"))
             {
@@ -1658,26 +1657,6 @@ namespace Smash_Forge
             if (fileName.EndsWith("lightmap.xmb"))
             {
                 LightTools.CreateLightMapsFromXMB(new XMBFile(fileName));
-            }
-
-            if (fileName.EndsWith(".nud"))
-            {
-                if(dockPanel1.ActiveContent is ModelViewport)
-                {
-                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name, (ModelViewport)dockPanel1.ActiveContent);
-                    }
-                    if (dialogResult == DialogResult.No)
-                    {
-                        OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
-                    }
-                }
-                else
-                {
-                    OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
-                }
             }
 
             if (fileName.EndsWith(".moi"))
