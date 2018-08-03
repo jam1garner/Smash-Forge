@@ -689,7 +689,7 @@ namespace Smash_Forge
                 {
                     if (!(node is ModelContainer)) continue;
                     ModelContainer m = (ModelContainer)node;
-                    m.BFRES.ApplyMta(bfresMaterialAnimation, frameNum);
+                    m.Bfres.ApplyMta(bfresMaterialAnimation, frameNum);
                 }
             }
 
@@ -717,9 +717,9 @@ namespace Smash_Forge
                     currentAnimation.SetFrame(frameNum);
                     currentAnimation.NextFrame(m.DatMelee.bones);
                 }
-                if (m.BCH != null)
+                if (m.Bch != null)
                 {
-                    foreach (BCH_Model mod in m.BCH.Models.Nodes)
+                    foreach (BCH_Model mod in m.Bch.Models.Nodes)
                     {
                         if (mod.skeleton != null)
                         {
@@ -749,9 +749,9 @@ namespace Smash_Forge
                     m.DatMelee.bones.reset();
                 }
 
-                if (m.BCH != null)
+                if (m.Bch != null)
                 {
-                    foreach (BCH_Model mod in m.BCH.Models.Nodes)
+                    foreach (BCH_Model mod in m.Bch.Models.Nodes)
                     {
                         if (mod.skeleton != null)
                         {
@@ -760,9 +760,9 @@ namespace Smash_Forge
                     }
                 }
 
-                if (m.BFRES != null)
+                if (m.Bfres != null)
                 {
-                    foreach (var mod in m.bfres.models)
+                    foreach (var mod in m.Bfres.models)
                     {
                         if (mod.skeleton != null)
                         {

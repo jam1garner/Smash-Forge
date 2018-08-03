@@ -1,5 +1,5 @@
 ﻿#version 330
- 
+
 //------------------------------------------------------------------------------------
 //
 //      Viewport Camera/Lighting
@@ -101,7 +101,7 @@ float BoneWeightDisplay(ivec4 index)
     int X = int(boneList[index.x]);
     int Y = int(boneList[index.y]);
     int Z = int(boneList[index.z]);
-    int W = int(boneList[index.w]); 
+    int W = int(boneList[index.w]);
 
     float weight = 0;
     if (selectedBoneIndex == X)
@@ -113,7 +113,7 @@ float BoneWeightDisplay(ivec4 index)
     if (selectedBoneIndex == W)
         weight += vWeight.w;
 
-		//For meshes that only use the skin index. Usually it defaults to root, but some are specific. 
+		//For meshes that only use the skin index. Usually it defaults to root, but some are specific.
         if (selectedBoneIndex == SingleBoneIndex)
 		    weight += 1;
 
@@ -134,7 +134,7 @@ vec3 BoneWeightColor(float weights)
 
 void main()
 {
-    ivec4 index = ivec4(vBone); 
+    ivec4 index = ivec4(vBone);
 
     vec4 objPos = vec4(vPosition.xyz, 1.0);
 
@@ -144,33 +144,33 @@ void main()
     normal = normalize(mat3(modelview) * vNormal);
 
 
-	    if(vBone.x != -1){
-        objPos = bones[boneList[index.x]] * vec4(vPosition, 1.0) * vWeight.x;
-        objPos += bones[boneList[index.y]] * vec4(vPosition, 1.0) * vWeight.y;
-        objPos += bones[boneList[index.z]] * vec4(vPosition, 1.0) * vWeight.z;
-        if(vWeight.w < 1)
-            objPos += bones[boneList[index.w]] * vec4(vPosition, 1.0) * vWeight.w;
-    }
+	//     if(vBone.x != -1){
+    //     objPos = bones[boneList[index.x]] * vec4(vPosition, 1.0) * vWeight.x;
+    //     objPos += bones[boneList[index.y]] * vec4(vPosition, 1.0) * vWeight.y;
+    //     objPos += bones[boneList[index.z]] * vec4(vPosition, 1.0) * vWeight.z;
+    //     if(vWeight.w < 1)
+    //         objPos += bones[boneList[index.w]] * vec4(vPosition, 1.0) * vWeight.w;
+    // }
 
 
     gl_Position = modelview * vec4(objPos.xyz, 1.0);
 
     vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;
 
-	if(vBone.x != -1.0)
-		normal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
-
-
-     if (RigidSkinning == 1){
-	     gl_Position = modelview * bones[boneList[index.x]] * vec4(vPosition, 1.0);
-         normal = vNormal;
-		 normal = mat3(bones[boneList[index.x]]) * vNormal.xyz * 1;
-	}
-	if (NoSkinning == 1){
-	    gl_Position = modelview * bones[SingleBoneIndex] * vec4(vPosition, 1.0);
-	    normal = mat3(bones[SingleBoneIndex]) * vNormal.xyz * 1;
-		normal = normalize(normal);
-	}
+	// if(vBone.x != -1.0)
+	// 	normal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
+    //
+    //
+    //  if (RigidSkinning == 1){
+	//      gl_Position = modelview * bones[boneList[index.x]] * vec4(vPosition, 1.0);
+    //      normal = vNormal;
+	// 	 normal = mat3(bones[boneList[index.x]]) * vNormal.xyz * 1;
+	// }
+	// if (NoSkinning == 1){
+	//     gl_Position = modelview * bones[SingleBoneIndex] * vec4(vPosition, 1.0);
+	//     normal = mat3(bones[SingleBoneIndex]) * vNormal.xyz * 1;
+	// 	normal = normalize(normal);
+	// }
 
     //gl_TexCoord[0] = vUV0;
     //gl_TexCoord[1] = vUV1;

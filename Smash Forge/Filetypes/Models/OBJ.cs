@@ -232,14 +232,14 @@ namespace Smash_Forge
 
         public static void Save(string fname, ModelContainer con)
         {
-            if (con.BFRES != null)
+            if (con.Bfres != null)
             {
-                BFRES2OBJ(fname, con.BFRES);
+                BFRES2OBJ(fname, con.Bfres);
                 return;
             }
-            if (con.KCL != null)
+            if (con.Kcl != null)
             {
-                KCL2OBJ(fname, con.KCL);
+                KCL2OBJ(fname, con.Kcl);
                 return;
             }
         }

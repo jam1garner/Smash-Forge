@@ -457,9 +457,9 @@ namespace Smash_Forge
                 if (child is BFRES.MTA) //For BFRES
                 {
                     {
-                        if (((ModelContainer)skeleton.Parent).BFRES != null)
+                        if (((ModelContainer)skeleton.Parent).Bfres != null)
                         {
-                            ((ModelContainer)skeleton.Parent).BFRES.ApplyMta(((BFRES.MTA)child), (int)Frame);
+                            ((ModelContainer)skeleton.Parent).Bfres.ApplyMta(((BFRES.MTA)child), (int)Frame);
                         }
                     }
                 }

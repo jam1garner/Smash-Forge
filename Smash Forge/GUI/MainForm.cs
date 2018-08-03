@@ -407,7 +407,7 @@ namespace Smash_Forge
             modelContainer.Text = pathKcl;
             mvp.Text = pathKcl;
 
-            modelContainer.KCL = new KCL(file_data);
+            modelContainer.Kcl = new KCL(file_data);
             
             return mvp;
         }
@@ -430,15 +430,15 @@ namespace Smash_Forge
             mvp.Text = pathBfres;
 
 
-            modelContainer.BFRES = new BFRES(pathBfres, file_data);
+            modelContainer.Bfres = new BFRES(pathBfres, file_data);
 
-            if (modelContainer.BFRES.models.Count != 0)
+            if (modelContainer.Bfres.models.Count != 0)
             {
-                Runtime.TargetVBN = modelContainer.BFRES.models[0].skeleton;
+                Runtime.TargetVBN = modelContainer.Bfres.models[0].skeleton;
                 resyncTargetVBN();
             }
 
-            if (modelContainer.BFRES.AnimationCountTotal != 0)
+            if (modelContainer.Bfres.AnimationCountTotal != 0)
             {
                 if (dockPanel1.ActiveContent is ModelViewport)
                 {
@@ -447,37 +447,37 @@ namespace Smash_Forge
                     AnimationGroupNode anim = new AnimationGroupNode();
                     anim.Text = Path.GetFileName(pathBfres);
 
-                    if (modelContainer.BFRES.FSKACount != 0)
+                    if (modelContainer.Bfres.FSKACount != 0)
                     {
                         BFRES.FSKA fska = new BFRES.FSKA();
-                        fska.Read(modelContainer.BFRES.TargetWiiUBFRES, anim, modelContainer.BFRES.TargetSwitchBFRES);
+                        fska.Read(modelContainer.Bfres.TargetWiiUBFRES, anim, modelContainer.Bfres.TargetSwitchBFRES);
                     }
 
-                    if (modelContainer.BFRES.FSHUCount != 0)
+                    if (modelContainer.Bfres.FSHUCount != 0)
                     {
                         BFRES.FSHU fshu = new BFRES.FSHU();
-                        fshu.Read(modelContainer.BFRES.TargetWiiUBFRES, anim, modelContainer);
+                        fshu.Read(modelContainer.Bfres.TargetWiiUBFRES, anim, modelContainer);
                     }
                     
-                    if (modelContainer.BFRES.FMAACount != 0)
+                    if (modelContainer.Bfres.FMAACount != 0)
                     {
                         BFRES.FMAA fmaa = new BFRES.FMAA();
-                        fmaa.Read(modelContainer.BFRES.TargetSwitchBFRES, anim, modelContainer);
+                        fmaa.Read(modelContainer.Bfres.TargetSwitchBFRES, anim, modelContainer);
                     }
-                    if (modelContainer.BFRES.FTXPCount != 0)
+                    if (modelContainer.Bfres.FTXPCount != 0)
                     {
                         BFRES.FTXP ftxp = new BFRES.FTXP();
-                        ftxp.Read(modelContainer.BFRES.TargetWiiUBFRES, anim, modelContainer);
+                        ftxp.Read(modelContainer.Bfres.TargetWiiUBFRES, anim, modelContainer);
                     }
-                    if (modelContainer.BFRES.FSHACount != 0)
+                    if (modelContainer.Bfres.FSHACount != 0)
                     {
                         BFRES.FSHA fsha = new BFRES.FSHA();
-                        fsha.Read(modelContainer.BFRES.TargetSwitchBFRES, anim, modelContainer);
+                        fsha.Read(modelContainer.Bfres.TargetSwitchBFRES, anim, modelContainer);
                     }
-                    if (modelContainer.BFRES.FVISCount != 0)
+                    if (modelContainer.Bfres.FVISCount != 0)
                     {
                         BFRES.FVIS fvis = new BFRES.FVIS();
-                        fvis.Read(modelContainer.BFRES.TargetSwitchBFRES, anim, modelContainer);
+                        fvis.Read(modelContainer.Bfres.TargetSwitchBFRES, anim, modelContainer);
 
                     }
                     mvp.animListPanel.treeView1.Nodes.Add(anim);
@@ -1358,7 +1358,7 @@ namespace Smash_Forge
                 ((BCH_Model)b.Models.Nodes[0]).OpenMBN(new FileData(fileName));
 
                 mvp = new ModelViewport();
-                mvp.draw.Add(new ModelContainer() { BCH = b });
+                mvp.draw.Add(new ModelContainer() { Bch = b });
                 mvp.Text = fileName;
                 AddDockedControl(mvp);
             }
@@ -2019,7 +2019,7 @@ namespace Smash_Forge
                             BCH bch = new Smash_Forge.BCH(ModelFolder + "normal.bch");
                             if (bch.Models.Nodes.Count > 0 && File.Exists(ModelFolder + "normal.mbn"))
                                 ((BCH_Model)bch.Models.Nodes[0]).OpenMBN(new FileData(ModelFolder + "normal.mbn"));
-                            modelContainer.BCH = bch;
+                            modelContainer.Bch = bch;
                         }
 
                         if (File.Exists(ofd.SelectedPath + "\\body\\c00\\" + "model.jtb"))

@@ -913,9 +913,9 @@ namespace Smash_Forge
                 {
                     ModelContainer con = (ModelContainer)filesTreeView.SelectedNode;
 
-                    if (con.BFRES != null)
+                    if (con.Bfres != null)
                     {
-                        for (int p = 0; p < con.BFRES.models.Count; p++)
+                        for (int p = 0; p < con.Bfres.models.Count; p++)
                         {
                             Collada.DaetoBfresReplace(ofd.FileName, con, p, false);
                         }
@@ -1533,8 +1533,8 @@ namespace Smash_Forge
                 {
                     if (con is ModelContainer)
                     {
-                        if (((ModelContainer)con).BFRES != null)
-                            ((ModelContainer)con).BFRES.UpdateVertexData();
+                        if (((ModelContainer)con).Bfres != null)
+                            ((ModelContainer)con).Bfres.UpdateVertexData();
                     }
                 }
             }
@@ -1555,8 +1555,8 @@ namespace Smash_Forge
                 {
                     if (con is ModelContainer)
                     {
-                        if (((ModelContainer)con).BFRES != null)
-                            ((ModelContainer)con).BFRES.UpdateVertexData();
+                        if (((ModelContainer)con).Bfres != null)
+                            ((ModelContainer)con).Bfres.UpdateVertexData();
                     }
                 }
             }
@@ -1575,8 +1575,8 @@ namespace Smash_Forge
             {
                 if (con is ModelContainer)
                 {
-                    if (((ModelContainer)con).BFRES != null)
-                        ((ModelContainer)con).BFRES.UpdateVertexData();
+                    if (((ModelContainer)con).Bfres != null)
+                        ((ModelContainer)con).Bfres.UpdateVertexData();
                 }
             }
         }
@@ -1606,8 +1606,8 @@ namespace Smash_Forge
             {
                 if (con is ModelContainer)
                 {
-                    if (((ModelContainer)con).BFRES != null)
-                        ((ModelContainer)con).BFRES.UpdateVertexData();
+                    if (((ModelContainer)con).Bfres != null)
+                        ((ModelContainer)con).Bfres.UpdateVertexData();
                 }
             }
         }
@@ -1626,8 +1626,8 @@ namespace Smash_Forge
             {
                 if (con is ModelContainer)
                 {
-                    if (((ModelContainer)con).BFRES != null)
-                        ((ModelContainer)con).BFRES.UpdateVertexData();
+                    if (((ModelContainer)con).Bfres != null)
+                        ((ModelContainer)con).Bfres.UpdateVertexData();
                 }
             }
         }
@@ -1664,8 +1664,8 @@ namespace Smash_Forge
             {
                 if (con is ModelContainer)
                 {
-                    if (((ModelContainer)con).BFRES != null)
-                        ((ModelContainer)con).BFRES.UpdateVertexData();
+                    if (((ModelContainer)con).Bfres != null)
+                        ((ModelContainer)con).Bfres.UpdateVertexData();
                 }
             }
         }
@@ -1693,8 +1693,8 @@ namespace Smash_Forge
             {
                 if (con is ModelContainer)
                 {
-                    if (((ModelContainer)con).BFRES != null)
-                        ((ModelContainer)con).BFRES.UpdateVertexData();
+                    if (((ModelContainer)con).Bfres != null)
+                        ((ModelContainer)con).Bfres.UpdateVertexData();
                 }
             }
 
@@ -1708,13 +1708,13 @@ namespace Smash_Forge
             {
                 if (con is ModelContainer)
                 {
-                    if (((ModelContainer)con).BFRES != null)
+                    if (((ModelContainer)con).Bfres != null)
                     {
-                        foreach (BFRES.FMDL_Model mdl in ((ModelContainer)con).BFRES.models)
+                        foreach (BFRES.FMDL_Model mdl in ((ModelContainer)con).Bfres.models)
                         {
                             foreach (BFRES.Mesh m in mdl.poly)
                             {
-                                ((ModelContainer)con).BFRES.UpdateVertexData();
+                                ((ModelContainer)con).Bfres.UpdateVertexData();
                             }
                         }
                     }
@@ -1742,7 +1742,7 @@ namespace Smash_Forge
             {
                 if (con is ModelContainer)
                 {
-                    if (((ModelContainer)con).BFRES != null)
+                    if (((ModelContainer)con).Bfres != null)
                     {
                         OpenFileDialog ofd = new OpenFileDialog();
                         ofd.Filter =
@@ -1753,7 +1753,7 @@ namespace Smash_Forge
                         {
                             if (ofd.FileName.EndsWith(".bfres"))
                             {
-                                BFRES.WiiU2Switch(ofd.FileName, filesTreeView.SelectedNode.Index, ((ModelContainer)con).BFRES);
+                                BFRES.WiiU2Switch(ofd.FileName, filesTreeView.SelectedNode.Index, ((ModelContainer)con).Bfres);
                             }
                         }
                     }
@@ -1822,10 +1822,10 @@ namespace Smash_Forge
             {
                 if (con is ModelContainer)
                 {
-                    if (((ModelContainer)con).BFRES != null)
+                    if (((ModelContainer)con).Bfres != null)
                     {
                         m.SingleBindMesh(); //Add BFRES instance so we can use the fmdl and skeleton classes
-                        ((ModelContainer)con).BFRES.UpdateVertexData();
+                        ((ModelContainer)con).Bfres.UpdateVertexData();
                     }
                 }
             }

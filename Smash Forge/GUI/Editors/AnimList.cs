@@ -256,9 +256,9 @@ namespace Smash_Forge
                     if (node is ModelContainer)
                     {
                         ModelContainer con = (ModelContainer)node;
-                        if (con.BFRES != null && con.BFRES_MTA != null)
+                        if (con.Bfres != null && con.BFRES_MTA != null)
                         {
-                            con.BFRES.ApplyMta(con.BFRES_MTA, 0);
+                            con.Bfres.ApplyMta(con.BFRES_MTA, 0);
                         }
                     }
                 }

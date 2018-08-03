@@ -143,7 +143,7 @@ namespace Smash_Forge
         private XMBFile xmb;
 
         // Other Model Formats
-        public BCH BCH
+        public BCH Bch
         {
             get
             {
@@ -157,8 +157,7 @@ namespace Smash_Forge
         }
         private BCH bch;
 
-        public BFRES bfres;
-        public BFRES BFRES
+        public BFRES Bfres
         {
             get
             {
@@ -170,9 +169,9 @@ namespace Smash_Forge
                 Refresh();
             }
         }
+        private BFRES bfres;
 
-        public KCL kcl;
-        public KCL KCL
+        public KCL Kcl
         {
             get
             {
@@ -184,6 +183,7 @@ namespace Smash_Forge
                 Refresh();
             }
         }
+        private KCL kcl;
 
         public DAT DatMelee
         {
@@ -260,15 +260,15 @@ namespace Smash_Forge
 
         public VBN GetVBN()
         {
-            if (BCH != null && BCH.Models.Nodes.Count > 0)
+            if (Bch != null && Bch.Models.Nodes.Count > 0)
             {
-                ((BCH_Model)BCH.Models.Nodes[0]).skeleton.JointTable = JTB;
-                return ((BCH_Model)BCH.Models.Nodes[0]).skeleton;
+                ((BCH_Model)Bch.Models.Nodes[0]).skeleton.JointTable = JTB;
+                return ((BCH_Model)Bch.Models.Nodes[0]).skeleton;
             }
-            if (BFRES != null && BFRES.models.Count > 0)
+            if (Bfres != null && Bfres.models.Count > 0)
             {
-                BFRES.models[0].skeleton.JointTable = JTB;
-                return BFRES.models[0].skeleton;
+                Bfres.models[0].skeleton.JointTable = JTB;
+                return Bfres.models[0].skeleton;
             }
             else if (vbn != null)
             {
@@ -294,9 +294,9 @@ namespace Smash_Forge
             shader.UseProgram();
             SetDatUniforms(shader);
 
-            if (BCH != null)
+            if (Bch != null)
             {
-                foreach (BCH_Model mo in BCH.Models.Nodes)
+                foreach (BCH_Model mo in Bch.Models.Nodes)
                 {
                     mo.Render(camera.MvpMatrix);
                 }
@@ -310,24 +310,29 @@ namespace Smash_Forge
             LightColor diffuseColor = Runtime.lightSetParam.characterDiffuse.diffuseColor;
             LightColor ambientColor = Runtime.lightSetParam.characterDiffuse.ambientColor;
 
-            if (KCL != null && OpenTKSharedResources.shaders["KCL"].ProgramCreatedSuccessfully)
+            if (Kcl != null)
             {
                 shader = OpenTKSharedResources.shaders["KCL"];
+                if (!shader.ProgramCreatedSuccessfully)
+                    return;
+
                 shader.UseProgram();
 
                 shader.SetVector3("difLightColor", diffuseColor.R, diffuseColor.G, diffuseColor.B);
                 shader.SetVector3("ambLightColor", ambientColor.R, ambientColor.G, ambientColor.B);
 
-                KCL.Render(camera.MvpMatrix);
+                Kcl.Render(camera.MvpMatrix);
             }
 
-            if (BFRES != null && OpenTKSharedResources.shaders["BFRES"].ProgramCreatedSuccessfully
-                && OpenTKSharedResources.shaders["BFRES_PBR"].ProgramCreatedSuccessfully)
+            if (Bfres != null)
             {
                 if (Runtime.renderPhysicallyBasedRendering == true)
                     shader = OpenTKSharedResources.shaders["BFRES_PBR"];
                 else
                     shader = OpenTKSharedResources.shaders["BFRES"];
+
+                if (!shader.ProgramCreatedSuccessfully)
+                    return;
 
                 shader.UseProgram();
 
@@ -347,7 +352,7 @@ namespace Smash_Forge
                 // This cube map is for a quick test.
                 shader.SetTexture("cmap", RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh].Id, TextureTarget.TextureCubeMap, 2);
 
-                BFRES.Render(camera.MvpMatrix);
+                Bfres.Render(camera.MvpMatrix);
             }
 
             if (NUD != null && OpenTKSharedResources.shaders["Nud"].ProgramCreatedSuccessfully && OpenTKSharedResources.shaders["NudDebug"].ProgramCreatedSuccessfully)
@@ -449,15 +454,15 @@ namespace Smash_Forge
             if (VBN != null)
                 RenderTools.DrawVBN(VBN);
 
-            if (BCH != null)
+            if (Bch != null)
             {
-                foreach (BCH_Model mo in BCH.Models.Nodes)
+                foreach (BCH_Model mo in Bch.Models.Nodes)
                     RenderTools.DrawVBN(mo.skeleton);
             }
 
-            if (BFRES != null)
+            if (Bfres != null)
             {
-                foreach (var mo in BFRES.models)
+                foreach (var mo in Bfres.models)
                 {
                     RenderTools.DrawVBN(mo.skeleton);
                 }
@@ -562,8 +567,8 @@ namespace Smash_Forge
         {
             if (NUD != null)
                 NUD.DepthSortMeshes(cameraPosition);
-            if (BFRES != null)
-                BFRES.DepthSortMeshes(cameraPosition);
+            if (Bfres != null)
+                Bfres.DepthSortMeshes(cameraPosition);
         }
 
         #region Editing Tools

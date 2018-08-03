@@ -12,6 +12,7 @@ using Syroot.NintenTools.Bfres.Helpers;
 using ResNSW = Syroot.NintenTools.NSW.Bfres;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
+using SFGraphics.GLObjects;
 
 namespace Smash_Forge
 {
@@ -74,10 +75,8 @@ namespace Smash_Forge
             "Common_Scroll01._13827715"
         });
 
-        // gl buffer objects
-        int vbo_position;
-        int ibo_elements;
-
+        BufferObject positionVbo;
+        BufferObject elementsIbo;
 
         public string path = "";
         public static Vector3 position = new Vector3(0, 0, 0);
@@ -107,8 +106,7 @@ namespace Smash_Forge
 
         public BFRES()
         {
-            GL.GenBuffers(1, out vbo_position);
-            GL.GenBuffers(1, out ibo_elements);
+
         }
 
         public BFRES(string fname, byte[] file_data) : this()
@@ -251,12 +249,6 @@ namespace Smash_Forge
             }
         }
 
-        public void Destroy()
-        {
-            GL.DeleteBuffer(vbo_position);
-            GL.DeleteBuffer(ibo_elements);
-        }
-
         public Matrix4 BonePosExtra;
         public Matrix4 BonePosFix;
 
@@ -381,9 +373,7 @@ namespace Smash_Forge
             shader.EnableVertexAttributes();
 
             if (Runtime.renderBoundingSphere)
-            {
                 DrawBoundingBoxes();
-            }
 
             SetRenderSettings(shader);
 
@@ -394,7 +384,6 @@ namespace Smash_Forge
                 // For proper alpha blending, draw in reverse order and draw opaque objects first. 
                 List<Mesh> opaque = new List<Mesh>();
                 List<Mesh> transparent = new List<Mesh>();
-
 
                 //Render Skeleton
                 Matrix4[] f = fmdl.skeleton.getShaderMatrix();
@@ -413,9 +402,7 @@ namespace Smash_Forge
                     }
                     else
                         opaque.Add(m);
-                }
-
-           
+                }  
 
                 foreach (Mesh m in opaque)
                 {
@@ -465,7 +452,7 @@ namespace Smash_Forge
                 return;
 
             SetVertexAttributes(m, shader);
-            RenderUniformParams(mat, shader, m);
+            SetUniforms(mat, shader, m);
             SetTextureUniforms(mat, m);
             SetAlphaBlending(mat);
             SetAlphaTesting(mat);
@@ -530,7 +517,7 @@ namespace Smash_Forge
         {
             //Note on these buffers
             // - vBone and vWeight have 2 attributes since bfres has 4 weights/bones per vertice. Additional one can allow up to a max of 8
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
+            positionVbo.Bind();
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
@@ -543,7 +530,8 @@ namespace Smash_Forge
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition2"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 124);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition3"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 136);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
+
+            elementsIbo.Bind();
 
             // Disabled these untill I fix transform stuff manually without shaders
             //     GL.VertexAttribPointer(shader.getAttribute("vBone1"),     4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 84);
@@ -573,12 +561,23 @@ namespace Smash_Forge
                     { 0x03, TextureWrapMode.MirroredRepeat},
         };
 
+        private void GenerateBuffers()
+        {
+            positionVbo = new BufferObject(BufferTarget.ArrayBuffer);
+            elementsIbo = new BufferObject(BufferTarget.ElementArrayBuffer);
+        }
+
         public void UpdateVertexData()
         {
+            // Binding 0 to a buffer target will crash. 
+            // This also means the buffers weren't generated yet.
+            bool buffersWereInitialized = elementsIbo != null && positionVbo != null;
+            if (!buffersWereInitialized)
+                GenerateBuffers();
+
             DisplayVertex[] Vertices;
             int[] Faces;
 
-            Console.WriteLine("Updating Verts");
             int poffset = 0;
             int voffset = 0;
             List<DisplayVertex> Vs = new List<DisplayVertex>();
@@ -604,13 +603,11 @@ namespace Smash_Forge
             Vertices = Vs.ToArray();
             Faces = Ds.ToArray();
 
-            Console.WriteLine(Faces.Length);
-
             // Bind only once!
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_position);
+            positionVbo.Bind();
             GL.BufferData<DisplayVertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
 
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_elements);
+            elementsIbo.Bind();
             GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
         }
 
@@ -632,7 +629,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void RenderUniformParams(MaterialData mat, Shader shader, Mesh m)
+        private static void SetUniforms(MaterialData mat, Shader shader, Mesh m)
         {
             shader.SetVector4("SamplerUV1", new Vector4(1, 1, 0, 0));
             shader.SetVector4("gsys_bake_st0", new Vector4(1, 1, 0, 0));
@@ -644,22 +641,21 @@ namespace Smash_Forge
             if (mat.shaderassign.ShaderModel == "uking_mat")
                 shader.SetInt("enableCellShading", 1);
 
-
             shader.SetInt("selectedBoneIndex", Runtime.selectedBoneIndex);
 
             //This uniform is set so I can do SRT anims.
-            SetUnifromData(mat, shader, "tex_mtx0");
+            SetUniformData(mat, shader, "tex_mtx0");
         //    SetUnifromData(mat, shader, "tex_mtx1");
        //     SetUnifromData(mat, shader, "tex_mtx2");
 
             //This uniform variable shifts first bake map coords (MK8, Spatoon 1/2, ect)
-            SetUnifromData(mat, shader, "gsys_bake_st0");
+            SetUniformData(mat, shader, "gsys_bake_st0");
             //This uniform variable shifts second bake map coords (MK8, Spatoon 1/2, ect)
-            SetUnifromData(mat, shader, "gsys_bake_st1");
-            SetUnifromData(mat, shader, "normal_map_weight");
-            SetUnifromData(mat, shader, "ao_density");
-            SetUnifromData(mat, shader, "base_color_mul_color");
-            SetUnifromData(mat, shader, "emission_color");
+            SetUniformData(mat, shader, "gsys_bake_st1");
+            SetUniformData(mat, shader, "normal_map_weight");
+            SetUniformData(mat, shader, "ao_density");
+            SetUniformData(mat, shader, "base_color_mul_color");
+            SetUniformData(mat, shader, "emission_color");
             
 
             //   Shader option data
@@ -667,20 +663,20 @@ namespace Smash_Forge
             //They can enable texture maps. However due to these being varied between games, doing by samplers is more simple. 
 
             //This uniform sets normal maps for BOTW to use second UV channel
-            SetUnifromData(mat, shader, "uking_texture2_texcoord");
+            SetUniformData(mat, shader, "uking_texture2_texcoord");
             //Sets shadow type
             //0 = Ambient occusion bake map
             //1 = Shadow 
             //2 = Shadow + Ambient occusion map
-            SetUnifromData(mat, shader, "bake_shadow_type");
+            SetUniformData(mat, shader, "bake_shadow_type");
 
-            SetUnifromData(mat, shader, "enable_fresnel");
-            SetUnifromData(mat, shader, "enable_emission");
+            SetUniformData(mat, shader, "enable_fresnel");
+            SetUniformData(mat, shader, "enable_emission");
 
             shader.SetBoolToInt("isTransparent", m.isTransparent);
         }
 
-        private static void SetUnifromData(MaterialData mat, Shader shader, string propertyName)
+        private static void SetUniformData(MaterialData mat, Shader shader, string propertyName)
         {
             //Note uniform data has so many types so it's messy atm
 
@@ -699,6 +695,7 @@ namespace Smash_Forge
                         mat.matparam[propertyName].Value_float = mat.anims[propertyName][0];
                     shader.SetFloat(propertyName, mat.matparam[propertyName].Value_float);
                 }
+
                 if (mat.matparam[propertyName].Type == ShaderParamType.Float2)
                 {
                     if (mat.anims.ContainsKey(propertyName))
@@ -709,6 +706,7 @@ namespace Smash_Forge
 
                     shader.SetVector2(propertyName, mat.matparam[propertyName].Value_float2);
                 }
+
                 if (mat.matparam[propertyName].Type == ShaderParamType.Float3)
                 {
                     if (mat.anims.ContainsKey(propertyName))

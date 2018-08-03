@@ -1291,7 +1291,7 @@ namespace Smash_Forge.Rendering
                 foreach (ModelContainer m in con)
                 {
                     DrawVBN(m.VBN);
-                    if (m.BCH != null)
+                    if (m.Bch != null)
                     {
                         //DrawVBN(m.bch.Models.Nodes[0].skeleton);
                     }

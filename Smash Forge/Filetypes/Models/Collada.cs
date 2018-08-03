@@ -382,7 +382,7 @@ namespace Smash_Forge
             Collada dae = new Collada();
             dae.Read(fileName);
 
-            BFRES b = container.BFRES;
+            BFRES b = container.Bfres;
 
             CreateBones(container, dae);
 
@@ -1565,9 +1565,9 @@ namespace Smash_Forge
             }
             NUD nud = con.NUD;
 
-            if (con.BFRES != null)
+            if (con.Bfres != null)
             {
-                BFRES2DAESave(fname, con.BFRES, con);
+                BFRES2DAESave(fname, con.Bfres, con);
                 return;
             }
 
