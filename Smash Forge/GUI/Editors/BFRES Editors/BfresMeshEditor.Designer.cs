@@ -1,6 +1,6 @@
 ﻿namespace Smash_Forge
 {
-    partial class BFRES_MeshEditor
+    partial class BfresMeshEditor
     {
         /// <summary>
         /// Required designer variable.

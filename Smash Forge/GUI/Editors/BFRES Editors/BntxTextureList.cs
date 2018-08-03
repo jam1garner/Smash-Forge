@@ -12,7 +12,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge
 {
-    public partial class BNTX_TextureList : Form
+    public partial class BntxTextureList : Form
     {
 
         public ImageList il = new ImageList();
@@ -22,7 +22,7 @@ namespace Smash_Forge
         private bool _loadedC = false;
         private bool _loadedA = false;
 
-        public BNTX_TextureList()
+        public BntxTextureList()
         {
             InitializeComponent();
 
@@ -30,7 +30,7 @@ namespace Smash_Forge
 
             foreach (BRTI tex in BNTX.textures)
             {
-                Bitmap color = new Bitmap(BFRES_MaterialEditor.textureRGBA(tex.texture, tex.display));
+                Bitmap color = new Bitmap(BfresMaterialEditor.textureRGBA(tex.texture, tex.display));
 
                 il.Images.Add(color);
                 texturesCol.Add(color);

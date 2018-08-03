@@ -10,13 +10,13 @@ using System.Windows.Forms;
 
 namespace Smash_Forge
 {
-    public partial class BFRES_MeshEditor : Form
+    public partial class BfresMeshEditor : Form
     {
         public BFRES.Mesh Mesh = null;
         public BFRES.FMDL_Model Model = null;
         public BFRES bfres = null;
 
-        public BFRES_MeshEditor(BFRES.Mesh p, BFRES.FMDL_Model mdl, BFRES b)
+        public BfresMeshEditor(BFRES.Mesh p, BFRES.FMDL_Model mdl, BFRES b)
         {
             InitializeComponent();
 

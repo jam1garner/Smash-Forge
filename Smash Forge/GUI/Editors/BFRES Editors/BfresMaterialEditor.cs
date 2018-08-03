@@ -15,7 +15,7 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Smash_Forge
 {
-    public partial class BFRES_MaterialEditor : DockContent
+    public partial class BfresMaterialEditor : DockContent
     {
         public BFRES.Mesh poly;
         public BFRES.MaterialData mat;
@@ -28,7 +28,7 @@ namespace Smash_Forge
            "edge_light_color",
         });
 
-        public BFRES_MaterialEditor()
+        public BfresMaterialEditor()
         {
             InitializeComponent();
             ResetParamUIData();
@@ -254,7 +254,7 @@ namespace Smash_Forge
         {
             if (BFRES.IsSwitchBFRES)
             {
-                BNTX_TextureList edit = new BNTX_TextureList();
+                BntxTextureList edit = new BntxTextureList();
                 edit.Show();
             }
         }

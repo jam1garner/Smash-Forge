@@ -13,12 +13,12 @@ using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {
-    public partial class BYAMLEditor : DockContent
+    public partial class ByamlEditor : DockContent
     {
         public BYAML TargetBYAML;
         public BYAML.PathPoint currentEntry;
 
-        public BYAMLEditor()
+        public ByamlEditor()
         {
             InitializeComponent();
 

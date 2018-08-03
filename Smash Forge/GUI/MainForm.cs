@@ -39,7 +39,7 @@ namespace Smash_Forge
         public AnimListPanel animList = new AnimListPanel() { ShowHint = DockState.DockRight };
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
         public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
-        public BYAMLList byamlList = new BYAMLList() { ShowHint = DockState.DockLeft };
+        public ByamlList byamlList = new ByamlList() { ShowHint = DockState.DockLeft };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
         public HurtboxList hurtboxList = new HurtboxList() { ShowHint = DockState.DockLeft };
 
@@ -49,8 +49,8 @@ namespace Smash_Forge
         public _3DSTexEditor texEditor = null;
         public CameraSettings cameraForm = null;
         public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockLeft };
-        public BYAMLEditor byamlEditor = new BYAMLEditor() { ShowHint = DockState.DockLeft };
-        public BFRES_MaterialEditor bfresMatEditor = new BFRES_MaterialEditor() { ShowHint = DockState.DockLeft };
+        public ByamlEditor byamlEditor = new ByamlEditor() { ShowHint = DockState.DockLeft };
+        public BfresMaterialEditor bfresMatEditor = new BfresMaterialEditor() { ShowHint = DockState.DockLeft };
 
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
         public List<MTAEditor> mtaEditors = new List<MTAEditor>() { };
@@ -248,7 +248,7 @@ namespace Smash_Forge
             }
             if (byamlList.IsDisposed)
             {
-                byamlList = new BYAMLList();
+                byamlList = new ByamlList();
                 byamlList.fillList();
             }
             if (lvdEditor.IsDisposed)
@@ -257,11 +257,11 @@ namespace Smash_Forge
             }    
             if (bfresMatEditor.IsDisposed)
             {
-                bfresMatEditor = new BFRES_MaterialEditor();
+                bfresMatEditor = new BfresMaterialEditor();
             }
             if (byamlEditor.IsDisposed)
             {
-                byamlEditor = new BYAMLEditor();
+                byamlEditor = new ByamlEditor();
             }
             if (meshList.IsDisposed)
             {
@@ -681,11 +681,11 @@ namespace Smash_Forge
         public void openBFRESMats(BFRES.Mesh poly, string name)
         {
             ModelViewport mvp = (ModelViewport)dockPanel1.ActiveContent;
-            mvp.bfresOpenMats(poly, name);
+            mvp.BfresOpenMats(poly, name);
         }
         public void bfresOpenMeshEditor(BFRES.Mesh mesh, BFRES.FMDL_Model mdl, BFRES bfres, string name)
         {
-            (new BFRES_MeshEditor(mesh, mdl, bfres) { Text = name }).Show();
+            (new BfresMeshEditor(mesh, mdl, bfres) { Text = name }).Show();
         }
         private void clearWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1443,7 +1443,7 @@ namespace Smash_Forge
                 
                 if (dat.collisions != null)//if the dat is a stage
                 {
-                    DAT_stage_list stageList = new DAT_stage_list(dat) { ShowHint = DockState.DockLeft };
+                    DatStageList stageList = new DatStageList(dat) { ShowHint = DockState.DockLeft };
                     AddDockedControl(stageList);
                 }
                 

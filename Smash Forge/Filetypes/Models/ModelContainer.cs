@@ -424,13 +424,13 @@ namespace Smash_Forge
             float elapsedSeconds = 0;
             if (NUD.useDirectUVTime)
             {
-                elapsedSeconds = ModelViewport.directUVTimeStopWatch.ElapsedMilliseconds / 1000.0f;
+                elapsedSeconds = ModelViewport.directUvTimeStopWatch.ElapsedMilliseconds / 1000.0f;
                 // Should be based on XMB eventualy.
                 if (elapsedSeconds >= 100)
-                    ModelViewport.directUVTimeStopWatch.Restart();
+                    ModelViewport.directUvTimeStopWatch.Restart();
             }
             else
-                ModelViewport.directUVTimeStopWatch.Stop();
+                ModelViewport.directUvTimeStopWatch.Stop();
 
             shader.SetFloat("elapsedTime", elapsedSeconds);
         }
@@ -579,43 +579,6 @@ namespace Smash_Forge
                 else
                     return result;
             }
-        }
-
-        // TODO: Remove.
-        public SortedList<double, NUD.Mesh> GetMeshSelection(Ray ray)
-        {
-            SortedList<double, NUD.Mesh> selected = new SortedList<double, NUD.Mesh>(new DuplicateKeyComparer<double>());
-            if (NUD != null)
-            {
-                Vector3 closest = Vector3.Zero;
-                foreach (NUD.Mesh mesh in NUD.Nodes)
-                {
-                    if (ray.CheckSphereHit(new Vector3(mesh.boundingSphere[0], mesh.boundingSphere[1], mesh.boundingSphere[2]), mesh.boundingSphere[3], out closest))
-                        selected.Add(ray.Distance(closest), mesh);
-                }
-            }
-            return selected;
-        }
-
-        // TODO: Remove and replace with ID map color picking.
-        public SortedList<double, BFRES.Mesh> GetBFRESMeshSelection(Ray ray)
-        {
-            SortedList<double, BFRES.Mesh> selected = new SortedList<double, BFRES.Mesh>(new DuplicateKeyComparer<double>());
-            if (BFRES != null)
-            {
-                Vector3 closest = Vector3.Zero;
-                foreach (BFRES.FMDL_Model mdl in BFRES.models)
-                {
-                    foreach (BFRES.Mesh mesh in mdl.poly)
-                    {
-                        BFRES.Mesh.BoundingBox box = mesh.boundingBoxes[0];
-                        if (ray.CheckSphereHit(box.Extent, mesh.radius[0], out closest))
-                            selected.Add(ray.Distance(closest), mesh);
-                    }
-                }
-
-            }
-            return selected;
         }
 
         public SortedList<double, Bone> GetBoneSelection(Ray ray)

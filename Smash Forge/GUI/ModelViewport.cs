@@ -1,24 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using System.Security.Cryptography;
 using SALT.Moveset.AnimCMD;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Drawing.Imaging;
 using Gif.Components;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Threading;
 using Smash_Forge.Rendering.Lights;
@@ -132,18 +125,18 @@ namespace Smash_Forge
             }
         }
 
-        private BFRES.MTA BFRESMaterialAnimation;
-        public BFRES.MTA CurrentBFRESMaterialAnimation
+        private BFRES.MTA bfresMaterialAnimation;
+        public BFRES.MTA CurrentBfresMaterialAnimation
         {
             get
             {
-                return BFRESMaterialAnimation;
+                return bfresMaterialAnimation;
             }
             set
             {
                 ResetModels();
                 currentAnimation = null;
-                BFRESMaterialAnimation = value;
+                bfresMaterialAnimation = value;
                 totalFrame.Value = value.FrameCount;
                 animationTrackBar.TickFrequency = 1;
                 animationTrackBar.SetRange(0, (int)value.FrameCount);
@@ -181,7 +174,7 @@ namespace Smash_Forge
         public VariableList variableViewer;
 
         // Used in ModelContainer for direct UV time animation.
-        public static Stopwatch directUVTimeStopWatch = new Stopwatch();
+        public static Stopwatch directUvTimeStopWatch = new Stopwatch();
 
         //LVD
         private LVD lvd;
@@ -204,7 +197,7 @@ namespace Smash_Forge
         LVDList lvdList = new LVDList();
         LVDEditor lvdEditor = new LVDEditor();
 
-        public BFRES_MaterialEditor bfresMatEditor = new BFRES_MaterialEditor();
+        public BfresMaterialEditor bfresMatEditor = new BfresMaterialEditor();
 
         //Binary YAML. Used in many Wii U/Switch games
         public BYAML BYAML
@@ -222,8 +215,8 @@ namespace Smash_Forge
             }
         }
         private BYAML byaml;
-        BYAMLList byamlList = new BYAMLList();
-        BYAMLEditor byamlEditor = new BYAMLEditor();
+        ByamlList byamlList = new ByamlList();
+        ByamlEditor byamlEditor = new ByamlEditor();
 
 
         //Path
@@ -256,14 +249,14 @@ namespace Smash_Forge
             FilePath = "";
             Text = "Model Viewport";
 
-            SetupMeshList();
-            SetupAnimListPanel();
-            SetupLvdEditors();
-            SetupVertexTool();
-            SetupAcmdEditor();
-            SetupHitBoxList();
-            SetupHurtBoxList();
-            SetupVariableViewer();
+            SetUpMeshList();
+            SetUpAnimListPanel();
+            SetUpLvdEditors();
+            SetUpVertexTool();
+            SetUpAcmdEditor();
+            SetUpHitBoxList();
+            SetUpHurtBoxList();
+            SetUpVariableViewer();
 
             bfresMatEditor.Dock = DockStyle.Left;
             bfresMatEditor.MaximumSize = new Size(500, 2000);
@@ -291,26 +284,26 @@ namespace Smash_Forge
             draw = meshList.filesTreeView.Nodes;
         }
 
-        private void SetupVariableViewer()
+        private void SetUpVariableViewer()
         {
             variableViewer = new VariableList();
             variableViewer.Dock = DockStyle.Right;
         }
 
-        private void SetupHurtBoxList()
+        private void SetUpHurtBoxList()
         {
             hurtboxList = new HurtboxList();
             hurtboxList.Dock = DockStyle.Right;
         }
 
-        private void SetupHitBoxList()
+        private void SetUpHitBoxList()
         {
             hitboxList = new HitboxList();
             hitboxList.Dock = DockStyle.Right;
             AddControl(hitboxList);
         }
 
-        private void SetupAcmdEditor()
+        private void SetUpAcmdEditor()
         {
             acmdEditor = new ACMDPreviewEditor();
             acmdEditor.Owner = this;
@@ -319,7 +312,7 @@ namespace Smash_Forge
             AddControl(acmdEditor);
         }
 
-        private void SetupVertexTool()
+        private void SetUpVertexTool()
         {
             vertexTool.Dock = DockStyle.Left;
             vertexTool.MaximumSize = new Size(300, 2000);
@@ -327,7 +320,7 @@ namespace Smash_Forge
             vertexTool.vp = this;
         }
 
-        private void SetupLvdEditors()
+        private void SetUpLvdEditors()
         {
             lvdList.Dock = DockStyle.Left;
             lvdList.MaximumSize = new Size(300, 2000);
@@ -339,7 +332,7 @@ namespace Smash_Forge
             AddControl(lvdEditor);
         }
 
-        private void SetupAnimListPanel()
+        private void SetUpAnimListPanel()
         {
             animListPanel.Dock = DockStyle.Left;
             animListPanel.MaximumSize = new Size(300, 2000);
@@ -347,7 +340,7 @@ namespace Smash_Forge
             AddControl(animListPanel);
         }
 
-        private void SetupMeshList()
+        private void SetUpMeshList()
         {
             meshList.Dock = DockStyle.Right;
             meshList.MaximumSize = new Size(300, 2000);
@@ -355,7 +348,7 @@ namespace Smash_Forge
             AddControl(meshList);
         }
 
-        public void bfresOpenMats(BFRES.Mesh poly, string name)
+        public void BfresOpenMats(BFRES.Mesh poly, string name)
         {
             ViewComboBox.SelectedItem = "BFRES Material Editor";
 
@@ -364,7 +357,7 @@ namespace Smash_Forge
             bfresMatEditor.Show();
         }
 
-        private void SetupBuffersAndTextures()
+        private void SetUpBuffersAndTextures()
         {
             // Use the viewport dimensions by default.
             fboRenderWidth = glViewport.Width;
@@ -384,10 +377,10 @@ namespace Smash_Forge
             // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-            SetupDepthMap();
+            SetUpDepthMap();
         }
 
-        private void SetupDepthMap()
+        private void SetUpDepthMap()
         {
             // Set up the depth map fbo.
             depthMapFbo = new Framebuffer(FramebufferTarget.Framebuffer);
@@ -690,13 +683,13 @@ namespace Smash_Forge
                 }
             }
 
-            if (BFRESMaterialAnimation != null)
+            if (bfresMaterialAnimation != null)
             {
                 foreach (TreeNode node in meshList.filesTreeView.Nodes)
                 {
                     if (!(node is ModelContainer)) continue;
                     ModelContainer m = (ModelContainer)node;
-                    m.BFRES.ApplyMta(BFRESMaterialAnimation, frameNum);
+                    m.BFRES.ApplyMta(bfresMaterialAnimation, frameNum);
                 }
             }
 
@@ -793,9 +786,9 @@ namespace Smash_Forge
             playButton.Text = isPlaying ? "Pause" : "Play";
 
             if (isPlaying)
-                directUVTimeStopWatch.Start();
+                directUvTimeStopWatch.Start();
             else
-                directUVTimeStopWatch.Stop();
+                directUvTimeStopWatch.Stop();
         }
 
         #endregion
@@ -2125,7 +2118,7 @@ namespace Smash_Forge
                 OpenTKSharedResources.InitializeSharedResources();
                 if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
                 {
-                    SetupBuffersAndTextures();
+                    SetUpBuffersAndTextures();
 
                     if (Runtime.enableOpenTKDebugOutput)
                     {

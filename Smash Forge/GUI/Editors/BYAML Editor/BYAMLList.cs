@@ -11,15 +11,15 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Smash_Forge
 {
-    public partial class BYAMLList :  DockContent
+    public partial class ByamlList :  DockContent
     {
-        public BYAMLList()
+        public ByamlList()
         {
             InitializeComponent();
         }
 
         public BYAML TargetBYAML;
-        public BYAMLEditor BYAMLEditor;
+        public ByamlEditor BYAMLEditor;
 
 
         public void fillList()

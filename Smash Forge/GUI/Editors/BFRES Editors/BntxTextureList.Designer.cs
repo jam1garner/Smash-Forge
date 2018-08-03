@@ -1,6 +1,6 @@
 ﻿namespace Smash_Forge
 {
-    partial class BNTX_TextureList
+    partial class BntxTextureList
     {
         /// <summary>
         /// Required designer variable.

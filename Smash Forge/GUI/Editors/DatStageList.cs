@@ -12,11 +12,11 @@ using OpenTK;
 
 namespace Smash_Forge
 {
-    public partial class DAT_stage_list : DockContent
+    public partial class DatStageList : DockContent
     {
         private DAT dat;
 
-        public DAT_stage_list(DAT dat)
+        public DatStageList(DAT dat)
         {
             InitializeComponent();
             this.dat = dat;

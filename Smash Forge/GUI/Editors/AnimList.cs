@@ -234,7 +234,7 @@ namespace Smash_Forge
             }
             if (e.Node is BFRES.MTA) //For BFRES
             {
-                ((ModelViewport)Parent).CurrentBFRESMaterialAnimation = (BFRES.MTA)e.Node;
+                ((ModelViewport)Parent).CurrentBfresMaterialAnimation = (BFRES.MTA)e.Node;
 
                 Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
                 foreach (TreeNode n in treeView1.Nodes)

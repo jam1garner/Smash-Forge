@@ -1,6 +1,6 @@
 ﻿namespace Smash_Forge
 {
-    partial class BYAMLList
+    partial class ByamlList
     {
         /// <summary>
         /// Required designer variable.

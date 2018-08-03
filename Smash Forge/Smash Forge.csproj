@@ -200,22 +200,22 @@
     <Compile Include="GUI\Controls\VertexTool.Designer.cs">
       <DependentUpon>VertexTool.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\BFRES Editors\BFRES_MaterialEditor.cs">
+    <Compile Include="GUI\Editors\BFRES Editors\BfresMaterialEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\BFRES Editors\BFRES_MaterialEditor.Designer.cs">
-      <DependentUpon>BFRES_MaterialEditor.cs</DependentUpon>
+    <Compile Include="GUI\Editors\BFRES Editors\BfresMaterialEditor.Designer.cs">
+      <DependentUpon>BfresMaterialEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\BFRES Editors\BFRES_MeshEditor.cs">
+    <Compile Include="GUI\Editors\BFRES Editors\BfresMeshEditor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\BFRES Editors\BFRES_MeshEditor.Designer.cs">
-      <DependentUpon>BFRES_MeshEditor.cs</DependentUpon>
+    <Compile Include="GUI\Editors\BFRES Editors\BfresMeshEditor.Designer.cs">
+      <DependentUpon>BfresMeshEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\BFRES Editors\BNTX_TextureList.cs">
+    <Compile Include="GUI\Editors\BFRES Editors\BntxTextureList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\BFRES Editors\BNTX_TextureList.Designer.cs" />
+    <Compile Include="GUI\Editors\BFRES Editors\BntxTextureList.Designer.cs" />
     <Compile Include="GUI\Editors\BFRES Editors\ImportTexture.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -347,17 +347,17 @@
     <Compile Include="GUI\Editors\DatTexEditor.Designer.cs">
       <DependentUpon>DatTexEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\DAT_stage_list.cs">
+    <Compile Include="GUI\Editors\DatStageList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\DAT_stage_list.Designer.cs">
-      <DependentUpon>DAT_stage_list.cs</DependentUpon>
+    <Compile Include="GUI\Editors\DatStageList.Designer.cs">
+      <DependentUpon>DatStageList.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\DAT_TreeView.cs">
+    <Compile Include="GUI\Editors\DatTreeView.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\DAT_TreeView.Designer.cs">
-      <DependentUpon>DAT_TreeView.cs</DependentUpon>
+    <Compile Include="GUI\Editors\DatTreeView.Designer.cs">
+      <DependentUpon>DatTreeView.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\HitboxList.cs">
       <SubType>Form</SubType>
@@ -644,8 +644,8 @@
     <Compile Include="Rendering\Drawing\TextureToBitmap.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
-    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BFRES_MeshEditor.resx">
-      <DependentUpon>BFRES_MeshEditor.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BfresMeshEditor.resx">
+      <DependentUpon>BfresMeshEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BFRES Editors\BNTXMaterialTextureEditor.resx">
       <DependentUpon>BNTXMaterialTextureEditor.cs</DependentUpon>
@@ -662,10 +662,10 @@
     <EmbeddedResource Include="GUI\EditorBase.resx">
       <DependentUpon>EditorBase.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BFRES_MaterialEditor.resx">
-      <DependentUpon>BFRES_MaterialEditor.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BfresMaterialEditor.resx">
+      <DependentUpon>BfresMaterialEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BNTX_TextureList.resx" />
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BntxTextureList.resx" />
     <EmbeddedResource Include="GUI\Editors\BFRES Editors\ImportTexture.resx">
       <DependentUpon>ImportTexture.cs</DependentUpon>
     </EmbeddedResource>
@@ -711,11 +711,11 @@
     <EmbeddedResource Include="GUI\Editors\DatTexEditor.resx">
       <DependentUpon>DatTexEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\DAT_stage_list.resx">
-      <DependentUpon>DAT_stage_list.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Editors\DatStageList.resx">
+      <DependentUpon>DatStageList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\DAT_TreeView.resx">
-      <DependentUpon>DAT_TreeView.cs</DependentUpon>
+    <EmbeddedResource Include="GUI\Editors\DatTreeView.resx">
+      <DependentUpon>DatTreeView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\HitboxList.resx">
       <DependentUpon>HitboxList.cs</DependentUpon>
