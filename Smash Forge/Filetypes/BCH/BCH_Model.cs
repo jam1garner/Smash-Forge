@@ -8,37 +8,29 @@ using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Smash_Forge.Rendering;
+using SFGraphics.GLObjects.Shaders;
 
 namespace Smash_Forge
 {
     public class BCH_Model : TreeNode
     {
-        public static ShaderOld shader = null;
+        public static Shader shader = null;
 
-        int vbo_vert;
-        int vbo_bone;
-        int ibo_faces;
+        // OpenGL Buffers
+        int vertVbo = 0;
+        int boneVbo = 0;
+        int facesIbo = 0;
 
         public int flags;
         public int skeletonScaleType;
         public int silhouetteMaterialEntries;
 
-        public VBN skeleton
-        {
-            get
-            {
-                return vbn;
-            }
-            set
-            {
-                vbn = value;
-            }
-        }
-        private VBN vbn = new VBN();
+        public VBN skeleton = new VBN();
+
         public Matrix4 worldTransform;
 
-        List<VertexAttribute> Attributes = new List<VertexAttribute>();
-        public Vertex[] Vertices;
+        List<VertexAttribute> attributes = new List<VertexAttribute>();
+        public Vertex[] vertices;
         
         public struct Vertex
         {
@@ -48,39 +40,35 @@ namespace Smash_Forge
             public Vector2 tx;
             public Vector2 bone;
             public Vector2 weight;
-            public static int Stride = (3+3+2+2+2+4) * 4;
+            public static int sizeInBytes = (3 + 3 + 4 + 2 + 2 + 2) * 4;
         }
 
         public BCH_Model()
         {
-            GL.GenBuffers(1, out vbo_vert);
-            GL.GenBuffers(1, out vbo_bone);
-            GL.GenBuffers(1, out ibo_faces);
-            
             ImageKey = "model";
             SelectedImageKey = "model";
 
+            SetupContextMenus();
+        }
+
+        private void SetupContextMenus()
+        {
             ContextMenu cm = new ContextMenu();
             MenuItem im = new MenuItem("Import DAE");
             im.Click += Import;
             cm.MenuItems.Add(im);
+
             MenuItem save = new MenuItem("Save as MBN");
             save.Click += Click;
             cm.MenuItems.Add(save);
             ContextMenu = cm;
+        }
 
-            if (!Runtime.shaders.ContainsKey("MBN"))
-            {
-                ShaderTools.CreateShader("MBN", "/lib/Shader/");
-            }
-
-            Runtime.shaders["MBN"].DisplayCompilationWarning("MBN");
-
-            if (shader == null)
-            {
-                shader = new ShaderOld();
-                shader = Runtime.shaders["MBN"];
-            }
+        private void GenerateBuffers()
+        {
+            GL.GenBuffers(1, out vertVbo);
+            GL.GenBuffers(1, out boneVbo);
+            GL.GenBuffers(1, out facesIbo);
         }
 
         public void Click(object o, EventArgs a)
@@ -114,11 +102,13 @@ namespace Smash_Forge
                             con.VBN = skeleton;
 
                             Collada.DaetoNud(f, con, daeImport.importTexCB.Checked);
-                            
-                            // apply settings
-                            daeImport.Apply(con.NUD);
-                            con.NUD.MergePoly();
-                            CreateFromNUD(con.NUD);
+
+                            if (con.NUD != null)
+                            {
+                                // apply settings
+                                daeImport.Apply(con.NUD);
+                                CreateFromNUD(con.NUD);
+                            }
                         }
                     }
                 }
@@ -218,9 +208,9 @@ namespace Smash_Forge
                     case 1:
                         return d.readByte() * scale;
                     case 2:
-                        return (sbyte)d.readByte() * scale;
+                        return d.readSByte() * scale;
                     case 3:
-                        return (short)d.readShort() * scale;
+                        return d.readShort() * scale;
                 }
                 return 0;
             }
@@ -236,10 +226,10 @@ namespace Smash_Forge
                         d.writeByte((byte)(data / scale));
                         break;
                     case 2:
-                        d.writeByte((sbyte)(data / scale));
+                        d.writeByte((byte)(data / scale));
                         break;
                     case 3:
-                        d.writeShort((int)(data / scale));
+                        d.writeShort((short)(data / scale));
                         break;
                 }
             }
@@ -259,8 +249,8 @@ namespace Smash_Forge
 
             // Write Vertex Attributes
             {
-                o.writeInt(Attributes.Count);
-                foreach(VertexAttribute va in Attributes)
+                o.writeInt(attributes.Count);
+                foreach(VertexAttribute va in attributes)
                 {
                     o.writeInt(va.type);
                     o.writeInt(va.format);
@@ -273,12 +263,12 @@ namespace Smash_Forge
             FileOutput vertexBuffer = new FileOutput();
             vertexBuffer.Endian = Endianness.Little;
 
-            for(int i = 0; i < Vertices.Length; i++)
+            for(int i = 0; i < vertices.Length; i++)
             {
-                foreach (VertexAttribute va in Attributes)
+                foreach (VertexAttribute va in attributes)
                 {
                     //Write Data
-                    va.WriteVertex(vertexBuffer, ref Vertices[i]);
+                    va.WriteVertex(vertexBuffer, ref vertices[i]);
                 }
             }
 
@@ -321,7 +311,7 @@ namespace Smash_Forge
             f.Endian = Endianness.Little;
             f.seek(0);
 
-            int format = f.readShort();
+            int format = f.readUShort();
             f.skip(2);//0xFFFF
             int flags = f.readInt();
             int mode = f.readInt();
@@ -336,7 +326,7 @@ namespace Smash_Forge
                 {
                     VertexAttribute a = new VertexAttribute();
                     a.Read(f);
-                    Attributes.Add(a);
+                    attributes.Add(a);
                 }
                 length = f.readInt();
             }
@@ -376,21 +366,21 @@ namespace Smash_Forge
             if (format != 4) f.align(32);
 
             int stride = 0;
-            foreach (VertexAttribute a in Attributes)
+            foreach (VertexAttribute a in attributes)
                 stride += _3DSGPU.getTypeSize(a.format) * _3DSGPU.getFormatSize(a.type);
 
             // Vertex Bank
-            Vertices = new Vertex[length / (stride+stride%2)];
-            for (int vi = 0; vi < Vertices.Length; vi++)
+            vertices = new Vertex[length / (stride+stride%2)];
+            for (int vi = 0; vi < vertices.Length; vi++)
             {
                 Vertex v = new Vertex();
-                foreach (VertexAttribute a in Attributes)
+                foreach (VertexAttribute a in attributes)
                 {
                     //f.align(2);
                     a.ReadVertex(f, ref v);
 
                 }
-                Vertices[vi] = v;
+                vertices[vi] = v;
             }
             f.align(32);
 
@@ -405,7 +395,7 @@ namespace Smash_Forge
                     pg.Text = "Polygroup_"+pi++;
                     pg.Faces = new int[pg.Count];
                     for(int k = 0; k < pg.Count; k++)
-                        pg.Faces[k] = f.readShort();
+                        pg.Faces[k] = f.readUShort();
                     f.align(32);
                 }
             }
@@ -413,24 +403,30 @@ namespace Smash_Forge
 
         public void Render(Matrix4 view)
         {
-            if (Vertices == null)
+            if (vertices == null)
                 return;
 
-            shader = Runtime.shaders["MBN"];
-            GL.UseProgram(shader.programID);
+            bool buffersWereInitialized = vertVbo != 0 && boneVbo != 0 && facesIbo != 0;
+            if (!buffersWereInitialized)
+            {
+                GenerateBuffers();
+            }
 
-            GL.Uniform1(shader.getAttribute("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
-            GL.Uniform1(shader.getAttribute("renderType"), (int)Runtime.renderType);
-            GL.Uniform1(shader.getAttribute("selectedBoneIndex"), Runtime.selectedBoneIndex);
+            shader = OpenTKSharedResources.shaders["Mbn"];
+            shader.UseProgram();
 
-            GL.UniformMatrix4(shader.getAttribute("modelview"), false, ref view);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderVertColor"), Runtime.renderVertColor ? 1 : 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("renderType"), (int)Runtime.renderType);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("selectedBoneIndex"), Runtime.selectedBoneIndex);
 
-            GL.Uniform3(shader.getAttribute("difLightColor"), Runtime.lightSetParam.characterDiffuse.diffuseColor.R, Runtime.lightSetParam.characterDiffuse.diffuseColor.G, Runtime.lightSetParam.characterDiffuse.diffuseColor.B);
-            GL.Uniform3(shader.getAttribute("ambLightColor"), Runtime.lightSetParam.characterDiffuse.ambientColor.R, Runtime.lightSetParam.characterDiffuse.ambientColor.G, Runtime.lightSetParam.characterDiffuse.ambientColor.B);
+            GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("modelview"), false, ref view);
+
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("difLightColor"), Runtime.lightSetParam.characterDiffuse.diffuseColor.R, Runtime.lightSetParam.characterDiffuse.diffuseColor.G, Runtime.lightSetParam.characterDiffuse.diffuseColor.B);
+            GL.Uniform3(shader.GetVertexAttributeUniformLocation("ambLightColor"), Runtime.lightSetParam.characterDiffuse.ambientColor.R, Runtime.lightSetParam.characterDiffuse.ambientColor.G, Runtime.lightSetParam.characterDiffuse.ambientColor.B);
 
             GL.ActiveTexture(TextureUnit.Texture10);
-            GL.BindTexture(TextureTarget.Texture2D, RenderTools.uvTestPattern);
-            GL.Uniform1(shader.getAttribute("UVTestPattern"), 10);
+            RenderTools.uvTestPattern.Bind();
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("UVTestPattern"), 10);
 
             Matrix4[] f = skeleton.getShaderMatrix();
 
@@ -438,59 +434,59 @@ namespace Smash_Forge
             int boneCount = skeleton.bones.Count;
             int dataSize = boneCount * Vector4.SizeInBytes * 4;
 
-            GL.BindBuffer(BufferTarget.UniformBuffer, vbo_bone);
+            GL.BindBuffer(BufferTarget.UniformBuffer, boneVbo);
             GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-            var blockIndex = GL.GetUniformBlockIndex(shader.programID, "bones");
-            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, vbo_bone);
+            var blockIndex = GL.GetUniformBlockIndex(shader.Id, "bones");
+            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, boneVbo);
 
             if (f.Length > 0)
             {
-                GL.BindBuffer(BufferTarget.UniformBuffer, vbo_bone);
+                GL.BindBuffer(BufferTarget.UniformBuffer, boneVbo);
                 GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
             }
 
-            shader.enableAttrib();
+            shader.EnableVertexAttributes();
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo_vert);
-            GL.BufferData<Vertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertex.Stride * Vertices.Length), Vertices, BufferUsageHint.StaticDraw);
-            GL.VertexAttribPointer(shader.getAttribute("pos"), 3, VertexAttribPointerType.Float, false, Vertex.Stride, 0);
-            GL.VertexAttribPointer(shader.getAttribute("nrm"), 3, VertexAttribPointerType.Float, false, Vertex.Stride, 12);
-            GL.VertexAttribPointer(shader.getAttribute("col"), 4, VertexAttribPointerType.Float, false, Vertex.Stride, 24);
-            GL.VertexAttribPointer(shader.getAttribute("tx0"), 2, VertexAttribPointerType.Float, false, Vertex.Stride, 40);
-            GL.VertexAttribPointer(shader.getAttribute("bone"), 2, VertexAttribPointerType.Float, false, Vertex.Stride, 48);
-            GL.VertexAttribPointer(shader.getAttribute("weight"), 2, VertexAttribPointerType.Float, false, Vertex.Stride, 56);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, vertVbo);
+            GL.BufferData<Vertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertex.sizeInBytes * vertices.Length), vertices, BufferUsageHint.StaticDraw);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("pos"), 3, VertexAttribPointerType.Float, false, Vertex.sizeInBytes, 0);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("nrm"), 3, VertexAttribPointerType.Float, false, Vertex.sizeInBytes, 12);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("col"), 4, VertexAttribPointerType.Float, false, Vertex.sizeInBytes, 24);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("tx0"), 2, VertexAttribPointerType.Float, false, Vertex.sizeInBytes, 40);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("bone"), 2, VertexAttribPointerType.Float, false, Vertex.sizeInBytes, 48);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("weight"), 2, VertexAttribPointerType.Float, false, Vertex.sizeInBytes, 56);
 
             GL.PointSize(4f);
-            //GL.DrawArrays(PrimitiveType.Points, 0, Vertices.Length);
 
             foreach (BCH_Mesh m in Nodes)
             {
-                GL.Uniform4(shader.getAttribute("colorSamplerUV"), new Vector4(1, 1, 0, 0));
+                GL.Uniform4(shader.GetVertexAttributeUniformLocation("colorSamplerUV"), new Vector4(1, 1, 0, 0));
 
                 GL.ActiveTexture(TextureUnit.Texture0);
                 BCH_Material material = (BCH_Material)((BCH)Parent.Parent).Materials.Nodes[m.MaterialIndex];
                 BCH_Texture tex = ((BCH)Parent.Parent).GetTexture(material.Text);
-                GL.BindTexture(TextureTarget.Texture2D, tex == null ? RenderTools.defaultTex : tex.display);
-                GL.Uniform1(shader.getAttribute("tex"), 0);
+                GL.BindTexture(TextureTarget.Texture2D, tex == null ? RenderTools.defaultTex.Id : tex.display);
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation("tex"), 0);
                 if (!m.Checked) continue;
 
                 foreach (BCH_PolyGroup pg in m.Nodes)
                 {
-                    GL.Uniform1(shader.getAttribute("boneList"), pg.BoneList.Length, pg.BoneList);
+                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("boneList"), pg.BoneList.Length, pg.BoneList);
 
                     GL.Disable(EnableCap.CullFace);
                     GL.CullFace(CullFaceMode.Back);
 
-                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, ibo_faces);
+                    GL.BindBuffer(BufferTarget.ElementArrayBuffer, facesIbo);
                     GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(pg.Faces.Length * sizeof(int)), pg.Faces, BufferUsageHint.StaticDraw);
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                     
                     GL.DrawElements(PrimitiveType.Triangles, pg.Faces.Length, DrawElementsType.UnsignedInt, 0);
                 }
             }
-            shader.disableAttrib();
+
+            shader.DisableVertexAttributes();
         }
 
 

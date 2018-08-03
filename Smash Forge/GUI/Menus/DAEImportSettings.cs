@@ -47,10 +47,15 @@ namespace Smash_Forge
         {
             InitializeComponent();
             Populate();
+
+            transUvVerticalCB.Checked = true;
         }
         
         public void Populate()
         {
+            vertTypeComboBox.BeginUpdate();
+            boneTypeComboBox.BeginUpdate();
+
             foreach (string key in VertexTypes.Keys)
                 vertTypeComboBox.Items.Add(key);
 
@@ -59,11 +64,13 @@ namespace Smash_Forge
 
             vertTypeComboBox.SelectedIndex = 4;
             boneTypeComboBox.SelectedIndex = 3;
+
+            vertTypeComboBox.EndUpdate();
+            boneTypeComboBox.EndUpdate();
         }
 
         public void Apply(NUD nud)
         {
-            nud.GenerateBoundingBoxes();
             Matrix4 rotXBy90 = Matrix4.CreateRotationX(0.5f * (float)Math.PI);
             float scale = 1f;
             bool hasScale = float.TryParse(scaleTB.Text, out scale);
@@ -81,17 +88,12 @@ namespace Smash_Forge
                 if (!checkedMeshName)
                 {
                     checkedMeshName = true;
-                    if (mesh.Text.Length > 5)
-                    {
-                        string sub = mesh.Text.Substring(0, 5);
-                        int a = 0;
-                        if (sub.StartsWith("_") && sub.EndsWith("_") && int.TryParse(sub.Substring(1, 3), out a))
-                            fixMeshName = DialogResult.Yes == MessageBox.Show("Detected mesh names that start with \"_###_\". Would you like to fix this?\nIt is recommended that you select \"Yes\".", "Mesh Name Fix", MessageBoxButtons.YesNo);
-                    }
+                    if (Collada.HasInitialUnderscoreId(mesh.Text))
+                        fixMeshName = DialogResult.Yes == MessageBox.Show("Detected mesh names that start with \"_###_\". Would you like to fix this?\nIt is recommended that you select \"Yes\".", "Mesh Name Fix", MessageBoxButtons.YesNo);
                 }
+
                 if (fixMeshName)
-                    if (mesh.Text.Length > 5)
-                        mesh.Text = mesh.Text.Substring(5);
+                    mesh.Text = Collada.RemoveInitialUnderscoreId(mesh.Text);
 
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
@@ -158,7 +160,8 @@ namespace Smash_Forge
                 }
             }
 
-            nud.UpdateVertexData();
+            // Wait until after the model is rotated.
+            nud.GenerateBoundingSpheres();
         }
 
         public VBN getVBN()

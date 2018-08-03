@@ -84,7 +84,7 @@ namespace Smash_Forge
 
             int texture = tex.display;
 
-            Rendering.RenderTools.DrawTexturedQuad(texture, width, height, true, true, true, false);
+            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, true, true, true, false);
 
             glControl1.SwapBuffers();
 
@@ -112,7 +112,7 @@ namespace Smash_Forge
 
             int texture = tex.display;
 
-            Rendering.RenderTools.DrawTexturedQuad(texture, width, height, false, false, false, true);
+            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, false, false, false, true);
 
             glControl2.SwapBuffers();
 
