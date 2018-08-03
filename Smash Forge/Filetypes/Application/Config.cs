@@ -104,6 +104,9 @@ namespace Smash_Forge
                         if (node.ParentNode != null && node.ParentNode.Name.Equals("RENDERSETTINGS"))
                             Enum.TryParse(node.InnerText, out Runtime.renderType);
                         break;
+                    case "bone_node_size":
+                        float.TryParse(node.InnerText, out Runtime.RenderBoneNodeSize);
+                        break;
                     case "camera_light":
                         bool.TryParse(node.InnerText, out Runtime.cameraLight);
                         break;
@@ -205,6 +208,9 @@ namespace Smash_Forge
                         break;
                     case "render_swagZ":
                         bool.TryParse(node.InnerText, out Runtime.renderSwagZ);
+                        break;
+                    case "reander_physicallyBasedRendering":
+                        bool.TryParse(node.InnerText, out Runtime.renderPhysicallyBasedRendering);
                         break;
                     case "fighter_dir":
                         Runtime.fighterDir = node.InnerText;
@@ -321,6 +327,9 @@ namespace Smash_Forge
                             }
                         }
                         break;
+                    case "GamePath":
+                        Runtime.MarioOdysseyGamePath = (node.InnerText);
+                        break;
                 }
             }
         }
@@ -395,6 +404,7 @@ namespace Smash_Forge
             viewportNode.AppendChild(createNode(doc, "fov", Runtime.fov.ToString()));
             viewportNode.AppendChild(createNode(doc, "render_depth", Runtime.renderDepth.ToString()));
             AppendBackgroundSettings(doc, viewportNode);
+            AppendOdysseyCostumeEditor(doc, viewportNode);
 
             AppendRenderSettings(doc, mainNode);
 
@@ -412,6 +422,10 @@ namespace Smash_Forge
             parentNode.AppendChild(createNode(doc, "back_gradient_top", ColorTranslator.ToHtml(Runtime.backgroundGradientTop)));
             parentNode.AppendChild(createNode(doc, "back_gradient_bottom", ColorTranslator.ToHtml(Runtime.backgroundGradientBottom)));
         }
+        private static void AppendOdysseyCostumeEditor(XmlDocument doc, XmlNode parentNode)
+        {
+            parentNode.AppendChild(createNode(doc, "GamePath", Runtime.MarioOdysseyGamePath.ToString()));
+        }
 
         private static void AppendRenderSettings(XmlDocument doc, XmlNode parentNode)
         {
@@ -422,6 +436,7 @@ namespace Smash_Forge
             renderSettingsNode.AppendChild(createNode(doc, "render_alpha", Runtime.renderAlpha.ToString()));
             renderSettingsNode.AppendChild(createNode(doc, "camera_light", Runtime.cameraLight.ToString()));
             renderSettingsNode.AppendChild(createNode(doc, "use_normal_map", Runtime.renderNormalMap.ToString()));
+            renderSettingsNode.AppendChild(createNode(doc, "bone_node_size", Runtime.RenderBoneNodeSize.ToString()));
 
             AppendMaterialLightingSettings(doc, renderSettingsNode);
             AppendModelRenderSettings(doc, renderSettingsNode);
@@ -546,6 +561,7 @@ namespace Smash_Forge
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_otherLVDEntries", Runtime.renderOtherLVDEntries.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_swag", Runtime.renderSwagY.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_swagZ", Runtime.renderSwagZ.ToString()));
+            lvdRenderSettingsNode.AppendChild(createNode(doc, "reander_physicallyBasedRendering", Runtime.renderPhysicallyBasedRendering.ToString()));
         }
 
         private static void AppendDiscordSettings(XmlDocument doc, XmlNode parentNode)

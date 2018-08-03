@@ -29,12 +29,20 @@ namespace Smash_Forge.Rendering
 
         private static void SetupAllShaders()
         {
-            SetupScreenShaders();
-            SetupNudShaders();
-            SetupMiscShaders();
+            SetUpScreenShaders();
+            SetUpNudShaders();
+            SetUpMiscShaders();
+            SetUpBfresShaders();
         }
 
-        private static void SetupMiscShaders()
+        private static void SetUpBfresShaders()
+        {
+            CreateAndAddShader("BFRES", "BFRES.frag", "BFRES.vert");
+            CreateAndAddShader("BFRES_PBR", "BFRES_PBR.frag", "BFRES_PBR.vert");
+            CreateAndAddShader("KCL", "KCL.frag", "KCL.vert");
+        }
+
+        private static void SetUpMiscShaders()
         {
             CreateAndAddShader("Mbn", "3ds\\Mbn.frag", "3ds\\Mbn.vert");
             CreateAndAddShader("Dat", "Melee\\Dat.frag", "Melee\\Dat.vert");
@@ -44,7 +52,7 @@ namespace Smash_Forge.Rendering
             CreateAndAddShader("UV", "NUD\\UV.frag", "NUD\\UV.vert", "NUD\\UV.geom", "NUD\\EdgeDistance.geom", "Utility\\Utility.frag", "Utility\\Wireframe.frag");
         }
 
-        private static void SetupNudShaders()
+        private static void SetUpNudShaders()
         {
             // Wii U NUD Shaders.
             string[] nudShaders = new string[]
@@ -86,7 +94,7 @@ namespace Smash_Forge.Rendering
             CreateAndAddShader("NudSphere", nudMatShaders);
         }
 
-        private static void SetupScreenShaders()
+        private static void SetUpScreenShaders()
         {
             // Fullscreen "quad" shaders.
             // A single vertex shader is shared to calculate UVs for all these shaders.

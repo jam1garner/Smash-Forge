@@ -8,6 +8,77 @@ namespace Smash_Forge
 {
     public class SMD
     {
+        public static void toBFRES(string fname)
+        {
+            StreamReader reader = File.OpenText(fname);
+            string line;
+            string current = "";
+            bool readBones = false;
+            int frame = 0, prevframe = 0;
+            string Text = "";
+
+            readBones = true;
+
+            while ((line = reader.ReadLine()) != null)
+            {
+                line = Regex.Replace(line, @"\s+", " ");
+                string[] args = line.Replace(";", "").TrimStart().Split(' ');
+
+                if (args[0].Equals("nodes") || args[0].Equals("skeleton") || args[0].Equals("end") || args[0].Equals("time"))
+                {
+                    current = args[0];
+                    if (args.Length > 1)
+                    {
+                        prevframe = frame;
+                        frame = int.Parse(args[1]);
+                    }
+                    continue;
+                }
+                if (current.Equals("nodes"))
+                {
+                    Text = args[1].Replace("\"", "");
+                }
+                if (current.Equals("time"))
+                {
+                    BFRES.NewBonePos bn = new BFRES.NewBonePos();
+
+                    float positionX = float.Parse(args[1]);
+                    float positionY = float.Parse(args[2]);
+                    float positionZ = float.Parse(args[3]);
+                    float rotX = float.Parse(args[4]);
+                    float rotY = float.Parse(args[5]);
+                    float rotZ = float.Parse(args[6]);
+                    float scaleX = 1f;
+                    float scaleY = 1f;
+                    float scaleZ = 1f;
+
+                    bn.scale = new Vector3(1);
+                    bn.pos = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
+                    bn.rot = new Vector3(MathHelper.DegreesToRadians(rotX), MathHelper.DegreesToRadians(rotY), MathHelper.DegreesToRadians(rotZ));
+                    Quaternion rot = VBN.FromEulerAngles(float.Parse(args[6]), float.Parse(args[5]), float.Parse(args[4]));
+                    bn.Name = Text;
+
+                    foreach (var defbn in BFRES.HackyBoneList)
+                    {
+                        if (defbn.Name == Text)
+                        {
+                            bn.pos.X = bn.pos.X +- defbn.pos.X;
+                            bn.pos.Y = bn.pos.Y +- defbn.pos.Y;
+                            bn.pos.Z = bn.pos.Z +- defbn.pos.Z;
+
+                            bn.rot.X = bn.rot.X +- defbn.rot.X;
+                            bn.rot.Y = bn.rot.Y +- defbn.rot.Y;
+                            bn.rot.Z = bn.rot.Z +- defbn.rot.Z;
+
+                        }
+                    }
+
+                    BFRES.HackyBoneDiffList.Add(bn);
+
+
+                }
+            }
+        }
 
         public static void read(string fname, Animation a, VBN v)
         {

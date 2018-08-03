@@ -17,7 +17,8 @@ namespace Smash_Forge
 {
     public class ModelContainer : TreeNode
     {
-        public NUD NUD {
+        public NUD NUD
+        {
             get
             {
                 return nud;
@@ -81,6 +82,20 @@ namespace Smash_Forge
         }
         private MTA mta;
 
+        public BFRES.MTA BFRES_MTA
+        {
+            get
+            {
+                return bfres_mta;
+            }
+            set
+            {
+                bfres_mta = value;
+                Refresh();
+            }
+        }
+        public BFRES.MTA bfres_mta;
+
         public MOI MOI
         {
             get
@@ -104,7 +119,7 @@ namespace Smash_Forge
             set
             {
                 jtb = value;
-                if(VBN != null)
+                if (VBN != null)
                     VBN.JointTable = jtb;
                 Refresh();
             }
@@ -142,6 +157,34 @@ namespace Smash_Forge
         }
         private BCH bch;
 
+        public BFRES bfres;
+        public BFRES BFRES
+        {
+            get
+            {
+                return bfres;
+            }
+            set
+            {
+                bfres = value;
+                Refresh();
+            }
+        }
+
+        public KCL kcl;
+        public KCL KCL
+        {
+            get
+            {
+                return kcl;
+            }
+            set
+            {
+                kcl = value;
+                Refresh();
+            }
+        }
+
         public DAT DatMelee
         {
             get
@@ -178,17 +221,25 @@ namespace Smash_Forge
         {
             Nodes.Clear();
 
-            if(DatMelee != null)
+            if (DatMelee != null)
             {
                 Text = "Melee DAT";
                 Nodes.AddRange(DatMelee.tree.ToArray());
                 if (vbn != null && vbn.Parent == null) Nodes.Add(vbn);
             }
-            else
-            if(bch != null)
+            else if (bch != null)
             {
                 Nodes.Add(bch);
-            }else
+            }
+            else if (bfres != null)
+            {
+                Nodes.Add(bfres);
+            }
+            else if (kcl != null)
+            {
+                Nodes.Add(kcl);
+            }
+            else
             {
                 if (nud != null) Nodes.Add(nud);
                 if (nut != null) Nodes.Add(nut);
@@ -213,6 +264,11 @@ namespace Smash_Forge
             {
                 ((BCH_Model)BCH.Models.Nodes[0]).skeleton.JointTable = JTB;
                 return ((BCH_Model)BCH.Models.Nodes[0]).skeleton;
+            }
+            if (BFRES != null && BFRES.models.Count > 0)
+            {
+                BFRES.models[0].skeleton.JointTable = JTB;
+                return BFRES.models[0].skeleton;
             }
             else if (vbn != null)
             {
@@ -249,6 +305,49 @@ namespace Smash_Forge
             if (DatMelee != null && OpenTKSharedResources.shaders["Dat"].ProgramCreatedSuccessfully)
             {
                 DatMelee.Render(camera.MvpMatrix);
+            }
+
+            LightColor diffuseColor = Runtime.lightSetParam.characterDiffuse.diffuseColor;
+            LightColor ambientColor = Runtime.lightSetParam.characterDiffuse.ambientColor;
+
+            if (KCL != null && OpenTKSharedResources.shaders["KCL"].ProgramCreatedSuccessfully)
+            {
+                shader = OpenTKSharedResources.shaders["KCL"];
+                shader.UseProgram();
+
+                shader.SetVector3("difLightColor", diffuseColor.R, diffuseColor.G, diffuseColor.B);
+                shader.SetVector3("ambLightColor", ambientColor.R, ambientColor.G, ambientColor.B);
+
+                KCL.Render(camera.MvpMatrix);
+            }
+
+            if (BFRES != null && OpenTKSharedResources.shaders["BFRES"].ProgramCreatedSuccessfully
+                && OpenTKSharedResources.shaders["BFRES_PBR"].ProgramCreatedSuccessfully)
+            {
+                if (Runtime.renderPhysicallyBasedRendering == true)
+                    shader = OpenTKSharedResources.shaders["BFRES_PBR"];
+                else
+                    shader = OpenTKSharedResources.shaders["BFRES"];
+
+                shader.UseProgram();
+
+                shader.SetVector3("difLightColor", diffuseColor.R, diffuseColor.G, diffuseColor.B);
+                shader.SetVector3("ambLightColor", ambientColor.R, ambientColor.G, ambientColor.B);
+
+                Matrix4 invertedCamera = camera.MvpMatrix.Inverted();
+                Vector3 lightDirection = new Vector3(0f, 0f, -1f);
+
+                //Todo. Maybe change direction via AAMP file (configs shader data)
+                shader.SetVector3("lightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+                shader.SetVector3("specLightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+                shader.SetVector3("difLightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+
+                shader.SetInt("debugOption", (int)Runtime.uvChannel);
+
+                // This cube map is for a quick test.
+                shader.SetTexture("cmap", RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh].Id, TextureTarget.TextureCubeMap, 2);
+
+                BFRES.Render(camera.MvpMatrix);
             }
 
             if (NUD != null && OpenTKSharedResources.shaders["Nud"].ProgramCreatedSuccessfully && OpenTKSharedResources.shaders["NudDebug"].ProgramCreatedSuccessfully)
@@ -356,6 +455,15 @@ namespace Smash_Forge
                     RenderTools.DrawVBN(mo.skeleton);
             }
 
+            if (BFRES != null)
+            {
+                foreach (var mo in BFRES.models)
+                {
+                    RenderTools.DrawVBN(mo.skeleton);
+                }
+
+            }
+
             if (DatMelee != null)
             {
                 RenderTools.DrawVBN(DatMelee.bones);
@@ -414,7 +522,7 @@ namespace Smash_Forge
             float refR, refG, refB = 1.0f;
             ColorTools.HsvToRgb(Runtime.reflectionHue, Runtime.reflectionSaturation, Runtime.reflectionIntensity, out refR, out refG, out refB);
             shader.SetVector3("refLightColor", refR, refG, refB);
-            
+
             // character diffuse lights
             shader.SetVector3("difLightColor", Runtime.lightSetParam.characterDiffuse.diffuseColor.R, Runtime.lightSetParam.characterDiffuse.diffuseColor.G, Runtime.lightSetParam.characterDiffuse.diffuseColor.B);
             shader.SetVector3("ambLightColor", Runtime.lightSetParam.characterDiffuse.ambientColor.R, Runtime.lightSetParam.characterDiffuse.ambientColor.G, Runtime.lightSetParam.characterDiffuse.ambientColor.B);
@@ -424,17 +532,17 @@ namespace Smash_Forge
 
             shader.SetVector3("difLightColor3", Runtime.lightSetParam.characterDiffuse3.diffuseColor.R, Runtime.lightSetParam.characterDiffuse3.diffuseColor.G, Runtime.lightSetParam.characterDiffuse3.diffuseColor.B);
             shader.SetVector3("ambLightColor3", Runtime.lightSetParam.characterDiffuse3.ambientColor.R, Runtime.lightSetParam.characterDiffuse3.ambientColor.G, Runtime.lightSetParam.characterDiffuse3.ambientColor.B);
-            
+
             // character specular light
             shader.SetVector3("specLightColor", LightTools.specularLight.diffuseColor.R, LightTools.specularLight.diffuseColor.G, LightTools.specularLight.diffuseColor.B);
-            
+
             // stage fog
             shader.SetBoolToInt("renderFog", Runtime.renderFog);
 
             shader.SetVector3("difLight2Direction", Runtime.lightSetParam.characterDiffuse2.direction);
             shader.SetVector3("difLight3Direction", Runtime.lightSetParam.characterDiffuse2.direction);
 
-            if (Runtime.cameraLight) 
+            if (Runtime.cameraLight)
             {
                 // Camera light should only affect character lighting.
                 Matrix4 invertedCamera = camera.MvpMatrix.Inverted();
@@ -454,6 +562,8 @@ namespace Smash_Forge
         {
             if (NUD != null)
                 NUD.DepthSortMeshes(cameraPosition);
+            if (BFRES != null)
+                BFRES.DepthSortMeshes(cameraPosition);
         }
 
         #region Editing Tools
@@ -471,6 +581,7 @@ namespace Smash_Forge
             }
         }
 
+        // TODO: Remove.
         public SortedList<double, NUD.Mesh> GetMeshSelection(Ray ray)
         {
             SortedList<double, NUD.Mesh> selected = new SortedList<double, NUD.Mesh>(new DuplicateKeyComparer<double>());
@@ -482,6 +593,27 @@ namespace Smash_Forge
                     if (ray.CheckSphereHit(new Vector3(mesh.boundingSphere[0], mesh.boundingSphere[1], mesh.boundingSphere[2]), mesh.boundingSphere[3], out closest))
                         selected.Add(ray.Distance(closest), mesh);
                 }
+            }
+            return selected;
+        }
+
+        // TODO: Remove and replace with ID map color picking.
+        public SortedList<double, BFRES.Mesh> GetBFRESMeshSelection(Ray ray)
+        {
+            SortedList<double, BFRES.Mesh> selected = new SortedList<double, BFRES.Mesh>(new DuplicateKeyComparer<double>());
+            if (BFRES != null)
+            {
+                Vector3 closest = Vector3.Zero;
+                foreach (BFRES.FMDL_Model mdl in BFRES.models)
+                {
+                    foreach (BFRES.Mesh mesh in mdl.poly)
+                    {
+                        BFRES.Mesh.BoundingBox box = mesh.boundingBoxes[0];
+                        if (ray.CheckSphereHit(box.Extent, mesh.radius[0], out closest))
+                            selected.Add(ray.Distance(closest), mesh);
+                    }
+                }
+
             }
             return selected;
         }
@@ -505,4 +637,3 @@ namespace Smash_Forge
 
     }
 }
-

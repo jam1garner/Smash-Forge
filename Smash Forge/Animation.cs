@@ -114,6 +114,7 @@ namespace Smash_Forge
                              "Source Animation (.smd)|*.smd|" +
                              "All Files (*.*)|*.*";
 
+                sfd.DefaultExt = "smd"; //Set a default extension to prevent crashing if not specified by user
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     sfd.FileName = sfd.FileName;
@@ -450,6 +451,15 @@ namespace Smash_Forge
                         if (((ModelContainer)skeleton.Parent).NUD != null)
                         {
                             ((ModelContainer)skeleton.Parent).NUD.ApplyMta(((MTA)child), (int)Frame);
+                        }
+                    }
+                }
+                if (child is BFRES.MTA) //For BFRES
+                {
+                    {
+                        if (((ModelContainer)skeleton.Parent).BFRES != null)
+                        {
+                            ((ModelContainer)skeleton.Parent).BFRES.ApplyMta(((BFRES.MTA)child), (int)Frame);
                         }
                     }
                 }

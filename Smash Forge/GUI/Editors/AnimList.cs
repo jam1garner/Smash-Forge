@@ -36,6 +36,14 @@ namespace Smash_Forge
             exportAll.Click += exportAllAsOMOToolStripMenuItem_Click;
             m.MenuItems.Add(exportAll);
 
+            MenuItem exportAllSMD = new MenuItem("Export All as SMD");
+            exportAllSMD.Click += exportAllAsSMDToolStripMenuItem_Click;
+            m.MenuItems.Add(exportAllSMD);
+
+            MenuItem exportAllAnim = new MenuItem("Export All as ANIM");
+            exportAllAnim.Click += exportAllAsANIMToolStripMenuItem_Click;
+            m.MenuItems.Add(exportAllAnim);
+
             MenuItem createAG = new MenuItem("Create Animation Group");
             createAG.Click += createAnimationGroupToolStripMenuItem_Click;
             m.MenuItems.Add(createAG);
@@ -224,6 +232,38 @@ namespace Smash_Forge
                 }
 
             }
+            if (e.Node is BFRES.MTA) //For BFRES
+            {
+                ((ModelViewport)Parent).CurrentBFRESMaterialAnimation = (BFRES.MTA)e.Node;
+
+                Queue<TreeNode> NodeQueue = new Queue<TreeNode>();
+                foreach (TreeNode n in treeView1.Nodes)
+                {
+                    NodeQueue.Enqueue(n);
+                }
+                while (NodeQueue.Count > 0)
+                {
+                    TreeNode n = NodeQueue.Dequeue();
+
+                    if (n is AnimationGroupNode)
+                    {
+                        foreach (TreeNode tn in n.Nodes)
+                            NodeQueue.Enqueue(tn);
+                    }
+                }
+                foreach (TreeNode node in ((ModelViewport)Parent).draw)
+                {
+                    if (node is ModelContainer)
+                    {
+                        ModelContainer con = (ModelContainer)node;
+                        if (con.BFRES != null && con.BFRES_MTA != null)
+                        {
+                            con.BFRES.ApplyMta(con.BFRES_MTA, 0);
+                        }
+                    }
+                }
+            }
+
         }
 
         private void treeView1_DoubleClick(object sender, EventArgs e)
@@ -243,6 +283,10 @@ namespace Smash_Forge
             if (treeView1.SelectedNode is MTA)
             {
                 ((MTA)treeView1.SelectedNode).ExpandNodes();
+            }
+            if (treeView1.SelectedNode is BFRES.MTA)
+            {
+                ((BFRES.MTA)treeView1.SelectedNode).ExpandNodes();
             }
         }
 
@@ -274,8 +318,64 @@ namespace Smash_Forge
 
                     foreach (TreeNode v in treeView1.Nodes)
                     {
-                        if (v is Animation)
-                            OMOOld.createOMO(((Animation)v), Runtime.TargetVBN, path + "\\" + v.Text + ".omo");
+                        foreach (TreeNode a in v.Nodes)
+                        {
+                            if (a is Animation)
+                                OMOOld.createOMO(((Animation)a), Runtime.TargetVBN, path + "\\" + a.Text + ".omo");
+                        }        
+                    }
+                }
+            }
+        }
+        private void exportAllAsSMDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new FolderSelectDialog())
+            {
+                ofd.Title = "Character Folder";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string path = ofd.SelectedPath;
+                    foreach (TreeNode b in treeView1.Nodes)
+                    {
+                        foreach (TreeNode v in b.Nodes)
+                        {
+                            foreach (TreeNode f in v.Nodes)
+                            {
+                                foreach (TreeNode a in f.Nodes)
+                                {
+                                    if (a is Animation)
+                                    {
+                                        SMD.Save(((Animation)a), Runtime.TargetVBN, path + "\\" + a.Text + ".smd");
+                                    }
+                                }
+                            }
+                        }
+                    }           
+                }
+            }
+        }
+
+        private void exportAllAsANIMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new FolderSelectDialog())
+            {
+                ofd.Title = "Character Folder";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string path = ofd.SelectedPath;
+                    foreach (TreeNode b in treeView1.Nodes)
+                    {
+                        foreach (TreeNode v in b.Nodes)
+                        {
+                            foreach (TreeNode f in v.Nodes)
+                            {
+                                foreach (TreeNode a in f.Nodes)
+                                {
+                                    if (a is Animation)
+                                        ANIM.CreateANIM(path + "\\" + a.Text + ".anim", ((Animation)a), Runtime.TargetVBN);
+                                }
+                            }
+                        }
                     }
                 }
             }

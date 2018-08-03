@@ -13,6 +13,8 @@ namespace Smash_Forge
     {
         public VBN vbnParent;
         public UInt32 boneType;
+        public UInt32 boneRotationType;
+        public bool IsInverted = true;
 
         public enum BoneType
         {
@@ -21,6 +23,13 @@ namespace Smash_Forge
             Helper,
             Swing
         }
+
+        public enum BoneRotationType
+        {
+            Euler,
+            Quaternion,
+        }
+
 
         public UInt32 boneId;
         public float[] position = new float[] { 0, 0, 0 };
@@ -103,7 +112,7 @@ namespace Smash_Forge
             else
                 GL.Color3(Color.GreenYellow);
 
-            Rendering.RenderTools.DrawCube(pos_c, .1f);
+            Rendering.RenderTools.DrawCube(pos_c, Runtime.RenderBoneNodeSize);
 
             // now draw line between parent
             GL.Color3(Color.LightBlue);
@@ -440,6 +449,24 @@ namespace Smash_Forge
                 queueBones(c, q);
         }
 
+        
+        public static Quaternion FromQuaternionAngles(float z, float y, float x, float w)
+        {
+            {
+                Quaternion q = new Quaternion();
+                q.X = x;
+                q.Y = y;
+                q.Z = z;
+                q.W = w;
+                
+                if (q.W < 0)
+                    q *= -1;
+
+                //return xRotation * yRotation * zRotation;
+                return q;
+            }
+        }
+
         public static Quaternion FromEulerAngles(float z, float y, float x)
         {
             {
@@ -528,7 +555,15 @@ namespace Smash_Forge
             for (int i = 0; i < bones.Count; i++)
             {
                 bones[i].pos = new Vector3(bones[i].position[0], bones[i].position[1], bones[i].position[2]);
-                bones[i].rot = (FromEulerAngles(bones[i].rotation[2], bones[i].rotation[1], bones[i].rotation[0]));
+
+                if (bones[i].boneRotationType == 1)
+                {
+                    bones[i].rot = (FromQuaternionAngles(bones[i].rotation[2], bones[i].rotation[1], bones[i].rotation[0], bones[i].rotation[3]));
+                }
+                else
+                {
+                    bones[i].rot = (FromEulerAngles(bones[i].rotation[2], bones[i].rotation[1], bones[i].rotation[0]));
+                }
                 bones[i].sca = new Vector3(bones[i].scale[0], bones[i].scale[1], bones[i].scale[2]);
             }
             update(true);
@@ -851,7 +886,7 @@ namespace Smash_Forge
 
                 for (int i = 0; i < bones.Count; i++)
                 {
-                    bonemat[i] = bones[i].invert * bones[i].transform;
+                     bonemat[i] = bones[i].invert * bones[i].transform;
                     //bonematIT[i] = bones[i].invert * bones[i].transform;
                     //bonematIT[i].Invert();
                     //bonematIT[i].Transpose();
@@ -859,6 +894,29 @@ namespace Smash_Forge
             }
 
             return bonemat;
+        }
+
+        public Matrix4[] bonemat2 = { };
+
+        public Matrix4[] getShaderMatrixSingleBinded()
+        {
+            Updated = true;
+            if (Updated)
+            {
+                Updated = false;
+                if (bonemat2.Length != bones.Count)
+                    bonemat2 = new Matrix4[bones.Count];
+
+                for (int i = 0; i < bones.Count; i++)
+                {
+                    bonemat2[i] = bones[i].transform;
+                    //bonematIT[i] = bones[i].invert * bones[i].transform;
+                    //bonematIT[i].Invert();
+                    //bonematIT[i].Transpose();
+                }
+            }
+
+            return bonemat2;
         }
 
         private static string charsToString(char[] c)

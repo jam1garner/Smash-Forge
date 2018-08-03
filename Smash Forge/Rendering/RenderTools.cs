@@ -18,7 +18,7 @@ namespace Smash_Forge.Rendering
         public static Texture floorTexture;
         public static Texture backgroundTexture;
 
-        public static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>(); 
+        public static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
 
         public static Texture uvTestPattern;
         public static Texture boneWeightGradient;
@@ -87,7 +87,7 @@ namespace Smash_Forge.Rendering
                 Vector3 p2 = Vector3.TransformPosition(center + new Vector3(0, 5, 0), view).Normalized();
 
                 // check if mouse is within range
-                
+
             }
 
             GL.Color3(Color.Green);
@@ -290,7 +290,7 @@ namespace Smash_Forge.Rendering
             GL.Clear(ClearBufferMask.StencilBufferBit);
             GL.ColorMask(false, false, false, false);
 
-               drawSphereTransformed(center, radius, precision, transform);
+            drawSphereTransformed(center, radius, precision, transform);
 
             GL.ColorMask(true, true, true, true);
             GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
@@ -450,7 +450,7 @@ namespace Smash_Forge.Rendering
 
             Vector3 axis = Vector3.Cross(d, yAxis);
             float angle = (float)Math.Acos(Vector3.Dot(d.Normalized(), yAxis));
-            
+
 
             GL.Enable(EnableCap.StencilTest);
 
@@ -502,7 +502,7 @@ namespace Smash_Forge.Rendering
 
             Vector3 axis = Vector3.Cross(d, yAxis);
             float angle = (float)Math.Acos(Vector3.Dot(d.Normalized(), yAxis));
-            
+
             GL.Enable(EnableCap.StencilTest);
 
             GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
@@ -510,7 +510,7 @@ namespace Smash_Forge.Rendering
             GL.Disable(EnableCap.DepthTest);
             GL.Clear(ClearBufferMask.StencilBufferBit);
             GL.ColorMask(false, false, false, false);
-                
+
             drawSphereTransformed(p1, R, 20, transform);
             drawSphereTransformed(p2, R, 20, transform);
 
@@ -528,7 +528,7 @@ namespace Smash_Forge.Rendering
                 GL.Vertex3((float)Math.Cos(j) * R, -height, (float)Math.Sin(j) * R);
             }
             GL.End();
-        
+
             GL.PopMatrix();
 
             GL.ColorMask(true, true, true, true);
@@ -604,71 +604,73 @@ namespace Smash_Forge.Rendering
             GL.Enable(EnableCap.CullFace);
         }
 
-        public static void DrawCylinder(Vector3 p1, Vector3 p2, float R){
+        public static void DrawCylinder(Vector3 p1, Vector3 p2, float R)
+        {
             int q = 8, p = 20;
 
-            Vector3 yAxis = new Vector3 (0, 1, 0);
+            Vector3 yAxis = new Vector3(0, 1, 0);
             Vector3 d = p2 - p1;
-            float height = (float)Math.Sqrt (d.X*d.X + d.Y*d.Y + d.Z*d.Z) / 2;
+            float height = (float)Math.Sqrt(d.X * d.X + d.Y * d.Y + d.Z * d.Z) / 2;
 
             Vector3 mid = (p1 + p2) / 2;
 
-            Vector3 axis = Vector3.Cross (d, yAxis);
-            float angle = (float)Math.Acos (Vector3.Dot(d.Normalized(), yAxis));
+            Vector3 axis = Vector3.Cross(d, yAxis);
+            float angle = (float)Math.Acos(Vector3.Dot(d.Normalized(), yAxis));
 
-            GL.PushMatrix ();
+            GL.PushMatrix();
             GL.Translate(p1);
-            GL.Rotate (-(float)((angle) * (180/Math.PI)), axis);
-            for(int j = 0; j < q; j++)
+            GL.Rotate(-(float)((angle) * (180 / Math.PI)), axis);
+            for (int j = 0; j < q; j++)
             {
                 GL.Begin(PrimitiveType.TriangleStrip);
-                for(int i = 0; i <= p; i++)
+                for (int i = 0; i <= p; i++)
                 {
-                    GL.Vertex3( R * Math.Cos( (float)(j+1)/q * Math.PI/2.0 ) * Math.Cos( 2.0 * (float)i/p * Math.PI ),
-                        -R * Math.Sin( (float)(j+1)/q * Math.PI/2.0 ),
-                        R * Math.Cos( (float)(j+1)/q * Math.PI/2.0 ) * Math.Sin( 2.0 * (float)i/p * Math.PI ) );
-                    GL.Vertex3( R * Math.Cos( (float)j/q * Math.PI/2.0 ) * Math.Cos( 2.0 * (float)i/p * Math.PI ),
-                        -R * Math.Sin( (float)j/q * Math.PI/2.0 ),
-                        R * Math.Cos( (float)j/q * Math.PI/2.0 ) * Math.Sin( 2.0 * (float)i/p * Math.PI ) );         
+                    GL.Vertex3(R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        -R * Math.Sin((float)(j + 1) / q * Math.PI / 2.0),
+                        R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
+                    GL.Vertex3(R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        -R * Math.Sin((float)j / q * Math.PI / 2.0),
+                        R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
                 }
                 GL.End();
             }
-            GL.PopMatrix ();
+            GL.PopMatrix();
 
-            GL.PushMatrix ();
+            GL.PushMatrix();
             GL.Translate(p2);
-            GL.Rotate (-(float)(angle * (180/Math.PI)), axis);
-            for(int j = 0; j < q; j++)
+            GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
+            for (int j = 0; j < q; j++)
             {
                 GL.Begin(PrimitiveType.TriangleStrip);
-                for(int i = 0; i <= p; i++)
+                for (int i = 0; i <= p; i++)
                 {
-                    GL.Vertex3( R * Math.Cos( (float)(j+1)/q * Math.PI/2.0 ) * Math.Cos( 2.0 * (float)i/p * Math.PI ),
-                        R * Math.Sin( (float)(j+1)/q * Math.PI/2.0 ),
-                        R * Math.Cos( (float)(j+1)/q * Math.PI/2.0 ) * Math.Sin( 2.0 * (float)i/p * Math.PI ) );
-                    GL.Vertex3( R * Math.Cos( (float)j/q * Math.PI/2.0 ) * Math.Cos( 2.0 * (float)i/p * Math.PI ),
-                        R * Math.Sin( (float)j/q * Math.PI/2.0 ),
-                        R * Math.Cos( (float)j/q * Math.PI/2.0 ) * Math.Sin( 2.0 * (float)i/p * Math.PI ) );         
+                    GL.Vertex3(R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        R * Math.Sin((float)(j + 1) / q * Math.PI / 2.0),
+                        R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
+                    GL.Vertex3(R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        R * Math.Sin((float)j / q * Math.PI / 2.0),
+                        R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
                 }
                 GL.End();
             }
-            GL.PopMatrix ();
+            GL.PopMatrix();
 
 
             /*  sides */
-            GL.PushMatrix ();
+            GL.PushMatrix();
 
             GL.Translate(mid);
-            GL.Rotate (-(float)(angle * (180/Math.PI)), axis);
+            GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
 
             GL.Begin(PrimitiveType.QuadStrip);
-            for (int j=0;j<=360;j+=1) {
-                GL.Vertex3((float)Math.Cos(j)*R,+height, (float)Math.Sin(j)*R);
-                GL.Vertex3((float)Math.Cos(j)*R,-height, (float)Math.Sin(j)*R);
+            for (int j = 0; j <= 360; j += 1)
+            {
+                GL.Vertex3((float)Math.Cos(j) * R, +height, (float)Math.Sin(j) * R);
+                GL.Vertex3((float)Math.Cos(j) * R, -height, (float)Math.Sin(j) * R);
             }
             GL.End();
 
-            GL.PopMatrix ();
+            GL.PopMatrix();
         }
 
         public static void DrawWireframeCylinder(Vector3 p1, Vector3 p2, float R)
@@ -1016,7 +1018,7 @@ namespace Smash_Forge.Rendering
 
             for (int i = 0; i < smooth; i++)
             {
-                GL.Vertex3(Vector3.TransformPosition(new Vector3(x + pos.X, y + pos.Y, pos.Z),view));
+                GL.Vertex3(Vector3.TransformPosition(new Vector3(x + pos.X, y + pos.Y, pos.Z), view));
                 float tx = -y;
                 float ty = x;
                 x += tx * tf;
@@ -1437,4 +1439,3 @@ namespace Smash_Forge.Rendering
         }
     }
 }
-

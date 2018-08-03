@@ -73,7 +73,8 @@ namespace Smash_Forge
 
         //Animation
         private Animation currentAnimation;
-        public Animation CurrentAnimation {
+        public Animation CurrentAnimation
+        {
             get
             {
                 return currentAnimation;
@@ -85,7 +86,7 @@ namespace Smash_Forge
                 if (MovesetManager != null && acmdScript == null)
                     acmdScript = new ForgeACMDScript(null);
 
-                if(value != null)
+                if (value != null)
                 {
                     string TargetAnimString = value.Text;
                     if (!string.IsNullOrEmpty(TargetAnimString))
@@ -131,6 +132,26 @@ namespace Smash_Forge
             }
         }
 
+        private BFRES.MTA BFRESMaterialAnimation;
+        public BFRES.MTA CurrentBFRESMaterialAnimation
+        {
+            get
+            {
+                return BFRESMaterialAnimation;
+            }
+            set
+            {
+                ResetModels();
+                currentAnimation = null;
+                BFRESMaterialAnimation = value;
+                totalFrame.Value = value.FrameCount;
+                animationTrackBar.TickFrequency = 1;
+                animationTrackBar.SetRange(0, (int)value.FrameCount);
+                currentFrame.Value = 1;
+                currentFrame.Value = 0;
+            }
+        }
+
         // ACMD
         public int scriptId = -1;
         public Dictionary<string, int> paramMoveNameIdMapping;
@@ -147,7 +168,7 @@ namespace Smash_Forge
             set
             {
                 movesetManager = value;
-                if(acmdEditor != null)
+                if (acmdEditor != null)
                     acmdEditor.updateCrcList();
             }
         }
@@ -183,12 +204,34 @@ namespace Smash_Forge
         LVDList lvdList = new LVDList();
         LVDEditor lvdEditor = new LVDEditor();
 
+        public BFRES_MaterialEditor bfresMatEditor = new BFRES_MaterialEditor();
+
+        //Binary YAML. Used in many Wii U/Switch games
+        public BYAML BYAML
+        {
+            get
+            {
+                return byaml;
+            }
+            set
+            {
+                byaml = value;
+                byamlEditor.TargetBYAML = byaml;
+                byamlList.TargetBYAML = byaml;
+                byamlList.fillList();
+            }
+        }
+        private BYAML byaml;
+        BYAMLList byamlList = new BYAMLList();
+        BYAMLEditor byamlEditor = new BYAMLEditor();
+
+
         //Path
         public PathBin pathBin;
-        
+
         // Selection Functions
         public float sx1, sy1;
-        
+
         //Animation Functions
         public int animationSpeed = 60;
         public float frame = 0;
@@ -221,6 +264,19 @@ namespace Smash_Forge
             SetupHitBoxList();
             SetupHurtBoxList();
             SetupVariableViewer();
+
+            bfresMatEditor.Dock = DockStyle.Left;
+            bfresMatEditor.MaximumSize = new Size(500, 2000);
+            AddControl(bfresMatEditor);
+
+            byamlList.Dock = DockStyle.Left;
+            byamlList.MaximumSize = new Size(300, 2000);
+            AddControl(byamlList);
+            byamlList.BYAMLEditor = byamlEditor;
+
+            byamlEditor.Dock = DockStyle.Right;
+            byamlEditor.MaximumSize = new Size(300, 2000);
+            AddControl(byamlEditor);
 
             // This selection mode is the last annoying mode for now.
             // It doesn't really do anything.
@@ -297,6 +353,15 @@ namespace Smash_Forge
             meshList.MaximumSize = new Size(300, 2000);
             meshList.Size = new Size(300, 2000);
             AddControl(meshList);
+        }
+
+        public void bfresOpenMats(BFRES.Mesh poly, string name)
+        {
+            ViewComboBox.SelectedItem = "BFRES Material Editor";
+
+            bfresMatEditor.LoadMaterial(poly);
+            bfresMatEditor.Text = name;
+            bfresMatEditor.Show();
         }
 
         private void SetupBuffersAndTextures()
@@ -528,7 +593,7 @@ namespace Smash_Forge
                         if (polyColor == pickedColor)
                             return p;
                     }
-                }         
+                }
             }
 
             return null;
@@ -624,7 +689,17 @@ namespace Smash_Forge
                     m.NUD.ApplyMta(currentMaterialAnimation, frameNum);
                 }
             }
-            
+
+            if (BFRESMaterialAnimation != null)
+            {
+                foreach (TreeNode node in meshList.filesTreeView.Nodes)
+                {
+                    if (!(node is ModelContainer)) continue;
+                    ModelContainer m = (ModelContainer)node;
+                    m.BFRES.ApplyMta(BFRESMaterialAnimation, frameNum);
+                }
+            }
+
             if (currentAnimation == null) return;
 
             // Process script first in case we have to speed up the animation
@@ -634,7 +709,7 @@ namespace Smash_Forge
             float animFrameNum = frameNum;
             if (acmdScript != null && Runtime.useFrameDuration)
                 animFrameNum = acmdScript.animationFrame;// - 1;
-            
+
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer)) continue;
@@ -680,9 +755,21 @@ namespace Smash_Forge
                 {
                     m.DatMelee.bones.reset();
                 }
+
                 if (m.BCH != null)
                 {
                     foreach (BCH_Model mod in m.BCH.Models.Nodes)
+                    {
+                        if (mod.skeleton != null)
+                        {
+                            mod.skeleton.reset();
+                        }
+                    }
+                }
+
+                if (m.BFRES != null)
+                {
+                    foreach (var mod in m.bfres.models)
                     {
                         if (mod.skeleton != null)
                         {
@@ -736,6 +823,10 @@ namespace Smash_Forge
             else if (meshList.filesTreeView.SelectedNode is ModelContainer)
             {
                 FrameSelectedModelContainer();
+            }
+            else if (meshList.filesTreeView.SelectedNode is BFRES)
+            {
+                FrameSelectedBfres();
             }
             else
             {
@@ -797,6 +888,37 @@ namespace Smash_Forge
             float[] boundingSphere = nud.boundingSphere;
             camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
+        }
+
+        private void FrameSelectedBfres()
+        {
+            Console.WriteLine("BFRES selected");
+            BFRES bfres = (BFRES)meshList.filesTreeView.SelectedNode;
+
+            List<float> X = new List<float>();
+            List<float> Y = new List<float>();
+            List<float> Z = new List<float>();
+            List<float> Radius = new List<float>();
+
+            foreach (BFRES.FMDL_Model mdl in bfres.models)
+            {
+                foreach (BFRES.Mesh msh in mdl.poly)
+                {
+                    X.Add(msh.boundingBoxes[0].Center.X);
+                    Y.Add(msh.boundingBoxes[0].Center.Y);
+                    Z.Add(msh.boundingBoxes[0].Center.Z);
+
+                    Radius.Add(msh.radius[0]);
+                }
+            }
+
+            X.Sort();
+            Y.Sort();
+            Z.Sort();
+            Radius.Sort();
+
+            camera.FrameBoundingSphere(new Vector3(X[X.Count - 1], Y[Y.Count - 1], Z[Z.Count - 1]), Radius[Radius.Count - 1]);
+            camera.UpdateMatrices();
         }
 
         private void FrameSelectedPolygon()
@@ -944,7 +1066,7 @@ namespace Smash_Forge
 
         private void CameraSettings_Click(object sender, EventArgs e)
         {
-            if(cameraPosForm == null)
+            if (cameraPosForm == null)
                 cameraPosForm = new GUI.Menus.CameraSettings(camera);
             cameraPosForm.ShowDialog();
         }
@@ -1128,7 +1250,7 @@ namespace Smash_Forge
             ScaleFactor = settings.ScaleFactor;
 
             int cFrame = (int)currentFrame.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
-                                                    //Disable controls
+                                                  //Disable controls
             this.Enabled = false;
 
             for (int i = settings.StartFrame; i <= settings.EndFrame + 1; i++)
@@ -1206,7 +1328,7 @@ namespace Smash_Forge
 
         private void prevButton_Click(object sender, EventArgs e)
         {
-            if(currentFrame.Value != 0)
+            if (currentFrame.Value != 0)
                 currentFrame.Value--;
         }
 
@@ -1240,16 +1362,17 @@ namespace Smash_Forge
         {
             SaveScreenRender(false);
         }
-        
+
         private void totalFrame_ValueChanged(object sender, EventArgs e)
         {
             if (currentAnimation == null) return;
-            if(totalFrame.Value < 1)
+            if (totalFrame.Value < 1)
             {
                 totalFrame.Value = 1;
-            }else
+            }
+            else
             {
-                if(currentAnimation.Tag is Animation)
+                if (currentAnimation.Tag is Animation)
                     ((Animation)currentAnimation.Tag).FrameCount = (int)totalFrame.Value;
                 currentAnimation.FrameCount = (int)totalFrame.Value;
                 animationTrackBar.Value = 0;
@@ -1367,7 +1490,7 @@ namespace Smash_Forge
 
         private void glViewport_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void glViewport_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -1410,6 +1533,16 @@ namespace Smash_Forge
                 {
                     DrawNutTex();
                     glViewport.SwapBuffers();
+                    return;
+                }
+                if (meshList.filesTreeView.SelectedNode is BRTI)
+                {
+                    DrawBNTXTexAndUvs();
+                    return;
+                }
+                if (meshList.filesTreeView.SelectedNode is FTEX)
+                {
+                    DrawFTEXTexAndUvs();
                     return;
                 }
             }
@@ -1501,14 +1634,14 @@ namespace Smash_Forge
             for (int i = 1; i < count; i++)
             {
                 // Identical speeds to fixed function pipeline for small scale values.
-                cubeMesh.Draw(camera.MvpMatrix);               
+                cubeMesh.Draw(camera.MvpMatrix);
                 //GL.Begin(PrimitiveType.TriangleStrip);
                 //foreach (Vector3 vert in vertices)
                 //{
                 //    GL.Vertex3(vert * 15);
                 //}
                 //GL.End();
-                
+
             }
             stopwatch.Stop();
 
@@ -1836,6 +1969,28 @@ namespace Smash_Forge
             return outputPath;
         }
 
+        private void DrawBNTXTexAndUvs()
+        {
+            GL.PopAttrib();
+            BRTI tex = ((BRTI)meshList.filesTreeView.SelectedNode);
+            switch (tex.format >> 8)
+            {
+                case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC4:
+                    {
+                        ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, false, false);
+                    }
+                    break;
+                default:
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+                    break;
+            }
+
+            if (Runtime.drawUv)
+                DrawNSWBFRESUvsForSelectedTexture(tex);
+
+            glViewport.SwapBuffers();
+        }
+
         private void DrawNutTex()
         {
             GL.PopAttrib();
@@ -1850,6 +2005,30 @@ namespace Smash_Forge
             ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
         }
 
+        private void DrawFTEXTexAndUvs()
+        {
+            GL.PopAttrib();
+
+            FTEX tex = ((FTEX)meshList.filesTreeView.SelectedNode);
+            switch (tex.format)
+            {
+                case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM:
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
+                    break;
+                case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM:
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
+                    break;
+                default:
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height);
+                    break;
+            }
+
+            if (Runtime.drawUv)
+                DrawBFRESUvsForSelectedTexture(tex);
+
+            glViewport.SwapBuffers();
+        }
+
         private void DrawAreaLightBoundingBoxes()
         {
             foreach (AreaLight light in LightTools.areaLights)
@@ -1858,6 +2037,36 @@ namespace Smash_Forge
 
                 RenderTools.DrawRectangularPrism(new Vector3(light.positionX, light.positionY, light.positionZ),
                     light.scaleX, light.scaleY, light.scaleZ, true);
+            }
+        }
+
+        private void DrawNSWBFRESUvsForSelectedTexture(BRTI tex)
+        {
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
+            {
+                if (!(node is ModelContainer))
+                    continue;
+
+                ModelContainer m = (ModelContainer)node;
+
+                int textureHash = 0;
+                int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
+                //   RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.Text, tex.display, 4, Color.Red, 1, Color.White);
+            }
+        }
+
+        private void DrawBFRESUvsForSelectedTexture(FTEX tex)
+        {
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
+            {
+                if (!(node is ModelContainer))
+                    continue;
+
+                ModelContainer m = (ModelContainer)node;
+
+                int textureHash = 0;
+                int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
+                //       RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.Text, tex.display, 4, Color.Red, 1, Color.White);
             }
         }
 

@@ -39,6 +39,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Octokit, Version=0.29.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Forge Updater\Octokit.dll</HintPath>
@@ -47,9 +51,31 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\OpenTK.dll</HintPath>
     </Reference>
-    <Reference Include="SFGraphics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="SFGraphics">
       <HintPath>lib\SFGraphics.dll</HintPath>
+    </Reference>
+    <Reference Include="Syroot.BinaryData, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Syroot.BinaryData.dll</HintPath>
+    </Reference>
+    <Reference Include="Syroot.Maths, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Syroot.Maths.dll</HintPath>
+    </Reference>
+    <Reference Include="Syroot.NintenTools.Bfres, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Syroot.NintenTools.Bfres.dll</HintPath>
+    </Reference>
+    <Reference Include="Syroot.NintenTools.MarioKart8">
+      <HintPath>lib\Syroot.NintenTools.MarioKart8.dll</HintPath>
+    </Reference>
+    <Reference Include="Syroot.NintenTools.NSW.Bfres, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Syroot.NintenTools.NSW.Bfres.dll</HintPath>
+    </Reference>
+    <Reference Include="Syroot.NintenTools.Yaz0, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Syroot.NintenTools.Yaz0.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -74,6 +100,7 @@
     <Reference Include="WeifenLuo.WinFormsUI.Docking">
       <HintPath>WeifenLuo.WinFormsUI.Docking.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ACMDScript.cs" />
@@ -82,10 +109,8 @@
     <Compile Include="Filetypes\Application\Config.cs" />
     <Compile Include="DiscordSettings.cs" />
     <Compile Include="Filetypes\Animation\BCHan.cs" />
-    <Compile Include="Filetypes\Animation\LIGH.cs" />
     <Compile Include="Filetypes\Animation\OMO.cs" />
-    <Compile Include="Filetypes\Animation\PATH.cs" />
-    <Compile Include="Filetypes\Application\MaterialXmlBatchExport.cs" />
+    <Compile Include="Filetypes\Application\MaterialXMLBatchExport.cs" />
     <Compile Include="Filetypes\ATKD.cs" />
     <Compile Include="Filetypes\BCH\BCH_Animation.cs" />
     <Compile Include="Filetypes\BCH\BCH_Main.cs" />
@@ -93,8 +118,39 @@
     <Compile Include="Filetypes\BCH\BCH_Texture.cs" />
     <Compile Include="Filetypes\BCH\PatriciaTree.cs" />
     <Compile Include="Filetypes\BCH\_3DSGPU.cs" />
+    <Compile Include="Filetypes\BFRES\BFRES_Main.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\BFRES_NSW.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\BNTX.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\DDS_Decompress.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\Exporter_BFRES_XML.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\FSHA.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\FSKA.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\FVIS.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\FMAA.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\Swizzle.cs" />
+    <Compile Include="Filetypes\BFRES\WiiU\BFRES_WiiU.cs" />
+    <Compile Include="Filetypes\BFRES\WiiU\FTEX.cs" />
+    <Compile Include="Filetypes\BFRES\WiiU\FSHU.cs" />
+    <Compile Include="Filetypes\BFRES\WiiU\FTXP.cs" />
+    <Compile Include="Filetypes\BYAML\BYAML.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\ByamlException.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\ByamlNodeType.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\ByamlPathPoint.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\Dynamic\ByamlFile.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\IO\BinaryDataReaderExtensions.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\IO\BinaryDataWriterExtensions.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\Serialization\ByamlMemberAttribute.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\Serialization\ByamlMemberInfo.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\Serialization\ByamlObjectAttribute.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\Serialization\ByamlObjectInfo.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\Serialization\ByamlSerializer.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\Serialization\ByamlSerializerSettings.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\Serialization\IByamlSerializable.cs" />
+    <Compile Include="Filetypes\BYAML\LIB\Serialization\TypeInfoExtensions.cs" />
     <Compile Include="Filetypes\DRP.cs" />
+    <Compile Include="Filetypes\KCL\KCL.cs" />
     <Compile Include="Filetypes\Application\MaterialXML.cs" />
+    <Compile Include="Filetypes\MaterialParamTools.cs" />
     <Compile Include="Filetypes\Melee\DAT.cs" />
     <Compile Include="Filetypes\Melee\DAT_Animation.cs" />
     <Compile Include="Filetypes\LVD.cs" />
@@ -108,14 +164,29 @@
     <Compile Include="Filetypes\Models\OBJ.cs" />
     <Compile Include="Filetypes\Models\Skapon.cs" />
     <Compile Include="Filetypes\PAC.cs" />
-    <Compile Include="Filetypes\Params\LightSetParam.cs" />
-    <Compile Include="Filetypes\Params\ParamTools.cs" />
+    <Compile Include="Filetypes\Animation\PATH.cs" />
+    <Compile Include="Filetypes\Animation\LIGH.cs" />
+    <Compile Include="Filetypes\Models\Params\LightSetParam.cs" />
+    <Compile Include="Filetypes\Models\Params\ParamTools.cs" />
+    <Compile Include="Filetypes\SARC.cs" />
     <Compile Include="Filetypes\Sounds\NUS3BANK.cs" />
-    <Compile Include="Filetypes\Sounds\SQB.cs" />
     <Compile Include="Filetypes\Sounds\VGMStreamNative.cs" />
     <Compile Include="Filetypes\Sounds\WAVE.cs" />
     <Compile Include="Filetypes\Textures\3DSTex.cs" />
     <Compile Include="Filetypes\Textures\RG_ETC1.cs" />
+    <Compile Include="Filetypes\Yaz0.cs" />
+    <Compile Include="GUI\Editors\BFRES Editors\BNTXMaterialTextureEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\BNTXMaterialTextureEditor.Designer.cs">
+      <DependentUpon>BNTXMaterialTextureEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\BFRES_Loaders\OdysseyCostumeLoader.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\BFRES_Loaders\OdysseyCostumeLoader.Designer.cs">
+      <DependentUpon>OdysseyCostumeLoader.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Controls\MeshMover.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -128,6 +199,70 @@
     </Compile>
     <Compile Include="GUI\Controls\VertexTool.Designer.cs">
       <DependentUpon>VertexTool.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\BFRES_MaterialEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\BFRES_MaterialEditor.Designer.cs">
+      <DependentUpon>BFRES_MaterialEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\BFRES_MeshEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\BFRES_MeshEditor.Designer.cs">
+      <DependentUpon>BFRES_MeshEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\BNTX_TextureList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\BNTX_TextureList.Designer.cs" />
+    <Compile Include="GUI\Editors\BFRES Editors\ImportTexture.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\ImportTexture.Designer.cs">
+      <DependentUpon>ImportTexture.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\MeshBoneList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\MeshBoneList.Designer.cs">
+      <DependentUpon>MeshBoneList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\BufferList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\BufferList.Designer.cs">
+      <DependentUpon>BufferList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\FSKLTree.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BFRES Editors\FSKLTree.Designer.cs">
+      <DependentUpon>FSKLTree.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BNTXEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BNTXEditor.Designer.cs">
+      <DependentUpon>BNTXEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BYAML Editor\BYAMLEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BYAML Editor\BYAMLEditor.Designer.cs">
+      <DependentUpon>BYAMLEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\BYAML Editor\BYAMLList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\BYAML Editor\BYAMLList.Designer.cs">
+      <DependentUpon>BYAMLList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Menus\OdysseyCostumeSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\OdysseyCostumeSelector.Designer.cs">
+      <DependentUpon>OdysseyCostumeSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Menus\TextureSelector.cs">
       <SubType>Form</SubType>
@@ -146,6 +281,12 @@
     </Compile>
     <Compile Include="GUI\Menus\XmbViewer.Designer.cs">
       <DependentUpon>XmbViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Menus\PolygonFormatEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Menus\PolygonFormatEditor.Designer.cs">
+      <DependentUpon>PolygonFormatEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="lib\DiscordController.cs" />
     <Compile Include="lib\DiscordRpc.cs" />
@@ -438,12 +579,6 @@
     <Compile Include="GUI\Menus\TexIDSelector.Designer.cs">
       <DependentUpon>TexIDSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Menus\PolygonFormatEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="GUI\Menus\PolygonFormatEditor.Designer.cs">
-      <DependentUpon>PolygonFormatEditor.cs</DependentUpon>
-    </Compile>
     <Compile Include="GUI\Menus\PolygonSelector.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -480,7 +615,6 @@
     </Compile>
     <Compile Include="IO\FileBase.cs" />
     <Compile Include="lib\NintacoAPI.cs" />
-    <Compile Include="Filetypes\Params\MaterialParamTools.cs" />
     <Compile Include="MovesetManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -490,8 +624,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Drawing\MaterialPreviewRendering.cs" />
     <Compile Include="Rendering\Drawing\NudMatSphereDrawing.cs" />
-    <Compile Include="Rendering\Drawing\ScreenDrawing.cs" />
+    <Compile Include="Rendering\Drawing\NudUvRendering.cs" />
     <Compile Include="Rendering\ForgeCamera.cs" />
     <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
@@ -500,16 +635,24 @@
     <Compile Include="Rendering\Lights\LightColor.cs" />
     <Compile Include="Rendering\Lights\LightMap.cs" />
     <Compile Include="Rendering\Lights\LightTools.cs" />
-    <Compile Include="Rendering\Drawing\MaterialPreviewRendering.cs" />
     <Compile Include="Rendering\Mesh3D.cs" />
     <Compile Include="Rendering\OpenTKSharedResources.cs" />
     <Compile Include="Rendering\Ray.cs" />
+    <Compile Include="Rendering\Drawing\ScreenDrawing.cs" />
     <Compile Include="Rendering\Shader\ShaderTools.cs" />
-    <Compile Include="Rendering\Drawing\NudUvRendering.cs" />
     <Compile Include="Rendering\Drawing\ShapeDrawing.cs" />
     <Compile Include="Rendering\Drawing\TextureToBitmap.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BFRES_MeshEditor.resx">
+      <DependentUpon>BFRES_MeshEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BNTXMaterialTextureEditor.resx">
+      <DependentUpon>BNTXMaterialTextureEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\BFRES_Loaders\OdysseyCostumeLoader.resx">
+      <DependentUpon>OdysseyCostumeLoader.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Controls\MeshMover.resx">
       <DependentUpon>MeshMover.cs</DependentUpon>
     </EmbeddedResource>
@@ -518,6 +661,25 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\EditorBase.resx">
       <DependentUpon>EditorBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BFRES_MaterialEditor.resx">
+      <DependentUpon>BFRES_MaterialEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BNTX_TextureList.resx" />
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\ImportTexture.resx">
+      <DependentUpon>ImportTexture.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\MeshBoneList.resx">
+      <DependentUpon>MeshBoneList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BufferList.resx">
+      <DependentUpon>BufferList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\FSKLTree.resx">
+      <DependentUpon>FSKLTree.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BNTXEditor.resx">
+      <DependentUpon>BNTXEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\3DS\3DSTexEditor.resx">
       <DependentUpon>3DSTexEditor.cs</DependentUpon>
@@ -539,6 +701,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BoneTree.resx">
       <DependentUpon>BoneTree.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BYAML Editor\BYAMLEditor.resx">
+      <DependentUpon>BYAMLEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\BYAML Editor\BYAMLList.resx">
+      <DependentUpon>BYAMLList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\DatTexEditor.resx">
       <DependentUpon>DatTexEditor.cs</DependentUpon>
@@ -646,11 +814,11 @@
     <EmbeddedResource Include="GUI\Menus\DAEImportSettings.resx">
       <DependentUpon>DAEImportSettings.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\OdysseyCostumeSelector.resx">
+      <DependentUpon>OdysseyCostumeSelector.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\TexIDSelector.resx">
       <DependentUpon>TexIDSelector.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Menus\PolygonFormatEditor.resx">
-      <DependentUpon>PolygonFormatEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\PolygonSelector.resx">
       <DependentUpon>PolygonSelector.cs</DependentUpon>
@@ -666,6 +834,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\XmbViewer.resx">
       <DependentUpon>XmbViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Menus\PolygonFormatEditor.resx">
+      <DependentUpon>PolygonFormatEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\ModelViewport.resx">
       <DependentUpon>ModelViewport.cs</DependentUpon>
@@ -795,6 +966,9 @@
     <None Include="lib\Shader\Utility\Wireframe.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="lib\Shader\BFRES_PBR.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="lib\Skapon.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -912,9 +1086,6 @@
     <None Include="param_labels\crazy_side_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="param_labels\equipment_param.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="param_labels\event_param.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -934,9 +1105,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\fighter_param_vl_pikachu.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="param_labels\fighter_param_vl_sheik.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\fighter_param_vl_xxx.ini">
@@ -979,9 +1147,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\simple_character_db_cafe.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="param_labels\sq_vs_melee_data.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\stage_param.ini">
@@ -1056,9 +1221,6 @@
     <None Include="param_labels\ui_character_db.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="param_labels\ui_cleargetter_db.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="param_labels\ui_figure_db.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -1068,25 +1230,16 @@
     <None Include="param_labels\ui_movie_db.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="param_labels\ui_skill_db.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="param_labels\ui_soft_db.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\ui_sound_call_voice_db.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="param_labels\ui_sound_db.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="param_labels\ui_stage_db.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\ui_tips_db.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="param_labels\unlock_condition_of_fighters.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="param_labels\worldsmash_param.ini">
@@ -1141,6 +1294,9 @@
     <Content Include="lib\libvorbis.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="lib\Newtonsoft.Json.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\Octokit.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1150,8 +1306,6 @@
     <Content Include="lib\SALT.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\uv.png" />
-    <None Include="Resources\tan.png" />
     <None Include="Resources\_10100000.png" />
     <None Include="Resources\_10040001.png" />
     <None Include="Resources\_10040000.png" />
@@ -1174,15 +1328,46 @@
     <None Include="Preview Images\Stage.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="lib\Shader\BFRES.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\BFRES.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\BFRES_PBR.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="lib\SFGraphics.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="lib\Shader\KCL.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="lib\Shader\KCL.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="lib\Syroot.BinaryData.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Syroot.Maths.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Syroot.NintenTools.Bfres.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Syroot.NintenTools.MarioKart8.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Syroot.NintenTools.NSW.Bfres.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\Syroot.NintenTools.Yaz0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\10080000.png" />
     <None Include="Resources\boneWeightGradient.png" />
     <None Include="Resources\Flat Folder icon.png" />
     <None Include="Resources\boneWeightGradient2.png" />
-    <None Include="Resources\bitan.png" />
-    <None Include="Resources\defaultDif.png" />
     <Content Include="Resources\forge.ico" />
     <Content Include="lib\FITC.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1213,18 +1398,22 @@
     <None Include="Resources\ForgeBack.png" />
     <None Include="Resources\icon_info.png" />
     <None Include="Resources\icon_number.png" />
-    <None Include="Resources\nrm.png" />
-    <None Include="Resources\nrmMap.png" />
+    <None Include="Resources\icon_model1.png" />
+    <None Include="Resources\icon_model2.png" />
+    <None Include="Resources\icon_bfres.bmp" />
     <Content Include="Resources\sexy_green_down_arrow.png" />
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="GUI\Editors\2D\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>del *.dll
 del *.pdb</PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
