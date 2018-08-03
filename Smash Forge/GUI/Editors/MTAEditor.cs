@@ -14,13 +14,13 @@ namespace Smash_Forge
 {
     public partial class MTAEditor : EditorBase
     {
-        public MTAEditor(MTA Mta)
+        public MTA mta;
+
+        public MTAEditor(MTA mta)
         {
             InitializeComponent();
-            mta = Mta;
+            this.mta = mta;
         }
-
-        public MTA mta;
 
         private void MTAEditor_Load(object sender, EventArgs e)
         {
@@ -60,38 +60,20 @@ namespace Smash_Forge
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void compileButton_Click(object sender, EventArgs e)
         {
-            //try
-            //{
-            /*mta = new MTA();
-            mta.Compile(new List<string>(richTextBox1.Text.Split('\n')));
-            using (var sfd = new SaveFileDialog())
-            {
-                sfd.Filter = "Material Animation (.mta)|*.mta|" +
-                                "All Files (*.*)|*.*";
-                    
-                if(sfd.ShowDialog() == DialogResult.OK)
-                {
-                    File.WriteAllBytes(sfd.FileName,mta.Rebuild());
-                }
-            }*/
-            //}
-            /*catch (Exception ex)
-            {
-                throw;
-                Console.WriteLine(ex.ToString());
-                MessageBox.Show("Failed to build MTA, make sure your formatting is correct", "MTA Build Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }*/
             mta.Compile(new List<string>(richTextBox1.Text.Split('\n')));
             richTextBox1.Text = mta.Decompile();
-            //Close();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void loadViewportButton_Click(object sender, EventArgs e)
         {
+            // Compile the MTA just in case and load into the active viewport.
             mta = new MTA();
             mta.Compile(new List<string>(richTextBox1.Text.Split('\n')));
+            ModelViewport modelViewport = (ModelViewport)MainForm.Instance.GetActiveModelViewport();
+            if (modelViewport != null)
+                modelViewport.CurrentMaterialAnimation = mta;
         }
     }
 }

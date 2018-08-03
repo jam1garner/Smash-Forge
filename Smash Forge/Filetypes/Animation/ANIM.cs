@@ -6,86 +6,122 @@ using System.Windows.Forms;
 
 namespace Smash_Forge
 {
-	public class ANIM
-	{
+    public class ANIM
+    {
+        private class AnimHeader
+        {
+            public string animVersion;
+            public string mayaVersion;
+            public float startTime;
+            public float endTime;
+            public float startUnitless;
+            public float endUnitless;
+            public string timeUnit;
+            public string linearUnit;
+            public string angularUnit;
 
-		private class AnimKey{
-			public float input, output;
-			public string intan, outtan;
-			public float t1 = 0, w1 = 1;
-		}
+            public AnimHeader()
+            {
+                animVersion = "1.1";
+                mayaVersion = "2015";
+                startTime = 0;
+                endTime = 0;
+                startUnitless = 0;
+                endUnitless = 0;
+                timeUnit = "ntscf";
+                linearUnit = "cm";
+                angularUnit = "deg";
+            }
+        }
 
-		private class AnimData{
-			public string type, input, output, preInfinity, postInfinity;
-			public bool weighted = false;
-			public List<AnimKey> keys = new List<AnimKey>();
+        private class AnimKey{
+            public float input, output;
+            public string intan, outtan;
+            public float t1 = 0, w1 = 1;
+        }
 
-			public float getValue(int frame){
-				AnimKey f1 = null, f2 = null;
-				for (int i = 0; i < keys.Count-1; i++) {
-					if ((keys [i].input-1 <= frame && keys [i + 1].input-1 >= frame)) {
-						f1 = keys [i];
-						f2 = keys [i + 1];
-						break;
-					}
-				}
-				if (f1 == null) {
-					if (keys.Count <= 1) {
-						return keys [0].output;
-					} else {
-						f1 = keys [keys.Count - 2];
-						f2 = keys [keys.Count - 1];
-					}
-				}
+        private class AnimData{
+            public string type, input, output, preInfinity, postInfinity;
+            public bool weighted = false;
+            public List<AnimKey> keys = new List<AnimKey>();
 
-				return CHR0.interHermite (frame+1, f1.input, f2.input, weighted ? f1.t1 : 0, weighted ? f2.t1 : 0, f1.output, f2.output);
-			}
-		}
+            public float getValue(int frame){
+                AnimKey f1 = null, f2 = null;
+                for (int i = 0; i < keys.Count-1; i++) {
+                    if ((keys [i].input-1 <= frame && keys [i + 1].input-1 >= frame)) {
+                        f1 = keys [i];
+                        f2 = keys [i + 1];
+                        break;
+                    }
+                }
+                if (f1 == null) {
+                    if (keys.Count <= 1) {
+                        return keys [0].output;
+                    } else {
+                        f1 = keys [keys.Count - 2];
+                        f2 = keys [keys.Count - 1];
+                    }
+                }
 
-		private class AnimBone{
-			public string name;
-			public List<AnimData> atts = new List<AnimData>();
-		}
+                return CHR0.interHermite (frame+1, f1.input, f2.input, weighted ? f1.t1 : 0, weighted ? f2.t1 : 0, f1.output, f2.output);
+            }
+        }
 
-		public static Animation read(string filename, VBN vbn){
-			StreamReader reader = File.OpenText(filename);
-			string line;
+        private class AnimBone{
+            public string name;
+            public List<AnimData> atts = new List<AnimData>();
+        }
 
-			bool isHeader = true;
-
-			string angularUnit, linearUnit, timeUnit;
-			int startTime = 0;
-			int endTime = 0;
-			List<AnimBone> bones = new List<AnimBone>();
-			Animation.KeyNode current = null;
-			Animation.KeyFrame att = new Animation.KeyFrame();
-			bool inKeys = false;
-            string type = "";
-            
+        public static Animation read(string filename, VBN vbn)
+        {
             Animation a = new Animation(filename);
+            Animation.KeyNode current = null;
+            Animation.KeyFrame att = new Animation.KeyFrame();
 
-            while ((line = reader.ReadLine()) != null) {
-				string[] args = line.Replace (";", "").TrimStart().Split (' ');
+            StreamReader reader = File.OpenText(filename);
+            string line;
 
-				if (isHeader) {
-					if (args [0].Equals ("anim"))
-						isHeader = false;
-					else if (args [0].Equals ("angularUnit"))
-						angularUnit = args [1];
-					else if (args [0].Equals ("endTime"))
-						endTime = (int)Math.Ceiling(float.Parse (args [1]));
-					else if (args [0].Equals ("startTime"))
-						startTime = (int)Math.Ceiling(float.Parse (args [1]));
-				}
+            AnimHeader header = new AnimHeader();
+            bool inHeader = true;
+            bool inKeys = false;
+            string type = "";
 
-				if (!isHeader) {
+            while ((line = reader.ReadLine()) != null)
+            {
+                string[] args = line.Replace(";", "").TrimStart().Split(' ');
 
-					if (inKeys) {
-						if(args[0].Equals("}")){
-							inKeys = false;
-							continue;
-						}
-						Animation.KeyFrame k = new Animation.KeyFrame ();
+                if (inHeader)
+                {
+                    if (args[0].Equals("anim"))
+                        inHeader = false;
+                    else if (args[0].Equals("animVersion"))
+                        header.animVersion = args[1];
+                    else if (args[0].Equals("mayaVersion"))
+                        header.mayaVersion = args[1];
+                    else if (args[0].Equals("startTime"))
+                        header.startTime = float.Parse(args[1]);
+                    else if (args[0].Equals("endTime"))
+                        header.endTime = float.Parse(args[1]);
+                    else if (args[0].Equals("startUnitless"))
+                        header.startUnitless = float.Parse(args[1]);
+                    else if (args[0].Equals("endUnitless"))
+                        header.endUnitless = float.Parse(args[1]);
+                    else if (args[0].Equals("timeUnit"))
+                        header.timeUnit = args[1];
+                    else if (args[0].Equals("linearUnit"))
+                        header.linearUnit = args[1];
+                    else if (args[0].Equals("angularUnit"))
+                        header.angularUnit = args[1];
+                }
+                if (!inHeader)
+                {
+                    if (inKeys)
+                    {
+                        if(args[0].Equals("}")){
+                            inKeys = false;
+                            continue;
+                        }
+                        Animation.KeyFrame k = new Animation.KeyFrame ();
                         //att.keys.Add (k);
                         if (type.Contains("translate"))
                         {
@@ -106,7 +142,7 @@ namespace Smash_Forge
                             if (type.Contains("Z")) current.ZSCA.Keys.Add(k);
                         }
                         k.Frame = float.Parse (args [0])-1;
-						k.Value = float.Parse (args [1]);
+                        k.Value = float.Parse (args [1]);
                         if (type.Contains("rotate"))
                         {
                             k.Value *= (float)(Math.PI / 180f);
@@ -120,67 +156,75 @@ namespace Smash_Forge
                         }
                     }
 
-					if (args [0].Equals ("anim")) {
-						inKeys = false;
-						if (args.Length == 5) {
-							//TODO: finish this type
-							// can be name of attribute
-						}
-						if (args.Length == 7) {
-							// see of the bone of this attribute exists
-							current = null;
-							foreach (Animation.KeyNode b in a.Bones)
-								if (b.Text.Equals (args [3])) {
-									current = b;
-									break;
-								}
-							if (current == null) {
-								current = new Animation.KeyNode (args[3]);
+                    if (args [0].Equals ("anim")) {
+                        inKeys = false;
+                        if (args.Length == 5) {
+                            //TODO: finish this type
+                            // can be name of attribute
+                        }
+                        if (args.Length == 7) {
+                            // see of the bone of this attribute exists
+                            current = null;
+                            foreach (Animation.KeyNode b in a.Bones)
+                                if (b.Text.Equals (args [3])) {
+                                    current = b;
+                                    break;
+                                }
+                            if (current == null) {
+                                current = new Animation.KeyNode (args[3]);
                                 current.RotType = Animation.RotationType.EULER;
-								a.Bones.Add (current);
-							}
-							current.Text = args [3];
+                                a.Bones.Add (current);
+                            }
+                            current.Text = args [3];
 
-							att = new Animation.KeyFrame();
+                            att = new Animation.KeyFrame();
                             att.InterType = Animation.InterpolationType.HERMITE;
-							type = args [2];
-							//current.Nodes.Add (att);
+                            type = args [2];
+                            //current.Nodes.Add (att);
 
-							// row child attribute aren't needed here
-						}
-					}
+                            // row child attribute aren't needed here
+                        }
+                    }
 
                     /*if (args [0].Equals ("input"))
-						att.input = args [1];
-					if (args [0].Equals ("output"))
-						att.output = args [1];
-					if (args [0].Equals ("preInfinity"))
-						att.preInfinity = args [1];
-					if (args [0].Equals ("postInfinity"))
-						att.postInfinity = args [1];*/
+                        att.input = args [1];
+                    if (args [0].Equals ("output"))
+                        att.output = args [1];
+                    if (args [0].Equals ("preInfinity"))
+                        att.preInfinity = args [1];
+                    if (args [0].Equals ("postInfinity"))
+                        att.postInfinity = args [1];*/
                     if (args[0].Equals("weighted"))
                         att.Weighted = args[1].Equals("1");
 
 
                     // begining keys section
                     if (args [0].Contains ("keys")) {
-						inKeys = true;
-					}
-				}
-			}
+                        inKeys = true;
+                    }
+                }
+            }
 
-            a.FrameCount = endTime-1;
+            int startTime = (int)Math.Ceiling(header.startTime);
+            int endTime = (int)Math.Ceiling(header.endTime);
+            a.FrameCount = (endTime + 1) - startTime;
 
             reader.Close();
-			return a;
-		}
+            return a;
+        }
 
         public static void CreateANIM(string fname, Animation a, VBN vbn)
         {
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(@fname))
             {
-                file.WriteLine("animVersion 1.1;");
-                file.WriteLine("mayaVersion 2014 x64;\ntimeUnit ntscf;\nlinearUnit cm;\nangularUnit deg;\nstartTime 1;\nendTime " + (a.FrameCount+1) + ";");
+                AnimHeader header = new AnimHeader();
+                file.WriteLine("animVersion " + header.animVersion + ";");
+                file.WriteLine("mayaVersion " + header.mayaVersion + ";");
+                file.WriteLine("timeUnit " + header.timeUnit + ";");
+                file.WriteLine("linearUnit " + header.linearUnit + ";");
+                file.WriteLine("angularUnit " + header.angularUnit + ";");
+                file.WriteLine("startTime " + 1 + ";");
+                file.WriteLine("endTime " + a.FrameCount + ";");
 
                 a.SetFrame(a.FrameCount - 1); //from last frame
                 for (int li = 0; li < a.FrameCount; ++li) //go through each frame with nextFrame
@@ -334,38 +378,38 @@ namespace Smash_Forge
             file.WriteLine(" }");
         }
         public static Vector3 quattoeul(Quaternion q){
-			float sqw = q.W * q.W;
-			float sqx = q.X * q.X;
-			float sqy = q.Y * q.Y;
-			float sqz = q.Z * q.Z;
+            float sqw = q.W * q.W;
+            float sqx = q.X * q.X;
+            float sqy = q.Y * q.Y;
+            float sqz = q.Z * q.Z;
 
-			float normal = (float)Math.Sqrt (sqw + sqx + sqy + sqz);
-			float pole_result = (q.X * q.Z) + (q.Y * q.W);
+            float normal = (float)Math.Sqrt (sqw + sqx + sqy + sqz);
+            float pole_result = (q.X * q.Z) + (q.Y * q.W);
 
-			if (pole_result > (0.5 * normal)){
-				float ry = (float)Math.PI / 2;
-				float rz = 0;
-				float rx = 2 * (float)Math.Atan2(q.X, q.W);
-				return new Vector3(rx, ry, rz);
-			}
-			if (pole_result < (-0.5 * normal)){
-				float ry = (float)Math.PI/2;
-				float rz = 0;
-				float rx = -2 * (float)Math.Atan2(q.X, q.W);
-				return new Vector3(rx, ry, rz);
-			}
+            if (pole_result > (0.5 * normal)){
+                float ry = (float)Math.PI / 2;
+                float rz = 0;
+                float rx = 2 * (float)Math.Atan2(q.X, q.W);
+                return new Vector3(rx, ry, rz);
+            }
+            if (pole_result < (-0.5 * normal)){
+                float ry = (float)Math.PI/2;
+                float rz = 0;
+                float rx = -2 * (float)Math.Atan2(q.X, q.W);
+                return new Vector3(rx, ry, rz);
+            }
 
-			float r11 = 2*(q.X*q.Y + q.W*q.Z);
-			float r12 = sqw + sqx - sqy - sqz;
-			float r21 = -2*(q.X*q.Z - q.W*q.Y);
-			float r31 = 2*(q.Y*q.Z + q.W*q.X);
-			float r32 = sqw - sqx - sqy + sqz;
+            float r11 = 2*(q.X*q.Y + q.W*q.Z);
+            float r12 = sqw + sqx - sqy - sqz;
+            float r21 = -2*(q.X*q.Z - q.W*q.Y);
+            float r31 = 2*(q.Y*q.Z + q.W*q.X);
+            float r32 = sqw - sqx - sqy + sqz;
 
-			float frx = (float)Math.Atan2( r31, r32 );
-			float fry = (float)Math.Asin ( r21 );
-			float frz = (float)Math.Atan2( r11, r12 );
-			return new Vector3(frx, fry, frz);
-		}
-	}
+            float frx = (float)Math.Atan2( r31, r32 );
+            float fry = (float)Math.Asin ( r21 );
+            float frz = (float)Math.Atan2( r11, r12 );
+            return new Vector3(frx, fry, frz);
+        }
+    }
 }
 

@@ -1,49 +1,35 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smash Forge", "Smash Forge\Smash Forge.csproj", "{055E5BC6-BB1B-4F76-8710-9991CA79C04D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Forge Updater", "Forge Updater\Forge Updater.csproj", "{9B2B5E75-6657-4558-95DB-8972C5A81716}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Debug|x64.Build.0 = Debug|Any CPU
-		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Debug|x86.Build.0 = Debug|Any CPU
 		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Release|x64.ActiveCfg = Release|Any CPU
-		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Release|x64.Build.0 = Release|Any CPU
-		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Release|x86.ActiveCfg = Release|Any CPU
-		{055E5BC6-BB1B-4F76-8710-9991CA79C04D}.Release|x86.Build.0 = Release|Any CPU
 		{9B2B5E75-6657-4558-95DB-8972C5A81716}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9B2B5E75-6657-4558-95DB-8972C5A81716}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9B2B5E75-6657-4558-95DB-8972C5A81716}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{9B2B5E75-6657-4558-95DB-8972C5A81716}.Debug|x64.Build.0 = Debug|Any CPU
-		{9B2B5E75-6657-4558-95DB-8972C5A81716}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{9B2B5E75-6657-4558-95DB-8972C5A81716}.Debug|x86.Build.0 = Debug|Any CPU
 		{9B2B5E75-6657-4558-95DB-8972C5A81716}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B2B5E75-6657-4558-95DB-8972C5A81716}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9B2B5E75-6657-4558-95DB-8972C5A81716}.Release|x64.ActiveCfg = Release|Any CPU
-		{9B2B5E75-6657-4558-95DB-8972C5A81716}.Release|x64.Build.0 = Release|Any CPU
-		{9B2B5E75-6657-4558-95DB-8972C5A81716}.Release|x86.ActiveCfg = Release|Any CPU
-		{9B2B5E75-6657-4558-95DB-8972C5A81716}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {461ED61E-43D2-49F3-92D9-DD5C24A0BEAD}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0

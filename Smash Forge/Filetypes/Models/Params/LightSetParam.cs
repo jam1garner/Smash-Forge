@@ -24,10 +24,9 @@ namespace Smash_Forge.Params
 
         public HemisphereFresnel fresnelLight;
 
-
         public LightSetParam()
         {
-            characterDiffuse = new DirectionalLight(new Vector3(0, 0, 1), new Vector3(0, 0, 0.85f), 0, 0, 0, "Diffuse");
+            characterDiffuse = new DirectionalLight(new Vector3(0, 0, 1), new Vector3(0, 0, 0.85f), -50, 0, 0, "Diffuse");
             characterDiffuse2 = new DirectionalLight(new Vector3(0, 0, 0.2f), new Vector3(0), 0, 0, 0, "Diffuse");
             characterDiffuse3 = new DirectionalLight(new Vector3(0, 0, 0.2f), new Vector3(0), 0, 0, 0, "Diffuse");
 
@@ -82,15 +81,15 @@ namespace Smash_Forge.Params
 
         public static HemisphereFresnel CreateFresnelLightFromLightSet(ParamFile lightSet)
         {
-            Vector3 hsvGround = new Vector3(0);
-            hsvGround.X = (float)ParamTools.GetParamValue(lightSet, 0, 0, 8);
-            hsvGround.Y = (float)ParamTools.GetParamValue(lightSet, 0, 0, 9);
-            hsvGround.Z = (float)ParamTools.GetParamValue(lightSet, 0, 0, 10);
-
             Vector3 hsvSky = new Vector3(0);
-            hsvSky.X = (float)ParamTools.GetParamValue(lightSet, 0, 0, 11);
-            hsvSky.Y = (float)ParamTools.GetParamValue(lightSet, 0, 0, 12);
-            hsvSky.Z = (float)ParamTools.GetParamValue(lightSet, 0, 0, 13);
+            hsvSky.X = (float)ParamTools.GetParamValue(lightSet, 0, 0, 8);
+            hsvSky.Y = (float)ParamTools.GetParamValue(lightSet, 0, 0, 9);
+            hsvSky.Z = (float)ParamTools.GetParamValue(lightSet, 0, 0, 10);
+
+            Vector3 hsvGround = new Vector3(0);
+            hsvGround.X = (float)ParamTools.GetParamValue(lightSet, 0, 0, 11);
+            hsvGround.Y = (float)ParamTools.GetParamValue(lightSet, 0, 0, 12);
+            hsvGround.Z = (float)ParamTools.GetParamValue(lightSet, 0, 0, 13);
 
             float skyAngle = (float)ParamTools.GetParamValue(lightSet, 0, 0, 14);
             float groundAngle = (float)ParamTools.GetParamValue(lightSet, 0, 0, 15);
@@ -100,14 +99,13 @@ namespace Smash_Forge.Params
 
         private void SaveFresnelLight()
         {
-            ParamTools.ModifyParamValue(paramFile, 0, 0, 8, fresnelLight.groundColor.H);
-            ParamTools.ModifyParamValue(paramFile, 0, 0, 9, fresnelLight.groundColor.S);
-            ParamTools.ModifyParamValue(paramFile, 0, 0, 10, fresnelLight.groundColor.V);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 8, fresnelLight.skyColor.H);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 9, fresnelLight.skyColor.S);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 10, fresnelLight.skyColor.V);
 
-            ParamTools.ModifyParamValue(paramFile, 0, 0, 11, fresnelLight.skyColor.H);
-            ParamTools.ModifyParamValue(paramFile, 0, 0, 12, fresnelLight.skyColor.S);
-            ParamTools.ModifyParamValue(paramFile, 0, 0, 13, fresnelLight.skyColor.V);
-
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 11, fresnelLight.groundColor.H);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 12, fresnelLight.groundColor.S);
+            ParamTools.ModifyParamValue(paramFile, 0, 0, 13, fresnelLight.groundColor.V);
         }
 
         public static DirectionalLight CreateCharDiffuseLightFromLightSet(ParamFile lightSet)
@@ -170,7 +168,7 @@ namespace Smash_Forge.Params
 
         public static DirectionalLight CreateDirectionalLightFromLightSet(ParamFile lightSet, int lightIndex, string name)
         {
-            bool enabled = (uint)ParamTools.GetParamValue(lightSet, 1, lightIndex, 1) == 1;
+            bool enabled = (int)ParamTools.GetParamValue(lightSet, 1, lightIndex, 1) == 1;
             Vector3 hsv = new Vector3(0);
             hsv.X = (float)ParamTools.GetParamValue(lightSet, 1, lightIndex, 2);
             hsv.Y = (float)ParamTools.GetParamValue(lightSet, 1, lightIndex, 3);
@@ -192,9 +190,9 @@ namespace Smash_Forge.Params
             ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 3, stageDiffuseLights[lightIndex].diffuseColor.S);
             ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 4, stageDiffuseLights[lightIndex].diffuseColor.V);
 
-            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 5, stageDiffuseLights[lightIndex].rotX);
-            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 6, stageDiffuseLights[lightIndex].rotY);
-            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 7, stageDiffuseLights[lightIndex].rotZ);
+            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 5, stageDiffuseLights[lightIndex].RotationXDegrees);
+            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 6, stageDiffuseLights[lightIndex].RotationYDegrees);
+            ParamTools.ModifyParamValue(paramFile, 1, lightIndex, 7, stageDiffuseLights[lightIndex].RotationZDegrees);
         }
     }
 }

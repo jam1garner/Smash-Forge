@@ -21,10 +21,10 @@ namespace Smash_Forge
 
             public Entry Read(FileData f)
             {
-                attackId = (ushort)f.readShort();
-                unk = (ushort)f.readShort();
-                start = (ushort)f.readShort();
-                end = (ushort)f.readShort();
+                attackId = f.readUShort();
+                unk = f.readUShort();
+                start = f.readUShort();
+                end = f.readUShort();
                 xmin = f.readFloat();
                 xmax = f.readFloat();
                 ymin = f.readFloat();

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace Smash_Forge
 {
-    public partial class ProgessAlert : Form
+    public partial class ProgressAlert : Form
     {
         public int ProgressValue
         {
@@ -29,7 +29,7 @@ namespace Smash_Forge
             }
         }
 
-        public ProgessAlert()
+        public ProgressAlert()
         {
             InitializeComponent();
         }

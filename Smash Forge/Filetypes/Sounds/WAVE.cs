@@ -118,12 +118,12 @@ namespace Smash_Forge
 
             d.skip(4); //fmt
             int formatsize = d.readInt();
-            int audio_format = d.readShort();
-            int channelCount = d.readShort();
+            int audio_format = d.readUShort();
+            int channelCount = d.readUShort();
             int sampleRate = d.readInt();
             int byte_rate = d.readInt();
-            int blockalign = d.readShort();
-            int bps = d.readShort();
+            int blockalign = d.readUShort();
+            int bps = d.readUShort();
 
             d.skip(4); // data
             int datasize = d.readInt();

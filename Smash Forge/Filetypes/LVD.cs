@@ -9,7 +9,7 @@ using OpenTK;
 using System.Drawing;
 using SFGraphics.Tools;
 using System.Diagnostics;
-
+using SFGraphics.Tools;
 
 
 namespace Smash_Forge
@@ -112,14 +112,50 @@ namespace Smash_Forge
             f.writeString(_boneName);
         }
     }
-   
+
     public class Point : LVDEntry
     {
         public override string magic { get { return ""; } }
         public float x;
         public float y;
     }
-    
+
+    public enum CollisionMatType : byte
+    {
+        Brick = 0x00,
+        Rock = 0x01,
+        Grass = 0x02,
+        Soil = 0x03,
+        Wood = 0x04,
+        LightMetal = 0x05,
+        HeavyMetal = 0x06,
+        Carpet = 0x07,
+        Fence = 0x08,
+        MasterFortress = 0x09,
+        Water = 0x0a,
+        Bubbles = 0x0b,
+        Ice = 0x0c,
+        Snow = 0x0d,
+        SnowIce = 0x0e,
+        Gamewatch = 0x0f,
+        Ice2 = 0x10,
+        Danbouru = 0x11,
+        SpikesTargetTestOnly = 0x12, //Untested; from Brawl
+        Hazard2SSEOnly = 0x13, //Untested; from Brawl
+        Hazard3SSEOnly = 0x14, //Untested; from Brawl
+        LargeBubbles = 0x15,
+        Clouds = 0x16,
+        Subspace = 0x17, //Untested; from Brawl
+        Stone2 = 0x18,
+        Unknown2 = 0x19, //Untested; from Brawl
+        NES8Bit = 0x1a, //Untested; from Brawl
+        Metal2 = 0x1b,
+        Sand = 0x1c,
+        Homerun = 0x1d, //Untested; from Brawl
+        WaterNoSplash = 0x1e, //Untested; from Brawl
+        Hurt = 0x1f
+    }
+
     public class CollisionMat
     {
         public byte[] material = new byte[0xC];
@@ -366,11 +402,12 @@ namespace Smash_Forge
         }
     }
 
-    public enum LVDShapeTypes
+    public enum LVDShapeType : int
     {
-        point = 1,
-        rectangle = 3,
-        path = 4
+        Point = 1,
+        Circle = 2,
+        Rectangle = 3,
+        Path = 4
     }
 
     //Basic shape structure, this is used for the sections of item spawners and enemy generators
@@ -405,7 +442,7 @@ namespace Smash_Forge
         {
             f.readByte();
             type = f.readInt();
-            if ((type != 1) && (type != 3) && (type != 4))
+            if (!Enum.IsDefined(typeof(LVDShapeType), type))
                 throw new NotImplementedException($"Unknown shape type {type} at offset {f.pos()-4}");
 
             x1 = f.readFloat();
@@ -615,7 +652,7 @@ namespace Smash_Forge
 
             f.readByte();
             type = f.readInt();
-            if ((type != 1) && (type != 3) && (type != 4))
+            if (!Enum.IsDefined(typeof(LVDShapeType), type))
                 throw new NotImplementedException($"Unknown shape type {type} at offset {f.pos()-4}");
 
             x1 = f.readFloat();
@@ -705,10 +742,10 @@ namespace Smash_Forge
         }
     }
 
-    public enum DamageShapeTypes
+    public enum DamageShapeType
     {
-        sphere = 2,
-        capsule = 3
+        Sphere = 2,
+        Capsule = 3
     }
 
     public class DamageShape : LVDEntry
@@ -732,7 +769,7 @@ namespace Smash_Forge
 
             f.skip(1);
             type = f.readInt();
-            if ((type != 2) && (type != 3))
+            if (!Enum.IsDefined(typeof(DamageShapeType), type))
                 throw new NotImplementedException($"Unknown damage shape type {type} at offset {f.pos()-4}");
 
             x = f.readFloat();
@@ -1317,14 +1354,21 @@ namespace Smash_Forge
             else
                 throw new Exception($"DrawShape function only accepts objects of type 'LVDShape' or 'GeneralShape'; got type '{obj.GetType()}'");
 
-            if(s.type == 1)
+            if (s.type == (int)LVDShapeType.Point)
             {
                 if (useStartPos)
                     Rendering.RenderTools.DrawCube(sPos, 3, true);
                 else
                     Rendering.RenderTools.DrawCube(new Vector3(s.x1, s.y1, 0), 3, true);
             }
-            if(s.type == 3)
+            else if (s.type == (int)LVDShapeType.Circle)
+            {
+                if (useStartPos)
+                    Rendering.RenderTools.drawCircleOutline(sPos, s.x2, 24);
+                else
+                    Rendering.RenderTools.drawCircleOutline(new Vector3(s.x1, s.y1, 0), s.x2, 24);
+            }
+            else if (s.type == (int)LVDShapeType.Rectangle)
             {
                 GL.Begin(PrimitiveType.LineLoop);
                 GL.Vertex3(s.x1 + sPos.X, s.y1 + sPos.Y, sPos.Z);
@@ -1332,10 +1376,10 @@ namespace Smash_Forge
                 GL.Vertex3(s.x2 + sPos.X, s.y2 + sPos.Y, sPos.Z);
                 GL.Vertex3(s.x1 + sPos.X, s.y2 + sPos.Y, sPos.Z);
             }
-            if(s.type == 4)
+            else if (s.type == (int)LVDShapeType.Path)
             {
                 GL.Begin(PrimitiveType.LineStrip);
-                foreach(Vector2 point in s.points)
+                foreach (Vector2 point in s.points)
                     GL.Vertex3(point.X + sPos.X, point.Y + sPos.Y, sPos.Z);
             }
 
@@ -1351,9 +1395,9 @@ namespace Smash_Forge
             Vector3 pos = new Vector3(s.x, s.y, s.z);
             Vector3 posd = new Vector3(s.dx, s.dy, s.dz);
 
-            if (s.type == 2)
+            if (s.type == (int)DamageShapeType.Sphere)
                 Rendering.RenderTools.drawSphere(sPos+pos, s.radius, 24);
-            if (s.type == 3)
+            else if (s.type == (int)DamageShapeType.Capsule)
                 Rendering.RenderTools.DrawCylinder(sPos+pos, sPos+pos+posd, s.radius);
         }
 

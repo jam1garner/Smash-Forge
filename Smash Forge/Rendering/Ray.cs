@@ -41,7 +41,7 @@ namespace Smash_Forge.Rendering
 
         public void Unproject(Camera camera)
         {
-            p1 = (camera.MvpMatrix.Inverted() * new Vector4(
+            p1 =  (camera.MvpMatrix.Inverted() * new Vector4(
                 2.0f * (mouse_x / Width) - 1.0f,
                 2.0f * ((Height - mouse_y) / Height) - 1.0f,
                 2.0f * 0 - 1.0f,
@@ -113,7 +113,7 @@ namespace Smash_Forge.Rendering
         public bool LineSphereIntersect(Vector3 center, float radius, out Vector3 result)
         {
             Vector3 diff = p2 - p1;
-            float a = Vector3.Dot(diff, diff);
+            float a = Vector3.Dot(diff, diff) ;
 
             if (a > 0.0f)
             {

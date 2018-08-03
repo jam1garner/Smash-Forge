@@ -33,22 +33,22 @@ namespace Smash_Forge
             bool changed = false;
             if (cb_section.Text.Equals("GAME") && Owner.MovesetManager.Game.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("SOUND") && Owner.MovesetManager.Sound.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Sound.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Sound.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("EXPRESSION") && Owner.MovesetManager.Expression.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Expression.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Expression.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("EFFECT") && Owner.MovesetManager.Effect.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Effect.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Effect.Scripts[crc]);
                 changed = true;
             }
 
@@ -57,7 +57,7 @@ namespace Smash_Forge
 
             if (Owner.MovesetManager.Game.Scripts.ContainsKey(crc))
             {
-                Owner.ACMDScript = new ForgeACMDScript((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
+                Owner.acmdScript = new ForgeACMDScript((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
                 //if (Runtime.vbnViewport != null && Runtime.TargetAnim != null)
                 //    Runtime.vbnViewport.setAnimMaxFrames(Runtime.TargetAnim);
             }
@@ -91,22 +91,22 @@ namespace Smash_Forge
             bool changed = false;
             if (cb_section.Text.Equals("GAME") && Owner.MovesetManager.Game.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Game.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("SOUND") && Owner.MovesetManager.Sound.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Sound.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Sound.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("EXPRESSION") && Owner.MovesetManager.Expression.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Expression.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Expression.Scripts[crc]);
                 changed = true;
             }
             if (cb_section.Text.Equals("EFFECT") && Owner.MovesetManager.Effect.Scripts.ContainsKey(crc))
             {
-                richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Effect.Scripts[crc]);
+                //richTextBox1.Text = ACMDDecompiler.DecompileCommands((ACMDScript)Owner.MovesetManager.Effect.Scripts[crc]);
                 changed = true;
             }
             if (changed)
@@ -157,8 +157,8 @@ namespace Smash_Forge
 
                     if (cb_section.Text.Equals("GAME"))
                     {
-                        Owner.ACMDScript = new ForgeACMDScript(script);
-                        Owner.ACMDScript.processToFrame(0);
+                        Owner.acmdScript = new ForgeACMDScript(script);
+                        Owner.acmdScript.processToFrame(0);
                     }
                 } catch (Exception)
                 {

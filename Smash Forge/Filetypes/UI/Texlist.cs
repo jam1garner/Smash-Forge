@@ -54,11 +54,11 @@ namespace VBN_Editor
 
             f.seek(0x06);
 
-            numAtlases = f.readShort();
-            int numTextures = f.readShort();
-            int flagsOffset = f.readShort();
-            int entriesOffset = f.readShort();
-            int stringsOffset = f.readShort();
+            numAtlases = f.readUShort();
+            int numTextures = f.readUShort();
+            int flagsOffset = f.readUShort();
+            int entriesOffset = f.readUShort();
+            int stringsOffset = f.readUShort();
 
             List<Texture.Flags> flags = new List<Texture.Flags>();
 

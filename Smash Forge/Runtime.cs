@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Xml;
 using OpenTK.Graphics.OpenGL;
 using SALT.PARAMS;
+using SFGraphics.GLObjects.Shaders;
 using SFGraphics.Tools;
 
 
@@ -25,9 +26,35 @@ namespace Smash_Forge
             Animnames = new Dictionary<uint, string>();
         }
 
-        public static string MarioOdysseyGamePath = "";
+        // See https://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
+        // for a really good overview of how to use distinct colors.
+        public enum DistinctColors : uint
+        {
+            VividYellow = 0xFFFFB300,
+            StrongPurple = 0xFF803E75,
+            VividOrange = 0xFFFF6800,
+            VeryLightBlue = 0xFFA6BDD7,
+            VividRed = 0xFFC10020,
+            GrayishYellow = 0xFFCEA262,
+            MediumGray = 0xFF817066,
 
-        public static Dictionary<string, ShaderOld> shaders = new Dictionary<string, ShaderOld>();
+            // The following will not be good for people with defective color vision.
+            VividGreen = 0xFF007D34,
+            StrongPurplishPink = 0xFFF6768E,
+            StrongBlue = 0xFF00538A,
+            StrongYellowishPink = 0xFFFF7A5C,
+            StrongViolet = 0xFF53377A,
+            VividOrangeYellow = 0xFFFF8E00,
+            StrongPurplishRed = 0xFFB32851,
+            VividGreenishYellow = 0xFFF4C800,
+            StrongReddishBrown = 0xFF7F180D,
+            VividYellowishGreen = 0xFF93AA00,
+            DeepYellowishBrown = 0xFF593315,
+            VividReddishOrange = 0xFFF13A13,
+            DarkOliveGreen = 0xFF232C16
+        }
+
+        public static string MarioOdysseyGamePath = "";
 
         //public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
         public static List<NUT> TextureContainers = new List<NUT>();
@@ -73,9 +100,12 @@ namespace Smash_Forge
         public static float RenderBoneNodeSize = 0.1f;
         public static float RenderLineSize = 2;
         public static bool renderLVD = true;
+
         public static bool renderModel = true;
         public static bool renderModelSelection = true;
         public static bool renderModelWireframe;
+        public static float wireframeLineWidth = 0.01f;
+
         public static bool renderBones = true;
         public static bool renderCollisions = true;
         public static bool renderCollisionNormals = false;
@@ -117,34 +147,6 @@ namespace Smash_Forge
         public static bool useFAFasAnimationLength = false;
         public static bool Is2DView = false;
 
-        // See https://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
-        // for a really good overview of how to use distinct colors.
-        public enum DistinctColors : uint
-        {
-            VividYellow = 0xFFFFB300,
-            StrongPurple = 0xFF803E75,
-            VividOrange = 0xFFFF6800,
-            VeryLightBlue = 0xFFA6BDD7,
-            VividRed = 0xFFC10020,
-            GrayishYellow = 0xFFCEA262,
-            MediumGray = 0xFF817066,
-
-            // The following will not be good for people with defective color vision.
-            VividGreen = 0xFF007D34,
-            StrongPurplishPink = 0xFFF6768E,
-            StrongBlue = 0xFF00538A,
-            StrongYellowishPink = 0xFFFF7A5C,
-            StrongViolet = 0xFF53377A,
-            VividOrangeYellow = 0xFFFF8E00,
-            StrongPurplishRed = 0xFFB32851,
-            VividGreenishYellow = 0xFFF4C800,
-            StrongReddishBrown = 0xFF7F180D,
-            VividYellowishGreen = 0xFF93AA00,
-            DeepYellowishBrown = 0xFF593315,
-            VividReddishOrange = 0xFFF13A13,
-            DarkOliveGreen = 0xFF232C16
-        }
-
         public static Color counterBubbleColor = Color.FromArgb(0x89, 0x89, 0x89);
         public static Color reflectBubbleColor = Color.Cyan;
         public static Color shieldBubbleColor = Color.Red;
@@ -157,18 +159,18 @@ namespace Smash_Forge
             Color.FromArgb(unchecked((int)DistinctColors.VividGreen)),
             Color.FromArgb(unchecked((int)DistinctColors.VividYellow)),
             Color.FromArgb(unchecked((int)DistinctColors.VividOrange)),
-            Color.FromArgb(unchecked((int)DistinctColors.VividRed))
+            Color.FromArgb(unchecked((int)DistinctColors.VividRed))     
         };
 
         public static List<Color> hitboxIdColors = new List<Color>();
         public static readonly List<Color> defaultHitboxIdColors = new List<Color>()
         {
-            Color.FromArgb(unchecked((int)DistinctColors.VividYellow)),
-            Color.FromArgb(unchecked((int)DistinctColors.StrongPurple)),
+            Color.FromArgb(unchecked((int)DistinctColors.VividYellow)), 
+            Color.FromArgb(unchecked((int)DistinctColors.StrongPurple)), 
             Color.FromArgb(unchecked((int)DistinctColors.VividRed)),
-            Color.FromArgb(unchecked((int)DistinctColors.GrayishYellow)),
-            Color.FromArgb(unchecked((int)DistinctColors.MediumGray)),
-            Color.FromArgb(unchecked((int)DistinctColors.StrongBlue)),
+            Color.FromArgb(unchecked((int)DistinctColors.GrayishYellow)), 
+            Color.FromArgb(unchecked((int)DistinctColors.MediumGray)), 
+            Color.FromArgb(unchecked((int)DistinctColors.StrongBlue)), 
             Color.FromArgb(unchecked((int)DistinctColors.DeepYellowishBrown))
         };
 
@@ -196,28 +198,29 @@ namespace Smash_Forge
         public static bool renderBloom = false;
         public static bool usePostProcessing = false;
         public static bool drawModelShadow = false;
-        public static float bloomIntensity = 0.2f;
+        public static float bloomIntensity = 0.25f;
         public static float bloomThreshold = 1.01f;
-        public static float bloomTexScale = 0.125f;
+        public static float bloomTexScale = 0.25f;
 
-        // Material Lighting
+        // Toggle Render Passes
         public static bool renderDiffuse = true;
         public static bool renderFresnel = true;
         public static bool renderSpecular = true;
         public static bool renderReflection = true;
 
+        // Render Passes Intensities
         public static float difIntensity = 1.00f;
         public static float spcIntentensity = 1.00f;
         public static float frsIntensity = 1.00f;
         public static float refIntensity = 1.00f;
         public static float ambItensity = 1.00f;
 
-        public static float model_scale = 1f;
+        // Misc Scale Stuff
+        public static float modelScale = 1f;
         public static float zScale = 1.0f;
 
+        // Bone Weight Display
         public static int selectedBoneIndex = -1;
-
-        public static bool drawUv = false;
 
         // Polygon ID Maps
         public static bool drawNudColorIdPass = false;
@@ -271,7 +274,6 @@ namespace Smash_Forge
         public static string renderer = "";
         public static string openGLVersion = "";
         public static string GLSLVersion = "";
-        public static bool useLegacyShaders = false;
 
         // Texture creation needs to be delayed until we actually have a context.
         public static bool glTexturesNeedRefreshing = false;
@@ -340,7 +342,6 @@ namespace Smash_Forge
         public static void clearMoveset()
         {
             Moveset = null;
-            //acmdEditor.updateCrcList();
         }
 
         public static bool killWorkspace { get; set; }

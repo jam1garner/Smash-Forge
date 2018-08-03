@@ -10,7 +10,7 @@ namespace Smash_Forge
         public class OMOHeader
         {
             public string magic = "OMO ";
-            public int verHi = 1, verLow = 3;
+            public ushort verHi = 1, verLow = 3;
             public int flags = 0x091E100C;
             public ushort unk1 = 0, boneCount;
             public ushort frameCount, frameSize;
@@ -44,13 +44,13 @@ namespace Smash_Forge
 
             header = new OMOHeader()
             {
-                verHi = d.readShort(),
-                verLow = d.readShort(),
+                verHi = d.readUShort(),
+                verLow = d.readUShort(),
                 flags = d.readInt(),
-                unk1 = (ushort)d.readShort(),
-                boneCount = (ushort)d.readShort(),
-                frameCount = (ushort)d.readShort(),
-                frameSize = (ushort)d.readShort(),
+                unk1 = d.readUShort(),
+                boneCount = d.readUShort(),
+                frameCount = d.readUShort(),
+                frameSize = d.readUShort(),
                 nodeOffset = d.readInt(),
                 interOffset = d.readInt(),
                 keyOffset = d.readInt()
@@ -80,7 +80,7 @@ namespace Smash_Forge
                 OMOFrame frame = new OMOFrame();
                 // /2 because size of short
                 for (int j = 0; j < header.frameSize / 2; j++)
-                    frame.keys.Add((ushort)d.readShort());
+                    frame.keys.Add(d.readUShort());
                 Frames.Add(frame);
             }
         }

@@ -60,6 +60,9 @@ namespace Smash_Forge
 
         bool changingValue = false;
 
+        public ContextMenuStrip PolyContextMenu { get { return polyContextMenu; } }
+        public ContextMenuStrip MeshContextMenu { get { return meshContextMenu; } }
+
         public void RefreshNodes()
         {
             Queue<TreeNode> nodes = new Queue<TreeNode>();
@@ -118,7 +121,7 @@ namespace Smash_Forge
         {
             numericUpDown1.Visible = false;
             label1.Visible = false;
-            button1.Visible = false;
+            matchToNudButton.Visible = false;
             Runtime.TargetVBN = null;
             if (e.Node is NUD.Mesh)
             {
@@ -133,7 +136,7 @@ namespace Smash_Forge
             }
             else if (e.Node is NUD)
             {
-                button1.Visible = true;
+                matchToNudButton.Visible = true;
             }
             else if (e.Node is ModelContainer)
             {
@@ -163,7 +166,7 @@ namespace Smash_Forge
                 parent.Nodes.Remove(node);
                 parent.Nodes.Insert(pos, node);
                 filesTreeView.SelectedNode = node;
-                n.UpdateVertexData();
+                n.UpdateVertexBuffers();
             }
             changingValue = false;//Set the value back so the user can change values
         }
@@ -186,7 +189,7 @@ namespace Smash_Forge
                     parent.Nodes.Remove(node);
                     parent.Nodes.Insert(pos, node);
                     filesTreeView.SelectedNode = node;
-                    n.UpdateVertexData();
+                    n.UpdateVertexBuffers();
                 }
             }
             if (e.KeyChar == '-')
@@ -205,64 +208,69 @@ namespace Smash_Forge
                     parent.Nodes.Remove(node);
                     parent.Nodes.Insert(pos, node);
                     filesTreeView.SelectedNode = node;
-                    n.UpdateVertexData();
+                    n.UpdateVertexBuffers();
                 }
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void matchToNudButton_Click(object sender, EventArgs e)
         {
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter = "Namco Model (.nud)|*.nud";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    string filename = ofd.FileName;
-                    NUD nud = new NUD(filename);
-                    NUD unorderedNud = (NUD)filesTreeView.SelectedNode;
-                    //Gonna reorder some NUDs, nud-in to it
-                    int meshCount = nud.Nodes.Count;
-                    if (unorderedNud.Nodes.Count > meshCount)
-                        meshCount = unorderedNud.Nodes.Count;
-                    NUD.Mesh[] meshes = new NUD.Mesh[meshCount];
+                    NUD sourceNud = new NUD(ofd.FileName);
+                    NUD targetNud = (NUD)filesTreeView.SelectedNode;
 
-                    //Fill in matching meshes
-                    foreach (NUD.Mesh m in nud.Nodes)
+                    //Gonna reorder some NUDs, nud-in to it
+                    // Don't remove any meshes.
+                    int meshCount = Math.Max(sourceNud.Nodes.Count, targetNud.Nodes.Count);
+
+                    NUD.Mesh[] newMeshes = new NUD.Mesh[meshCount];
+
+                    // Fill in matching meshes
+                    foreach (NUD.Mesh sourceMesh in sourceNud.Nodes)
                     {
-                        foreach (NUD.Mesh m2 in unorderedNud.Nodes)
+                        foreach (NUD.Mesh targetMesh in targetNud.Nodes)
                         {
-                            if (m2.Text.Equals(m.Text))
+                            if (targetMesh.Text.Equals(sourceMesh.Text))
                             {
-                                meshes[nud.Nodes.IndexOf((m))] = m2;
+                                newMeshes[sourceNud.Nodes.IndexOf((sourceMesh))] = targetMesh;
                                 break;
                             }
                         }
                     }
-                    //Fill in mismatched meshes
-                    foreach (NUD.Mesh m in unorderedNud.Nodes)
+
+                    // Fill in mismatched meshes
+                    foreach (NUD.Mesh targetMesh in targetNud.Nodes)
                     {
-                        if (!meshes.Contains(m))
+                        if (!newMeshes.Contains(targetMesh))
                         {
-                            for (int i = 0; i < meshes.Length; i++)
+                            for (int i = 0; i < newMeshes.Length; i++)
                             {
-                                if (meshes[i] == null)
+                                if (newMeshes[i] == null)
                                 {
-                                    meshes[i] = m;
+                                    newMeshes[i] = targetMesh;
                                     break;
                                 }
                             }
                         }
                     }
-                    //Dummies for the dummies that don't make enough meshes
-                    for (int i = 0; i < meshes.Length; i++)
+
+                    // Dummies for the dummies that don't make enough meshes
+                    for (int i = 0; i < newMeshes.Length; i++)
                     {
-                        if (meshes[i] == null)
+                        if (newMeshes[i] == null)
                         {
-                            meshes[i] = new NUD.Mesh();
-                            meshes[i].Text = "dummy";  
-                            break;
+                            newMeshes[i] = new NUD.Mesh();
+                            newMeshes[i].Text = "dummy";  
                         }
                     }
+
+                    // Apply the changes.
+                    targetNud.Nodes.Clear();
+                    targetNud.Nodes.AddRange(newMeshes);
 
                     RefreshNodes();
                 }
@@ -295,14 +303,14 @@ namespace Smash_Forge
                 {
                     NUD.Mesh parent = ((NUD.Mesh)filesTreeView.SelectedNode.Parent);
                     parent.Nodes.Remove((NUD.Polygon)filesTreeView.SelectedNode);
-                    NUD parentn = ((NUD)parent.Parent);
-                    parentn.UpdateVertexData();
+                    NUD parentNud = ((NUD)parent.Parent);
+                    parentNud.UpdateVertexBuffers();
                 }
                 else if (filesTreeView.SelectedNode is NUD.Mesh)
                 {
                     NUD parent = ((NUD)filesTreeView.SelectedNode.Parent);
                     filesTreeView.SelectedNode.Parent.Nodes.Remove(filesTreeView.SelectedNode);
-                    parent.UpdateVertexData();
+                    parent.UpdateVertexBuffers();
                 }
                 else if (filesTreeView.SelectedNode is NUD)
                 {
@@ -326,7 +334,7 @@ namespace Smash_Forge
                         NUD nud = new NUD(filename);
                         foreach (NUD.Mesh mesh in nud.Nodes)
                             ((NUD)filesTreeView.SelectedNode).Nodes.Add((mesh));
-                        ((NUD)filesTreeView.SelectedNode).UpdateVertexData();
+                        ((NUD)filesTreeView.SelectedNode).UpdateVertexBuffers();
                         RefreshNodes();
                     }
                 }
@@ -343,25 +351,29 @@ namespace Smash_Forge
             if (e.Button == MouseButtons.Right)
             {
                 filesTreeView.SelectedNode = filesTreeView.GetNodeAt(e.Location);
-                if (filesTreeView.SelectedNode is NUD.Mesh)
+
+                // Check for null first to avoid exceptions.
+                if (filesTreeView.SelectedNode == null)
+                {
+                    MainContextMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
+                }
+                else if (filesTreeView.SelectedNode is NUD.Mesh)
                 {
                     meshContextMenu.Show(this, e.X, e.Y);
                 }
-                else
-                if (filesTreeView.SelectedNode is NUD.Polygon)
+                else if (filesTreeView.SelectedNode is NUD.Polygon)
                 {
                     polyContextMenu.Show(this, e.X, e.Y);
                 }
-                else
-                if (filesTreeView.SelectedNode is NUD)
+                else if (filesTreeView.SelectedNode is NUD)
                 {
                     nudContextMenu.Show(this, e.X, e.Y);
                 }
-                else
-                if (filesTreeView.SelectedNode is ModelContainer)
+                else if (filesTreeView.SelectedNode.Tag is SALT.Graphics.XMBFile)
                 {
-                    ModelContainerContextMenu.Show(this, e.X, e.Y);
+                    xmbContextMenu.Show(this, e.X, e.Y);
                 }
+<<<<<<< HEAD
                 else
                 if (filesTreeView.SelectedNode is BFRES.Mesh)
                 {
@@ -384,8 +396,11 @@ namespace Smash_Forge
                 }
                 else
                 if(filesTreeView.SelectedNode == null)
+=======
+                else if (filesTreeView.SelectedNode is ModelContainer)
+>>>>>>> 1648edfbd21782869aebf5132a785daa518b48e9
                 {
-                    MainContextMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
+                    ModelContainerContextMenu.Show(this, e.X, e.Y);
                 }
             }
         }
@@ -407,7 +422,7 @@ namespace Smash_Forge
                     if(con is ModelContainer)
                     {
                         if (((ModelContainer)con).NUD != null)
-                            ((ModelContainer)con).NUD.UpdateVertexData();
+                            ((ModelContainer)con).NUD.UpdateVertexBuffers();
                     }
                 }
             }
@@ -461,7 +476,7 @@ namespace Smash_Forge
                         vi.boneWeights.Add(1);
                     }
                 }
-                ((NUD)filesTreeView.SelectedNode.Parent).UpdateVertexData();
+                ((NUD)filesTreeView.SelectedNode.Parent).UpdateVertexBuffers();
             }
         }
 
@@ -505,9 +520,8 @@ namespace Smash_Forge
 
             // Remove the original nodes.
             originalModelContainer.NUD.Nodes.Clear();
-            originalModelContainer.NUD.Destroy();
 
-            newModelContainer.NUD.UpdateVertexData();
+            newModelContainer.NUD.UpdateVertexBuffers();
 
             filesTreeView.Nodes.Remove(filesTreeView.SelectedNode);
             filesTreeView.SelectedNode = n;
@@ -697,7 +711,7 @@ namespace Smash_Forge
                     if (con is ModelContainer)
                     {
                         if (((ModelContainer)con).NUD != null)
-                            ((ModelContainer)con).NUD.UpdateVertexData();
+                            ((ModelContainer)con).NUD.UpdateVertexBuffers();
                     }
                 }
             }
@@ -804,7 +818,7 @@ namespace Smash_Forge
                 }
 
                 // Update the data for rendering.
-                n.UpdateVertexData();
+                n.UpdateVertexBuffers();
             }
         }
 
@@ -818,7 +832,7 @@ namespace Smash_Forge
 
             // Update the data for rendering.
             NUD n = (NUD)poly.Parent.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void calculateNormalsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -841,7 +855,7 @@ namespace Smash_Forge
             }
 
             // Update the data for rendering.
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void useAOAsSpecToolStripMenuItem_Click(object sender, EventArgs e)
@@ -924,6 +938,7 @@ namespace Smash_Forge
                             con.VBN = daeImport.getVBN();
 
 
+<<<<<<< HEAD
 
                             Collada.DaetoNud(ofd.FileName, con, daeImport.importTexCB.Checked);
 
@@ -932,13 +947,19 @@ namespace Smash_Forge
                             con.NUD.MergePoly();
                         }
                     }           
+=======
+                        // apply settings
+                        if (con.NUD != null)
+                            daeImport.Apply(con.NUD);
+                    }
+>>>>>>> 1648edfbd21782869aebf5132a785daa518b48e9
                 }
             }
         }
 
-        private void generateBoundingBoxesToolStripMenuItem_Click(object sender, EventArgs e)
+        private void generateBoundingSpheresToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ((NUD)filesTreeView.SelectedNode).GenerateBoundingBoxes();
+            ((NUD)filesTreeView.SelectedNode).GenerateBoundingSpheres();
         }
 
         private void recalculateToolStripMenuItem_Click(object sender, EventArgs e)
@@ -954,7 +975,7 @@ namespace Smash_Forge
 
             // Update the data for rendering.
             NUD n = (NUD)mesh.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void smoothToolStripMenuItem_Click(object sender, EventArgs e)
@@ -970,7 +991,7 @@ namespace Smash_Forge
 
             // Update the data for rendering.
             NUD n = (NUD)mesh.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void recalculateToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -983,7 +1004,7 @@ namespace Smash_Forge
 
             // Update the data for rendering.
             NUD n = (NUD)p.Parent.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void smoothToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -996,7 +1017,7 @@ namespace Smash_Forge
 
             // Update the data for rendering.
             NUD n = (NUD)p.Parent.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void smoothToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -1014,7 +1035,7 @@ namespace Smash_Forge
             }
 
             // Update the data for rendering.
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void recalculateToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -1032,7 +1053,7 @@ namespace Smash_Forge
             }
 
             // Update the data for rendering.
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void generateTanBitanToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -1055,7 +1076,7 @@ namespace Smash_Forge
 
                 // Update the data for rendering.
                 NUD n = (NUD)mesh.Parent;
-                n.UpdateVertexData();
+                n.UpdateVertexBuffers();
             }               
         }
 
@@ -1079,11 +1100,11 @@ namespace Smash_Forge
                 return;
 
             NUD.Polygon p = (NUD.Polygon)filesTreeView.SelectedNode;
-            p.SetVertexColor(new OpenTK.Vector4(127, 127, 127, 255));
+            p.SetVertexColor(new OpenTK.Vector4(127, 127, 127, 127));
 
             // Update the data for rendering.
             NUD n = (NUD)p.Parent.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void selectColorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1098,11 +1119,11 @@ namespace Smash_Forge
             // Remap the color from 1.0 being white to 127 being white.
             OpenTK.Vector3 newVertColor = colorEditor.GetColor() * 127;
             NUD.Polygon p = (NUD.Polygon)filesTreeView.SelectedNode;
-            p.SetVertexColor(new OpenTK.Vector4(newVertColor, 255));
+            p.SetVertexColor(new OpenTK.Vector4(newVertColor, 127));
 
             // Update the data for rendering.
             NUD n = (NUD)p.Parent.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void tangentsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1114,12 +1135,12 @@ namespace Smash_Forge
             foreach (NUD.Vertex v in p.vertices)
             {
                 OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                v.color = new OpenTK.Vector4(newTan * 127, 255);
+                v.color = new OpenTK.Vector4(newTan * 127, 127);
             }
 
             // Update the data for rendering.
             NUD n = (NUD)p.Parent.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void bitangentsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1131,12 +1152,12 @@ namespace Smash_Forge
             foreach (NUD.Vertex v in p.vertices)
             {
                 OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                v.color = new OpenTK.Vector4(newBitan * 127, 255);
+                v.color = new OpenTK.Vector4(newBitan * 127, 127);
             }
 
             // Update the data for rendering.
             NUD n = (NUD)p.Parent.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void normalsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1148,12 +1169,12 @@ namespace Smash_Forge
             foreach (NUD.Vertex v in p.vertices)
             {
                 OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
-                v.color = new OpenTK.Vector4(newNrm * 127, 255);
+                v.color = new OpenTK.Vector4(newNrm * 127, 127);
             }
 
             // Update the data for rendering.
             NUD n = (NUD)p.Parent.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void uVsToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -1164,12 +1185,23 @@ namespace Smash_Forge
             NUD.Polygon p = (NUD.Polygon)filesTreeView.SelectedNode;
             foreach (NUD.Vertex v in p.vertices)
             {
-                v.color = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
+                v.color = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 127);
             }
 
             // Update the data for rendering.
             NUD n = (NUD)p.Parent.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
+        }
+
+        private void polyFormatToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon poly = (NUD.Polygon)filesTreeView.SelectedNode;
+            PolygonFormatEditor pfe = new PolygonFormatEditor(poly);
+            pfe.ShowDialog();
+            ((NUD)poly.Parent.Parent).UpdateVertexBuffers();
         }
 
         private void setToWhiteToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -1180,12 +1212,12 @@ namespace Smash_Forge
             NUD.Mesh mesh = (NUD.Mesh)filesTreeView.SelectedNode;
             foreach (NUD.Polygon poly in mesh.Nodes)
             {
-                poly.SetVertexColor(new OpenTK.Vector4(127, 127, 127, 255));
+                poly.SetVertexColor(new OpenTK.Vector4(127, 127, 127, 127));
             }
 
             // Update the data for rendering.
             NUD n = (NUD)mesh.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void selectColorToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -1203,12 +1235,12 @@ namespace Smash_Forge
             NUD.Mesh mesh = (NUD.Mesh)filesTreeView.SelectedNode;
             foreach (NUD.Polygon poly in mesh.Nodes)
             {
-                poly.SetVertexColor(new OpenTK.Vector4(newVertColor, 255));
+                poly.SetVertexColor(new OpenTK.Vector4(newVertColor, 127));
             }
 
             // Update the data for rendering.
             NUD n = (NUD)mesh.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void tangentsToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -1222,13 +1254,13 @@ namespace Smash_Forge
                 foreach (NUD.Vertex v in poly.vertices)
                 {
                     OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                    v.color = new OpenTK.Vector4(newTan * 127, 255);
+                    v.color = new OpenTK.Vector4(newTan * 127, 127);
                 }
             }
 
             // Update the data for rendering.
             NUD n = (NUD)mesh.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void bitangentsToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -1242,13 +1274,13 @@ namespace Smash_Forge
                 foreach (NUD.Vertex v in poly.vertices)
                 {
                     OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                    v.color = new OpenTK.Vector4(newBitan * 127, 255);
+                    v.color = new OpenTK.Vector4(newBitan * 127, 127);
                 }
             }
 
             // Update the data for rendering.
             NUD n = (NUD)mesh.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void normalsToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -1262,13 +1294,13 @@ namespace Smash_Forge
                 foreach (NUD.Vertex v in poly.vertices)
                 {
                     OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
-                    v.color = new OpenTK.Vector4(newNrm * 127, 255);
+                    v.color = new OpenTK.Vector4(newNrm * 127, 127);
                 }
             }
 
             // Update the data for rendering.
             NUD n = (NUD)mesh.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void uVsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1281,13 +1313,13 @@ namespace Smash_Forge
             {
                 foreach (NUD.Vertex v in poly.vertices)
                 {
-                    v.color = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
+                    v.color = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 127);
                 }
             }
 
             // Update the data for rendering.
             NUD n = (NUD)mesh.Parent;
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void tangentsToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -1304,13 +1336,13 @@ namespace Smash_Forge
                     foreach (NUD.Vertex v in p.vertices)
                     {
                         OpenTK.Vector3 newTan = v.tan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                        v.color = new OpenTK.Vector4(newTan * 127, 255);
+                        v.color = new OpenTK.Vector4(newTan * 127, 127);
                     }
                 }
             }
 
             // Update the data for rendering.
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void bitangentsToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -1327,13 +1359,13 @@ namespace Smash_Forge
                     foreach (NUD.Vertex v in p.vertices)
                     {
                         OpenTK.Vector3 newBitan = v.bitan.Xyz * 0.5f + new OpenTK.Vector3(0.5f);
-                        v.color = new OpenTK.Vector4(newBitan * 127, 255);
+                        v.color = new OpenTK.Vector4(newBitan * 127, 127);
                     }
                 }
             }
 
             // Update the data for rendering.
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void setToWhiteToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -1347,12 +1379,12 @@ namespace Smash_Forge
             {
                 foreach (NUD.Polygon p in m.Nodes)
                 {
-                    p.SetVertexColor(new OpenTK.Vector4(127, 127, 127, 255));
+                    p.SetVertexColor(new OpenTK.Vector4(127, 127, 127, 127));
                 }
             }
 
             // Update the data for rendering.
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void normalsToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -1369,13 +1401,13 @@ namespace Smash_Forge
                     foreach (NUD.Vertex v in p.vertices)
                     {
                         OpenTK.Vector3 newNrm = v.nrm * 0.5f + new OpenTK.Vector3(0.5f);
-                        v.color = new OpenTK.Vector4(newNrm * 127, 255);
+                        v.color = new OpenTK.Vector4(newNrm * 127, 127);
                     }
                 }
             }
 
             // Update the data for rendering.
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void uVsToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -1390,13 +1422,13 @@ namespace Smash_Forge
                 {
                     foreach (NUD.Vertex v in p.vertices)
                     {
-                        v.color = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 255);
+                        v.color = new OpenTK.Vector4(v.uv[0].X * 127, v.uv[0].Y * 127, 127, 127);
                     }
                 }
             }
 
             // Update the data for rendering.
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void selectColorToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -1417,12 +1449,12 @@ namespace Smash_Forge
             {
                 foreach (NUD.Polygon p in m.Nodes)
                 {
-                    p.SetVertexColor(new OpenTK.Vector4(newVertColor, 255));
+                    p.SetVertexColor(new OpenTK.Vector4(newVertColor, 127));
                 }
             }
 
             // Update the data for rendering.
-            n.UpdateVertexData();
+            n.UpdateVertexBuffers();
         }
 
         private void texIDToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1456,7 +1488,7 @@ namespace Smash_Forge
             using (var texIdSelector = new TexIdSelector())
             {
                 // Match the texture IDs. Assume the NUT is the correct one to initialize the gui.
-                texIdSelector.Set(((NutTexture)modelContainer.NUT.Nodes[0]).HASHID);
+                texIdSelector.Set(((NutTexture)modelContainer.NUT.Nodes[0]).HashId);
                 texIdSelector.ShowDialog();
                 if (texIdSelector.exitStatus == TexIdSelector.ExitStatus.Opened)
                 {
@@ -1466,6 +1498,7 @@ namespace Smash_Forge
             }
         }
 
+<<<<<<< HEAD
         private void contextMenuStrip1_Opening_1(object sender, CancelEventArgs e)
         {
 
@@ -1838,5 +1871,34 @@ namespace Smash_Forge
         }
 
 
+=======
+        private void uvViewerMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is NUD.Polygon))
+                return;
+
+            NUD.Polygon poly = (NUD.Polygon)filesTreeView.SelectedNode;
+            NUD nud = (NUD)poly.Parent.Parent;
+            UvViewer uvViewer = new UvViewer(nud, poly);
+            uvViewer.Show();
+        }
+
+        private void openViewerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode.Tag is SALT.Graphics.XMBFile))
+                return;
+
+            try
+            {
+                SALT.Graphics.XMBFile xmb = (SALT.Graphics.XMBFile)filesTreeView.SelectedNode.Tag;
+                XmbViewer xmbViewer = new XmbViewer(xmb);
+                xmbViewer.Show();
+            }
+            catch (Exception)
+            {
+                // Something broke. Let's just pretend it didn't happen.
+            }
+        }
+>>>>>>> 1648edfbd21782869aebf5132a785daa518b48e9
     }
 }

@@ -177,8 +177,7 @@ namespace Smash_Forge.GUI.Menus
                     vbnFilePath = ofd.FileName;
                     vbn = new VBN(vbnFilePath);
                     lbVBN.Text = vbnFilePath;
-                }
-                else
+                }else
                 {
                     vbnFilePath = "";
                     vbn = null;
@@ -191,12 +190,12 @@ namespace Smash_Forge.GUI.Menus
         {
             if (useCameraAnimation.Checked)
             {
-                if (vbn != null && animation != null)
+                if(vbn != null && animation != null)
                 {
                     animation.SetFrame(frame);
                     animation.NextFrame(vbn);
 
-                    if (vbn.bones.Count > 0)
+                    if(vbn.bones.Count > 0)
                         Cam.SetFromBone(vbn.bones[0]);
                 }
             }

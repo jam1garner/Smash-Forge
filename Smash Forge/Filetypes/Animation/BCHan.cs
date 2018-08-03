@@ -26,7 +26,7 @@ namespace Smash_Forge
             f.skip(4);
             header.backwardCompatibility = f.readByte();
             header.forwardCompatibility = f.readByte();
-            header.version = f.readShort();
+            header.version = f.readUShort();
 
             header.mainHeaderOffset = f.readInt();
             header.stringTableOffset = f.readInt();
@@ -47,8 +47,8 @@ namespace Smash_Forge
 
             if (header.backwardCompatibility > 7)
             {
-                header.flags = f.readShort();
-                header.addressCount = f.readShort();
+                header.flags = f.readUShort();
+                header.addressCount = f.readUShort();
             }
 
             // Relocation table
@@ -158,7 +158,6 @@ namespace Smash_Forge
                 //Runtime.Animations.Add(skeletalAnimationName, a);
                 //MainForm.animNode.Nodes.Add(skeletalAnimationName);
                 
-                //Debug.WriteLine("Animation Name: " + skeletalAnimationName);
                 Animation a = new Animation(skeletalAnimationName);
                 ThisAnimation.Nodes.Add(a);
 

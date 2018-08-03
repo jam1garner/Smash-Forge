@@ -1253,7 +1253,6 @@
     <Compile Include="Runtime.cs" />
     <Compile Include="SkelAnimation.cs" />
     <Compile Include="Filetypes\SMD.cs" />
-    <Compile Include="Rendering\Shader.cs" />
     <Compile Include="Filetypes\Textures\DDS.cs" />
     <Compile Include="Filetypes\Models\NUD.cs" />
     <Compile Include="Filetypes\Textures\NUT.cs" />
@@ -1264,7 +1263,6 @@
     <None Include="GUI\Editors\MeshList.resx">
       <DependentUpon>MeshList.cs</DependentUpon>
     </None>
-    <Compile Include="Filetypes\Models\DAE.cs" />
     <Compile Include="Filetypes\Models\MBN.cs" />
     <Compile Include="Filetypes\Textures\Pixel.cs" />
   </ItemGroup>

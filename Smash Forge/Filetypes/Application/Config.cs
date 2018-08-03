@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
 using System.Xml;
+using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {
@@ -48,7 +49,6 @@ namespace Smash_Forge
                                     if (File.Exists(node.InnerText) && node.InnerText.ToLower().EndsWith(".png"))
                                     {
                                         Runtime.floorTexFilePath = node.InnerText;
-                                        Rendering.RenderTools.floorTexture = NUT.loadImage(new Bitmap(node.InnerText));
                                         Runtime.floorStyle = Runtime.FloorStyle.UserTexture;
                                     }
                                     break;
@@ -67,7 +67,7 @@ namespace Smash_Forge
                     case "default_texture":
                         if (File.Exists(node.InnerText) && node.InnerText.ToLower().EndsWith(".png"))
                         {
-                            Rendering.RenderTools.defaultTex = NUT.loadImage(new Bitmap(node.InnerText));
+                            Rendering.RenderTools.defaultTex = new Texture2D(new Bitmap(node.InnerText));
                         }
                         break;
                     case "size":
@@ -103,9 +103,6 @@ namespace Smash_Forge
                     case "type":
                         if (node.ParentNode != null && node.ParentNode.Name.Equals("RENDERSETTINGS"))
                             Enum.TryParse(node.InnerText, out Runtime.renderType);
-                        break;
-                    case "OpenGL_2.10":
-                        bool.TryParse(node.InnerText, out Runtime.useLegacyShaders);
                         break;
                     case "bone_node_size":
                         float.TryParse(node.InnerText, out Runtime.RenderBoneNodeSize);
@@ -185,7 +182,7 @@ namespace Smash_Forge
                     case "render_tether_ledge_grabboxes":
                         bool.TryParse(node.InnerText, out Runtime.renderTetherLedgeGrabboxes);
                         break;
-                    case "render_bounding_boxes":
+                    case "render_bounding_spheres":
                         bool.TryParse(node.InnerText, out Runtime.renderBoundingSphere);
                         break;
                     case "render_path":
@@ -439,7 +436,6 @@ namespace Smash_Forge
             renderSettingsNode.AppendChild(createNode(doc, "render_alpha", Runtime.renderAlpha.ToString()));
             renderSettingsNode.AppendChild(createNode(doc, "camera_light", Runtime.cameraLight.ToString()));
             renderSettingsNode.AppendChild(createNode(doc, "use_normal_map", Runtime.renderNormalMap.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "OpenGL_2.10", Runtime.useLegacyShaders.ToString()));
             renderSettingsNode.AppendChild(createNode(doc, "bone_node_size", Runtime.RenderBoneNodeSize.ToString()));
 
             AppendMaterialLightingSettings(doc, renderSettingsNode);
@@ -459,7 +455,7 @@ namespace Smash_Forge
             renderModelNode.AppendChild(createNode(doc, "render_selection", Runtime.renderModelSelection.ToString()));
             renderModelNode.AppendChild(createNode(doc, "render_wireframe", Runtime.renderModelWireframe.ToString()));
             renderModelNode.AppendChild(createNode(doc, "render_bones", Runtime.renderBones.ToString()));
-            renderModelNode.AppendChild(createNode(doc, "render_bounding_boxes", Runtime.renderBoundingSphere.ToString()));
+            renderModelNode.AppendChild(createNode(doc, "render_bounding_spheres", Runtime.renderBoundingSphere.ToString()));
         }
 
         private static void AppendMaterialLightingSettings(XmlDocument doc, XmlNode parentNode)

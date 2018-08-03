@@ -149,13 +149,13 @@ namespace Smash_Forge
                 d.skip(4); // 0 padding?
                 unk1 = d.readInt();
                 d.skip(2); //0
-                unk2 = d.readShort();
+                unk2 = d.readUShort();
 
                 int ssize = d.readByte();
                 project = d.readString(d.pos(), ssize-1);
                 d.skip(ssize-1);
                 d.skip(6);
-                unk3 = d.readShort();
+                unk3 = d.readUShort();
                 d.align(4);
                 ssize = d.readByte();
                 timestamp = d.readString(d.pos(), ssize-1);

@@ -190,7 +190,7 @@ namespace Smash_Forge
 
             if(Runtime.TargetVBN == null)
             {
-                MessageBox.Show("You must have a bone set (VBN) open before saving animations");
+                MessageBox.Show("You must have a bone-set (VBN) selected to save animations.");
                 return;
             }
 

@@ -41,9 +41,6 @@ namespace Smash_Forge.Rendering
             CreateAndAddShader("Point", "Point.frag", "Point.vert");
             CreateAndAddShader("Shadow", "Shadow.frag", "Shadow.vert");
             CreateAndAddShader("SolidColor3D", "SolidColor3D.frag", "SolidColor3D.vert");
-            CreateAndAddShader("BFRES", "BFRES.frag", "BFRES.vert");
-            CreateAndAddShader("BFRES_PBR", "BFRES_PBR.frag", "BFRES_PBR.vert");
-            CreateAndAddShader("KCL", "KCL.frag", "KCL.vert");
             CreateAndAddShader("UV", "NUD\\UV.frag", "NUD\\UV.vert", "NUD\\UV.geom", "NUD\\EdgeDistance.geom", "Utility\\Utility.frag", "Utility\\Wireframe.frag");
         }
 
@@ -97,7 +94,7 @@ namespace Smash_Forge.Rendering
             CreateAndAddShader("ScreenQuad", "PostProcessing\\ScreenQuad.frag", "PostProcessing\\ScreenTexCoordMain.vert");
             CreateAndAddShader("Gradient", "PostProcessing\\Gradient.frag", "PostProcessing\\ScreenTexCoordMain.vert");
         }
-
+        
         public static void CreateAndAddShader(string shaderProgramName, params string[] shaderRelativePaths)
         {
             if (!OpenTKSharedResources.shaders.ContainsKey(shaderProgramName))
@@ -151,7 +148,7 @@ namespace Smash_Forge.Rendering
         public static void SaveErrorLogs()
         {
             // Export error logs for all the shaders.
-            List<String> compileErrorList = new List<String>();
+            List<String> compileErrorList = new List<String>(); 
             int successfulCompilations = OpenTKSharedResources.shaders.Count;
             foreach (string shaderName in OpenTKSharedResources.shaders.Keys)
             {

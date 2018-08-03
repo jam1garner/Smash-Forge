@@ -117,7 +117,7 @@ namespace Smash_Forge
             ImageKey = "texture";
             SelectedImageKey = "texture";
         }
-
+        
         public override string ToString()
         {
             return HashId.ToString("x").ToUpper();
@@ -245,7 +245,7 @@ namespace Smash_Forge
             save.Click += Save;
         }
 
-        public NUT(string filename) : this()
+        public NUT (string filename) : this()
         {
             Read(filename);
         }
@@ -317,7 +317,7 @@ namespace Smash_Forge
 
             foreach (NutTexture texture in Nodes)
             {
-
+                
                 byte surfaceCount = (byte)texture.surfaces.Count;
                 bool isCubemap = surfaceCount == 6;
                 if (surfaceCount < 1 || surfaceCount > 6)
@@ -773,7 +773,7 @@ namespace Smash_Forge
         public static bool texIdUsed(int texId)
         {
             foreach (var nut in Runtime.TextureContainers)
-                foreach (NutTexture tex in nut.Nodes)
+                foreach(NutTexture tex in nut.Nodes)
                     if (tex.HashId == texId)
                         return true;
             return false;
@@ -809,12 +809,12 @@ namespace Smash_Forge
             List<byte> previous4thBytes = new List<byte>();
             foreach (NutTexture tex in Nodes)
             {
-                byte fourthByte = (byte)(tex.HashId & 0xFF);
+                byte fourthByte = (byte) (tex.HashId & 0xFF);
                 if (!(previous4thBytes.Contains(fourthByte)))
                     previous4thBytes.Add(fourthByte);
                 else
                     return true;
-
+                    
             }
 
             return false;
@@ -844,8 +844,8 @@ namespace Smash_Forge
                 else
                 {
                     // Only load the first level and generate the rest.
-                    return new Texture2D(nutTexture.Width, nutTexture.Height,
-                        nutTexture.surfaces[surfaceIndex].mipmaps, false,
+                    return new Texture2D(nutTexture.Width, nutTexture.Height, 
+                        nutTexture.surfaces[surfaceIndex].mipmaps, false, 
                         (InternalFormat)nutTexture.pixelInternalFormat);
                 }
             }
@@ -864,7 +864,7 @@ namespace Smash_Forge
             texture.Bind();
 
             // Necessary to access mipmaps past the base level.
-            texture.MinFilter = TextureMinFilter.LinearMipmapLinear;
+            texture.MinFilter = TextureMinFilter.LinearMipmapLinear; 
 
             // The number of mip maps needs to be specified first.
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureBaseLevel, 0);
@@ -874,7 +874,7 @@ namespace Smash_Forge
             for (int i = 0; i < t.surfaces.Count; i++)
             {
                 GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, 0, (InternalFormat)t.pixelInternalFormat, t.Width, t.Height, 0, t.ImageSize, t.surfaces[i].mipmaps[0]);
-
+                
                 // Initialize the data for each level.
                 for (int j = 1; j < t.surfaces[i].mipmaps.Count; j++)
                 {

@@ -42,7 +42,7 @@ namespace Smash_Forge
             if(e.Node.Tag is DAT.JOBJ)
             {
                 DAT.JOBJ jobj = (DAT.JOBJ)e.Node.Tag;
-                MainForm.Instance.lvdEditor.open(jobj, new TreeNode());
+                MainForm.Instance.lvdEditor.Open(jobj, new TreeNode());
             }
         }
 

@@ -125,11 +125,11 @@ namespace VBN_Editor
                     f.skip(0x08); // graphic chunk header
                     Graphic graphic = new Graphic();
                     graphic.atlasId = f.readInt();
-                    graphic.unk1 = (short)f.readShort();
+                    graphic.unk1 = f.readShort();
                     graphic.verts = new List<Vertex>();
                     graphic.indices = new List<int>();
 
-                    int numVerts = f.readShort();
+                    ushort numVerts = f.readUShort();
                     int numIndices = f.readInt();
 
                     for (int j = 0; j < numVerts; j++)
@@ -142,7 +142,7 @@ namespace VBN_Editor
 
                     for (int j = 0; j < numIndices; j++)
                     {
-                        graphic.indices.Add(f.readShort());
+                        graphic.indices.Add(f.readUShort());
                     }
 
                     // indices are padded to word boundaries
@@ -291,14 +291,14 @@ namespace VBN_Editor
                             placement.placementId = f.readInt();
                             placement.unk1 = f.readInt();
                             placement.nameId = f.readInt();
-                            placement.unk2 = (short)f.readShort();
-                            placement.unk3 = (short)f.readShort();
-                            placement.mcObjectId = (short)f.readShort();
-                            placement.unk4 = (short)f.readShort();
-                            placement.transformFlags = (short)f.readShort();
-                            placement.transformId = (short)f.readShort();
-                            placement.positionFlags = (short)f.readShort();
-                            placement.positionId = (short)f.readShort();
+                            placement.unk2 = f.readShort();
+                            placement.unk3 = f.readShort();
+                            placement.mcObjectId = f.readShort();
+                            placement.unk4 = f.readShort();
+                            placement.transformFlags = f.readShort();
+                            placement.transformId = f.readShort();
+                            placement.positionFlags = f.readShort();
+                            placement.positionId = f.readShort();
                             placement.colorId1 = f.readInt();
                             placement.colorId2 = f.readInt();
                             placement.numF037s = f.readInt();
@@ -318,8 +318,8 @@ namespace VBN_Editor
                         {
                             Deletion deletion = new Deletion();
                             deletion.unk1 = f.readInt();
-                            deletion.mcObjectId = (short)f.readShort();
-                            deletion.unk2 = (short)f.readShort();
+                            deletion.mcObjectId = f.readShort();
+                            deletion.unk2 = f.readShort();
                             frame.deletions.Add(deletion);
                         }
                         else if (childType == ChunkType.Action)
@@ -422,10 +422,10 @@ namespace VBN_Editor
                         for (int i = 0; i < numColors; i++)
                         {
                             Color color;
-                            color.r = (short)f.readShort();
-                            color.g = (short)f.readShort();
-                            color.b = (short)f.readShort();
-                            color.a = (short)f.readShort();
+                            color.r = f.readShort();
+                            color.g = f.readShort();
+                            color.b = f.readShort();
+                            color.a = f.readShort();
 
                             colors.Add(color);
                         }
@@ -505,8 +505,8 @@ namespace VBN_Editor
                         text.unk3 = f.readInt();
                         text.unk4 = f.readInt();
                         text.unk5 = f.readInt();
-                        text.alignment = (short)f.readShort();
-                        text.unk6 = (short)f.readShort();
+                        text.alignment = f.readShort();
+                        text.unk6 = f.readShort();
                         text.unk7 = f.readInt();
                         text.unk8 = f.readInt();
                         text.size = f.readFloat();

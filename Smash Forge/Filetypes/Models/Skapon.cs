@@ -35,10 +35,10 @@ namespace Smash_Forge
 
                 if (e.Name.EndsWith(".dds"))
                 {
-                    NutTexture tex = new DDS(new FileData(b)).toNUT_Texture();
+                    NutTexture tex = new DDS(new FileData(b)).ToNutTexture();
                     nut.Nodes.Add(tex);
-                    tex.HASHID = 0x40000000 + randomNumber;
-                    nut.draw.Add(tex.HASHID, NUT.loadImage(tex));
+                    tex.HashId = 0x40000000 + randomNumber;
+                    nut.glTexByHashId.Add(tex.HashId, NUT.CreateTexture2D(tex));
                 }
             }
 
@@ -59,7 +59,7 @@ namespace Smash_Forge
                 p.materials[0].textures[0].hash = 0x40000000 + randomNumber;
             }
 
-            nud.UpdateVertexData();
+            nud.UpdateVertexBuffers();
 
             return nud;
         }
@@ -119,9 +119,9 @@ namespace Smash_Forge
                         v.uv.Add(new Vector2(float.Parse(args[1]), float.Parse(args[2])));
                         break;
                     case "f":
-                        poly.faces.Add(int.Parse(args[1].Split('/')[0]) - 1);
-                        poly.faces.Add(int.Parse(args[2].Split('/')[0]) - 1);
-                        poly.faces.Add(int.Parse(args[3].Split('/')[0]) - 1);
+                        poly.vertexIndices.Add(int.Parse(args[1].Split('/')[0]) - 1);
+                        poly.vertexIndices.Add(int.Parse(args[2].Split('/')[0]) - 1);
+                        poly.vertexIndices.Add(int.Parse(args[3].Split('/')[0]) - 1);
                         break;
                 }
             }
@@ -233,7 +233,7 @@ namespace Smash_Forge
 
 
             removeLowPolyNr(nud);
-            nud.UpdateVertexData();
+            nud.UpdateVertexBuffers();
 
             //Runtime.ModelContainers.Add(converted);
             //-------------------------------------------------
@@ -363,7 +363,7 @@ namespace Smash_Forge
                     }
                 }
             }
-            nud.UpdateVertexData();
+            nud.UpdateVertexBuffers();
         }
 
         public static void ArrangeBones(VBN vbn, NUD nud)
@@ -418,7 +418,7 @@ namespace Smash_Forge
                     }
                 }
             }
-            nud.UpdateVertexData();
+            nud.UpdateVertexBuffers();
         }
 
         public static void BoneNameFix(VBN vbn)
