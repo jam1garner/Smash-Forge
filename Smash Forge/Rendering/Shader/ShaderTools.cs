@@ -37,7 +37,7 @@ namespace Smash_Forge.Rendering
 
         private static void SetUpBfresShaders()
         {
-            CreateAndAddShader("BFRES", "BFRES.frag", "BFRES.vert");
+            CreateAndAddShader("BFRES", "BFRES.frag", "BFRES.vert", "Utility\\Utility.frag");
             CreateAndAddShader("BFRES_PBR", "BFRES_PBR.frag", "BFRES_PBR.vert");
             CreateAndAddShader("KCL", "KCL.frag", "KCL.vert");
         }

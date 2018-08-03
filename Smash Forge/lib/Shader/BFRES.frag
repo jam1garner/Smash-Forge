@@ -117,6 +117,8 @@ out vec4 FragColor;
 
 #define gamma 2.2
 
+// Defined in Utility.frag.
+float Luminance(vec3 rgb);
 
 vec2 displayTexCoord =  f_texcoord0;
 
@@ -143,7 +145,7 @@ vec3 CalcSpecularMap(vec3 I, vec3 NormalMap)
    vec3 NewSpecular = vec3(1);
 
    if (shininess < 255.0)
-   {   
+   {
    }
 
 
@@ -152,39 +154,37 @@ vec3 CalcSpecularMap(vec3 I, vec3 NormalMap)
 
 }
 
-vec3 CalcBumpedNormal(vec3 inputNormal) //Currently reused some bits from nud shader. 
+vec3 CalcBumpedNormal(vec3 inputNormal) //Currently reused some bits from nud shader.
 {
-    // if no normal map, then return just the normal
-    if(useNormalMap == 0 || HasNormalMap == 0)
+    // If there's no normal map, then return just the normal.
+    if (useNormalMap == 0 || HasNormalMap == 0)
 	   return inputNormal;
 
-    float normalIntensity = 3;
+    float normalIntensity = 1;
 
 	//if (normal_map_weight != 0) //MK8 and splatoon 1/2 uses this param
 	//      normalIntensity = normal_map_weight;
 
-	vec3 BumpMapNormal = vec3(1);
+    // Calculate the resulting normal map and intensity.
+	vec3 normalMapColor = vec3(1);
 	if (uking_texture2_texcoord == 1)
-        BumpMapNormal = vec3(texture(nrm, f_texcoord1).rg, 1);
+        normalMapColor = vec3(texture(nrm, f_texcoord1).rg, 1);
     else
-        BumpMapNormal = vec3(texture(nrm, displayTexCoord).rg, 1);
-    BumpMapNormal = mix(vec3(0.5, 0.5, 1), BumpMapNormal, normalIntensity); // probably a better way to do this
-    BumpMapNormal = 2.0 * BumpMapNormal - vec3(1);
+        normalMapColor = vec3(texture(nrm, displayTexCoord).rg, 1);
+    normalMapColor = mix(vec3(0.5, 0.5, 1), normalMapColor, normalIntensity);
 
-	vec3 B = vec3(0);
-	vec3 T = vec3(0);
+    // Remap the normal map to the correct range.
+    vec3 normalMapNormal = 2.0 * normalMapColor - vec3(1);
 
-    vec3 NewNormal;
-    vec3 Normal = normalize(normal);
-	if (bitangent != vec3(0))
-	    B = normalize(bitangent);
-	if (tangent != vec3(0))
-	    T = normalize(tangent);
-    mat3 TBN = mat3(tangent, B, Normal);
-    NewNormal = TBN * BumpMapNormal;
-    NewNormal = normalize(NewNormal);
+    // TBN Matrix.
+    vec3 T = tangent;
+    vec3 B = bitangent;
+    if (Luminance(B) < 0.01)
+        B = normalize(cross(T, normal));
+    mat3 tbnMatrix = mat3(T, B, normal);
 
-    return NewNormal;
+    vec3 newNormal = tbnMatrix * normalMapNormal;
+    return normalize(newNormal);
 }
 
 void main()
@@ -208,7 +208,7 @@ void main()
 		}
         return;
     }
- 
+
 
   //Diffuse
     vec3 colordiff = texture(tex0, displayTexCoord).rgb;
@@ -294,7 +294,7 @@ void main()
 	      FragColor += vec4(texture(DiffuseLayer, f_texcoord3).rgb, 1) * vec4(1);
 	  //   outputColor = outputColor + vec4(texture(DiffuseLayer, f_texcoord3).rgb, 1) * vec4(1);
 	}
-	
+
 
 
   //Default Shader
@@ -349,7 +349,7 @@ void main()
 		 else
 		      A0Tex = vec4(texture(BakeShadowMap, displayTexCoord).rrr, 1);
 
-	  //   FragColor *= A0Tex;    
+	  //   FragColor *= A0Tex;
     }
 	if (HasShadowMap == 1)
 	{
@@ -440,17 +440,17 @@ void main()
 	{
 	   //     FragColor =  vec4(texture(BakeLightMap, f_texcoord2).rgb, 1);
 
-    
+
 		vec4 AmbientOcc = vec4(texture(BakeShadowMap, f_texcoord1).rrr, 1);
 		vec4 ColorMain = vec4(((33,33,33 * alpha * outputColor)).xyz, 1.0);
 
 		vec3 LightHDRScale = vec3(1);
 
-		vec3 LColor = vec3(1); 
+		vec3 LColor = vec3(1);
 
 		if (LightMapColor.a > 0.9)
 		{
-		    LColor = vec3(1); 
+		    LColor = vec3(1);
 		}
 		else
 		{

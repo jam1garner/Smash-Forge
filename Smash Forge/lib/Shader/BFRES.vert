@@ -141,7 +141,7 @@ void main()
     vec4 sampler2 = gsys_bake_st0;
     vec4 sampler3 = gsys_bake_st1;
 
-    normal = normalize(mat3(modelview) * vNormal);
+    normal = vNormal;
 
 
 	//     if(vBone.x != -1){
