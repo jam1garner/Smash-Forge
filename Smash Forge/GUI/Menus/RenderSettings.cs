@@ -41,7 +41,7 @@ namespace Smash_Forge.GUI
 
             // Model Settings
             renderModelCB.Checked = Runtime.renderModel;
-            boundingCB.Checked = Runtime.renderBoundingBox;
+            boundingCB.Checked = Runtime.renderBoundingSphere;
             wireframeCB.Checked = Runtime.renderModelWireframe;
             modelSelectCB.Checked = Runtime.renderModelSelection;
             wireframeCB.Enabled = renderModelCB.Checked;
@@ -409,7 +409,7 @@ namespace Smash_Forge.GUI
 
         private void boundingCB_CheckedChanged(object sender, EventArgs e)
         {
-            Runtime.renderBoundingBox = boundingCB.Checked;
+            Runtime.renderBoundingSphere = boundingCB.Checked;
         }
 
         private void modelSelectCB_CheckedChanged(object sender, EventArgs e)

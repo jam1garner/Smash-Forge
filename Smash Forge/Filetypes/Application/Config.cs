@@ -186,7 +186,7 @@ namespace Smash_Forge
                         bool.TryParse(node.InnerText, out Runtime.renderTetherLedgeGrabboxes);
                         break;
                     case "render_bounding_boxes":
-                        bool.TryParse(node.InnerText, out Runtime.renderBoundingBox);
+                        bool.TryParse(node.InnerText, out Runtime.renderBoundingSphere);
                         break;
                     case "render_path":
                         bool.TryParse(node.InnerText, out Runtime.renderPath);
@@ -459,7 +459,7 @@ namespace Smash_Forge
             renderModelNode.AppendChild(createNode(doc, "render_selection", Runtime.renderModelSelection.ToString()));
             renderModelNode.AppendChild(createNode(doc, "render_wireframe", Runtime.renderModelWireframe.ToString()));
             renderModelNode.AppendChild(createNode(doc, "render_bones", Runtime.renderBones.ToString()));
-            renderModelNode.AppendChild(createNode(doc, "render_bounding_boxes", Runtime.renderBoundingBox.ToString()));
+            renderModelNode.AppendChild(createNode(doc, "render_bounding_boxes", Runtime.renderBoundingSphere.ToString()));
         }
 
         private static void AppendMaterialLightingSettings(XmlDocument doc, XmlNode parentNode)

@@ -2008,21 +2008,18 @@ namespace Smash_Forge
         private void DrawFTEXTexAndUvs()
         {
             GL.PopAttrib();
-            FTEX tex = ((FTEX)MeshList.filesTreeView.SelectedNode);
+
+            FTEX tex = ((FTEX)meshList.filesTreeView.SelectedNode);
             switch (tex.format)
             {
                 case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM:
-                    {
-                        RenderTools.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
-                    }
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
                     break;
                 case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM:
-                    {
-                        RenderTools.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
-                    }
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
                     break;
                 default:
-                    RenderTools.DrawTexturedQuad(tex.display, tex.width, tex.height);
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height);
                     break;
             }
 

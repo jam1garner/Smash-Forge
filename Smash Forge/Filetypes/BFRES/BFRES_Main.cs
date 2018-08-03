@@ -393,7 +393,7 @@ namespace Smash_Forge
 
             shader.enableAttrib();
 
-            if (Runtime.renderBoundingBox)
+            if (Runtime.renderBoundingSphere)
             {
                 DrawBoundingBoxes();
             }
