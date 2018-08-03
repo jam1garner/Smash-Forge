@@ -106,10 +106,11 @@
     <Compile Include="ACMDScript.cs" />
     <Compile Include="Animation.cs" />
     <Compile Include="CharacterParamManager.cs" />
-    <Compile Include="Config.cs" />
+    <Compile Include="Filetypes\Application\Config.cs" />
     <Compile Include="DiscordSettings.cs" />
     <Compile Include="Filetypes\Animation\BCHan.cs" />
     <Compile Include="Filetypes\Animation\OMO.cs" />
+    <Compile Include="Filetypes\Application\MaterialXMLBatchExport.cs" />
     <Compile Include="Filetypes\ATKD.cs" />
     <Compile Include="Filetypes\BCH\BCH_Animation.cs" />
     <Compile Include="Filetypes\BCH\BCH_Main.cs" />
@@ -148,7 +149,7 @@
     <Compile Include="Filetypes\BYAML\LIB\Serialization\TypeInfoExtensions.cs" />
     <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\KCL\KCL.cs" />
-    <Compile Include="Filetypes\MaterialXML.cs" />
+    <Compile Include="Filetypes\Application\MaterialXML.cs" />
     <Compile Include="Filetypes\Melee\DAT.cs" />
     <Compile Include="Filetypes\Melee\DAT_Animation.cs" />
     <Compile Include="Filetypes\LVD.cs" />
@@ -598,11 +599,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Drawing\MaterialPreviewRendering.cs" />
+    <Compile Include="Rendering\Drawing\NudMatSphereDrawing.cs" />
+    <Compile Include="Rendering\Drawing\NudUvRendering.cs" />
     <Compile Include="Rendering\ForgeCamera.cs" />
     <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
-    <Compile Include="Rendering\BatchRenderTools.cs" />
-    <Compile Include="Rendering\Camera.cs" />
     <Compile Include="Rendering\Lights\DirectionalLight.cs" />
     <Compile Include="Rendering\Lights\HemisphereFresnel.cs" />
     <Compile Include="Rendering\Lights\LightColor.cs" />
@@ -612,7 +614,7 @@
     <Compile Include="Rendering\OpenTKSharedResources.cs" />
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\Drawing\ScreenDrawing.cs" />
-    <Compile Include="Rendering\ShaderTools.cs" />
+    <Compile Include="Rendering\Shader\ShaderTools.cs" />
     <Compile Include="Rendering\Drawing\ShapeDrawing.cs" />
     <Compile Include="Rendering\Drawing\TextureToBitmap.cs" />
     <Compile Include="Updates.cs" />
@@ -828,7 +830,7 @@
     <None Include="hashTable.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\BFRES_PBR_fs.txt">
+    <None Include="lib\Shader\BFRES_PBR.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Skapon.zip">
@@ -1183,48 +1185,6 @@
     <None Include="Resources\UVPattern.png" />
     <None Include="Resources\10102000.png" />
     <None Include="Resources\10101000.png" />
-    <None Include="lib\Shader\Texture_fs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\Texture_vs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\NUD_fs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\NUD_vs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\MBN_fs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\MBN_vs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\Quad_fs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\Quad_vs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\Shadow_fs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\DAT_fs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\DAT_vs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\Blur_fs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\Blur_vs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\Shadow_vs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Preview Images\Mat01 [Beginners Material].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -1255,30 +1215,6 @@
     <None Include="Preview Images\Stage.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Gradient_vs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\Gradient_fs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\NUD_Debug_fs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\NUD_Eff_fs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\NUD_Eff_vs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\Point_fs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\Point_vs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\NUD_Debug_vs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Preview Images\Mat05 [Metal Ganon Armor].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -1288,30 +1224,24 @@
     <None Include="Preview Images\Mat11 [JoeTE Glow].png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Screen_Quad_fs.txt">
+    <None Include="lib\Shader\BFRES.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Screen_Quad_vs.txt">
+    <None Include="lib\Shader\BFRES.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\BFRES_fs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\BFRES_vs.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\Shader\BFRES_PBR_vs.txt">
+    <None Include="lib\Shader\BFRES_PBR.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="lib\SFGraphics.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="lib\Shader\KCL_fs.txt">
+    <None Include="lib\Shader\KCL.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="lib\Shader\KCL_vs.txt">
+    </None>
+    <None Include="lib\Shader\KCL.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
     <Content Include="lib\Syroot.BinaryData.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -57,8 +57,6 @@
             this.lbVBN = new System.Windows.Forms.Label();
             this.lbAnimation = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.FreeCamToggle = new System.Windows.Forms.CheckBox();
             this.useCameraAnimation = new System.Windows.Forms.CheckBox();
             this.groupHorizontalRotation.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericHorizontalRadians)).BeginInit();
@@ -216,6 +214,7 @@
             this.numericZoom.Name = "numericZoom";
             this.numericZoom.Size = new System.Drawing.Size(69, 20);
             this.numericZoom.TabIndex = 2;
+            this.numericZoom.ValueChanged += new System.EventHandler(this.numericZoom_ValueChanged);
             // 
             // numericPositionY
             // 
@@ -224,6 +223,7 @@
             this.numericPositionY.Name = "numericPositionY";
             this.numericPositionY.Size = new System.Drawing.Size(69, 20);
             this.numericPositionY.TabIndex = 3;
+            this.numericPositionY.ValueChanged += new System.EventHandler(this.numericPositionY_ValueChanged);
             // 
             // numericPositionX
             // 
@@ -232,6 +232,7 @@
             this.numericPositionX.Name = "numericPositionX";
             this.numericPositionX.Size = new System.Drawing.Size(69, 20);
             this.numericPositionX.TabIndex = 2;
+            this.numericPositionX.ValueChanged += new System.EventHandler(this.numericPositionX_ValueChanged);
             // 
             // label5
             // 
@@ -364,8 +365,6 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.label8);
-            this.groupBox3.Controls.Add(this.FreeCamToggle);
             this.groupBox3.Controls.Add(this.useCameraAnimation);
             this.groupBox3.Controls.Add(this.btnLoadVBN);
             this.groupBox3.Controls.Add(this.lbAnimation);
@@ -377,26 +376,6 @@
             this.groupBox3.TabIndex = 44;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Camera Animation";
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(114, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(52, 13);
-            this.label8.TabIndex = 47;
-            this.label8.Text = "Free Cam";
-            // 
-            // FreeCamToggle
-            // 
-            this.FreeCamToggle.AutoSize = true;
-            this.FreeCamToggle.Location = new System.Drawing.Point(117, 19);
-            this.FreeCamToggle.Name = "FreeCamToggle";
-            this.FreeCamToggle.Size = new System.Drawing.Size(107, 17);
-            this.FreeCamToggle.TabIndex = 46;
-            this.FreeCamToggle.Text = "Enable Free Cam";
-            this.FreeCamToggle.UseVisualStyleBackColor = true;
-            this.FreeCamToggle.CheckedChanged += new System.EventHandler(this.FreeCamToggle_CheckedChanged);
             // 
             // useCameraAnimation
             // 
@@ -483,7 +462,5 @@
         private System.Windows.Forms.Label lbAnimation;
         private System.Windows.Forms.GroupBox groupBox3;
         public System.Windows.Forms.CheckBox useCameraAnimation;
-        private System.Windows.Forms.CheckBox FreeCamToggle;
-        private System.Windows.Forms.Label label8;
     }
 }

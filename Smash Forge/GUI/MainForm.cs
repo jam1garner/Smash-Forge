@@ -1415,9 +1415,9 @@ namespace Smash_Forge
                     {
                         foreach(ModelContainer modelContainer in modelViewport.MeshList.filesTreeView.Nodes)
                         {
-                            if(modelContainer.DAT_MELEE != null)
+                            if(modelContainer.DatMelee != null)
                             {
-                                Dictionary<string, Animation> Anims = DAT_Animation.GetTracks(fileName, modelContainer.DAT_MELEE.bones);
+                                Dictionary<string, Animation> Anims = DAT_Animation.GetTracks(fileName, modelContainer.DatMelee.bones);
                                 foreach(string key in Anims.Keys)
                                 {
                                     Anims[key].Text = key;
@@ -1445,7 +1445,7 @@ namespace Smash_Forge
                 }
                 
                 mvp = new ModelViewport();
-                mvp.draw.Add(new ModelContainer() { DAT_MELEE = dat });
+                mvp.draw.Add(new ModelContainer() { DatMelee = dat });
                 mvp.Text = fileName;
                 AddDockedControl(mvp);
             }

@@ -176,20 +176,20 @@ namespace Smash_Forge
                 Refresh();
             }
         }
-        public DAT DAT_MELEE
+        public DAT DatMelee
         {
             get
             {
-                return dat_melee;
+                return datMelee;
             }
             set
             {
-                dat_melee = value;
-                VBN = dat_melee.bones;
+                datMelee = value;
+                VBN = datMelee.bones;
                 Refresh();
             }
         }
-        private DAT dat_melee;
+        private DAT datMelee;
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
         public static MovesetManager Moveset { get; set; }
@@ -213,10 +213,10 @@ namespace Smash_Forge
         {
             Nodes.Clear();
 
-            if (DAT_MELEE != null)
+            if (DatMelee != null)
             {
                 Text = "Melee DAT";
-                Nodes.AddRange(DAT_MELEE.tree.ToArray());
+                Nodes.AddRange(DatMelee.tree.ToArray());
                 if (vbn != null && vbn.Parent == null) Nodes.Add(vbn);
             }
             else
@@ -259,14 +259,6 @@ namespace Smash_Forge
          * */
         public void Destroy()
         {
-            if (NUD != null)
-                NUD.Destroy();
-            if (NUT != null)
-                NUT.Destroy();
-            if (bfres != null)
-                bfres.Destroy();
-            if (kcl != null)
-                kcl.Destroy();
         }
 
         public VBN GetVBN()
@@ -383,9 +375,9 @@ namespace Smash_Forge
 
                 BFRES.Render(camera.mvpMatrix);
             }
-            if (DAT_MELEE != null && Runtime.shaders["DAT"].CompiledSuccessfully())
+            if (DatMelee != null && Runtime.shaders["DAT"].CompiledSuccessfully())
             {
-                DAT_MELEE.Render(camera.mvpMatrix);
+                DatMelee.Render(camera.mvpMatrix);
             }
 
             if (NUD != null && Runtime.shaders["NUD"].CompiledSuccessfully() && Runtime.shaders["NUD_Debug"].CompiledSuccessfully())
@@ -465,9 +457,9 @@ namespace Smash_Forge
 
             }
 
-            if (DAT_MELEE != null)
+            if (DatMelee != null)
             {
-                RenderTools.DrawVBN(DAT_MELEE.bones);
+                RenderTools.DrawVBN(DatMelee.bones);
             }
         }
 
@@ -590,7 +582,7 @@ namespace Smash_Forge
                 Vector3 closest = Vector3.Zero;
                 foreach (NUD.Mesh mesh in NUD.Nodes)
                 {
-                    if (ray.CheckSphereHit(new Vector3(mesh.boundingBox[0], mesh.boundingBox[1], mesh.boundingBox[2]), mesh.boundingBox[3], out closest))
+                    if (ray.CheckSphereHit(new Vector3(mesh.boundingSphere[0], mesh.boundingSphere[1], mesh.boundingSphere[2]), mesh.boundingSphere[3], out closest))
                         selected.Add(ray.Distance(closest), mesh);
                 }
             }

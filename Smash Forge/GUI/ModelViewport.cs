@@ -27,28 +27,37 @@ using Smash_Forge.Params;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects;
 using SFGraphics.Tools;
+using SFGraphics.Cameras;
+
 
 namespace Smash_Forge
 {
     public partial class ModelViewport : EditorBase
     {
-        // setup
-        bool ReadyToRender = false;
-
         // View controls
-        public Camera camera = new Camera();
+        public ForgeCamera camera = new ForgeCamera();
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
         // Rendering Stuff
-        int colorHdrFbo;
-        int colorHdrTex0;
-        int colorHdrTex1;
-        int hdrDepthRbo;
+        private Framebuffer colorHdrFbo;
 
-        int brightTexSmall;
-        int brightHdrSmallFbo;
-        int brightTexWidth;
-        int brightTexHeight;
+        // The texture that will be blurred for bloom.
+        private Framebuffer imageBrightHdrFbo;
+
+        // Used for screen renders and color picking.
+        private Framebuffer offscreenRenderFbo;
+
+        // Shadow Mapping
+        private Framebuffer depthMapFbo;
+        private DepthTexture depthMap;
+        private int shadowWidth = 2048;
+        private int shadowHeight = 2048;
+        private Matrix4 lightMatrix = Matrix4.Identity;
+
+        // The viewport dimensions should be used for FBOs visible on screen.
+        // Larger dimensions can be used for higher quality outputs for FBOs.
+        private int fboRenderWidth;
+        private int fboRenderHeight;
 
         // Functions of Viewer
         public enum Mode
@@ -57,47 +66,45 @@ namespace Smash_Forge
             Photoshoot,
             Selection
         }
-        public Mode CurrentMode = Mode.Normal;
+        public Mode currentMode = Mode.Normal;
 
-
-        VertexTool VertexTool = new VertexTool();
-        TransformTool TransformTool = new TransformTool();
+        private VertexTool vertexTool = new VertexTool();
+        private TransformTool transformTool = new TransformTool();
 
         //Animation
-        private VBN TargetVBN;
-        private Animation Animation;
+        private Animation currentAnimation;
         public Animation CurrentAnimation
         {
             get
             {
-                return Animation;
+                return currentAnimation;
             }
             set
             {
                 //Moveset
                 //If moveset is loaded then initialize with null script so handleACMD loads script for frame speed modifiers and FAF (if parameters are imported)
-                if (MovesetManager != null && ACMDScript == null)
-                    ACMDScript = new ForgeACMDScript(null);
+                if (MovesetManager != null && acmdScript == null)
+                    acmdScript = new ForgeACMDScript(null);
 
                 if (value != null)
                 {
                     string TargetAnimString = value.Text;
                     if (!string.IsNullOrEmpty(TargetAnimString))
                     {
-                        if (ACMDScript != null)
+                        if (acmdScript != null)
                         {
                             //Remove manual crc flag
                             //acmdEditor.manualCrc = false;
                             HandleACMD(TargetAnimString);
-                            if (ACMDScript != null)
-                                ACMDScript.processToFrame(0);
+                            if (acmdScript != null)
+                                acmdScript.processToFrame(0);
 
                         }
                     }
                 }
                 ResetModels();
-                MaterialAnimation = null;
-                Animation = value;
+                currentMaterialAnimation = null;
+                currentAnimation = value;
                 totalFrame.Value = value.FrameCount;
                 animationTrackBar.TickFrequency = 1;
                 currentFrame.Value = 1;
@@ -105,25 +112,26 @@ namespace Smash_Forge
             }
         }
 
-        private MTA MaterialAnimation;
+        private MTA currentMaterialAnimation;
         public MTA CurrentMaterialAnimation
         {
             get
             {
-                return MaterialAnimation;
+                return currentMaterialAnimation;
             }
             set
             {
                 ResetModels();
-                Animation = null;
-                MaterialAnimation = value;
-                totalFrame.Value = value.numFrames;
+                currentAnimation = null;
+                currentMaterialAnimation = value;
+                totalFrame.Value = value.frameCount;
                 animationTrackBar.TickFrequency = 1;
-                animationTrackBar.SetRange(0, (int)value.numFrames);
+                animationTrackBar.SetRange(0, (int)value.frameCount);
                 currentFrame.Value = 1;
                 currentFrame.Value = 0;
             }
         }
+
         private BFRES.MTA BFRESMaterialAnimation;
         public BFRES.MTA CurrentBFRESMaterialAnimation
         {
@@ -146,52 +154,55 @@ namespace Smash_Forge
 
         // ACMD
         public int scriptId = -1;
-        public Dictionary<string, int> ParamMoveNameIdMapping;
-        public CharacterParamManager ParamManager;
-        public PARAMEditor ParamManagerHelper;
+        public Dictionary<string, int> paramMoveNameIdMapping;
+        public CharacterParamManager paramManager;
+        public PARAMEditor paramManagerHelper;
+
+        private MovesetManager movesetManager;
         public MovesetManager MovesetManager
         {
             get
             {
-                return _MovesetManager;
+                return movesetManager;
             }
             set
             {
-                _MovesetManager = value;
-                if (ACMDEditor != null)
-                    ACMDEditor.updateCrcList();
+                movesetManager = value;
+                if (acmdEditor != null)
+                    acmdEditor.updateCrcList();
             }
         }
-        public MovesetManager _MovesetManager;
-        public ForgeACMDScript ACMDScript = null;
 
-        public ACMDPreviewEditor ACMDEditor;
-        public HitboxList HitboxList;
-        public HurtboxList HurtboxList;
-        public VariableList VariableViewer;
+        public ForgeACMDScript acmdScript = null;
+
+        public ACMDPreviewEditor acmdEditor;
+        public HitboxList hitboxList;
+        public HurtboxList hurtboxList;
+        public VariableList variableViewer;
 
         // Used in ModelContainer for direct UV time animation.
         public static Stopwatch directUVTimeStopWatch = new Stopwatch();
 
         //LVD
+        private LVD lvd;
         public LVD LVD
         {
             get
             {
-                return _lvd;
+                return lvd;
             }
             set
             {
-                _lvd = value;
-                _lvd.MeshList = MeshList;
-                LVDEditor.LVD = _lvd;
-                LVDList.TargetLVD = _lvd;
-                LVDList.fillList();
+                lvd = value;
+                lvd.MeshList = meshList;
+                lvdEditor.LVD = lvd;
+                lvdList.TargetLVD = lvd;
+                lvdList.fillList();
             }
         }
-        private LVD _lvd;
-        LVDList LVDList = new LVDList();
-        LVDEditor LVDEditor = new LVDEditor();
+
+        LVDList lvdList = new LVDList();
+        LVDEditor lvdEditor = new LVDEditor();
 
         public BFRES_MaterialEditor bfresMatEditor = new BFRES_MaterialEditor();
 
@@ -214,54 +225,45 @@ namespace Smash_Forge
         BYAMLList byamlList = new BYAMLList();
         BYAMLEditor byamlEditor = new BYAMLEditor();
 
+
         //Path
-        public PathBin PathBin;
+        public PathBin pathBin;
 
         // Selection Functions
         public float sx1, sy1;
 
         //Animation Functions
-        public int AnimationSpeed = 60;
-        public float Frame = 0;
+        public int animationSpeed = 60;
+        public float frame = 0;
         public bool isPlaying;
 
         // Contents
-        public MeshList MeshList = new MeshList();
-        public AnimListPanel AnimList = new AnimListPanel();
+        public MeshList meshList = new MeshList();
+        public AnimListPanel animListPanel = new AnimListPanel();
         public TreeNodeCollection draw;
 
         // Photoshoot
         public bool freezeCamera = false;
-        public int ShootX = 0;
-        public int ShootY = 0;
-        public int ShootWidth = 50;
-        public int ShootHeight = 50;
+        public int shootX = 0;
+        public int shootY = 0;
+        public int shootWidth = 50;
+        public int shootHeight = 50;
 
         public ModelViewport()
         {
             InitializeComponent();
-            camera = new Camera();
+            camera = new ForgeCamera();
             FilePath = "";
             Text = "Model Viewport";
 
-            MeshList.Dock = DockStyle.Right;
-            MeshList.MaximumSize = new Size(300, 2000);
-            MeshList.Size = new Size(300, 2000);
-            AddControl(MeshList);
-
-            AnimList.Dock = DockStyle.Left;
-            AnimList.MaximumSize = new Size(300, 2000);
-            AnimList.Size = new Size(300, 2000);
-            AddControl(AnimList);
-
-            LVDList.Dock = DockStyle.Left;
-            LVDList.MaximumSize = new Size(300, 2000);
-            AddControl(LVDList);
-            LVDList.lvdEditor = LVDEditor;
-
-            LVDEditor.Dock = DockStyle.Right;
-            LVDEditor.MaximumSize = new Size(300, 2000);
-            AddControl(LVDEditor);
+            SetupMeshList();
+            SetupAnimListPanel();
+            SetupLvdEditors();
+            SetupVertexTool();
+            SetupAcmdEditor();
+            SetupHitBoxList();
+            SetupHurtBoxList();
+            SetupVariableViewer();
 
             bfresMatEditor.Dock = DockStyle.Left;
             bfresMatEditor.MaximumSize = new Size(500, 2000);
@@ -276,36 +278,81 @@ namespace Smash_Forge
             byamlEditor.MaximumSize = new Size(300, 2000);
             AddControl(byamlEditor);
 
-            VertexTool.Dock = DockStyle.Left;
-            VertexTool.MaximumSize = new Size(300, 2000);
-            AddControl(VertexTool);
-            VertexTool.vp = this;
-
-            ACMDEditor = new ACMDPreviewEditor();
-            ACMDEditor.Owner = this;
-            ACMDEditor.Dock = DockStyle.Right;
-            ACMDEditor.updateCrcList();
-            AddControl(ACMDEditor);
-
-            HitboxList = new HitboxList();
-            HitboxList.Dock = DockStyle.Right;
-            AddControl(HitboxList);
-
-            HurtboxList = new HurtboxList();
-            HurtboxList.Dock = DockStyle.Right;
-
-            VariableViewer = new VariableList();
-            VariableViewer.Dock = DockStyle.Right;
+            // This selection mode is the last annoying mode for now.
+            // It doesn't really do anything.
+            modeBone.Checked = true;
+            modeMesh.Checked = false;
+            modePolygon.Checked = false;
 
             LVD = new LVD();
 
             ViewComboBox.SelectedIndex = 0;
 
-            draw = MeshList.filesTreeView.Nodes;
+            draw = meshList.filesTreeView.Nodes;
+        }
 
-            RenderTools.Setup();
+        private void SetupVariableViewer()
+        {
+            variableViewer = new VariableList();
+            variableViewer.Dock = DockStyle.Right;
+        }
 
-            SetupBuffersAndTextures();
+        private void SetupHurtBoxList()
+        {
+            hurtboxList = new HurtboxList();
+            hurtboxList.Dock = DockStyle.Right;
+        }
+
+        private void SetupHitBoxList()
+        {
+            hitboxList = new HitboxList();
+            hitboxList.Dock = DockStyle.Right;
+            AddControl(hitboxList);
+        }
+
+        private void SetupAcmdEditor()
+        {
+            acmdEditor = new ACMDPreviewEditor();
+            acmdEditor.Owner = this;
+            acmdEditor.Dock = DockStyle.Right;
+            acmdEditor.updateCrcList();
+            AddControl(acmdEditor);
+        }
+
+        private void SetupVertexTool()
+        {
+            vertexTool.Dock = DockStyle.Left;
+            vertexTool.MaximumSize = new Size(300, 2000);
+            AddControl(vertexTool);
+            vertexTool.vp = this;
+        }
+
+        private void SetupLvdEditors()
+        {
+            lvdList.Dock = DockStyle.Left;
+            lvdList.MaximumSize = new Size(300, 2000);
+            AddControl(lvdList);
+            lvdList.lvdEditor = lvdEditor;
+
+            lvdEditor.Dock = DockStyle.Right;
+            lvdEditor.MaximumSize = new Size(300, 2000);
+            AddControl(lvdEditor);
+        }
+
+        private void SetupAnimListPanel()
+        {
+            animListPanel.Dock = DockStyle.Left;
+            animListPanel.MaximumSize = new Size(300, 2000);
+            animListPanel.Size = new Size(300, 2000);
+            AddControl(animListPanel);
+        }
+
+        private void SetupMeshList()
+        {
+            meshList.Dock = DockStyle.Right;
+            meshList.MaximumSize = new Size(300, 2000);
+            meshList.Size = new Size(300, 2000);
+            AddControl(meshList);
         }
 
         public void bfresOpenMats(BFRES.Mesh poly, string name)
@@ -319,71 +366,39 @@ namespace Smash_Forge
 
         private void SetupBuffersAndTextures()
         {
-            CreateHdrRenderToTexture(out colorHdrFbo, out colorHdrTex0, out colorHdrTex1);
-            CreateBrightSmallHdrRenderToTexture();
-        }
+            // Use the viewport dimensions by default.
+            fboRenderWidth = glViewport.Width;
+            fboRenderHeight = glViewport.Height;
 
-        private void CreateBrightSmallHdrRenderToTexture()
-        {
-            GL.GenFramebuffers(1, out brightHdrSmallFbo);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, brightHdrSmallFbo);
+            // Render bright and normal images to separate textures.
+            colorHdrFbo = new Framebuffer(FramebufferTarget.Framebuffer, glViewport.Width, glViewport.Height, PixelInternalFormat.Rgba16f, 2);
 
-            brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
-            brightTexHeight = (int)(glViewport.Height * Runtime.bloomTexScale);
+            // Smaller FBO/texture for the brighter, blurred portions.
+            int brightTexWidth = (int)(glViewport.Width * Runtime.bloomTexScale);
+            int brightTexHeight = (int)(glViewport.Height * Runtime.bloomTexScale);
+            imageBrightHdrFbo = new Framebuffer(FramebufferTarget.Framebuffer, brightTexWidth, brightTexHeight, PixelInternalFormat.Rgba16f);
 
-            // Regular texture.
-            GL.GenTextures(1, out brightTexSmall);
-            GL.BindTexture(TextureTarget.Texture2D, brightTexSmall);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, brightTexWidth, brightTexHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, brightTexSmall, 0);
-        }
+            // Screen Rendering
+            offscreenRenderFbo = new Framebuffer(FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, PixelInternalFormat.Rgba);
 
-        private void CreateHdrRenderToTexture(out int fbo, out int texture0, out int texture1)
-        {
-            GL.GenFramebuffers(1, out fbo);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
-
-            int textureWidth = glViewport.Width;
-            int textureHeight = glViewport.Height;
-
-            // Regular texture.
-            GL.GenTextures(1, out texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture0);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, texture0, 0);
-
-            // Texture for bright portions of the image that will be blurred later.
-            GL.GenTextures(1, out texture1);
-            GL.BindTexture(TextureTarget.Texture2D, texture1);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba16f, textureWidth, textureHeight, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, texture1, 0);
-
-            GL.GenRenderbuffers(1, out hdrDepthRbo);
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, hdrDepthRbo);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, textureWidth, textureHeight);
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, hdrDepthRbo);
-
-            // Draw to both textures
-            DrawBuffersEnum[] buffers = { DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1 };
-            GL.DrawBuffers(2, buffers);
-
+            // Bind the default framebuffer again.
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            SetupDepthMap();
         }
 
-        public ModelViewport(string filename) : this()
+        private void SetupDepthMap()
         {
+            // Set up the depth map fbo.
+            depthMapFbo = new Framebuffer(FramebufferTarget.Framebuffer);
+            depthMapFbo.Bind();
 
-        }
-
-        ~ModelViewport()
-        {
-
+            // Set up the depth map texture.
+            depthMap = new DepthTexture(shadowWidth, shadowHeight, PixelInternalFormat.DepthComponent24);
+            depthMapFbo.Bind();
+            GL.FramebufferTexture2D(depthMapFbo.FramebufferTarget, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthMap.Id, 0);
+            GL.DrawBuffer(DrawBufferMode.None);
+            GL.ReadBuffer(ReadBufferMode.None);
         }
 
         public Camera GetCamera()
@@ -401,10 +416,10 @@ namespace Smash_Forge
             switch (Path.GetExtension(FilePath).ToLower())
             {
                 case ".lvd":
-                    _lvd.Save(FilePath);
+                    lvd.Save(FilePath);
                     break;
                 case ".mtable":
-                    _MovesetManager.Save(FilePath);
+                    movesetManager.Save(FilePath);
                     break;
             }
             Edited = false;
@@ -420,12 +435,12 @@ namespace Smash_Forge
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    if (sfd.FileName.EndsWith(".lvd") && _lvd != null)
+                    if (sfd.FileName.EndsWith(".lvd") && lvd != null)
                     {
                         FilePath = sfd.FileName;
                         Save();
                     }
-                    if (sfd.FileName.EndsWith(".mtable") && _MovesetManager != null)
+                    if (sfd.FileName.EndsWith(".mtable") && movesetManager != null)
                     {
                         FilePath = sfd.FileName;
                         Save();
@@ -444,18 +459,11 @@ namespace Smash_Forge
 
         private void ModelViewport_Load(object sender, EventArgs e)
         {
-            ReadyToRender = true;
+            // HACK: Frame time control.
             var timer = new System.Windows.Forms.Timer();
-            timer.Interval = 1000 / 120;
+            timer.Interval = 8;
             timer.Tick += new EventHandler(Application_Idle);
             timer.Start();
-
-            InitializeLights();
-        }
-
-        private static void InitializeLights()
-        {
-            // TODO: Initialize Lights
         }
 
         private void Application_Idle(object sender, EventArgs e)
@@ -463,7 +471,7 @@ namespace Smash_Forge
             if (this.IsDisposed)
                 return;
 
-            if (ReadyToRender)
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
             {
                 if (isPlaying)
                 {
@@ -486,58 +494,132 @@ namespace Smash_Forge
             return new Vector2(mx, my);
         }
 
-        int dbdistance = 0;
-        System.Drawing.Point _LastPoint;
-        private void glViewport_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void MouseClickItemSelect(System.Windows.Forms.MouseEventArgs e)
         {
-            if (ReadyToRender && glViewport != null)
-            {
-                glViewport.MakeCurrent();
-                GL.LoadIdentity();
-                GL.Viewport(glViewport.ClientRectangle);
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || glViewport == null)
+                return;
 
-                camera.renderWidth = glViewport.Width;
-                camera.renderHeight = glViewport.Height;
-                camera.Update();
-            }
             //Mesh Selection Test
             if (e.Button == MouseButtons.Left)
             {
                 Ray ray = new Ray(camera, glViewport);
-                int selectedSize = 0;
 
-                TransformTool.b = null;
-
+                transformTool.b = null;
                 foreach (TreeNode node in draw)
                 {
-                    if (!(node is ModelContainer)) continue;
-                    ModelContainer con = (ModelContainer)node;
+                    if (!(node is ModelContainer))
+                        continue;
+                    ModelContainer modelContainer = (ModelContainer)node;
+
                     if (modeBone.Checked)
                     {
-                        SortedList<double, Bone> selected = con.GetBoneSelection(ray);
-                        selectedSize = selected.Count;
-                        if (selected.Count > dbdistance)// && MeshList.treeView1.Nodes.Contains(selected.Values.ElementAt(dbdistance)))
-                            TransformTool.b = (Bone)selected.Values.ElementAt(dbdistance);
-                        break;
+                        // Bounding spheres work well because bones aren't close together.
+                        SortedList<double, Bone> selected = modelContainer.GetBoneSelection(ray);
+                        if (selected.Count > 0)
+                            transformTool.b = selected.Values.ElementAt(0);
+                        //break;
                     }
+
                     if (modeMesh.Checked)
                     {
-                        SortedList<double, NUD.Mesh> selected = con.GetMeshSelection(ray);
-                        selectedSize = selected.Count;
-                        if (selected.Count > dbdistance)
-                            MeshList.filesTreeView.SelectedNode = selected.Values.ElementAt(dbdistance);
+                        // Use a color ID render pass for more precision.
+                        SelectMeshAtMousePosition();
+                    }
+
+                    if (modePolygon.Checked)
+                    {
+                        // Use a color ID render pass for more precision.
+                        SelectPolygonAtMousePosition();
                     }
                 }
-
-                dbdistance += 1;
-                if (dbdistance >= selectedSize) dbdistance = 0;
-                _LastPoint = e.Location;
             }
+            else if (e.Button == MouseButtons.Right)
+            {
+                // Display the MeshList context menus in the viewport.
+                // This is faster than right clicking in the treeview.
+                if (meshList.filesTreeView.SelectedNode is NUD.Polygon && modePolygon.Checked)
+                    meshList.PolyContextMenu.Show(glViewport, e.X, e.Y);
+                else if (meshList.filesTreeView.SelectedNode is NUD.Mesh && modeMesh.Checked)
+                    meshList.MeshContextMenu.Show(glViewport, e.X, e.Y);
+            }
+        }
+
+        private void SelectPolygonAtMousePosition()
+        {
+            RenderNudColorIdPassToFbo(offscreenRenderFbo.Id);
+
+            // Get the color at the mouse's position.
+            Color selectedColor = ColorPickPixelAtMousePosition();
+            meshList.filesTreeView.SelectedNode = GetSelectedPolygonFromColor(selectedColor);
+        }
+
+        private void SelectMeshAtMousePosition()
+        {
+            RenderNudColorIdPassToFbo(offscreenRenderFbo.Id);
+
+            // Get the color at the mouse's position.
+            Color selectedColor = ColorPickPixelAtMousePosition();
+            meshList.filesTreeView.SelectedNode = GetSelectedMeshFromColor(selectedColor);
+        }
+
+        private void RenderNudColorIdPassToFbo(int fbo)
+        {
+            // Render the ID map to the offscreen FBO.
+            glViewport.MakeCurrent();
+            GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
+            Runtime.drawNudColorIdPass = true;
+            Render(null, null, fboRenderWidth, fboRenderHeight, fbo);
+            Runtime.drawNudColorIdPass = false;
+        }
+
+        private NUD.Polygon GetSelectedPolygonFromColor(Color pixelColor)
+        {
+            // Determine what polgyon is selected.
+            foreach (TreeNode node in draw)
+            {
+                if (!(node is ModelContainer))
+                    continue;
+                ModelContainer con = (ModelContainer)node;
+
+                foreach (NUD.Mesh mesh in con.NUD.Nodes)
+                {
+                    foreach (NUD.Polygon p in mesh.Nodes)
+                    {
+                        // The color is the polygon index (not the render order).
+                        // Convert to Vector3 to ignore the alpha.
+                        Vector3 polyColor = ColorTools.Vector4FromColor(Color.FromArgb(p.DisplayId)).Xyz;
+                        Vector3 pickedColor = ColorTools.Vector4FromColor(pixelColor).Xyz;
+
+                        if (polyColor == pickedColor)
+                            return p;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private NUD.Mesh GetSelectedMeshFromColor(Color pixelColor)
+        {
+            // Determine what mesh is selected. 
+            // We can still use the poly ID pass.
+            NUD.Polygon selectedPolygon = GetSelectedPolygonFromColor(pixelColor);
+            if (selectedPolygon != null && selectedPolygon.Parent != null)
+                return (NUD.Mesh)selectedPolygon.Parent;
+            else
+                return null;
+        }
+
+        private Color ColorPickPixelAtMousePosition()
+        {
+            // Colorpick a single pixel from the offscreen FBO at the mouse's location.
+            System.Drawing.Point mousePosition = glViewport.PointToClient(Cursor.Position);
+            return offscreenRenderFbo.SamplePixelColor(mousePosition.X, glViewport.Height - mousePosition.Y);
         }
 
         private Vector3 getScreenPoint(Vector3 pos)
         {
-            Vector4 n = Vector4.Transform(new Vector4(pos, 1), camera.mvpMatrix);
+            Vector4 n = Vector4.Transform(new Vector4(pos, 1), camera.MvpMatrix);
             n.X /= n.W;
             n.Y /= n.W;
             n.Z /= n.W;
@@ -546,17 +628,42 @@ namespace Smash_Forge
 
         private void glViewport_Resize(object sender, EventArgs e)
         {
-            if (ReadyToRender && CurrentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized
+                && currentMode != Mode.Selection && glViewport.Height != 0 && glViewport.Width != 0)
             {
                 GL.LoadIdentity();
-                GL.Viewport(glViewport.ClientRectangle);
+                GL.Viewport(0, 0, glViewport.Width, glViewport.Height);
 
-                camera.renderWidth = (glViewport.Width);
-                camera.renderHeight = (glViewport.Height);
-                camera.Update();
+                camera.renderWidth = glViewport.Width;
+                camera.renderHeight = glViewport.Height;
+                fboRenderWidth = glViewport.Width;
+                fboRenderHeight = glViewport.Height;
+                camera.UpdateFromMouse();
 
-                // Remake the textures and buffers everytime the dimensions change.
-                SetupBuffersAndTextures();
+                ResizeTexturesAndBuffers();
+            }
+        }
+
+        private void ResizeTexturesAndBuffers()
+        {
+            // FBOs manage their own resizing.
+            // FBOs may not be initialized yet.
+            if (imageBrightHdrFbo != null)
+            {
+                imageBrightHdrFbo.Width = (int)(fboRenderWidth * Runtime.bloomTexScale);
+                imageBrightHdrFbo.Height = (int)(fboRenderHeight * Runtime.bloomTexScale);
+            }
+
+            if (offscreenRenderFbo != null)
+            {
+                offscreenRenderFbo.Width = fboRenderWidth;
+                offscreenRenderFbo.Height = fboRenderHeight;
+            }
+
+            if (colorHdrFbo != null)
+            {
+                colorHdrFbo.Width = glViewport.Width;
+                colorHdrFbo.Height = glViewport.Height;
             }
         }
 
@@ -573,19 +680,19 @@ namespace Smash_Forge
 
             int frameNum = animationTrackBar.Value;
 
-            if (MaterialAnimation != null)
+            if (currentMaterialAnimation != null)
             {
-                foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+                foreach (TreeNode node in meshList.filesTreeView.Nodes)
                 {
                     if (!(node is ModelContainer)) continue;
                     ModelContainer m = (ModelContainer)node;
-                    m.NUD.ApplyMta(MaterialAnimation, frameNum);
+                    m.NUD.ApplyMta(currentMaterialAnimation, frameNum);
                 }
             }
 
             if (BFRESMaterialAnimation != null)
             {
-                foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+                foreach (TreeNode node in meshList.filesTreeView.Nodes)
                 {
                     if (!(node is ModelContainer)) continue;
                     ModelContainer m = (ModelContainer)node;
@@ -593,30 +700,29 @@ namespace Smash_Forge
                 }
             }
 
-
-            if (Animation == null) return;
+            if (currentAnimation == null) return;
 
             // Process script first in case we have to speed up the animation
-            if (ACMDScript != null)
-                ACMDScript.processToFrame(frameNum);
+            if (acmdScript != null)
+                acmdScript.processToFrame(frameNum);
 
             float animFrameNum = frameNum;
-            if (ACMDScript != null && Runtime.useFrameDuration)
-                animFrameNum = ACMDScript.animationFrame;// - 1;
+            if (acmdScript != null && Runtime.useFrameDuration)
+                animFrameNum = acmdScript.animationFrame;// - 1;
 
-            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer)) continue;
                 ModelContainer m = (ModelContainer)node;
-                Animation.SetFrame(animFrameNum);
+                currentAnimation.SetFrame(animFrameNum);
                 if (m.VBN != null)
-                    Animation.NextFrame(m.VBN);
+                    currentAnimation.NextFrame(m.VBN);
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
-                if (m.DAT_MELEE != null)
+                if (m.DatMelee != null)
                 {
-                    Animation.SetFrame(frameNum);
-                    Animation.NextFrame(m.DAT_MELEE.bones);
+                    currentAnimation.SetFrame(frameNum);
+                    currentAnimation.NextFrame(m.DatMelee.bones);
                 }
                 if (m.BCH != null)
                 {
@@ -624,19 +730,8 @@ namespace Smash_Forge
                     {
                         if (mod.skeleton != null)
                         {
-                            Animation.SetFrame(animFrameNum);
-                            Animation.NextFrame(mod.skeleton);
-                        }
-                    }
-                }
-                if (m.BFRES != null)
-                {
-                    foreach (var mo in m.BFRES.models)
-                    {
-                        if (mo.skeleton != null)
-                        {
-                            Animation.SetFrame(animFrameNum);
-                            Animation.NextFrame(mo.skeleton);
+                            currentAnimation.SetFrame(animFrameNum);
+                            currentAnimation.NextFrame(mod.skeleton);
                         }
                     }
                 }
@@ -647,7 +742,7 @@ namespace Smash_Forge
 
         public void ResetModels()
         {
-            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer)) continue;
                 ModelContainer m = (ModelContainer)node;
@@ -656,10 +751,11 @@ namespace Smash_Forge
                     m.VBN.reset();
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
-                if (m.DAT_MELEE != null)
+                if (m.DatMelee != null)
                 {
-                    m.DAT_MELEE.bones.reset();
+                    m.DatMelee.bones.reset();
                 }
+
                 if (m.BCH != null)
                 {
                     foreach (BCH_Model mod in m.BCH.Models.Nodes)
@@ -670,6 +766,7 @@ namespace Smash_Forge
                         }
                     }
                 }
+
                 if (m.BFRES != null)
                 {
                     foreach (var mod in m.bfres.models)
@@ -711,23 +808,23 @@ namespace Smash_Forge
 
         public void FrameSelectionAndSort()
         {
-            if (MeshList.filesTreeView.SelectedNode is NUD.Mesh)
+            if (meshList.filesTreeView.SelectedNode is NUD.Mesh)
             {
                 FrameSelectedMesh();
             }
-            else if (MeshList.filesTreeView.SelectedNode is NUD)
+            else if (meshList.filesTreeView.SelectedNode is NUD)
             {
                 FrameSelectedNud();
             }
-            else if (MeshList.filesTreeView.SelectedNode is NUD.Polygon)
+            else if (meshList.filesTreeView.SelectedNode is NUD.Polygon)
             {
                 FrameSelectedPolygon();
             }
-            else if (MeshList.filesTreeView.SelectedNode is ModelContainer)
+            else if (meshList.filesTreeView.SelectedNode is ModelContainer)
             {
                 FrameSelectedModelContainer();
             }
-            else if (MeshList.filesTreeView.SelectedNode is BFRES)
+            else if (meshList.filesTreeView.SelectedNode is BFRES)
             {
                 FrameSelectedBfres();
             }
@@ -737,66 +834,66 @@ namespace Smash_Forge
             }
 
             // Depth sorting. 
-            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (node is ModelContainer)
                 {
                     ModelContainer modelContainer = (ModelContainer)node;
-                    modelContainer.DepthSortModels(camera.position);
+                    modelContainer.DepthSortModels(camera.Position);
                 }
             }
         }
 
         private void FrameSelectedModelContainer()
         {
-            ModelContainer modelContainer = (ModelContainer)MeshList.filesTreeView.SelectedNode;
-            float[] boundingBox = new float[] { 0, 0, 0, 0 };
+            ModelContainer modelContainer = (ModelContainer)meshList.filesTreeView.SelectedNode;
+            float[] boundingSphere = new float[] { 0, 0, 0, 0 };
 
             // Use the main bounding box for the NUD.
-            if (modelContainer.NUD.boundingBox[3] > boundingBox[3])
+            if (modelContainer.NUD.boundingSphere[3] > boundingSphere[3])
             {
-                boundingBox[0] = modelContainer.NUD.boundingBox[0];
-                boundingBox[1] = modelContainer.NUD.boundingBox[1];
-                boundingBox[2] = modelContainer.NUD.boundingBox[2];
-                boundingBox[3] = modelContainer.NUD.boundingBox[3];
+                boundingSphere[0] = modelContainer.NUD.boundingSphere[0];
+                boundingSphere[1] = modelContainer.NUD.boundingSphere[1];
+                boundingSphere[2] = modelContainer.NUD.boundingSphere[2];
+                boundingSphere[3] = modelContainer.NUD.boundingSphere[3];
             }
 
             // It's possible that only the individual meshes have bounding boxes.
             foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
             {
-                if (mesh.boundingBox[3] > boundingBox[3])
+                if (mesh.boundingSphere[3] > boundingSphere[3])
                 {
-                    boundingBox[0] = mesh.boundingBox[0];
-                    boundingBox[1] = mesh.boundingBox[1];
-                    boundingBox[2] = mesh.boundingBox[2];
-                    boundingBox[3] = mesh.boundingBox[3];
+                    boundingSphere[0] = mesh.boundingSphere[0];
+                    boundingSphere[1] = mesh.boundingSphere[1];
+                    boundingSphere[2] = mesh.boundingSphere[2];
+                    boundingSphere[3] = mesh.boundingSphere[3];
                 }
             }
 
-            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-            camera.Update();
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
+            camera.UpdateFromMouse();
         }
 
         private void FrameSelectedMesh()
         {
-            NUD.Mesh mesh = (NUD.Mesh)MeshList.filesTreeView.SelectedNode;
-            float[] boundingBox = mesh.boundingBox;
-            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-            camera.Update();
+            NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode;
+            float[] boundingSphere = mesh.boundingSphere;
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
+            camera.UpdateFromMouse();
         }
 
         private void FrameSelectedNud()
         {
-            NUD nud = (NUD)MeshList.filesTreeView.SelectedNode;
-            float[] boundingBox = nud.boundingBox;
-            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-            camera.Update();
+            NUD nud = (NUD)meshList.filesTreeView.SelectedNode;
+            float[] boundingSphere = nud.boundingSphere;
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
+            camera.UpdateFromMouse();
         }
 
         private void FrameSelectedBfres()
         {
             Console.WriteLine("BFRES selected");
-            BFRES bfres = (BFRES)MeshList.filesTreeView.SelectedNode;
+            BFRES bfres = (BFRES)meshList.filesTreeView.SelectedNode;
 
             List<float> X = new List<float>();
             List<float> Y = new List<float>();
@@ -820,54 +917,54 @@ namespace Smash_Forge
             Z.Sort();
             Radius.Sort();
 
-            camera.FrameSelection(new Vector3(X[X.Count - 1], Y[Y.Count - 1], Z[Z.Count - 1]), Radius[Radius.Count - 1]);
-            camera.Update();
+            camera.FrameBoundingSphere(new Vector3(X[X.Count - 1], Y[Y.Count - 1], Z[Z.Count - 1]), Radius[Radius.Count - 1]);
+            camera.UpdateMatrices();
         }
 
         private void FrameSelectedPolygon()
         {
-            NUD.Mesh mesh = (NUD.Mesh)MeshList.filesTreeView.SelectedNode.Parent;
-            float[] boundingBox = mesh.boundingBox;
-            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-            camera.Update();
+            NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode.Parent;
+            float[] boundingSphere = mesh.boundingSphere;
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
+            camera.UpdateFromMouse();
         }
 
         private void FrameAllModelContainers(float maxBoundingRadius = 400)
         {
             // Find the max NUD bounding box for all models. 
-            float[] boundingBox = new float[] { 0, 0, 0, 0 };
-            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            float[] boundingSphere = new float[] { 0, 0, 0, 0 };
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (node is ModelContainer)
                 {
                     ModelContainer modelContainer = (ModelContainer)node;
 
                     // Use the main bounding box for the NUD.
-                    if ((modelContainer.NUD.boundingBox[3] > boundingBox[3]) && (modelContainer.NUD.boundingBox[3] < maxBoundingRadius))
+                    if ((modelContainer.NUD.boundingSphere[3] > boundingSphere[3]) && (modelContainer.NUD.boundingSphere[3] < maxBoundingRadius))
                     {
-                        boundingBox[0] = modelContainer.NUD.boundingBox[0];
-                        boundingBox[1] = modelContainer.NUD.boundingBox[1];
-                        boundingBox[2] = modelContainer.NUD.boundingBox[2];
-                        boundingBox[3] = modelContainer.NUD.boundingBox[3];
+                        boundingSphere[0] = modelContainer.NUD.boundingSphere[0];
+                        boundingSphere[1] = modelContainer.NUD.boundingSphere[1];
+                        boundingSphere[2] = modelContainer.NUD.boundingSphere[2];
+                        boundingSphere[3] = modelContainer.NUD.boundingSphere[3];
                     }
 
                     // It's possible that only the individual meshes have bounding boxes.
                     foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
                     {
-                        if (mesh.boundingBox[3] > boundingBox[3] && mesh.boundingBox[3] < maxBoundingRadius)
+                        if (mesh.boundingSphere[3] > boundingSphere[3] && mesh.boundingSphere[3] < maxBoundingRadius)
                         {
-                            boundingBox[0] = mesh.boundingBox[0];
-                            boundingBox[1] = mesh.boundingBox[1];
-                            boundingBox[2] = mesh.boundingBox[2];
-                            boundingBox[3] = mesh.boundingBox[3];
+                            boundingSphere[0] = mesh.boundingSphere[0];
+                            boundingSphere[1] = mesh.boundingSphere[1];
+                            boundingSphere[2] = mesh.boundingSphere[2];
+                            boundingSphere[3] = mesh.boundingSphere[3];
                         }
                     }
                 }
 
             }
 
-            camera.FrameSelection(new Vector3(boundingBox[0], boundingBox[1], boundingBox[2]), boundingBox[3]);
-            camera.Update();
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
+            camera.UpdateFromMouse();
         }
 
         #region Moveset
@@ -883,15 +980,15 @@ namespace Smash_Forge
 
             if (MovesetManager == null)
             {
-                ACMDScript = null;
+                this.acmdScript = null;
                 return;
             }
 
             // Try and set up the editor
             try
             {
-                if (ACMDEditor.crc != crc)
-                    ACMDEditor.SetAnimation(crc);
+                if (acmdEditor.crc != crc)
+                    acmdEditor.SetAnimation(crc);
             }
             catch { }
 
@@ -943,9 +1040,9 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    ACMDScript = null;
-                    HitboxList.refresh();
-                    VariableViewer.refresh();
+                    this.acmdScript = null;
+                    hitboxList.refresh();
+                    variableViewer.refresh();
                     return;
                 }
             }
@@ -955,13 +1052,13 @@ namespace Smash_Forge
             if (acmdScript != null)
             {
                 // If script wasn't set, or it was set and it changed, load the new script
-                if (ACMDScript == null || (ACMDScript != null && ACMDScript.script != acmdScript))
+                if (this.acmdScript == null || (this.acmdScript != null && this.acmdScript.script != acmdScript))
                 {
-                    ACMDScript = new ForgeACMDScript(acmdScript);
+                    this.acmdScript = new ForgeACMDScript(acmdScript);
                 }
             }
             else
-                ACMDScript = null;
+                this.acmdScript = null;
         }
 
         #endregion
@@ -976,23 +1073,20 @@ namespace Smash_Forge
 
         private void glViewport_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (CurrentMode != Mode.Selection && !freezeCamera)
-                camera.Update();
+            if (currentMode != Mode.Selection && !freezeCamera)
+                camera.UpdateFromMouse();
         }
 
         #region Controls
 
         public void HideAll()
         {
-            LVDEditor.Visible = false;
-            LVDList.Visible = false;
-            bfresMatEditor.Visible = false;
-            byamlEditor.Visible = false;
-            byamlList.Visible = false;
-            MeshList.Visible = false;
-            AnimList.Visible = false;
-            ACMDEditor.Visible = false;
-            VertexTool.Visible = false;
+            lvdEditor.Visible = false;
+            lvdList.Visible = false;
+            meshList.Visible = false;
+            animListPanel.Visible = false;
+            acmdEditor.Visible = false;
+            vertexTool.Visible = false;
             totalFrame.Enabled = false;
         }
 
@@ -1003,55 +1097,42 @@ namespace Smash_Forge
             switch (ViewComboBox.SelectedItem.ToString())
             {
                 case "Model Viewer":
-                    MeshList.Visible = true;
-                    AnimList.Visible = true;
+                    meshList.Visible = true;
+                    animListPanel.Visible = true;
                     break;
                 case "Model Editor":
-                    MeshList.Visible = true;
-                    VertexTool.Visible = true;
+                    meshList.Visible = true;
+                    vertexTool.Visible = true;
                     break;
                 case "Animation Editor":
-                    AnimList.Visible = true;
+                    animListPanel.Visible = true;
                     totalFrame.Enabled = true;
                     break;
                 case "LVD Editor":
-                    LVDEditor.Visible = true;
-                    LVDList.Visible = true;
-                    break;
-                case "BYAML Editor":
-                    byamlEditor.Visible = true;
-                    byamlList.Visible = true;
-                    break;
-                case "BFRES Material Editor":
-                    bfresMatEditor.Visible = true;
-                    MeshList.Visible = true;
+                    lvdEditor.Visible = true;
+                    lvdList.Visible = true;
                     break;
                 case "ACMD Editor":
-                    AnimList.Visible = true;
-                    ACMDEditor.Visible = true;
+                    animListPanel.Visible = true;
+                    acmdEditor.Visible = true;
                     break;
                 case "Clean":
-                    LVDEditor.Visible = false;
-                    LVDList.Visible = false;
-                    bfresMatEditor.Visible = false;
-                    byamlEditor.Visible = false;
-                    byamlList.Visible = false;
-                    MeshList.Visible = false;
-                    AnimList.Visible = false;
-                    ACMDEditor.Visible = false;
-                    VertexTool.Visible = false;
+                    lvdEditor.Visible = false;
+                    lvdList.Visible = false;
+                    meshList.Visible = false;
+                    animListPanel.Visible = false;
+                    acmdEditor.Visible = false;
+                    vertexTool.Visible = false;
                     totalFrame.Enabled = false;
                     break;
             }
         }
 
-        private void RenderButton_Click(object sender, EventArgs e)
-        {
-            CaptureScreen(true).Save(MainForm.executableDir + "\\Render.png");
-        }
-
         private void BatchRenderModels()
         {
+            // Ignore warnings.
+            Runtime.checkNudTexIdOnOpen = false;
+
             // Get the source model folder and then the output folder. 
             using (var folderSelect = new FolderSelectDialog())
             {
@@ -1076,12 +1157,19 @@ namespace Smash_Forge
                                     Debug.WriteLine(e.Message);
                                     Debug.WriteLine(e.StackTrace);
                                 }
-                                RenderModel(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+                                BatchRenderViewportToFile(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+
+                                // Cleanup the models and nodes but keep the same viewport.
+                                ClearModelContainers();
+                                // Make sure the reference counts get updated for all the GLObjects so we can clean up next frame.
+                                GC.WaitForPendingFinalizers();
                             }
                         }
                     }
                 }
             }
+
+            Runtime.checkNudTexIdOnOpen = true;
         }
 
         private void BatchRenderStages()
@@ -1100,9 +1188,9 @@ namespace Smash_Forge
                             foreach (string stageFolder in Directory.GetDirectories(sourceFolderSelect.SelectedPath))
                             {
                                 MainForm.Instance.OpenStageFolder(stageFolder, this);
-                                RenderStageModels(stageFolder, outputFolderSelect.SelectedPath, sourceFolderSelect.SelectedPath);
-                                RenderModel(stageFolder, sourceFolderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+                                BatchRenderViewportToFile(stageFolder, sourceFolderSelect.SelectedPath, outputFolderSelect.SelectedPath);
                                 MainForm.Instance.ClearWorkSpace(false);
+                                ClearModelContainers();
                             }
                         }
                     }
@@ -1110,32 +1198,29 @@ namespace Smash_Forge
             }
         }
 
-        private void RenderModel(string nudFileName, string sourcePath, string outputPath)
+        private void BatchRenderViewportToFile(string nudFileName, string sourcePath, string outputPath)
         {
-            SetupNextRender();
-            string renderName = FormatFileName(nudFileName, sourcePath);
-            // Manually dispose the bitmap to avoid memory leaks. 
-            Bitmap screenCapture = CaptureScreen(true);
-            screenCapture.Save(outputPath + "\\" + renderName + ".png");
-            screenCapture.Dispose();
-
-            // Cleanup the models and nodes.
-            Runtime.TextureContainers.Clear();
-            draw.Clear();
+            SetupAndRenderViewport();
+            string renderName = ConvertDirSeparatorsToUnderscore(nudFileName, sourcePath);
+            using (Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, true))
+            {
+                screenCapture.Save(outputPath + "\\" + renderName + ".png");
+            }
         }
 
-        private void SetupNextRender()
+        private void SetupAndRenderViewport()
         {
             // Setup before rendering the model. Use a large max radius to show skybox models.
             FrameAllModelContainers();
-            Render(null, null);
-            glViewport.SwapBuffers();
+            // We need to manually call the paint event twice so the textures are refreshed and the screen updates properly.
+            glViewport_Paint(null, null);
+            glViewport_Paint(null, null);
         }
 
-        private static string FormatFileName(string fileName, string path)
+        public static string ConvertDirSeparatorsToUnderscore(string fullPath, string sourceDirPath)
         {
             // Save the render using the folder structure as the name.
-            string renderName = fileName.Replace(path, "");
+            string renderName = fullPath.Replace(sourceDirPath, "");
             renderName = renderName.Substring(1);
             renderName = renderName.Replace("\\", "_");
             renderName = renderName.Replace("//", "_");
@@ -1143,40 +1228,9 @@ namespace Smash_Forge
             return renderName;
         }
 
-        public Bitmap CaptureScreen(bool saveAlpha)
-        {
-            int width = glViewport.Width;
-            int height = glViewport.Height;
-
-            byte[] pixels = new byte[width * height * 4];
-            glViewport.MakeCurrent();
-            GL.ReadPixels(0, 0, width, height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
-            // Flip data because glReadPixels reads it in from bottom row to top row
-            byte[] fixedPixels = new byte[width * height * 4];
-            for (int h = 0; h < height; h++)
-            {
-                for (int w = 0; w < width; w++)
-                {
-                    // Remove alpha blending from the end image - we just want the post-render colors
-                    if (!saveAlpha)
-                        pixels[((w + h * width) * 4) + 3] = 255;
-
-                    // Copy a 4 byte pixel one at a time
-                    Array.Copy(pixels, (w + h * width) * 4, fixedPixels, ((height - h - 1) * width + w) * 4, 4);
-                }
-            }
-
-            // Format and save the data
-            Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, bmp.PixelFormat);
-            Marshal.Copy(fixedPixels, 0, bmpData.Scan0, fixedPixels.Length);
-            bmp.UnlockBits(bmpData);
-            return bmp;
-        }
-
         private void GIFButton_Click(object sender, EventArgs e)
         {
-            if (Animation == null)
+            if (currentAnimation == null)
                 return;
 
             List<Bitmap> images = new List<Bitmap>();
@@ -1203,13 +1257,14 @@ namespace Smash_Forge
             {
                 currentFrame.Value = i;
                 currentFrame.Refresh(); //Refresh the frame counter control
-                Render(null, null);
+                Render(null, null, glViewport.Width, glViewport.Height);
 
                 if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
                 {
-                    Bitmap cs = CaptureScreen(false);
-                    images.Add(new Bitmap(cs, new Size((int)(cs.Width / ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
-                    cs.Dispose();
+                    using (Bitmap cs = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderWidth))
+                    {
+                        images.Add(new Bitmap(cs, new Size((int)(cs.Width / ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
+                    }
                 }
             }
 
@@ -1223,7 +1278,7 @@ namespace Smash_Forge
 
                 if (sf.ShowDialog() == DialogResult.OK)
                 {
-                    GIFProgress g = new GIFProgress(images, sf.FileName, AnimationSpeed, settings.Repeat, settings.Quality);
+                    GIFProgress g = new GIFProgress(images, sf.FileName, animationSpeed, settings.Repeat, settings.Quality);
                     g.Show();
                 }
 
@@ -1238,17 +1293,21 @@ namespace Smash_Forge
 
         private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
         {
-            foreach (TreeNode n in MeshList.filesTreeView.Nodes)
+            ClearModelContainers();
+            GC.Collect();
+        }
+
+        public void ClearModelContainers()
+        {
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
-                if (n is ModelContainer)
+                if (node is ModelContainer)
                 {
-                    Runtime.TextureContainers.Remove(((ModelContainer)n).NUT);
-                    ((ModelContainer)n).NUT.Destroy();
-                    ((ModelContainer)n).NUD.Destroy();
+                    Runtime.TextureContainers.Remove(((ModelContainer)node).NUT);
                 }
             }
 
-            GC.Collect();
+            draw.Clear();
         }
 
         private void beginButton_Click(object sender, EventArgs e)
@@ -1273,14 +1332,6 @@ namespace Smash_Forge
                 currentFrame.Value--;
         }
 
-        private void viewStripButtons(object sender, EventArgs e)
-        {
-            modeBone.Checked = false;
-            modePolygon.Checked = false;
-            modeMesh.Checked = false;
-            ((ToolStripButton)sender).Checked = true;
-        }
-
         private void viewStripButtonsBone(object sender, EventArgs e)
         {
             stripPos.Checked = false;
@@ -1288,57 +1339,50 @@ namespace Smash_Forge
             stripSca.Checked = false;
             ((ToolStripButton)sender).Checked = true;
             if (stripPos.Checked)
-                TransformTool.Type = TransformTool.ToolTypes.POSITION;
+                transformTool.Type = TransformTool.ToolTypes.POSITION;
             if (stripRot.Checked)
-                TransformTool.Type = TransformTool.ToolTypes.ROTATION;
+                transformTool.Type = TransformTool.ToolTypes.ROTATION;
             if (stripSca.Checked)
-                TransformTool.Type = TransformTool.ToolTypes.SCALE;
+                transformTool.Type = TransformTool.ToolTypes.SCALE;
         }
 
         #endregion
 
         private void ModelViewport_FormClosing(object sender, FormClosingEventArgs e)
         {
-            foreach (TreeNode n in MeshList.filesTreeView.Nodes)
-            {
-                if (n is ModelContainer)
-                {
-                    ((ModelContainer)n).NUD.Dispose();
-                    ((ModelContainer)n).NUT.Destroy();
-                }
-            }
+
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        private void toolStripSaveRenderAlphaButton_Click(object sender, EventArgs e)
         {
-            CaptureScreen(false).Save(MainForm.executableDir + "\\Render.png");
+            SaveScreenRender(true);
         }
 
-        private void ModelViewport_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        private void toolStripRenderNoAlphaButton_Click(object sender, EventArgs e)
         {
-
+            SaveScreenRender(false);
         }
 
         private void totalFrame_ValueChanged(object sender, EventArgs e)
         {
-            if (Animation == null) return;
+            if (currentAnimation == null) return;
             if (totalFrame.Value < 1)
             {
                 totalFrame.Value = 1;
             }
             else
             {
-                if (Animation.Tag is Animation)
-                    ((Animation)Animation.Tag).FrameCount = (int)totalFrame.Value;
-                Animation.FrameCount = (int)totalFrame.Value;
+                if (currentAnimation.Tag is Animation)
+                    ((Animation)currentAnimation.Tag).FrameCount = (int)totalFrame.Value;
+                currentAnimation.FrameCount = (int)totalFrame.Value;
                 animationTrackBar.Value = 0;
-                animationTrackBar.SetRange(0, Animation.FrameCount);
+                animationTrackBar.SetRange(0, currentAnimation.FrameCount);
             }
         }
 
         private void checkSelect()
         {
-            if (CurrentMode == Mode.Selection)
+            if (currentMode == Mode.Selection)
             {
                 Vector2 m = GetMouseOnViewport();
                 if (!m.Equals(new Vector2(sx1, sy1)))
@@ -1376,7 +1420,7 @@ namespace Smash_Forge
                 {
                     // single vertex
                     // Selects the closest vertex
-                    Ray r = RenderTools.CreateRay(camera.mvpMatrix, GetMouseOnViewport());
+                    Ray r = RenderTools.CreateRay(camera.MvpMatrix, GetMouseOnViewport());
                     Vector3 close = Vector3.Zero;
                     foreach (TreeNode node in draw)
                     {
@@ -1418,8 +1462,8 @@ namespace Smash_Forge
                     }
                 }
 
-                VertexTool.vertexListBox.BeginUpdate();
-                VertexTool.vertexListBox.Items.Clear();
+                vertexTool.vertexListBox.BeginUpdate();
+                vertexTool.vertexListBox.Items.Clear();
                 foreach (TreeNode node in draw)
                 {
                     if (!(node is ModelContainer)) continue;
@@ -1433,14 +1477,14 @@ namespace Smash_Forge
                             {
                                 if (poly.selectedVerts[i++] == 1)
                                 {
-                                    VertexTool.vertexListBox.Items.Add(v);
+                                    vertexTool.vertexListBox.Items.Add(v);
                                 }
                             }
                         }
                     }
                 }
-                VertexTool.vertexListBox.EndUpdate();
-                CurrentMode = Mode.Normal;
+                vertexTool.vertexListBox.EndUpdate();
+                currentMode = Mode.Normal;
             }
         }
 
@@ -1459,37 +1503,44 @@ namespace Smash_Forge
             //vertexTool.Show();
         }
 
-        private void Render(object sender, PaintEventArgs e)
+        private void Render(object sender, PaintEventArgs e, int width, int height, int defaultFbo = 0)
         {
-            if (!ReadyToRender)
+            // Don't render if the context and resources aren't set up properly.
+            // Watching textures suddenly appear looks weird.
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || Runtime.glTexturesNeedRefreshing)
                 return;
 
-            SetupViewport();
+            SetupViewport(width, height);
+
+            // Bind the default framebuffer in case it was set elsewhere.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
 
             // Push all attributes so we don't have to clean up later
             GL.PushAttrib(AttribMask.AllAttribBits);
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
-            GL.ClearColor(0, 0, 0, 0);
 
             // Return early to avoid rendering other stuff. 
-            if (MeshList.filesTreeView.SelectedNode != null)
+            if (meshList.filesTreeView.SelectedNode != null)
             {
-                if (MeshList.filesTreeView.SelectedNode is BCH_Texture)
+                if (meshList.filesTreeView.SelectedNode is BCH_Texture)
                 {
                     DrawBchTex();
+                    glViewport.SwapBuffers();
                     return;
                 }
-                if (MeshList.filesTreeView.SelectedNode is NutTexture)
+                if (meshList.filesTreeView.SelectedNode is NutTexture)
                 {
-                    DrawNutTexAndUvs();
+                    DrawNutTex();
+                    glViewport.SwapBuffers();
                     return;
                 }
-                if (MeshList.filesTreeView.SelectedNode is BRTI)
+                if (meshList.filesTreeView.SelectedNode is BRTI)
                 {
                     DrawBNTXTexAndUvs();
                     return;
                 }
-                if (MeshList.filesTreeView.SelectedNode is FTEX)
+                if (meshList.filesTreeView.SelectedNode is FTEX)
                 {
                     DrawFTEXTexAndUvs();
                     return;
@@ -1499,61 +1550,57 @@ namespace Smash_Forge
             if (Runtime.usePostProcessing)
             {
                 // Render models and background into an HDR buffer. 
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, colorHdrFbo);
+                colorHdrFbo.Bind();
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             }
 
+            // The screen quad shader draws its own background gradient.
+            // This prevents the second color attachment from having a white background.
             if (Runtime.renderBackGround && !Runtime.usePostProcessing)
-            {
-                // The screen quad shader draws its own background gradient.
                 DrawViewportBackground();
-            }
 
+            // What even is this...
             if (glViewport.ClientRectangle.Contains(glViewport.PointToClient(Cursor.Position))
              && glViewport.Focused
-             && (CurrentMode == Mode.Normal || (CurrentMode == Mode.Photoshoot && !freezeCamera))
-             && !TransformTool.hit)
+             && (currentMode == Mode.Normal || (currentMode == Mode.Photoshoot && !freezeCamera))
+             && !transformTool.hit)
             {
-                camera.Update();
-            }
-            try
-            {
-                if (OpenTK.Input.Mouse.GetState() != null)
-                    camera.mouseSLast = OpenTK.Input.Mouse.GetState().WheelPrecise;
-            }
-            catch
-            {
-
+                camera.UpdateFromMouse();
             }
 
             if (cameraPosForm != null)
                 cameraPosForm.ApplyCameraAnimation(camera, animationTrackBar.Value);
 
             if (Runtime.renderFloor)
-                RenderTools.DrawFloor(camera.mvpMatrix);
+                RenderTools.DrawFloor(camera.MvpMatrix);
 
-            // Allow disabling depth testing for experimental "flat" rendering. 
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Lequal);
-            if (!Runtime.useDepthTest)
-                GL.Disable(EnableCap.DepthTest);
+            // Depth testing isn't set by materials.
+            SetDepthTesting();
 
-            DrawModels();
+            // Ignore the background for the ID pass.
+            if (Runtime.drawNudColorIdPass)
+                GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            if (Runtime.drawModelShadow)
+                DrawModelsIntoShadowMap();
+
+            if (Runtime.usePostProcessing)
+                DrawModelsNormally(width, height, colorHdrFbo.Id);
+            else
+                DrawModelsNormally(width, height, defaultFbo);
 
             if (Runtime.usePostProcessing)
             {
                 // Draw the texture to the screen into a smaller FBO.
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, brightHdrSmallFbo);
-                GL.Viewport(0, 0, brightTexWidth, brightTexHeight);
-                RenderTools.DrawTexturedQuad(colorHdrTex1, brightTexWidth, brightTexHeight);
+                imageBrightHdrFbo.Bind();
+                GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
+                ScreenDrawing.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1].Id, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
 
                 // Setup the normal viewport dimensions again.
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                GL.Viewport(glViewport.ClientRectangle);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
+                GL.Viewport(0, 0, width, height);
 
-                RenderTools.DrawScreenQuadPostProcessing(colorHdrTex0, brightTexSmall);
+                ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id);
             }
 
             FixedFunctionRendering();
@@ -1562,9 +1609,82 @@ namespace Smash_Forge
             glViewport.SwapBuffers();
         }
 
+        private void BenchmarkShapeDrawing()
+        {
+            int count = 2000;
+            ShapeDrawing.SetUp();
+
+            // Depth testing has a huge performance impact.
+            GL.Disable(EnableCap.DepthTest);
+
+            Mesh3D cubeMesh = new Mesh3D(new Vector4(1, 0, 1, 1));
+            cubeMesh.Color = ColorTools.Vector4FromColor(Color.Aquamarine);
+            cubeMesh.ScaleX = 5;
+            cubeMesh.ScaleY = 2;
+            cubeMesh.ScaleZ = 3;
+
+            Vector3[] vertices = ShapeDrawing.GetRectangularPrismPositions();
+            foreach (Vector3 vert in vertices)
+            {
+                cubeMesh.AddVertex(vert);
+            }
+
+            // Test shader rendering.
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            for (int i = 1; i < count; i++)
+            {
+                // Identical speeds to fixed function pipeline for small scale values.
+                cubeMesh.Draw(camera.MvpMatrix);
+                //GL.Begin(PrimitiveType.TriangleStrip);
+                //foreach (Vector3 vert in vertices)
+                //{
+                //    GL.Vertex3(vert * 15);
+                //}
+                //GL.End();
+
+            }
+            stopwatch.Stop();
+
+            Debug.WriteLine(String.Format("{0}", stopwatch.ElapsedMilliseconds));
+        }
+
+        private void DrawModelsNormally(int width, int height, int defaultFbo)
+        {
+            // Draw the models normally.
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
+            GL.Viewport(0, 0, width, height);
+            DrawModels();
+        }
+
+        private void DrawModelsIntoShadowMap()
+        {
+            // Draw the models into the shadow map.
+            depthMapFbo.Bind();
+            GL.Viewport(0, 0, shadowWidth, shadowHeight);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            // Use the direction of the main character diffuse light.
+            float directionScale = 550;
+            Matrix4 modelView = Matrix4.LookAt(Vector3.Normalize(Runtime.lightSetParam.characterDiffuse.direction) * directionScale, new Vector3(0), new Vector3(0, 1, 0));
+            if (Runtime.cameraLight)
+                modelView = Matrix4.LookAt(new Vector3(0, 0, 1).Normalized() * directionScale, new Vector3(0), new Vector3(0, 1, 0));
+            lightMatrix = modelView * Matrix4.CreateOrthographicOffCenter(-75, 75, -75, 75, 1, 1000) * Matrix4.CreateScale(5);
+
+            DrawModels(true);
+        }
+
+        private static void SetDepthTesting()
+        {
+            // Allow disabling depth testing for experimental "flat" rendering. 
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+            if (!Runtime.useDepthTest)
+                GL.Disable(EnableCap.DepthTest);
+        }
+
         private void FixedFunctionRendering()
         {
-            RenderTools.Setup3DFixedFunctionRendering(camera.mvpMatrix);
+            RenderTools.SetUp3DFixedFunctionRendering(camera.MvpMatrix);
 
             // Bounding boxes should not render on top.
             if (Runtime.drawAreaLightBoundingBoxes)
@@ -1577,22 +1697,27 @@ namespace Smash_Forge
         {
             Vector3 topColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
             Vector3 bottomColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
-            RenderTools.DrawQuadGradient(topColor, bottomColor);
+
+            // Only use the top color for solid color rendering.
+            if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
+                ScreenDrawing.DrawQuadGradient(topColor, topColor, ScreenDrawing.screenQuadVbo);
+            else
+                ScreenDrawing.DrawQuadGradient(topColor, bottomColor, ScreenDrawing.screenQuadVbo);
         }
 
-        private void SetupViewport()
+        private void SetupViewport(int width, int height)
         {
             glViewport.MakeCurrent();
             GL.LoadIdentity();
-            GL.Viewport(glViewport.ClientRectangle);
+            GL.Viewport(0, 0, width, height);
         }
 
-        private void DrawModels()
+        private void DrawModels(bool drawShadow = false)
         {
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
                     if (m is ModelContainer)
-                        ((ModelContainer)m).Render(camera, 0, Matrix4.Zero, camera.mvpMatrix);
+                        ((ModelContainer)m).Render(camera, depthMap.Id, lightMatrix, new Vector2(glViewport.Width, glViewport.Height), drawShadow);
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)
@@ -1606,21 +1731,21 @@ namespace Smash_Forge
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             if (Runtime.renderLVD)
-                _lvd.Render();
+                lvd.Render();
 
             if (Runtime.renderBones)
                 foreach (ModelContainer m in draw)
                     m.RenderBones();
 
             // ACMD
-            if (ParamManager != null && Runtime.renderHurtboxes && draw.Count > 0 && (draw[0] is ModelContainer))
+            if (paramManager != null && Runtime.renderHurtboxes && draw.Count > 0 && (draw[0] is ModelContainer))
             {
                 // Doesn't do anything. ParamManager is always null.
-                ParamManager.RenderHurtboxes(Frame, scriptId, ACMDScript, ((ModelContainer)draw[0]).GetVBN());
+                paramManager.RenderHurtboxes(frame, scriptId, acmdScript, ((ModelContainer)draw[0]).GetVBN());
             }
 
-            if (ACMDScript != null && draw.Count > 0 && (draw[0] is ModelContainer))
-                ACMDScript.Render(((ModelContainer)draw[0]).GetVBN());
+            if (acmdScript != null && draw.Count > 0 && (draw[0] is ModelContainer))
+                acmdScript.Render(((ModelContainer)draw[0]).GetVBN());
 
             if (ViewComboBox.SelectedIndex == 2)
             {
@@ -1632,16 +1757,16 @@ namespace Smash_Forge
                 MouseSelectionStuff();
             }
 
-            if (CurrentMode == Mode.Photoshoot)
+            if (currentMode == Mode.Photoshoot)
             {
                 freezeCamera = false;
                 if (Keyboard.GetState().IsKeyDown(Key.W) && Mouse.GetState().IsButtonDown(MouseButton.Left))
                 {
-                    ShootX = glViewport.PointToClient(Cursor.Position).X;
-                    ShootY = glViewport.PointToClient(Cursor.Position).Y;
+                    shootX = glViewport.PointToClient(Cursor.Position).X;
+                    shootY = glViewport.PointToClient(Cursor.Position).Y;
                     freezeCamera = true;
                 }
-                RenderTools.DrawPhotoshoot(glViewport, ShootX, ShootY, ShootWidth, ShootHeight);
+                RenderTools.DrawPhotoshoot(glViewport, shootX, shootY, shootWidth, shootHeight);
             }
         }
 
@@ -1649,9 +1774,9 @@ namespace Smash_Forge
         {
             try
             {
-                if (CurrentMode == Mode.Normal && OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
+                if (currentMode == Mode.Normal && OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
                 {
-                    CurrentMode = Mode.Selection;
+                    currentMode = Mode.Selection;
                     Vector2 m = GetMouseOnViewport();
                     sx1 = m.X;
                     sy1 = m.Y;
@@ -1661,12 +1786,12 @@ namespace Smash_Forge
             {
 
             }
-            if (CurrentMode == Mode.Selection)
+            if (currentMode == Mode.Selection)
             {
                 if (!OpenTK.Input.Mouse.GetState().IsButtonDown(OpenTK.Input.MouseButton.Right))
                 {
                     checkSelect();
-                    CurrentMode = Mode.Normal;
+                    currentMode = Mode.Normal;
                 }
 
                 GL.MatrixMode(MatrixMode.Modelview);
@@ -1699,22 +1824,22 @@ namespace Smash_Forge
         {
             if (modeBone.Checked)
             {
-                TransformTool.Render(camera, new Ray(camera, glViewport));
-                if (TransformTool.state == 1)
-                    CurrentMode = Mode.Selection;
+                transformTool.Render(camera, new Ray(camera, glViewport));
+                if (transformTool.state == 1)
+                    currentMode = Mode.Selection;
                 else
-                    CurrentMode = Mode.Normal;
+                    currentMode = Mode.Normal;
             }
 
-            if (TransformTool.HasChanged())
+            if (transformTool.HasChanged())
             {
-                if (Animation != null && TransformTool.b != null)
+                if (currentAnimation != null && transformTool.b != null)
                 {
                     // get the node group for the current bone in animation
                     Animation.KeyNode ThisNode = null;
-                    foreach (Animation.KeyNode node in Animation.Bones)
+                    foreach (Animation.KeyNode node in currentAnimation.Bones)
                     {
-                        if (node.Text.Equals(TransformTool.b.Text))
+                        if (node.Text.Equals(transformTool.b.Text))
                         {
                             // found
                             ThisNode = node;
@@ -1723,12 +1848,12 @@ namespace Smash_Forge
                     }
                     if (ThisNode == null)
                     {
-                        ThisNode = new Animation.KeyNode(TransformTool.b.Text);
-                        Animation.Bones.Add(ThisNode);
+                        ThisNode = new Animation.KeyNode(transformTool.b.Text);
+                        currentAnimation.Bones.Add(ThisNode);
                     }
 
                     // update or add the key frame
-                    ThisNode.SetKeyFromBone((float)currentFrame.Value, TransformTool.b);
+                    ThisNode.SetKeyFromBone((float)currentFrame.Value, transformTool.b);
                 }
             }
         }
@@ -1738,15 +1863,11 @@ namespace Smash_Forge
             if (e.KeyChar == 'f')
                 FrameSelectionAndSort();
 
-            // Toggles color channel rendering.
-            if (e.KeyChar == 'r')
-                Runtime.renderR = !Runtime.renderR;
-            if (e.KeyChar == 'g')
-                Runtime.renderG = !Runtime.renderG;
-            if (e.KeyChar == 'b')
-                Runtime.renderB = !Runtime.renderB;
-            if (e.KeyChar == 'a')
-                Runtime.renderAlpha = !Runtime.renderAlpha;
+            if (e.KeyChar == 'i')
+            {
+                ShaderTools.SetupShaders();
+                ShaderTools.SaveErrorLogs();
+            }
         }
 
         private void ModelViewport_KeyDown(object sender, KeyEventArgs e)
@@ -1756,7 +1877,7 @@ namespace Smash_Forge
                 BatchRenderModels();
 
             if (Keyboard.GetState().IsKeyDown(Key.X) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.L))
-                BatchExportMaterialXml();
+                MaterialXmlBatchExport.ExportAllMaterialsFromFolder();
 
             if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T) && Keyboard.GetState().IsKeyDown(Key.M))
                 BatchRenderStages();
@@ -1794,58 +1915,73 @@ namespace Smash_Forge
                 string[] nudFileNames = Directory.GetFiles(modelPath, "*.nud", SearchOption.AllDirectories);
                 foreach (string nudFile in nudFileNames)
                 {
-                    RenderModel(nudFile, sourcePath, outputPath);
+                    BatchRenderViewportToFile(nudFile, sourcePath, outputPath);
                 }
             }
         }
 
-        private void SaveScreenRender(string outputPath)
+        public void SaveScreenRender(bool saveAlpha = false)
         {
-            // Manually dispose the bitmap to avoid memory leaks. 
-            Bitmap screenCapture = CaptureScreen(true);
-            screenCapture.Save(outputPath);
-            screenCapture.Dispose();
-        }
+            // Set these dimensions back again before normal rendering so the viewport doesn't look glitchy.
+            int oldWidth = glViewport.Width;
+            int oldHeight = glViewport.Height;
 
-        private void BatchExportMaterialXml()
-        {
-            // Get the source model folder and then the output folder. 
-            using (var folderSelect = new FolderSelectDialog())
+            // The scissor test is causing issues with viewport resizing. Just disable it for now.
+            glViewport.MakeCurrent();
+            GL.Disable(EnableCap.ScissorTest);
+
+            // Render screenshots in a higher quality.
+            fboRenderWidth = oldWidth * 2;
+            fboRenderHeight = oldHeight * 2;
+
+            // Make sure the framebuffers and viewport match the new drawing size.
+            ResizeTexturesAndBuffers();
+            GL.Viewport(0, 0, fboRenderWidth, fboRenderHeight);
+
+            // Render the viewport.       
+            offscreenRenderFbo.Bind();
+            Render(null, null, fboRenderWidth, fboRenderHeight, offscreenRenderFbo.Id);
+
+            // Save the render as a PNG.
+            using (Bitmap screenCapture = offscreenRenderFbo.ReadImagePixels(saveAlpha))
             {
-                if (folderSelect.ShowDialog() == DialogResult.OK)
-                {
-                    string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*.nud", SearchOption.AllDirectories);
-
-                    using (var outputFolderSelect = new FolderSelectDialog())
-                    {
-                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
-                        {
-                            for (int i = 0; i < files.Length; i++)
-                            {
-                                string xmlName = FormatFileName(files[i], folderSelect.SelectedPath);
-                                NUD nud = new NUD(files[i]);
-                                string outputFileName = outputFolderSelect.SelectedPath + "\\" + xmlName + ".xml";
-                                MaterialXML.ExportMaterialAsXml(nud, outputFileName);
-                            }
-                        }
-                    }
-                }
+                string outputPath = CalculateUniqueName();
+                screenCapture.Save(outputPath);
             }
+
+            // Cleanup
+            fboRenderWidth = oldWidth;
+            fboRenderHeight = oldHeight;
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        }
+
+        private static string CalculateUniqueName()
+        {
+            // Keep incrementing the number until unique.
+            int i = 0;
+            string outputPath = MainForm.executableDir + "\\render_" + i + ".png";
+            while (File.Exists(outputPath))
+            {
+                outputPath = MainForm.executableDir + "\\render_" + i + ".png";
+                i++;
+            }
+
+            return outputPath;
         }
 
         private void DrawBNTXTexAndUvs()
         {
             GL.PopAttrib();
-            BRTI tex = ((BRTI)MeshList.filesTreeView.SelectedNode);
+            BRTI tex = ((BRTI)meshList.filesTreeView.SelectedNode);
             switch (tex.format >> 8)
             {
                 case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC4:
                     {
-                        RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, false, false);
+                        ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, false, false);
                     }
                     break;
                 default:
-                    RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
                     break;
             }
 
@@ -1855,26 +1991,20 @@ namespace Smash_Forge
             glViewport.SwapBuffers();
         }
 
-
-        private void DrawNutTexAndUvs()
+        private void DrawNutTex()
         {
             GL.PopAttrib();
-            NutTexture tex = ((NutTexture)MeshList.filesTreeView.SelectedNode);
-            RenderTools.DrawTexturedQuad(((NUT)tex.Parent).draw[tex.HASHID], tex.Width, tex.Height);
-
-            if (Runtime.drawUv)
-                DrawUvsForSelectedTexture(tex);
-
-            glViewport.SwapBuffers();
+            NutTexture tex = ((NutTexture)meshList.filesTreeView.SelectedNode);
+            ScreenDrawing.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HashId].Id, tex.Width, tex.Height);
         }
 
         private void DrawBchTex()
         {
             GL.PopAttrib();
-            BCH_Texture tex = ((BCH_Texture)MeshList.filesTreeView.SelectedNode);
-            RenderTools.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
-            glViewport.SwapBuffers();
+            BCH_Texture tex = ((BCH_Texture)meshList.filesTreeView.SelectedNode);
+            ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
         }
+
         private void DrawFTEXTexAndUvs()
         {
             GL.PopAttrib();
@@ -1901,6 +2031,7 @@ namespace Smash_Forge
 
             glViewport.SwapBuffers();
         }
+
         private void DrawAreaLightBoundingBoxes()
         {
             foreach (AreaLight light in LightTools.areaLights)
@@ -1914,7 +2045,7 @@ namespace Smash_Forge
 
         private void DrawNSWBFRESUvsForSelectedTexture(BRTI tex)
         {
-            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer))
                     continue;
@@ -1923,13 +2054,13 @@ namespace Smash_Forge
 
                 int textureHash = 0;
                 int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
-             //   RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.Text, tex.display, 4, Color.Red, 1, Color.White);
+                //   RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.Text, tex.display, 4, Color.Red, 1, Color.White);
             }
         }
 
         private void DrawBFRESUvsForSelectedTexture(FTEX tex)
         {
-            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer))
                     continue;
@@ -1938,22 +2069,88 @@ namespace Smash_Forge
 
                 int textureHash = 0;
                 int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
-         //       RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.Text, tex.display, 4, Color.Red, 1, Color.White);
+                //       RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.Text, tex.display, 4, Color.Red, 1, Color.White);
             }
         }
 
-        private void DrawUvsForSelectedTexture(NutTexture tex)
+        private void glViewport_Paint(object sender, PaintEventArgs e)
         {
-            foreach (TreeNode node in MeshList.filesTreeView.Nodes)
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+                return;
+
+            Render(sender, e, glViewport.Width, glViewport.Height);
+
+            // Make sure unused resources get cleaned up.
+            GLObjectManager.DeleteUnusedGLObjects();
+
+            // Deleting the context will require all the textures to be reloaded.
+            if (Runtime.glTexturesNeedRefreshing)
+            {
+                RefreshGlTextures();
+                Runtime.glTexturesNeedRefreshing = false;
+            }
+        }
+
+        private void glViewport_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            MouseClickItemSelect(e);
+        }
+
+        private void modePolygon_Click(object sender, EventArgs e)
+        {
+            // These should act like radio buttons.
+            modeBone.Checked = false;
+            modePolygon.Checked = true;
+            modeMesh.Checked = false;
+        }
+
+        private void modeMesh_Click(object sender, EventArgs e)
+        {
+            // These should act like radio buttons.
+            modeBone.Checked = false;
+            modePolygon.Checked = false;
+            modeMesh.Checked = true;
+        }
+
+        private void modeBone_Click(object sender, EventArgs e)
+        {
+            // These should act like radio buttons.
+            modeBone.Checked = true;
+            modePolygon.Checked = false;
+            modeMesh.Checked = false;
+        }
+
+        private void glViewport_Load(object sender, EventArgs e)
+        {
+            glViewport.MakeCurrent();
+            if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
+            {
+                OpenTKSharedResources.InitializeSharedResources();
+                if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+                {
+                    SetupBuffersAndTextures();
+
+                    if (Runtime.enableOpenTKDebugOutput)
+                    {
+                        glViewport.MakeCurrent();
+                        OpenTKSharedResources.EnableOpenTKDebugOutput();
+                    }
+                }
+            }
+        }
+
+        private void RefreshGlTextures()
+        {
+            // Regenerate all the texture objects.
+            foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (!(node is ModelContainer))
                     continue;
 
                 ModelContainer m = (ModelContainer)node;
 
-                int textureHash = 0;
-                int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
-                RenderTools.DrawUv(camera, m.NUD, textureHash, 4, Color.Red, 1, Color.White);
+                if (m.NUT != null)
+                    m.NUT.RefreshGlTexturesByHashId();
             }
         }
     }

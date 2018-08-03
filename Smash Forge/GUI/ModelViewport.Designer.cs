@@ -49,7 +49,6 @@
             this.RenderButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.GIFButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.animationTrackBar = new System.Windows.Forms.TrackBar();
             this.label2 = new System.Windows.Forms.Label();
@@ -61,7 +60,7 @@
             this.beginButton = new System.Windows.Forms.Button();
             this.prevButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
-            this.glViewport = new OpenTK.GLControl();
+            this.glViewport = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
             this.toolStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animationTrackBar)).BeginInit();
@@ -91,8 +90,7 @@
             this.toolStripSeparator4,
             this.RenderButton,
             this.toolStripButton1,
-            this.GIFButton,
-            this.toolStripButton2});
+            this.GIFButton});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(662, 31);
@@ -108,9 +106,7 @@
             "Animation Editor",
             "LVD Editor",
             "ACMD Editor",
-            "Clean",
-            "BYAML Editor",
-            "BFRES Material Editor"});
+            "Clean"});
             this.ViewComboBox.Name = "ViewComboBox";
             this.ViewComboBox.Size = new System.Drawing.Size(121, 31);
             this.ViewComboBox.ToolTipText = "The current view for the Viewport";
@@ -182,7 +178,7 @@
             this.modeBone.Size = new System.Drawing.Size(28, 28);
             this.modeBone.Text = "toolStripButton3";
             this.modeBone.ToolTipText = "Bones";
-            this.modeBone.Click += new System.EventHandler(this.viewStripButtons);
+            this.modeBone.Click += new System.EventHandler(this.modeBone_Click);
             // 
             // modeMesh
             // 
@@ -196,20 +192,19 @@
             this.modeMesh.Size = new System.Drawing.Size(28, 28);
             this.modeMesh.Text = "toolStripButton1";
             this.modeMesh.ToolTipText = "Mesh";
-            this.modeMesh.Click += new System.EventHandler(this.viewStripButtons);
+            this.modeMesh.Click += new System.EventHandler(this.modeMesh_Click);
             // 
             // modePolygon
             // 
             this.modePolygon.CheckOnClick = true;
             this.modePolygon.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.modePolygon.Enabled = false;
             this.modePolygon.Image = global::Smash_Forge.Properties.Resources.icon_polygon;
             this.modePolygon.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.modePolygon.Name = "modePolygon";
             this.modePolygon.Size = new System.Drawing.Size(28, 28);
             this.modePolygon.Text = "toolStripButton2";
             this.modePolygon.ToolTipText = "Polygons";
-            this.modePolygon.Click += new System.EventHandler(this.viewStripButtons);
+            this.modePolygon.Click += new System.EventHandler(this.modePolygon_Click);
             // 
             // toolStripSeparator1
             // 
@@ -265,7 +260,7 @@
             this.RenderButton.Size = new System.Drawing.Size(28, 28);
             this.RenderButton.Text = "toolStripRenderAlpha";
             this.RenderButton.ToolTipText = "Render Viewport to File";
-            this.RenderButton.Click += new System.EventHandler(this.RenderButton_Click);
+            this.RenderButton.Click += new System.EventHandler(this.toolStripSaveRenderAlphaButton_Click);
             // 
             // toolStripButton1
             // 
@@ -276,7 +271,7 @@
             this.toolStripButton1.Size = new System.Drawing.Size(28, 28);
             this.toolStripButton1.Text = "toolStripRenderNoAlpha";
             this.toolStripButton1.ToolTipText = "Render Viewport to File (No Alpha)";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
+            this.toolStripButton1.Click += new System.EventHandler(this.toolStripRenderNoAlphaButton_Click);
             // 
             // GIFButton
             // 
@@ -288,15 +283,6 @@
             this.GIFButton.Text = "toolStripSaveGif";
             this.GIFButton.ToolTipText = "Render GIF of Current Animation";
             this.GIFButton.Click += new System.EventHandler(this.GIFButton_Click);
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(28, 28);
-            this.toolStripButton2.Text = "toolStripButton2";
             // 
             // groupBox1
             // 
@@ -320,7 +306,7 @@
             // 
             // animationTrackBar
             // 
-            this.animationTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.animationTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.animationTrackBar.Location = new System.Drawing.Point(12, 16);
             this.animationTrackBar.Name = "animationTrackBar";
@@ -421,7 +407,7 @@
             // 
             // playButton
             // 
-            this.playButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.playButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.playButton.Location = new System.Drawing.Point(90, 64);
             this.playButton.MinimumSize = new System.Drawing.Size(44, 44);
@@ -441,10 +427,11 @@
             this.glViewport.Size = new System.Drawing.Size(662, 468);
             this.glViewport.TabIndex = 0;
             this.glViewport.VSync = false;
+            this.glViewport.Load += new System.EventHandler(this.glViewport_Load);
             this.glViewport.Click += new System.EventHandler(this.glViewport_Click);
-            this.glViewport.Paint += new System.Windows.Forms.PaintEventHandler(this.Render);
+            this.glViewport.Paint += new System.Windows.Forms.PaintEventHandler(this.glViewport_Paint);
             this.glViewport.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.glViewport_KeyPress);
-            this.glViewport.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseDoubleClick);
+            this.glViewport.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseClick);
             this.glViewport.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseMove);
             this.glViewport.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseUp);
             this.glViewport.Resize += new System.EventHandler(this.glViewport_Resize);
@@ -465,7 +452,6 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ModelViewport_FormClosed);
             this.Load += new System.EventHandler(this.ModelViewport_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModelViewport_KeyDown);
-            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ModelViewport_KeyPress);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -512,6 +498,5 @@
         private System.Windows.Forms.ToolStripButton stripRot;
         private System.Windows.Forms.ToolStripButton stripSca;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
-        private System.Windows.Forms.ToolStripButton toolStripButton2;
     }
 }

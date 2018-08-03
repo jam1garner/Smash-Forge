@@ -67,6 +67,9 @@ namespace Smash_Forge
 
         public static ViewportModes ViewportMode = ViewportModes.EDITVERT;
 
+        // The messages are annoying when batch rendering.
+        public static bool checkNudTexIdOnOpen = true;
+
         public static float RenderBoneNodeSize = 0.1f;
         public static float RenderLineSize = 2;
         public static bool renderLVD = true;
@@ -80,8 +83,6 @@ namespace Smash_Forge
         public static bool renderInterpolatedHitboxes = true;
         public static bool renderHitboxesColorByKb;
         public static bool renderHitboxAngles = true;
-        public static bool renderFloor = true;
-        public static bool renderBackGround = true;
         public static bool renderPath = true;
         public static bool renderRespawns = true;
         public static bool renderSpawns = true;
@@ -171,17 +172,23 @@ namespace Smash_Forge
             Color.FromArgb(unchecked((int)DistinctColors.DeepYellowishBrown))
         };
 
-        public static string FloorURL = "";
+        // Floor Grid
+        public static bool renderFloor = true;
+        public static string floorTexFilePath = "";
         public static TextureWrapMode floorWrap = TextureWrapMode.MirroredRepeat;
         public static float floorSize = 30f;
         public static Color floorColor = Color.Gray;
-        public static FloorStyle floorStyle = FloorStyle.Normal;
+        public static FloorStyle floorStyle = FloorStyle.WireFrame;
         public static bool renderFloorLines = true;
 
+        // Viewport Background
+        public static bool renderBackGround = true;
+        public static string backgroundTexFilePath = "";
+        public static BackgroundStyle backgroundStyle = BackgroundStyle.Gradient;
         public static Color backgroundGradientTop = Color.FromArgb(255, 26, 26, 26);
         public static Color backgroundGradientBottom = Color.FromArgb(255, 77, 77, 77);
         public static float fov = 0.524f; // default 30 degrees from stage param files
-        public static float zoomspeed = 1.0f;
+        public static float zoomspeed = 1.25f;
         public static float zoomModifierScale = 2.0f;
         public static bool cameraLight = false;
 
@@ -211,6 +218,9 @@ namespace Smash_Forge
         public static int selectedBoneIndex = -1;
 
         public static bool drawUv = false;
+
+        // Polygon ID Maps
+        public static bool drawNudColorIdPass = false;
 
         public static float specularHue = 360.0f;
         public static float specularSaturation = 0.0f;
@@ -263,6 +273,12 @@ namespace Smash_Forge
         public static string GLSLVersion = "";
         public static bool useLegacyShaders = false;
 
+        // Texture creation needs to be delayed until we actually have a context.
+        public static bool glTexturesNeedRefreshing = false;
+
+        // This should only be done once for performance reasons.
+        public static bool hasRefreshedMatThumbnails = false;
+
         public enum RenderTypes
         {
             Shaded = 0,
@@ -289,10 +305,16 @@ namespace Smash_Forge
 
         public enum FloorStyle
         {
-            Normal = 0,
-            Textured = 1,
-            UserTexture = 2,
-            Solid = 3,
+            WireFrame = 0,
+            UserTexture = 1,
+            Solid = 2,
+        }
+
+        public enum BackgroundStyle
+        {
+            Gradient = 0,
+            UserTexture = 1,
+            Solid = 2,
         }
 
         public static string TargetAnimString { get; set; }

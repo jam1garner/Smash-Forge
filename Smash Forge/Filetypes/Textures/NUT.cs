@@ -8,13 +8,30 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {
-    public class NutTexture : TreeNode
+    public class TextureSurface
     {
         public List<byte[]> mipmaps = new List<byte[]>();
-        public int HASHID
+        public uint cubemapFace = 0; //Not set currently
+    }
+
+    public class NutTexture : TreeNode
+    {
+        //Each texture should contain either 1 or 6 surfaces
+        //Each surface should contain (1 <= n <= 255) mipmaps
+        //Each surface in a texture should have the same amount of mipmaps and dimensions for them
+
+        public List<TextureSurface> surfaces = new List<TextureSurface>();
+
+        public byte MipMapsPerSurface
+        {
+            get { return (byte)surfaces[0].mipmaps.Count; }
+        }
+
+        public int HashId
         {
             get
             {
@@ -27,52 +44,111 @@ namespace Smash_Forge
             }
         }
         private int id;
+
+        // Loading mip maps is only supported for DDS currently.
+        public bool isDds = false;
+
         public int Width;
         public int Height;
-        public PixelInternalFormat type;
-        public OpenTK.Graphics.OpenGL.PixelFormat utype;
-        public PixelType PixelType = PixelType.UnsignedByte;
+
+        public PixelInternalFormat pixelInternalFormat;
+        public OpenTK.Graphics.OpenGL.PixelFormat pixelFormat;
+        public PixelType pixelType = PixelType.UnsignedByte;
+
+        public uint DdsCaps2
+        {
+            get
+            {
+                if (surfaces.Count == 6)
+                    return (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES;
+                else
+                    return (uint)0;
+            }
+        }
+
+        //Return a list containing every mipmap from every surface
+        public List<byte[]> GetAllMipmaps()
+        {
+            List<byte[]> mipmaps = new List<byte[]>();
+            foreach (TextureSurface surface in surfaces)
+            {
+                foreach (byte[] mipmap in surface.mipmaps)
+                {
+                    mipmaps.Add(mipmap);
+                }
+            }
+            return mipmaps;
+        }
+
+        //Move channel 0 to channel 3 (ABGR -> BGRA)
+        public void SwapChannelOrderUp()
+        {
+            foreach (byte[] mip in GetAllMipmaps())
+            {
+                for (int t = 0; t < mip.Length; t += 4)
+                {
+                    byte t1 = mip[t];
+                    mip[t] = mip[t + 1];
+                    mip[t + 1] = mip[t + 2];
+                    mip[t + 2] = mip[t + 3];
+                    mip[t + 3] = t1;
+                }
+            }
+        }
+
+        //Move channel 3 to channel 0 (BGRA -> ABGR)
+        public void SwapChannelOrderDown()
+        {
+            foreach (byte[] mip in GetAllMipmaps())
+            {
+                for (int t = 0; t < mip.Length; t += 4)
+                {
+                    byte t1 = mip[t + 3];
+                    mip[t + 3] = mip[t + 2];
+                    mip[t + 2] = mip[t + 1];
+                    mip[t + 1] = mip[t];
+                    mip[t] = t1;
+                }
+            }
+        }
 
         public NutTexture()
         {
             ImageKey = "texture";
             SelectedImageKey = "texture";
         }
-        
+
         public override string ToString()
         {
-            return HASHID.ToString("x").ToUpper();
+            return HashId.ToString("x").ToUpper();
         }
 
-        public int Size
+        public int ImageSize
         {
             get
             {
-                switch (type)
+                switch (pixelInternalFormat)
                 {
                     case PixelInternalFormat.CompressedRedRgtc1:
-                        return (Width * Height / 2);
-                    case PixelInternalFormat.CompressedRgRgtc2:
-                        return (Width * Height / 2);
                     case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
                         return (Width * Height / 2);
+                    case PixelInternalFormat.CompressedRgRgtc2:
                     case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
-                        return (Width * Height);
                     case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
                         return (Width * Height);
                     case PixelInternalFormat.Rgba16:
-                        return mipmaps[0].Length / 2;
+                        return surfaces[0].mipmaps[0].Length / 2;
                     case PixelInternalFormat.Rgba:
-                        return mipmaps[0].Length;
+                        return surfaces[0].mipmaps[0].Length;
                     default:
-                        return mipmaps[0].Length;
+                        return surfaces[0].mipmaps[0].Length;
                 }
             }
         }
 
         public int getNutFormat()
         {
-            switch (type)
+            switch (pixelInternalFormat)
             {
                 case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
                     return 0;
@@ -83,10 +159,10 @@ namespace Smash_Forge
                 case PixelInternalFormat.Rgb16:
                     return 8;
                 case PixelInternalFormat.Rgba:
-                    if (utype == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
+                    if (pixelFormat == OpenTK.Graphics.OpenGL.PixelFormat.Rgba)
                         return 14;
                     else
-                    if (utype == OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt)
+                    if (pixelFormat == OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt)
                         return 16;
                     else
                         return 17;
@@ -95,7 +171,7 @@ namespace Smash_Forge
                 case PixelInternalFormat.CompressedRgRgtc2:
                     return 22;
                 default:
-                    throw new NotImplementedException($"Unknown pixel format 0x{type:X}");
+                    throw new NotImplementedException($"Unknown pixel format 0x{pixelInternalFormat:X}");
             }
         }
 
@@ -104,53 +180,53 @@ namespace Smash_Forge
             switch (typet)
             {
                 case 0x0:
-                    type = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                     break;
                 case 0x1:
-                    type = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                    pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
                     break;
                 case 0x2:
-                    type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                     break;
                 case 8:
-                    type = PixelInternalFormat.Rgb16;
-                    utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgb;
-                    PixelType = PixelType.UnsignedShort565Reversed;
+                    pixelInternalFormat = PixelInternalFormat.Rgb16;
+                    pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgb;
+                    pixelType = PixelType.UnsignedShort565Reversed;
                     break;
                 case 12:
-                    type = PixelInternalFormat.Rgba16;
-                    utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    pixelInternalFormat = PixelInternalFormat.Rgba16;
+                    pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 case 14:
-                    type = PixelInternalFormat.Rgba;
-                    utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    pixelInternalFormat = PixelInternalFormat.Rgba;
+                    pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 case 16:
-                    type = PixelInternalFormat.Rgba;
-                    utype = OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt;
+                    pixelInternalFormat = PixelInternalFormat.Rgba;
+                    pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.AbgrExt;
                     break;
                 case 17:
-                    type = PixelInternalFormat.Rgba;
-                    utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    pixelInternalFormat = PixelInternalFormat.Rgba;
+                    pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 case 21:
-                    type = PixelInternalFormat.CompressedRedRgtc1;
+                    pixelInternalFormat = PixelInternalFormat.CompressedRedRgtc1;
                     break;
                 case 22:
-                    type = PixelInternalFormat.CompressedRgRgtc2;
+                    pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
                     break;
                 default:
-                    throw new NotImplementedException($"Unknown nut format {typet}");
+                    throw new NotImplementedException($"Unknown nut texture format 0x{typet:X}");
             }
         }
     }
 
     public class NUT : FileBase
     {
-        // Dictionary<hash ID, OpenTK texture>
-        public Dictionary<int, int> draw = new Dictionary<int, int>();
+        // Dictionary<hash ID, Texture>
+        public Dictionary<int, Texture> glTexByHashId = new Dictionary<int, Texture>();
 
-        public int Version = 0x200;
+        public ushort Version = 0x200;
 
         public override Endianness Endian { get; set; }
 
@@ -169,7 +245,7 @@ namespace Smash_Forge
             save.Click += Save;
         }
 
-        public NUT (string filename) : this()
+        public NUT(string filename) : this()
         {
             Read(filename);
         }
@@ -179,16 +255,11 @@ namespace Smash_Forge
             Read(d);
         }
 
-        ~NUT()
-        {
-            //Destroy();
-        }
-
         public bool getTextureByID(int hash, out NutTexture suc)
         {
             suc = null;
             foreach (NutTexture t in Nodes)
-                if (t.HASHID == hash)
+                if (t.HashId == hash)
                 {
                     suc = t;
                     return true;
@@ -235,116 +306,129 @@ namespace Smash_Forge
             FileOutput o = new FileOutput();
             FileOutput data = new FileOutput();
 
-            o.writeInt(0x4E545033); // "NTP3"
-            o.writeShort(Version);
-            o.writeShort(Nodes.Count);
+            o.writeUInt(0x4E545033); // "NTP3"
+            o.writeUShort(Version);
+            o.writeUShort((ushort)Nodes.Count);
             o.writeInt(0);
             o.writeInt(0);
 
             //calculate total header size
-            int headerLength = 0;
+            uint headerLength = 0;
 
             foreach (NutTexture texture in Nodes)
             {
-                int headerSize = 0x50;
-                
-                if (texture.mipmaps.Count > 1)
+
+                byte surfaceCount = (byte)texture.surfaces.Count;
+                bool isCubemap = surfaceCount == 6;
+                if (surfaceCount < 1 || surfaceCount > 6)
+                    throw new NotImplementedException($"Unsupported surface amount {surfaceCount} for texture with hash 0x{texture.HashId:X}. 1 to 6 faces are required.");
+                else if (surfaceCount > 1 && surfaceCount < 6)
+                    throw new NotImplementedException($"Unsupported cubemap face amount for texture with hash 0x{texture.HashId:X}. Six faces are required.");
+                byte mipmapCount = (byte)texture.surfaces[0].mipmaps.Count;
+
+                ushort headerSize = 0x50;
+                if (isCubemap)
                 {
-                    headerSize += texture.mipmaps.Count * 4;
-                    while (headerSize % 16 != 0)
-                        headerSize += 4;
+                    headerSize += 0x10;
                 }
+                if (mipmapCount > 1)
+                {
+                    headerSize += (ushort)(mipmapCount * 4);
+                    while (headerSize % 0x10 != 0)
+                        headerSize += 1;
+                }
+
                 headerLength += headerSize;
             }
 
             // write headers+data
             foreach (NutTexture texture in Nodes)
             {
-                int size = 0;
-                
-                foreach (var mip in texture.mipmaps)
+                byte surfaceCount = (byte)texture.surfaces.Count;
+                bool isCubemap = surfaceCount == 6;
+                byte mipmapCount = (byte)texture.surfaces[0].mipmaps.Count;
+
+                uint dataSize = 0;
+
+                foreach (var mip in texture.GetAllMipmaps())
                 {
-                    size += mip.Length;
-                    while (size % 16 != 0)
-                        size += 1;
+                    dataSize += (uint)mip.Length;
+                    while (dataSize % 0x10 != 0)
+                        dataSize += 1;
                 }
 
-                int headerSize = 0x50;
-
-                // calculate header size
-                if(texture.mipmaps.Count > 1)
+                ushort headerSize = 0x50;
+                if (isCubemap)
                 {
-                    headerSize += texture.mipmaps.Count * 4;
-                    //align to 16
-                    while (headerSize % 16 != 0)
+                    headerSize += 0x10;
+                }
+                if (mipmapCount > 1)
+                {
+                    headerSize += (ushort)(mipmapCount * 4);
+                    while (headerSize % 0x10 != 0)
                         headerSize += 1;
                 }
 
-                o.writeInt(size + headerSize);
-                o.writeInt(0x00);//padding
-                o.writeInt(size);
-                o.writeShort(headerSize); //+ (texture.mipmaps.Count - 4 > 0 ? texture.mipmaps.Count - 4 : 0) * 4
-                o.writeShort(0);
-                o.writeShort(texture.mipmaps.Count);
-                o.writeShort(texture.getNutFormat());
+                o.writeUInt(dataSize + headerSize);
+                o.writeUInt(0);
+                o.writeUInt(dataSize);
+                o.writeUShort(headerSize);
+                o.writeUShort(0);
+
+                o.writeByte(0);
+                o.writeByte(mipmapCount);
+                o.writeByte(0);
+                o.writeByte(texture.getNutFormat());
                 o.writeShort(texture.Width);
                 o.writeShort(texture.Height);
                 o.writeInt(0);
-                o.writeInt(0);
-                o.writeInt(headerLength + data.size());
+                o.writeUInt(texture.DdsCaps2);
+
+                o.writeUInt((uint)(headerLength + data.size()));
                 headerLength -= headerSize;
                 o.writeInt(0);
                 o.writeInt(0);
                 o.writeInt(0);
-                
-                if (texture.getNutFormat() == 14 || texture.getNutFormat() == 17)
+
+                if (isCubemap)
                 {
-                    foreach (byte[] mip in texture.mipmaps)
-                    {
-                        for (int t = 0; t < mip.Length; t += 4)
-                        {
-                            byte t1 = mip[t + 3];
-                            mip[t + 3] = mip[t + 2];
-                            mip[t + 2] = mip[t + 1];
-                            mip[t + 1] = mip[t];
-                            mip[t] = t1;
-                        }
-                    }
+                    o.writeInt(texture.surfaces[0].mipmaps[0].Length);
+                    o.writeInt(texture.surfaces[0].mipmaps[0].Length);
+                    o.writeInt(0);
+                    o.writeInt(0);
                 }
 
-                foreach (var mip in texture.mipmaps)
-                {
-                    int ds = data.size();
-                    data.writeBytes(mip);
-                    data.align(0x10);
-                    if (texture.mipmaps.Count > 1)
-                        o.writeInt(data.size() - ds);
-                }
-                o.align(16);
-                
                 if (texture.getNutFormat() == 14 || texture.getNutFormat() == 17)
                 {
-                    foreach (byte[] mip in texture.mipmaps)
-                    {
-                        for (int t = 0; t < mip.Length; t += 4)
-                        {
-                            byte t1 = mip[t];
-                            mip[t] = mip[t + 1];
-                            mip[t + 1] = mip[t + 2];
-                            mip[t + 2] = mip[t + 3];
-                            mip[t + 3] = t1;
-                        }
-                    }
+                    texture.SwapChannelOrderDown();
                 }
 
-                o.writeInt(0x65587400); // "eXt\0"
+                for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
+                {
+                    for (byte mipLevel = 0; mipLevel < mipmapCount; ++mipLevel)
+                    {
+                        int ds = data.size();
+                        data.writeBytes(texture.surfaces[surfaceLevel].mipmaps[mipLevel]);
+                        data.align(0x10);
+                        if (mipmapCount > 1 && surfaceLevel == 0)
+                            o.writeInt(data.size() - ds);
+                    }
+                }
+                o.align(0x10);
+
+                if (texture.getNutFormat() == 14 || texture.getNutFormat() == 17)
+                {
+                    texture.SwapChannelOrderUp();
+                }
+
+                o.writeUInt(0x65587400); // "eXt\0"
                 o.writeInt(0x20);
                 o.writeInt(0x10);
                 o.writeInt(0x00);
-                o.writeInt(0x47494458); // "GIDX"
-                o.writeInt(0x10);
 
-                o.writeInt(texture.HASHID);
+                o.writeUInt(0x47494458); // "GIDX"
+                o.writeInt(0x10);
+                o.writeInt(texture.HashId);
                 o.writeInt(0);
             }
             o.writeOutput(data);
@@ -361,7 +445,7 @@ namespace Smash_Forge
         {
             Endian = Endianness.Big;
             d.Endian = Endian;
-            int magic = d.readInt();
+            uint magic = d.readUInt();
 
             if (magic == 0x4E545033)
             {
@@ -380,317 +464,317 @@ namespace Smash_Forge
 
         public void ReadNTP3(FileData d)
         {
-            Version = d.readShort();
-            int count = d.readShort();
+            d.seek(0x4);
+
+            Version = d.readUShort();
+            ushort count = d.readUShort();
+            if (Version == 0x100)
+                count -= 1;
+
             d.skip(0x8);
-            if (Version == 0x100) count -= 1;
+            int headerPtr = 0x10;
 
-            int dataPtr = 0;
-
-            for (int i = 0; i < count; i++)
+            for (ushort i = 0; i < count; ++i)
             {
-                //Debug.WriteLine(d.pos().ToString("x"));
+                d.seek(headerPtr);
+
                 NutTexture tex = new NutTexture();
-                tex.type = PixelInternalFormat.Rgba32ui;
+                tex.isDds = true;
+                tex.pixelInternalFormat = PixelInternalFormat.Rgba32ui;
 
                 int totalSize = d.readInt();
-                d.skip(4); // padding
-
+                d.skip(4);
                 int dataSize = d.readInt();
-                int headerSize = d.readShort();
-                d.skip(3);
-                int numMips = d.readByte();
-                //Debug.WriteLine(numMips);
+                int headerSize = d.readUShort();
+                d.skip(2);
+
+                //It might seem that mipmapCount and pixelFormat would be shorts, but they're bytes because they stay in the same place regardless of endianness
+                d.skip(1);
+                byte mipmapCount = d.readByte();
                 d.skip(1);
                 tex.setPixelFormatFromNutFormat(d.readByte());
-                tex.Width = d.readShort();
-                tex.Height = d.readShort();
+                tex.Width = d.readUShort();
+                tex.Height = d.readUShort();
+                d.skip(4);
+                uint caps2 = d.readUInt();
 
-                d.skip(8); // padding?
-
-                int dataOffset = d.readInt() + dataPtr + 0x10;
-                d.skip(0x0C);
-
-                int[] mipSizes = new int[numMips];
-
-                if (numMips == 1) mipSizes[0] = dataSize;
-                else
-                for (int j = 0; j < numMips; j++)
+                bool isCubemap = false;
+                byte surfaceCount = 1;
+                if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP) == (uint)DDS.DDSCAPS2.CUBEMAP)
                 {
-                    mipSizes[j] = d.readInt();
+                    //Only supporting all six faces
+                    if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES) == (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES)
+                    {
+                        isCubemap = true;
+                        surfaceCount = 6;
+                    }
+                    else
+                    {
+                        throw new NotImplementedException($"Unsupported cubemap face amount for texture {i} with hash 0x{tex.HashId:X}. Six faces are required.");
+                    }
                 }
-                d.align(16);
 
-                d.skip(0x18);
-                tex.HASHID = d.readInt();
+                int dataOffset = d.readInt() + headerPtr;
+                d.readInt();
+                d.readInt();
+                d.readInt();
+
+                //The size of a single cubemap face (discounting mipmaps). I don't know why it is repeated. If mipmaps are present, this is also specified in the mipSize section anyway.
+                int cmapSize1 = 0;
+                int cmapSize2 = 0;
+                if (isCubemap)
+                {
+                    cmapSize1 = d.readInt();
+                    cmapSize2 = d.readInt();
+                    d.skip(8);
+                }
+
+                int[] mipSizes = new int[mipmapCount];
+                if (mipmapCount == 1)
+                {
+                    if (isCubemap)
+                        mipSizes[0] = cmapSize1;
+                    else
+                        mipSizes[0] = dataSize;
+                }
+                else
+                {
+                    for (byte mipLevel = 0; mipLevel < mipmapCount; ++mipLevel)
+                    {
+                        mipSizes[mipLevel] = d.readInt();
+                    }
+                    d.align(0x10);
+                }
+
+                d.skip(0x10); //eXt data - always the same
+
+                d.skip(4); //GIDX
+                d.readInt(); //Always 0x10
+                tex.HashId = d.readInt();
                 d.skip(4); // padding align 8
 
                 if (Version == 0x100)
                     dataOffset = d.pos();
 
-                // add mipmap data
-                for (int miplevel = 0; miplevel < numMips; miplevel++)
+                for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
                 {
-                    byte[] texArray = d.getSection(dataOffset, mipSizes[miplevel]);
-                    //Debug.WriteLine(texArray.Length.ToString("x"));
-                    tex.mipmaps.Add(texArray);
-                    dataOffset += mipSizes[miplevel];
+                    TextureSurface surface = new TextureSurface();
+                    for (byte mipLevel = 0; mipLevel < mipmapCount; ++mipLevel)
+                    {
+                        byte[] texArray = d.getSection(dataOffset, mipSizes[mipLevel]);
+                        surface.mipmaps.Add(texArray);
+                        dataOffset += mipSizes[mipLevel];
+                    }
+                    tex.surfaces.Add(surface);
                 }
 
-                dataPtr += headerSize;
-                
                 if (tex.getNutFormat() == 14 || tex.getNutFormat() == 17)
                 {
-                    Console.WriteLine("Endian swap");
-                    // swap 
-                    foreach (byte[] mip in tex.mipmaps)
-                    {
-                        for (int t = 0; t < mip.Length; t += 4)
-                        {
-                            byte t1 = mip[t];
-                            mip[t] = mip[t + 1];
-                            mip[t + 1] = mip[t + 2];
-                            mip[t + 2] = mip[t + 3];
-                            mip[t + 3] = t1;
-                            /*byte t1 = mip[t];
-                            byte t2 = mip[t+1];
-                            mip[t] = mip[t + 3];
-                            mip[t + 1] = mip[t + 2];
-                            mip[t + 2] = t2;
-                            mip[t + 3] = t1;*/
-                        }
-                    }
+                    tex.SwapChannelOrderUp();
                 }
+
+                headerPtr += headerSize;
 
                 Nodes.Add(tex);
-
-                /*for (int miplevel = 0; miplevel < numMips; miplevel++)
-                {
-                    byte[] texArray = d.getSection(dataOffset, mipSizes[miplevel]);
-
-                    if (tex.getNutFormat() == 14)
-                    {
-                        byte[] oldArray = texArray;
-                        for (int pos = 0; pos < mipSizes[miplevel]; pos+=4)
-                        {
-
-                            for (int p = 0; p < 4; p++)
-                            {
-                                if (p == 0)
-                                    texArray[pos + 3] = oldArray[pos];
-                                else
-                                    texArray[pos + p - 1] = oldArray[pos + p];
-                            }
-
-                        }
-                    }
-                    tex.mipmaps.Add(texArray);
-                    dataOffset += mipSizes[miplevel];
-                }*/
-            }
-
-            foreach (NutTexture tex in Nodes)
-            {
-                if (!draw.ContainsKey(tex.HASHID))
-                {
-                    draw.Add(tex.HASHID, loadImage(tex, true));
-                }
             }
         }
 
         public void ReadNTWU(FileData d)
         {
-            d.skip(0x02);
-            int count = d.readShort();
+            d.seek(0x4);
 
-            d.skip(0x10);
-            int headerPtr = d.pos();
-            int dataPtr = 0;
-            int gtxHeaderOffset = 0;
+            Version = d.readUShort();
+            ushort count = d.readUShort();
 
-            for (int i = 0; i < count; i++) {
-                NutTexture tex = new NutTexture();
-                tex.type = PixelInternalFormat.Rgba32ui;
+            d.skip(0x8);
+            int headerPtr = 0x10;
 
+            for (ushort i = 0; i < count; ++i)
+            {
                 d.seek(headerPtr);
+
+                NutTexture tex = new NutTexture();
+                tex.pixelInternalFormat = PixelInternalFormat.Rgba32ui;
+
                 int totalSize = d.readInt();
-                int headerSize = d.readShort();
-                int numMips = d.readInt();
-                tex.setPixelFormatFromNutFormat(d.readShort());
-                tex.Width = d.readShort();
-                tex.Height = d.readShort();
+                d.skip(4);
+                int dataSize = d.readInt();
+                int headerSize = d.readUShort();
+                d.skip(2);
 
-                d.skip(8); // mipmaps and padding
-                int dataOffset = d.readInt() + dataPtr + 0x10;
+                d.skip(1);
+                byte mipmapCount = d.readByte();
+                d.skip(1);
+                tex.setPixelFormatFromNutFormat(d.readByte());
+                tex.Width = d.readUShort();
+                tex.Height = d.readUShort();
+                d.readInt(); //Always 1?
+                uint caps2 = d.readUInt();
 
-                headerPtr += headerSize;
-                dataPtr += headerSize;
-
-                d.skip(0x04);
-                if (i == 0)
+                bool isCubemap = false;
+                byte surfaceCount = 1;
+                if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP) == (uint)DDS.DDSCAPS2.CUBEMAP)
                 {
-                    gtxHeaderOffset = d.readInt() + 0x10;
-                } else
-                {
-                    gtxHeaderOffset += 0x80;
-                    d.skip(0x04);
+                    //Only supporting all six faces
+                    if ((caps2 & (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES) == (uint)DDS.DDSCAPS2.CUBEMAP_ALLFACES)
+                    {
+                        isCubemap = true;
+                        surfaceCount = 6;
+                    }
+                    else
+                    {
+                        throw new NotImplementedException($"Unsupported cubemap face amount for texture {i} with hash 0x{tex.HashId:X}. Six faces are required.");
+                    }
                 }
 
-                d.skip(0x04);
-                
-                // check for cubemap
-                bool cmap = (d.readInt() == d.readInt());
-                d.seek(d.pos() - 8);
-                if (cmap) Console.WriteLine("cubemap detected");
+                int dataOffset = d.readInt() + headerPtr;
+                int mipDataOffset = d.readInt() + headerPtr;
+                int gtxHeaderOffset = d.readInt() + headerPtr;
+                d.readInt();
 
-                d.skip(headerSize - 0x50);
-
-                d.skip(0x18);
-                tex.HASHID = d.readInt();
-
-                Console.WriteLine(gtxHeaderOffset.ToString("x"));
-                d.seek(gtxHeaderOffset);
-                d.skip(0x04); // dim
-                d.skip(0x04); // width
-                d.skip(0x04); // height
-                d.skip(0x04); // depth
-                d.skip(0x04); // numMips
-                int format = d.readInt();
-                d.skip(0x04); // aa
-                d.skip(0x04); // use
-                int imageSize = d.readInt();
-                d.skip(0x04); // imagePtr
-                int maxSize = d.readInt(); // mipSize
-                d.skip(0x04); // mipPtr
-                int tileMode = d.readInt();
-                int swizzle = d.readInt();
-                d.skip(0x04); // alignment
-                int pitch = d.readInt();
-
-                int ds = dataOffset;
-                int s1 = 0;
-                int size = 0;
-                Console.WriteLine(totalSize.ToString("x"));
-                for (int mipLevel = 0; mipLevel < numMips; mipLevel++)
+                int cmapSize1 = 0;
+                int cmapSize2 = 0;
+                if (isCubemap)
                 {
-                    // Maybe this is the problem?
-                    int mipSize = imageSize >> (mipLevel * 2);
-                    int p = pitch >> mipLevel;
-                    
-                    size = d.readInt();
-                    //Console.WriteLine("\tMIP: " + size.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + (size == 0 ? ds + totalSize - dataOffset : size));
+                    cmapSize1 = d.readInt();
+                    cmapSize2 = d.readInt();
+                    d.skip(8);
+                }
 
-                    //Console.WriteLine(tex.id.ToString("x") + " " + dataOffset.ToString("x") + " " + mipSize.ToString("x") + " " + p + " " + swizzle);
-                    //Console.WriteLine((tex.width >> mipLevel) + " " + (tex.height >> mipLevel));
+                int imageSize = 0; //Total size of first mipmap of every surface
+                int mipSize = 0; //Total size of mipmaps other than the first of every surface
+                if (mipmapCount == 1)
+                {
+                    if (isCubemap)
+                        imageSize = cmapSize1;
+                    else
+                        imageSize = dataSize;
+                }
+                else
+                {
+                    imageSize = d.readInt();
+                    mipSize = d.readInt();
+                    d.skip((mipmapCount - 2) * 4);
+                    d.align(0x10);
+                }
 
-                    //if (cmap) tex.height *= 2;
+                d.skip(0x10); //eXt data - always the same
 
-                    int w = (tex.Width >> mipLevel);
-                    int h = (tex.Height >> mipLevel);
-                    
+                d.skip(4); //GIDX
+                d.readInt(); //Always 0x10
+                tex.HashId = d.readInt();
+                d.skip(4); // padding align 8
+
+                d.seek(gtxHeaderOffset);
+                GTX.GX2Surface gtxHeader = new GTX.GX2Surface();
+
+                gtxHeader.dim = d.readInt();
+                gtxHeader.width = d.readInt();
+                gtxHeader.height = d.readInt();
+                gtxHeader.depth = d.readInt();
+                gtxHeader.numMips = d.readInt();
+                gtxHeader.format = d.readInt();
+                gtxHeader.aa = d.readInt();
+                gtxHeader.use = d.readInt();
+                gtxHeader.imageSize = d.readInt();
+                gtxHeader.imagePtr = d.readInt();
+                gtxHeader.mipSize = d.readInt();
+                gtxHeader.mipPtr = d.readInt();
+                gtxHeader.tileMode = d.readInt();
+                gtxHeader.swizzle = d.readInt();
+                gtxHeader.alignment = d.readInt();
+                gtxHeader.pitch = d.readInt();
+
+                //mipOffsets[0] is not in this list and is simply the start of the data (dataOffset)
+                //mipOffsets[1] is relative to the start of the data (dataOffset + mipOffsets[1])
+                //Other mipOffsets are relative to mipOffset[1] (dataOffset + mipOffsets[1] + mipOffsets[i])
+                int[] mipOffsets = new int[mipmapCount];
+                mipOffsets[0] = 0;
+                for (byte mipLevel = 1; mipLevel < mipmapCount; ++mipLevel)
+                {
+                    mipOffsets[mipLevel] = 0;
+                    mipOffsets[mipLevel] = mipOffsets[1] + d.readInt();
+                }
+
+                for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
+                {
+                    tex.surfaces.Add(new TextureSurface());
+                }
+
+                int w = tex.Width, h = tex.Height;
+                for (byte mipLevel = 0; mipLevel < mipmapCount; ++mipLevel)
+                {
+                    int p = gtxHeader.pitch / (gtxHeader.width / w);
+
+                    int size;
+                    if (mipmapCount == 1)
+                        size = imageSize;
+                    else if (mipLevel + 1 == mipmapCount)
+                        size = (mipSize + mipOffsets[1]) - mipOffsets[mipLevel];
+                    else
+                        size = mipOffsets[mipLevel + 1] - mipOffsets[mipLevel];
+
+                    size /= surfaceCount;
+
+                    for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
                     {
+                        gtxHeader.data = d.getSection(dataOffset + mipOffsets[mipLevel] + (size * surfaceLevel), size);
+
+                        //Real size
+                        //Leave the below line commented for now because it breaks RGBA textures
+                        //size = ((w + 3) >> 2) * ((h + 3) >> 2) * (GTX.getBPP(gtxHeader.format) / 8);
+                        if (size < (GTX.getBPP(gtxHeader.format) / 8))
+                            size = (GTX.getBPP(gtxHeader.format) / 8);
+
                         byte[] deswiz = GTX.swizzleBC(
-                            d.getSection(dataOffset, d.size() - dataOffset),
+                            gtxHeader.data,
                             w,
                             h,
-                            format,
-                            tileMode,
+                            gtxHeader.format,
+                            gtxHeader.tileMode,
                             p,
-                            swizzle
+                            gtxHeader.swizzle
                         );
-                        tex.mipmaps.Add(new FileData(deswiz).getSection(0, mipSize));
+                        tex.surfaces[surfaceLevel].mipmaps.Add(new FileData(deswiz).getSection(0, size));
                     }
-                    if (mipLevel == 0)
-                    {
-                        s1 = size;
-                        dataOffset = ds + size;
-                    }else
-                    {
-                        dataOffset = ds + s1 +size;
-                    }
-                    //dataOffset += mipSize;
-                    
-                    /*if (cmap)
-                    {
-                        for(int k = 0; k < 5; k++)
-                        {
-                            p = pitch >> (mipLevel + k + 1);
-                            tex.mipmaps.Add(GTX.swizzleBC(
-                                d.getSection(dataOffset, mipSize),
-                                w,
-                                h,
-                                format,
-                                tileMode,
-                                p,
-                                swizzle
-                            ));
 
-                            dataOffset += mipSize;
-                        }
-                    }*/
+                    w /= 2;
+                    h /= 2;
 
-                    //while (dataOffset % 1024 != 0) dataOffset++;
-                    //if (mipSize == 0x4000) dataOffset += 0x400;
+                    if (w < 1)
+                        w = 1;
+                    if (h < 1)
+                        h = 1;
                 }
+
+                headerPtr += headerSize;
 
                 Nodes.Add(tex);
             }
+        }
+
+        public void RefreshGlTexturesByHashId()
+        {
+            glTexByHashId.Clear();
 
             foreach (NutTexture tex in Nodes)
             {
-                if (!draw.ContainsKey(tex.HASHID))
+                if (!glTexByHashId.ContainsKey(tex.HashId))
                 {
-                    draw.Add(tex.HASHID, loadImage(tex, false));
+                    // Check if the texture is a cube map.
+                    if (tex.surfaces.Count == 6)
+                        glTexByHashId.Add(tex.HashId, CreateTextureCubeMap(tex));
+                    else
+                        glTexByHashId.Add(tex.HashId, CreateTexture2D(tex));
                 }
-
-                // redo mipmaps
-                /*GL.BindTexture(TextureTarget.Texture2D, draw[tex.id]);
-                for (int k = 1; k < tex.mipmaps.Count; k++)
-                {
-                    tex.mipmaps[k] = new byte[tex.mipmaps[k].Length];
-                    GCHandle pinnedArray = GCHandle.Alloc(tex.mipmaps[k], GCHandleType.Pinned);
-                    IntPtr pointer = pinnedArray.AddrOfPinnedObject();
-                    GL.GetCompressedTexImage(TextureTarget.Texture2D, 0, pointer);
-                    pinnedArray.Free();
-                }*/
             }
-
-            
-            //File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\duckhunt\\model\\body\\mip1.bin", bytearray);
-
-            //Console.WriteLine(GL.GetError());
-            /*int j = 0;
-            foreach(byte[] b in textures[0].mipmaps)
-            {
-                if (j == 3)
-                {
-                    for(int w = 3; w < 8; w++)
-                    {
-                        for (int p = 3; p < 6; p++)
-                        {
-                            byte[] deswiz = GTX.swizzleBC(
-                                b,
-                                (int)Math.Pow(2, w),
-                                64,
-                                51,
-                                4,
-                                 (int)Math.Pow(2, p),
-                                197632
-                            );
-                            File.WriteAllBytes("C:\\s\\Smash\\extract\\data\\fighter\\duckhunt\\model\\body\\chunk_" + (int)Math.Pow(2, p) + "_" + (int)Math.Pow(2, w), deswiz);
-                        }
-                    }
-                    
-                }
-                j++;
-            }*/
         }
 
         public static bool texIdUsed(int texId)
         {
             foreach (var nut in Runtime.TextureContainers)
-                foreach(NutTexture tex in nut.Nodes)
-                    if (tex.HASHID == texId)
+                foreach (NutTexture tex in nut.Nodes)
+                    if (tex.HashId == texId)
                         return true;
             return false;
         }
@@ -707,15 +791,15 @@ namespace Smash_Forge
 
             foreach (NutTexture tex in Nodes)
             {
-                int originalTexture = draw[tex.HASHID];
-                draw.Remove(tex.HASHID);
+                Texture originalTexture = glTexByHashId[tex.HashId];
+                glTexByHashId.Remove(tex.HashId);
 
                 // Only change the first 3 bytes.
-                tex.HASHID = tex.HASHID & 0xFF;
+                tex.HashId = tex.HashId & 0xFF;
                 int first3Bytes = (int)(newTexId & 0xFFFFFF00);
-                tex.HASHID = tex.HASHID | first3Bytes;
+                tex.HashId = tex.HashId | first3Bytes;
 
-                draw.Add(tex.HASHID, originalTexture);
+                glTexByHashId.Add(tex.HashId, originalTexture);
             }
         }
 
@@ -725,25 +809,15 @@ namespace Smash_Forge
             List<byte> previous4thBytes = new List<byte>();
             foreach (NutTexture tex in Nodes)
             {
-                byte fourthByte = (byte) (tex.HASHID & 0xFF);
+                byte fourthByte = (byte)(tex.HashId & 0xFF);
                 if (!(previous4thBytes.Contains(fourthByte)))
                     previous4thBytes.Add(fourthByte);
                 else
                     return true;
-                    
+
             }
 
             return false;
-        }
-
-        public void Destroy()
-        {
-            foreach (var kv in draw)
-            {
-                if (GL.IsTexture(kv.Value))
-                    GL.DeleteTexture(kv.Value);
-            }
-            Nodes.Clear();
         }
 
         public override string ToString()
@@ -751,79 +825,76 @@ namespace Smash_Forge
             return "NUT";
         }
 
-        //texture----------------------------------------------------------
-
-        public static int loadImage(Bitmap image)
+        public static Texture2D CreateTexture2D(NutTexture nutTexture, int surfaceIndex = 0)
         {
-            int texID = GL.GenTexture();
+            bool compressedFormatWithMipMaps = nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
+                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
+                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
+                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRedRgtc1
+                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgRgtc2;
 
-            GL.BindTexture(TextureTarget.Texture2D, texID);
-            BitmapData data = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
-                ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
-                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-
-            image.UnlockBits(data);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 1);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-
-            return texID;
-        }
-
-        public static int loadImage(NutTexture t, bool DDS = false)
-        {
-            int texID = GL.GenTexture();
-
-            GL.BindTexture(TextureTarget.Texture2D, texID);
-
-            if (t.type == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
-                || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
-                || t.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
-                || t.type == PixelInternalFormat.CompressedRedRgtc1
-                || t.type == PixelInternalFormat.CompressedRgRgtc2)
+            if (compressedFormatWithMipMaps)
             {
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, (InternalFormat)t.type,
-                    t.Width, t.Height, 0, t.Size, t.mipmaps[0]);
-                
-                if (t.mipmaps.Count > 1 && DDS)
+                if (nutTexture.surfaces[0].mipmaps.Count > 1 && nutTexture.isDds)
                 {
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.mipmaps.Count);
-                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-                    for (int i = 0; i <t.mipmaps.Count; i++)
-                        GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, i, (InternalFormat)t.type,
-                        t.Width / (int)Math.Pow(2,i), t.Height / (int)Math.Pow(2, i), 0, t.mipmaps[i].Length, t.mipmaps[i]);
+                    // Reading mip maps past the first level is only supported for DDS currently.
+                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps, true,
+                        (InternalFormat)nutTexture.pixelInternalFormat);
                 }
                 else
                 {
-                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                    // Only load the first level and generate the rest.
+                    return new Texture2D(nutTexture.Width, nutTexture.Height,
+                        nutTexture.surfaces[surfaceIndex].mipmaps, false,
+                        (InternalFormat)nutTexture.pixelInternalFormat);
                 }
-
-                //Debug.WriteLine(GL.GetError());
             }
             else
             {
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.mipmaps.Count);
-                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+                Texture2D texture = new Texture2D(nutTexture.Width, nutTexture.Height);
+                texture.Bind();
+                AutoGenerateMipMaps(nutTexture);
+                return texture;
+            }
+        }
 
-                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.Width, t.Height, 0,
-                    t.utype, t.PixelType, t.mipmaps[0]);
+        public static TextureCubeMap CreateTextureCubeMap(NutTexture t)
+        {
+            TextureCubeMap texture = new TextureCubeMap(Properties.Resources._10102000);
+            texture.Bind();
 
-               /* for (int i = 0; i < t.mipmaps.Count; i++)
-                    GL.TexImage2D<byte>(TextureTarget.Texture2D, i, t.type, t.width, t.height, 0,
-                    t.utype, t.PixelType, t.mipmaps[i]);*/
+            // Necessary to access mipmaps past the base level.
+            texture.MinFilter = TextureMinFilter.LinearMipmapLinear;
 
-                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            // The number of mip maps needs to be specified first.
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureBaseLevel, 0);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMaxLevel, t.surfaces[0].mipmaps.Count);
+            GL.GenerateMipmap(GenerateMipmapTarget.TextureCubeMap);
+
+            for (int i = 0; i < t.surfaces.Count; i++)
+            {
+                GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, 0, (InternalFormat)t.pixelInternalFormat, t.Width, t.Height, 0, t.ImageSize, t.surfaces[i].mipmaps[0]);
+
+                // Initialize the data for each level.
+                for (int j = 1; j < t.surfaces[i].mipmaps.Count; j++)
+                {
+                    GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, j, (InternalFormat)t.pixelInternalFormat,
+                     t.Width / (int)Math.Pow(2, j), t.Height / (int)Math.Pow(2, j), 0, t.ImageSize, t.surfaces[i].mipmaps[j]);
+                }
             }
 
-            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            return texture;
+        }
 
-            return texID;
+        private static void AutoGenerateMipMaps(NutTexture t)
+        {
+            for (int i = 0; i < t.surfaces.Count; ++i)
+            {
+                // Only load the first level and generate the other mip maps.
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.surfaces[i].mipmaps.Count);
+                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.Width, t.Height, 0, t.pixelFormat, t.pixelType, t.surfaces[i].mipmaps[0]);
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            }
         }
     }
 }

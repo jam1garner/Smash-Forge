@@ -1,79 +1,80 @@
 ﻿using System;
-using System.IO;
 using System.Drawing;
 using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using System.Drawing.Imaging;
 using System.Diagnostics;
-using System.Reflection;
 using SALT.PARAMS;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using SFGraphics.Tools;
+using SFGraphics.GLObjects.Textures;
+using SFGraphics.Cameras;
+
 
 namespace Smash_Forge.Rendering
 {
-    public class RenderTools
+    class RenderTools
     {
-        public static int defaultTex = -1;
-        public static int floorTexture;
+        public static Texture defaultTex;
+        public static Texture floorTexture;
+        public static Texture backgroundTexture;
 
-        public static Dictionary<NUD.DummyTextures, int> dummyTextures = new Dictionary<NUD.DummyTextures, int>(); 
+        public static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
 
-        private static int stageMapHigh;
-        private static int stageMapLow;
-        private static int dummyRamp;
-        private static int pokemonStadiumDummyTex;
-        private static int punchOutDummyTex;
-        private static int shadowMapDummyTex;
-
-        public static int uvTestPattern;
-        public static int boneWeightGradient;
-        public static int boneWeightGradient2;
-
-        public static void Setup()
-        {
-            if(defaultTex == -1)
-                LoadTextures();
-
-            GetOpenGLSystemInfo();
-        }
+        public static Texture uvTestPattern;
+        public static Texture boneWeightGradient;
+        public static Texture boneWeightGradient2;
 
         public static void LoadTextures()
         {
-            // Dummy textures. 
-            stageMapHigh = LoadCubeMap(Properties.Resources._10102000, TextureUnit.Texture12);
-            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
+            dummyTextures = CreateNudDummyTextures();
 
-            stageMapLow = LoadCubeMap(Properties.Resources._10101000, TextureUnit.Texture13);
-            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
-
-            dummyRamp = NUT.loadImage(Properties.Resources._10080000);
-            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp);
-
-            pokemonStadiumDummyTex = NUT.loadImage(Properties.Resources._10040001);
-            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex);
-
-            punchOutDummyTex = NUT.loadImage(Properties.Resources._10040000);
-            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex);
-
-            shadowMapDummyTex = NUT.loadImage(Properties.Resources._10100000);
-            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
+            NudMatSphereDrawing.LoadMaterialSphereTextures();
 
             // Helpful textures. 
-            uvTestPattern = NUT.loadImage(Properties.Resources.UVPattern);
-            boneWeightGradient = NUT.loadImage(Properties.Resources.boneWeightGradient);
-            boneWeightGradient2 = NUT.loadImage(Properties.Resources.boneWeightGradient2);
+            uvTestPattern = new Texture2D(Properties.Resources.UVPattern);
+            uvTestPattern.TextureWrapS = TextureWrapMode.Repeat;
+            uvTestPattern.TextureWrapT = TextureWrapMode.Repeat;
 
-            defaultTex = NUT.loadImage(Smash_Forge.Resources.Resources.DefaultTexture);
+            boneWeightGradient = new Texture2D(Properties.Resources.boneWeightGradient);
+            boneWeightGradient2 = new Texture2D(Properties.Resources.boneWeightGradient2);
+
+            defaultTex = new Texture2D(Resources.Resources.DefaultTexture);
+
+            try
+            {
+                floorTexture = new Texture2D(new Bitmap(Runtime.floorTexFilePath));
+                backgroundTexture = new Texture2D(new Bitmap(Runtime.backgroundTexFilePath));
+            }
+            catch (Exception)
+            {
+                // File paths are incorrect or never set. 
+            }
         }
 
-        private static void GetOpenGLSystemInfo()
+        public static Dictionary<NUD.DummyTextures, Texture> CreateNudDummyTextures()
         {
-            Runtime.renderer = GL.GetString(StringName.Renderer);
-            Runtime.openGLVersion = GL.GetString(StringName.Version);
-            Runtime.GLSLVersion = GL.GetString(StringName.ShadingLanguageVersion);
+            Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
+
+            // Dummy textures. 
+            Texture stageMapHigh = new TextureCubeMap(Properties.Resources._10102000, 128);
+            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
+
+            Texture stageMapLow = new TextureCubeMap(Properties.Resources._10101000, 128);
+            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
+
+            Texture dummyRamp = new Texture2D(Properties.Resources._10080000);
+            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp);
+
+            Texture pokemonStadiumDummyTex = new Texture2D(Properties.Resources._10040001);
+            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex);
+
+            Texture punchOutDummyTex = new Texture2D(Properties.Resources._10040000);
+            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex);
+
+            Texture shadowMapDummyTex = new Texture2D(Properties.Resources._10100000);
+            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
+
+            return dummyTextures;
         }
 
         public static void drawTranslator(Matrix4 view)
@@ -86,7 +87,7 @@ namespace Smash_Forge.Rendering
                 Vector3 p2 = Vector3.TransformPosition(center + new Vector3(0, 5, 0), view).Normalized();
 
                 // check if mouse is within range
-                
+
             }
 
             GL.Color3(Color.Green);
@@ -289,7 +290,7 @@ namespace Smash_Forge.Rendering
             GL.Clear(ClearBufferMask.StencilBufferBit);
             GL.ColorMask(false, false, false, false);
 
-               drawSphereTransformed(center, radius, precision, transform);
+            drawSphereTransformed(center, radius, precision, transform);
 
             GL.ColorMask(true, true, true, true);
             GL.StencilFunc(StencilFunction.Equal, 1, 0xFF);
@@ -449,7 +450,7 @@ namespace Smash_Forge.Rendering
 
             Vector3 axis = Vector3.Cross(d, yAxis);
             float angle = (float)Math.Acos(Vector3.Dot(d.Normalized(), yAxis));
-            
+
 
             GL.Enable(EnableCap.StencilTest);
 
@@ -501,7 +502,7 @@ namespace Smash_Forge.Rendering
 
             Vector3 axis = Vector3.Cross(d, yAxis);
             float angle = (float)Math.Acos(Vector3.Dot(d.Normalized(), yAxis));
-            
+
             GL.Enable(EnableCap.StencilTest);
 
             GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
@@ -509,7 +510,7 @@ namespace Smash_Forge.Rendering
             GL.Disable(EnableCap.DepthTest);
             GL.Clear(ClearBufferMask.StencilBufferBit);
             GL.ColorMask(false, false, false, false);
-                
+
             drawSphereTransformed(p1, R, 20, transform);
             drawSphereTransformed(p2, R, 20, transform);
 
@@ -527,7 +528,7 @@ namespace Smash_Forge.Rendering
                 GL.Vertex3((float)Math.Cos(j) * R, -height, (float)Math.Sin(j) * R);
             }
             GL.End();
-        
+
             GL.PopMatrix();
 
             GL.ColorMask(true, true, true, true);
@@ -569,7 +570,6 @@ namespace Smash_Forge.Rendering
             //  sides
             GL.PushMatrix();
 
-            //GL.Scale(scale.X, scale.Y, scale.Z);
             double[] f = new double[] {
                 transform.M11, transform.M12, transform.M13, transform.M14,
                 transform.M21, transform.M22, transform.M23, transform.M24,
@@ -577,7 +577,6 @@ namespace Smash_Forge.Rendering
                 transform.M41, transform.M42, transform.M43, transform.M44,
             };
             GL.MultMatrix(f);
-            //Vector3 scale = transform.ExtractScale();
             GL.Translate(mid);
             GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
 
@@ -605,71 +604,73 @@ namespace Smash_Forge.Rendering
             GL.Enable(EnableCap.CullFace);
         }
 
-        public static void DrawCylinder(Vector3 p1, Vector3 p2, float R){
+        public static void DrawCylinder(Vector3 p1, Vector3 p2, float R)
+        {
             int q = 8, p = 20;
 
-            Vector3 yAxis = new Vector3 (0, 1, 0);
+            Vector3 yAxis = new Vector3(0, 1, 0);
             Vector3 d = p2 - p1;
-            float height = (float)Math.Sqrt (d.X*d.X + d.Y*d.Y + d.Z*d.Z) / 2;
+            float height = (float)Math.Sqrt(d.X * d.X + d.Y * d.Y + d.Z * d.Z) / 2;
 
             Vector3 mid = (p1 + p2) / 2;
 
-            Vector3 axis = Vector3.Cross (d, yAxis);
-            float angle = (float)Math.Acos (Vector3.Dot(d.Normalized(), yAxis));
+            Vector3 axis = Vector3.Cross(d, yAxis);
+            float angle = (float)Math.Acos(Vector3.Dot(d.Normalized(), yAxis));
 
-            GL.PushMatrix ();
+            GL.PushMatrix();
             GL.Translate(p1);
-            GL.Rotate (-(float)((angle) * (180/Math.PI)), axis);
-            for(int j = 0; j < q; j++)
+            GL.Rotate(-(float)((angle) * (180 / Math.PI)), axis);
+            for (int j = 0; j < q; j++)
             {
                 GL.Begin(PrimitiveType.TriangleStrip);
-                for(int i = 0; i <= p; i++)
+                for (int i = 0; i <= p; i++)
                 {
-                    GL.Vertex3( R * Math.Cos( (float)(j+1)/q * Math.PI/2.0 ) * Math.Cos( 2.0 * (float)i/p * Math.PI ),
-                        -R * Math.Sin( (float)(j+1)/q * Math.PI/2.0 ),
-                        R * Math.Cos( (float)(j+1)/q * Math.PI/2.0 ) * Math.Sin( 2.0 * (float)i/p * Math.PI ) );
-                    GL.Vertex3( R * Math.Cos( (float)j/q * Math.PI/2.0 ) * Math.Cos( 2.0 * (float)i/p * Math.PI ),
-                        -R * Math.Sin( (float)j/q * Math.PI/2.0 ),
-                        R * Math.Cos( (float)j/q * Math.PI/2.0 ) * Math.Sin( 2.0 * (float)i/p * Math.PI ) );         
+                    GL.Vertex3(R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        -R * Math.Sin((float)(j + 1) / q * Math.PI / 2.0),
+                        R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
+                    GL.Vertex3(R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        -R * Math.Sin((float)j / q * Math.PI / 2.0),
+                        R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
                 }
                 GL.End();
             }
-            GL.PopMatrix ();
+            GL.PopMatrix();
 
-            GL.PushMatrix ();
+            GL.PushMatrix();
             GL.Translate(p2);
-            GL.Rotate (-(float)(angle * (180/Math.PI)), axis);
-            for(int j = 0; j < q; j++)
+            GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
+            for (int j = 0; j < q; j++)
             {
                 GL.Begin(PrimitiveType.TriangleStrip);
-                for(int i = 0; i <= p; i++)
+                for (int i = 0; i <= p; i++)
                 {
-                    GL.Vertex3( R * Math.Cos( (float)(j+1)/q * Math.PI/2.0 ) * Math.Cos( 2.0 * (float)i/p * Math.PI ),
-                        R * Math.Sin( (float)(j+1)/q * Math.PI/2.0 ),
-                        R * Math.Cos( (float)(j+1)/q * Math.PI/2.0 ) * Math.Sin( 2.0 * (float)i/p * Math.PI ) );
-                    GL.Vertex3( R * Math.Cos( (float)j/q * Math.PI/2.0 ) * Math.Cos( 2.0 * (float)i/p * Math.PI ),
-                        R * Math.Sin( (float)j/q * Math.PI/2.0 ),
-                        R * Math.Cos( (float)j/q * Math.PI/2.0 ) * Math.Sin( 2.0 * (float)i/p * Math.PI ) );         
+                    GL.Vertex3(R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        R * Math.Sin((float)(j + 1) / q * Math.PI / 2.0),
+                        R * Math.Cos((float)(j + 1) / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
+                    GL.Vertex3(R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Cos(2.0 * (float)i / p * Math.PI),
+                        R * Math.Sin((float)j / q * Math.PI / 2.0),
+                        R * Math.Cos((float)j / q * Math.PI / 2.0) * Math.Sin(2.0 * (float)i / p * Math.PI));
                 }
                 GL.End();
             }
-            GL.PopMatrix ();
+            GL.PopMatrix();
 
 
             /*  sides */
-            GL.PushMatrix ();
+            GL.PushMatrix();
 
             GL.Translate(mid);
-            GL.Rotate (-(float)(angle * (180/Math.PI)), axis);
+            GL.Rotate(-(float)(angle * (180 / Math.PI)), axis);
 
             GL.Begin(PrimitiveType.QuadStrip);
-            for (int j=0;j<=360;j+=1) {
-                GL.Vertex3((float)Math.Cos(j)*R,+height, (float)Math.Sin(j)*R);
-                GL.Vertex3((float)Math.Cos(j)*R,-height, (float)Math.Sin(j)*R);
+            for (int j = 0; j <= 360; j += 1)
+            {
+                GL.Vertex3((float)Math.Cos(j) * R, +height, (float)Math.Sin(j) * R);
+                GL.Vertex3((float)Math.Cos(j) * R, -height, (float)Math.Sin(j) * R);
             }
             GL.End();
 
-            GL.PopMatrix ();
+            GL.PopMatrix();
         }
 
         public static void DrawWireframeCylinder(Vector3 p1, Vector3 p2, float R)
@@ -851,7 +852,7 @@ namespace Smash_Forge.Rendering
 
         public static void DrawFloor(Matrix4 mvpMatrix)
         {
-            float s = Runtime.floorSize;
+            float scale = Runtime.floorSize;
 
             GL.UseProgram(0);
             GL.MatrixMode(MatrixMode.Modelview);
@@ -864,53 +865,57 @@ namespace Smash_Forge.Rendering
             GL.Color3(Runtime.floorColor);
             GL.LineWidth(1f);
 
-            if (Runtime.floorStyle == Runtime.FloorStyle.Textured || Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
+            if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
             {
                 GL.Enable(EnableCap.Texture2D);
                 GL.ActiveTexture(TextureUnit.Texture0);
-                if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
-                    GL.BindTexture(TextureTarget.Texture2D, floorTexture);
+
+                if (floorTexture != null)
+                    floorTexture.Bind();
                 else
-                    GL.BindTexture(TextureTarget.Texture2D, defaultTex);
+                    defaultTex.Bind();
 
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)Runtime.floorWrap);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (float)Runtime.floorWrap);
 
                 GL.Color3(Runtime.floorColor == Color.Gray ? Color.White : Runtime.floorColor);
+
                 GL.Begin(PrimitiveType.Quads);
-
                 GL.TexCoord2(0, 0);
-                GL.Vertex3(new Vector3(-s, 0f, -s));
-                GL.TexCoord2(0, 2);
-                GL.Vertex3(new Vector3(-s, 0f, s));
-                GL.TexCoord2(2, 2);
-                GL.Vertex3(new Vector3(s, 0f, s));
-                GL.TexCoord2(2, 0);
-                GL.Vertex3(new Vector3(s, 0f, -s));
+                GL.Vertex3(new Vector3(-scale, 0f, -scale));
 
+                GL.TexCoord2(0, 2);
+                GL.Vertex3(new Vector3(-scale, 0f, scale));
+
+                GL.TexCoord2(2, 2);
+                GL.Vertex3(new Vector3(scale, 0f, scale));
+
+                GL.TexCoord2(2, 0);
+                GL.Vertex3(new Vector3(scale, 0f, -scale));
                 GL.End();
+
                 GL.Disable(EnableCap.Texture2D);
             }
             else if (Runtime.floorStyle == Runtime.FloorStyle.Solid)
             {
                 GL.Begin(PrimitiveType.Quads);
-                GL.Vertex3(-s, 0f, -s);
-                GL.Vertex3(-s, 0f, s);
-                GL.Vertex3(s, 0f, s);
-                GL.Vertex3(s, 0f, -s);
+                GL.Vertex3(-scale, 0f, -scale);
+                GL.Vertex3(-scale, 0f, scale);
+                GL.Vertex3(scale, 0f, scale);
+                GL.Vertex3(scale, 0f, -scale);
                 GL.End();
             }
             else
             {
                 GL.Begin(PrimitiveType.Lines);
-                for (var i = -s / 2; i <= s / 2; i++)
+                for (var i = -scale / 2; i <= scale / 2; i++)
                 {
                     if (i != 0)
                     {
-                        GL.Vertex3(-s, 0f, i * 2);
-                        GL.Vertex3(s, 0f, i * 2);
-                        GL.Vertex3(i * 2, 0f, -s);
-                        GL.Vertex3(i * 2, 0f, s);
+                        GL.Vertex3(-scale, 0f, i * 2);
+                        GL.Vertex3(scale, 0f, i * 2);
+                        GL.Vertex3(i * 2, 0f, -scale);
+                        GL.Vertex3(i * 2, 0f, scale);
                     }
                 }
                 GL.End();
@@ -919,157 +924,45 @@ namespace Smash_Forge.Rendering
             if (Runtime.renderFloorLines)
             {
                 GL.Disable(EnableCap.DepthTest);
-                GL.Begin(PrimitiveType.Lines);
                 GL.Color3(Color.White);
+
                 GL.Begin(PrimitiveType.Lines);
-                GL.Vertex3(-s, 0f, 0);
-                GL.Vertex3(s, 0f, 0);
-                GL.Vertex3(0, 0f, -s);
-                GL.Vertex3(0, 0f, s);
+                GL.Vertex3(-scale, 0f, 0);
+                GL.Vertex3(scale, 0f, 0);
+                GL.Vertex3(0, 0f, -scale);
+                GL.Vertex3(0, 0f, scale);
                 GL.End();
+
                 GL.Enable(EnableCap.DepthTest);
 
                 GL.Disable(EnableCap.DepthTest);
                 GL.Color3(Color.LightGray);
+
                 GL.Begin(PrimitiveType.Lines);
                 GL.Vertex3(0, 5, 0);
                 GL.Vertex3(0, 0, 0);
+                GL.End();
 
                 GL.Color3(Color.OrangeRed);
+
+                GL.Begin(PrimitiveType.Lines);
                 GL.Vertex3(0f, 0f, 0);
-                GL.Color3(Color.OrangeRed);
                 GL.Vertex3(5f, 0f, 0);
+                GL.End();
 
                 GL.Color3(Color.Olive);
+
+                GL.Begin(PrimitiveType.Lines);
                 GL.Vertex3(0, 0f, 0f);
                 GL.Color3(Color.Olive);
                 GL.Vertex3(0, 0f, 5f);
-
                 GL.End();
             }
 
             GL.Enable(EnableCap.DepthTest);
         }
 
-        public static void BFRES_DrawUv(Camera camera, BFRES bfres, int texHash, int divisions, Color uvColor, float lineWidth, Color gridColor)
-        {
-            foreach (BFRES.FMDL_Model m in bfres.models)
-            {
-                foreach (BFRES.Mesh p in m.poly)
-                {
-                    // Draw UVs for all models using this texture.
-                    // TODO: previously selected model or select multiple models.
-                    bool containsTexture = BFRES_MeshContainsTextureHash(texHash, p);
-
-                    if (containsTexture)
-                    {
-                        List<int> f = p.lodMeshes[p.DisplayLODIndex].getDisplayFace();
-
-                        for (int i = 0; i < p.lodMeshes[p.DisplayLODIndex].displayFaceSize; i += 3)
-                        {
-                            BFRES.Vertex v1 = p.vertices[f[i]];
-                            BFRES.Vertex v2 = p.vertices[f[i + 1]];
-                            BFRES.Vertex v3 = p.vertices[f[i + 2]];
-
-                            if (Runtime.uvChannel == Runtime.UVChannel.Channel1)
-                                BFRES_DrawUVTriangleAndGrid(v1.uv0, v2.uv0, v3.uv0, divisions, uvColor, lineWidth, gridColor, p.material);
-                            else if (Runtime.uvChannel == Runtime.UVChannel.Channel2)
-                                BFRES_DrawUVTriangleAndGrid(v1.uv1, v2.uv1, v3.uv1, divisions, uvColor, lineWidth, gridColor, p.material);
-                            else if (Runtime.uvChannel == Runtime.UVChannel.Channel3)
-                                BFRES_DrawUVTriangleAndGrid(v1.uv2, v2.uv2, v3.uv2, divisions, uvColor, lineWidth, gridColor, p.material);
-                        }
-                    }
-                }
-            }
-        }
-
-        private static bool BFRES_MeshContainsTextureHash(int selectedTextureHash, BFRES.Mesh m)
-        {
-            foreach (BFRES.MatTexture matTex in m.material.textures)
-            {
-                if (selectedTextureHash == matTex.hash)
-                    return true;
-            }
-
-
-            return false;
-        }
-
-        private static void DrawUVTriangleAndGrid(NUD.Vertex v1, NUD.Vertex v2, NUD.Vertex v3, int divisions, Color uvColor, float lineWidth, Color gridColor)
-        {
-            // No shaders
-            GL.UseProgram(0);
-
-            float bounds = 1;
-            Vector2 scaleUv = new Vector2(1, 1);
-
-            SetupUvRendering(lineWidth);
-
-            DrawUvTriangle(v1, v2, v3, uvColor, scaleUv);
-
-            // Draw Grid
-            GL.Color3(gridColor);
-            DrawHorizontalGrid(divisions, bounds, scaleUv);
-            DrawVerticalGrid(divisions, bounds, scaleUv);
-        }
-
-        private static void BFRES_DrawUVTriangleAndGrid(Vector2 v1, Vector2 v2, Vector2 v3, int divisions, Color uvColor, float lineWidth, Color gridColor, BFRES.MaterialData mat)
-        {
-            // No shaders
-            GL.UseProgram(0);
-
-            float bounds = 1;
-            Vector2 scaleUv = new Vector2(1, 1);
-            Vector2 transUv = new Vector2(0, 0);
-
-            if (Runtime.uvChannel == Runtime.UVChannel.Channel2)
-            {
-                if (mat.matparam.ContainsKey("gsys_bake_st0"))
-                {
-                    scaleUv = mat.matparam["gsys_bake_st0"].Value_float4.Xy;
-                    transUv = mat.matparam["gsys_bake_st0"].Value_float4.Zw;
-                }
-            }
-            
-
-            SetupUvRendering(lineWidth);
-
-            BFRES_DrawUvTriangle(v1, v2, v3, uvColor, scaleUv, transUv);
-
-            // Draw Grid
-            GL.Color3(gridColor);
-            DrawHorizontalGrid(divisions, bounds, scaleUv);
-            DrawVerticalGrid(divisions, bounds, scaleUv);
-        }
-
-        public static void DrawUv(Camera camera, NUD nud, int texHash, int divisions, Color uvColor, float lineWidth, Color gridColor)
-        {
-            foreach (NUD.Mesh m in nud.Nodes)
-            {
-                foreach (NUD.Polygon p in m.Nodes)
-                {
-                    // Draw UVs for all models using this texture.
-                    // TODO: previously selected model or select multiple models.
-                    bool containsTexture = PolyContainsTextureHash(texHash, p);
-
-                    if (containsTexture)
-                    {
-                        List<int> f = p.getDisplayFace();
-
-                        for (int i = 0; i < p.displayFaceSize; i += 3)
-                        {
-                            NUD.Vertex v1 = p.vertices[f[i]];
-                            NUD.Vertex v2 = p.vertices[f[i + 1]];
-                            NUD.Vertex v3 = p.vertices[f[i + 2]];
-
-                            DrawUVTriangleAndGrid(v1, v2, v3, divisions, uvColor, lineWidth, gridColor);
-                        }
-                    }
-                }
-            }
-        }
-
-        private static bool PolyContainsTextureHash(int selectedTextureHash, NUD.Polygon poly)
+        public static bool PolyContainsTextureHash(int selectedTextureHash, NUD.Polygon poly)
         {
             foreach (NUD.Material material in poly.materials)
             {
@@ -1081,86 +974,6 @@ namespace Smash_Forge.Rendering
             }
 
             return false;
-        }
-
-        private static void SetupUvRendering(float lineWidth)
-        {
-            // Go to 2D
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.PushMatrix();
-            GL.LoadIdentity();
-            GL.Ortho(0, 1, 1, 0, 0, 1);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.PushMatrix();
-            GL.LoadIdentity();
-            GL.LineWidth(lineWidth);
-
-            // Draw over everything
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-        }
-
-        private static void DrawUvTriangle(NUD.Vertex v1, NUD.Vertex v2, NUD.Vertex v3, Color uvColor, Vector2 scaleUv)
-        {
-            GL.Color3(uvColor);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex2(v1.uv[0] * scaleUv);
-            GL.Vertex2(v2.uv[0] * scaleUv);
-            GL.End();
-
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex2(v2.uv[0] * scaleUv);
-            GL.Vertex2(v3.uv[0] * scaleUv);
-            GL.End();
-
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex2(v3.uv[0] * scaleUv);
-            GL.Vertex2(v1.uv[0] * scaleUv);
-            GL.End();
-        }
-
-        private static void BFRES_DrawUvTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color uvColor, Vector2 scaleUv, Vector2 transUv)
-        {
-            GL.Color3(uvColor);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex2(v1 * scaleUv + transUv);
-            GL.Vertex2(v2 * scaleUv + transUv);
-            GL.End();
-
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex2(v2 * scaleUv + transUv);
-            GL.Vertex2(v3 * scaleUv + transUv);
-            GL.End();
-
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex2(v3 * scaleUv + transUv);
-            GL.Vertex2(v1 * scaleUv + transUv);
-            GL.End();
-        }
-
-        private static void DrawVerticalGrid(int divisions, float bounds, Vector2 scaleUv)
-        {
-            int verticalCount = divisions;
-            for (int i = 0; i < verticalCount * bounds; i++)
-            {
-                GL.Begin(PrimitiveType.Lines);
-                GL.Vertex2(new Vector2((1.0f / verticalCount) * i, -bounds) * scaleUv);
-                GL.Vertex2(new Vector2((1.0f / verticalCount) * i, bounds) * scaleUv);
-                GL.End();
-            }
-        }
-
-        private static void DrawHorizontalGrid(int divisions, float bounds, Vector2 scaleUv)
-        {
-            int horizontalCount = divisions;
-            for (int i = 0; i < horizontalCount * bounds; i++)
-            {
-                GL.Begin(PrimitiveType.Lines);
-                GL.Vertex2(new Vector2(-bounds, (1.0f / horizontalCount) * i) * scaleUv);
-                GL.Vertex2(new Vector2(bounds, (1.0f / horizontalCount) * i) * scaleUv);
-                GL.End();
-            }
         }
 
         public static void DrawCircle(float x, float y, float z, float radius, uint precision)
@@ -1205,7 +1018,7 @@ namespace Smash_Forge.Rendering
 
             for (int i = 0; i < smooth; i++)
             {
-                GL.Vertex3(Vector3.TransformPosition(new Vector3(x + pos.X, y + pos.Y, pos.Z),view));
+                GL.Vertex3(Vector3.TransformPosition(new Vector3(x + pos.X, y + pos.Y, pos.Z), view));
                 float tx = -y;
                 float ty = x;
                 x += tx * tf;
@@ -1227,7 +1040,7 @@ namespace Smash_Forge.Rendering
             float y = 0;
 
             GL.Begin(PrimitiveType.LineStrip);
-            for (int i = 0; i < precision; i++)
+            for (int i = 0; i < precision + 1; i++)
             {
                 GL.Vertex3(x + center.X, y + center.Y, center.Z);
 
@@ -1249,7 +1062,7 @@ namespace Smash_Forge.Rendering
             float y = 0;
 
             GL.Begin(PrimitiveType.LineStrip);
-            for (int i = 0; i < precision; i++)
+            for (int i = 0; i < precision + 1; i++)
             {
                 GL.Vertex3(Vector3.TransformPosition(new Vector3(x, y, 0), transform) + center);
 
@@ -1439,11 +1252,11 @@ namespace Smash_Forge.Rendering
             GL.End();
         }
 
-        public static void Setup3DFixedFunctionRendering(Matrix4 mvpMatrix)
+        public static void SetUp3DFixedFunctionRendering(Matrix4 mvpMatrix)
         {
             GL.UseProgram(0);
 
-            // Manually setup the matrix for immediate mode.
+            // Manually set up the matrix for immediate mode.
             Matrix4 matrix = mvpMatrix;
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref matrix);
@@ -1454,6 +1267,7 @@ namespace Smash_Forge.Rendering
 
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
 
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Lequal);
@@ -1481,13 +1295,10 @@ namespace Smash_Forge.Rendering
                     {
                         //DrawVBN(m.bch.Models.Nodes[0].skeleton);
                     }
-                    if (m.bfres != null)
+
+                    if (m.DatMelee != null)
                     {
-                      //  DrawVBN(m.bfres.models[0].skeleton);
-                    }
-                    if (m.DAT_MELEE != null)
-                    {
-                        DrawVBN(m.DAT_MELEE.bones);
+                        DrawVBN(m.DatMelee.bones);
                     }
                 }
             }
@@ -1526,6 +1337,7 @@ namespace Smash_Forge.Rendering
                             bone.rot = VBN.FromEulerAngles(bone.rotation[2], bone.rotation[1], bone.rotation[0]) *
                                 VBN.FromEulerAngles(sz, sy, 0);
                         }
+
                     }
                 }
 
@@ -1539,129 +1351,6 @@ namespace Smash_Forge.Rendering
                     vbn.update();
             }
         }
-
-        public static void DrawQuadGradient(Vector3 topColor, Vector3 bottomColor)
-        {
-            // draw RGB and alpha channels of texture to screen quad
-            ShaderOld shader = Runtime.shaders["Gradient"];
-            GL.UseProgram(shader.programID);
-
-            Setup2DRendering();
-
-            GL.Uniform3(shader.getAttribute("topColor"), topColor);
-            GL.Uniform3(shader.getAttribute("bottomColor"), bottomColor);
-
-            DrawScreenTriangle(shader);          
-        }
-
-        public static void DrawTexturedQuad(int texture, int width, int height, bool renderR = true, bool renderG = true, bool renderB = true,
-            bool renderA = false, bool keepAspectRatio = false, int currentMipLevel = 0)
-        {
-            // Draws RGB and alpha channels of texture to screen quad.
-            ShaderOld shader = Runtime.shaders["Texture"];
-            GL.UseProgram(shader.programID);
-
-            Setup2DRendering();
-
-            // Single texture uniform.
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.getAttribute("image"), 0);
-
-            // Channel toggle uniforms. 
-            ShaderTools.BoolToIntShaderUniform(shader, renderR, "renderR");
-            ShaderTools.BoolToIntShaderUniform(shader, renderG, "renderG");
-            ShaderTools.BoolToIntShaderUniform(shader, renderB, "renderB");
-            ShaderTools.BoolToIntShaderUniform(shader, renderA, "renderAlpha");
-
-            bool alphaOverride = renderA && !renderR && !renderG && !renderB;
-            ShaderTools.BoolToIntShaderUniform(shader, alphaOverride, "alphaOverride");
-
-            // Perform aspect ratio calculations in shader. 
-            // This only works properly if the viewport is square.
-            ShaderTools.BoolToIntShaderUniform(shader, keepAspectRatio, "preserveAspectRatio");
-            float aspectRatio = (float)width / (float)height;
-            GL.Uniform1(shader.getAttribute("width"), width);
-            GL.Uniform1(shader.getAttribute("height"), height);
-
-            // Display certain mip levels.
-            GL.Uniform1(shader.getAttribute("currentMipLevel"), currentMipLevel);
-
-            // Draw full screen "quad" (big triangle)
-            DrawScreenTriangle(shader);
-        }
-
-        public static void DrawScreenQuadPostProcessing(int texture0, int texture1)
-        {
-            // Draws RGB and alpha channels of texture to screen quad.
-            ShaderOld shader = Runtime.shaders["Screen_Quad"];
-            GL.UseProgram(shader.programID);
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, texture0);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.getAttribute("image0"), 0);
-
-            GL.ActiveTexture(TextureUnit.Texture1);
-            GL.BindTexture(TextureTarget.Texture2D, texture1);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)All.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)All.ClampToEdge);
-            GL.Uniform1(shader.getAttribute("image1"), 1);
-
-            ShaderTools.BoolToIntShaderUniform(shader, Runtime.renderBloom, "renderBloom");
-            GL.Uniform1(shader.getAttribute("bloomIntensity"), Runtime.bloomIntensity);
-
-            GL.Uniform3(shader.getAttribute("backgroundBottomColor"), ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz);
-            GL.Uniform3(shader.getAttribute("backgroundTopColor"), ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz);
-
-            // Draw full screen "quad" (big triangle)
-            DrawScreenTriangle(shader);
-        }
-
-
-        public static void Setup2DRendering()
-        {
-            // Setup OpenGL settings for basic 2D rendering.
-            GL.ClearColor(Color.White);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
-
-            // Allow for alpha blending.
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-        }
-
-        private static void DrawScreenTriangle(ShaderOld shader)
-        {
-            float[] vertices =
-            {
-                -1f, -1f, 0.0f,
-                 3f, -1f, 0.0f,
-                 -1f, 3f, 0.0f
-            };
-
-            int vao;
-            GL.GenVertexArrays(1, out vao);
-            GL.BindVertexArray(vao);
-
-            int vbo;
-            GL.GenBuffers(1, out vbo);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(sizeof(float) * vertices.Length), vertices, BufferUsageHint.StaticDraw);
-
-            GL.VertexAttribPointer(shader.getAttribute("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
-            GL.EnableVertexAttribArray(0);
-
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-        }
-
         public static byte[] DXT5ScreenShot(GLControl gc, int x, int y, int width, int height)
         {
             int newtex;
@@ -1686,6 +1375,15 @@ namespace Smash_Forge.Rendering
             GL.DeleteTexture(newtex);
 
             return data;
+        }
+
+        public static void SetCameraValuesFromParam(Camera camera, ParamFile stprm)
+        {
+            if (stprm == null)
+                return;
+
+            camera.FovDegrees = (float)Params.ParamTools.GetParamValue(stprm, 0, 0, 6);
+            camera.FarClipPlane = (float)Params.ParamTools.GetParamValue(stprm, 0, 0, 77);
         }
 
         public static void DrawPhotoshoot(GLControl glControl1, float shootX, float shootY, float shootWidth, float shootHeight)
@@ -1728,47 +1426,6 @@ namespace Smash_Forge.Rendering
             GL.End();
         }
 
-        public static int LoadCubeMap(Bitmap b, TextureUnit textureUnit)
-        {
-            int id;
-            GL.GenBuffers(1, out id);
-
-            GL.ActiveTexture(textureUnit);
-            
-            GL.BindTexture(TextureTarget.TextureCubeMap, id);
-
-            Bitmap bmp = b;
-
-            Rectangle[] srcRect = new Rectangle[] {
-            new Rectangle(0, 0, 128, 128),
-            new Rectangle(0, 128, 128, 128),
-            new Rectangle(0, 256, 128, 128),
-            new Rectangle(0, 384, 128, 128),
-            new Rectangle(0, 512, 128, 128),
-            new Rectangle(0, 640, 128, 128),
-            }; 
-
-            for(int i = 0; i < 6; i++)
-            {
-                Bitmap image = (Bitmap)bmp.Clone(srcRect[i], bmp.PixelFormat);
-                BitmapData data = image.LockBits(new System.Drawing.Rectangle(0, 0, image.Width, image.Height),
-                    ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
-                    OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-                image.UnlockBits(data);
-            }
-
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
-
-            GL.BindTexture(TextureTarget.TextureCubeMap, 0);
-
-            return id;
-        }
-
         public static Ray CreateRay(Matrix4 v, Vector2 m)
         {
             Vector4 va = Vector4.Transform(new Vector4(m.X, m.Y, -1.0f, 1.0f), v.Inverted());
@@ -1782,4 +1439,3 @@ namespace Smash_Forge.Rendering
         }
     }
 }
-

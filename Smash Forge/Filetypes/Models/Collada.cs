@@ -1424,9 +1424,9 @@ namespace Smash_Forge
         {
             Collada dae = new Collada();
 
-            if (con.DAT_MELEE != null)
+            if (con.DatMelee != null)
             {
-                Save(fname, con.DAT_MELEE);
+                Save(fname, con.DatMelee);
                 return;
             }
 
