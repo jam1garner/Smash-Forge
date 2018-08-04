@@ -215,7 +215,9 @@
     <Compile Include="GUI\Editors\BFRES Editors\BntxTextureList.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Editors\BFRES Editors\BntxTextureList.Designer.cs" />
+    <Compile Include="GUI\Editors\BFRES Editors\BntxTextureList.Designer.cs">
+        <DependentUpon>BntxTextureList.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Editors\BFRES Editors\ImportTexture.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -665,7 +667,9 @@
     <EmbeddedResource Include="GUI\Editors\BFRES Editors\BfresMaterialEditor.resx">
       <DependentUpon>BfresMaterialEditor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BntxTextureList.resx" />
+    <EmbeddedResource Include="GUI\Editors\BFRES Editors\BntxTextureList.resx">
+        <DependentUpon>BntxTextureList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BFRES Editors\ImportTexture.resx">
       <DependentUpon>ImportTexture.cs</DependentUpon>
     </EmbeddedResource>
