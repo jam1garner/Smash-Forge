@@ -635,6 +635,15 @@ namespace Smash_Forge
 
                 ResizeTexturesAndBuffers();
             }
+
+            UpdateBoneSizeRelativeToViewport();
+        }
+
+        private void UpdateBoneSizeRelativeToViewport()
+        {
+            // TODO: Adjust bones to be a fixed size on screen.
+            //float distance = camera.Position.Length / (float)Math.Tan(camera.FovRadians / 2.0f);
+            //Runtime.renderBoneNodeSize = Runtime.difIntensity * distance;
         }
 
         private void ResizeTexturesAndBuffers()
@@ -865,6 +874,7 @@ namespace Smash_Forge
 
             camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
+            UpdateBoneSizeRelativeToViewport();
         }
 
         private void FrameSelectedMesh()
@@ -873,6 +883,7 @@ namespace Smash_Forge
             float[] boundingSphere = mesh.boundingSphere;
             camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
+            UpdateBoneSizeRelativeToViewport();
         }
 
         private void FrameSelectedNud()
@@ -881,6 +892,7 @@ namespace Smash_Forge
             float[] boundingSphere = nud.boundingSphere;
             camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
+            UpdateBoneSizeRelativeToViewport();
         }
 
         private void FrameSelectedBfres()
@@ -920,6 +932,7 @@ namespace Smash_Forge
             float[] boundingSphere = mesh.boundingSphere;
             camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
+            UpdateBoneSizeRelativeToViewport();
         }
 
         private void FrameAllModelContainers(float maxBoundingRadius = 400)
@@ -1067,7 +1080,10 @@ namespace Smash_Forge
         private void glViewport_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (currentMode != Mode.Selection && !freezeCamera)
+            {
                 camera.UpdateFromMouse();
+                UpdateBoneSizeRelativeToViewport();
+            }
         }
 
         #region Controls
@@ -1559,6 +1575,7 @@ namespace Smash_Forge
              && !transformTool.hit)
             {
                 camera.UpdateFromMouse();
+                UpdateBoneSizeRelativeToViewport();
             }
 
             if (cameraPosForm != null)
@@ -1969,9 +1986,7 @@ namespace Smash_Forge
             switch (tex.format >> 8)
             {
                 case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC4:
-                    {
-                        ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, false, false);
-                    }
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, false, false);
                     break;
                 default:
                     ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height);

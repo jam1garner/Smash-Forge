@@ -128,26 +128,20 @@ float AmbientOcclusionBlend()
     return mix(aoMap, 1, ao_density);
 }
 
-vec3 CalcSpecularMap(vec3 I, vec3 NormalMap)
+vec3 SpecularPass(vec3 I, vec3 normal)
 {
     if (HasSpecularMap == 0)
-	    return vec3(1);
+        return vec3(0);
 
-   float shininess = 32.0;
+    // TODO: Different games use the channels for separate textures.
+    vec3 specularColor = texture(SpecularMap, f_texcoord0).rrr;
 
-   if (HasSpecularMap == 1)
-       shininess = texture2D(SpecularMap, f_texcoord0).r * 255.0;
+    float specBrdf = max(dot(I, normal), 0);
+    float exponent = 8;
 
-   vec3 NewSpecular = vec3(1);
-
-   if (shininess < 255.0)
-   {
-   }
-
-
-
-    return NewSpecular;
-
+    vec3 result = specularColor * pow(specBrdf, exponent);
+    float intensity = 0.3;
+    return result * intensity;
 }
 
 vec3 CalcBumpedNormal(vec3 inputNormal) //Currently reused some bits from nud shader.
@@ -238,10 +232,6 @@ void main()
     vec3 I = vec3(0,0,-1) * mat3(modelview);
 	vec3 bumpMapNormal = CalcBumpedNormal(normal);
 
-    // Specular Maps
-    float specularIntensity = texture2D(SpecularMap, f_texcoord0).r;
-	vec3 specularMap = CalcSpecularMap(I, normal);
-
     // Light Map
     vec4 LightMapColor = texture(BakeLightMap, f_texcoord2);
 
@@ -253,11 +243,18 @@ void main()
 	float brightness = 0;
 	if (enableCellShading == 1)
 	{
+        // Higher blend values make the dark region smoother and larger.
         float lambert = max(dot(bumpMapNormal, difLightDirection), 0);
-	    brightness = lambert;
-		float level = floor(brightness * levels);
-		brightness = level / levels;
-		brightness = brightness;
+        float smoothness = 0.1;
+        float center = 0.5;
+        float edgeL = center;
+        float edgeR = center + (smoothness * 0.5);
+        float smoothLambert = smoothstep(edgeL, edgeR, lambert);
+
+        float ambient = 0.6;
+        smoothLambert = clamp(smoothLambert + ambient, 0, 1);
+
+		brightness = smoothLambert * 3;
 	}
 	else
 	{
@@ -283,7 +280,9 @@ void main()
     diffuseMapColor *= brightness;
     fragColor.rgb += diffuseMapColor.rgb;
 
+    // Render Passes
     fragColor.rgb += EmissionPass();
+    fragColor.rgb += SpecularPass(I, bumpMapNormal);
 
     if (HasAmbientOcclusionMap == 1)
     {
@@ -408,7 +407,6 @@ void main()
 	        fragColor.rgb += emission.rgb;
 	    }
 	}
-
 
     // Toggles rendering of individual color channels for all render modes.
     fragColor.rgb *= vec3(renderR, renderG, renderB);

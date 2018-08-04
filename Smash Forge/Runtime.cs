@@ -99,8 +99,10 @@ namespace Smash_Forge
 
         public static bool drawUv;
 
-        public static float RenderBoneNodeSize = 0.1f;
-        public static float RenderLineSize = 2;
+        // Model Viewport bone display.
+        public static bool renderBones = true;
+        public static float renderBoneNodeSize = 0.1f;
+
         public static bool renderLVD = true;
 
         public static bool renderModel = true;
@@ -108,7 +110,6 @@ namespace Smash_Forge
         public static bool renderModelWireframe;
         public static float wireframeLineWidth = 0.01f;
 
-        public static bool renderBones = true;
         public static bool renderCollisions = true;
         public static bool renderCollisionNormals = false;
         public static bool renderHitboxes = true;

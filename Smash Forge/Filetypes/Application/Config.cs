@@ -105,7 +105,7 @@ namespace Smash_Forge
                             Enum.TryParse(node.InnerText, out Runtime.renderType);
                         break;
                     case "bone_node_size":
-                        float.TryParse(node.InnerText, out Runtime.RenderBoneNodeSize);
+                        float.TryParse(node.InnerText, out Runtime.renderBoneNodeSize);
                         break;
                     case "camera_light":
                         bool.TryParse(node.InnerText, out Runtime.cameraLight);
@@ -436,7 +436,7 @@ namespace Smash_Forge
             renderSettingsNode.AppendChild(createNode(doc, "render_alpha", Runtime.renderAlpha.ToString()));
             renderSettingsNode.AppendChild(createNode(doc, "camera_light", Runtime.cameraLight.ToString()));
             renderSettingsNode.AppendChild(createNode(doc, "use_normal_map", Runtime.renderNormalMap.ToString()));
-            renderSettingsNode.AppendChild(createNode(doc, "bone_node_size", Runtime.RenderBoneNodeSize.ToString()));
+            renderSettingsNode.AppendChild(createNode(doc, "bone_node_size", Runtime.renderBoneNodeSize.ToString()));
 
             AppendMaterialLightingSettings(doc, renderSettingsNode);
             AppendModelRenderSettings(doc, renderSettingsNode);

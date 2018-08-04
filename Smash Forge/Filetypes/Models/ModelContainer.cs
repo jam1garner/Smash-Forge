@@ -466,7 +466,6 @@ namespace Smash_Forge
                 {
                     RenderTools.DrawVBN(mo.skeleton);
                 }
-
             }
 
             if (DatMelee != null)

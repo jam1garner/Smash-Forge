@@ -1166,66 +1166,6 @@ namespace Smash_Forge.Rendering
         #endregion
 
 
-        public void DrawVBNDiamond(VBN vbn)
-        {
-            if (vbn != null && Runtime.renderBones)
-            {
-                foreach (Bone bone in vbn.bones)
-                {
-                    float offset = 0.1f;
-                    // first calcuate the point and draw a point
-                    GL.Color3(Color.DarkGray);
-                    GL.PointSize(1f);
-
-                    Vector3 pos_c = Vector3.TransformPosition(Vector3.Zero, bone.transform);
-
-                    GL.Begin(PrimitiveType.LineLoop);
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
-                    GL.End();
-
-                    Vector3 pos_p = pos_c;
-                    if (bone.parentIndex != 0x0FFFFFFF && bone.parentIndex != -1)
-                    {
-                        int i = bone.parentIndex;
-                        pos_p = Vector3.TransformPosition(Vector3.Zero, vbn.bones[i].transform);
-                    }
-
-                    GL.Color3(Color.Gray);
-                    GL.Begin(PrimitiveType.Lines);
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y + 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(new Vector3(pos_c.X, pos_c.Y - 0.25f, pos_c.Z));
-
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(pos_p);
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z - offset));
-                    GL.Vertex3(pos_p);
-                    GL.Vertex3(new Vector3(pos_c.X + offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(pos_p);
-                    GL.Vertex3(new Vector3(pos_c.X - offset, pos_c.Y, pos_c.Z + offset));
-                    GL.Vertex3(pos_p);
-
-                    GL.End();
-                }
-            }
-        }
-
         public static void DrawCircle(Vector3 pos, float r, int smooth)
         {
             float t = 2 * (float)Math.PI / smooth;
@@ -1306,6 +1246,8 @@ namespace Smash_Forge.Rendering
 
         public static void DrawVBN(VBN vbn)
         {
+            // Used for NUD, BFRES, BCH.
+
             float ToRad = (float)Math.PI / 180;
             int swinganim = 0;
 
