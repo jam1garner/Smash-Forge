@@ -388,10 +388,15 @@ namespace Smash_Forge
                 //Render Skeleton
                 Matrix4[] f = fmdl.skeleton.getShaderMatrix();
                 int[] bind = fmdl.Node_Array; //Now bind each bone
-                GL.UniformMatrix4(shader.GetVertexAttributeUniformLocation("bones"), f.Length, false, ref f[0].Row0.X);
-                if (bind.Length != 0)
+
+                for (int i = 0; i < f.Length; i++)
                 {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("boneList"), bind.Length, ref bind[0]);
+                    GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, String.Format("bones[{0}]", i)), false, ref f[i]);
+                }
+
+                for (int i = 0; i < bind.Length; i++)
+                {
+                    GL.Uniform1(GL.GetUniformLocation(shader.Id, String.Format("boneList[{0}]", i)), bind[i]);
                 }
 
                 foreach (Mesh m in fmdl.depthSortedMeshes)

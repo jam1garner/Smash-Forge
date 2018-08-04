@@ -77,14 +77,18 @@ uniform int debugOption;
 
 vec3 skinNRM(vec3 nr, ivec4 index)
 {
-    vec3 nrmPos = vec3(0);
+    vec3 newNormal = vec3(0);
 
-    if(vWeight.x != 0.0) nrmPos = mat3(bones[boneList[index.x]]) * nr * vWeight.x;
-    if(vWeight.y != 0.0) nrmPos += mat3(bones[boneList[index.y]]) * nr * vWeight.y;
-    if(vWeight.z != 0.0) nrmPos += mat3(bones[boneList[index.z]]) * nr * vWeight.z;
-    if(vWeight.w < 1) nrmPos += mat3(bones[boneList[index.w]]) * nr * vWeight.w;
+    if (index.x != -1)
+        newNormal = mat3(bones[boneList[index.x]]) * nr * vWeight.x;
+    if (index.y != -1)
+        newNormal += mat3(bones[boneList[index.y]]) * nr * vWeight.y;
+    if (index.z != -1)
+        newNormal += mat3(bones[boneList[index.z]]) * nr * vWeight.z;
+    if (index.w != -1)
+        newNormal += mat3(bones[boneList[index.w]]) * nr * vWeight.w;
 
-    return nrmPos;
+    return newNormal;
 }
 
 vec2 rotateUV(vec2 uv, float rotation)
@@ -143,34 +147,33 @@ void main()
 
     normal = vNormal;
 
-
-	//     if(vBone.x != -1){
-    //     objPos = bones[boneList[index.x]] * vec4(vPosition, 1.0) * vWeight.x;
-    //     objPos += bones[boneList[index.y]] * vec4(vPosition, 1.0) * vWeight.y;
-    //     objPos += bones[boneList[index.z]] * vec4(vPosition, 1.0) * vWeight.z;
-    //     if(vWeight.w < 1)
-    //         objPos += bones[boneList[index.w]] * vec4(vPosition, 1.0) * vWeight.w;
-    // }
+    if (index.x != -1)
+        objPos = bones[boneList[index.x]] * vec4(vPosition, 1.0) * vWeight.x;
+    if (index.y != -1)
+        objPos += bones[boneList[index.y]] * vec4(vPosition, 1.0) * vWeight.y;
+    if (index.z != -1)
+        objPos += bones[boneList[index.z]] * vec4(vPosition, 1.0) * vWeight.z;
+    if (index.w != -1)
+        objPos += bones[boneList[index.w]] * vec4(vPosition, 1.0) * vWeight.w;
 
 
     gl_Position = modelview * vec4(objPos.xyz, 1.0);
 
     vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;
 
-	// if(vBone.x != -1.0)
-	// 	normal = normalize((skinNRM(vNormal.xyz, ivec4(vBone))).xyz);
-    //
-    //
-    //  if (RigidSkinning == 1){
-	//      gl_Position = modelview * bones[boneList[index.x]] * vec4(vPosition, 1.0);
-    //      normal = vNormal;
-	// 	 normal = mat3(bones[boneList[index.x]]) * vNormal.xyz * 1;
-	// }
-	// if (NoSkinning == 1){
-	//     gl_Position = modelview * bones[SingleBoneIndex] * vec4(vPosition, 1.0);
-	//     normal = mat3(bones[SingleBoneIndex]) * vNormal.xyz * 1;
-	// 	normal = normalize(normal);
-	// }
+	if(vBone.x != -1.0)
+		normal = normalize((skinNRM(vNormal.xyz, index)).xyz);
+
+     if (RigidSkinning == 1){
+	     gl_Position = modelview * bones[boneList[index.x]] * vec4(vPosition, 1.0);
+         normal = vNormal;
+		 normal = mat3(bones[boneList[index.x]]) * vNormal.xyz * 1;
+	}
+	if (NoSkinning == 1){
+	    gl_Position = modelview * bones[SingleBoneIndex] * vec4(vPosition, 1.0);
+	    normal = mat3(bones[SingleBoneIndex]) * vNormal.xyz * 1;
+		normal = normalize(normal);
+	}
 
     //gl_TexCoord[0] = vUV0;
     //gl_TexCoord[1] = vUV1;
