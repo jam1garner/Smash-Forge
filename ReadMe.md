@@ -89,13 +89,10 @@ Project:
 - MIT License: https://github.com/ScanMountGoat/SFGraphics/blob/master/LICENSE.txt
 
 Project:
- - Gericom's [EveryFileExplorer (Yaz0 decomp/comp)](https://github.com/Syroot/NintenTools.Bfres)
+- [EveryFileExplorer](https://github.com/Gericom/EveryFileExplorer)
+- Gericom
 
 Project:
- - masterf0x's [RedCarpet (Sarc loading)](https://github.com/Gericom/EveryFileExplorer)
-
-Project:
- - Syroot's [bfres library (Wii U)](https://github.com/Syroot/NintenTools.Bfres)
-
-Project:
- - Syroot's bfres library (Wii U) as a base for switch.
+- [NintenTools.Bfres](https://github.com/Syroot/NintenTools.Bfres)
+- Copyright (c) 2017 Syroot
+- MIT License: https://github.com/Syroot/NintenTools.Bfres/blob/master/LICENSE
