@@ -23,6 +23,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -216,7 +217,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\Editors\BFRES Editors\BntxTextureList.Designer.cs">
-        <DependentUpon>BntxTextureList.cs</DependentUpon>
+      <DependentUpon>BntxTextureList.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Editors\BFRES Editors\ImportTexture.cs">
       <SubType>Form</SubType>
@@ -668,7 +669,7 @@
       <DependentUpon>BfresMaterialEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BFRES Editors\BntxTextureList.resx">
-        <DependentUpon>BntxTextureList.cs</DependentUpon>
+      <DependentUpon>BntxTextureList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\BFRES Editors\ImportTexture.resx">
       <DependentUpon>ImportTexture.cs</DependentUpon>

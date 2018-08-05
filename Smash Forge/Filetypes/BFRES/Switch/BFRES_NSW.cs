@@ -1393,7 +1393,7 @@ namespace Smash_Forge
                 throw new ArgumentException($"{value} cannot be converted to Int2 (exceeds range -1 to 1).",
                     nameof(value));
             }
-            return (int)(((uint)value << 30) >> 30) & 0b00000000_00000000_00000000_00000011;
+            return (int)(((uint)value << 30) >> 30) & 0x3;
         }
 
         private static int SingleToInt10(float value)
@@ -1403,7 +1403,7 @@ namespace Smash_Forge
                 throw new ArgumentException($"{value} cannot be converted to Int10 (exceeds range -512 to 511).",
                     nameof(value));
             }
-            return (int)(((uint)value << 22) >> 22) & 0b00000000_00000000_00000011_11111111;
+            return (int)(((uint)value << 22) >> 22) & 0x3FF;
         }
 
         #endregion

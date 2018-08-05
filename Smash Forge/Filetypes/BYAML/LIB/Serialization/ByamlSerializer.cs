@@ -313,7 +313,8 @@ namespace Syroot.NintenTools.Byaml.Serialization
             // Get the information required to serialize this type (for Nullables take the underlying type).
             Type nullableType = Nullable.GetUnderlyingType(type);
             if (nullableType != null) type = nullableType;
-            if (!_byamlObjectInfos.TryGetValue(type, out ByamlObjectInfo objectInfo))
+            ByamlObjectInfo objectInfo;
+            if (!_byamlObjectInfos.TryGetValue(type, out objectInfo))
             {
                 objectInfo = new ByamlObjectInfo(type);
                 _byamlObjectInfos.Add(type, objectInfo);
@@ -340,7 +341,8 @@ namespace Syroot.NintenTools.Byaml.Serialization
                 string key = _nameArray[nodeNameIndex];
                 // Find a member for it to map the value to.
                 object value;
-                if (objectInfo.Members.TryGetValue(key, out ByamlMemberInfo member))
+                ByamlMemberInfo member;
+                if (objectInfo.Members.TryGetValue(key, out member))
                 {
                     // The key could be mapped to a member, read it as the member's type.
                     value = ReadValue(reader, member.Type, nodeType);
@@ -447,25 +449,26 @@ namespace Syroot.NintenTools.Byaml.Serialization
         private void CollectArrayContents(object obj)
         {
             // Put strings into the string array.
-            if (obj is string objString)
+            if (obj is string)
             {
-                _stringArray.Add(objString);
+                _stringArray.Add((string)obj);
                 return;
             }
 
             // Put paths into the path array (if supported).
             if (Settings.SupportPaths)
             {
-                if (obj is List<ByamlPathPoint> objPath)
+                if (obj is List<ByamlPathPoint>)
                 {
-                    _pathArray.Add(objPath);
+                    _pathArray.Add((List <ByamlPathPoint>)obj);
                     return;
                 }
             }
 
             // Traverse through arrays if the element type is of interest.
-            if (obj is IList objArray)
+            if (obj is IList)
             {
+                IList objArray = (IList)obj;
                 Type elementType = objArray.GetType().GetTypeInfo().GetElementType();
                 if (elementType == typeof(string) || elementType is IList || IsTypeByamlObject(elementType))
                 {
@@ -481,7 +484,8 @@ namespace Syroot.NintenTools.Byaml.Serialization
             Type type = obj.GetType();
             if (IsTypeByamlObject(type))
             {
-                if (!_byamlObjectInfos.TryGetValue(type, out ByamlObjectInfo objectInfo))
+                ByamlObjectInfo objectInfo;
+                if (!_byamlObjectInfos.TryGetValue(type, out objectInfo))
                 {
                     objectInfo = new ByamlObjectInfo(type);
                     _byamlObjectInfos.Add(type, objectInfo);
@@ -619,9 +623,9 @@ namespace Syroot.NintenTools.Byaml.Serialization
             offset.Satisfy();
 
             // Serialize the value as an array.
-            if (obj is IList objArray)
+            if (obj is IList)
             {
-                WriteArray(writer, objArray);
+                WriteArray(writer, (IList)obj);
                 return;
             }
 
@@ -678,7 +682,8 @@ namespace Syroot.NintenTools.Byaml.Serialization
             // Create a string-object dictionary out of the members.
             Dictionary<string, object> dictionary = new Dictionary<string, object>();
             // Add the custom members if any have been created when collecting node contents previously.
-            if (_customMembers.TryGetValue(obj, out Dictionary<string, object> customMembers))
+            Dictionary<string, object> customMembers;
+            if (_customMembers.TryGetValue(obj, out customMembers))
             {
                 foreach (KeyValuePair<string, object> customMember in customMembers)
                 {

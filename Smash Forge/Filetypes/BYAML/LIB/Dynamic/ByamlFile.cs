@@ -114,7 +114,8 @@ namespace Syroot.NintenTools.Byaml.Dynamic
         /// <returns>The value stored under the given key or <c>null</c> if the key is not present.</returns>
         public static dynamic GetValue(IDictionary<string, dynamic> node, string key)
         {
-            return node.TryGetValue(key, out dynamic value) ? value : null;
+            dynamic value;
+            return node.TryGetValue(key, out value) ? value : null;
         }
 
         /// <summary>
