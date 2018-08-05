@@ -966,22 +966,25 @@ namespace Smash_Forge
                         }
                     }
 
-                    foreach (var mdl in modelContainer.Bfres.models)
+                    if (modelContainer.Bfres != null)
                     {
-                        foreach (var m in mdl.poly)
+                        foreach (var mdl in modelContainer.Bfres.models)
                         {
-                            m.GenerateBoundingBoxes();
-
-                            foreach (var box in m.boundingBoxes)
+                            foreach (var m in mdl.poly)
                             {
-                                // HACK: This sort of works.
-                                float maxExtent = Math.Max(Math.Max(box.Extent.X, box.Extent.Y), box.Extent.Z);
-                                if (maxExtent > boundingSphere[3])
+                                m.GenerateBoundingBoxes();
+
+                                foreach (var box in m.boundingBoxes)
                                 {
-                                    boundingSphere[0] = box.Center.X;
-                                    boundingSphere[1] = box.Center.Y;
-                                    boundingSphere[2] = box.Center.Z;
-                                    boundingSphere[3] = maxExtent;
+                                    // HACK: This sort of works.
+                                    float maxExtent = Math.Max(Math.Max(box.Extent.X, box.Extent.Y), box.Extent.Z);
+                                    if (maxExtent > boundingSphere[3])
+                                    {
+                                        boundingSphere[0] = box.Center.X;
+                                        boundingSphere[1] = box.Center.Y;
+                                        boundingSphere[2] = box.Center.Z;
+                                        boundingSphere[3] = maxExtent;
+                                    }
                                 }
                             }
                         }
