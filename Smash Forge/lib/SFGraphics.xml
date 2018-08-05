@@ -183,12 +183,13 @@
             Sets <see cref="F:SFGraphics.Cameras.Camera.rotationXRadians"/> and <see cref="P:SFGraphics.Cameras.Camera.RotationYRadians"/> to 0.
             </summary>
         </member>
-        <member name="M:SFGraphics.Cameras.Camera.FrameBoundingSphere(OpenTK.Vector3,System.Single)">
+        <member name="M:SFGraphics.Cameras.Camera.FrameBoundingSphere(OpenTK.Vector3,System.Single,System.Single)">
             <summary>
             
             </summary>
             <param name="center">The position of the center of the bounding sphere.</param>
             <param name="radius">The radius of the bounding sphere.</param>
+            <param name="offset"></param>
         </member>
         <member name="T:SFGraphics.GLObjects.BufferObject">
             <summary>
@@ -531,6 +532,22 @@
             Stores hardware info, OpenGL/GLSL version, invalid uniform/attribute names, shader compilation errors, and linker errors.
             </summary>
         </member>
+        <member name="T:SFGraphics.GLObjects.Textures.CompressedImageSize">
+            <summary>
+            Calculates the number of bytes of image data for loading compressed texture data with OpenTK.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.CompressedImageSize.CalculateImageSize(System.Int32,System.Int32,OpenTK.Graphics.OpenGL.InternalFormat)">
+            <summary>
+            Calculates the imageSize parameter for GL.CompressedTexImage. 
+            Supports the variants of InternalFormat for DXT1, DXT3, DXT5.
+            The imageSize should be recalculated for each mip level when reading mipmaps from existing image data.
+            </summary>
+            <param name="width">The width of the mip level in pixels</param>
+            <param name="height">The height of the mip level in pixels</param>
+            <param name="internalFormat">The <paramref name="internalFormat"/> should be a compressed format.</param>
+            <returns></returns>
+        </member>
         <member name="T:SFGraphics.GLObjects.Textures.DepthTexture">
             <summary>
             A simple texture for storing depth information. 
@@ -657,8 +674,6 @@
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor(System.Int32,System.Int32,System.Collections.Generic.List{System.Byte[]},System.Boolean,OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             Initializes a texture of the specified format and loads all specified mipmaps.
-            <paramref name="imageSize"/> is usually <paramref name="mipmaps"/>[0].Length.
-            This doesn't always work and is being investigated.
             </summary>
             <param name="width">The width of the base mip level</param>
             <param name="height">The height of the base mip level</param>
@@ -681,6 +696,19 @@
             <param name="cubeMapFaces">Faces arranged from top to bottom in the order
             X+, X-, Y+, Y-, Z+, Z- </param>
             <param name="sideLength">The length in pixels of a side of any of the faces</param>
+        </member>
+        <member name="T:SFGraphics.Tools.BoundingSphereGenerator">
+            <summary>
+            Generates bounding spheres. 
+            This can be used with <see cref="M:SFGraphics.Cameras.Camera.FrameBoundingSphere(OpenTK.Vector3,System.Single,System.Single)"/> to make models visible in the viewport.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Tools.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.List{OpenTK.Vector3})">
+            <summary>
+            Returns Vector4(center.Xyz, radius).
+            </summary>
+            <param name="vertexPositions"></param>
+            <returns>Vector4(center.Xyz, radius)</returns>
         </member>
         <member name="T:SFGraphics.Tools.ColorTools">
             <summary>

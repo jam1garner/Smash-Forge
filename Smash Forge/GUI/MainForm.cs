@@ -24,7 +24,7 @@ namespace Smash_Forge
         {
             get { return _instance != null ? _instance : (_instance = new MainForm()); }
         }
-        
+
         private static MainForm _instance;
 
         public static string executableDir = null;
@@ -95,7 +95,7 @@ namespace Smash_Forge
             DiscordSettings.startTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             dockPanel = dockPanel1;
             DiscordSettings.DiscordController = new DiscordController();
-            
+
             DiscordSettings.DiscordController.Initialize();
             DiscordSettings.Update();
 
@@ -103,7 +103,7 @@ namespace Smash_Forge
             Thread thread = new Thread(t);
             thread.Start();
 
-            if(File.Exists(Path.Combine(executableDir, "version.txt")))
+            if (File.Exists(Path.Combine(executableDir, "version.txt")))
                 Text = "Smash Forge | Build: " + File.ReadAllText(Path.Combine(executableDir, "version.txt"));
 
             Application.Idle += AppIdle;
@@ -215,7 +215,7 @@ namespace Smash_Forge
                 content.MdiParent = this;
                 content.Show();
             }
-            else if(content != null && dockPanel1 != null)
+            else if (content != null && dockPanel1 != null)
                 content.Show(dockPanel1);
         }
 
@@ -254,7 +254,7 @@ namespace Smash_Forge
             if (lvdEditor.IsDisposed)
             {
                 lvdEditor = new LVDEditor();
-            }    
+            }
             if (bfresMatEditor.IsDisposed)
             {
                 bfresMatEditor = new BfresMaterialEditor();
@@ -331,9 +331,9 @@ namespace Smash_Forge
                 }
             }
         }
-            string pathNUT = "";
+        string pathNUT = "";
 
-        public ModelViewport OpenNud(string pathNud, string name = "", ModelViewport mvp = null)
+        public ModelViewport OpenNud(string pathNud, string viewportTitle = "", ModelViewport mvp = null)
         {
             // All the model files will be in the same directory as the model.nud file.
             string[] files = Directory.GetFiles(Path.GetDirectoryName(pathNud));
@@ -374,8 +374,8 @@ namespace Smash_Forge
 
             ModelContainer modelContainer = new ModelContainer();
             mvp.draw.Add(modelContainer);
-            modelContainer.Text = name;
-            mvp.Text = name;
+            modelContainer.Text = viewportTitle;
+            mvp.Text = viewportTitle;
 
             modelContainer.NUD = new NUD(pathNud);
             if (modelContainer.NUD != null)
@@ -392,29 +392,30 @@ namespace Smash_Forge
             mvp.FrameSelectionAndSort();
             return mvp;
         }
-        public ModelViewport OpenKCL(string pathKcl, byte[] file_data, string name = "", ModelViewport mvp = null)
+
+        public ModelViewport OpenKcl(string fileName, string viewportTitle = "", ModelViewport mvp = null)
         {
             if (mvp == null)
             {
-                Console.WriteLine("Creating new viewport");
-
                 mvp = new ModelViewport();
                 AddDockedControl(mvp);
             }
 
             ModelContainer modelContainer = new ModelContainer();
             mvp.draw.Add(modelContainer);
-            modelContainer.Text = pathKcl;
-            mvp.Text = pathKcl;
+            modelContainer.Text = fileName;
+            mvp.Text = fileName;
 
-            modelContainer.Kcl = new KCL(file_data);
-            
+            byte[] fileData = GetUncompressedSzsSbfresData(fileName);
+            modelContainer.Kcl = new KCL(fileData);
+
             return mvp;
         }
-        public ModelViewport OpenBFRES(string pathBfres, byte[] file_data, string name = "", ModelViewport mvp = null)
-        {
 
+        public ModelViewport OpenBfres(string fileName, string viewportTitle = "", ModelViewport mvp = null)
+        {
             //Todo. Support loading bfres texture and animations if seperate and in same directory
+            byte[] fileData = GetUncompressedSzsSbfresData(fileName);
 
             if (mvp == null)
             {
@@ -426,11 +427,11 @@ namespace Smash_Forge
 
             ModelContainer modelContainer = new ModelContainer();
             mvp.draw.Add(modelContainer);
-            modelContainer.Text = pathBfres;
-            mvp.Text = pathBfres;
+            modelContainer.Text = fileName;
+            mvp.Text = fileName;
 
 
-            modelContainer.Bfres = new BFRES(pathBfres, file_data);
+            modelContainer.Bfres = new BFRES(fileName, fileData);
 
             if (modelContainer.Bfres.models.Count != 0)
             {
@@ -446,7 +447,7 @@ namespace Smash_Forge
                     mvp = (ModelViewport)dockPanel1.ActiveContent;
 
                     AnimationGroupNode anim = new AnimationGroupNode();
-                    anim.Text = Path.GetFileName(pathBfres);
+                    anim.Text = Path.GetFileName(fileName);
 
                     if (modelContainer.Bfres.FSKACount != 0)
                     {
@@ -459,7 +460,7 @@ namespace Smash_Forge
                         BFRES.FSHU fshu = new BFRES.FSHU();
                         fshu.Read(modelContainer.Bfres.TargetWiiUBFRES, anim, modelContainer);
                     }
-                    
+
                     if (modelContainer.Bfres.FMAACount != 0)
                     {
                         BFRES.FMAA fmaa = new BFRES.FMAA();
@@ -490,7 +491,6 @@ namespace Smash_Forge
 
             return mvp;
         }
-
 
         private static void OpenPacs(List<string> pacs, ModelContainer modelContainer)
         {
@@ -567,7 +567,7 @@ namespace Smash_Forge
             modelContainer.NUT = nut;
             Runtime.TextureContainers.Add(nut);
             // Multiple windows was a mistake...
-            Runtime.glTexturesNeedRefreshing = true; 
+            Runtime.glTexturesNeedRefreshing = true;
         }
 
         private static void OpenStprmBin(ModelViewport modelViewport, string fileName)
@@ -626,7 +626,7 @@ namespace Smash_Forge
             Runtime.Animations.Clear();
             Runtime.Animnames.Clear();
             Runtime.MaterialAnimations.Clear();
-            if(Runtime.TargetVBN!=null)
+            if (Runtime.TargetVBN != null)
                 Runtime.TargetVBN.reset();
             Runtime.acmdEditor.updateCrcList();
         }
@@ -678,7 +678,7 @@ namespace Smash_Forge
         {
             (new NUDMaterialEditor(poly) { ShowHint = DockState.DockLeft, Text = name }).Show();
         }
-        
+
         public void openBFRESMats(BFRES.Mesh poly, string name)
         {
             ModelViewport mvp = (ModelViewport)dockPanel1.ActiveContent;
@@ -753,7 +753,7 @@ namespace Smash_Forge
                     string[] dirs = Directory.GetDirectories(ofd.SelectedPath);
 
                     ModelViewport mvp = new ModelViewport();
-                    
+
                     foreach (string s in dirs)
                     {
                         if (s.EndsWith("model"))
@@ -768,15 +768,16 @@ namespace Smash_Forge
                             MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Expressions");
                             string[] anims = Directory.GetFiles(s + "\\body\\c00\\");
                             float a = 0;
-                            foreach(string ss in anims)
+                            foreach (string ss in anims)
                             {
-                                MainForm.Instance.Progress.ProgressValue = 25 + (int)((a++ / anims.Length)*25f);
+                                MainForm.Instance.Progress.ProgressValue = 25 + (int)((a++ / anims.Length) * 25f);
                                 if (ss.EndsWith(".pac"))
                                 {
                                     mvp.animListPanel.treeView1.Nodes.Add(openAnimation(ss));
                                 }
                             }
                         }
+
                         if (s.EndsWith("motion"))
                         {
                             MainForm.Instance.Progress.ProgressValue = 50;
@@ -791,8 +792,9 @@ namespace Smash_Forge
                                     return 1;
 
                                 return 0;
-                            }); 
+                            });
                             foreach (string a in anims)
+
                                 mvp.animListPanel.treeView1.Nodes.Add(openAnimation(a));
                         }
                         if (s.EndsWith("script"))
@@ -1006,13 +1008,13 @@ namespace Smash_Forge
                 if (Runtime.TargetVBN == null)
                     Runtime.TargetVBN = new VBN();
                 SMD.read(filename, anim, Runtime.TargetVBN);
-                return(anim);
+                return (anim);
             }
             else if (filename.EndsWith(".pac"))
             {
                 PAC p = new PAC();
                 p.Read(filename);
-                AnimationGroupNode animGroup = new AnimationGroupNode() { Text = Path.GetFileName(filename)};
+                AnimationGroupNode animGroup = new AnimationGroupNode() { Text = Path.GetFileName(filename) };
 
                 foreach (var pair in p.Files)
                 {
@@ -1021,11 +1023,11 @@ namespace Smash_Forge
                         Console.WriteLine("Adding " + pair.Key);
                         var anim = OMOOld.read(new FileData(pair.Value));
                         animGroup.Nodes.Add(anim);
-                        string AnimName = pair.Key; 
+                        string AnimName = pair.Key;
                         if (!string.IsNullOrEmpty(AnimName))
                         {
                             anim.Text = AnimName;
-                            AddAnimName(AnimName.Substring(3).Replace(".omo",""));
+                            AddAnimName(AnimName.Substring(3).Replace(".omo", ""));
                         }
                     }
                     else if (pair.Key.EndsWith(".mta"))
@@ -1044,20 +1046,24 @@ namespace Smash_Forge
                 if (!filename.EndsWith("AJ.dat"))
                     MessageBox.Show("Not a DAT animation");
             }
+
             if (filename.EndsWith(".omo"))
             {
                 Animation a = OMOOld.read(new FileData(filename));
                 a.Text = filename;
                 return a;
             }
+
             if (filename.EndsWith(".chr0"))
             {
-                return(CHR0.read(new FileData(filename), Runtime.TargetVBN));
+                return (CHR0.read(new FileData(filename), Runtime.TargetVBN));
             }
+
             if (filename.EndsWith(".anim"))
             {
-                return(ANIM.read(filename, Runtime.TargetVBN));
+                return (ANIM.read(filename, Runtime.TargetVBN));
             }
+
             if (filename.EndsWith(".bch"))
             {
                 BCHan.Read(filename);
@@ -1070,14 +1076,14 @@ namespace Smash_Forge
 
         private static void writeDatJobjPositions(TreeNode node, FileOutput f)
         {
-            if(node.Tag is DAT.JOBJ)
+            if (node.Tag is DAT.JOBJ)
             {
                 DAT.JOBJ jobj = (DAT.JOBJ)node.Tag;
                 f.writeFloatAt((float)jobj.pos.X, jobj.posOff);
                 f.writeFloatAt((float)jobj.pos.Y, jobj.posOff + 4);
                 f.writeFloatAt((float)jobj.pos.Z, jobj.posOff + 8);
             }
-            foreach(TreeNode child in node.Nodes)
+            foreach (TreeNode child in node.Nodes)
                 writeDatJobjPositions(child, f);
         }
 
@@ -1115,8 +1121,6 @@ namespace Smash_Forge
 
             // Reassigned if a valid model file is opened. 
             ModelViewport mvp = new ModelViewport();
-
-      
 
             if (fileName.EndsWith(".omo"))
             {
@@ -1164,7 +1168,7 @@ namespace Smash_Forge
             {
                 mvp = new ModelViewport();
                 // Load as Animation
-                if(dockPanel1.ActiveContent is ModelViewport)
+                if (dockPanel1.ActiveContent is ModelViewport)
                 {
                     DialogResult dialogResult = MessageBox.Show("Import Animation Data into active viewport?", "", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
@@ -1172,7 +1176,8 @@ namespace Smash_Forge
                         mvp = (ModelViewport)dockPanel1.ActiveContent;
                         mvp.animListPanel.treeView1.Nodes.Add(BCHan.Read(fileName));
                         return;
-                    }else
+                    }
+                    else
                     {
                         mvp.animListPanel.treeView1.Nodes.Add(BCHan.Read(fileName));
                     }
@@ -1207,21 +1212,19 @@ namespace Smash_Forge
                 if (CheckCurrentViewport(out mvp))
                 {
                     mvp.ViewComboBox.SelectedItem = "BYAML Editor";
-                //    mvp.BYAML = new BYAML(fileName);
+                    //    mvp.BYAML = new BYAML(fileName);
                 }
                 else
                 {
                     mvp.ViewComboBox.SelectedItem = "BYAML Editor";
                     mvp.Text = fileName;
-             //       mvp.BYAML = new BYAML(fileName);
+                    //       mvp.BYAML = new BYAML(fileName);
                 }
             }
 
             if (fileName.EndsWith(".kcl"))
             {
-
                 FileData f = new FileData(fileName);
-
                 byte[] data = f.getSection(0, f.eof());
 
                 if (dockPanel1.ActiveContent is ModelViewport)
@@ -1229,129 +1232,115 @@ namespace Smash_Forge
                     DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
-                        OpenKCL(fileName, data, fileName, (ModelViewport)dockPanel1.ActiveContent);
+                        OpenKcl(fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
                     }
                     if (dialogResult == DialogResult.No)
                     {
-                        OpenKCL(fileName, data);
+                        OpenKcl(fileName);
                     }
                 }
                 else
                 {
-                    OpenKCL(fileName, data);
+                    OpenKcl(fileName);
                 }
-
             }
 
             if (fileName.EndsWith(".szs") || fileName.EndsWith(".sbfres"))
             {
-                FileData f = new FileData(fileName);
+                byte[] fileByteData = GetUncompressedSzsSbfresData(fileName);
+                FileData uncompressedFileData = new FileData(fileByteData);
 
-                byte[] data = f.getSection(0, f.eof());
+                int hexM = uncompressedFileData.readInt();
+                string magic2 = uncompressedFileData.readString(0, 4);
 
-                string Magic = f.readString(0, 4);
-
-                if (Magic == "Yaz0") //YAZO compressed
-                {
-                    data = EveryFileExplorer.YAZ0.Decompress(fileName);
-                }
-          
-                FileData t = new FileData(data);
-
-                int HexM = t.readInt();
-
-                string Magic2 = t.readString(0, 4);
-
-                if (Magic2 == "FRES") //YAZO compressed
+                if (magic2 == "FRES") //YAZO compressed
                 {
                     if (dockPanel1.ActiveContent is ModelViewport)
                     {
                         DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+
                         if (dialogResult == DialogResult.Yes)
-                        {
-                            OpenBFRES(fileName, data, fileName, (ModelViewport)dockPanel1.ActiveContent);
-                        }
+                            OpenBfres(fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
+
                         if (dialogResult == DialogResult.No)
-                        {
-                            OpenBFRES(fileName, data);
-                        }
+                            OpenBfres(fileName);
                     }
                     else
                     {
-                        OpenBFRES(fileName, data);
+                        OpenBfres(fileName);
                     }
                 }
-                if (HexM == 0x02020000) //YAZO compressed
+
+                if (hexM == 0x02020000) //YAZO compressed
                 {
-                    OpenKCL(fileName, data, fileName, (ModelViewport)dockPanel1.ActiveContent);
+                    OpenKcl(fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
                 }
-                if (Magic2 == "BNTX") //SARC compressed
+
+                if (magic2 == "BNTX") //SARC compressed
                 {
-                    BNTXEditor editor = new BNTXEditor(data);
+                    BNTXEditor editor = new BNTXEditor(fileByteData);
                     AddDockedControl(editor);
                 }
-                if (Magic2 == "SARC") //SARC compressed
-                {
-                    Console.WriteLine("Found sarc");
 
-                    var SzsFiles = new SARC().unpackRam(t.getSection(0, t.eof()));
+                if (magic2 == "SARC") //SARC compressed
+                {
+                    var SzsFiles = new SARC().unpackRam(uncompressedFileData.getSection(0, uncompressedFileData.eof()));
 
                     foreach (var s in SzsFiles.Keys)
                     {
-                        Console.WriteLine(s);
                         if (s.Contains(".bfres"))
                         {
                             Console.WriteLine("Found bfres");
-                            data = SzsFiles[s];
-                            t = new FileData(data);
+                            fileByteData = SzsFiles[s];
+                            uncompressedFileData = new FileData(fileByteData);
 
-                            OpenBFRES(s, data, s, (ModelViewport)dockPanel1.ActiveContent);
+                            OpenBfres(s, s, (ModelViewport)dockPanel1.ActiveContent);
                         }
+
                         if (s.Contains(".kcl"))
                         {
                             Console.WriteLine("Found kcl");
-                            data = SzsFiles[s];
-                            t = new FileData(data);
+                            fileByteData = SzsFiles[s];
+                            uncompressedFileData = new FileData(fileByteData);
 
-                            OpenKCL(s, data, s, (ModelViewport)dockPanel1.ActiveContent);
+                            OpenKcl(s, s, (ModelViewport)dockPanel1.ActiveContent);
                         }
                     }
                 }
-
             }
+
             if (fileName.EndsWith(".bfres"))
             {
                 FileData f = new FileData(fileName);
-
                 byte[] data = f.getSection(0, f.eof());
 
                 if (dockPanel1.ActiveContent is ModelViewport)
                 {
                     DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+
                     if (dialogResult == DialogResult.Yes)
-                    {
-                        OpenBFRES(fileName, data, fileName, (ModelViewport)dockPanel1.ActiveContent);
-                    }
+                        OpenBfres(fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
+
                     if (dialogResult == DialogResult.No)
-                    {
-                        OpenBFRES(fileName, data);
-                    }
+                        OpenBfres(fileName);
                 }
                 else
                 {
-                    OpenBFRES(fileName, data);
+                    OpenBfres(fileName);
                 }
 
             }
+
             if (fileName.EndsWith(".mbn"))
             {
-                if(!File.Exists(fileName.Replace(".mbn", ".bch")))
+                if (!File.Exists(fileName.Replace(".mbn", ".bch")))
                 {
                     MessageBox.Show("Missing BCH file");
                     return;
                 }
+
                 BCH b = new BCH(fileName.Replace(".mbn", ".bch"));
-                if(b.Models.Nodes.Count == 0)
+                if (b.Models.Nodes.Count == 0)
                 {
                     MessageBox.Show("BCH is Missing Model Data");
                     return;
@@ -1391,18 +1380,19 @@ namespace Smash_Forge
                 _3DSTexEditor editor = new _3DSTexEditor(fileName);
                 AddDockedControl(editor);
             }
-            
+
             if (fileName.EndsWith(".sb"))
             {
                 //needs vbn
-                if(File.Exists(fileName.Replace(".sb", ".vbn")))
+                if (File.Exists(fileName.Replace(".sb", ".vbn")))
                 {
                     VBN vbn = new VBN(fileName.Replace(".sb", ".vbn"));
                     SB sb = new SB();
                     sb.Read(fileName);
                     vbn.SwingBones = sb;
                     sb.OpenEditor(null, null);
-                }else
+                }
+                else
                 {
                     MessageBox.Show("Swing Bones need a VBN with the same name");
                 }
@@ -1417,12 +1407,12 @@ namespace Smash_Forge
                     ModelViewport modelViewport;
                     if (CheckCurrentViewport(out modelViewport))
                     {
-                        foreach(ModelContainer modelContainer in modelViewport.meshList.filesTreeView.Nodes)
+                        foreach (ModelContainer modelContainer in modelViewport.meshList.filesTreeView.Nodes)
                         {
-                            if(modelContainer.DatMelee != null)
+                            if (modelContainer.DatMelee != null)
                             {
                                 Dictionary<string, Animation> Anims = DAT_Animation.GetTracks(fileName, modelContainer.DatMelee.bones);
-                                foreach(string key in Anims.Keys)
+                                foreach (string key in Anims.Keys)
                                 {
                                     Anims[key].Text = key;
                                     modelViewport.animListPanel.treeView1.Nodes.Add(Anims[key]);
@@ -1434,20 +1424,21 @@ namespace Smash_Forge
 
                     return;
                 }
+
                 DAT dat = new DAT();
                 dat.filename = fileName;
                 dat.Read(new FileData(fileName));
-                
+
                 dat.PreRender();
 
                 HashMatch();
-                
+
                 if (dat.collisions != null)//if the dat is a stage
                 {
                     DatStageList stageList = new DatStageList(dat) { ShowHint = DockState.DockLeft };
                     AddDockedControl(stageList);
                 }
-                
+
                 mvp = new ModelViewport();
                 mvp.draw.Add(new ModelContainer() { DatMelee = dat });
                 mvp.Text = fileName;
@@ -1456,25 +1447,26 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".lvd"))
             {
-                if(CheckCurrentViewport(out mvp))
+                if (CheckCurrentViewport(out mvp))
                 {
                     mvp.ViewComboBox.SelectedItem = "LVD Editor";
                     mvp.LVD = new LVD(fileName);
-                }else
+                }
+                else
                 {
                     mvp.ViewComboBox.SelectedItem = "LVD Editor";
                     mvp.Text = Path.GetFileName(fileName);
                     mvp.LVD = new LVD(fileName);
                 }
             }
-            
+
             if (fileName.EndsWith(".mdl0"))
             {
                 MDL0Bones mdl0 = new MDL0Bones();
                 BoneTreePanel editor = new BoneTreePanel(mdl0.GetVBN(new FileData(fileName)));
                 AddDockedControl(editor);
             }
-            
+
             if (fileName.ToLower().EndsWith(".obj"))
             {
                 OBJ obj = new OBJ();
@@ -1576,7 +1568,7 @@ namespace Smash_Forge
                 TargetMTA.Read(fileName);
                 Runtime.TargetMTA.Clear();
                 Runtime.TargetMTA.Add(TargetMTA);
-                MTAEditor temp = new MTAEditor(TargetMTA) {ShowHint = DockState.DockLeft};
+                MTAEditor temp = new MTAEditor(TargetMTA) { ShowHint = DockState.DockLeft };
                 temp.Text = Path.GetFileName(fileName);
                 AddDockedControl(temp);
                 mtaEditors.Add(temp);
@@ -1623,15 +1615,15 @@ namespace Smash_Forge
                     }
 
                 }
-                else if (f.readString(4,4) == "PATH")
+                else if (f.readString(4, 4) == "PATH")
                 {
                     Runtime.TargetPath = new PathBin(fileName);
                 }
-                else if (f.readString(0,4) == "LIGH")
+                else if (f.readString(0, 4) == "LIGH")
                 {
                     Runtime.TargetLigh = new LIGH.LighBin(fileName);
                 }
-                else if (f.readString(6,4) == "LVD1")
+                else if (f.readString(6, 4) == "LVD1")
                 {
                     if (Runtime.TargetLVD == null)
                         Runtime.TargetLVD = new LVD(fileName);
@@ -1639,7 +1631,7 @@ namespace Smash_Forge
                         Runtime.TargetLVD.Read(fileName);
                     lvdList.fillList();
                 }
-                else if (f.readString(0,4) == "ATKD")
+                else if (f.readString(0, 4) == "ATKD")
                 {
                     AddDockedControl(new ATKD_Editor(new ATKD().Read(fileName)));
                 }
@@ -1663,7 +1655,7 @@ namespace Smash_Forge
             if (fileName.EndsWith(".moi"))
             {
                 MOI moi = new MOI(fileName);
-                AddDockedControl(new MOIEditor(moi) {ShowHint = DockState.DockRight});
+                AddDockedControl(new MOIEditor(moi) { ShowHint = DockState.DockRight });
             }
 
             if (fileName.EndsWith(".drp"))
@@ -1684,6 +1676,18 @@ namespace Smash_Forge
             // just set it up already
             if (!fileName.EndsWith(".wrkspc"))
                 project.fillTree();
+        }
+
+        private static byte[] GetUncompressedSzsSbfresData(string fileName)
+        {
+            FileData f = new FileData(fileName);
+            byte[] fileBytes = f.getSection(0, f.eof());
+            string Magic = f.readString(0, 4);
+
+            if (Magic == "Yaz0") //YAZO compressed
+                fileBytes = EveryFileExplorer.YAZ0.Decompress(fileName);
+
+            return fileBytes;
         }
 
         public ModelViewport GetActiveViewport()
@@ -1712,7 +1716,8 @@ namespace Smash_Forge
                     AddDockedControl(mvp);
                     return false;
                 }
-            }else
+            }
+            else
             {
                 mvp = new ModelViewport();
                 AddDockedControl(mvp);
@@ -1763,7 +1768,7 @@ namespace Smash_Forge
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop) && !Text.Equals("Meteor Preview"))
             {
-                string[] files = (string[]) e.Data.GetData(DataFormats.FileDrop);
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 foreach (string filePath in files)
                 {
                     openFile(filePath);
@@ -1880,7 +1885,7 @@ namespace Smash_Forge
         private void openDATTextureEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DAT datToOpen = null;
-            if(datToOpen != null)
+            if (datToOpen != null)
                 AddDockedControl(new DatTexEditor(datToOpen));
         }
 
@@ -1891,9 +1896,6 @@ namespace Smash_Forge
 
         private void cameraToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (cameraForm == null || cameraForm.IsDisposed)
-            {
-            }
             cameraForm.Show();
         }
 
@@ -1930,7 +1932,7 @@ namespace Smash_Forge
                     }
                     catch
                     {
-                        
+
                     }
                 }
             }
@@ -1952,7 +1954,7 @@ namespace Smash_Forge
                 {
                     LightSetEditor stageLightForm = new LightSetEditor();
                     stageLightForm.Show();
-                }             
+                }
             }
             else
             {
@@ -1963,7 +1965,7 @@ namespace Smash_Forge
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(dockPanel1.ActiveContent is EditorBase)
+            if (dockPanel1.ActiveContent is EditorBase)
             {
                 ((EditorBase)dockPanel1.ActiveContent).SaveAs();
             }
@@ -2036,7 +2038,7 @@ namespace Smash_Forge
                         string[] anims = Directory.GetFiles(ModelFolder);
                         foreach (string s in anims)
                         {
-                            if(s.EndsWith("main.bch"))
+                            if (s.EndsWith("main.bch"))
                                 mvp.animListPanel.treeView1.Nodes.Add(BCHan.Read(s));
                         }
 
@@ -2070,11 +2072,12 @@ namespace Smash_Forge
                     ofd.Multiselect = true;
 
                     if (ofd.ShowDialog() == DialogResult.OK)
+                    {
                         foreach (string filename in ofd.FileNames)
                         {
                             HackyWiiUtoPS3NUT(new Smash_Forge.FileData(filename));
                         }
-
+                    }
                 }
             }
             else
@@ -2097,7 +2100,7 @@ namespace Smash_Forge
             int offheader = 0;
             for (int i = 0; i < count; i++)
             {
-                if(i > 0)
+                if (i > 0)
                     padfix += headerSize;
                 data.skip(4); //int fullsize = d.readInt();
                 data.skip(4);
@@ -2177,7 +2180,7 @@ namespace Smash_Forge
                         o.writeIntAt(DDSSize, 0xF0);
 
                         o.save("TexConv/temp.gtx");
-                        
+
                         String command = " -i temp.gtx -o temp.dds";
                         ProcessStartInfo cmdsi = new ProcessStartInfo();
                         cmdsi.Arguments = command;
@@ -2227,11 +2230,11 @@ namespace Smash_Forge
             CostumeNames.Add($"{fileName}Shell.szs");
             CostumeNames.Add($"{fileName}Tail.szs");
             CostumeNames.Add($"{fileName}Hair.szs");
-       //     CostumeNames.Add($"{fileName}Hakama.szs");
-           CostumeNames.Add($"{fileName}Skirt.szs");
-     //     CostumeNames.Add($"{fileName}Poncho.szs");
+            //     CostumeNames.Add($"{fileName}Hakama.szs");
+            CostumeNames.Add($"{fileName}Skirt.szs");
+            //     CostumeNames.Add($"{fileName}Poncho.szs");
             CostumeNames.Add($"{fileName}Guitar.szs");
-            
+
 
             foreach (string path in CostumeNames)
             {
@@ -2249,7 +2252,7 @@ namespace Smash_Forge
                      });
 
                     bool Exluded = ExcludeFileList.Any(path.Contains);
-               
+
                     if (Exluded == false)
                     {
                         string parent = Directory.GetParent(path).FullName;
@@ -2272,11 +2275,11 @@ namespace Smash_Forge
                     }
                 }
             }
-            
+
         }
         public void LoadCostume(string fileName, ModelViewport mvp)
         {
-        
+
 
             byte[] data = data = EveryFileExplorer.YAZ0.Decompress(fileName);
 
@@ -2292,7 +2295,7 @@ namespace Smash_Forge
                     t = new FileData(data);
 
 
-                    OpenBFRES(s, data, s, mvp);
+                    OpenBfres(s, s, mvp);
                 }
             }
         }

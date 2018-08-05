@@ -965,12 +965,32 @@ namespace Smash_Forge
                             boundingSphere[3] = mesh.boundingSphere[3];
                         }
                     }
-                }
 
+                    foreach (var mdl in modelContainer.Bfres.models)
+                    {
+                        foreach (var m in mdl.poly)
+                        {
+                            m.GenerateBoundingBoxes();
+
+                            foreach (var box in m.boundingBoxes)
+                            {
+                                // HACK: This sort of works.
+                                float maxExtent = Math.Max(Math.Max(box.Extent.X, box.Extent.Y), box.Extent.Z);
+                                if (maxExtent > boundingSphere[3])
+                                {
+                                    boundingSphere[0] = box.Center.X;
+                                    boundingSphere[1] = box.Center.Y;
+                                    boundingSphere[2] = box.Center.Z;
+                                    boundingSphere[3] = maxExtent;
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
-            camera.UpdateFromMouse();
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 0);
+            camera.UpdateMatrices();
         }
 
         #region Moveset
@@ -1148,7 +1168,7 @@ namespace Smash_Forge
                 folderSelect.Title = "Models Directory";
                 if (folderSelect.ShowDialog() == DialogResult.OK)
                 {
-                    string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*model.nud", SearchOption.AllDirectories);
+                    string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*.sbfres", SearchOption.AllDirectories);
 
                     using (var outputFolderSelect = new FolderSelectDialog())
                     {
@@ -1157,9 +1177,19 @@ namespace Smash_Forge
                         {
                             for (int i = 0; i < files.Length; i++)
                             {
+                                if (files[i].ToLower().Contains("tex") || files[i].ToLower().Contains("animation"))
+                                    continue;
+
                                 try
                                 {
-                                    MainForm.Instance.OpenNud(files[i], "", this);
+                                    MainForm.Instance.OpenBfres(files[i], "", this);
+
+                                    string nameNoExtension = Path.GetFileNameWithoutExtension(files[i]);
+                                    string textureFileName = Path.GetDirectoryName(files[i]) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
+
+                                    if (File.Exists(textureFileName))
+                                        MainForm.Instance.OpenBfres(textureFileName, "", this);
+                                    //MainForm.Instance.OpenNud(files[i], "", this);
                                 }
                                 catch (Exception e)
                                 {
@@ -1209,15 +1239,16 @@ namespace Smash_Forge
 
         private void BatchRenderViewportToFile(string nudFileName, string sourcePath, string outputPath)
         {
-            SetupAndRenderViewport();
-            string renderName = ConvertDirSeparatorsToUnderscore(nudFileName, sourcePath);
+            SetUpAndRenderViewport();
+
             using (Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, true))
             {
+                string renderName = ConvertDirSeparatorsToUnderscore(nudFileName, sourcePath);
                 screenCapture.Save(outputPath + "\\" + renderName + ".png");
             }
         }
 
-        private void SetupAndRenderViewport()
+        private void SetUpAndRenderViewport()
         {
             // Setup before rendering the model. Use a large max radius to show skybox models.
             FrameAllModelContainers();
