@@ -432,6 +432,7 @@ namespace Smash_Forge
             shader.SetBoolToInt("renderB", Runtime.renderB);
             shader.SetBoolToInt("renderAlpha", Runtime.renderAlpha);
             shader.SetBoolToInt("renderFog", Runtime.renderFog);
+            shader.SetBoolToInt("useImageBasedLighting", false);
         }
         private void DrawMesh(Mesh m, Shader shader, MaterialData mat, bool drawSelection = false)
         {
