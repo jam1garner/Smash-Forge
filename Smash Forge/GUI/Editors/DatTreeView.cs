@@ -11,9 +11,9 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Smash_Forge
 {
-    public partial class DAT_TreeView : DockContent
+    public partial class DatTreeView : DockContent
     {
-        public DAT_TreeView()
+        public DatTreeView()
         {
             InitializeComponent();
             refresh();

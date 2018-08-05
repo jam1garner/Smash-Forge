@@ -37,6 +37,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Octokit.dll</HintPath>
     </Reference>
+    <Reference Include="Syroot.NintenTools.Yaz0">
+      <HintPath>..\Smash Forge\lib\Syroot.NintenTools.Yaz0.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />

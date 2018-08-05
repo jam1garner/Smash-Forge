@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -202,7 +202,7 @@ namespace Smash_Forge
 
                 string skeletalAnimationName = f.readString(f.readInt(), -1);
                 int animationFlags = f.readInt();
-                //int skeletalAnimationloopMode = f.readByte();  //pas ça du tout
+                //int skeletalAnimationloopMode = f.readByte();  //pas ï¿½a du tout
                 float skeletalAnimationframeSize = f.readFloat();
                 int boneTableOffset = f.readInt();
                 int boneTableEntries = f.readInt();
@@ -539,10 +539,10 @@ namespace Smash_Forge
                     objectName[i] = f.readString(f.readInt(), -1);
                 }
 
-            // Materials
-            // NOTE: MATERIALS AND OBJECT SECTIONS ARE REALLY MESSY ATM
+                // Materials
+                // NOTE: MATERIALS AND OBJECT SECTIONS ARE REALLY MESSY ATM
 
-            String[] materialNames = new String[materialsTableEntries];
+                String[] materialNames = new String[materialsTableEntries];
                 for (int index = 0; index < materialsTableEntries; index++)
                 {
                     f.seek(materialsTableOffset + (index * 0x2c));

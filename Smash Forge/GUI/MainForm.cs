@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Security.Cryptography;
@@ -14,6 +15,7 @@ using System.ComponentModel;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Lights;
 
+
 namespace Smash_Forge
 {
     public partial class MainForm : FormBase
@@ -22,7 +24,7 @@ namespace Smash_Forge
         {
             get { return _instance != null ? _instance : (_instance = new MainForm()); }
         }
-
+        
         private static MainForm _instance;
 
         public static string executableDir = null;
@@ -37,6 +39,7 @@ namespace Smash_Forge
         public AnimListPanel animList = new AnimListPanel() { ShowHint = DockState.DockRight };
         public ProjectTree project = new ProjectTree() { ShowHint = DockState.DockLeft };
         public LVDList lvdList = new LVDList() { ShowHint = DockState.DockLeft };
+        public ByamlList byamlList = new ByamlList() { ShowHint = DockState.DockLeft };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
         public HurtboxList hurtboxList = new HurtboxList() { ShowHint = DockState.DockLeft };
 
@@ -46,6 +49,9 @@ namespace Smash_Forge
         public _3DSTexEditor texEditor = null;
         public CameraSettings cameraForm = null;
         public LVDEditor lvdEditor = new LVDEditor() { ShowHint = DockState.DockLeft };
+        public ByamlEditor byamlEditor = new ByamlEditor() { ShowHint = DockState.DockLeft };
+        public BfresMaterialEditor bfresMatEditor = new BfresMaterialEditor() { ShowHint = DockState.DockLeft };
+
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
         public List<MTAEditor> mtaEditors = new List<MTAEditor>() { };
         public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
@@ -240,9 +246,22 @@ namespace Smash_Forge
                 lvdList = new LVDList();
                 lvdList.fillList();
             }
+            if (byamlList.IsDisposed)
+            {
+                byamlList = new ByamlList();
+                byamlList.fillList();
+            }
             if (lvdEditor.IsDisposed)
             {
                 lvdEditor = new LVDEditor();
+            }    
+            if (bfresMatEditor.IsDisposed)
+            {
+                bfresMatEditor = new BfresMaterialEditor();
+            }
+            if (byamlEditor.IsDisposed)
+            {
+                byamlEditor = new ByamlEditor();
             }
             if (meshList.IsDisposed)
             {
@@ -302,7 +321,7 @@ namespace Smash_Forge
             {
                 string filename = "";
                 SaveFileDialog save = new SaveFileDialog();
-                save.Filter = "Supported Filetypes (VBN,LVD,DAE,DAT)|*.vbn;*.lvd;*.dae;*.dat;|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
+                save.Filter = "Supported Filetypes (VBN,LVD,DAE,DAT)|*.vbn;*.lvd;*.dae;*.dat;*.byaml*.byml;;|Smash 4 Boneset|*.vbn|All files(*.*)|*.*";
                 DialogResult result = save.ShowDialog();
 
                 if (result == DialogResult.OK)
@@ -312,13 +331,13 @@ namespace Smash_Forge
                 }
             }
         }
+            string pathNUT = "";
 
         public ModelViewport OpenNud(string pathNud, string name = "", ModelViewport mvp = null)
         {
             // All the model files will be in the same directory as the model.nud file.
             string[] files = Directory.GetFiles(Path.GetDirectoryName(pathNud));
 
-            string pathNUT = "";
             string pathJTB = "";
             string pathVBN = "";
             string pathMTA = "";
@@ -373,6 +392,105 @@ namespace Smash_Forge
             mvp.FrameSelectionAndSort();
             return mvp;
         }
+        public ModelViewport OpenKCL(string pathKcl, byte[] file_data, string name = "", ModelViewport mvp = null)
+        {
+            if (mvp == null)
+            {
+                Console.WriteLine("Creating new viewport");
+
+                mvp = new ModelViewport();
+                AddDockedControl(mvp);
+            }
+
+            ModelContainer modelContainer = new ModelContainer();
+            mvp.draw.Add(modelContainer);
+            modelContainer.Text = pathKcl;
+            mvp.Text = pathKcl;
+
+            modelContainer.Kcl = new KCL(file_data);
+            
+            return mvp;
+        }
+        public ModelViewport OpenBFRES(string pathBfres, byte[] file_data, string name = "", ModelViewport mvp = null)
+        {
+
+            //Todo. Support loading bfres texture and animations if seperate and in same directory
+
+            if (mvp == null)
+            {
+                Console.WriteLine("Creating new viewport");
+
+                mvp = new ModelViewport();
+                AddDockedControl(mvp);
+            }
+
+            ModelContainer modelContainer = new ModelContainer();
+            mvp.draw.Add(modelContainer);
+            modelContainer.Text = pathBfres;
+            mvp.Text = pathBfres;
+
+
+            modelContainer.Bfres = new BFRES(pathBfres, file_data);
+
+            if (modelContainer.Bfres.models.Count != 0)
+            {
+                Runtime.TargetVBN = modelContainer.Bfres.models[0].skeleton;
+                modelContainer.VBN = Runtime.TargetVBN;
+                resyncTargetVBN();
+            }
+
+            if (modelContainer.Bfres.AnimationCountTotal != 0)
+            {
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    mvp = (ModelViewport)dockPanel1.ActiveContent;
+
+                    AnimationGroupNode anim = new AnimationGroupNode();
+                    anim.Text = Path.GetFileName(pathBfres);
+
+                    if (modelContainer.Bfres.FSKACount != 0)
+                    {
+                        BFRES.FSKA fska = new BFRES.FSKA();
+                        fska.Read(modelContainer.Bfres.TargetWiiUBFRES, anim, modelContainer.Bfres.TargetSwitchBFRES);
+                    }
+
+                    if (modelContainer.Bfres.FSHUCount != 0)
+                    {
+                        BFRES.FSHU fshu = new BFRES.FSHU();
+                        fshu.Read(modelContainer.Bfres.TargetWiiUBFRES, anim, modelContainer);
+                    }
+                    
+                    if (modelContainer.Bfres.FMAACount != 0)
+                    {
+                        BFRES.FMAA fmaa = new BFRES.FMAA();
+                        fmaa.Read(modelContainer.Bfres.TargetSwitchBFRES, anim, modelContainer);
+                    }
+                    if (modelContainer.Bfres.FTXPCount != 0)
+                    {
+                        BFRES.FTXP ftxp = new BFRES.FTXP();
+                        ftxp.Read(modelContainer.Bfres.TargetWiiUBFRES, anim, modelContainer);
+                    }
+                    if (modelContainer.Bfres.FSHACount != 0)
+                    {
+                        BFRES.FSHA fsha = new BFRES.FSHA();
+                        fsha.Read(modelContainer.Bfres.TargetSwitchBFRES, anim, modelContainer);
+                    }
+                    if (modelContainer.Bfres.FVISCount != 0)
+                    {
+                        BFRES.FVIS fvis = new BFRES.FVIS();
+                        fvis.Read(modelContainer.Bfres.TargetSwitchBFRES, anim, modelContainer);
+
+                    }
+                    mvp.animListPanel.treeView1.Nodes.Add(anim);
+                }
+            }
+
+            // Reset the camera. 
+            mvp.FrameSelectionAndSort();
+
+            return mvp;
+        }
+
 
         private static void OpenPacs(List<string> pacs, ModelContainer modelContainer)
         {
@@ -560,7 +678,16 @@ namespace Smash_Forge
         {
             (new NUDMaterialEditor(poly) { ShowHint = DockState.DockLeft, Text = name }).Show();
         }
-
+        
+        public void openBFRESMats(BFRES.Mesh poly, string name)
+        {
+            ModelViewport mvp = (ModelViewport)dockPanel1.ActiveContent;
+            mvp.BfresOpenMats(poly, name);
+        }
+        public void bfresOpenMeshEditor(BFRES.Mesh mesh, BFRES.FMDL_Model mdl, BFRES bfres, string name)
+        {
+            (new BfresMeshEditor(mesh, mdl, bfres) { Text = name }).Show();
+        }
         private void clearWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ClearWorkSpace();
@@ -970,7 +1097,13 @@ namespace Smash_Forge
 
             if (filename.EndsWith(".lvd") && Runtime.TargetLVD != null)
                 File.WriteAllBytes(filename, Runtime.TargetLVD.Rebuild());
+
+
+            if (filename.EndsWith(".byaml") && Runtime.TargetBYAML != null)
+                Runtime.TargetBYAML.Rebuild(filename);
+
         }
+
 
         ///<summary>
         ///Open a file based on the filename
@@ -982,6 +1115,8 @@ namespace Smash_Forge
 
             // Reassigned if a valid model file is opened. 
             ModelViewport mvp = new ModelViewport();
+
+      
 
             if (fileName.EndsWith(".omo"))
             {
@@ -1047,6 +1182,167 @@ namespace Smash_Forge
                 AddDockedControl(mvp);
             }
 
+            if (fileName.EndsWith(".nud"))
+            {
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name, (ModelViewport)dockPanel1.ActiveContent);
+                    }
+                    if (dialogResult == DialogResult.No)
+                    {
+                        OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
+                    }
+                }
+                else
+                {
+                    OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
+                }
+            }
+
+            if (fileName.EndsWith(".byaml") || fileName.EndsWith(".sprm") || fileName.EndsWith(".byml"))
+            {
+                if (CheckCurrentViewport(out mvp))
+                {
+                    mvp.ViewComboBox.SelectedItem = "BYAML Editor";
+                //    mvp.BYAML = new BYAML(fileName);
+                }
+                else
+                {
+                    mvp.ViewComboBox.SelectedItem = "BYAML Editor";
+                    mvp.Text = fileName;
+             //       mvp.BYAML = new BYAML(fileName);
+                }
+            }
+
+            if (fileName.EndsWith(".kcl"))
+            {
+
+                FileData f = new FileData(fileName);
+
+                byte[] data = f.getSection(0, f.eof());
+
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        OpenKCL(fileName, data, fileName, (ModelViewport)dockPanel1.ActiveContent);
+                    }
+                    if (dialogResult == DialogResult.No)
+                    {
+                        OpenKCL(fileName, data);
+                    }
+                }
+                else
+                {
+                    OpenKCL(fileName, data);
+                }
+
+            }
+
+            if (fileName.EndsWith(".szs") || fileName.EndsWith(".sbfres"))
+            {
+                FileData f = new FileData(fileName);
+
+                byte[] data = f.getSection(0, f.eof());
+
+                string Magic = f.readString(0, 4);
+
+                if (Magic == "Yaz0") //YAZO compressed
+                {
+                    data = EveryFileExplorer.YAZ0.Decompress(fileName);
+                }
+          
+                FileData t = new FileData(data);
+
+                int HexM = t.readInt();
+
+                string Magic2 = t.readString(0, 4);
+
+                if (Magic2 == "FRES") //YAZO compressed
+                {
+                    if (dockPanel1.ActiveContent is ModelViewport)
+                    {
+                        DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+                        if (dialogResult == DialogResult.Yes)
+                        {
+                            OpenBFRES(fileName, data, fileName, (ModelViewport)dockPanel1.ActiveContent);
+                        }
+                        if (dialogResult == DialogResult.No)
+                        {
+                            OpenBFRES(fileName, data);
+                        }
+                    }
+                    else
+                    {
+                        OpenBFRES(fileName, data);
+                    }
+                }
+                if (HexM == 0x02020000) //YAZO compressed
+                {
+                    OpenKCL(fileName, data, fileName, (ModelViewport)dockPanel1.ActiveContent);
+                }
+                if (Magic2 == "BNTX") //SARC compressed
+                {
+                    BNTXEditor editor = new BNTXEditor(data);
+                    AddDockedControl(editor);
+                }
+                if (Magic2 == "SARC") //SARC compressed
+                {
+                    Console.WriteLine("Found sarc");
+
+                    var SzsFiles = new SARC().unpackRam(t.getSection(0, t.eof()));
+
+                    foreach (var s in SzsFiles.Keys)
+                    {
+                        Console.WriteLine(s);
+                        if (s.Contains(".bfres"))
+                        {
+                            Console.WriteLine("Found bfres");
+                            data = SzsFiles[s];
+                            t = new FileData(data);
+
+                            OpenBFRES(s, data, s, (ModelViewport)dockPanel1.ActiveContent);
+                        }
+                        if (s.Contains(".kcl"))
+                        {
+                            Console.WriteLine("Found kcl");
+                            data = SzsFiles[s];
+                            t = new FileData(data);
+
+                            OpenKCL(s, data, s, (ModelViewport)dockPanel1.ActiveContent);
+                        }
+                    }
+                }
+
+            }
+            if (fileName.EndsWith(".bfres"))
+            {
+                FileData f = new FileData(fileName);
+
+                byte[] data = f.getSection(0, f.eof());
+
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+                    if (dialogResult == DialogResult.Yes)
+                    {
+                        OpenBFRES(fileName, data, fileName, (ModelViewport)dockPanel1.ActiveContent);
+                    }
+                    if (dialogResult == DialogResult.No)
+                    {
+                        OpenBFRES(fileName, data);
+                    }
+                }
+                else
+                {
+                    OpenBFRES(fileName, data);
+                }
+
+            }
             if (fileName.EndsWith(".mbn"))
             {
                 if(!File.Exists(fileName.Replace(".mbn", ".bch")))
@@ -1063,7 +1359,7 @@ namespace Smash_Forge
                 ((BCH_Model)b.Models.Nodes[0]).OpenMBN(new FileData(fileName));
 
                 mvp = new ModelViewport();
-                mvp.draw.Add(new ModelContainer() { BCH = b });
+                mvp.draw.Add(new ModelContainer() { Bch = b });
                 mvp.Text = fileName;
                 AddDockedControl(mvp);
             }
@@ -1077,6 +1373,16 @@ namespace Smash_Forge
             if (fileName.EndsWith(".nut"))
             {
                 NUTEditor editor = new NUTEditor(fileName);
+                AddDockedControl(editor);
+            }
+
+            if (fileName.EndsWith(".bntx"))
+            {
+                FileData f = new FileData(fileName);
+
+                byte[] data = f.getSection(0, f.eof());
+
+                BNTXEditor editor = new BNTXEditor(data);
                 AddDockedControl(editor);
             }
 
@@ -1138,7 +1444,7 @@ namespace Smash_Forge
                 
                 if (dat.collisions != null)//if the dat is a stage
                 {
-                    DAT_stage_list stageList = new DAT_stage_list(dat) { ShowHint = DockState.DockLeft };
+                    DatStageList stageList = new DatStageList(dat) { ShowHint = DockState.DockLeft };
                     AddDockedControl(stageList);
                 }
                 
@@ -1186,7 +1492,6 @@ namespace Smash_Forge
                 }
             }
 
-
             if (fileName.EndsWith(".smd"))
             {
                 ModelContainer modelContainer = new ModelContainer();
@@ -1206,7 +1511,6 @@ namespace Smash_Forge
                     mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
                 }
             }
-
 
             if (fileName.ToLower().EndsWith(".dae"))
             {
@@ -1356,26 +1660,6 @@ namespace Smash_Forge
                 LightTools.CreateLightMapsFromXMB(new XMBFile(fileName));
             }
 
-            if (fileName.EndsWith(".nud"))
-            {
-                if(dockPanel1.ActiveContent is ModelViewport)
-                {
-                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name, (ModelViewport)dockPanel1.ActiveContent);
-                    }
-                    if (dialogResult == DialogResult.No)
-                    {
-                        OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
-                    }
-                }
-                else
-                {
-                    OpenNud(fileName, new DirectoryInfo(Path.GetDirectoryName(fileName)).Name);
-                }
-            }
-
             if (fileName.EndsWith(".moi"))
             {
                 MOI moi = new MOI(fileName);
@@ -1448,7 +1732,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.mdl0|" +
+                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0;*.bntx;*.szs;*.sbfres;*.sarc;*.pack;*.byaml;*.byml;*.kcl|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -1736,7 +2020,7 @@ namespace Smash_Forge
                             BCH bch = new Smash_Forge.BCH(ModelFolder + "normal.bch");
                             if (bch.Models.Nodes.Count > 0 && File.Exists(ModelFolder + "normal.mbn"))
                                 ((BCH_Model)bch.Models.Nodes[0]).OpenMBN(new FileData(ModelFolder + "normal.mbn"));
-                            modelContainer.BCH = bch;
+                            modelContainer.Bch = bch;
                         }
 
                         if (File.Exists(ofd.SelectedPath + "\\body\\c00\\" + "model.jtb"))
@@ -1913,6 +2197,104 @@ namespace Smash_Forge
             NUTEditor editor = new NUTEditor();
             editor.SelectNUT(n);
             AddDockedControl(editor);
+        }
+
+        private void openOdysseyCostumeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OdysseyCostumeSelector OCS = new OdysseyCostumeSelector();
+            OCS.ShowDialog(this);
+        }
+
+        public void LoadCostumes(string fileName)
+        {
+            fileName = Path.ChangeExtension(fileName, null);
+
+            // Reassigned if a valid model file is opened. 
+            ModelViewport mvp = new ModelViewport();
+            AddDockedControl(mvp);
+
+            List<string> CostumeNames = new List<string>();
+            CostumeNames.Add($"{fileName}.szs");
+            CostumeNames.Add($"{fileName}Face.szs");
+            CostumeNames.Add($"{fileName}Eye.szs");
+            CostumeNames.Add($"{fileName}Head.szs");
+            CostumeNames.Add($"{fileName}HeadTexture.szs");
+            CostumeNames.Add($"{fileName}Under.szs");
+            CostumeNames.Add($"{fileName}HandL.szs");
+            CostumeNames.Add($"{fileName}HandR.szs");
+            CostumeNames.Add($"{fileName}HandTexture.szs");
+            CostumeNames.Add($"{fileName}BodyTexture.szs");
+            CostumeNames.Add($"{fileName}Shell.szs");
+            CostumeNames.Add($"{fileName}Tail.szs");
+            CostumeNames.Add($"{fileName}Hair.szs");
+       //     CostumeNames.Add($"{fileName}Hakama.szs");
+           CostumeNames.Add($"{fileName}Skirt.szs");
+     //     CostumeNames.Add($"{fileName}Poncho.szs");
+            CostumeNames.Add($"{fileName}Guitar.szs");
+            
+
+            foreach (string path in CostumeNames)
+            {
+                Console.WriteLine("Path = " + path);
+
+                if (File.Exists(path))
+                {
+                    LoadCostume(path, mvp);
+                }
+                else
+                {
+                    //Load default meshes unless it's these file names
+                    List<string> ExcludeFileList = new List<string>(new string[] {
+                    "MarioHack","MarioDot",
+                     });
+
+                    bool Exluded = ExcludeFileList.Any(path.Contains);
+               
+                    if (Exluded == false)
+                    {
+                        string parent = Directory.GetParent(path).FullName;
+
+                        if (path.Contains($"{fileName}Face"))
+                            LoadCostume($"{parent}\\MarioFace.szs", mvp);
+                        else if (path.Contains($"{fileName}Eye"))
+                            LoadCostume($"{parent}\\MarioEye.szs", mvp);
+                        else if (path.Contains($"{fileName}HeadTexture"))
+                            LoadCostume($"{parent}\\MarioHeadTexture.szs", mvp);
+                        else if (path.Contains($"{fileName}Head"))
+                            LoadCostume($"{parent}\\MarioHead.szs", mvp);
+                        else if (path.Contains($"{fileName}HandL"))
+                            LoadCostume($"{parent}\\MarioHandL.szs", mvp);
+                        else if (path.Contains($"{fileName}HandR"))
+                            LoadCostume($"{parent}\\MarioHandR.szs", mvp);
+                        else if (path.Contains($"{fileName}HandTexture"))
+                            LoadCostume($"{parent}\\MarioHandTexture.szs", mvp);
+
+                    }
+                }
+            }
+            
+        }
+        public void LoadCostume(string fileName, ModelViewport mvp)
+        {
+        
+
+            byte[] data = data = EveryFileExplorer.YAZ0.Decompress(fileName);
+
+            FileData t = new FileData(data);
+
+            var SzsFiles = new SARC().unpackRam(t.getSection(0, t.eof()));
+
+            foreach (var s in SzsFiles.Keys)
+            {
+                if (s.Contains(".bfres"))
+                {
+                    data = SzsFiles[s];
+                    t = new FileData(data);
+
+
+                    OpenBFRES(s, data, s, mvp);
+                }
+            }
         }
     }
 }

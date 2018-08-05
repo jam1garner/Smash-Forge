@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,7 +19,7 @@ namespace Smash_Forge
 {
     public partial class MeshList : DockContent
     {
-        
+
         public static ImageList iconList = new ImageList();
         private ContextMenu MainContextMenu;
 
@@ -43,6 +43,7 @@ namespace Smash_Forge
             iconList.Images.Add("info", Properties.Resources.icon_info);
             iconList.Images.Add("number", Properties.Resources.icon_number);
             iconList.Images.Add("nut", Properties.Resources.UVPattern);
+            iconList.Images.Add("bfres", Properties.Resources.icon_bfres);
             filesTreeView.ImageList = iconList;
 
             MainContextMenu = new ContextMenu();
@@ -54,6 +55,7 @@ namespace Smash_Forge
                 RefreshNodes();
             };
             MainContextMenu.MenuItems.Add(newMC);
+
         }
 
         bool changingValue = false;
@@ -85,15 +87,34 @@ namespace Smash_Forge
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
         {
             if (e.Node is NUD) {
-                
+
                 foreach (TreeNode n in e.Node.Nodes) n.Checked = e.Node.Checked;
-                
+
             }
+            if (e.Node is BFRES)
+            {
+                foreach (TreeNode n in e.Node.Nodes)
+                {
+                    n.Checked = e.Node.Checked;
+                    foreach (TreeNode m in n.Nodes)
+                    {
+                        m.Checked = e.Node.Checked;
+                    }
+                }
+            }
+            if (e.Node is BFRES.FMDL_Model)
+                foreach (TreeNode n in e.Node.Nodes) n.Checked = e.Node.Checked;
+            if (e.Node is BFRES.Mesh)
+                foreach (TreeNode n in e.Node.Nodes) n.Checked = e.Node.Checked;
         }
 
         private void polySelected(NUD.Polygon poly, string name)
         {
             MainForm.Instance.openMats(poly,name);
+        }
+        private void bfresShapeSelected(BFRES.Mesh poly, string name)
+        {
+            MainForm.Instance.openBFRESMats(poly, name);
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
@@ -243,7 +264,7 @@ namespace Smash_Forge
                         if (newMeshes[i] == null)
                         {
                             newMeshes[i] = new NUD.Mesh();
-                            newMeshes[i].Text = "dummy";  
+                            newMeshes[i].Text = "dummy";
                         }
                     }
 
@@ -260,7 +281,7 @@ namespace Smash_Forge
         {
             //if (e.Node is NUD.Mesh)
             //    ((NUD.Mesh) e.Node).Text = e.Label;
-            
+
         }
 
         private void treeView1_KeyDown(object sender, KeyEventArgs e)
@@ -351,6 +372,22 @@ namespace Smash_Forge
                 else if (filesTreeView.SelectedNode.Tag is SALT.Graphics.XMBFile)
                 {
                     xmbContextMenu.Show(this, e.X, e.Y);
+                }
+                else if (filesTreeView.SelectedNode is BFRES.Mesh)
+                {
+                    bfresMeshContextMenu.Show(this, e.X, e.Y);
+                }
+                else if (filesTreeView.SelectedNode is BFRES)
+                {
+                    bfresToolStripMenu.Show(this, e.X, e.Y);
+                }
+                else if (filesTreeView.SelectedNode is BFRES.FMDL_Model)
+                {
+                    bfresFmdlcontextMenuStrip1.Show(this, e.X, e.Y);
+                }
+                else if (filesTreeView.SelectedNode is KCL)
+                {
+                    kclContextMenuStrip1.Show(this, e.X, e.Y);
                 }
                 else if (filesTreeView.SelectedNode is ModelContainer)
                 {
@@ -459,15 +496,15 @@ namespace Smash_Forge
         {
             ModelContainer originalModelContainer = (ModelContainer)filesTreeView.SelectedNode;
             ModelContainer newModelContainer = (ModelContainer)n;
-            
-            // Remove nodes from original and add to the new model container. 
+
+            // Remove nodes from original and add to the new model container.
             int count = originalModelContainer.NUD.Nodes.Count;
             for (int i = 0; i < count; i++)
             {
                 TreeNode node = originalModelContainer.NUD.Nodes[0];
                 originalModelContainer.NUD.Nodes.Remove(node);
 
-                // TODO: Account for merging single bound meshes. 
+                // TODO: Account for merging single bound meshes.
 
                 newModelContainer.NUD.Nodes.Add(node);
             }
@@ -550,7 +587,7 @@ namespace Smash_Forge
                     foreach (NUD.Material m in ((NUD.Polygon)filesTreeView.SelectedNode).materials)
                         poly.materials.Add(m.Clone());
                 }
-         
+
             }
         }
 
@@ -622,7 +659,7 @@ namespace Smash_Forge
             if (targetMeshIndex >= nud.Nodes.Count || targetMeshIndex < 0)
                 return;
 
-            // Merge the selected mesh onto the next mesh. 
+            // Merge the selected mesh onto the next mesh.
             NUD.Mesh targetMesh = (NUD.Mesh)nud.Nodes[targetMeshIndex];
             nud.Nodes.Remove(sourceMesh);
             TransferMeshPolygons(sourceMesh, targetMesh);
@@ -644,7 +681,7 @@ namespace Smash_Forge
             // Check single bind.
             if (sourceMesh.singlebind != targetMesh.singlebind)
             {
-                // Change bone flag and generate weights. 
+                // Change bone flag and generate weights.
             }
         }
 
@@ -659,7 +696,7 @@ namespace Smash_Forge
                     for (int i = 0; i < v.uv.Count; i++)
                         v.uv[i] = new OpenTK.Vector2(1 - v.uv[i].X, v.uv[i].Y);
                 }
-                
+
                 foreach (TreeNode con in filesTreeView.Nodes)
                 {
                     if (con is ModelContainer)
@@ -733,7 +770,7 @@ namespace Smash_Forge
                 NUD nud = (NUD)filesTreeView.SelectedNode;
 
                 NUD.Mesh m = new NUD.Mesh();
-                
+
                 int i = 0;
                 bool foundName = false;
                 while (!foundName)
@@ -780,7 +817,7 @@ namespace Smash_Forge
         {
             if (!(filesTreeView.SelectedNode is NUD.Polygon))
                 return;
-            
+
             NUD.Polygon poly = ((NUD.Polygon)filesTreeView.SelectedNode);
             GenerateTanBitanAndFixVertType(poly);
 
@@ -791,7 +828,7 @@ namespace Smash_Forge
 
         private void calculateNormalsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-   
+
         }
 
         private void calculateNormalsToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -853,12 +890,15 @@ namespace Smash_Forge
         private void exportAsDAEToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog save = new SaveFileDialog();
-            save.Filter = "Supported Filetypes (DAE)|*.dae;|All files(*.*)|*.*";
+            save.Filter = "Supported Filetypes (DAE)|*.dae;*.obj;|All files(*.*)|*.*";
             DialogResult result = save.ShowDialog();
 
             if (result == DialogResult.OK && filesTreeView.SelectedNode is ModelContainer)
             {
-                Collada.Save(save.FileName, (ModelContainer)filesTreeView.SelectedNode);
+                if (save.FileName.EndsWith(".dae"))
+                    Collada.Save(save.FileName, (ModelContainer)filesTreeView.SelectedNode);
+                if (save.FileName.EndsWith(".obj"))
+                    OBJ.Save(save.FileName, (ModelContainer)filesTreeView.SelectedNode);
             }
         }
 
@@ -869,21 +909,31 @@ namespace Smash_Forge
 
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
-                if(ofd.ShowDialog() == DialogResult.OK)
+                if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    DAEImportSettings daeImport = new DAEImportSettings();
-                    daeImport.ShowDialog();
-                    if (daeImport.exitStatus == DAEImportSettings.ExitStatus.Opened)
+                    ModelContainer con = (ModelContainer)filesTreeView.SelectedNode;
+
+                    if (con.Bfres != null)
                     {
-                        ModelContainer con = (ModelContainer)filesTreeView.SelectedNode;
-                        
-                        con.VBN = daeImport.getVBN();
+                        for (int p = 0; p < con.Bfres.models.Count; p++)
+                        {
+                            Collada.DaetoBfresReplace(ofd.FileName, con, p, false);
+                        }
+                    }
+                    else
+                    {
+                        DAEImportSettings daeImport = new DAEImportSettings();
+                        daeImport.ShowDialog();
+                        if (daeImport.exitStatus == DAEImportSettings.ExitStatus.Opened)
+                        {
+                            con.VBN = daeImport.getVBN();
 
-                        Collada.DaetoNud(ofd.FileName, con, daeImport.importTexCB.Checked);
+                            Collada.DaetoNud(ofd.FileName, con, daeImport.importTexCB.Checked);
 
-                        // apply settings
-                        if (con.NUD != null)
-                            daeImport.Apply(con.NUD);
+                            // apply settings
+                            if (con.NUD != null)
+                                daeImport.Apply(con.NUD);
+                        }
                     }
                 }
             }
@@ -992,7 +1042,7 @@ namespace Smash_Forge
         {
             if (!(filesTreeView.SelectedNode is NUD.Mesh))
                 return;
-            
+
             string meshName = filesTreeView.SelectedNode.Text;
             var messageBox = MessageBox.Show("If the vertex type does not support tangents/bitangents, \n" +
                 "the vertex type will be changed to Normals, Tan, Bi-Tan (Float). \n" +
@@ -1009,7 +1059,7 @@ namespace Smash_Forge
                 // Update the data for rendering.
                 NUD n = (NUD)mesh.Parent;
                 n.UpdateVertexBuffers();
-            }               
+            }
         }
 
         private static void GenerateTanBitanAndFixVertType(NUD.Polygon poly)
@@ -1022,7 +1072,7 @@ namespace Smash_Forge
                 poly.vertSize |= 7;
             }
 
-            // This already checks for the appropriate vertex type. 
+            // This already checks for the appropriate vertex type.
             poly.CalculateTangentBitangent();
         }
 
@@ -1044,7 +1094,7 @@ namespace Smash_Forge
             if (!(filesTreeView.SelectedNode is NUD.Polygon))
                 return;
 
-            // Use a dialog so the color isn't set until the color editor is closed. 
+            // Use a dialog so the color isn't set until the color editor is closed.
             ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
             colorEditor.ShowDialog();
 
@@ -1157,7 +1207,7 @@ namespace Smash_Forge
             if (!(filesTreeView.SelectedNode is NUD.Mesh))
                 return;
 
-            // Use a dialog so the color isn't set until the color editor is closed. 
+            // Use a dialog so the color isn't set until the color editor is closed.
             ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
             colorEditor.ShowDialog();
 
@@ -1370,7 +1420,7 @@ namespace Smash_Forge
 
             NUD n = (NUD)filesTreeView.SelectedNode;
 
-            // Use a dialog so the color isn't set until the color editor is closed. 
+            // Use a dialog so the color isn't set until the color editor is closed.
             ColorEditor colorEditor = new ColorEditor(new OpenTK.Vector3(1));
             colorEditor.ShowDialog();
 
@@ -1397,7 +1447,7 @@ namespace Smash_Forge
             NUD n = (NUD)filesTreeView.SelectedNode;
 
             using (var texIdSelector = new TexIdSelector())
-            {              
+            {
                 texIdSelector.Set(n.GetFirstTexId());
                 texIdSelector.ShowDialog();
                 if (texIdSelector.exitStatus == TexIdSelector.ExitStatus.Opened)
@@ -1427,6 +1477,371 @@ namespace Smash_Forge
                     modelContainer.NUD.ChangeTextureIds(texIdSelector.getNewTexId());
                     modelContainer.NUT.ChangeTextureIds(texIdSelector.getNewTexId());
                 }
+            }
+        }
+
+#region BFRES Menus
+
+        private void openMaterialEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            bfresShapeSelected((BFRES.Mesh)filesTreeView.SelectedNode, $"");
+        }
+
+        private void openPolygonEditorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MainForm.Instance.bfresOpenMeshEditor((BFRES.Mesh)filesTreeView.SelectedNode, (BFRES.FMDL_Model)filesTreeView.SelectedNode.Parent, (BFRES)filesTreeView.SelectedNode.Parent.Parent.Parent, $"");
+        }
+
+        private void bfresSaveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string filename = "";
+            SaveFileDialog save = new SaveFileDialog();
+            save.Filter = "Binary caFe RESource|*.bfres|All files(*.*)|*.*";
+            DialogResult result = save.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                filename = save.FileName;
+                if (filename.EndsWith(".bfres"))
+                {
+                    if (((BFRES)filesTreeView.SelectedNode).TargetSwitchBFRES != null)
+                    {
+                        ((BFRES)filesTreeView.SelectedNode).InjectToFile(filename);
+                    }
+                    else
+                    {
+                        ((BFRES)filesTreeView.SelectedNode).InjectToWiiUBFRES(filename);
+                    }
+
+
+                }
+            }
+        }
+
+        private void flipUVsVerticalToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (filesTreeView.SelectedNode is BFRES.Mesh)
+            {
+                BFRES.Mesh msh = (BFRES.Mesh)filesTreeView.SelectedNode;
+
+                foreach (BFRES.Vertex v in msh.vertices)
+                {
+                    v.uv0 = new OpenTK.Vector2(v.uv0.X, 1 - v.uv0.Y);
+                }
+
+                foreach (TreeNode con in filesTreeView.Nodes)
+                {
+                    if (con is ModelContainer)
+                    {
+                        if (((ModelContainer)con).Bfres != null)
+                            ((ModelContainer)con).Bfres.UpdateVertexData();
+                    }
+                }
+            }
+        }
+
+        private void flipUVsHorizontalToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (filesTreeView.SelectedNode is BFRES.Mesh)
+            {
+                BFRES.Mesh msh = (BFRES.Mesh)filesTreeView.SelectedNode;
+
+                foreach (BFRES.Vertex v in msh.vertices)
+                {
+                    v.uv0 = new OpenTK.Vector2(1 - v.uv0.X, v.uv0.Y);
+                }
+
+                foreach (TreeNode con in filesTreeView.Nodes)
+                {
+                    if (con is ModelContainer)
+                    {
+                        if (((ModelContainer)con).Bfres != null)
+                            ((ModelContainer)con).Bfres.UpdateVertexData();
+                    }
+                }
+            }
+        }
+        private void bfresGenerateTanBitanToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh mesh = (BFRES.Mesh)filesTreeView.SelectedNode;
+
+            BFRESGenerateTanBitanAndFixVertType(mesh);
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).Bfres != null)
+                        ((ModelContainer)con).Bfres.UpdateVertexData();
+                }
+            }
+        }
+
+        private static void BFRESGenerateTanBitanAndFixVertType(BFRES.Mesh mesh)
+        {
+            // This already checks for the appropriate vertex type.
+            mesh.CalculateTangentBitangent();
+        }
+
+        private void smoothNormalsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void bfresRecalculateToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh mesh = (BFRES.Mesh)filesTreeView.SelectedNode;
+            mesh.CalculateNormals();
+
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).Bfres != null)
+                        ((ModelContainer)con).Bfres.UpdateVertexData();
+                }
+            }
+        }
+
+        private void bfresSmoothToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh mesh = (BFRES.Mesh)filesTreeView.SelectedNode;
+            mesh.SmoothNormals();
+
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).Bfres != null)
+                        ((ModelContainer)con).Bfres.UpdateVertexData();
+                }
+            }
+        }
+
+        private void bfresNormalsToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void bfresSetVertexColors_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void setColorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh mesh = (BFRES.Mesh)filesTreeView.SelectedNode;
+
+            ColorDialog colorDialog1 = new ColorDialog();
+            if (colorDialog1.ShowDialog() == DialogResult.OK)
+            {
+                mesh.SetVertexColor(new OpenTK.Vector4(
+                    colorDialog1.Color.R / 255.0f,
+                    colorDialog1.Color.G / 255.0f,
+                    colorDialog1.Color.B / 255.0f,
+                    colorDialog1.Color.A / 255.0f));
+            }
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).Bfres != null)
+                        ((ModelContainer)con).Bfres.UpdateVertexData();
+                }
+            }
+        }
+
+        private void bfresMeshContextMenu_Opening(object sender, CancelEventArgs e)
+        {
+
+        }
+
+        private void bfresSetWhiteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh mesh = (BFRES.Mesh)filesTreeView.SelectedNode;
+
+            mesh.SetVertexColor(new OpenTK.Vector4(
+                127.0f / 255.0f,
+                127.0f / 255.0f,
+                127.0f / 255.0f,
+                127.0f / 255.0f));
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).Bfres != null)
+                        ((ModelContainer)con).Bfres.UpdateVertexData();
+                }
+            }
+
+        }
+
+        public void UpdateBFRESMeshList()
+        {
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).Bfres != null)
+                    {
+                        foreach (BFRES.FMDL_Model mdl in ((ModelContainer)con).Bfres.models)
+                        {
+                            foreach (BFRES.Mesh m in mdl.poly)
+                            {
+                                ((ModelContainer)con).Bfres.UpdateVertexData();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void exportMaterialsXMLToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh msh = (BFRES.Mesh)filesTreeView.SelectedNode;
+
+            msh.ExportMaterials2XML();
+        }
+
+        private void bfresConvertWiiU2SwitchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES))
+                return;
+
+            // Update the data for rendering.
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).Bfres != null)
+                    {
+                        OpenFileDialog ofd = new OpenFileDialog();
+                        ofd.Filter =
+                                "Supported Formats|*.bfres;|" +
+                                "All files(*.*)|*.*";
+
+                        if (ofd.ShowDialog() == DialogResult.OK)
+                        {
+                            if (ofd.FileName.EndsWith(".bfres"))
+                            {
+                                BFRES.WiiU2Switch(ofd.FileName, filesTreeView.SelectedNode.Index, ((ModelContainer)con).Bfres);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void generateTanBitanToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.FMDL_Model))
+                return;
+
+            BFRES.FMDL_Model mdl = (BFRES.FMDL_Model)filesTreeView.SelectedNode;
+
+            mdl.GenerateTansBitansEachMesh();
+            UpdateBFRESMeshList();
+        }
+
+        private void recalculateToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.FMDL_Model))
+                return;
+
+            BFRES.FMDL_Model mdl = (BFRES.FMDL_Model)filesTreeView.SelectedNode;
+
+            mdl.GenerateNormalEachMesh();
+            UpdateBFRESMeshList();
+        }
+
+        private void smoothToolStripMenuItem3_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.FMDL_Model))
+                return;
+
+            BFRES.FMDL_Model mdl = (BFRES.FMDL_Model)filesTreeView.SelectedNode;
+
+            mdl.SmoothNormalEachMesh();
+            UpdateBFRESMeshList();
+        }
+
+        private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.FMDL_Model))
+                return;
+
+        }
+
+        private void copyChannel1To2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh m = (BFRES.Mesh)filesTreeView.SelectedNode;
+            m.CopyUVChannel2();
+            UpdateBFRESMeshList();
+        }
+
+        private void singleBindToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!(filesTreeView.SelectedNode is BFRES.Mesh))
+                return;
+
+            BFRES.Mesh m = (BFRES.Mesh)filesTreeView.SelectedNode;
+
+            foreach (TreeNode con in filesTreeView.Nodes)
+            {
+                if (con is ModelContainer)
+                {
+                    if (((ModelContainer)con).Bfres != null)
+                    {
+                        m.SingleBindMesh(); //Add BFRES instance so we can use the fmdl and skeleton classes
+                        ((ModelContainer)con).Bfres.UpdateVertexData();
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        private void KCLtoolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.Filter = "Supported Filetypes (OBJ)|*.obj;|All files(*.*)|*.*";
+            DialogResult result = save.ShowDialog();
+
+            if (result == DialogResult.OK && filesTreeView.SelectedNode is KCL)
+            {
+                OBJ.KCL2OBJ(save.FileName, (KCL)filesTreeView.SelectedNode);
             }
         }
 

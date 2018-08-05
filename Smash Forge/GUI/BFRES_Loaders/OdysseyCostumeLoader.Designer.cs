@@ -1,6 +1,6 @@
-﻿namespace Smash_Forge
+﻿namespace Smash_Forge.GUI.BFRES_Loaders
 {
-    partial class DAT_stage_list
+    partial class OdysseyCostumeLoader
     {
         /// <summary>
         /// Required designer variable.
@@ -28,34 +28,32 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.listBox1 = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
-            // treeView1
+            // listBox1
             // 
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.Location = new System.Drawing.Point(0, 0);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(284, 536);
-            this.treeView1.TabIndex = 0;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(0, 0);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(325, 697);
+            this.listBox1.TabIndex = 0;
             // 
-            // DAT_stage_list
+            // OdysseyCostumeLoader
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 536);
-            this.Controls.Add(this.treeView1);
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "DAT_stage_list";
-            this.Text = "dat_stage_list";
-            this.Load += new System.EventHandler(this.DAT_stage_list_Load);
+            this.ClientSize = new System.Drawing.Size(325, 697);
+            this.Controls.Add(this.listBox1);
+            this.Name = "OdysseyCostumeLoader";
+            this.Text = "OdysseyCostumeLoader";
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.ListBox listBox1;
     }
 }

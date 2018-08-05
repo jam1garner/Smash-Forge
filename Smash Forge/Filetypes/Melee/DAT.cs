@@ -41,7 +41,7 @@ namespace Smash_Forge
 
         public Map_Head.Head_Node headNode = null;
 
-        public float stageScale = 1; 
+        public float stageScale = 1;
 
         public VBN bones = new VBN();
 
@@ -65,7 +65,7 @@ namespace Smash_Forge
 
         public DAT()
         {
-            
+
             GL.GenBuffers(1, out ubo_bones);
             GL.GenBuffers(1, out vbo_position);
             GL.GenBuffers(1, out vbo_color);
@@ -115,7 +115,7 @@ namespace Smash_Forge
             }
 
             d.seek(relocationTableOffset + header.relocationTableCount * 4); // skip relocation table
-            
+
             int strOffset = d.pos() + header.rootCount * 8 + header.referenceNodeCount * 8;
             int[] sectionOffset = new int[header.rootCount];
             string[] sectionNames = new string[header.rootCount];
@@ -180,14 +180,14 @@ namespace Smash_Forge
 
                 foreach (object o in v.Tags)
                 {
-                    if(o is JOBJ)
+                    if (o is JOBJ)
                     {
                         v.bones.Add(boneTrack.IndexOf((JOBJ)o));
-                        mt = Matrix4.CreateScale(1,1,1);
+                        mt = Matrix4.CreateScale(1, 1, 1);
                         v.nrm = TransformNormal(((JOBJ)o).transform, v.nrm);
                     }
                     else
-                    if(o is int)
+                    if (o is int)
                     {
                         v.bones.Add(boneTrack.IndexOf(jobjOffsetLinker[(int)o]));
                         mt += jobjOffsetLinker[(int)o].transform * v.weights[w++];
@@ -248,9 +248,9 @@ namespace Smash_Forge
                 col.Add(v.clr);
                 nrm.Add(v.nrm);
 
-                if(v.bones.Count == 0)
+                if (v.bones.Count == 0)
                 {
-                    v.bones.Add (-1);
+                    v.bones.Add(-1);
                     v.weights.Add(0);
                 }
                 while (v.bones.Count < MaxWeightCount)
@@ -265,7 +265,7 @@ namespace Smash_Forge
 
             Stack<TreeNode> queue = new Stack<TreeNode>();
             //foreach (TreeNode node in tree)
-            for(int i = tree.Count - 1; i >= 0; i--)
+            for (int i = tree.Count - 1; i >= 0; i--)
                 queue.Push(tree[i]);
 
             displayList.Clear();
@@ -368,7 +368,7 @@ namespace Smash_Forge
                 shader = new Shader();
                 shader = Rendering.OpenTKSharedResources.shaders["Dat"];
             }
-            
+
             GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
             GL.BufferData(BufferTarget.UniformBuffer, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
@@ -399,7 +399,7 @@ namespace Smash_Forge
             {
                 Matrix4[] f = bones.getShaderMatrix();
 
-                if(f.Length > 0)
+                if (f.Length > 0)
                 {
                     GL.BindBuffer(BufferTarget.UniformBuffer, ubo_bones);
                     GL.BufferSubData(BufferTarget.UniformBuffer, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * 4), f);
@@ -494,7 +494,7 @@ namespace Smash_Forge
             }
             return boneTrack;
         }
-        
+
         public static Vector3 TransformNormal(Matrix4 M, Vector3 N)
         {
             return new Vector3((M.M11 * N.X) + (M.M12 * N.Y) + (M.M13 * N.Z),
@@ -520,7 +520,7 @@ namespace Smash_Forge
             int index = 0;
             foreach (int k in texturesLinker.Keys)
             {
-                texturesLinker[k].Save(path + (key+index++).ToString("x") + ".png");
+                texturesLinker[k].Save(path + (key + index++).ToString("x") + ".png");
             }
         }
 
@@ -649,7 +649,7 @@ namespace Smash_Forge
             NUT nut = new NUT();
             Runtime.TextureContainers.Add(nut);
             int texid = 0;
-            foreach(int key in texturesLinker.Keys)
+            foreach (int key in texturesLinker.Keys)
             {
                 NutTexture tex = new NutTexture();
                 tex.Width = texturesLinker[key].Width;
@@ -665,7 +665,7 @@ namespace Smash_Forge
                 nut.glTexByHashId.Add(0x40545400 + texid, NUT.CreateTexture2D(tex));
                 texid++;
             }
-            
+
             foreach (var da in displayList)
             {
                 DOBJ data = (DOBJ)da.Tag;
@@ -719,7 +719,7 @@ namespace Smash_Forge
                         }
                     }
                 }
-                
+
                 if (usedVertices.Count == 0)
                     continue;
 
@@ -732,7 +732,7 @@ namespace Smash_Forge
                     nv.pos = vert.pos;
                     nv.uv.Add(new Vector2(vert.tx0.X * data.material.texture.scale_w, (vert.tx0.Y * data.material.texture.scale_h)));
                     nv.nrm = vert.nrm;
-                    nv.color = (vert.clr*0xFF)/2;
+                    nv.color = (vert.clr * 0xFF) / 2;
                     nv.boneIds.AddRange(vert.bones);
                     nv.boneWeights.AddRange(vert.weights);
                     polygon.AddVertex(nv);
@@ -823,7 +823,7 @@ namespace Smash_Forge
 
             public int vertOffOff;
             public int linkOffOff;
-            public int polyOffOff; 
+            public int polyOffOff;
 
             public COLL_DATA()
             {
@@ -933,10 +933,10 @@ namespace Smash_Forge
                         parentNode.Nodes.Add(node);
                         node.Tag = this;
                         node.Text = "NodeObject";
-                        
+
                         // WTF ARE THESE OFFSETS OMG
                         int jPointer = d.readInt();
-                        Console.WriteLine((d.readInt()).ToString("x") + " " + 
+                        Console.WriteLine((d.readInt()).ToString("x") + " " +
                             (d.readInt()).ToString("x") + " " +
                             (d.readInt()).ToString("x") + " " +
                             (d.readInt()).ToString("x") + " " +
@@ -1273,7 +1273,7 @@ namespace Smash_Forge
                     materialOffset = d.readInt();
                     unk3 = d.readInt();
                     unk4 = d.readInt();
-                    
+
                     if (tobjOffset != 0)
                     {
                         d.seek(tobjOffset);
@@ -1343,7 +1343,7 @@ namespace Smash_Forge
                             paletteOffset == 0 ? null : d.getSection(paletteDataOffset, 4 * count), count, paletteFormat);
 
                         dat.texturesLinker.Add(imageDataOffset, image);
-                        dat.tobjLinker.Add(imageDataOffset, new object[]{ testOffset, image, imageOffset, imageDataOffset });
+                        dat.tobjLinker.Add(imageDataOffset, new object[] { testOffset, image, imageOffset, imageDataOffset });
                     }
 
                     Texture texture = new Texture2D(image);
@@ -1416,7 +1416,7 @@ namespace Smash_Forge
             public Vector4 clr = new Vector4(1, 1, 1, 1);
             public List<int> bones = new List<int>();
             public List<float> weights = new List<float>();
-            
+
             public List<object> Tags = new List<object>(); // this is for post processing of vertices
         }
 
@@ -1621,7 +1621,7 @@ namespace Smash_Forge
                                         value = d.readByte();
                                         break;
                                     case GXAttrType.GX_INDEX16:
-                                        value = (short)d.readShort()&0xFFFF;
+                                        value = (short)d.readShort() & 0xFFFF;
                                         break;
                                     default:
                                         break;
@@ -1727,23 +1727,24 @@ namespace Smash_Forge
                                         d.seek(temp);
                                         break;
                                     case GXAttr.GX_VA_CLR0:
-                                        if(att.dataOffset + att.vtxStride * value != 0) { 
-                                        temp = d.pos();
-                                        d.seek(att.dataOffset + att.vtxStride * value);
-                                        v.clr = readGXClr(d, att.compType);
-                                        d.seek(temp);
+                                        if (att.dataOffset + att.vtxStride * value != 0)
+                                        {
+                                            temp = d.pos();
+                                            d.seek(att.dataOffset + att.vtxStride * value);
+                                            v.clr = readGXClr(d, att.compType);
+                                            d.seek(temp);
                                         }
                                         break;
-                                    /*default:
-                                        Console.WriteLine("vtxAttr:0x{0}\t0x{1}",att.vtxAttr.ToString("X4"),(att.dataOffset + att.vtxStride * value).ToString("X4"));
-                                        break;*/
+                                        /*default:
+                                            Console.WriteLine("vtxAttr:0x{0}\t0x{1}",att.vtxAttr.ToString("X4"),(att.dataOffset + att.vtxStride * value).ToString("X4"));
+                                            break;*/
                                 }
                             }
                         }
 
                         display.Add(ob);
                     }
-                
+
 
                 if (nextOffset != 0)
                 {

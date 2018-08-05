@@ -183,6 +183,16 @@ namespace Smash_Forge.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap icon_bfres {
+            get {
+                object obj = ResourceManager.GetObject("icon_bfres", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap icon_bone {
             get {
                 object obj = ResourceManager.GetObject("icon_bone", resourceCulture);

@@ -15,7 +15,7 @@ namespace Smash_Forge
             b = File.ReadAllBytes(f);
 
             // auto decompress
-            if(b.Length > 2)
+            if (b.Length > 2)
             {
                 if (b[0] == 0x78 && b[1] == 0x9C)
                     b = InflateZLIB(b);
@@ -48,17 +48,17 @@ namespace Smash_Forge
         public int readInt()
         {
             if (Endian == Endianness.Little)
-                return (int) ((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 24));
+                return (int)((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 24));
             else
-                return (int) (((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
+                return (int)(((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
         }
 
         public uint readUInt()
         {
             if (Endian == Endianness.Little)
-                return (uint) ((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 24));
+                return (uint)((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 24));
             else
-                return (uint) (((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
+                return (uint)(((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
         }
 
         public int readThree()
@@ -72,27 +72,27 @@ namespace Smash_Forge
         public short readShort()
         {
             if (Endian == Endianness.Little)
-                return (short) ((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8));
+                return (short)((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8));
             else
-                return (short) (((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
+                return (short)(((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
         }
 
         public ushort readUShort()
         {
             if (Endian == Endianness.Little)
-                return (ushort) ((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8));
+                return (ushort)((b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8));
             else
-                return (ushort) (((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
+                return (ushort)(((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF));
         }
 
         public byte readByte()
         {
-            return (byte) (b[p++] & 0xFF);
+            return (byte)(b[p++] & 0xFF);
         }
 
         public sbyte readSByte()
         {
-            return (sbyte) (b[p++] & 0xFF);
+            return (sbyte)(b[p++] & 0xFF);
         }
 
         public float readFloat()
@@ -198,7 +198,8 @@ namespace Smash_Forge
             return p;
         }
 
-        public int size(){
+        public int size()
+        {
             return b.Length;
         }
 
@@ -213,10 +214,11 @@ namespace Smash_Forge
             return s;
         }
 
-        public byte[] getSection(int offset, int size){
+        public byte[] getSection(int offset, int size)
+        {
             byte[] by = new byte[size];
 
-            Array.Copy (b, offset, by, 0, size);
+            Array.Copy(b, offset, by, 0, size);
 
             return by;
         }
@@ -247,7 +249,8 @@ namespace Smash_Forge
             return str2;
         }
 
-        public void align(int i){
+        public void align(int i)
+        {
             while (p % i != 0)
                 p++;
         }
@@ -308,6 +311,16 @@ namespace Smash_Forge
             return output.ToArray();
         }
 
+        public long readInt64()
+        {
+            if (Endian == Endianness.Little)
+            {
+                return (b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 32) | ((b[p++] & 0xFF) << 40) | ((b[p++] & 0xFF) << 48) | ((b[p++] & 0xFF) << 56);
+            }
+            else
+                return ((b[p++] & 0xFF) << 56) | ((b[p++] & 0xFF) << 48) | ((b[p++] & 0xFF) << 40) | ((b[p++] & 0xFF) << 32) | ((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF);
+        }
+
         public static byte[] InflateZLIB(byte[] i)
         {
             var stream = new MemoryStream();
@@ -327,6 +340,82 @@ namespace Smash_Forge
             zlibStream.Close();
             return stream.ToArray();
         }
+
+        public class Decompress
+        {
+            public static FileData YAZ0(FileData i)
+            {
+                return new FileData(YAZ0(i.b));
+            }
+
+            private static byte[] YAZ0(byte[] data)
+            {
+                FileData f = new FileData(data);
+
+                f.Endian = Endianness.Big;
+                f.seek(4);
+                int uncompressedSize = f.readInt();
+                f.seek(0x10);
+
+                byte[] src = f.read(data.Length - 0x10);
+                byte[] dst = new byte[uncompressedSize];
+
+                int srcPlace = 0, dstPlace = 0; //current read/write positions
+
+                uint validBitCount = 0; //number of valid bits left in "code" byte
+                byte currCodeByte = 0;
+                while (dstPlace < uncompressedSize)
+                {
+                    //read new "code" byte if the current one is used up
+                    if (validBitCount == 0)
+                    {
+                        currCodeByte = src[srcPlace];
+                        ++srcPlace;
+                        validBitCount = 8;
+                    }
+
+                    if ((currCodeByte & 0x80) != 0)
+                    {
+                        //straight copy
+                        dst[dstPlace] = src[srcPlace];
+                        dstPlace++;
+                        srcPlace++;
+                    }
+                    else
+                    {
+                        //RLE part
+                        byte byte1 = src[srcPlace];
+                        byte byte2 = src[srcPlace + 1];
+                        srcPlace += 2;
+
+                        uint dist = (uint)(((byte1 & 0xF) << 8) | byte2);
+                        uint copySource = (uint)(dstPlace - (dist + 1));
+
+                        uint numBytes = (uint)(byte1 >> 4);
+                        if (numBytes == 0)
+                        {
+                            numBytes = (uint)(src[srcPlace] + 0x12);
+                            srcPlace++;
+                        }
+                        else
+                            numBytes += 2;
+
+                        //copy run
+                        for (int i = 0; i < numBytes; ++i)
+                        {
+                            dst[dstPlace] = dst[copySource];
+                            copySource++;
+                            dstPlace++;
+                        }
+                    }
+
+                    //use next bit from "code" byte
+                    currCodeByte <<= 1;
+                    validBitCount -= 1;
+                }
+
+                return dst;
+            }
+        }
     }
 }
-
