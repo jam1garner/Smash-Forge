@@ -638,7 +638,7 @@
     <Compile Include="Rendering\Lights\LightColor.cs" />
     <Compile Include="Rendering\Lights\LightMap.cs" />
     <Compile Include="Rendering\Lights\LightTools.cs" />
-    <Compile Include="Rendering\Mesh3D.cs" />
+    <Compile Include="Rendering\Mesh3d.cs" />
     <Compile Include="Rendering\OpenTKSharedResources.cs" />
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\Drawing\ScreenDrawing.cs" />

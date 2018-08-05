@@ -1647,6 +1647,8 @@ namespace Smash_Forge
                 ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id);
             }
 
+            //BenchmarkShapeDrawing();
+
             FixedFunctionRendering();
 
             GL.PopAttrib();
@@ -1655,30 +1657,23 @@ namespace Smash_Forge
 
         private void BenchmarkShapeDrawing()
         {
-            int count = 2000;
+            int count = 1;
             ShapeDrawing.SetUp();
 
             // Depth testing has a huge performance impact.
             GL.Disable(EnableCap.DepthTest);
 
-            Mesh3D cubeMesh = new Mesh3D(new Vector4(1, 0, 1, 1));
-            cubeMesh.Color = ColorTools.Vector4FromColor(Color.Aquamarine);
-            cubeMesh.ScaleX = 5;
-            cubeMesh.ScaleY = 2;
-            cubeMesh.ScaleZ = 3;
+            List<Vector3> vertices = ShapeDrawing.GetRectangularPrismPositions().ToList();
 
-            Vector3[] vertices = ShapeDrawing.GetRectangularPrismPositions();
-            foreach (Vector3 vert in vertices)
-            {
-                cubeMesh.AddVertex(vert);
-            }
+            Mesh3d cubeMesh = new Mesh3d(vertices, ColorTools.Vector4FromColor(Color.Aquamarine));
+            cubeMesh.scale = new Vector3(5, 2, 3);
 
             // Test shader rendering.
             Stopwatch stopwatch = Stopwatch.StartNew();
-            for (int i = 1; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 // Identical speeds to fixed function pipeline for small scale values.
-                cubeMesh.Draw(camera.MvpMatrix);
+                cubeMesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera.MvpMatrix);
                 //GL.Begin(PrimitiveType.TriangleStrip);
                 //foreach (Vector3 vert in vertices)
                 //{
