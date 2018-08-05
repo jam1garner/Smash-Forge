@@ -1185,13 +1185,13 @@ namespace Smash_Forge
 
                                 try
                                 {
-                                    MainForm.Instance.OpenBfres(files[i], "", this);
+                                    MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(files[i]), files[i], "", this);
 
                                     string nameNoExtension = Path.GetFileNameWithoutExtension(files[i]);
                                     string textureFileName = Path.GetDirectoryName(files[i]) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
 
                                     if (File.Exists(textureFileName))
-                                        MainForm.Instance.OpenBfres(textureFileName, "", this);
+                                        MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
                                     //MainForm.Instance.OpenNud(files[i], "", this);
                                 }
                                 catch (Exception e)

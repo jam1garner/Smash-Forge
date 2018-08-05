@@ -412,11 +412,9 @@ namespace Smash_Forge
             return mvp;
         }
 
-        public ModelViewport OpenBfres(string fileName, string viewportTitle = "", ModelViewport mvp = null)
+        public ModelViewport OpenBfres(byte[] fileData, string fileName, string viewportTitle = "", ModelViewport mvp = null)
         {
             //Todo. Support loading bfres texture and animations if seperate and in same directory
-            byte[] fileData = GetUncompressedSzsSbfresData(fileName);
-
             if (mvp == null)
             {
                 Console.WriteLine("Creating new viewport");
@@ -1260,14 +1258,14 @@ namespace Smash_Forge
                         DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
 
                         if (dialogResult == DialogResult.Yes)
-                            OpenBfres(fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
+                            OpenBfres(fileByteData, fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
 
                         if (dialogResult == DialogResult.No)
-                            OpenBfres(fileName);
+                            OpenBfres(fileByteData, fileName);
                     }
                     else
                     {
-                        OpenBfres(fileName);
+                        OpenBfres(fileByteData, fileName);
                     }
                 }
 
@@ -1294,7 +1292,7 @@ namespace Smash_Forge
                             fileByteData = SzsFiles[s];
                             uncompressedFileData = new FileData(fileByteData);
 
-                            OpenBfres(s, s, (ModelViewport)dockPanel1.ActiveContent);
+                            OpenBfres(fileByteData, s, s, (ModelViewport)dockPanel1.ActiveContent);
                         }
 
                         if (s.Contains(".kcl"))
@@ -1319,14 +1317,14 @@ namespace Smash_Forge
                     DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
 
                     if (dialogResult == DialogResult.Yes)
-                        OpenBfres(fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
+                        OpenBfres(data, fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
 
                     if (dialogResult == DialogResult.No)
-                        OpenBfres(fileName);
+                        OpenBfres(data, fileName);
                 }
                 else
                 {
-                    OpenBfres(fileName);
+                    OpenBfres(data, fileName);
                 }
 
             }
@@ -1678,7 +1676,7 @@ namespace Smash_Forge
                 project.fillTree();
         }
 
-        private static byte[] GetUncompressedSzsSbfresData(string fileName)
+        public static byte[] GetUncompressedSzsSbfresData(string fileName)
         {
             FileData f = new FileData(fileName);
             byte[] fileBytes = f.getSection(0, f.eof());
@@ -2294,8 +2292,7 @@ namespace Smash_Forge
                     data = SzsFiles[s];
                     t = new FileData(data);
 
-
-                    OpenBfres(s, s, mvp);
+                    OpenBfres(data, s, s, mvp);
                 }
             }
         }
