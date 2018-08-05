@@ -342,6 +342,7 @@ namespace Smash_Forge
                 }
             }
         }
+
         public void Render(Matrix4 mvpMatrix)
         {
             if (Runtime.renderPhysicallyBasedRendering == true)
@@ -1476,16 +1477,18 @@ namespace Smash_Forge
                 //Set center and extent
                 //Each sub mesh has their own bounding + for BOTW/switch has per LOD mesh too
 
+                List<Vector3> vertexPositions = new List<Vector3>();
+                foreach (var vertex in vertices)
+                {
+                    vertexPositions.Add(vertex.pos);
+                }
+
+                Vector4 boundingSphere = SFGraphics.Tools.BoundingSphereGenerator.GenerateBoundingSphere(vertexPositions);
+
                 for (int i = 0; i < BoundingCount; i++)
                 {
-
-            
-
-
-
-                    boundingBoxes[i].Center = new Vector3(0, 0, 0);
-                    boundingBoxes[i].Extent = new Vector3(0, 0, 0);
-
+                    boundingBoxes[i].Center = boundingSphere.Xyz;
+                    boundingBoxes[i].Extent = boundingSphere.Xyz + new Vector3(boundingSphere.W);
                 }
             }
 

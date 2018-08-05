@@ -965,12 +965,32 @@ namespace Smash_Forge
                             boundingSphere[3] = mesh.boundingSphere[3];
                         }
                     }
-                }
 
+                    foreach (var mdl in modelContainer.Bfres.models)
+                    {
+                        foreach (var m in mdl.poly)
+                        {
+                            m.GenerateBoundingBoxes();
+
+                            foreach (var box in m.boundingBoxes)
+                            {
+                                // HACK: This sort of works.
+                                float maxExtent = Math.Max(Math.Max(box.Extent.X, box.Extent.Y), box.Extent.Z);
+                                if (maxExtent > boundingSphere[3])
+                                {
+                                    boundingSphere[0] = box.Center.X;
+                                    boundingSphere[1] = box.Center.Y;
+                                    boundingSphere[2] = box.Center.Z;
+                                    boundingSphere[3] = maxExtent;
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
-            camera.UpdateFromMouse();
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 0);
+            camera.UpdateMatrices();
         }
 
         #region Moveset
