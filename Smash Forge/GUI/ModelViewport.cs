@@ -1148,7 +1148,7 @@ namespace Smash_Forge
                 folderSelect.Title = "Models Directory";
                 if (folderSelect.ShowDialog() == DialogResult.OK)
                 {
-                    string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*model.nud", SearchOption.AllDirectories);
+                    string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*.sbfres", SearchOption.AllDirectories);
 
                     using (var outputFolderSelect = new FolderSelectDialog())
                     {
@@ -1157,9 +1157,19 @@ namespace Smash_Forge
                         {
                             for (int i = 0; i < files.Length; i++)
                             {
+                                if (files[i].ToLower().Contains("tex") || files[i].ToLower().Contains("animation"))
+                                    continue;
+
                                 try
                                 {
-                                    MainForm.Instance.OpenNud(files[i], "", this);
+                                    MainForm.Instance.OpenBfres(files[i], "", this);
+
+                                    string nameNoExtension = Path.GetFileNameWithoutExtension(files[i]);
+                                    string textureFileName = Path.GetDirectoryName(files[i]) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
+
+                                    if (File.Exists(textureFileName))
+                                        MainForm.Instance.OpenBfres(textureFileName, "", this);
+                                    //MainForm.Instance.OpenNud(files[i], "", this);
                                 }
                                 catch (Exception e)
                                 {
@@ -1209,15 +1219,16 @@ namespace Smash_Forge
 
         private void BatchRenderViewportToFile(string nudFileName, string sourcePath, string outputPath)
         {
-            SetupAndRenderViewport();
-            string renderName = ConvertDirSeparatorsToUnderscore(nudFileName, sourcePath);
+            SetUpAndRenderViewport();
+
             using (Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, true))
             {
+                string renderName = ConvertDirSeparatorsToUnderscore(nudFileName, sourcePath);
                 screenCapture.Save(outputPath + "\\" + renderName + ".png");
             }
         }
 
-        private void SetupAndRenderViewport()
+        private void SetUpAndRenderViewport()
         {
             // Setup before rendering the model. Use a large max radius to show skybox models.
             FrameAllModelContainers();
