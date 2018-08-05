@@ -131,8 +131,7 @@ namespace Smash_Forge
                 path = Text;
                 Read(TargetSwitchBFRES, f); //Temp add FileData for now till I parse BNTX with lib
                 UpdateVertexData();
-                RenderTest();
-
+                ModelTransform();
             }
             else
             {
@@ -263,7 +262,7 @@ namespace Smash_Forge
             return output;
         }
 
-        public void RenderTest()
+        public void ModelTransform()
         {
 
             //These are used to move models anywhere I want
@@ -283,25 +282,7 @@ namespace Smash_Forge
 
                     Matrix4 test2 = b.transform;
                     b.transform = b.transform * BonePosExtra;
-
-/*
-
-                    b.sca = test.ExtractScale();
-                    b.rot = test.ExtractRotation();
-                    b.pos = test.ExtractTranslation();
-
-                    b.scale[0] = test.ExtractScale().X;
-                    b.scale[1] = test.ExtractScale().Y;
-                    b.scale[2] = test.ExtractScale().Z;
-                    b.rotation[0] = test.ExtractRotation().X;
-                    b.rotation[1] = test.ExtractRotation().Y;
-                    b.rotation[2] = test.ExtractRotation().Z;
-                    b.position[0] = test.ExtractTranslation().X;
-                    b.position[1] = test.ExtractTranslation().Y;
-                    b.position[2] = test.ExtractTranslation().Z;*/
                 }
-                
-
             }
         }
 
@@ -361,7 +342,7 @@ namespace Smash_Forge
                 }
             }
         }
-        public void Render(Matrix4 view)
+        public void Render(Matrix4 mvpMatrix)
         {
             if (Runtime.renderPhysicallyBasedRendering == true)
                 shader = OpenTKSharedResources.shaders["BFRES_PBR"];
@@ -377,7 +358,7 @@ namespace Smash_Forge
 
             SetRenderSettings(shader);
 
-            shader.SetMatrix4x4("modelview", ref view);
+            shader.SetMatrix4x4("mvpMatrix", ref mvpMatrix);
 
             foreach (FMDL_Model fmdl in models)
             {

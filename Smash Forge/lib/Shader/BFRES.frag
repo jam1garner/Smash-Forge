@@ -6,7 +6,7 @@
 //
 //------------------------------------------------------------------------------------
 
-uniform mat4 modelview;
+uniform mat4 mvpMatrix;
 uniform vec3 specLightDirection;
 uniform vec3 difLightDirection;
 
@@ -229,7 +229,7 @@ void main()
     }
 
     // Calculate shading vectors.
-    vec3 I = vec3(0,0,-1) * mat3(modelview);
+    vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
 	vec3 bumpMapNormal = CalcBumpedNormal(normal);
 
     // Light Map

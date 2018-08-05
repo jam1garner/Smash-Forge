@@ -33,7 +33,7 @@ uniform sampler2D DiffuseLayer;
 uniform sampler2D MetalnessMap;
 uniform sampler2D RoughnessMap;
 
-uniform mat4 modelview;
+uniform mat4 mvpMatrix;
 
 //Shader Params via BFRES
 uniform float normal_map_weight;

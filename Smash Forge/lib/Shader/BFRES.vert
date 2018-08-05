@@ -6,7 +6,7 @@
 //
 //------------------------------------------------------------------------------------
 
-uniform mat4 modelview;
+uniform mat4 mvpMatrix;
 
 //------------------------------------------------------------------------------------
 //
@@ -74,19 +74,27 @@ uniform float SRT_Rotate;
 
 uniform int debugOption;
 
+vec4 skin(vec3 pos, ivec4 index)
+{
+    vec4 NewPos = vec4(pos.xyz, 1.0);
+
+    NewPos = bones[boneList[index.x]] * vec4(pos, 1.0) * vWeight.x;
+    NewPos += bones[boneList[index.y]] * vec4(pos, 1.0) * vWeight.y;
+    NewPos += bones[boneList[index.z]] * vec4(pos, 1.0) * vWeight.z;
+    if(vWeight.w < 1) //Necessary. Bones may scale weirdly without
+		NewPos += bones[boneList[index.w]] * vec4(pos, 1.0) * vWeight.w;
+     
+    return NewPos;
+}
 
 vec3 skinNRM(vec3 nr, ivec4 index)
 {
     vec3 newNormal = vec3(0);
 
-    if (index.x != -1)
-        newNormal = mat3(bones[boneList[index.x]]) * nr * vWeight.x;
-    if (index.y != -1)
-        newNormal += mat3(bones[boneList[index.y]]) * nr * vWeight.y;
-    if (index.z != -1)
-        newNormal += mat3(bones[boneList[index.z]]) * nr * vWeight.z;
-    if (index.w != -1)
-        newNormal += mat3(bones[boneList[index.w]]) * nr * vWeight.w;
+	newNormal = mat3(bones[boneList[index.x]]) * nr * vWeight.x;
+	newNormal += mat3(bones[boneList[index.y]]) * nr * vWeight.y;
+	newNormal += mat3(bones[boneList[index.z]]) * nr * vWeight.z;
+	newNormal += mat3(bones[boneList[index.w]]) * nr * vWeight.w;
 
     return newNormal;
 }
@@ -147,17 +155,10 @@ void main()
 
     normal = vNormal;
 
-    if (index.x != -1)
-        objPos = bones[boneList[index.x]] * vec4(vPosition, 1.0) * vWeight.x;
-    if (index.y != -1)
-        objPos += bones[boneList[index.y]] * vec4(vPosition, 1.0) * vWeight.y;
-    if (index.z != -1)
-        objPos += bones[boneList[index.z]] * vec4(vPosition, 1.0) * vWeight.z;
-    if (index.w != -1)
-        objPos += bones[boneList[index.w]] * vec4(vPosition, 1.0) * vWeight.w;
+	if(vBone.x != -1.0)
+		objPos = skin(vPosition, index);
 
-
-    gl_Position = modelview * vec4(objPos.xyz, 1.0);
+    gl_Position = mvpMatrix * vec4(objPos.xyz, 1.0);
 
     vec3 distance = (objPos.xyz + vec3(5, 5, 5))/2;
 
@@ -165,12 +166,12 @@ void main()
 		normal = normalize((skinNRM(vNormal.xyz, index)).xyz);
 
      if (RigidSkinning == 1){
-	     gl_Position = modelview * bones[boneList[index.x]] * vec4(vPosition, 1.0);
+	     gl_Position = mvpMatrix * bones[boneList[index.x]] * vec4(vPosition, 1.0);
          normal = vNormal;
 		 normal = mat3(bones[boneList[index.x]]) * vNormal.xyz * 1;
 	}
 	if (NoSkinning == 1){
-	    gl_Position = modelview * bones[SingleBoneIndex] * vec4(vPosition, 1.0);
+	    gl_Position = mvpMatrix * bones[SingleBoneIndex] * vec4(vPosition, 1.0);
 	    normal = mat3(bones[SingleBoneIndex]) * vNormal.xyz * 1;
 		normal = normalize(normal);
 	}
