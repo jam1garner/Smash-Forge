@@ -438,6 +438,9 @@ namespace Smash_Forge
                 resyncTargetVBN();
             }
 
+            if (BNTX.textures.Count > 0)
+                Runtime.glTexturesNeedRefreshing = true;
+
             if (modelContainer.Bfres.AnimationCountTotal != 0)
             {
                 if (dockPanel1.ActiveContent is ModelViewport)

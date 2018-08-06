@@ -13,6 +13,7 @@ using ResNSW = Syroot.NintenTools.NSW.Bfres;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {
@@ -83,24 +84,7 @@ namespace Smash_Forge
         public static Vector3 rotation = new Vector3(0, 0, 0);
         public static Vector3 scale = new Vector3(1, 1, 1);
 
-     
-
-        public static List<DefaultBonePos> HackyBoneList = new List<DefaultBonePos>();
-        public class DefaultBonePos
-        {
-            public string Name;
-            public Vector3 pos;
-            public Vector3 rot;
-            public Vector3 scale;
-        }
-        public static List<NewBonePos> HackyBoneDiffList = new List<NewBonePos>();
-        public class NewBonePos
-        {
-            public string Name;
-            public Vector3 pos;
-            public Vector3 rot;
-            public Vector3 scale;
-        }
+        public BNTX Bntx = null;
 
         #region Render BFRES
 
@@ -163,21 +147,21 @@ namespace Smash_Forge
                 scale = new Vector3(1, 1, 1);
                 rotation = new Vector3(0, 0, 0);
             }
-            else if(fname.Contains("Mario") && fname.Contains("HandL"))
+            else if (fname.Contains("Mario") && fname.Contains("HandL"))
             {
                 Console.WriteLine("Positioning Face Mesh.....");
                 position = new Vector3(48.877f, 82.551f, -3.3f);
                 scale = new Vector3(1, 1, 1);
                 rotation = new Vector3(0, 90f, 0);
             }
-            else if(fname.Contains("Mario") && fname.Contains("HandR"))
+            else if (fname.Contains("Mario") && fname.Contains("HandR"))
             {
                 Console.WriteLine("Positioning HandR Mesh.....");
                 position = new Vector3(-48.877f, 82.551f, -3.3f);
                 scale = new Vector3(1, 1, 1);
                 rotation = new Vector3(0, -90f, 0);
             }
-            else if(fname.Contains("Mario") && fname.Contains("Eye"))
+            else if (fname.Contains("Mario") && fname.Contains("Eye"))
             {
                 Console.WriteLine("Positioning Eye Mesh.....");
                 position = new Vector3(0, 97.0f, 0);
@@ -191,7 +175,7 @@ namespace Smash_Forge
                 scale = new Vector3(1, 1, 1);
                 rotation = new Vector3(0, 0f, 0);
             }
-            else if(fname.Contains("Mario") && fname.Contains("Skirt"))
+            else if (fname.Contains("Mario") && fname.Contains("Skirt"))
             {
                 Console.WriteLine("Positioning Skirt Mesh.....");
                 position = new Vector3(0, 56.0f, 0);
@@ -389,11 +373,11 @@ namespace Smash_Forge
                     }
                     else
                         opaque.Add(m);
-                }  
+                }
 
                 foreach (Mesh m in opaque)
                 {
-                     ApplyTransformFix(fmdl, m);
+                    ApplyTransformFix(fmdl, m);
 
                     if (m.Parent != null && (m.Parent).Checked)
                         DrawMesh(m, shader, m.material);
@@ -401,14 +385,14 @@ namespace Smash_Forge
 
                 foreach (Mesh m in transparent)
                 {
-                     ApplyTransformFix(fmdl, m);
+                    ApplyTransformFix(fmdl, m);
 
                     if (((FMDL_Model)m.Parent).Checked)
                         DrawMesh(m, shader, m.material);
                 }
             }
 
-      
+
             shader.DisableVertexAttributes();
         }
 
@@ -542,6 +526,21 @@ namespace Smash_Forge
                     { 0x02, BlendingFactorSrc.Zero}
         };
 
+        private static readonly Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
+        {
+            { 0x00, TextureMinFilter.LinearMipmapLinear},
+            { 0x01, TextureMinFilter.Nearest},
+            { 0x02, TextureMinFilter.Linear},
+            { 0x03, TextureMinFilter.NearestMipmapLinear},
+        };
+
+        static readonly Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
+        {
+            { 0x00, TextureMagFilter.Linear},
+            { 0x01, TextureMagFilter.Nearest},
+            { 0x02, TextureMagFilter.Linear}
+        };
+
         static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
                     { 0x00, TextureWrapMode.Repeat},
                     { 0x01, TextureWrapMode.MirroredRepeat},
@@ -633,8 +632,8 @@ namespace Smash_Forge
 
             //This uniform is set so I can do SRT anims.
             SetUniformData(mat, shader, "tex_mtx0");
-        //    SetUnifromData(mat, shader, "tex_mtx1");
-       //     SetUnifromData(mat, shader, "tex_mtx2");
+            //    SetUnifromData(mat, shader, "tex_mtx1");
+            //     SetUnifromData(mat, shader, "tex_mtx2");
 
             //This uniform variable shifts first bake map coords (MK8, Spatoon 1/2, ect)
             SetUniformData(mat, shader, "gsys_bake_st0");
@@ -644,7 +643,7 @@ namespace Smash_Forge
             SetUniformData(mat, shader, "ao_density");
             SetUniformData(mat, shader, "base_color_mul_color");
             SetUniformData(mat, shader, "emission_color");
-            
+
 
             //   Shader option data
             // These enable certain effects
@@ -688,8 +687,8 @@ namespace Smash_Forge
                 {
                     if (mat.anims.ContainsKey(propertyName))
                     {
-                           mat.matparam[propertyName].Value_float2 = new Vector2(
-                                        mat.anims[propertyName][0], mat.anims[propertyName][1]);
+                        mat.matparam[propertyName].Value_float2 = new Vector2(
+                                     mat.anims[propertyName][0], mat.anims[propertyName][1]);
                     }
 
                     shader.SetVector2(propertyName, mat.matparam[propertyName].Value_float2);
@@ -699,9 +698,9 @@ namespace Smash_Forge
                 {
                     if (mat.anims.ContainsKey(propertyName))
                     {
-                            mat.matparam[propertyName].Value_float3 = new Vector3(
-                                         mat.anims[propertyName][0], mat.anims[propertyName][1],
-                                         mat.anims[propertyName][2]);
+                        mat.matparam[propertyName].Value_float3 = new Vector3(
+                                     mat.anims[propertyName][0], mat.anims[propertyName][1],
+                                     mat.anims[propertyName][2]);
                     }
 
                     shader.SetVector3(propertyName, mat.matparam[propertyName].Value_float3);
@@ -728,7 +727,7 @@ namespace Smash_Forge
                     shader.SetFloat("SRT_Rotate", texSRT.rotate);
                     shader.SetVector2("SRT_Translate", texSRT.translate);
                 }
-            }         
+            }
         }
 
         private void SetAlphaBlending(MaterialData material)
@@ -791,10 +790,10 @@ namespace Smash_Forge
                     break;
             }
         }
- 
+
         private static void SetDefaultTextureAttributes(MaterialData mat)
-        {            
-            shader.SetBoolToInt("HasDiffuseLayer", mat.HasDiffuseMap);
+        {
+            shader.SetBoolToInt("HasDiffuse", mat.HasDiffuseMap);
             shader.SetBoolToInt("HasDiffuseLayer", mat.HasDiffuseLayer);
             shader.SetBoolToInt("HasNormalMap", mat.HasNormalMap);
             shader.SetBoolToInt("HasEmissionMap", mat.HasEmissionMap);
@@ -806,7 +805,7 @@ namespace Smash_Forge
             shader.SetBoolToInt("hasDummyRamp", mat.HasTransparencyMap);
 
             //Unused atm untill I do PBR shader
-            shader.SetBoolToInt("HasMetalnessMap" ,mat.HasMetalnessMap);
+            shader.SetBoolToInt("HasMetalnessMap", mat.HasMetalnessMap);
             shader.SetBoolToInt("HasRoughnessMap", mat.HasRoughnessMap);
         }
 
@@ -827,9 +826,9 @@ namespace Smash_Forge
 
             foreach (MatTexture matex in mat.textures)
             {
-                if (matex.Type == MatTexture.TextureType.Diffuse)    
-                    TextureUniform(shader, mat, mat.HasDiffuseMap, "tex0", matex);              
-                else if (matex.Type == MatTexture.TextureType.Normal)          
+                if (matex.Type == MatTexture.TextureType.Diffuse)
+                    TextureUniform(shader, mat, mat.HasDiffuseMap, "tex0", matex);
+                else if (matex.Type == MatTexture.TextureType.Normal)
                     TextureUniform(shader, mat, mat.HasNormalMap, "nrm", matex);
                 else if (matex.Type == MatTexture.TextureType.Emission)
                     TextureUniform(shader, mat, mat.HasEmissionMap, "EmissionMap", matex);
@@ -866,33 +865,42 @@ namespace Smash_Forge
             GL.ActiveTexture(TextureUnit.Texture0 + tex.hash + 1);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex.Id);
 
+            SFGraphics.GLObjects.Textures.Texture texture;
+
             if (IsSwitchBFRES == true)
             {
-                if (BNTX.textured.ContainsKey(tex.Name))
+                foreach (BNTX bntx in Runtime.BNTXList)
                 {
-                    BindBRTTexture(tex, BNTX.textured[tex.Name].texture.display);
+                    if (bntx.glTexByName.TryGetValue(tex.Name, out texture))
+                    {
+                        BindBRTTexture(tex, texture);
+                    }
                 }
             }
             else
             {
                 if (FTEXtextures.ContainsKey(tex.Name))
                 {
-                    BindBRTTexture(tex, FTEXtextures[tex.Name].texture.display);
+                    //  BindBRTTexture(tex, FTEXtextures[tex.Name].texture.display);
                 }
             }
-         
+
             return tex.hash + 1;
         }
 
-        private static void BindBRTTexture(MatTexture tex, int texid)
+        private static void BindBRTTexture(MatTexture matTexture, SFGraphics.GLObjects.Textures.Texture texture)
         {
-            //   GL.ActiveTexture(TextureUnit.Texture0 + texid);
-            GL.BindTexture(TextureTarget.Texture2D, texid);
+            // Set the texture's parameters based on the material settings.
+            texture.Bind();
+            texture.TextureWrapS = wrapmode[matTexture.wrapModeS];
+            texture.TextureWrapT = wrapmode[matTexture.wrapModeT];
+            texture.MinFilter = minfilter[matTexture.minFilter];
+            texture.MagFilter = magfilter[matTexture.magFilter];
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)wrapmode[tex.wrapModeS]);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)wrapmode[tex.wrapModeT]);
-
+            // TODO: These aren't controlled by the Texture class yet.
             GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 0.0f);
+            if (matTexture.mipDetail == 0x4 || matTexture.mipDetail == 0x6)
+                GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 4.0f);
         }
 
 
@@ -915,7 +923,7 @@ namespace Smash_Forge
                             // - SRT constants
                             // - Vis mat anims
 
-                         
+
 
                             int FrameRate = 60;
                             int frm = (int)((frame * 60 / FrameRate) % (m.FrameCount));
@@ -925,7 +933,7 @@ namespace Smash_Forge
                                 foreach (MatAnimData md in matEntry.matCurves)
                                 {
                                     if (frm == md.Frame)
-                                    { 
+                                    {
                                         //If it's a texture pattern one set the texture by the frame
                                         if (md.Pat0Tex != null)
                                         {
@@ -966,7 +974,7 @@ namespace Smash_Forge
 
                                                         break;
                                                     case ShaderParamType.Float4:
-                                                        
+
 
                                                         break;
                                                     default:
@@ -1233,7 +1241,7 @@ namespace Smash_Forge
 
             public float sortingDistance = 0;
 
-   
+
 
             public Mesh()
             {
@@ -1265,7 +1273,7 @@ namespace Smash_Forge
 
                 Vector3 distanceVector = new Vector3(cameraPosition - box.Center);
                 return distanceVector.Length + radius[0];
-            }     
+            }
 
             public List<DisplayVertex> CreateDisplayVertices()
             {
@@ -1331,7 +1339,7 @@ namespace Smash_Forge
                 mshbl.SetMeshBoneList(((FMDL_Model)Parent), this, true);
                 mshbl.Show();
             }
- 
+
             public void ExportMaterials2XML()
             {
                 Console.WriteLine("Wring XML");
@@ -1416,13 +1424,13 @@ namespace Smash_Forge
                     }
                     else
                     {
-                     
+
                         s1 = v2.uv0.X - v1.uv0.X;
                         s2 = v3.uv0.X - v1.uv0.X;
                         t1 = v2.uv0.Y - v1.uv0.Y;
                         t2 = v3.uv0.Y - v1.uv0.Y;
                     }
-           
+
 
                     float div = (s1 * t2 - s2 * t1);
                     float r = 1.0f / div;
@@ -1454,7 +1462,7 @@ namespace Smash_Forge
                         sameU = (Math.Abs(v1.uv0.X - v2.uv0.X) < delta) && (Math.Abs(v2.uv0.X - v3.uv0.X) < delta);
                         sameV = (Math.Abs(v1.uv0.Y - v2.uv0.Y) < delta) && (Math.Abs(v2.uv0.Y - v3.uv0.Y) < delta);
                     }
-                
+
                     if (sameU || sameV)
                     {
                         // Let's pick some arbitrary tangent vectors.
@@ -1578,22 +1586,6 @@ namespace Smash_Forge
                     v.col = intColor;
                 }
             }
-
-            public void UpdateTexIDs()
-            {
-                texHashs.Clear();
-                foreach (var tex in material.textures)
-                {
-                    try
-                    {
-                        texHashs.Add(BNTX.textured[tex.Name].texture.display);
-                    }
-                    catch
-                    {
-                        texHashs.Add(0);
-                    }
-                }
-            }
         }
 
         public class MaterialData
@@ -1620,7 +1612,7 @@ namespace Smash_Forge
             {
                 public string ShaderModel = "";
                 public string ShaderArchive = "";
-                
+
 
                 public Dictionary<string, string> options = new Dictionary<string, string>();
                 public Dictionary<string, string> samplers = new Dictionary<string, string>();
@@ -1665,7 +1657,7 @@ namespace Smash_Forge
                 m.TextureRefs = new List<TextureRef>();
                 m.RenderInfos = new ResDict<RenderInfo>();
                 m.Samplers = new ResDict<Sampler>();
-          //      m.ShaderAssign = new ShaderAssign();
+                //      m.ShaderAssign = new ShaderAssign();
                 m.ShaderParamData = new byte[0];
                 m.ShaderParams = new ResDict<Syroot.NintenTools.Bfres.ShaderParam>();
                 m.UserData = new ResDict<UserData>();
@@ -1676,7 +1668,7 @@ namespace Smash_Forge
                 {
                     TextureRef texture = new TextureRef();
                     texture.Name = tex.Name;
-                    texture.Texture = new Texture();
+                    texture.Texture = new Syroot.NintenTools.Bfres.Texture();
 
                     m.TextureRefs.Add(texture);
                 }
@@ -1701,7 +1693,7 @@ namespace Smash_Forge
             //Note samplers will get converted to another sampler type sometimes in the shader assign section
             //Use this string if not empty for our bfres fragment shader to produce the accurate affects
             //An example of a conversion maybe be like a1 - t0 so texture gets used as a transparent map/alpha texture
-            public string FragShaderSampler = ""; 
+            public string FragShaderSampler = "";
 
 
             public TextureType Type;
@@ -1776,7 +1768,7 @@ namespace Smash_Forge
             public float[] Value_float2x2 = new float[8];
             public float[] Value_float2x3 = new float[12];
             public uint Value_UInt;
-            public bool Value_Bool;         
+            public bool Value_Bool;
 
             public override string ToString()
             {
@@ -1864,7 +1856,7 @@ namespace Smash_Forge
                     m.CalculateNormals();
                 }
             }
- 
+
 
             private VBN vbn = new VBN();
             public List<Mesh> poly = new List<Mesh>();
@@ -1881,7 +1873,7 @@ namespace Smash_Forge
             public List<MatAnimEntry> matEntries = new List<MatAnimEntry>();
 
             public List<string> Pat0 = new List<string>();
-          
+
 
             public List<TexPatInfo> TexPat0Info = new List<TexPatInfo>();
 
@@ -1916,7 +1908,7 @@ namespace Smash_Forge
                 ImageKey = "image";
                 SelectedImageKey = "image";
             }
-            
+
 
             public List<MatAnimData> matCurves = new List<MatAnimData>();
 
@@ -2090,6 +2082,6 @@ namespace Smash_Forge
 
             public int offset;
         }
-#endregion
+        #endregion
     }
 }

@@ -55,13 +55,6 @@ namespace Smash_Forge
             if (listView1.SelectedItems.Count > 0)
             {
                 string TexName = listView1.SelectedItems[0].Text;
-                if (BNTX.textured.ContainsKey(TexName))
-                {
-                    BRTI tex = BNTX.textured[TexName];
-
-                    RenderTextureColor(tex);
-                    RenderTextureAlpha(tex);
-                }
             }
         }
 
