@@ -151,7 +151,7 @@ namespace Smash_Forge
             }
             tex.width = bmp.Width;
             tex.height = bmp.Height;
-            tex.type = PixelInternalFormat.Rgba;
+            tex.pixelInternalFormat = PixelInternalFormat.Rgba;
             tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
 
             return tex;
@@ -241,7 +241,7 @@ namespace Smash_Forge
 
                     t.texture.height = newTexture.height;
                     t.texture.width = newTexture.width;
-                    t.texture.type = newTexture.type;
+                    t.texture.pixelInternalFormat = newTexture.pixelInternalFormat;
                     t.texture.mipmaps = newTexture.mipmaps;
                     t.texture.utype = newTexture.utype;
                     t.texture.data = newTexture.data;

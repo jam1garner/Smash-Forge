@@ -360,13 +360,13 @@ namespace Smash_Forge
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC1):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
                     {
-                        texture.type = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                        texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SRGB)
                     {
                         byte[] fixBC1 = DDS_Decompress.DecompressBC1(texture.data, texture.width, texture.height, true);
                         texture.data = fixBC1;
-                        texture.type = PixelInternalFormat.Rgba;
+                        texture.pixelInternalFormat = PixelInternalFormat.Rgba;
                         texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else
@@ -374,20 +374,20 @@ namespace Smash_Forge
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC2):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
-                        texture.type = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                        texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
                     else if (DataType == (byte)Formats.BNTXImageTypes.SRGB)
-                        texture.type = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
+                        texture.pixelInternalFormat = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
                     else
                         throw new Exception("Unsupported data type for BC2");
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC3):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
                     {
-                        texture.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                        texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SRGB)
                     {
-                        texture.type = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext;
+                        texture.pixelInternalFormat = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext;
                     }
                     else
                         throw new Exception("Unsupported data type for BC3");
@@ -395,7 +395,7 @@ namespace Smash_Forge
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC4):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
                     {
-                        texture.type = PixelInternalFormat.CompressedRedRgtc1;
+                        texture.pixelInternalFormat = PixelInternalFormat.CompressedRedRgtc1;
 
                         //        byte[] fixBC4 = DecompressBC4(texture.data, texture.width, texture.height, false);
                         //       texture.data = fixBC4;
@@ -404,7 +404,7 @@ namespace Smash_Forge
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
                     {
-                        texture.type = PixelInternalFormat.CompressedSignedRedRgtc1;
+                        texture.pixelInternalFormat = PixelInternalFormat.CompressedSignedRedRgtc1;
 
                         //       byte[] fixBC4 = DecompressBC4(texture.data, texture.width, texture.height, true);
                         //       texture.data = fixBC4;
@@ -419,14 +419,14 @@ namespace Smash_Forge
                     {
                         //      byte[] fixBC5 = DecompressBC5(texture.data, texture.width, texture.height, false);
                         //    texture.data = fixBC5;
-                        texture.type = PixelInternalFormat.CompressedRgRgtc2;
+                        texture.pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
                         //    texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
                     {
                         byte[] fixBC5 = DDS_Decompress.DecompressBC5(texture.data, texture.width, texture.height, true);
                         texture.data = fixBC5;
-                        texture.type = PixelInternalFormat.Rgba;
+                        texture.pixelInternalFormat = PixelInternalFormat.Rgba;
                         texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else
@@ -435,13 +435,13 @@ namespace Smash_Forge
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC7):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM || DataType == (byte)Formats.BNTXImageTypes.SRGB)
                     {
-                        texture.type = PixelInternalFormat.CompressedRgbaBptcUnorm;
+                        texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaBptcUnorm;
                     }
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_R8_G8_B8_A8):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM || DataType == (byte)Formats.BNTXImageTypes.SRGB)
                     {
-                        texture.type = PixelInternalFormat.Rgba;
+                        texture.pixelInternalFormat = PixelInternalFormat.Rgba;
                         texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else
@@ -459,13 +459,13 @@ namespace Smash_Forge
             public byte[] data;
             public int width, height;
             public int display = 0;
-            public PixelInternalFormat type;
+            public PixelInternalFormat pixelInternalFormat;
             public OpenTK.Graphics.OpenGL.PixelFormat utype;
             public int mipMapCount; //temp till i add mip maps.
         }
         public static int getImageSize(BRTI_Texture t)
         {
-            switch (t.type)
+            switch (t.pixelInternalFormat)
             {
                 case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
                 case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext:
@@ -492,15 +492,15 @@ namespace Smash_Forge
 
             GL.BindTexture(TextureTarget.Texture2D, texID);
 
-            if (t.type != PixelInternalFormat.Rgba)
+            if (t.pixelInternalFormat != PixelInternalFormat.Rgba)
             {
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, (InternalFormat)t.type,
+                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, (InternalFormat)t.pixelInternalFormat,
                     t.width, t.height, 0, getImageSize(t), t.data);
                 //Debug.WriteLine(GL.GetError());
             }
             else
             {
-                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.width, t.height, 0,
+                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.width, t.height, 0,
                     t.utype, PixelType.UnsignedByte, t.data);
             }
 
@@ -511,15 +511,7 @@ namespace Smash_Forge
 
         public static Texture2D CreateTexture2D(BRTI_Texture tex, int surfaceIndex = 0)
         {
-            bool compressedFormatWithMipMaps = tex.type == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
-                || tex.type == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
-                || tex.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
-                || tex.type == PixelInternalFormat.CompressedRedRgtc1
-                || tex.type == PixelInternalFormat.CompressedRgRgtc2
-                || tex.type == PixelInternalFormat.CompressedSignedRgRgtc2
-                || tex.type == PixelInternalFormat.CompressedRgbaBptcUnorm
-                || tex.type == PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext
-                || tex.type == PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
+            bool compressedFormatWithMipMaps = TextureFormatTools.IsCompressed(tex.pixelInternalFormat);
 
             if (compressedFormatWithMipMaps)
             {
@@ -530,7 +522,7 @@ namespace Smash_Forge
 
             }
 
-            Texture2D texture = new Texture2D(tex.width, tex.height, tex.type);
+            Texture2D texture = new Texture2D(tex.width, tex.height, tex.pixelInternalFormat);
             texture.Bind();
             AutoGenerateMipMaps(tex);
             tex.display = texture.Id;
@@ -542,18 +534,18 @@ namespace Smash_Forge
             // Only load the first level and generate the other mip maps.
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.mipMapCount);
 
-            if (t.type != PixelInternalFormat.Rgba)
+            if (t.pixelInternalFormat != PixelInternalFormat.Rgba)
             {
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, (InternalFormat)t.type,
+                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, (InternalFormat)t.pixelInternalFormat,
                     t.width, t.height, 0, getImageSize(t), t.data);
             }
             else
             {
-                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.width, t.height, 0,
+                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.width, t.height, 0,
                     t.utype, PixelType.UnsignedByte, t.data);
             }
 
-            GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.type, t.width, t.height, 0, t.utype, PixelType.UnsignedByte, t.data);
+            GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.width, t.height, 0, t.utype, PixelType.UnsignedByte, t.data);
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 

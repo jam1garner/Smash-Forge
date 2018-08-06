@@ -388,24 +388,24 @@ namespace Smash_Forge
             {
                 case 0x0:
                     size = 4f;
-                    tex.type = PixelInternalFormat.SrgbAlpha;
+                    tex.pixelInternalFormat = PixelInternalFormat.SrgbAlpha;
                     tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 case 0x31545844:
                     size = 1 / 2f;
-                    tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                     break;
                 case 0x35545844:
                     size = 1f;
-                    tex.type = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
                     break;
                 case 0x32495441:
                     size = 1 / 2f;
-                    tex.type = PixelInternalFormat.CompressedRedRgtc1;
+                    tex.pixelInternalFormat = PixelInternalFormat.CompressedRedRgtc1;
                     break;
                 case 0x31495441:
                     size = 1f;
-                    tex.type = PixelInternalFormat.CompressedRgRgtc2;
+                    tex.pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
                     break;
                 default:
                     MessageBox.Show("Unsupported DDS format - 0x" + header.ddspf.fourCC.ToString("x"));

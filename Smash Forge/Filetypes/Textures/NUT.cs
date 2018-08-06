@@ -827,7 +827,7 @@ namespace Smash_Forge
 
         public static Texture2D CreateTexture2D(NutTexture nutTexture, int surfaceIndex = 0)
         {
-            bool compressedFormatWithMipMaps = TextureFormatTools.IsCompressed((InternalFormat)nutTexture.pixelInternalFormat);
+            bool compressedFormatWithMipMaps = TextureFormatTools.IsCompressed(nutTexture.pixelInternalFormat);
 
             List<byte[]> mipmaps = nutTexture.surfaces[surfaceIndex].mipmaps;
 

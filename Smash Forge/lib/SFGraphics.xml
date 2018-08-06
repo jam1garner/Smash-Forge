@@ -556,6 +556,14 @@
             <param name="internalFormat">The image format for the texture data</param>
             <returns>True if the format is compressed</returns>
         </member>
+        <member name="M:SFGraphics.GLObjects.Textures.TextureFormatTools.IsCompressed(OpenTK.Graphics.OpenGL.PixelInternalFormat)">
+            <summary>
+            Determines whether a format is compressed.
+            Compressed formats should use GL.CompressedTexImage instead of GL.TexImage.
+            </summary>
+            <param name="pixelInternalFormat">The image format for the texture data</param>
+            <returns>True if the format is compressed</returns>
+        </member>
         <member name="T:SFGraphics.GLObjects.Textures.DepthTexture">
             <summary>
             A simple texture for storing depth information. 
