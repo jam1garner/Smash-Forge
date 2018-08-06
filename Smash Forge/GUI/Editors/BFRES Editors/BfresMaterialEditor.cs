@@ -263,10 +263,6 @@ namespace Smash_Forge
         {
             BNTXMaterialTextureEditor edit = new BNTXMaterialTextureEditor();
             edit.Show();
-           if (BFRES.IsSwitchBFRES)
-               edit.LoadTexture(poly, BNTX.textured[mat.textures[0].Name]);
-           else
-                edit.LoadTexture(poly, null, BFRES.FTEXtextures[mat.textures[0].Name]);
         }
         private void OpenTextureEditor(BRTI tex)
         {
