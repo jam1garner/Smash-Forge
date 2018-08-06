@@ -54,10 +54,10 @@ namespace Smash_Forge
         public bool SuperArmor { get; set; }
 
         // Script variables
-        public List<uint> ActiveFlags { get; set; }
-        public SortedList<uint, bool> IfVariableList { get; set; } = new SortedList<uint, bool>(); //Variables that have a bit flag
-        public SortedList<uint, int> IfVariableValueList { get; set; } = new SortedList<uint, int>(); //Variables that have a value
-        public SortedList<uint, List<int>> VariableValueList { get; set; } = new SortedList<uint, List<int>>(); //List of values these variables can have
+        public List<FighterVariable> ActiveFlags { get; set; }
+        public SortedList<FighterVariable, bool> IfVariableList { get; set; } = new SortedList<FighterVariable, bool>(); //Variables that have a bit flag
+        public SortedList<FighterVariable, int> IfVariableValueList { get; set; } = new SortedList<FighterVariable, int>(); //Variables that have a value
+        public SortedList<FighterVariable, List<int>> VariableValueList { get; set; } = new SortedList<FighterVariable, List<int>>(); //List of values these variables can have
 
 
         // Script processing helpers
@@ -106,9 +106,9 @@ namespace Smash_Forge
 
 
             //Get all If events variables for BitVariableList
-            IfVariableList = new SortedList<uint, bool>();
-            IfVariableValueList = new SortedList<uint, int>();
-            VariableValueList = new SortedList<uint, List<int>>();
+            IfVariableList = new SortedList<FighterVariable, bool>();
+            IfVariableValueList = new SortedList<FighterVariable, int>();
+            VariableValueList = new SortedList<FighterVariable, List<int>>();
 
             if (script != null)
             {
@@ -135,7 +135,7 @@ namespace Smash_Forge
             BodyIntangible     = false;
             BodyInvincible     = false;
             SuperArmor         = false;
-            ActiveFlags        = new List<uint>();
+            ActiveFlags        = new List<FighterVariable>();
 
             //Reset hidden hitboxes so all hitboxes are visible
             Runtime.HiddenHitboxes.Clear();
@@ -754,28 +754,28 @@ namespace Smash_Forge
                     }
                 case 0x661B30DA: // Bit_Variable_Set
                     {
-                        uint flag = (uint)((int)cmd.Parameters[0]);
+                        FighterVariable flag = (FighterVariable)cmd.Parameters[0];
                         if (!ActiveFlags.Contains(flag))
                             ActiveFlags.Add(flag);
                         break;
                     }
                 case 0x17232732: // Bit_Variable_Clear
                     {
-                        uint flag = (uint)((int)cmd.Parameters[0]);
+                        FighterVariable flag = (FighterVariable)cmd.Parameters[0];
                         ActiveFlags.Remove(flag);
                         break;
                     }
                 case 0xA21BC6EA: //If_Bit_Is_Set
                 case 0x34BCD3F7: //If_Compare
                     {
-                        if (IfVariableList.ContainsKey((uint)(int)cmd.Parameters[0]))
-                            readTrue = IfVariableList[(uint)(int)cmd.Parameters[0]];
+                        if (IfVariableList.ContainsKey((FighterVariable)cmd.Parameters[0]))
+                            readTrue = IfVariableList[(FighterVariable)cmd.Parameters[0]];
                         break;
                     }
                 case 0x477705C2: //unk_477705C2 If_Compare2?
                     {
-                        if (IfVariableValueList.ContainsKey((uint)(int)cmd.Parameters[0]))
-                            readTrue = IfVariableValueList[(uint)(int)cmd.Parameters[0]] == (int)cmd.Parameters[2];
+                        if (IfVariableValueList.ContainsKey((FighterVariable)cmd.Parameters[0]))
+                            readTrue = IfVariableValueList[(FighterVariable)cmd.Parameters[0]] == (int)cmd.Parameters[2];
                         break;
                     }
                 case 0xA5BD4F32: // TRUE
@@ -864,21 +864,21 @@ namespace Smash_Forge
                 case 0x34BCD3F7: //If_Compare
                 case 0xA21BC6EA: //If_Bit_Is_Set
                     {
-                        if (!IfVariableList.ContainsKey((uint)(int)cmd.Parameters[0]))
-                            IfVariableList.Add((uint)(int)cmd.Parameters[0], true);
+                        if (!IfVariableList.ContainsKey((FighterVariable)cmd.Parameters[0]))
+                            IfVariableList.Add((FighterVariable)cmd.Parameters[0], true);
                         break;
                     }
                 case 0x477705C2: //unk_477705C2 If_Compare2?
                     {
-                        if (!IfVariableValueList.ContainsKey((uint)(int)cmd.Parameters[0]))
+                        if (!IfVariableValueList.ContainsKey((FighterVariable)cmd.Parameters[0]))
                         {
-                            IfVariableValueList.Add((uint)(int)cmd.Parameters[0], (int)cmd.Parameters[2]);
-                            VariableValueList.Add((uint)(int)cmd.Parameters[0], new List<int>() { (int)cmd.Parameters[2] });
+                            IfVariableValueList.Add((FighterVariable)cmd.Parameters[0], (int)cmd.Parameters[2]);
+                            VariableValueList.Add((FighterVariable)cmd.Parameters[0], new List<int>() { (int)cmd.Parameters[2] });
                         }
                         else
                         {
-                            if (!VariableValueList[(uint)(int)cmd.Parameters[0]].Contains((int)cmd.Parameters[2]))
-                                VariableValueList[(uint)(int)cmd.Parameters[0]].Add((int)cmd.Parameters[2]);
+                            if (!VariableValueList[(FighterVariable)cmd.Parameters[0]].Contains((int)cmd.Parameters[2]))
+                                VariableValueList[(FighterVariable)cmd.Parameters[0]].Add((int)cmd.Parameters[2]);
                         }
                         break;
                     }
