@@ -827,23 +827,20 @@ namespace Smash_Forge
 
         public static Texture2D CreateTexture2D(NutTexture nutTexture, int surfaceIndex = 0)
         {
-            bool compressedFormatWithMipMaps = nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
-                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
-                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
-                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRedRgtc1
-                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgRgtc2;
+            bool compressedFormatWithMipMaps = TextureFormatTools.IsCompressed((InternalFormat)nutTexture.pixelInternalFormat);
+
+            List<byte[]> mipmaps = nutTexture.surfaces[surfaceIndex].mipmaps;
 
             if (compressedFormatWithMipMaps)
             {
                 if (nutTexture.surfaces[0].mipmaps.Count > 1 && nutTexture.isDds)
                 {
-                    // Reading mip maps past the first level is only supported for DDS currently.
+                    // Reading mipmaps past the first level is only supported for DDS currently.
                     return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps,
                         (InternalFormat)nutTexture.pixelInternalFormat);
                 }
                 else
                 {
-                    List<byte[]> mipmaps = nutTexture.surfaces[surfaceIndex].mipmaps;
                     // Only load the first level and generate the rest.
                     return new Texture2D(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count, 
                         (InternalFormat)nutTexture.pixelInternalFormat);
@@ -851,10 +848,9 @@ namespace Smash_Forge
             }
             else
             {
-                Texture2D texture = new Texture2D(nutTexture.Width, nutTexture.Height);
-                texture.Bind();
-                AutoGenerateMipMaps(nutTexture);
-                return texture;
+                // Uncompressed.
+                return new Texture2D(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count,
+                    nutTexture.pixelInternalFormat, nutTexture.pixelFormat, nutTexture.pixelType);
             }
         }
 
@@ -884,17 +880,6 @@ namespace Smash_Forge
             }
 
             return texture;
-        }
-
-        private static void AutoGenerateMipMaps(NutTexture t)
-        {
-            for (int i = 0; i < t.surfaces.Count; ++i)
-            {
-                // Only load the first level and generate the other mip maps.
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.surfaces[i].mipmaps.Count);
-                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.Width, t.Height, 0, t.pixelFormat, t.pixelType, t.surfaces[i].mipmaps[0]);
-                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-            }
         }
     }
 }
