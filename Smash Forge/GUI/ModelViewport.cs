@@ -737,6 +737,17 @@ namespace Smash_Forge
                         }
                     }
                 }
+                if (m.Bfres != null)
+                {
+                    foreach (BFRES.FMDL_Model mod in m.Bfres.models)
+                    {
+                        if (mod.skeleton != null)
+                        {
+                            currentAnimation.SetFrame(animFrameNum);
+                            currentAnimation.NextFrame(mod.skeleton);
+                        }
+                    }
+                }
             }
 
             //Frame = (int)animFrameNum;
