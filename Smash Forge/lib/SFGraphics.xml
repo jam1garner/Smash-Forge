@@ -736,6 +736,21 @@
             X+, X-, Y+, Y-, Z+, Z- </param>
             <param name="sideLength">The length in pixels of a side of any of the faces</param>
         </member>
+        <member name="M:SFGraphics.GLObjects.Textures.TextureCubeMap.#ctor(System.Int32,System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]})">
+            <summary>
+            Initializes a compressed cube map with mipmaps.
+            Each face should have the same dimensions, image format, and number of mipmaps.
+            </summary>
+            <param name="faceWidth">The width in pixels of each face</param>
+            <param name="faceHeight">The height in pixels of each face</param>
+            <param name="internalFormat"></param>
+            <param name="mipsPosX">Mipmaps for the positive x target</param>
+            <param name="mipsNegX">Mipmaps for the negative x target</param>
+            <param name="mipsPosY">Mipmaps for the positive y target</param>
+            <param name="mipsNegY">Mipmaps for the negative y target</param>
+            <param name="mipsPosZ">Mipmaps for the positive z target</param>
+            <param name="mipsNegZ">Mipmaps for the negative z target</param>
+        </member>
         <member name="T:SFGraphics.Tools.BoundingSphereGenerator">
             <summary>
             Generates bounding spheres for a collection of vertices.

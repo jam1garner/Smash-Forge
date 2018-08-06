@@ -856,30 +856,10 @@ namespace Smash_Forge
 
         public static TextureCubeMap CreateTextureCubeMap(NutTexture t)
         {
-            TextureCubeMap texture = new TextureCubeMap(Properties.Resources._10102000);
-            texture.Bind();
-
-            // Necessary to access mipmaps past the base level.
-            texture.MinFilter = TextureMinFilter.LinearMipmapLinear; 
-
-            // The number of mip maps needs to be specified first.
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureBaseLevel, 0);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMaxLevel, t.surfaces[0].mipmaps.Count);
-            GL.GenerateMipmap(GenerateMipmapTarget.TextureCubeMap);
-
-            for (int i = 0; i < t.surfaces.Count; i++)
-            {
-                GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, 0, (InternalFormat)t.pixelInternalFormat, t.Width, t.Height, 0, t.ImageSize, t.surfaces[i].mipmaps[0]);
-                
-                // Initialize the data for each level.
-                for (int j = 1; j < t.surfaces[i].mipmaps.Count; j++)
-                {
-                    GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, j, (InternalFormat)t.pixelInternalFormat,
-                     t.Width / (int)Math.Pow(2, j), t.Height / (int)Math.Pow(2, j), 0, t.ImageSize, t.surfaces[i].mipmaps[j]);
-                }
-            }
-
-            return texture;
+            // TODO: Uncompressed cube maps.
+            TextureCubeMap texture = new TextureCubeMap(t.Width, t.Height, (InternalFormat)t.pixelInternalFormat,
+                t.surfaces[0].mipmaps, t.surfaces[1].mipmaps, t.surfaces[2].mipmaps, t.surfaces[3].mipmaps, t.surfaces[4].mipmaps, t.surfaces[5].mipmaps);
+             return texture;
         }
     }
 }
