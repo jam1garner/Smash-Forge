@@ -26,9 +26,9 @@ namespace Smash_Forge
             {
                 listBox1.BeginUpdate();
                 listBox1.Items.Clear();
-                foreach (uint flag in Runtime.gameAcmdScript.ActiveFlags)
+                foreach (var flag in Runtime.gameAcmdScript.ActiveFlags)
                 {
-                    listBox1.Items.Add($"Flag 0x{flag.ToString("X8")}");
+                    listBox1.Items.Add(flag.ToString());
                 }
                 if (Runtime.gameAcmdScript.LedgeGrabDisallowed)
                     listBox1.Items.Add("Ledge grab disallowed");
@@ -45,7 +45,7 @@ namespace Smash_Forge
                 {
                     foreach (var pair in Runtime.gameAcmdScript.IfVariableList)
                     {
-                        TreeNode node = new TreeNode($"Variable 0x{pair.Key.ToString("X8")}") { Tag = pair.Key, Checked = pair.Value };
+                        TreeNode node = new TreeNode(pair.Key.ToString()) { Tag = pair.Key, Checked = pair.Value };
 
                         treeView1.Nodes.Add(node);
                     }
@@ -57,7 +57,7 @@ namespace Smash_Forge
                     flowLayoutPanel1.Controls.Clear();
                     foreach (var pair in Runtime.gameAcmdScript.VariableValueList)
                     {
-                        Label label = new Label() { Text = $"Variable 0x{pair.Key.ToString("X8")}" };
+                        Label label = new Label() { Text = pair.Key.ToString() };
                         ComboBox comboBox = new ComboBox() { Tag = pair.Key };
                         flowLayoutPanel1.Controls.Add(label);
                         flowLayoutPanel1.Controls.Add(comboBox);
@@ -71,7 +71,7 @@ namespace Smash_Forge
 
                         comboBox.SelectedIndexChanged += (sender, e) =>
                         {
-                            Runtime.gameAcmdScript.IfVariableValueList[(uint)comboBox.Tag] = (int)comboBox.SelectedItem;
+                            Runtime.gameAcmdScript.IfVariableValueList[(SALT.Moveset.FighterVariable)comboBox.Tag] = (int)comboBox.SelectedItem;
                         };
                     }
                     VariableValuesSet = true;
@@ -101,7 +101,7 @@ namespace Smash_Forge
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
         {
             if (e.Node.Index > -1)
-                Runtime.gameAcmdScript.IfVariableList[(uint)e.Node.Tag] = e.Node.Checked;
+                Runtime.gameAcmdScript.IfVariableList[(SALT.Moveset.FighterVariable)e.Node.Tag] = e.Node.Checked;
         }
 
     }
