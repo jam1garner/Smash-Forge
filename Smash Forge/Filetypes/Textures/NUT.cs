@@ -838,14 +838,14 @@ namespace Smash_Forge
                 if (nutTexture.surfaces[0].mipmaps.Count > 1 && nutTexture.isDds)
                 {
                     // Reading mip maps past the first level is only supported for DDS currently.
-                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps, true,
+                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps,
                         (InternalFormat)nutTexture.pixelInternalFormat);
                 }
                 else
                 {
+                    List<byte[]> mipmaps = nutTexture.surfaces[surfaceIndex].mipmaps;
                     // Only load the first level and generate the rest.
-                    return new Texture2D(nutTexture.Width, nutTexture.Height, 
-                        nutTexture.surfaces[surfaceIndex].mipmaps, false, 
+                    return new Texture2D(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count, 
                         (InternalFormat)nutTexture.pixelInternalFormat);
                 }
             }

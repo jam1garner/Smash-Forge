@@ -512,14 +512,14 @@ namespace Smash_Forge
         public static Texture2D CreateTexture2D(BRTI_Texture tex, int surfaceIndex = 0)
         {
             bool compressedFormatWithMipMaps = tex.type == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
-    || tex.type == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
-    || tex.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
-    || tex.type == PixelInternalFormat.CompressedRedRgtc1
-    || tex.type == PixelInternalFormat.CompressedRgRgtc2
-    || tex.type == PixelInternalFormat.CompressedSignedRgRgtc2
-    || tex.type == PixelInternalFormat.CompressedRgbaBptcUnorm
-    || tex.type == PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext
-    || tex.type == PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
+                || tex.type == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
+                || tex.type == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
+                || tex.type == PixelInternalFormat.CompressedRedRgtc1
+                || tex.type == PixelInternalFormat.CompressedRgRgtc2
+                || tex.type == PixelInternalFormat.CompressedSignedRgRgtc2
+                || tex.type == PixelInternalFormat.CompressedRgbaBptcUnorm
+                || tex.type == PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext
+                || tex.type == PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
 
             if (compressedFormatWithMipMaps)
             {
