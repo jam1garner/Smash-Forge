@@ -434,7 +434,6 @@ namespace Smash_Forge
             if (modelContainer.Bfres.models.Count != 0)
             {
                 Runtime.TargetVBN = modelContainer.Bfres.models[0].skeleton;
-                modelContainer.VBN = Runtime.TargetVBN;
                 resyncTargetVBN();
             }
 
