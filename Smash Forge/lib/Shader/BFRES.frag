@@ -25,7 +25,7 @@ in vec2 f_texcoord1;
 in vec2 f_texcoord2;
 in vec2 f_texcoord3;
 in vec3 normal;
-in vec4 color;
+in vec4 vertexColor;
 in vec3 tangent;
 in vec3 bitangent;
 
@@ -221,7 +221,7 @@ void main()
     if (colorOverride == 1)
     {
 		if (renderVertColor == 1)
-            fragColor = vec4(color);
+            fragColor = vec4(vertexColor);
 		else
             fragColor = vec4(1);
 
@@ -317,7 +317,7 @@ void main()
        fragColor *= min(base_color_mul_color, 1);
 
     if (renderVertColor == 1)
-	    fragColor *= min(color, vec4(1));
+	    fragColor *= min(vertexColor, vec4(1));
 
     // Fragment alpha calculations.
     fragColor.a *= texture(tex0, displayTexCoord).a;
@@ -342,7 +342,7 @@ void main()
 	else if (renderType == 3) //DiffuseColor
 	    fragColor = vec4(texture(tex0, displayTexCoord).rgb, 1);
     else if (renderType == 5) // vertexColor
-        fragColor = color;
+        fragColor = vertexColor;
 	else if (renderType == 6) //Display Ambient Occlusion
 	{
 	    if (HasShadowMap == 1)
