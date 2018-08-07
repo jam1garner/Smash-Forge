@@ -59,6 +59,7 @@ namespace Smash_Forge
         //public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
         public static List<NUT> TextureContainers = new List<NUT>();
         public static List<BNTX> BNTXList = new List<BNTX>();
+        public static List<FTEXContainer> FTEXContainerList = new List<FTEXContainer>();
 
         public static List<NUS3BANK> SoundContainers = new List<NUS3BANK>();
 
