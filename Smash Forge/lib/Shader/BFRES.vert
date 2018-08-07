@@ -52,7 +52,6 @@ uniform vec4 gsys_bake_st1;
 //------------------------------------------------------------------------------------
 
 uniform mat4 bones[150];
-uniform int boneList[150];
 uniform int NoSkinning;
 uniform int RigidSkinning;
 uniform int SingleBoneIndex;
@@ -78,11 +77,11 @@ vec4 skin(vec3 pos, ivec4 index)
 {
     vec4 NewPos = vec4(pos.xyz, 1.0);
 
-    NewPos = bones[boneList[index.x]] * vec4(pos, 1.0) * vWeight.x;
-    NewPos += bones[boneList[index.y]] * vec4(pos, 1.0) * vWeight.y;
-    NewPos += bones[boneList[index.z]] * vec4(pos, 1.0) * vWeight.z;
+    NewPos = bones[index.x] * vec4(pos, 1.0) * vWeight.x;
+    NewPos += bones[index.y] * vec4(pos, 1.0) * vWeight.y;
+    NewPos += bones[index.z] * vec4(pos, 1.0) * vWeight.z;
     if(vWeight.w < 1) //Necessary. Bones may scale weirdly without
-		NewPos += bones[boneList[index.w]] * vec4(pos, 1.0) * vWeight.w;
+		NewPos += bones[index.w] * vec4(pos, 1.0) * vWeight.w;
      
     return NewPos;
 }
@@ -91,10 +90,10 @@ vec3 skinNRM(vec3 nr, ivec4 index)
 {
     vec3 newNormal = vec3(0);
 
-	newNormal = mat3(bones[boneList[index.x]]) * nr * vWeight.x;
-	newNormal += mat3(bones[boneList[index.y]]) * nr * vWeight.y;
-	newNormal += mat3(bones[boneList[index.z]]) * nr * vWeight.z;
-	newNormal += mat3(bones[boneList[index.w]]) * nr * vWeight.w;
+	newNormal = mat3(bones[index.x]) * nr * vWeight.x;
+	newNormal += mat3(bones[index.y]) * nr * vWeight.y;
+	newNormal += mat3(bones[index.z]) * nr * vWeight.z;
+	newNormal += mat3(bones[index.w]) * nr * vWeight.w;
 
     return newNormal;
 }
@@ -110,24 +109,15 @@ vec2 rotateUV(vec2 uv, float rotation)
 
 float BoneWeightDisplay(ivec4 index)
 {
-    int X = int(boneList[index.x]);
-    int Y = int(boneList[index.y]);
-    int Z = int(boneList[index.z]);
-    int W = int(boneList[index.w]);
-
-    float weight = 0;
-    if (selectedBoneIndex == X)
+     float weight = 0;
+    if (selectedBoneIndex == bones[index.x])
         weight += vWeight.x;
-    if (selectedBoneIndex == Y)
+    if (selectedBoneIndex == bones[index.y])
         weight += vWeight.y;
-    if (selectedBoneIndex == Z)
+    if (selectedBoneIndex == bones[index.z])
         weight += vWeight.z;
-    if (selectedBoneIndex == W)
+    if (selectedBoneIndex == bones[index.w])
         weight += vWeight.w;
-
-		//For meshes that only use the skin index. Usually it defaults to root, but some are specific.
-        if (selectedBoneIndex == SingleBoneIndex)
-		    weight += 1;
 
     return weight;
 }
@@ -166,9 +156,9 @@ void main()
 		normal = normalize((skinNRM(vNormal.xyz, index)).xyz);
 
      if (RigidSkinning == 1){
-	     gl_Position = mvpMatrix * bones[boneList[index.x]] * vec4(vPosition, 1.0);
+	     gl_Position = mvpMatrix * bones[index.x] * vec4(vPosition, 1.0);
          normal = vNormal;
-		 normal = mat3(bones[boneList[index.x]]) * vNormal.xyz * 1;
+		 normal = mat3(bones[index.x]) * vNormal.xyz * 1;
 	}
 	if (NoSkinning == 1){
 	    gl_Position = mvpMatrix * bones[SingleBoneIndex] * vec4(vPosition, 1.0);

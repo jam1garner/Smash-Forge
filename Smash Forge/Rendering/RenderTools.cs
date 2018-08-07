@@ -51,6 +51,20 @@ namespace Smash_Forge.Rendering
             }
         }
 
+        //For conversions
+        public static int HDRTextureMap = -1; //The raw HDR texture
+        public static int envCubemap = -1; //HDR to cubemap.
+
+        //Used in PBR shader
+        public static int irradianceMap = -1; //For scene lighting
+        public static int preFilterMap = -1; //Stores roughness values in mip maps. Gets more blurry
+        public static int brdfLUTMap = -1; //Used with prefilter to get proper specular
+
+        public static void LoadIBLTextures()
+        {
+
+        }
+
         public static Dictionary<NUD.DummyTextures, Texture> CreateNudDummyTextures()
         {
             Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();

@@ -225,7 +225,8 @@ namespace Smash_Forge
             damageShapeY2UpDown.Value = (Decimal)shape.dy;
             damageShapeZ2UpDown.Value = (Decimal)shape.dz;
             damageShapeRadiusUpDown.Value = (Decimal)shape.radius;
-            damageShapeUnknownUpDown.Value = (Decimal)shape.unk;
+            damageShapeUnknown1UpDown.Value = shape.dsUnk1;
+            damageShapeUnknown2UpDown.Value = shape.dsUnk2;
         }
 
         private void OpenGeneralPoint(GeneralPoint point)
@@ -776,8 +777,10 @@ namespace Smash_Forge
                 shape.dz = (float)damageShapeZ2UpDown.Value;
             if (sender == damageShapeRadiusUpDown)
                 shape.radius = (float)damageShapeRadiusUpDown.Value;
-            if (sender == damageShapeUnknownUpDown)
-                shape.unk = (float)damageShapeUnknownUpDown.Value;
+            if (sender == damageShapeUnknown1UpDown)
+                shape.dsUnk1 = (byte)damageShapeUnknown1UpDown.Value;
+            if (sender == damageShapeUnknown2UpDown)
+                shape.dsUnk2 = (int)damageShapeUnknown2UpDown.Value;
         }
 
         #region meleeCollisions

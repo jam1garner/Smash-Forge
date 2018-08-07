@@ -352,17 +352,12 @@ namespace Smash_Forge
                 List<Mesh> transparent = new List<Mesh>();
 
                 //Render Skeleton
-                Matrix4[] f = fmdl.skeleton.getShaderMatrix();
-                int[] bind = fmdl.Node_Array; //Now bind each bone
 
-                for (int i = 0; i < f.Length; i++)
+                //Go through each node in the list and index the bones in the skeleton then use that transform
+                for (int i = 0; i < fmdl.Node_Array.Length; i++)
                 {
-                    GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, String.Format("bones[{0}]", i)), false, ref f[i]);
-                }
-
-                for (int i = 0; i < bind.Length; i++)
-                {
-                    GL.Uniform1(GL.GetUniformLocation(shader.Id, String.Format("boneList[{0}]", i)), bind[i]);
+                    Matrix4 transform = fmdl.skeleton.bones[fmdl.Node_Array[i]].invert * fmdl.skeleton.bones[fmdl.Node_Array[i]].transform;
+                    GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, String.Format("bones[{0}]", i)), false, ref transform);
                 }
 
                 foreach (Mesh m in fmdl.depthSortedMeshes)
