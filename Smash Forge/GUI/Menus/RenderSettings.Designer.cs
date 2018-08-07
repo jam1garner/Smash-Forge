@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem13 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem14 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -200,6 +200,7 @@
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.defaultRadioButton = new System.Windows.Forms.RadioButton();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.bfresPbrCB = new System.Windows.Forms.CheckBox();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -734,8 +735,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem13,
-            listViewItem14});
+            listViewItem1,
+            listViewItem2});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -834,7 +835,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(579, 628);
+            this.tabPage1.Size = new System.Drawing.Size(557, 628);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
             // 
@@ -854,7 +855,7 @@
             this.generalFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.generalFlowLayout.Location = new System.Drawing.Point(3, 3);
             this.generalFlowLayout.Name = "generalFlowLayout";
-            this.generalFlowLayout.Size = new System.Drawing.Size(573, 622);
+            this.generalFlowLayout.Size = new System.Drawing.Size(551, 622);
             this.generalFlowLayout.TabIndex = 44;
             this.generalFlowLayout.WrapContents = false;
             this.generalFlowLayout.Resize += new System.EventHandler(this.flowLayout_Resize);
@@ -1216,7 +1217,7 @@
             this.experimentalPanel.Controls.Add(this.experimentalFlowLayout);
             this.experimentalPanel.Location = new System.Drawing.Point(3, 411);
             this.experimentalPanel.Name = "experimentalPanel";
-            this.experimentalPanel.Size = new System.Drawing.Size(606, 141);
+            this.experimentalPanel.Size = new System.Drawing.Size(548, 152);
             this.experimentalPanel.TabIndex = 48;
             // 
             // experimentalFlowLayout
@@ -1226,11 +1227,12 @@
             this.experimentalFlowLayout.Controls.Add(this.drawShadowCB);
             this.experimentalFlowLayout.Controls.Add(this.depthTestCB);
             this.experimentalFlowLayout.Controls.Add(this.zScaleTableLayout);
+            this.experimentalFlowLayout.Controls.Add(this.bfresPbrCB);
             this.experimentalFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
             this.experimentalFlowLayout.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.experimentalFlowLayout.Location = new System.Drawing.Point(0, 0);
             this.experimentalFlowLayout.Name = "experimentalFlowLayout";
-            this.experimentalFlowLayout.Size = new System.Drawing.Size(606, 141);
+            this.experimentalFlowLayout.Size = new System.Drawing.Size(548, 152);
             this.experimentalFlowLayout.TabIndex = 0;
             this.experimentalFlowLayout.WrapContents = false;
             // 
@@ -1316,7 +1318,7 @@
             // 
             // lvdPanelButton
             // 
-            this.lvdPanelButton.Location = new System.Drawing.Point(3, 558);
+            this.lvdPanelButton.Location = new System.Drawing.Point(3, 569);
             this.lvdPanelButton.Name = "lvdPanelButton";
             this.lvdPanelButton.Size = new System.Drawing.Size(567, 23);
             this.lvdPanelButton.TabIndex = 49;
@@ -1333,7 +1335,7 @@
             this.lvdPanel.Controls.Add(this.renderPassthroughCB);
             this.lvdPanel.Controls.Add(this.renderSpawnsCB);
             this.lvdPanel.Controls.Add(this.renderRespawnsCB);
-            this.lvdPanel.Location = new System.Drawing.Point(3, 587);
+            this.lvdPanel.Location = new System.Drawing.Point(3, 598);
             this.lvdPanel.Name = "lvdPanel";
             this.lvdPanel.Size = new System.Drawing.Size(606, 177);
             this.lvdPanel.TabIndex = 50;
@@ -1437,7 +1439,7 @@
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(579, 628);
+            this.tabPage6.Size = new System.Drawing.Size(557, 628);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Material Lighting";
             // 
@@ -1458,7 +1460,7 @@
             this.groupBox5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox5.Location = new System.Drawing.Point(3, 3);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(573, 622);
+            this.groupBox5.Size = new System.Drawing.Size(551, 622);
             this.groupBox5.TabIndex = 36;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Material Lighting";
@@ -1745,7 +1747,7 @@
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(579, 628);
+            this.tabPage5.Size = new System.Drawing.Size(557, 628);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Background/Floor";
             // 
@@ -1759,7 +1761,7 @@
             this.groupBox9.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBox9.Location = new System.Drawing.Point(3, 3);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(573, 180);
+            this.groupBox9.Size = new System.Drawing.Size(551, 180);
             this.groupBox9.TabIndex = 39;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Background Settings";
@@ -1874,7 +1876,7 @@
             this.groupBox8.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.groupBox8.Location = new System.Drawing.Point(3, 196);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(573, 429);
+            this.groupBox8.Size = new System.Drawing.Size(551, 429);
             this.groupBox8.TabIndex = 38;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Floor Settings";
@@ -1950,7 +1952,7 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(579, 628);
+            this.tabPage4.Size = new System.Drawing.Size(557, 628);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Post Processing";
             // 
@@ -2067,7 +2069,7 @@
             this.tabPage3.Controls.Add(this.groupBox7);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(579, 628);
+            this.tabPage3.Size = new System.Drawing.Size(557, 628);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Discord Rich Presence";
             // 
@@ -2181,6 +2183,17 @@
             this.defaultRadioButton.Text = "Default";
             this.defaultRadioButton.UseVisualStyleBackColor = true;
             this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
+            // 
+            // bfresPbrCB
+            // 
+            this.bfresPbrCB.AutoSize = true;
+            this.bfresPbrCB.Location = new System.Drawing.Point(3, 130);
+            this.bfresPbrCB.Name = "bfresPbrCB";
+            this.bfresPbrCB.Size = new System.Drawing.Size(153, 17);
+            this.bfresPbrCB.TabIndex = 46;
+            this.bfresPbrCB.Text = "Enable Bfres PBR Shading";
+            this.bfresPbrCB.UseVisualStyleBackColor = true;
+            this.bfresPbrCB.CheckedChanged += new System.EventHandler(this.bfresPbrCB_CheckedChanged);
             // 
             // RenderSettings
             // 
@@ -2435,5 +2448,6 @@
         private System.Windows.Forms.Panel lvdPanel;
         private System.Windows.Forms.Button modelPanelButton;
         private System.Windows.Forms.Panel modelPanel;
+        private System.Windows.Forms.CheckBox bfresPbrCB;
     }
 }

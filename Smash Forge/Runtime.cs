@@ -255,8 +255,8 @@ namespace Smash_Forge
         public static bool useDepthTest = true;
         public static bool drawAreaLightBoundingBoxes = true;
         public static bool renderStageLighting = true;
-        public static bool renderPhysicallyBasedRendering = false;
 
+        public static bool renderBfresPbr = false;
 
         // Debug Shading
         public static RenderTypes renderType;

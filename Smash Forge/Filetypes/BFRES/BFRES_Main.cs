@@ -27,8 +27,6 @@ namespace Smash_Forge
 
         public FSKA SkeletonAnimation;
 
-        public static Shader shader = null;
-
         public Matrix4[] sb;
 
         public byte[] BFRESFile;
@@ -329,7 +327,8 @@ namespace Smash_Forge
 
         public void Render(Matrix4 mvpMatrix)
         {
-            if (Runtime.renderPhysicallyBasedRendering == true)
+            Shader shader;
+            if (Runtime.renderBfresPbr)
                 shader = OpenTKSharedResources.shaders["BFRES_PBR"];
             else
                 shader = OpenTKSharedResources.shaders["BFRES"];
@@ -372,7 +371,7 @@ namespace Smash_Forge
 
                 foreach (Mesh m in opaque)
                 {
-                    ApplyTransformFix(fmdl, m);
+                    ApplyTransformFix(fmdl, m, shader);
 
                     if (m.Parent != null && (m.Parent).Checked)
                         DrawMesh(m, shader, m.material);
@@ -380,7 +379,7 @@ namespace Smash_Forge
 
                 foreach (Mesh m in transparent)
                 {
-                    ApplyTransformFix(fmdl, m);
+                    ApplyTransformFix(fmdl, m, shader);
 
                     if (((FMDL_Model)m.Parent).Checked)
                         DrawMesh(m, shader, m.material);
@@ -420,7 +419,7 @@ namespace Smash_Forge
 
             SetVertexAttributes(m, shader);
             SetUniforms(mat, shader, m);
-            SetTextureUniforms(mat, m);
+            SetTextureUniforms(mat, m, shader);
             SetAlphaBlending(mat);
             SetAlphaTesting(mat);
 
@@ -593,7 +592,7 @@ namespace Smash_Forge
             GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
         }
 
-        private static void ApplyTransformFix(FMDL_Model fmdl, Mesh m)
+        private static void ApplyTransformFix(FMDL_Model fmdl, Mesh m, Shader shader)
         {
             shader.SetInt("NoSkinning", 0);
             shader.SetInt("RigidSkinning", 0);
@@ -786,26 +785,26 @@ namespace Smash_Forge
             }
         }
 
-        private static void SetDefaultTextureAttributes(MaterialData mat)
+        private static void SetDefaultTextureAttributes(MaterialData materialData, Shader shader)
         {
-            shader.SetBoolToInt("HasDiffuse", mat.HasDiffuseMap);
-            shader.SetBoolToInt("HasDiffuseLayer", mat.HasDiffuseLayer);
-            shader.SetBoolToInt("HasNormalMap", mat.HasNormalMap);
-            shader.SetBoolToInt("HasEmissionMap", mat.HasEmissionMap);
-            shader.SetBoolToInt("HasLightMap", mat.HasLightMap);
-            shader.SetBoolToInt("HasShadowMap", mat.HasShadowMap);
-            shader.SetBoolToInt("HasSpecularMap", mat.HasSpecularMap);
-            shader.SetBoolToInt("HasTeamColorMap", mat.HasTeamColorMap);
-            shader.SetBoolToInt("hasDummyRamp", mat.HasTransparencyMap);
+            shader.SetBoolToInt("HasDiffuse", materialData.HasDiffuseMap);
+            shader.SetBoolToInt("HasDiffuseLayer", materialData.HasDiffuseLayer);
+            shader.SetBoolToInt("HasNormalMap", materialData.HasNormalMap);
+            shader.SetBoolToInt("HasEmissionMap", materialData.HasEmissionMap);
+            shader.SetBoolToInt("HasLightMap", materialData.HasLightMap);
+            shader.SetBoolToInt("HasShadowMap", materialData.HasShadowMap);
+            shader.SetBoolToInt("HasSpecularMap", materialData.HasSpecularMap);
+            shader.SetBoolToInt("HasTeamColorMap", materialData.HasTeamColorMap);
+            shader.SetBoolToInt("hasDummyRamp", materialData.HasTransparencyMap);
 
             //Unused atm untill I do PBR shader
-            shader.SetBoolToInt("HasMetalnessMap", mat.HasMetalnessMap);
-            shader.SetBoolToInt("HasRoughnessMap", mat.HasRoughnessMap);
+            shader.SetBoolToInt("HasMetalnessMap", materialData.HasMetalnessMap);
+            shader.SetBoolToInt("HasRoughnessMap", materialData.HasRoughnessMap);
         }
 
-        private static void SetTextureUniforms(MaterialData mat, Mesh m)
+        private static void SetTextureUniforms(MaterialData materialData, Mesh mesh, Shader shader)
         {
-            SetDefaultTextureAttributes(mat);
+            SetDefaultTextureAttributes(materialData, shader);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex.Id);
@@ -818,30 +817,30 @@ namespace Smash_Forge
 
             //So this loops through each type and maps by tex hash. This is done because there is no particular order in the list
 
-            foreach (MatTexture matex in mat.textures)
+            foreach (MatTexture matex in materialData.textures)
             {
                 if (matex.Type == MatTexture.TextureType.Diffuse)
-                    TextureUniform(shader, mat, mat.HasDiffuseMap, "tex0", matex);
+                    TextureUniform(shader, materialData, materialData.HasDiffuseMap, "tex0", matex);
                 else if (matex.Type == MatTexture.TextureType.Normal)
-                    TextureUniform(shader, mat, mat.HasNormalMap, "nrm", matex);
+                    TextureUniform(shader, materialData, materialData.HasNormalMap, "nrm", matex);
                 else if (matex.Type == MatTexture.TextureType.Emission)
-                    TextureUniform(shader, mat, mat.HasEmissionMap, "EmissionMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasEmissionMap, "EmissionMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Specular)
-                    TextureUniform(shader, mat, mat.HasSpecularMap, "SpecularMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasSpecularMap, "SpecularMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Shadow)
-                    TextureUniform(shader, mat, mat.HasShadowMap, "BakeShadowMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasShadowMap, "BakeShadowMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Light)
-                    TextureUniform(shader, mat, mat.HasLightMap, "BakeLightMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasLightMap, "BakeLightMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Metalness)
-                    TextureUniform(shader, mat, mat.HasMetalnessMap, "MetalnessMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasMetalnessMap, "MetalnessMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Roughness)
-                    TextureUniform(shader, mat, mat.HasRoughnessMap, "RoughnessMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasRoughnessMap, "RoughnessMap", matex);
                 else if (matex.Type == MatTexture.TextureType.TeamColor)
-                    TextureUniform(shader, mat, mat.HasTeamColorMap, "TeamColorMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasTeamColorMap, "TeamColorMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Transparency)
-                    TextureUniform(shader, mat, mat.HasTransparencyMap, "TransparencyMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasTransparencyMap, "TransparencyMap", matex);
                 else if (matex.Type == MatTexture.TextureType.DiffuseLayer2)
-                    TextureUniform(shader, mat, mat.HasDiffuseLayer, "DiffuseLayer", matex);
+                    TextureUniform(shader, materialData, materialData.HasDiffuseLayer, "DiffuseLayer", matex);
             }
         }
 

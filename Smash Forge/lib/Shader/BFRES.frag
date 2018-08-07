@@ -1,25 +1,5 @@
 #version 330
 
-//------------------------------------------------------------------------------------
-//
-//      Viewport Camera/Lighting
-//
-//------------------------------------------------------------------------------------
-
-uniform mat4 mvpMatrix;
-uniform vec3 specLightDirection;
-uniform vec3 difLightDirection;
-
-uniform int enableCellShading;
-
-const float levels = 3.0;
-
-//------------------------------------------------------------------------------------
-//
-//      Verex Attributes
-//
-//------------------------------------------------------------------------------------
-
 in vec2 f_texcoord0;
 in vec2 f_texcoord1;
 in vec2 f_texcoord2;
@@ -31,12 +11,16 @@ in vec3 bitangent;
 
 in vec3 boneWeightsColored;
 
-//------------------------------------------------------------------------------------
-//
-//      Viewport Settings
-//
-//------------------------------------------------------------------------------------
+// Viewport Camera/Lighting
+uniform mat4 mvpMatrix;
+uniform vec3 specLightDirection;
+uniform vec3 difLightDirection;
 
+uniform int enableCellShading;
+
+const float levels = 3.0;
+
+// Viewport Settings
 uniform int uvChannel;
 uniform int renderType;
 uniform int useNormalMap;

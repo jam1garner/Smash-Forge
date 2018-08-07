@@ -32,6 +32,7 @@ namespace Smash_Forge.GUI
             BackgroundGradient2.BackColor = Runtime.backgroundGradientBottom;
             floorColorPictureBox.BackColor = Runtime.floorColor;
             modelscaleTB.Text = Runtime.modelScale + "";
+            bfresPbrCB.Checked = Runtime.renderBfresPbr;
 
             // Bone settings
             renderBonesCB.Checked = Runtime.renderBones;
@@ -1020,6 +1021,11 @@ namespace Smash_Forge.GUI
         private void flowLayout_Resize(object sender, EventArgs e)
         {
             GuiTools.ScaleControlsHorizontallyToLayoutWidth((Control)sender);
+        }
+
+        private void bfresPbrCB_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.renderBfresPbr = bfresPbrCB.Checked;
         }
     }
 }

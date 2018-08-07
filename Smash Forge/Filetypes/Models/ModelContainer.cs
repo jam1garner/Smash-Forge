@@ -326,7 +326,7 @@ namespace Smash_Forge
 
             if (Bfres != null)
             {
-                if (Runtime.renderPhysicallyBasedRendering == true)
+                if (Runtime.renderBfresPbr)
                     shader = OpenTKSharedResources.shaders["BFRES_PBR"];
                 else
                     shader = OpenTKSharedResources.shaders["BFRES"];
