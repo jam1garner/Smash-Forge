@@ -1276,7 +1276,7 @@ namespace Smash_Forge
             node.pos = new Vector3(b.position[0], b.position[1], b.position[2]);
             node.scale = new Vector3(b.scale[0], b.scale[1], b.scale[2]);
             node.rot = new Vector3(b.rotation[0], b.rotation[1], b.rotation[2]);
-            node.mat = Matrix4.CreateScale(node.scale) * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(node.rot.X, node.rot.Y, node.rot.Z)) * Matrix4.CreateTranslation(node.pos);
+            node.mat = Matrix4.CreateScale(node.scale) * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(node.rot.Z, node.rot.Y, node.rot.X)) * Matrix4.CreateTranslation(node.pos);
             foreach (var bone in b.GetChildren())
                 SaveBoneNodes(dae, bone, vbn, node);
         }
