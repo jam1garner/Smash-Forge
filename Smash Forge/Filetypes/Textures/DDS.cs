@@ -30,45 +30,49 @@ namespace Smash_Forge
             NegZ
         }
 
-        [FlagsAttribute] public enum DDSD : uint
+        [FlagsAttribute]
+        public enum DDSD : uint
         {
-            CAPS              = 0x00000001,
-            HEIGHT            = 0x00000002,
-            WIDTH             = 0x00000004,
-            PITCH             = 0x00000008,
-            PIXELFORMAT       = 0x00001000,
-            MIPMAPCOUNT       = 0x00020000,
-            LINEARSIZE        = 0x00080000,
-            DEPTH             = 0x00800000
+            CAPS = 0x00000001,
+            HEIGHT = 0x00000002,
+            WIDTH = 0x00000004,
+            PITCH = 0x00000008,
+            PIXELFORMAT = 0x00001000,
+            MIPMAPCOUNT = 0x00020000,
+            LINEARSIZE = 0x00080000,
+            DEPTH = 0x00800000
         }
-        [FlagsAttribute] public enum DDPF : uint
+        [FlagsAttribute]
+        public enum DDPF : uint
         {
-            ALPHAPIXELS       = 0x00000001,
-            ALPHA             = 0x00000002,
-            FOURCC            = 0x00000004,
-            RGB               = 0x00000040,
-            YUV               = 0x00000200,
-            LUMINANCE         = 0x00020000,
+            ALPHAPIXELS = 0x00000001,
+            ALPHA = 0x00000002,
+            FOURCC = 0x00000004,
+            RGB = 0x00000040,
+            YUV = 0x00000200,
+            LUMINANCE = 0x00020000,
         }
-        [FlagsAttribute] public enum DDSCAPS : uint
+        [FlagsAttribute]
+        public enum DDSCAPS : uint
         {
-            COMPLEX           = 0x00000008,
-            TEXTURE           = 0x00001000,
-            MIPMAP            = 0x00400000,
+            COMPLEX = 0x00000008,
+            TEXTURE = 0x00001000,
+            MIPMAP = 0x00400000,
         }
-        [FlagsAttribute] public enum DDSCAPS2 : uint
+        [FlagsAttribute]
+        public enum DDSCAPS2 : uint
         {
-            CUBEMAP           = 0x00000200,
+            CUBEMAP = 0x00000200,
             CUBEMAP_POSITIVEX = 0x00000400 | CUBEMAP,
             CUBEMAP_NEGATIVEX = 0x00000800 | CUBEMAP,
             CUBEMAP_POSITIVEY = 0x00001000 | CUBEMAP,
             CUBEMAP_NEGATIVEY = 0x00002000 | CUBEMAP,
             CUBEMAP_POSITIVEZ = 0x00004000 | CUBEMAP,
             CUBEMAP_NEGATIVEZ = 0x00008000 | CUBEMAP,
-            CUBEMAP_ALLFACES  = ( CUBEMAP_POSITIVEX | CUBEMAP_NEGATIVEX |
+            CUBEMAP_ALLFACES = (CUBEMAP_POSITIVEX | CUBEMAP_NEGATIVEX |
                                   CUBEMAP_POSITIVEY | CUBEMAP_NEGATIVEY |
-                                  CUBEMAP_POSITIVEZ | CUBEMAP_NEGATIVEZ ),
-            VOLUME            = 0x00200000
+                                  CUBEMAP_POSITIVEZ | CUBEMAP_NEGATIVEZ),
+            VOLUME = 0x00200000
         }
 
         //Bytes per block (4x4 pixels) for block formats, bytes per pixel for non-block formats
@@ -364,23 +368,86 @@ namespace Smash_Forge
 
             return tex;
         }
-       
+
+        //For bfres / bntx
+        public BRTI.BRTI_Texture toBRTITexture()
+        {
+            // TODO: Check these casts.
+            BRTI.BRTI_Texture tex = new BRTI.BRTI_Texture();
+            tex.height = (int)header.height;
+            tex.width = (int)header.width;
+            float size = 1;
+            int mips = (int)header.mipmapCount;
+            /*if (mips > header.mipmapCount)
+            {
+                mips = header.mipmapCount;
+                MessageBox.Show("Possible texture error: Only one mipmap");
+            }*/
+
+            switch (header.ddspf.fourCC)
+            {
+                case 0x0:
+                    size = 4f;
+                    tex.pixelInternalFormat = PixelInternalFormat.SrgbAlpha;
+                    tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    break;
+                case 0x31545844:
+                    size = 1 / 2f;
+                    tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    break;
+                case 0x35545844:
+                    size = 1f;
+                    tex.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    break;
+                case 0x32495441:
+                    size = 1 / 2f;
+                    tex.pixelInternalFormat = PixelInternalFormat.CompressedRedRgtc1;
+                    break;
+                case 0x31495441:
+                    size = 1f;
+                    tex.pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
+                    break;
+                default:
+                    MessageBox.Show("Unsupported DDS format - 0x" + header.ddspf.fourCC.ToString("x"));
+                    break;
+            }
+
+            // now for mipmap data...
+            FileData d = new FileData(bdata);
+            int off = 0, w = (int)header.width, h = (int)header.height;
+
+            if (header.mipmapCount == 0) header.mipmapCount = 1;
+            for (int i = 0; i < header.mipmapCount; i++)
+            {
+                int s = (int)((w * h) * size);
+                if (s < 0x8) s = 0x8;
+                //Console.WriteLine(off.ToString("x") + " " + s.ToString("x"));
+                w /= 2;
+                h /= 2;
+                tex.mipmaps.Add(d.getSection(off, s));
+                off += s;
+            }
+            Console.WriteLine(off.ToString("x"));
+
+            return tex;
+        }
+
         public Bitmap toBitmap()
         {
             byte[] pixels = new byte[header.width * header.height * 4];
 
             if (header.ddspf.fourCC == 0x31545844)
-                decodeDXT1 (pixels, bdata, (int)header.width, (int)header.height);
+                decodeDXT1(pixels, bdata, (int)header.width, (int)header.height);
             else
             if (header.ddspf.fourCC == 0x33545844)
-                decodeDXT3 (pixels, bdata, (int)header.width, (int)header.height);
+                decodeDXT3(pixels, bdata, (int)header.width, (int)header.height);
             else
             if (header.ddspf.fourCC == 0x35545844)
-                decodeDXT5 (pixels, bdata, (int)header.width, (int)header.height);
+                decodeDXT5(pixels, bdata, (int)header.width, (int)header.height);
             else
-                Console.WriteLine ("Unknown DDS format " + header.ddspf.fourCC);
+                Console.WriteLine("Unknown DDS format " + header.ddspf.fourCC);
 
-            Bitmap bmp = new Bitmap((int)header.width, (int)header.height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);  
+            Bitmap bmp = new Bitmap((int)header.width, (int)header.height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
             BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
 
@@ -397,16 +464,16 @@ namespace Smash_Forge
             byte[] pixels = new byte[width * height * 4];
 
             if (format == DDSFormat.DXT1)
-                decodeDXT1 (pixels, d, width, height);
+                decodeDXT1(pixels, d, width, height);
             if (format == DDSFormat.DXT3)
-                decodeDXT3 (pixels, d, width, height);
+                decodeDXT3(pixels, d, width, height);
             if (format == DDSFormat.DXT5)
-                decodeDXT5 (pixels, d, width, height);
+                decodeDXT5(pixels, d, width, height);
 
-            Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);  
+            Bitmap bmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
             BitmapData bmpData = bmp.LockBits(
-                new Rectangle(0, 0, bmp.Width, bmp.Height),   
+                new Rectangle(0, 0, bmp.Width, bmp.Height),
                 ImageLockMode.WriteOnly, bmp.PixelFormat);
 
             Marshal.Copy(pixels, 0, bmpData.Scan0, pixels.Length);
@@ -420,170 +487,188 @@ namespace Smash_Forge
         // DECODING TOOLS--------------------------------
 
 
-        public static void decodeDXT1(byte[] pixels, byte[] data, int width, int height){
+        public static void decodeDXT1(byte[] pixels, byte[] data, int width, int height)
+        {
             int x = 0, y = 0;
             int p = 0;
 
-            while(true){
+            while (true)
+            {
                 // Color----------------------------------------------------------------
 
                 byte[] block = new byte[8];
                 int blockp = 0;
-                for(int i = 0 ; i < 8 ; i ++)
+                for (int i = 0; i < 8; i++)
                     block[i] = data[p++];
 
                 int[] pal = new int[4];
-                pal[0] = makeColor565(block[blockp++]&0xFF,block[blockp++]&0xFF);
-                pal[1] = makeColor565(block[blockp++]&0xFF,block[blockp++]&0xFF);
+                pal[0] = makeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
+                pal[1] = makeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
 
 
-                int r = (2 * getRed(pal[0]) + getRed(pal[1]))/3;
-                int g = (2 * getGreen(pal[0]) + getGreen(pal[1]))/3;
-                int b = (2 * getBlue(pal[0]) + getBlue(pal[1]))/3;
+                int r = (2 * getRed(pal[0]) + getRed(pal[1])) / 3;
+                int g = (2 * getGreen(pal[0]) + getGreen(pal[1])) / 3;
+                int b = (2 * getBlue(pal[0]) + getBlue(pal[1])) / 3;
 
-                pal[2] = (0xFF<<24)|(r<<16)|(g<<8)|(b);
+                pal[2] = (0xFF << 24) | (r << 16) | (g << 8) | (b);
 
-                r = (2 * getRed(pal[1]) + getRed(pal[0]))/3;
-                g = (2 * getGreen(pal[1]) + getGreen(pal[0]))/3;
-                b = (2 * getBlue(pal[1]) + getBlue(pal[0]))/3;
+                r = (2 * getRed(pal[1]) + getRed(pal[0])) / 3;
+                g = (2 * getGreen(pal[1]) + getGreen(pal[0])) / 3;
+                b = (2 * getBlue(pal[1]) + getBlue(pal[0])) / 3;
 
-                pal[3] = (0xFF<<24)|(r<<16)|(g<<8)|(b);
+                pal[3] = (0xFF << 24) | (r << 16) | (g << 8) | (b);
 
 
                 int[] index = new int[16];
                 int indexp = 0;
-                for(int i = 0 ; i < 4 ; i++){
-                    int by = block[blockp++]&0xFF;
-                    index[indexp++] = (by&0x03);
-                    index[indexp++] = (by&0x0C)>>2;
-                    index[indexp++] = (by&0x30)>>4;
-                    index[indexp++] = (by&0xC0)>>6;
+                for (int i = 0; i < 4; i++)
+                {
+                    int by = block[blockp++] & 0xFF;
+                    index[indexp++] = (by & 0x03);
+                    index[indexp++] = (by & 0x0C) >> 2;
+                    index[indexp++] = (by & 0x30) >> 4;
+                    index[indexp++] = (by & 0xC0) >> 6;
                 }
 
                 // end----------------------------------------------------------------
 
                 indexp = 0;
 
-                for(int h = 0 ; h < 4 ; h++){
-                    for(int w = 0; w < 4 ; w++){
-                        int color = (0xFF << 24) | (pal [index [(w) + (h) * 4]] & 0x00FFFFFF);
-                        pixels [((w + x) + (h + y) * width) * 4 + 3] = 0xFF;
-                        pixels [((w + x) + (h + y) * width) * 4 + 2] = (byte)((color >> 16) & 0xFF);
-                        pixels [((w + x) + (h + y) * width) * 4 + 1] = (byte)((color >> 8) & 0xFF);
-                        pixels [((w + x) + (h + y) * width) * 4 + 0] = (byte)((color) & 0xFF);
+                for (int h = 0; h < 4; h++)
+                {
+                    for (int w = 0; w < 4; w++)
+                    {
+                        int color = (0xFF << 24) | (pal[index[(w) + (h) * 4]] & 0x00FFFFFF);
+                        pixels[((w + x) + (h + y) * width) * 4 + 3] = 0xFF;
+                        pixels[((w + x) + (h + y) * width) * 4 + 2] = (byte)((color >> 16) & 0xFF);
+                        pixels[((w + x) + (h + y) * width) * 4 + 1] = (byte)((color >> 8) & 0xFF);
+                        pixels[((w + x) + (h + y) * width) * 4 + 0] = (byte)((color) & 0xFF);
                     }
                 }
 
                 // end positioning------------------------------------------------------------------
 
                 x += 4;
-                if(x >= width){
+                if (x >= width)
+                {
                     x = 0;
                     y += 4;
                 }
-                if(y >= height)
+                if (y >= height)
                     break;
             }
         }
 
         //INCOMPLETE - But toBitmap is never called anyway *shrug*
-        public static void decodeDXT3(byte[] pixels, byte[] data, int width, int height){
+        public static void decodeDXT3(byte[] pixels, byte[] data, int width, int height)
+        {
             int x = 0, y = 0;
             int p = 0;
 
-            while(true){
+            while (true)
+            {
                 // Color----------------------------------------------------------------
 
                 byte[] block = new byte[16];
                 int blockp = 8;
-                for(int i = 0 ; i < 16 ; i ++)
+                for (int i = 0; i < 16; i++)
                     block[i] = data[p++];
 
                 int[] pal = new int[4];
-                pal[0] = makeColor565(block[blockp++]&0xFF,block[blockp++]&0xFF);
-                pal[1] = makeColor565(block[blockp++]&0xFF,block[blockp++]&0xFF);
+                pal[0] = makeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
+                pal[1] = makeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
 
 
-                int r = (2 * getRed(pal[0]) + getRed(pal[1]))/3;
-                int g = (2 * getGreen(pal[0]) + getGreen(pal[1]))/3;
-                int b = (2 * getBlue(pal[0]) + getBlue(pal[1]))/3;
+                int r = (2 * getRed(pal[0]) + getRed(pal[1])) / 3;
+                int g = (2 * getGreen(pal[0]) + getGreen(pal[1])) / 3;
+                int b = (2 * getBlue(pal[0]) + getBlue(pal[1])) / 3;
 
-                pal[2] = (0xFF<<24)|(r<<16)|(g<<8)|(b);
+                pal[2] = (0xFF << 24) | (r << 16) | (g << 8) | (b);
 
-                r = (2 * getRed(pal[1]) + getRed(pal[0]))/3;
-                g = (2 * getGreen(pal[1]) + getGreen(pal[0]))/3;
-                b = (2 * getBlue(pal[1]) + getBlue(pal[0]))/3;
+                r = (2 * getRed(pal[1]) + getRed(pal[0])) / 3;
+                g = (2 * getGreen(pal[1]) + getGreen(pal[0])) / 3;
+                b = (2 * getBlue(pal[1]) + getBlue(pal[0])) / 3;
 
-                pal[3] = (0xFF<<24)|(r<<16)|(g<<8)|(b);
+                pal[3] = (0xFF << 24) | (r << 16) | (g << 8) | (b);
 
 
                 int[] index = new int[16];
                 int indexp = 0;
-                for(int i = 0 ; i < 4 ; i++){
-                    int by = block[blockp++]&0xFF;
-                    index[indexp++] = (by&0x03);
-                    index[indexp++] = (by&0x0C)>>2;
-                    index[indexp++] = (by&0x30)>>4;
-                    index[indexp++] = (by&0xC0)>>6;
+                for (int i = 0; i < 4; i++)
+                {
+                    int by = block[blockp++] & 0xFF;
+                    index[indexp++] = (by & 0x03);
+                    index[indexp++] = (by & 0x0C) >> 2;
+                    index[indexp++] = (by & 0x30) >> 4;
+                    index[indexp++] = (by & 0xC0) >> 6;
                 }
 
                 // end----------------------------------------------------------------
 
                 indexp = 0;
 
-                for(int h = 0 ; h < 4 ; h++){
-                    for(int w = 0; w < 4 ; w++){
-                        int color = (0xFF << 24) | (pal [index [(w) + (h) * 4]] & 0x00FFFFFF);
-                        pixels [((w + x) + (h + y) * width) * 4 + 3] = 0xFF;
-                        pixels [((w + x) + (h + y) * width) * 4 + 2] = (byte)((color >> 16) & 0xFF);
-                        pixels [((w + x) + (h + y) * width) * 4 + 1] = (byte)((color >> 8) & 0xFF);
-                        pixels [((w + x) + (h + y) * width) * 4 + 0] = (byte)((color) & 0xFF);
+                for (int h = 0; h < 4; h++)
+                {
+                    for (int w = 0; w < 4; w++)
+                    {
+                        int color = (0xFF << 24) | (pal[index[(w) + (h) * 4]] & 0x00FFFFFF);
+                        pixels[((w + x) + (h + y) * width) * 4 + 3] = 0xFF;
+                        pixels[((w + x) + (h + y) * width) * 4 + 2] = (byte)((color >> 16) & 0xFF);
+                        pixels[((w + x) + (h + y) * width) * 4 + 1] = (byte)((color >> 8) & 0xFF);
+                        pixels[((w + x) + (h + y) * width) * 4 + 0] = (byte)((color) & 0xFF);
                     }
                 }
 
                 // end positioning------------------------------------------------------------------
 
                 x += 4;
-                if(x >= width){
+                if (x >= width)
+                {
                     x = 0;
                     y += 4;
                 }
-                if(y >= height)
+                if (y >= height)
                     break;
             }
         }
 
-        public static void decodeDXT5(byte[] pixels, byte[] data, int width, int height){
+        public static void decodeDXT5(byte[] pixels, byte[] data, int width, int height)
+        {
             int x = 0, y = 0;
             int p = 0;
 
-            while(true){
+            while (true)
+            {
 
                 //Alpha------------------------------------------------------------------
                 byte[] block = new byte[8];
                 int blockp = 0;
 
-                for(int i = 0 ; i < 8 ; i ++)
+                for (int i = 0; i < 8; i++)
                     block[i] = data[p++];
 
-                int a1 = block[blockp++]&0xFF;
-                int a2 = block[blockp++]&0xFF;
+                int a1 = block[blockp++] & 0xFF;
+                int a2 = block[blockp++] & 0xFF;
 
-                int aWord1 = (block[blockp++]&0xFF)|((block[blockp++]&0xFF)<<8)|((block[blockp++]&0xFF)<<16);
-                int aWord2 = (block[blockp++]&0xFF)|((block[blockp++]&0xFF)<<8)|((block[blockp++]&0xFF)<<16);
+                int aWord1 = (block[blockp++] & 0xFF) | ((block[blockp++] & 0xFF) << 8) | ((block[blockp++] & 0xFF) << 16);
+                int aWord2 = (block[blockp++] & 0xFF) | ((block[blockp++] & 0xFF) << 8) | ((block[blockp++] & 0xFF) << 16);
 
                 int[] a = new int[16];
 
-                for(int i = 0 ; i < 16 ; i++){
-                    if(i < 8){
-                        int code = (int) (aWord1 & 0x7);
+                for (int i = 0; i < 16; i++)
+                {
+                    if (i < 8)
+                    {
+                        int code = (int)(aWord1 & 0x7);
                         aWord1 >>= 3;
-                        a[i] = getDXTAWord(code, a1, a2)&0xFF;
-                    } else{
-                        int code = (int) (aWord2 & 0x7);
+                        a[i] = getDXTAWord(code, a1, a2) & 0xFF;
+                    }
+                    else
+                    {
+                        int code = (int)(aWord2 & 0x7);
                         aWord2 >>= 3;
-                        a[i] = getDXTAWord(code, a1, a2)&0xFF;
-                    } 
+                        a[i] = getDXTAWord(code, a1, a2) & 0xFF;
+                    }
                 }
 
 
@@ -591,110 +676,125 @@ namespace Smash_Forge
 
                 block = new byte[8];
                 blockp = 0;
-                for(int i = 0 ; i < 8 ; i ++)
+                for (int i = 0; i < 8; i++)
                     block[i] = data[p++];
 
                 int[] pal = new int[4];
-                pal[0] = makeColor565(block[blockp++]&0xFF,block[blockp++]&0xFF);
-                pal[1] = makeColor565(block[blockp++]&0xFF,block[blockp++]&0xFF);
+                pal[0] = makeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
+                pal[1] = makeColor565(block[blockp++] & 0xFF, block[blockp++] & 0xFF);
 
 
-                int r = (2 * getRed(pal[0]) + getRed(pal[1]))/3;
-                int g = (2 * getGreen(pal[0]) + getGreen(pal[1]))/3;
-                int b = (2 * getBlue(pal[0]) + getBlue(pal[1]))/3;
+                int r = (2 * getRed(pal[0]) + getRed(pal[1])) / 3;
+                int g = (2 * getGreen(pal[0]) + getGreen(pal[1])) / 3;
+                int b = (2 * getBlue(pal[0]) + getBlue(pal[1])) / 3;
 
-                pal[2] = (0xFF<<24)|(r<<16)|(g<<8)|(b);
+                pal[2] = (0xFF << 24) | (r << 16) | (g << 8) | (b);
 
-                r = (2 * getRed(pal[1]) + getRed(pal[0]))/3;
-                g = (2 * getGreen(pal[1]) + getGreen(pal[0]))/3;
-                b = (2 * getBlue(pal[1]) + getBlue(pal[0]))/3;
+                r = (2 * getRed(pal[1]) + getRed(pal[0])) / 3;
+                g = (2 * getGreen(pal[1]) + getGreen(pal[0])) / 3;
+                b = (2 * getBlue(pal[1]) + getBlue(pal[0])) / 3;
 
-                pal[3] = (0xFF<<24)|(r<<16)|(g<<8)|(b);
+                pal[3] = (0xFF << 24) | (r << 16) | (g << 8) | (b);
 
 
                 int[] index = new int[16];
                 int indexp = 0;
-                for(int i = 0 ; i < 4 ; i++){
-                    int by = block[blockp++]&0xFF;
-                    index[indexp++] = (by&0x03);
-                    index[indexp++] = (by&0x0C)>>2;
-                    index[indexp++] = (by&0x30)>>4;
-                    index[indexp++] = (by&0xC0)>>6;
+                for (int i = 0; i < 4; i++)
+                {
+                    int by = block[blockp++] & 0xFF;
+                    index[indexp++] = (by & 0x03);
+                    index[indexp++] = (by & 0x0C) >> 2;
+                    index[indexp++] = (by & 0x30) >> 4;
+                    index[indexp++] = (by & 0xC0) >> 6;
                 }
 
                 // end----------------------------------------------------------------
 
                 indexp = 0;
 
-                for(int h = 0 ; h < 4 ; h++){
-                    for(int w = 0; w < 4 ; w++){
-                        int color = (a [(w) + (h) * 4] << 24) | (pal [index [(w) + (h) * 4]] & 0x00FFFFFF);
-                        pixels [((w + x) + (h + y) * width) * 4 + 3] = (byte)getAlpha(color);
-                        pixels [((w + x) + (h + y) * width) * 4 + 2] = (byte)((color >> 16) & 0xFF);
-                        pixels [((w + x) + (h + y) * width) * 4 + 1] = (byte)((color >> 8) & 0xFF);
-                        pixels [((w + x) + (h + y) * width) * 4 + 0] = (byte)((color) & 0xFF);
+                for (int h = 0; h < 4; h++)
+                {
+                    for (int w = 0; w < 4; w++)
+                    {
+                        int color = (a[(w) + (h) * 4] << 24) | (pal[index[(w) + (h) * 4]] & 0x00FFFFFF);
+                        pixels[((w + x) + (h + y) * width) * 4 + 3] = (byte)getAlpha(color);
+                        pixels[((w + x) + (h + y) * width) * 4 + 2] = (byte)((color >> 16) & 0xFF);
+                        pixels[((w + x) + (h + y) * width) * 4 + 1] = (byte)((color >> 8) & 0xFF);
+                        pixels[((w + x) + (h + y) * width) * 4 + 0] = (byte)((color) & 0xFF);
                     }
                 }
 
                 // end positioning------------------------------------------------------------------
 
                 x += 4;
-                if(x >= width){
+                if (x >= width)
+                {
                     x = 0;
                     y += 4;
                 }
-                if(y >= height)
+                if (y >= height)
                     break;
             }
         }
 
 
-        private static int getDXTAWord(int code, int alpha0, int alpha1){
+        private static int getDXTAWord(int code, int alpha0, int alpha1)
+        {
 
-            if(alpha0 > alpha1){
-                switch(code){
-                case 0: return alpha0;
-                case 1: return alpha1;
-                case 2: return (6*alpha0 + 1*alpha1)/7;
-                case 3: return (5*alpha0 + 2*alpha1)/7;
-                case 4: return (4*alpha0 + 3*alpha1)/7;
-                case 5: return (3*alpha0 + 4*alpha1)/7;
-                case 6: return (2*alpha0 + 5*alpha1)/7;
-                case 7: return (1*alpha0 + 6*alpha1)/7;
+            if (alpha0 > alpha1)
+            {
+                switch (code)
+                {
+                    case 0: return alpha0;
+                    case 1: return alpha1;
+                    case 2: return (6 * alpha0 + 1 * alpha1) / 7;
+                    case 3: return (5 * alpha0 + 2 * alpha1) / 7;
+                    case 4: return (4 * alpha0 + 3 * alpha1) / 7;
+                    case 5: return (3 * alpha0 + 4 * alpha1) / 7;
+                    case 6: return (2 * alpha0 + 5 * alpha1) / 7;
+                    case 7: return (1 * alpha0 + 6 * alpha1) / 7;
                 }
-            } else{
-                switch(code){
-                case 0: return alpha0;
-                case 1: return alpha1;
-                case 2: return (4*alpha0 + 1*alpha1)/5;
-                case 3: return (3*alpha0 + 2*alpha1)/5;
-                case 4: return (2*alpha0 + 3*alpha1)/5;
-                case 5: return (1*alpha0 + 4*alpha1)/5;
-                case 6: return 0;
-                case 7: return 255;
+            }
+            else
+            {
+                switch (code)
+                {
+                    case 0: return alpha0;
+                    case 1: return alpha1;
+                    case 2: return (4 * alpha0 + 1 * alpha1) / 5;
+                    case 3: return (3 * alpha0 + 2 * alpha1) / 5;
+                    case 4: return (2 * alpha0 + 3 * alpha1) / 5;
+                    case 5: return (1 * alpha0 + 4 * alpha1) / 5;
+                    case 6: return 0;
+                    case 7: return 255;
                 }
             }
 
             return 0;
         }
 
-        public static int getAlpha(int c){
-            return (c>>24)>>0xFF;
+        public static int getAlpha(int c)
+        {
+            return (c >> 24) >> 0xFF;
         }
 
-        public static int getRed(int c){
-            return (c&0x00FF0000)>>16;
+        public static int getRed(int c)
+        {
+            return (c & 0x00FF0000) >> 16;
         }
 
-        public static int getGreen(int c){
-            return (c&0x0000FF00)>>8;
+        public static int getGreen(int c)
+        {
+            return (c & 0x0000FF00) >> 8;
         }
 
-        public static int getBlue(int c){
-            return (c&0x000000FF);
+        public static int getBlue(int c)
+        {
+            return (c & 0x000000FF);
         }
 
-        private static int makeColor565(int b1, int b2) {
+        private static int makeColor565(int b1, int b2)
+        {
 
             int bt = (b2 << 8) | b1;
 
@@ -707,10 +807,8 @@ namespace Smash_Forge
             g = (g << 2) | (g >> 4);
             b = (b << 3) | (b >> 2);
 
-            return ((int) a << 24) | ((int) r << 16) | ((int) g << 8) | (int) b;
+            return ((int)a << 24) | ((int)r << 16) | ((int)g << 8) | (int)b;
 
         }
-
     }
 }
-

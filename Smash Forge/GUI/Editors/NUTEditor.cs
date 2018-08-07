@@ -486,11 +486,13 @@ namespace Smash_Forge
                     else
                         tex.HashId = 0x40FFFF00 | (currentNut.Nodes.Count);
 
+                    // Replace OpenGL texture.
                     if (currentNut.glTexByHashId.ContainsKey(tex.HashId))
                         currentNut.glTexByHashId.Remove(tex.HashId);
 
-                    currentNut.Nodes.Add(tex);
                     currentNut.glTexByHashId.Add(tex.HashId, NUT.CreateTexture2D(tex));
+
+                    currentNut.Nodes.Add(tex);
                     FillForm();
                 }
             }

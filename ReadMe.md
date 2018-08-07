@@ -25,11 +25,27 @@ Download the latest commit from the [releases page](https://github.com/jam1garne
  - Can edit and preview Smash 4 movesets in real time (ACMD)
  - Can edit and preview Smash 4 material animations in real time (.mta)
  - Can provide accurate previews of character, stage, and some effect NUD models
- - Can open and preview BFRES (Wii U) Models (Only available on Wii U General Branch)
  - Includes a set of standard materials to help get started with more quickly adding and editing materials
 
-NOTE: this entire program is still very much a WIP. There may be bugs or incomplete features. Please stick with us as we're working on it!
+## BFRES Features
+  - Can open and preview BFRES models, skeleton animations, texture pattern animations, bone visual animations and textures
+  - Wii U and Switch support.
+  - Exportable models, animations, and textures
+  - Improved shaders from previous tool
+  - Debug shader options (in view - render settings) to help debug mods.
+  - SARC support.
+  - DAE model importing.
 
+## BFRES Todos
+  - Finish nintendo switch bfres rebuilding for full edits
+  - Fix up model exporting (bones have issues, and weights, and materials).
+  - Add animation importing.
+  - Add every other type of animation (texture pattern, visual anim, srt anim, ect)
+  - Add physically based rendering
+  - Full decoding and compression of all texture types for editing.
+  - Merge to master forge branch (code is too messy and not complete atm)
+
+NOTE: this entire program is still very much a WIP. There may be bugs or incomplete features. Please stick with us as we're working on it!
 While credit on projects made using this tool is in no way necessary, it is very much appreciated. Thank you to those who use it.
 
 ## Building
@@ -71,3 +87,12 @@ Project:
 - [SFGraphics](https://github.com/ScanMountGoat/SFGraphics)
 - Copyright (c) 2018 SMG
 - MIT License: https://github.com/ScanMountGoat/SFGraphics/blob/master/LICENSE.txt
+
+Project:
+- [EveryFileExplorer](https://github.com/Gericom/EveryFileExplorer)
+- Gericom
+
+Project:
+- [NintenTools.Bfres](https://github.com/Syroot/NintenTools.Bfres)
+- Copyright (c) 2017 Syroot
+- MIT License: https://github.com/Syroot/NintenTools.Bfres/blob/master/LICENSE

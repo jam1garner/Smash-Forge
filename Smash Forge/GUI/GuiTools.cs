@@ -57,7 +57,8 @@ namespace Smash_Forge
             else if (int.TryParse(textBox.Text, out result))
             {
                 textBox.BackColor = Color.White;
-            } else if (changeTextBoxColor)
+            }
+            else if (changeTextBoxColor)
             {
                 textBox.BackColor = Color.Red;
             }

@@ -345,7 +345,7 @@ namespace Smash_Forge
 
         /*---------------------------------------
          * 
-         * Code ported from AboodXD's GTX Extractor https://github.com/aboood40091/GTX-Extractor/blob/master/gtx_extract.py
+         * Code ported from Aboood's GTX Extractor https://github.com/aboood40091/GTX-Extractor/blob/master/gtx_extract.py
          * 
          * With help by Aelan!
          * 
@@ -365,688 +365,694 @@ namespace Smash_Forge
 
 
         public static byte[] swizzleBC(byte[] data, int width, int height, int format, int tileMode, int pitch, int swizzle)
-    {
-        GX2Surface sur = new GX2Surface();
-        sur.width = width;
-        sur.height = height;
-        sur.tileMode = tileMode;
-        sur.format = format;
-        sur.swizzle = swizzle;
-        sur.pitch = pitch;
-        sur.data = data;
-        sur.imageSize = data.Length;
-        //return swizzleBC(sur);
-        return swizzleSurface(sur, (GX2SurfaceFormat)sur.format != GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM);
-    }
-
-    public static int getBPP(int i)
-    {
-        switch((GX2SurfaceFormat)i){
-            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM:
-                return 0x20;
-            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_TC_R5_G5_B5_A1_UNORM:
-                return 0x10;
-            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM:
-                return 0x40;
-            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_UNORM:
-                return 0x80;
-            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC3_UNORM:
-                return 0x80;
-            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM:
-                return 0x40;
-            case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_UNORM:
-                return 0x80;
-        }
-        return -1;
-    }
-
-    public static byte[] swizzleSurface(GX2Surface surface, bool isCompressed)
-    {
-        byte[] original = new byte[surface.data.Length];
-
-        surface.data.CopyTo(original, 0);
-
-        int swizzle = ((surface.swizzle >> 8) & 1) + (((surface.swizzle >> 9) & 3) << 1);
-        int blockSize;
-        int width = surface.width;
-        int height = surface.height;
-
-        int format = getBPP(surface.format);
-            Console.WriteLine(((GX2SurfaceFormat)surface.format).ToString());
-
-        if (isCompressed) {
-            width  /= 4;
-            height /= 4;
-
-            if ((GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM ||
-                (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM) {
-                blockSize = 8;
-            } else {
-                blockSize = 16;
-            }
-        } else {
-                /*if ((GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_TC_R5_G5_B5_A1_UNORM)
-                {
-                    blockSize = format / 4;
-                }
-                else*/
-            blockSize = format / 8;
-        }
-
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int pos = surfaceAddrFromCoordMacroTiled(x, y, format, surface.pitch, swizzle);
-                int pos_ = (y * width + x) * blockSize;
-
-                for (int k = 0; k < blockSize; k++)
-                {
-                        if (pos + k >= original.Length || pos_ + k >= surface.data.Length)
-                        {
-                            Console.WriteLine("Break Point " + pos_ + " " + pos);
-                            break;
-                        }
-                    surface.data[pos_ + k] = original[pos + k];
-                }
-            }
-        }
-        return surface.data;
-    }
-
-    public static int surfaceAddrFromCoordMacroTiled (int x, int y, int bpp, int pitch, int swizzle)
-    {
-        int pixelIndex = computePixelIndexWithinMicroTile(x, y, bpp);
-        int elemOffset = (bpp * pixelIndex) >> 3;
-
-        int pipe = computePipeFromCoordWoRotation(x, y);
-        int bank = computeBankFromCoordWoRotation(x, y);
-        int bankPipe = ((pipe + 2 * bank) ^ swizzle) % 9;
-
-        pipe = bankPipe % 2;
-        bank = bankPipe / 2;
-
-        int macroTileBytes = (bpp * 512 + 7) >> 3;
-        int macroTileOffset = (x / 32 + pitch / 32 * (y / 16)) * macroTileBytes;
-
-        int unk1 = elemOffset + (macroTileOffset >> 3);
-        int unk2 = unk1 & ~0xFF;
-
-        return (unk2 << 3) | (0xFF & unk1) | (pipe << 8) | (bank << 9);
-    }
-
-    public static int computePixelIndexWithinMicroTile (int x, int y, int bpp)
-    {
-        int bits = ((x & 4) << 1) | ((y & 2) << 3) | ((y & 4) << 3);
-
-        if (bpp == 0x20 || bpp == 0x60) {
-            bits |= (x & 1) | (x & 2)        | ((y & 1) << 2);
-        } else if (bpp == 0x40) {
-            bits |= (x & 1) | ((y & 1) << 1) | ((x & 2) << 1);
-        } else if (bpp == 0x80) {
-            bits |= (y & 1) | ((x & 1) << 1) | ((x & 2) << 1);
-        }
-
-        return bits;
-    }
-
-    public static int getFormatBpp(int format)
-    {
-        int hwFormat = format & 0x3F;
-        return formatHwInfo[hwFormat * 4];
-    }
-
-    public static int computeSurfaceThickness(AddrTileMode tileMode)
-    {
-        switch (tileMode)
         {
-            case AddrTileMode.ADDR_TM_1D_TILED_THICK:
-            case AddrTileMode.ADDR_TM_2D_TILED_THICK:
-            case AddrTileMode.ADDR_TM_2B_TILED_THICK:
-            case AddrTileMode.ADDR_TM_3D_TILED_THICK:
-            case AddrTileMode.ADDR_TM_3B_TILED_THICK:
-                {
-                    return 4;
-                }
-            case AddrTileMode.ADDR_TM_2D_TILED_XTHICK:
-            case AddrTileMode.ADDR_TM_3D_TILED_XTHICK:
-                {
-                    return 8;
-                }
+            GX2Surface sur = new GX2Surface();
+            sur.width = width;
+            sur.height = height;
+            sur.tileMode = tileMode;
+            sur.format = format;
+            sur.swizzle = swizzle;
+            sur.pitch = pitch;
+            sur.data = data;
+            sur.imageSize = data.Length;
+            //return swizzleBC(sur);
+            return swizzleSurface(sur, ((GX2SurfaceFormat)sur.format != GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM) & (GX2SurfaceFormat)sur.format != GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_SRGB);
         }
 
-        return 1;
-    }
-
-    public static int isThickMacroTiled(AddrTileMode tileMode)
-    {
-        switch (tileMode)
+        public static int getBPP(int i)
         {
-            case AddrTileMode.ADDR_TM_2D_TILED_THICK:
-            case AddrTileMode.ADDR_TM_2B_TILED_THICK:
-            case AddrTileMode.ADDR_TM_3D_TILED_THICK:
-            case AddrTileMode.ADDR_TM_3B_TILED_THICK:
-                {
-                    return 1;
-                }
-        }
-
-        return 0;
-    }
-
-    public static int isBankSwappedTileMode(AddrTileMode tileMode)
-    {
-        switch (tileMode)
-        {
-            case AddrTileMode.ADDR_TM_2B_TILED_THIN1:
-            case AddrTileMode.ADDR_TM_2B_TILED_THIN2:
-            case AddrTileMode.ADDR_TM_2B_TILED_THIN4:
-            case AddrTileMode.ADDR_TM_2B_TILED_THICK:
-            case AddrTileMode.ADDR_TM_3B_TILED_THIN1:
-            case AddrTileMode.ADDR_TM_3B_TILED_THICK:
-                {
-                    return 1;
-                }
-        }
-        return 0;
-    }
-
-    public static int computeSurfaceRotationFromTileMode(AddrTileMode tileMode)
-    {
-        switch ((int)tileMode)
-        {
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-                {
-                    return 2;
-                }
-            case 12:
-            case 13:
-            case 14:
-            case 15:
-                {
-                    return 1;
-                }
-        }
-
-        return 0;
-    }
-
-    public static int computePipeFromCoordWoRotation(int x, int y)
-    {
-        int pipe = ((y >> 3) ^ (x >> 3)) & 1;
-        return pipe;
-    }
-
-    public static int computeBankFromCoordWoRotation(int x, int y)
-    {
-        int bankBit0 = ((y / (16 * 2)) ^ (x >> 3)) & 1;
-        int bank = bankBit0 | 2 * (((y / (8 * 2)) ^ (x >> 4)) & 1);
-
-        return bank;
-    }
-
-    public static int computeMacroTileAspectRatio(AddrTileMode tileMode)
-    {
-        switch (tileMode)
-        {
-            case AddrTileMode.ADDR_TM_2B_TILED_THIN1:
-            case AddrTileMode.ADDR_TM_3D_TILED_THIN1:
-            case AddrTileMode.ADDR_TM_3B_TILED_THIN1:
-                {
-                    return 1;
-                }
-            case AddrTileMode.ADDR_TM_2D_TILED_THIN2:
-            case AddrTileMode.ADDR_TM_2B_TILED_THIN2:
-                {
-                    return 2;
-                }
-            case AddrTileMode.ADDR_TM_2D_TILED_THIN4:
-            case AddrTileMode.ADDR_TM_2B_TILED_THIN4:
-                {
-                    return 4;
-                }
-        }
-
-        return 1;
-    }
-
-    public static int computeSurfaceBankSwappedWidth(AddrTileMode tileMode, int bpp, int numSamples, int pitch, int pSlicesPerTile)
-    {
-        int bankSwapWidth = 0;
-        int numBanks = 4;
-        int numPipes = 2;
-        int swapSize = 256;
-        int rowSize = 2048;
-        int splitSize = 2048;
-        int groupSize = 256;
-        int slicesPerTile = 1;
-        int bytesPerSample = 8 * bpp & 0x1FFFFFFF;
-        int samplesPerTile = splitSize / bytesPerSample;
-
-        if ((splitSize / bytesPerSample) != 0)
-        {
-            slicesPerTile = numSamples / samplesPerTile;
-            if ((numSamples / samplesPerTile) == 0)
+            switch ((GX2SurfaceFormat)i)
             {
-                slicesPerTile = 1;
+                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM:
+                    return 0x20;
+                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM:
+                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM:
+                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_SRGB:
+                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM:
+                    return 0x40;
+                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_UNORM:
+                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC3_UNORM:
+                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_UNORM:
+                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_SRGB:
+                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC3_SRGB:
+                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC5_SNORM:
+                    return 0x80;
             }
+            return -1;
         }
 
-        if (pSlicesPerTile != 0)
+        public static byte[] swizzleSurface(GX2Surface surface, bool isCompressed)
         {
-            pSlicesPerTile = slicesPerTile;
-        }
+            byte[] original = new byte[surface.data.Length];
 
-        if (isThickMacroTiled(tileMode) == 1)
-        {
-            numSamples = 4;
-        }
+            surface.data.CopyTo(original, 0);
 
-        int bytesPerTileSlice = numSamples * bytesPerSample / slicesPerTile;
+            int swizzle = ((surface.swizzle >> 8) & 1) + (((surface.swizzle >> 9) & 3) << 1);
+            int blockSize;
+            int width = surface.width;
+            int height = surface.height;
 
-        if (isBankSwappedTileMode(tileMode) == 1)
-        {
-            int v7;
-            int v8;
-            int v9;
+            int format = getBPP(surface.format);
 
-            int factor = computeMacroTileAspectRatio(tileMode);
-            int swapTiles = (swapSize >> 1) / bpp;
-
-            if (swapTiles != 0)
+            if (isCompressed)
             {
-                v9 = swapTiles;
-            }
-            else
-            {
-                v9 = 1;
-            }
+                width /= 4;
+                height /= 4;
 
-            int swapWidth = v9 * 8 * numBanks;
-            int heightBytes = numSamples * factor * numPipes * bpp / slicesPerTile;
-            int swapMax = numPipes * numBanks * rowSize / heightBytes;
-            int swapMin = groupSize * 8 * numBanks / bytesPerTileSlice;
-
-            if (swapMax >= swapWidth)
-            {
-                if (swapMin <= swapWidth)
+                if ((GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM ||
+                    (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_SRGB ||
+                    (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM ||
+                        (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM)
                 {
-                    v7 = swapWidth;
+                    blockSize = 8;
                 }
                 else
                 {
-                    v7 = swapMin;
+                    blockSize = 16;
                 }
-
-                v8 = v7;
             }
             else
             {
-                v8 = swapMax;
+                blockSize = format / 8;
             }
 
-            bankSwapWidth = v8;
-
-            while (bankSwapWidth >= (2 * pitch))
+            for (int y = 0; y < height; y++)
             {
-                bankSwapWidth >>= 1;
+                for (int x = 0; x < width; x++)
+                {
+                    int pos = surfaceAddrFromCoordMacroTiled(x, y, format, surface.pitch, swizzle);
+                    int pos_ = (y * width + x) * blockSize;
+
+                    for (int k = 0; k < blockSize; k++)
+                    {
+                        if (pos_ + k >= surface.data.Length || pos + k >= original.Length)
+                            break;
+                        surface.data[pos_ + k] = original[pos + k];
+                    }
+                }
             }
+            return surface.data;
         }
 
-        return bankSwapWidth;
-    }
-
-    public static int computePixelIndexWithinMicroTile(int x, int y, int z, int bpp, AddrTileMode tileMode, int microTileType)
-    {
-        int pixelBit0 = 0;
-        int pixelBit1 = 0;
-        int pixelBit2 = 0;
-        int pixelBit3 = 0;
-        int pixelBit4 = 0;
-        int pixelBit5 = 0;
-        int pixelBit6 = 0;
-        int pixelBit7 = 0;
-        int pixelBit8 = 0;
-        int thickness = computeSurfaceThickness(tileMode);
-
-        if (microTileType == 3)
+        public static int surfaceAddrFromCoordMacroTiled(int x, int y, int bpp, int pitch, int swizzle)
         {
-            pixelBit0 = x & 1;
-            pixelBit1 = y & 1;
-            pixelBit2 = z & 1;
-            pixelBit3 = (x & 2) >> 1;
-            pixelBit4 = (y & 2) >> 1;
-            pixelBit5 = (z & 2) >> 1;
-            pixelBit6 = (x & 4) >> 2;
-            pixelBit7 = (y & 4) >> 2;
+            int pixelIndex = computePixelIndexWithinMicroTile(x, y, bpp);
+            int elemOffset = (bpp * pixelIndex) >> 3;
+
+            int pipe = computePipeFromCoordWoRotation(x, y);
+            int bank = computeBankFromCoordWoRotation(x, y);
+            int bankPipe = ((pipe + 2 * bank) ^ swizzle) % 9;
+
+            pipe = bankPipe % 2;
+            bank = bankPipe / 2;
+
+            int macroTileBytes = (bpp * 512 + 7) >> 3;
+            int macroTileOffset = (x / 32 + pitch / 32 * (y / 16)) * macroTileBytes;
+
+            int unk1 = elemOffset + (macroTileOffset >> 3);
+            int unk2 = unk1 & ~0xFF;
+
+            return (unk2 << 3) | (0xFF & unk1) | (pipe << 8) | (bank << 9);
         }
-        else
+
+        public static int computePixelIndexWithinMicroTile(int x, int y, int bpp)
         {
-            if (microTileType != 0)
+            int bits = ((x & 4) << 1) | ((y & 2) << 3) | ((y & 4) << 3);
+
+            if (bpp == 0x20 || bpp == 0x60)
+            {
+                bits |= (x & 1) | (x & 2) | ((y & 1) << 2);
+            }
+            else if (bpp == 0x40)
+            {
+                bits |= (x & 1) | ((y & 1) << 1) | ((x & 2) << 1);
+            }
+            else if (bpp == 0x80)
+            {
+                bits |= (y & 1) | ((x & 1) << 1) | ((x & 2) << 1);
+            }
+
+            return bits;
+        }
+
+        public static int getFormatBpp(int format)
+        {
+            int hwFormat = format & 0x3F;
+            return formatHwInfo[hwFormat * 4];
+        }
+
+        public static int computeSurfaceThickness(AddrTileMode tileMode)
+        {
+            switch (tileMode)
+            {
+                case AddrTileMode.ADDR_TM_1D_TILED_THICK:
+                case AddrTileMode.ADDR_TM_2D_TILED_THICK:
+                case AddrTileMode.ADDR_TM_2B_TILED_THICK:
+                case AddrTileMode.ADDR_TM_3D_TILED_THICK:
+                case AddrTileMode.ADDR_TM_3B_TILED_THICK:
+                    {
+                        return 4;
+                    }
+                case AddrTileMode.ADDR_TM_2D_TILED_XTHICK:
+                case AddrTileMode.ADDR_TM_3D_TILED_XTHICK:
+                    {
+                        return 8;
+                    }
+            }
+
+            return 1;
+        }
+
+        public static int isThickMacroTiled(AddrTileMode tileMode)
+        {
+            switch (tileMode)
+            {
+                case AddrTileMode.ADDR_TM_2D_TILED_THICK:
+                case AddrTileMode.ADDR_TM_2B_TILED_THICK:
+                case AddrTileMode.ADDR_TM_3D_TILED_THICK:
+                case AddrTileMode.ADDR_TM_3B_TILED_THICK:
+                    {
+                        return 1;
+                    }
+            }
+
+            return 0;
+        }
+
+        public static int isBankSwappedTileMode(AddrTileMode tileMode)
+        {
+            switch (tileMode)
+            {
+                case AddrTileMode.ADDR_TM_2B_TILED_THIN1:
+                case AddrTileMode.ADDR_TM_2B_TILED_THIN2:
+                case AddrTileMode.ADDR_TM_2B_TILED_THIN4:
+                case AddrTileMode.ADDR_TM_2B_TILED_THICK:
+                case AddrTileMode.ADDR_TM_3B_TILED_THIN1:
+                case AddrTileMode.ADDR_TM_3B_TILED_THICK:
+                    {
+                        return 1;
+                    }
+            }
+            return 0;
+        }
+
+        public static int computeSurfaceRotationFromTileMode(AddrTileMode tileMode)
+        {
+            switch ((int)tileMode)
+            {
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                    {
+                        return 2;
+                    }
+                case 12:
+                case 13:
+                case 14:
+                case 15:
+                    {
+                        return 1;
+                    }
+            }
+
+            return 0;
+        }
+
+        public static int computePipeFromCoordWoRotation(int x, int y)
+        {
+            int pipe = ((y >> 3) ^ (x >> 3)) & 1;
+            return pipe;
+        }
+
+        public static int computeBankFromCoordWoRotation(int x, int y)
+        {
+            int bankBit0 = ((y / (16 * 2)) ^ (x >> 3)) & 1;
+            int bank = bankBit0 | 2 * (((y / (8 * 2)) ^ (x >> 4)) & 1);
+
+            return bank;
+        }
+
+        public static int computeMacroTileAspectRatio(AddrTileMode tileMode)
+        {
+            switch (tileMode)
+            {
+                case AddrTileMode.ADDR_TM_2B_TILED_THIN1:
+                case AddrTileMode.ADDR_TM_3D_TILED_THIN1:
+                case AddrTileMode.ADDR_TM_3B_TILED_THIN1:
+                    {
+                        return 1;
+                    }
+                case AddrTileMode.ADDR_TM_2D_TILED_THIN2:
+                case AddrTileMode.ADDR_TM_2B_TILED_THIN2:
+                    {
+                        return 2;
+                    }
+                case AddrTileMode.ADDR_TM_2D_TILED_THIN4:
+                case AddrTileMode.ADDR_TM_2B_TILED_THIN4:
+                    {
+                        return 4;
+                    }
+            }
+
+            return 1;
+        }
+
+        public static int computeSurfaceBankSwappedWidth(AddrTileMode tileMode, int bpp, int numSamples, int pitch, int pSlicesPerTile)
+        {
+            int bankSwapWidth = 0;
+            int numBanks = 4;
+            int numPipes = 2;
+            int swapSize = 256;
+            int rowSize = 2048;
+            int splitSize = 2048;
+            int groupSize = 256;
+            int slicesPerTile = 1;
+            int bytesPerSample = 8 * bpp & 0x1FFFFFFF;
+            int samplesPerTile = splitSize / bytesPerSample;
+
+            if ((splitSize / bytesPerSample) != 0)
+            {
+                slicesPerTile = numSamples / samplesPerTile;
+                if ((numSamples / samplesPerTile) == 0)
+                {
+                    slicesPerTile = 1;
+                }
+            }
+
+            if (pSlicesPerTile != 0)
+            {
+                pSlicesPerTile = slicesPerTile;
+            }
+
+            if (isThickMacroTiled(tileMode) == 1)
+            {
+                numSamples = 4;
+            }
+
+            int bytesPerTileSlice = numSamples * bytesPerSample / slicesPerTile;
+
+            if (isBankSwappedTileMode(tileMode) == 1)
+            {
+                int v7;
+                int v8;
+                int v9;
+
+                int factor = computeMacroTileAspectRatio(tileMode);
+                int swapTiles = (swapSize >> 1) / bpp;
+
+                if (swapTiles != 0)
+                {
+                    v9 = swapTiles;
+                }
+                else
+                {
+                    v9 = 1;
+                }
+
+                int swapWidth = v9 * 8 * numBanks;
+                int heightBytes = numSamples * factor * numPipes * bpp / slicesPerTile;
+                int swapMax = numPipes * numBanks * rowSize / heightBytes;
+                int swapMin = groupSize * 8 * numBanks / bytesPerTileSlice;
+
+                if (swapMax >= swapWidth)
+                {
+                    if (swapMin <= swapWidth)
+                    {
+                        v7 = swapWidth;
+                    }
+                    else
+                    {
+                        v7 = swapMin;
+                    }
+
+                    v8 = v7;
+                }
+                else
+                {
+                    v8 = swapMax;
+                }
+
+                bankSwapWidth = v8;
+
+                while (bankSwapWidth >= (2 * pitch))
+                {
+                    bankSwapWidth >>= 1;
+                }
+            }
+
+            return bankSwapWidth;
+        }
+
+        public static int computePixelIndexWithinMicroTile(int x, int y, int z, int bpp, AddrTileMode tileMode, int microTileType)
+        {
+            int pixelBit0 = 0;
+            int pixelBit1 = 0;
+            int pixelBit2 = 0;
+            int pixelBit3 = 0;
+            int pixelBit4 = 0;
+            int pixelBit5 = 0;
+            int pixelBit6 = 0;
+            int pixelBit7 = 0;
+            int pixelBit8 = 0;
+            int thickness = computeSurfaceThickness(tileMode);
+
+            if (microTileType == 3)
             {
                 pixelBit0 = x & 1;
                 pixelBit1 = y & 1;
-                pixelBit2 = (x & 2) >> 1;
-                pixelBit3 = (y & 2) >> 1;
-                pixelBit4 = (x & 4) >> 2;
-                pixelBit5 = (y & 4) >> 2;
+                pixelBit2 = z & 1;
+                pixelBit3 = (x & 2) >> 1;
+                pixelBit4 = (y & 2) >> 1;
+                pixelBit5 = (z & 2) >> 1;
+                pixelBit6 = (x & 4) >> 2;
+                pixelBit7 = (y & 4) >> 2;
             }
             else
             {
-                if (bpp == 0x08)
-                {
-                    pixelBit0 = x & 1;
-                    pixelBit1 = (x & 2) >> 1;
-                    pixelBit2 = (x & 4) >> 2;
-                    pixelBit3 = (y & 2) >> 1;
-                    pixelBit4 = y & 1;
-                    pixelBit5 = (y & 4) >> 2;
-                }
-                else if (bpp == 0x10)
-                {
-                    pixelBit0 = x & 1;
-                    pixelBit1 = (x & 2) >> 1;
-                    pixelBit2 = (x & 4) >> 2;
-                    pixelBit3 = y & 1;
-                    pixelBit4 = (y & 2) >> 1;
-                    pixelBit5 = (y & 4) >> 2;
-                }
-                else if (bpp == 0x20 || bpp == 0x60)
-                {
-                    pixelBit0 = x & 1;
-                    pixelBit1 = (x & 2) >> 1;
-                    pixelBit2 = y & 1;
-                    pixelBit3 = (x & 4) >> 2;
-                    pixelBit4 = (y & 2) >> 1;
-                    pixelBit5 = (y & 4) >> 2;
-                }
-                else if (bpp == 0x40)
+                if (microTileType != 0)
                 {
                     pixelBit0 = x & 1;
                     pixelBit1 = y & 1;
                     pixelBit2 = (x & 2) >> 1;
-                    pixelBit3 = (x & 4) >> 2;
-                    pixelBit4 = (y & 2) >> 1;
-                    pixelBit5 = (y & 4) >> 2;
-                }
-                else if (bpp == 0x80)
-                {
-                    pixelBit0 = y & 1;
-                    pixelBit1 = x & 1;
-                    pixelBit2 = (x & 2) >> 1;
-                    pixelBit3 = (x & 4) >> 2;
-                    pixelBit4 = (y & 2) >> 1;
+                    pixelBit3 = (y & 2) >> 1;
+                    pixelBit4 = (x & 4) >> 2;
                     pixelBit5 = (y & 4) >> 2;
                 }
                 else
                 {
-                    pixelBit0 = x & 1;
-                    pixelBit1 = (x & 2) >> 1;
-                    pixelBit2 = y & 1;
-                    pixelBit3 = (x & 4) >> 2;
-                    pixelBit4 = (y & 2) >> 1;
-                    pixelBit5 = (y & 4) >> 2;
+                    if (bpp == 0x08)
+                    {
+                        pixelBit0 = x & 1;
+                        pixelBit1 = (x & 2) >> 1;
+                        pixelBit2 = (x & 4) >> 2;
+                        pixelBit3 = (y & 2) >> 1;
+                        pixelBit4 = y & 1;
+                        pixelBit5 = (y & 4) >> 2;
+                    }
+                    else if (bpp == 0x10)
+                    {
+                        pixelBit0 = x & 1;
+                        pixelBit1 = (x & 2) >> 1;
+                        pixelBit2 = (x & 4) >> 2;
+                        pixelBit3 = y & 1;
+                        pixelBit4 = (y & 2) >> 1;
+                        pixelBit5 = (y & 4) >> 2;
+                    }
+                    else if (bpp == 0x20 || bpp == 0x60)
+                    {
+                        pixelBit0 = x & 1;
+                        pixelBit1 = (x & 2) >> 1;
+                        pixelBit2 = y & 1;
+                        pixelBit3 = (x & 4) >> 2;
+                        pixelBit4 = (y & 2) >> 1;
+                        pixelBit5 = (y & 4) >> 2;
+                    }
+                    else if (bpp == 0x40)
+                    {
+                        pixelBit0 = x & 1;
+                        pixelBit1 = y & 1;
+                        pixelBit2 = (x & 2) >> 1;
+                        pixelBit3 = (x & 4) >> 2;
+                        pixelBit4 = (y & 2) >> 1;
+                        pixelBit5 = (y & 4) >> 2;
+                    }
+                    else if (bpp == 0x80)
+                    {
+                        pixelBit0 = y & 1;
+                        pixelBit1 = x & 1;
+                        pixelBit2 = (x & 2) >> 1;
+                        pixelBit3 = (x & 4) >> 2;
+                        pixelBit4 = (y & 2) >> 1;
+                        pixelBit5 = (y & 4) >> 2;
+                    }
+                    else
+                    {
+                        pixelBit0 = x & 1;
+                        pixelBit1 = (x & 2) >> 1;
+                        pixelBit2 = y & 1;
+                        pixelBit3 = (x & 4) >> 2;
+                        pixelBit4 = (y & 2) >> 1;
+                        pixelBit5 = (y & 4) >> 2;
+                    }
+                }
+
+                if (thickness > 1)
+                {
+                    pixelBit6 = z & 1;
+                    pixelBit7 = (z & 2) >> 1;
                 }
             }
 
-            if (thickness > 1)
+            if (thickness == 8)
             {
-                pixelBit6 = z & 1;
-                pixelBit7 = (z & 2) >> 1;
+                pixelBit8 = (z & 4) >> 2;
             }
+
+            return pixelBit0 |
+                (pixelBit8 << 8) |
+                (pixelBit7 << 7) |
+                (pixelBit6 << 6) |
+                (pixelBit5 << 5) |
+                (pixelBit4 << 4) |
+                (pixelBit3 << 3) |
+                (pixelBit2 << 2) |
+                (pixelBit1 << 1);
         }
 
-        if (thickness == 8)
+        public static int surfaceAddrFromCoordMacroTiled(
+            int x, int y, int slice, int sample, int bpp,
+            int pitch, int height, int numSamples, AddrTileMode tileMode,
+            int isDepth, int tileBase, int compBits,
+            int pipeSwizzle, int bankSwizzle
+        )
         {
-            pixelBit8 = (z & 4) >> 2;
-        }
+            const int numPipes = 2;
+            const int numBanks = 4;
+            const int numGroupBits = 8;
+            const int numPipeBits = 1;
+            const int numBankBits = 2;
 
-        return pixelBit0 |
-            (pixelBit8 << 8) |
-            (pixelBit7 << 7) |
-            (pixelBit6 << 6) |
-            (pixelBit5 << 5) |
-            (pixelBit4 << 4) |
-            (pixelBit3 << 3) |
-            (pixelBit2 << 2) |
-            (pixelBit1 << 1);
-    }
+            int microTileThickness = computeSurfaceThickness(tileMode);
+            int microTileBits = numSamples * bpp * (microTileThickness * (8 * 8));
+            int microTileBytes = microTileBits >> 3;
+            int microTileType = (isDepth == 1) ? 1 : 0;
+            int pixelIndex = computePixelIndexWithinMicroTile(x, y, slice, bpp, tileMode, microTileType);
 
-    public static int surfaceAddrFromCoordMacroTiled(
-        int x, int y, int slice, int sample, int bpp,
-        int pitch, int height, int numSamples, AddrTileMode tileMode,
-        int isDepth, int tileBase, int compBits,
-        int pipeSwizzle, int bankSwizzle
-    )
-    {
-        const int numPipes = 2;
-        const int numBanks = 4;
-        const int numGroupBits = 8;
-        const int numPipeBits = 1;
-        const int numBankBits = 2;
-
-        int microTileThickness = computeSurfaceThickness(tileMode);
-        int microTileBits = numSamples * bpp * (microTileThickness * (8 * 8));
-        int microTileBytes = microTileBits >> 3;
-        int microTileType = (isDepth == 1) ? 1 : 0;
-        int pixelIndex = computePixelIndexWithinMicroTile(x, y, slice, bpp, tileMode, microTileType);
-
-        int sampleOffset;
-        int pixelOffset;
-        if (isDepth == 1)
-        {
-            if (compBits != 0 && compBits != bpp)
+            int sampleOffset;
+            int pixelOffset;
+            if (isDepth == 1)
             {
-                sampleOffset = tileBase + compBits * sample;
-                pixelOffset = numSamples * compBits * pixelIndex;
+                if (compBits != 0 && compBits != bpp)
+                {
+                    sampleOffset = tileBase + compBits * sample;
+                    pixelOffset = numSamples * compBits * pixelIndex;
+                }
+                else
+                {
+                    sampleOffset = bpp * sample;
+                    pixelOffset = numSamples * compBits * pixelIndex;
+                }
             }
             else
             {
-                sampleOffset = bpp * sample;
-                pixelOffset = numSamples * compBits * pixelIndex;
+                sampleOffset = sample * (microTileBits / numSamples);
+                pixelOffset = bpp * pixelIndex;
             }
-        }
-        else
-        {
-            sampleOffset = sample * (microTileBits / numSamples);
-            pixelOffset = bpp * pixelIndex;
-        }
 
-        int elemOffset = pixelOffset + sampleOffset;
-        int bytesPerSample = microTileBytes / numSamples;
+            int elemOffset = pixelOffset + sampleOffset;
+            int bytesPerSample = microTileBytes / numSamples;
 
-        int samplesPerSlice;
-        int numSampleSplits;
-        int sampleSlice;
+            int samplesPerSlice;
+            int numSampleSplits;
+            int sampleSlice;
 
-        if (numSamples <= 1 || microTileBytes <= 2048)
-        {
-            samplesPerSlice = numSamples;
-            numSampleSplits = 1;
-            sampleSlice = 0;
-        }
-        else
-        {
-            samplesPerSlice = 2048 / bytesPerSample;
-            numSampleSplits = numSamples / samplesPerSlice;
-            numSamples = samplesPerSlice;
-            sampleSlice = elemOffset / (microTileBits / numSampleSplits);
-            elemOffset %= microTileBits / numSampleSplits;
-        }
-
-        elemOffset >>= 3;
-
-        int pipe = computePipeFromCoordWoRotation(x, y);
-        int bank = computeBankFromCoordWoRotation(x, y);
-        int bankPipe = pipe + numPipes * bank;
-        int rotation = computeSurfaceRotationFromTileMode(tileMode);
-        int swizzle = pipeSwizzle + numPipes * bankSwizzle;
-        int sliceIn = slice;
-
-        if (isThickMacroTiled(tileMode) == 1)
-        {
-            sliceIn >>= 2;
-        }
-
-        bankPipe ^= numPipes * sampleSlice * ((numBanks >> 1) + 1) ^ (swizzle + sliceIn * rotation);
-        bankPipe %= numPipes * numBanks;
-        pipe = bankPipe % numPipes;
-        bank = bankPipe / numPipes;
-
-        int sliceBytes = (height * pitch * microTileThickness * bpp * numSamples + 7) / 8;
-        int sliceOffset = sliceBytes * ((sampleSlice + numSampleSplits * slice) / microTileThickness);
-        int macroTilePitch = 8 * 4; // m_banks
-        int macroTileHeight = 8 * 2; // m_pipes
-        int v18 = (int)tileMode - 5;
-
-        if ((int)tileMode == 5 || (int)tileMode == 9)
-        {
-            macroTilePitch >>= 1;
-            macroTileHeight *= 2;
-        }
-        else if ((int)tileMode == 6 || (int)tileMode == 10)
-        {
-            macroTilePitch >>= 2;
-            macroTileHeight *= 4;
-        }
-
-        int macroTilesPerRow = pitch / macroTilePitch;
-        int macroTileBytes = (numSamples * microTileThickness * bpp * macroTileHeight * macroTilePitch + 7) >> 3;
-        int macroTileIndexX = x / macroTilePitch;
-        int macroTileIndexY = y / macroTileHeight;
-        int macroTileOffset = (x / macroTilePitch + pitch / macroTilePitch * (y / macroTileHeight)) * macroTileBytes;
-
-        int bankSwapWidth;
-        int swapIndex;
-        int bankMask;
-
-        byte[] bankSwapOrder = { 0, 1, 3, 2 };
-        switch ((int)tileMode)
-        {
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-            case 14:
-            case 15:
-                {
-                    bankSwapWidth = computeSurfaceBankSwappedWidth(tileMode, bpp, numSamples, pitch, 0);
-                    swapIndex = macroTilePitch * macroTileIndexX / bankSwapWidth;
-                    bankMask = 3; // m_banks-1
-                    bank ^= bankSwapOrder[swapIndex & bankMask];
-                }
-                break;
-        }
-
-        int p4 = pipe << numGroupBits;
-        int p5 = bank << (numPipeBits + numGroupBits);
-        int numSwizzleBits = numBankBits + numPipeBits;
-        int unk1 = (macroTileOffset + sliceOffset) >> numSwizzleBits;
-        int unk2 = ~((1 << numGroupBits) - 1);
-        int unk3 = (elemOffset + unk1) & unk2;
-        int groupMask = (1 << numGroupBits) - 1;
-        int offset1 = macroTileOffset + sliceOffset;
-        int unk4 = elemOffset + (offset1 >> numSwizzleBits);
-
-        int subOffset1 = unk3 << numSwizzleBits;
-        int subOffset2 = groupMask & unk4;
-
-        return subOffset1 | subOffset2 | p4 | p5;
-    }
-
-    public static byte[] swizzleBC(GX2Surface surface)
-    {
-        //std::vector<u8> result;
-        //List<byte> result = new List<byte>();
-
-        //result.resize(surface->imageSize);
-
-        //u8 *data = (u8*)surface->imagePtr;
-        byte[] data = surface.data;
-        byte[] result = new byte[surface.imageSize];
-
-        int width = surface.width / 4;
-        int height = surface.height / 4;
-
-        for (int y = 0; y < height; ++y)
-        {
-            for (int x = 0; x < width; ++x)
+            if (numSamples <= 1 || microTileBytes <= 2048)
             {
-                int bpp = getFormatBpp(surface.format);
-                int pos = 0;
-
-                switch (surface.tileMode)
-                {
-                    case 0:
-                    case 1:
-                        {
-                            // pos = surfaceAddrFromCoordLinear(
-                            //  x, y, 0, 0, bpp,
-                            //  surface->pitch, height, surface->depth, 0
-                            // );
-
-                            //printf("Unsupported tilemode %d\n", surface->tileMode);
-                            //exit(1);
-                        }
-                        break;
-
-                    case 2:
-                    case 3:
-                        {
-                            // pos = surfaceAddrFromCoordMicroTiled(
-                            //  x, y, 0, bpp, surface->pitch, height,
-                            //  surface->tileMode, 0, 0, 0, 0
-                            // );
-
-                            //printf("Unsupported tilemode %d\n", surface->tileMode);
-                            //exit(1);
-                        }
-                        break;
-
-                    default:
-                        {
-                            pos = surfaceAddrFromCoordMacroTiled(
-                                x, y, 0, 0, bpp, surface.pitch, height,
-                                1, (AddrTileMode)surface.tileMode, 0, 0, 0,
-                                (surface.swizzle >> 8) & 1,
-                                (surface.swizzle >> 9) & 3
-                            );
-                        }
-                        break;
-                }
-
-                int q = y * width + x;
-                switch (surface.format)
-                {
-                    case 0x31:
-                    case 0x34:
-                    case 0x234:
-                    case 0x431:
-                        {
-                            System.Array.Copy(data, pos, result, q * 8, 8);
-                            //memcpy(result.data() + q*8, data+pos, 8);
-                        }
-                        break;
-
-                    default:
-                        {
-                            System.Array.Copy(data, pos, result, q * 16, 16);
-                            //memcpy(result.data() + q*16, data+pos, 16);
-                        }
-                        break;
-                }
+                samplesPerSlice = numSamples;
+                numSampleSplits = 1;
+                sampleSlice = 0;
             }
+            else
+            {
+                samplesPerSlice = 2048 / bytesPerSample;
+                numSampleSplits = numSamples / samplesPerSlice;
+                numSamples = samplesPerSlice;
+                sampleSlice = elemOffset / (microTileBits / numSampleSplits);
+                elemOffset %= microTileBits / numSampleSplits;
+            }
+
+            elemOffset >>= 3;
+
+            int pipe = computePipeFromCoordWoRotation(x, y);
+            int bank = computeBankFromCoordWoRotation(x, y);
+            int bankPipe = pipe + numPipes * bank;
+            int rotation = computeSurfaceRotationFromTileMode(tileMode);
+            int swizzle = pipeSwizzle + numPipes * bankSwizzle;
+            int sliceIn = slice;
+
+            if (isThickMacroTiled(tileMode) == 1)
+            {
+                sliceIn >>= 2;
+            }
+
+            bankPipe ^= numPipes * sampleSlice * ((numBanks >> 1) + 1) ^ (swizzle + sliceIn * rotation);
+            bankPipe %= numPipes * numBanks;
+            pipe = bankPipe % numPipes;
+            bank = bankPipe / numPipes;
+
+            int sliceBytes = (height * pitch * microTileThickness * bpp * numSamples + 7) / 8;
+            int sliceOffset = sliceBytes * ((sampleSlice + numSampleSplits * slice) / microTileThickness);
+            int macroTilePitch = 8 * 4; // m_banks
+            int macroTileHeight = 8 * 2; // m_pipes
+            int v18 = (int)tileMode - 5;
+
+            if ((int)tileMode == 5 || (int)tileMode == 9)
+            {
+                macroTilePitch >>= 1;
+                macroTileHeight *= 2;
+            }
+            else if ((int)tileMode == 6 || (int)tileMode == 10)
+            {
+                macroTilePitch >>= 2;
+                macroTileHeight *= 4;
+            }
+
+            int macroTilesPerRow = pitch / macroTilePitch;
+            int macroTileBytes = (numSamples * microTileThickness * bpp * macroTileHeight * macroTilePitch + 7) >> 3;
+            int macroTileIndexX = x / macroTilePitch;
+            int macroTileIndexY = y / macroTileHeight;
+            int macroTileOffset = (x / macroTilePitch + pitch / macroTilePitch * (y / macroTileHeight)) * macroTileBytes;
+
+            int bankSwapWidth;
+            int swapIndex;
+            int bankMask;
+
+            byte[] bankSwapOrder = { 0, 1, 3, 2 };
+            switch ((int)tileMode)
+            {
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                case 14:
+                case 15:
+                    {
+                        bankSwapWidth = computeSurfaceBankSwappedWidth(tileMode, bpp, numSamples, pitch, 0);
+                        swapIndex = macroTilePitch * macroTileIndexX / bankSwapWidth;
+                        bankMask = 3; // m_banks-1
+                        bank ^= bankSwapOrder[swapIndex & bankMask];
+                    }
+                    break;
+            }
+
+            int p4 = pipe << numGroupBits;
+            int p5 = bank << (numPipeBits + numGroupBits);
+            int numSwizzleBits = numBankBits + numPipeBits;
+            int unk1 = (macroTileOffset + sliceOffset) >> numSwizzleBits;
+            int unk2 = ~((1 << numGroupBits) - 1);
+            int unk3 = (elemOffset + unk1) & unk2;
+            int groupMask = (1 << numGroupBits) - 1;
+            int offset1 = macroTileOffset + sliceOffset;
+            int unk4 = elemOffset + (offset1 >> numSwizzleBits);
+
+            int subOffset1 = unk3 << numSwizzleBits;
+            int subOffset2 = groupMask & unk4;
+
+            return subOffset1 | subOffset2 | p4 | p5;
         }
 
-        return result;
+        public static byte[] swizzleBC(GX2Surface surface)
+        {
+            //std::vector<u8> result;
+            //List<byte> result = new List<byte>();
 
-        //memcpy(data, result.data(), result.size());
+            //result.resize(surface->imageSize);
+
+            //u8 *data = (u8*)surface->imagePtr;
+            byte[] data = surface.data;
+            byte[] result = new byte[surface.imageSize];
+
+            int width = surface.width / 4;
+            int height = surface.height / 4;
+
+            for (int y = 0; y < height; ++y)
+            {
+                for (int x = 0; x < width; ++x)
+                {
+                    int bpp = getFormatBpp(surface.format);
+                    int pos = 0;
+
+                    switch (surface.tileMode)
+                    {
+                        case 0:
+                        case 1:
+                            {
+                                // pos = surfaceAddrFromCoordLinear(
+                                //  x, y, 0, 0, bpp,
+                                //  surface->pitch, height, surface->depth, 0
+                                // );
+
+                                //printf("Unsupported tilemode %d\n", surface->tileMode);
+                                //exit(1);
+                            }
+                            break;
+
+                        case 2:
+                        case 3:
+                            {
+                                // pos = surfaceAddrFromCoordMicroTiled(
+                                //  x, y, 0, bpp, surface->pitch, height,
+                                //  surface->tileMode, 0, 0, 0, 0
+                                // );
+
+                                //printf("Unsupported tilemode %d\n", surface->tileMode);
+                                //exit(1);
+                            }
+                            break;
+
+                        default:
+                            {
+                                pos = surfaceAddrFromCoordMacroTiled(
+                                    x, y, 0, 0, bpp, surface.pitch, height,
+                                    1, (AddrTileMode)surface.tileMode, 0, 0, 0,
+                                    (surface.swizzle >> 8) & 1,
+                                    (surface.swizzle >> 9) & 3
+                                );
+                            }
+                            break;
+                    }
+
+                    int q = y * width + x;
+                    switch (surface.format)
+                    {
+                        case 0x31:
+                        case 0x34:
+                        case 0x234:
+                        case 0x431:
+                            {
+                                System.Array.Copy(data, pos, result, q * 8, 8);
+                                //memcpy(result.data() + q*8, data+pos, 8);
+                            }
+                            break;
+
+                        default:
+                            {
+                                System.Array.Copy(data, pos, result, q * 16, 16);
+                                //memcpy(result.data() + q*16, data+pos, 16);
+                            }
+                            break;
+                    }
+                }
+            }
+
+            return result;
+
+            //memcpy(data, result.data(), result.size());
+        }
     }
 }
-}
-

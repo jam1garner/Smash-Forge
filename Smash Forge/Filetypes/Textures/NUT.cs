@@ -827,74 +827,39 @@ namespace Smash_Forge
 
         public static Texture2D CreateTexture2D(NutTexture nutTexture, int surfaceIndex = 0)
         {
-            bool compressedFormatWithMipMaps = nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
-                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
-                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
-                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRedRgtc1
-                || nutTexture.pixelInternalFormat == PixelInternalFormat.CompressedRgRgtc2;
+            bool compressedFormatWithMipMaps = TextureFormatTools.IsCompressed(nutTexture.pixelInternalFormat);
+
+            List<byte[]> mipmaps = nutTexture.surfaces[surfaceIndex].mipmaps;
 
             if (compressedFormatWithMipMaps)
             {
                 if (nutTexture.surfaces[0].mipmaps.Count > 1 && nutTexture.isDds)
                 {
-                    // Reading mip maps past the first level is only supported for DDS currently.
-                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps, true,
+                    // Reading mipmaps past the first level is only supported for DDS currently.
+                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps,
                         (InternalFormat)nutTexture.pixelInternalFormat);
                 }
                 else
                 {
                     // Only load the first level and generate the rest.
-                    return new Texture2D(nutTexture.Width, nutTexture.Height, 
-                        nutTexture.surfaces[surfaceIndex].mipmaps, false, 
+                    return new Texture2D(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count, 
                         (InternalFormat)nutTexture.pixelInternalFormat);
                 }
             }
             else
             {
-                Texture2D texture = new Texture2D(nutTexture.Width, nutTexture.Height);
-                texture.Bind();
-                AutoGenerateMipMaps(nutTexture);
-                return texture;
+                // Uncompressed.
+                return new Texture2D(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count,
+                    nutTexture.pixelInternalFormat, nutTexture.pixelFormat, nutTexture.pixelType);
             }
         }
 
         public static TextureCubeMap CreateTextureCubeMap(NutTexture t)
         {
-            TextureCubeMap texture = new TextureCubeMap(Properties.Resources._10102000);
-            texture.Bind();
-
-            // Necessary to access mipmaps past the base level.
-            texture.MinFilter = TextureMinFilter.LinearMipmapLinear; 
-
-            // The number of mip maps needs to be specified first.
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureBaseLevel, 0);
-            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMaxLevel, t.surfaces[0].mipmaps.Count);
-            GL.GenerateMipmap(GenerateMipmapTarget.TextureCubeMap);
-
-            for (int i = 0; i < t.surfaces.Count; i++)
-            {
-                GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, 0, (InternalFormat)t.pixelInternalFormat, t.Width, t.Height, 0, t.ImageSize, t.surfaces[i].mipmaps[0]);
-                
-                // Initialize the data for each level.
-                for (int j = 1; j < t.surfaces[i].mipmaps.Count; j++)
-                {
-                    GL.CompressedTexImage2D<byte>(TextureTarget.TextureCubeMapPositiveX + i, j, (InternalFormat)t.pixelInternalFormat,
-                     t.Width / (int)Math.Pow(2, j), t.Height / (int)Math.Pow(2, j), 0, t.ImageSize, t.surfaces[i].mipmaps[j]);
-                }
-            }
-
-            return texture;
-        }
-
-        private static void AutoGenerateMipMaps(NutTexture t)
-        {
-            for (int i = 0; i < t.surfaces.Count; ++i)
-            {
-                // Only load the first level and generate the other mip maps.
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.surfaces[i].mipmaps.Count);
-                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.Width, t.Height, 0, t.pixelFormat, t.pixelType, t.surfaces[i].mipmaps[0]);
-                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-            }
+            // TODO: Uncompressed cube maps.
+            TextureCubeMap texture = new TextureCubeMap(t.Width, t.Height, (InternalFormat)t.pixelInternalFormat,
+                t.surfaces[0].mipmaps, t.surfaces[1].mipmaps, t.surfaces[2].mipmaps, t.surfaces[3].mipmaps, t.surfaces[4].mipmaps, t.surfaces[5].mipmaps);
+             return texture;
         }
     }
 }

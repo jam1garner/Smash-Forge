@@ -8,6 +8,42 @@ namespace Smash_Forge
 {
     public class SMD
     {
+        public static void toBFRES(string fname)
+        {
+            StreamReader reader = File.OpenText(fname);
+            string line;
+            string current = "";
+            bool readBones = false;
+            int frame = 0, prevframe = 0;
+            string Text = "";
+
+            readBones = true;
+
+            while ((line = reader.ReadLine()) != null)
+            {
+                line = Regex.Replace(line, @"\s+", " ");
+                string[] args = line.Replace(";", "").TrimStart().Split(' ');
+
+                if (args[0].Equals("nodes") || args[0].Equals("skeleton") || args[0].Equals("end") || args[0].Equals("time"))
+                {
+                    current = args[0];
+                    if (args.Length > 1)
+                    {
+                        prevframe = frame;
+                        frame = int.Parse(args[1]);
+                    }
+                    continue;
+                }
+                if (current.Equals("nodes"))
+                {
+                    Text = args[1].Replace("\"", "");
+                }
+                if (current.Equals("time"))
+                {
+    
+                }
+            }
+        }
 
         public static void read(string fname, Animation a, VBN v)
         {

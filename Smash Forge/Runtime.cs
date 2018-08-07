@@ -26,7 +26,40 @@ namespace Smash_Forge
             Animnames = new Dictionary<uint, string>();
         }
 
+        // See https://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
+        // for a really good overview of how to use distinct colors.
+        public enum DistinctColors : uint
+        {
+            VividYellow = 0xFFFFB300,
+            StrongPurple = 0xFF803E75,
+            VividOrange = 0xFFFF6800,
+            VeryLightBlue = 0xFFA6BDD7,
+            VividRed = 0xFFC10020,
+            GrayishYellow = 0xFFCEA262,
+            MediumGray = 0xFF817066,
+
+            // The following will not be good for people with defective color vision.
+            VividGreen = 0xFF007D34,
+            StrongPurplishPink = 0xFFF6768E,
+            StrongBlue = 0xFF00538A,
+            StrongYellowishPink = 0xFFFF7A5C,
+            StrongViolet = 0xFF53377A,
+            VividOrangeYellow = 0xFFFF8E00,
+            StrongPurplishRed = 0xFFB32851,
+            VividGreenishYellow = 0xFFF4C800,
+            StrongReddishBrown = 0xFF7F180D,
+            VividYellowishGreen = 0xFF93AA00,
+            DeepYellowishBrown = 0xFF593315,
+            VividReddishOrange = 0xFFF13A13,
+            DarkOliveGreen = 0xFF232C16
+        }
+
+        public static string MarioOdysseyGamePath = "";
+
+        //public static List<ModelContainer> ModelContainers = new List<ModelContainer>();
         public static List<NUT> TextureContainers = new List<NUT>();
+        public static List<BNTX> BNTXList = new List<BNTX>();
+
         public static List<NUS3BANK> SoundContainers = new List<NUS3BANK>();
 
         public static Dictionary<string, Rendering.Lights.AreaLight> areaLights = new Dictionary<string, Rendering.Lights.AreaLight>();
@@ -36,6 +69,7 @@ namespace Smash_Forge
         public static VBN TargetVBN { get; set; }
         public static NUD TargetNUD { get; set; }
         public static LVD TargetLVD { get; set; }
+        public static BYAML TargetBYAML { get; set; }
         public static PathBin TargetPath { get; set; }
         public static LIGH.LighBin TargetLigh { get; set; }
         public static CMR0 TargetCMR0 { get; set; }
@@ -62,7 +96,15 @@ namespace Smash_Forge
 
         public static ViewportModes ViewportMode = ViewportModes.EDITVERT;
 
-        public static float RenderLineSize = 2;
+        // The messages are annoying when batch rendering.
+        public static bool checkNudTexIdOnOpen = true;
+
+        public static bool drawUv;
+
+        // Model Viewport bone display.
+        public static bool renderBones = true;
+        public static float renderBoneNodeSize = 0.1f;
+
         public static bool renderLVD = true;
 
         public static bool renderModel = true;
@@ -70,10 +112,6 @@ namespace Smash_Forge
         public static bool renderModelWireframe;
         public static float wireframeLineWidth = 0.01f;
 
-        // The messages are annoying when batch rendering.
-        public static bool checkNudTexIdOnOpen = true;
-
-        public static bool renderBones = true;
         public static bool renderCollisions = true;
         public static bool renderCollisionNormals = false;
         public static bool renderHitboxes = true;
@@ -112,35 +150,7 @@ namespace Smash_Forge
         public static bool renderHitboxesNoOverlap;
         public static bool useFrameDuration = true;
         public static bool useFAFasAnimationLength = false;
-
-        // See https://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
-        // for a really good overview of how to use distinct colors.
-        public enum DistinctColors : uint
-        {
-            VividYellow = 0xFFFFB300,
-            StrongPurple = 0xFF803E75,
-            VividOrange = 0xFFFF6800,
-            VeryLightBlue = 0xFFA6BDD7,
-            VividRed = 0xFFC10020,
-            GrayishYellow = 0xFFCEA262,
-            MediumGray = 0xFF817066,
-
-            // The following will not be good for people with defective color vision.
-            VividGreen = 0xFF007D34,
-            StrongPurplishPink = 0xFFF6768E,
-            StrongBlue = 0xFF00538A,
-            StrongYellowishPink = 0xFFFF7A5C,
-            StrongViolet = 0xFF53377A,
-            VividOrangeYellow = 0xFFFF8E00,
-            StrongPurplishRed = 0xFFB32851,
-            VividGreenishYellow = 0xFFF4C800,
-            StrongReddishBrown = 0xFF7F180D,
-            VividYellowishGreen = 0xFF93AA00,
-            DeepYellowishBrown = 0xFF593315,
-            VividReddishOrange = 0xFFF13A13,
-            DarkOliveGreen = 0xFF232C16
-        }
-
+        public static bool Is2DView = false;
 
         public static Color counterBubbleColor = Color.FromArgb(0x89, 0x89, 0x89);
         public static Color reflectBubbleColor = Color.Cyan;
@@ -245,6 +255,8 @@ namespace Smash_Forge
         public static bool useDepthTest = true;
         public static bool drawAreaLightBoundingBoxes = true;
         public static bool renderStageLighting = true;
+        public static bool renderPhysicallyBasedRendering = false;
+
 
         // Debug Shading
         public static RenderTypes renderType;

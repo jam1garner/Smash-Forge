@@ -10,7 +10,6 @@ using System.Diagnostics;
 using Smash_Forge.Rendering;
 using SFGraphics.Cameras;
 
-
 namespace Smash_Forge
 {
     class DropOutStack<T>

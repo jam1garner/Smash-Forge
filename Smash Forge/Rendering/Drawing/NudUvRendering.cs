@@ -86,25 +86,5 @@ namespace Smash_Forge.Rendering
             Vector2[] uvArray = uvs.ToArray();
             GL.BufferData(uvPositionVBO.BufferTarget, (IntPtr)(sizeof(float) * 2 * uvArray.Length), uvArray, BufferUsageHint.StaticDraw);
         }
-
-        private static List<Vector2> GenerateUVList(List<NUD.Polygon> polygons)
-        {
-            List<Vector2> uvs = new List<Vector2>();
-            int uvIndex = 0;
-
-
-            foreach (NUD.Polygon p in polygons)
-            {
-                foreach (int vertIndex in p.GetRenderingVertexIndices())
-                {
-                    // TODO: Not sure why some of the indices are incorrect.
-                    if (p.vertices.Count > vertIndex)
-                        uvs.Add(p.vertices[vertIndex].uv[uvIndex]);
-                }
-            }
-
-            return uvs;
-        }
-
     }
 }
