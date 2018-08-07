@@ -794,7 +794,6 @@ namespace Smash_Forge
             shader.SetBoolToInt("HasEmissionMap", mat.HasEmissionMap);
             shader.SetBoolToInt("HasLightMap", mat.HasLightMap);
             shader.SetBoolToInt("HasShadowMap", mat.HasShadowMap);
-            shader.SetBoolToInt("HasAmbientOcclusionMap", mat.HasAmbientOcclusionMap);
             shader.SetBoolToInt("HasSpecularMap", mat.HasSpecularMap);
             shader.SetBoolToInt("HasTeamColorMap", mat.HasTeamColorMap);
             shader.SetBoolToInt("hasDummyRamp", mat.HasTransparencyMap);
@@ -1634,7 +1633,6 @@ namespace Smash_Forge
             public bool HasTeamColorMap = false; //Splatoon uses this (TLC)
             public bool HasTransparencyMap = false;
             public bool HasShadowMap = false;
-            public bool HasAmbientOcclusionMap = false;
             public bool HasLightMap = false;
 
             //PBR (Switch) data

@@ -432,17 +432,12 @@ namespace Smash_Forge
                     poly.material.HasSpecularMap = true;
                     texture.Type = MatTexture.TextureType.Specular;
                 }
-                else if (TextureName.Contains("b00"))
+                else if (TextureName.Contains("b00") || TextureName.Contains("Moc") || TextureName.Contains("AO"))
                 {
+                    //AO and shadow can use the same sampler. Shader options will determine which channels to use 
                     texture.hash = 2;
                     poly.material.HasShadowMap = true;
                     texture.Type = MatTexture.TextureType.Shadow;
-                }
-                else if (TextureName.Contains("Moc") || TextureName.Contains("AO"))
-                {
-                    texture.hash = 2;
-                    poly.material.HasAmbientOcclusionMap = true;
-                    texture.Type = MatTexture.TextureType.AO;
                 }
                 else if (TextureName.Contains("b01"))
                 {

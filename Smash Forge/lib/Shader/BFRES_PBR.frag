@@ -6,7 +6,7 @@
 //
 //------------------------------------------------------------------------------------
 
-uniform mat4 modelview;
+uniform mat4 mvpMatrix;
 uniform vec3 specLightDirection;
 uniform vec3 difLightDirection;
 uniform mat4 projMatrix;
@@ -330,7 +330,7 @@ void main()
 			ao = texture(MRA, displayTexCoord).a;
 	}
 
-    vec3 I = vec3(0,0,-1) * mat3(modelview);
+    vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
 
     vec3 N = CalcBumpedNormal(normal);	
     vec3 V = normalize(I); //Eye View
@@ -342,15 +342,6 @@ void main()
 
     vec3 F0 = vec3(0.04); //0.04 for dielectric materials
     F0 = mix(F0, albedo, metallic);
-
-	//Quick point light setup. Currently unused
-	float Size = 1f;
-	vec3 lightPositions[4];
-	lightPositions[0] = vec3(-10.0f * Size,  10.0f * Size, 10.0f * Size);;
-	lightPositions[1] = vec3(10.0f * Size,  10.0f * Size, 10.0f * Size);
-	lightPositions[2] = vec3(-10.0f * Size,  -10.0f * Size, 10.0f * Size);
-	lightPositions[3] = vec3(10.0f * Size,  -10.0f * Size, 10.0f * Size);
-
 
 	vec3 Lo = vec3(0.0);
 
@@ -381,7 +372,6 @@ void main()
 
 // add to outgoing radiance Lo
 	Lo = (kD * albedo / PI + specular) * radiance * NdotL;
-
 
 	//Start IBL stuff
 

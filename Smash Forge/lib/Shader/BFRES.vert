@@ -25,12 +25,13 @@ in vec4 vWeight;
 in vec3 vTangent;
 in vec3 vBitangent;
 
+out vec3 FragPos;
 out vec2 f_texcoord0;
 out vec2 f_texcoord1;
 out vec2 f_texcoord2;
 out vec2 f_texcoord3;
 out vec3 normal;
-out vec4 color;
+out vec4 vertexColor;
 out vec3 tangent;
 out vec3 bitangent;
 
@@ -166,8 +167,7 @@ void main()
 		normal = normalize(normal);
 	}
 
-    //gl_TexCoord[0] = vUV0;
-    //gl_TexCoord[1] = vUV1;
+	FragPos = objPos.xyz;
 
 	if (sampler2.x + sampler2.y != 0) //BOTW has scale values to 0 if unused so set them to 1
         f_texcoord1 = vec2((vUV1 * sampler2.xy) + sampler2.zw);
@@ -194,5 +194,5 @@ void main()
     boneWeightsColored = BoneWeightColor(totalWeight).rgb;
 
 
-    color = vColor;
+    vertexColor = vColor;
 }
