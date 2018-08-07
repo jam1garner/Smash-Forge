@@ -9,7 +9,6 @@ using OpenTK;
 using System.Drawing;
 using SFGraphics.Tools;
 using System.Diagnostics;
-using SFGraphics.Tools;
 
 
 namespace Smash_Forge
@@ -206,7 +205,7 @@ namespace Smash_Forge
         public float angle; //I don't know what this does exactly, but it's -1 for left and 1 for right
         public int lineIndex;
 
-        public void read(FileData f)
+        public new void read(FileData f)
         {
             base.read(f);
 
@@ -217,7 +216,7 @@ namespace Smash_Forge
             angle = f.readFloat();
             lineIndex = f.readInt();
         }
-        public void save(FileOutput f)
+        public new void save(FileOutput f)
         {
             base.save(f);
 
@@ -251,7 +250,7 @@ namespace Smash_Forge
 
         public Collision() {}
 
-        public void read(FileData f)
+        public new void read(FileData f)
         {
             base.read(f);
 
@@ -302,7 +301,7 @@ namespace Smash_Forge
             }
 
         }
-        public void save(FileOutput f)
+        public new void save(FileOutput f)
         {
             base.save(f);
 
@@ -353,7 +352,7 @@ namespace Smash_Forge
         public float x;
         public float y;
 
-        public void read(FileData f)
+        public new void read(FileData f)
         {
             base.read(f);
 
@@ -361,7 +360,7 @@ namespace Smash_Forge
             x = f.readFloat();
             y = f.readFloat();
         }
-        public void save(FileOutput f)
+        public new void save(FileOutput f)
         {
             base.save(f);
 
@@ -380,7 +379,7 @@ namespace Smash_Forge
         public float left;
         public float right;
 
-        public void read(FileData f)
+        public new void read(FileData f)
         {
             base.read(f);
 
@@ -390,7 +389,7 @@ namespace Smash_Forge
             top = f.readFloat();
             bottom = f.readFloat();
         }
-        public void save(FileOutput f)
+        public new void save(FileOutput f)
         {
             base.save(f);
 
@@ -490,7 +489,7 @@ namespace Smash_Forge
 
         public ItemSpawner() {}
 
-        public void read(FileData f)
+        public new void read(FileData f)
         {
             base.read(f);
 
@@ -506,7 +505,7 @@ namespace Smash_Forge
                 sections.Add(new LVDShape(f));
             }
         }
-        public void save(FileOutput f)
+        public new void save(FileOutput f)
         {
             base.save(f);
 
@@ -534,7 +533,7 @@ namespace Smash_Forge
         public List<int> ids = new List<int>();
         public int padCount = 0;
 
-        public void read(FileData f)
+        public new void read(FileData f)
         {
             base.read(f);
 
@@ -579,7 +578,7 @@ namespace Smash_Forge
             for (int i = 0; i < padCount; i++)
                 f.skip(0x5); //x01 00 00 00 00
         }
-        public void save(FileOutput f)
+        public new void save(FileOutput f)
         {
             base.save(f);
 
@@ -643,7 +642,7 @@ namespace Smash_Forge
             this.type = type;
         }
 
-        public void read(FileData f)
+        public new void read(FileData f)
         {
             base.read(f);
 
@@ -669,7 +668,7 @@ namespace Smash_Forge
                 points.Add(new Vector2(f.readFloat(), f.readFloat()));
             }
         }
-        public void save(FileOutput f)
+        public new void save(FileOutput f)
         {
             base.save(f);
 
@@ -710,7 +709,7 @@ namespace Smash_Forge
             type = 4;
         }
 
-        public void read(FileData f)
+        public new void read(FileData f)
         {
             base.read(f);
 
@@ -725,7 +724,7 @@ namespace Smash_Forge
             z = f.readFloat();
             f.skip(0x10);
         }
-        public void save(FileOutput f)
+        public new void save(FileOutput f)
         {
             base.save(f);
 
@@ -761,10 +760,10 @@ namespace Smash_Forge
         public float dy;
         public float dz;
         public float radius;
-        public byte unk1;
-        public int unk2;
+        public byte dsUnk1;
+        public int dsUnk2;
 
-        public void read(FileData f)
+        public new void read(FileData f)
         {
             base.read(f);
 
@@ -790,10 +789,10 @@ namespace Smash_Forge
                 dz = f.readFloat();
                 radius = f.readFloat();
             }
-            unk1 = f.readByte();
-            unk2 = f.readInt();
+            dsUnk1 = f.readByte();
+            dsUnk2 = f.readInt();
         }
-        public void save(FileOutput f)
+        public new void save(FileOutput f)
         {
             base.save(f);
 
@@ -817,8 +816,8 @@ namespace Smash_Forge
                 f.writeFloat(dz);
                 f.writeFloat(radius);
             }
-            f.writeByte(unk1);
-            f.writeInt(unk2);
+            f.writeByte(dsUnk1);
+            f.writeInt(dsUnk2);
         }
     }
 
