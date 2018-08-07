@@ -761,7 +761,8 @@ namespace Smash_Forge
         public float dy;
         public float dz;
         public float radius;
-        public float unk;
+        public byte unk1;
+        public int unk2;
 
         public void read(FileData f)
         {
@@ -789,8 +790,8 @@ namespace Smash_Forge
                 dz = f.readFloat();
                 radius = f.readFloat();
             }
-            unk = f.readFloat();
-            f.skip(0x1);
+            unk1 = f.readByte();
+            unk2 = f.readInt();
         }
         public void save(FileOutput f)
         {
@@ -816,8 +817,8 @@ namespace Smash_Forge
                 f.writeFloat(dz);
                 f.writeFloat(radius);
             }
-            f.writeFloat(unk);
-            f.writeHex("00");
+            f.writeByte(unk1);
+            f.writeInt(unk2);
         }
     }
 

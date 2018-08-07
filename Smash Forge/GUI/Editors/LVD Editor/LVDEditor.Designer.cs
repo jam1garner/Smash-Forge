@@ -139,7 +139,8 @@
             this.label56 = new System.Windows.Forms.Label();
             this.label57 = new System.Windows.Forms.Label();
             this.damageShapeRadiusUpDown = new System.Windows.Forms.NumericUpDown();
-            this.damageShapeUnknownUpDown = new System.Windows.Forms.NumericUpDown();
+            this.damageShapeUnknown1UpDown = new System.Windows.Forms.NumericUpDown();
+            this.damageShapeUnknown2UpDown = new System.Windows.Forms.NumericUpDown();
             this.meleeCollisionGroup = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -233,7 +234,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.damageShapeY2UpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.damageShapeZ2UpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.damageShapeRadiusUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.damageShapeUnknownUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeUnknown1UpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeUnknown2UpDown)).BeginInit();
             this.meleeCollisionGroup.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -1236,7 +1238,7 @@
             this.itemSpawnerGroup.Margin = new System.Windows.Forms.Padding(2);
             this.itemSpawnerGroup.Name = "itemSpawnerGroup";
             this.itemSpawnerGroup.Padding = new System.Windows.Forms.Padding(2);
-            this.itemSpawnerGroup.Size = new System.Drawing.Size(276, 300);
+            this.itemSpawnerGroup.Size = new System.Drawing.Size(276, 306);
             this.itemSpawnerGroup.TabIndex = 35;
             this.itemSpawnerGroup.TabStop = false;
             this.itemSpawnerGroup.Text = "Item Spawner";
@@ -1650,12 +1652,13 @@
             this.damageShapeGroup.Controls.Add(this.label56);
             this.damageShapeGroup.Controls.Add(this.label57);
             this.damageShapeGroup.Controls.Add(this.damageShapeRadiusUpDown);
-            this.damageShapeGroup.Controls.Add(this.damageShapeUnknownUpDown);
+            this.damageShapeGroup.Controls.Add(this.damageShapeUnknown1UpDown);
+            this.damageShapeGroup.Controls.Add(this.damageShapeUnknown2UpDown);
             this.damageShapeGroup.Location = new System.Drawing.Point(2, 1228);
             this.damageShapeGroup.Margin = new System.Windows.Forms.Padding(2);
             this.damageShapeGroup.Name = "damageShapeGroup";
             this.damageShapeGroup.Padding = new System.Windows.Forms.Padding(2);
-            this.damageShapeGroup.Size = new System.Drawing.Size(276, 107);
+            this.damageShapeGroup.Size = new System.Drawing.Size(276, 135);
             this.damageShapeGroup.TabIndex = 38;
             this.damageShapeGroup.TabStop = false;
             this.damageShapeGroup.Text = "Damage Shape";
@@ -1814,7 +1817,7 @@
             // label56
             // 
             this.label56.AutoSize = true;
-            this.label56.Location = new System.Drawing.Point(6, 78);
+            this.label56.Location = new System.Drawing.Point(67, 74);
             this.label56.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label56.Name = "label56";
             this.label56.Size = new System.Drawing.Size(14, 13);
@@ -1824,17 +1827,17 @@
             // label57
             // 
             this.label57.AutoSize = true;
-            this.label57.Location = new System.Drawing.Point(120, 78);
+            this.label57.Location = new System.Drawing.Point(10, 108);
             this.label57.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label57.Name = "label57";
             this.label57.Size = new System.Drawing.Size(14, 13);
             this.label57.TabIndex = 32;
-            this.label57.Text = "Unknown";
+            this.label57.Text = "Unknowns";
             // 
             // damageShapeRadiusUpDown
             // 
             this.damageShapeRadiusUpDown.DecimalPlaces = 4;
-            this.damageShapeRadiusUpDown.Location = new System.Drawing.Point(48, 76);
+            this.damageShapeRadiusUpDown.Location = new System.Drawing.Point(109, 72);
             this.damageShapeRadiusUpDown.Margin = new System.Windows.Forms.Padding(2);
             this.damageShapeRadiusUpDown.Maximum = new decimal(new int[] {
             1000000000,
@@ -1851,25 +1854,29 @@
             this.damageShapeRadiusUpDown.TabIndex = 32;
             this.damageShapeRadiusUpDown.ValueChanged += new System.EventHandler(this.damageShape_ValueChanged);
             // 
-            // damageShapeUnknownUpDown
+            // damageShapeUnknown1UpDown
             // 
-            this.damageShapeUnknownUpDown.DecimalPlaces = 4;
-            this.damageShapeUnknownUpDown.Location = new System.Drawing.Point(175, 76);
-            this.damageShapeUnknownUpDown.Margin = new System.Windows.Forms.Padding(2);
-            this.damageShapeUnknownUpDown.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.damageShapeUnknownUpDown.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.damageShapeUnknownUpDown.Name = "damageShapeUnknownUpDown";
-            this.damageShapeUnknownUpDown.Size = new System.Drawing.Size(56, 20);
-            this.damageShapeUnknownUpDown.TabIndex = 32;
-            this.damageShapeUnknownUpDown.ValueChanged += new System.EventHandler(this.damageShape_ValueChanged);
+            this.damageShapeUnknown1UpDown.DecimalPlaces = 0;
+            this.damageShapeUnknown1UpDown.Location = new System.Drawing.Point(71, 106);
+            this.damageShapeUnknown1UpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.damageShapeUnknown1UpDown.Maximum = 255;
+            this.damageShapeUnknown1UpDown.Minimum = 0;
+            this.damageShapeUnknown1UpDown.Name = "damageShapeUnknown1UpDown";
+            this.damageShapeUnknown1UpDown.Size = new System.Drawing.Size(43, 20);
+            this.damageShapeUnknown1UpDown.TabIndex = 32;
+            this.damageShapeUnknown1UpDown.ValueChanged += new System.EventHandler(this.damageShape_ValueChanged);
+            // 
+            // damageShapeUnknown2UpDown
+            // 
+            this.damageShapeUnknown2UpDown.DecimalPlaces = 0;
+            this.damageShapeUnknown2UpDown.Location = new System.Drawing.Point(120, 106);
+            this.damageShapeUnknown2UpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.damageShapeUnknown2UpDown.Maximum = 2147483647;
+            this.damageShapeUnknown2UpDown.Minimum = -2147483648;
+            this.damageShapeUnknown2UpDown.Name = "damageShapeUnknown2UpDown";
+            this.damageShapeUnknown2UpDown.Size = new System.Drawing.Size(86, 20);
+            this.damageShapeUnknown2UpDown.TabIndex = 32;
+            this.damageShapeUnknown2UpDown.ValueChanged += new System.EventHandler(this.damageShape_ValueChanged);
             // 
             // meleeCollisionGroup
             // 
@@ -2606,7 +2613,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.damageShapeY2UpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.damageShapeZ2UpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.damageShapeRadiusUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.damageShapeUnknownUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeUnknown1UpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.damageShapeUnknown2UpDown)).EndInit();
             this.meleeCollisionGroup.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -2745,7 +2753,8 @@
         private System.Windows.Forms.Label label56;
         private System.Windows.Forms.Label label57;
         private System.Windows.Forms.NumericUpDown damageShapeRadiusUpDown;
-        private System.Windows.Forms.NumericUpDown damageShapeUnknownUpDown;
+        private System.Windows.Forms.NumericUpDown damageShapeUnknown1UpDown;
+        private System.Windows.Forms.NumericUpDown damageShapeUnknown2UpDown;
         private System.Windows.Forms.GroupBox meleeCollisionGroup;
         private System.Windows.Forms.NumericUpDown meleeY;
         private System.Windows.Forms.NumericUpDown meleeX;
