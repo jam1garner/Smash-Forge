@@ -2200,7 +2200,7 @@ namespace Smash_Forge
                 {
                     m.BNTX.RefreshGlTexturesByName();
                 }
-                if (m.Bfres.FTEXContainer != null)
+                if (m.Bfres != null && m.Bfres.FTEXContainer != null)
                 {
                     m.Bfres.FTEXContainer.RefreshGlTexturesByName();
                 }

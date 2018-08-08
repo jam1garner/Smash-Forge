@@ -1,0 +1,981 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SFGraphics</name>
+    </assembly>
+    <members>
+        <member name="T:SFGraphics.Cameras.Camera">
+            <summary>
+            A container for 4x4 camera matrices. The matrices can not be set directly.
+            To edit the translation matrix, the camera position should be changed, for example.
+            <para>Keyboard/mouse controls can be added by inheriting from this class and using the Pan(), Rotate(), Zoom() methods.</para>
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.Position">
+            <summary>
+            The position of the camera in scene units. 
+            Updates all matrices when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.FovRadians">
+            <summary>
+            The vertical field of view in radians. 
+            Updates <see cref="P:SFGraphics.Cameras.Camera.FovDegrees"/> and all matrices when set.
+            <para>Values less than or equal to 0 or greater than or equal to PI are ignored.</para>
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.FovDegrees">
+            <summary>
+            The vertical field of view in degrees. 
+            Updates <see cref="P:SFGraphics.Cameras.Camera.FovRadians"/> and all matrices when set.
+            <para>Values less than or equal to 0 or greater than or equal to 180 are ignored.</para>
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.RotationXRadians">
+            <summary>
+            The rotation around the x-axis in radians.
+            Updates <see cref="P:SFGraphics.Cameras.Camera.RotationXDegrees"/> and all matrices when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.RotationXDegrees">
+            <summary>
+            The rotation around the x-axis in degrees.
+            Updates <see cref="F:SFGraphics.Cameras.Camera.rotationXRadians"/> and all matrices when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.RotationYRadians">
+            <summary>
+            The rotation around the y-axis in radians.
+            Updates all matrices when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.RotationYDegrees">
+            <summary>
+            The rotation around the y-axis in degrees.
+            Updates all matrices when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.FarClipPlane">
+            <summary>
+            The far clip plane of the perspective matrix.
+            Updates all matrices when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.NearClipPlane">
+            <summary>
+            The near clip plane of the perspective matrix.
+            Updates all matrices when set.
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Cameras.Camera.renderWidth">
+            <summary>
+            The width of the viewport or rendered region in pixels.
+            Only the ratio between <see cref="F:SFGraphics.Cameras.Camera.renderWidth"/> and <see cref="F:SFGraphics.Cameras.Camera.renderHeight"/> is important.
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Cameras.Camera.renderHeight">
+            <summary>
+            The height of the viewport or rendered region in pixels.
+            Only the ratio between <see cref="F:SFGraphics.Cameras.Camera.renderWidth"/> and <see cref="F:SFGraphics.Cameras.Camera.renderHeight"/> is important.
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Cameras.Camera.modelViewMatrix">
+            <summary>
+            See <see cref="P:SFGraphics.Cameras.Camera.ModelViewMatrix"/>
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.ModelViewMatrix">
+            <summary>
+            The result of <see cref="P:SFGraphics.Cameras.Camera.RotationMatrix"/> * <see cref="P:SFGraphics.Cameras.Camera.TranslationMatrix"/>
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Cameras.Camera.mvpMatrix">
+            <summary>
+            See <see cref="P:SFGraphics.Cameras.Camera.MvpMatrix"/>
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.MvpMatrix">
+            <summary>
+            The result of <see cref="P:SFGraphics.Cameras.Camera.ModelViewMatrix"/> * <see cref="P:SFGraphics.Cameras.Camera.PerspectiveMatrix"/>
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Cameras.Camera.rotationMatrix">
+            <summary>
+            See <see cref="P:SFGraphics.Cameras.Camera.RotationMatrix"/>
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.RotationMatrix">
+            <summary>
+            The result of <see cref="M:OpenTK.Matrix4.CreateRotationY(System.Single)"/> * <see cref="M:OpenTK.Matrix4.CreateRotationX(System.Single)"/>
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Cameras.Camera.translationMatrix">
+            <summary>
+            See <see cref="P:SFGraphics.Cameras.Camera.TranslationMatrix"/>
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.TranslationMatrix">
+            <summary>
+            The result of <see cref="M:OpenTK.Matrix4.CreateTranslation(System.Single,System.Single,System.Single)"/> for X, -Y, Z of <see cref="P:SFGraphics.Cameras.Camera.Position"/>
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Cameras.Camera.perspectiveMatrix">
+            <summary>
+            See <see cref="P:SFGraphics.Cameras.Camera.PerspectiveMatrix"/>
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.PerspectiveMatrix">
+            <summary>
+            The result of <see cref="M:OpenTK.Matrix4.CreatePerspectiveFieldOfView(System.Single,System.Single,System.Single,System.Single)"/> for 
+            <see cref="P:SFGraphics.Cameras.Camera.FovRadians"/>, <see cref="F:SFGraphics.Cameras.Camera.renderWidth"/> / <see cref="F:SFGraphics.Cameras.Camera.renderHeight"/>, <see cref="P:SFGraphics.Cameras.Camera.NearClipPlane"/>,
+            <see cref="P:SFGraphics.Cameras.Camera.FarClipPlane"/>
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.#ctor(OpenTK.Vector3,System.Single,System.Single,System.Int32,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="position">The initial position of the camera.</param>
+            <param name="rotX">The rotation around the x-axis in radians</param>
+            <param name="rotY">The rotation around the y-axis in radians</param>
+            <param name="renderWidth">The width of the viewport in pixels</param>
+            <param name="renderHeight">The height of the viewport in pixels</param>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.Rotate(System.Single,System.Single)">
+            <summary>
+            Rotates the camera around the x and y axes by the specified amounts.
+            </summary>
+            <param name="xAmount">Amount to rotate around the x-axis in radians</param>
+            <param name="yAmount">Amount to rotate around the y-axis in radians</param>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.Pan(System.Single,System.Single,System.Boolean)">
+            <summary>
+            Translates the camera along the x and y axes by a specified amount.
+            </summary>
+            <param name="xAmount">The amount to add to the camera's x coordinate</param>
+            <param name="yAmount">The amount to add to the camera's y coordinate</param>
+            <param name="scaleByDistanceToOrigin">When <c>true</c>, the <paramref name="xAmount"/>
+            and <paramref name="yAmount"/> are multiplied by the magnitude of <see cref="P:SFGraphics.Cameras.Camera.Position"/>
+            and the sine of <see cref="P:SFGraphics.Cameras.Camera.FovRadians"/></param>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.Zoom(System.Single,System.Boolean)">
+            <summary>
+            Translates the camera along the z-axis by a specified amount.
+            </summary>
+            <param name="amount"></param>
+            <param name="scaleByDistanceToOrigin">When <c>true</c>, the <paramref name="amount"/> 
+            is multiplied by the magnitude of <see cref="P:SFGraphics.Cameras.Camera.Position"/></param>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.UpdateMatrices">
+            <summary>
+            Updates the <see cref="P:SFGraphics.Cameras.Camera.TranslationMatrix"/>, <see cref="P:SFGraphics.Cameras.Camera.RotationMatrix"/>, 
+            <see cref="P:SFGraphics.Cameras.Camera.PerspectiveMatrix"/>, <see cref="P:SFGraphics.Cameras.Camera.ModelViewMatrix"/>, 
+            and <see cref="P:SFGraphics.Cameras.Camera.MvpMatrix"/>.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.ResetToDefaultPosition">
+            <summary>
+            Sets <see cref="F:SFGraphics.Cameras.Camera.rotationXRadians"/> and <see cref="P:SFGraphics.Cameras.Camera.RotationYRadians"/> to 0.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.FrameBoundingSphere(OpenTK.Vector3,System.Single,System.Single)">
+            <summary>
+            
+            </summary>
+            <param name="center">The position of the center of the bounding sphere.</param>
+            <param name="radius">The radius of the bounding sphere.</param>
+            <param name="offset"></param>
+        </member>
+        <member name="T:SFGraphics.GLObjects.BufferObject">
+            <summary>
+            Encapsulates an OpenGL buffer object. Like other GLOBjects, memory is handled by GLObjectManager.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.BufferObject.Id">
+            <summary>
+            The value generated by GL.GenBuffer(). Do not attempt to bind <see cref="P:SFGraphics.GLObjects.BufferObject.Id"/> when the object has become unreachable.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.BufferObject.BufferTarget">
+            <summary>
+            The target to which the buffer is bound when calling Bind().
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.BufferObject.#ctor(OpenTK.Graphics.OpenGL.BufferTarget)">
+            <summary>
+            Creates and binds an empty buffer of the specified target.
+            </summary>
+            <param name="bufferTarget">The target to which <see cref="P:SFGraphics.GLObjects.BufferObject.Id"/> is bound</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.BufferObject.Finalize">
+            <summary>
+            Decrement the reference count for <see cref="P:SFGraphics.GLObjects.BufferObject.Id"/>. The context probably isn't current, so the data is deleted later by <see cref="T:SFGraphics.GLObjects.GLObjectManager"/>.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.BufferObject.Bind">
+            <summary>
+            Binds the buffer to the target specified at creation.
+            </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Framebuffer">
+            <summary>
+            Encapsulates an OpenGL framebuffer, including any attached color or depth attachments.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Framebuffer.Id">
+            <summary>
+            The value generated by GL.GenFramebuffer(). Do not attempt to bind <see cref="P:SFGraphics.GLObjects.Framebuffer.Id"/> when the object has become unreachable.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Framebuffer.FramebufferTarget">
+            <summary>
+            The target which <see cref="P:SFGraphics.GLObjects.Framebuffer.Id"/> is bound when calling <see cref="M:SFGraphics.GLObjects.Framebuffer.Bind"/>.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Framebuffer.PixelInternalFormat">
+            <summary>
+            The internal format used for all color attachments.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Framebuffer.Width">
+            <summary>
+            All attached textures, renderbuffers, etc are resized when set. The framebuffer's contents will not be preserved when resizing.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Framebuffer.Height">
+            <summary>
+            All attached textures, renderbuffers, etc are resized when set. The framebuffer's contents will not be preserved when resizing.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Framebuffer.ColorAttachments">
+            <summary>
+            All color attachment textures. This list may be empty if <c>0</c> is specified for the color attachment count.
+            Attempting to modify the textures in this list may result in unexpected behavior.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget)">
+            <summary>
+            Generates an empty framebuffer with no attachments bound to the specified target. 
+            Binds the framebuffer.
+            </summary>
+            <param name="framebufferTarget">The target to which <see cref="P:SFGraphics.GLObjects.Framebuffer.Id"/> is bound</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget,System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat,System.Int32)">
+            <summary>
+            Generates a framebuffer with a color attachment of the specified pixel format and dimensions. 
+            A render buffer of the same dimensions as the color attachment is generated for the depth component.
+            Binds the framebuffer.
+            </summary>
+            <param name="framebufferTarget">The target to which <see cref="P:SFGraphics.GLObjects.Framebuffer.Id"/> is bound</param>
+            <param name="width">The width of attached textures or renderbuffers</param>
+            <param name="height">The height of attached textures or renderbuffers</param>
+            <param name="pixelInternalFormat">The internal format for all color attachments</param>
+            <param name="colorAttachmentsCount">The number of color attachments to create. 
+            Ex: <c>1</c> would only create ColorAttachment0.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">The number of color attachments is negative.</exception>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Framebuffer.Finalize">
+            <summary>
+            Decrement the reference count for <see cref="P:SFGraphics.GLObjects.Framebuffer.Id"/>. The context probably isn't current, so the data is deleted later by <see cref="T:SFGraphics.GLObjects.GLObjectManager"/>.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Framebuffer.GetStatus">
+            <summary>
+            Gets the named framebuffer status for this framebuffer.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Framebuffer.ReadImagePixels(System.Boolean)">
+            <summary>
+            Reads the framebuffer's contents into a Bitmap using GL.ReadPixels. 
+            This is intended for screenshots, so it only works properly for framebuffers of type 
+            PixelFormat.Rgba.
+            </summary>
+            <param name="saveAlpha">The alpha channel is saved when true or set to 255 (white) when false</param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Framebuffer.SamplePixelColor(System.Int32,System.Int32)">
+            <summary>
+            The origin (0,0) corresponds to the top left of the screen.
+            The coordinates are based on the framebuffer's dimensions 
+            and not the screen's dimensions.
+            </summary>
+            <param name="x">The horizontal pixel coordinate</param>
+            <param name="y">The vertical pixel coordinate</param>
+            <returns>A color with the RGBA values of the selected pixel</returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Framebuffer.Bind">
+            <summary>
+            Binds the framebuffer to the target specified at creation.
+            </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.GLObjectManager">
+            <summary>
+            Manages reference counting and resource management for all GLObjects. 
+            Each GLObject has an integer ID generated by OpenTK. When an object is created, the reference count for that ID is incremented.
+            When the finalizer is called for an object, the reference count is decremented. 
+            <para></para> <para></para>
+            <see cref="T:SFGraphics.GLObjects.GLObjectManager"/> will maintain reference counts for <see cref="T:SFGraphics.GLObjects.Shaders.Shader"/> or any class inheriting from <see cref="T:SFGraphics.GLObjects.Textures.Texture"/>,
+            <see cref="T:SFGraphics.GLObjects.BufferObject"/>, or <see cref="T:SFGraphics.GLObjects.Framebuffer"/>.
+            <para></para>
+            Call <see cref="M:SFGraphics.GLObjects.GLObjectManager.DeleteUnusedGLObjects"/> with a valid OpenTK context current to delete objects with no references.
+            The reference count is managed automatically, so there is no need to call GL.DeleteTexture(int), for example.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.GLObjectManager.DeleteUnusedGLObjects">
+            <summary>
+            The appropriate GL.Delete() function is called for all GLObjects if the <c>ID</c> has 0 references.
+            This means GLObjects may not be cleaned up until long after the original object becomes unreachable.
+            <para>
+            Call <see cref="M:System.GC.WaitForPendingFinalizers"/> prior to <see cref="M:SFGraphics.GLObjects.GLObjectManager.DeleteUnusedGLObjects"/> if more 
+            immediate cleanup is desired.
+            </para>
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.IGLObject.Id">
+            <summary>
+            The value generated by GL.Gen() for a texture, buffer, etc. Do not attempt to bind this when the object has gone out of scope.
+            </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Shaders.Shader">
+            <summary>
+            Encapsulates a shader program and attached shaders. 
+            Errors are stored to an internal log, which can be exported with <see cref="M:SFGraphics.GLObjects.Shaders.Shader.GetErrorLog"/>.
+            <para></para> <para></para>
+            Ensure that <see cref="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully"/> returns <c>true</c> before rendering to avoid crashes.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.Shader.Id">
+            <summary>
+            The ID generated by GL.CreateProgram().
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully">
+            <summary>
+            <c>true</c> when the link status is ok and all attached shaders compiled.
+            If <c>false</c>, rendering with this shader will most likely cause an <see cref="T:System.AccessViolationException"/>.
+            <para></para><para></para>
+            The status is updated with each call to <see cref="M:SFGraphics.GLObjects.Shaders.Shader.LoadShader(System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String)"/> or
+            <see cref="M:SFGraphics.GLObjects.Shaders.Shader.AttachShader(System.Int32,OpenTK.Graphics.OpenGL.ShaderType)"/>.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.#ctor">
+            <summary>
+            Initializes the programID. Attach and compile shaders with LoadShader() before using.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.Finalize">
+            <summary>
+            Decrement the reference count for <see cref="P:SFGraphics.GLObjects.Shaders.Shader.Id"/>. 
+            The context probably isn't current, so the data is deleted later by <see cref="T:SFGraphics.GLObjects.GLObjectManager"/>.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.UseProgram">
+            <summary>
+            Use this shader program's program ID for rendering.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetFloat(System.String,System.Single)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetInt(System.String,System.Int32)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetUint(System.String,System.UInt32)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetBoolToInt(System.String,System.Boolean)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform. True = 1. False = 0.</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector2(System.String,OpenTK.Vector2)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector2(System.String,System.Single,System.Single)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="x"></param>        
+            <param name="y"></param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector3(System.String,OpenTK.Vector3)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector3(System.String,System.Single,System.Single,System.Single)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="x"></param>        
+            <param name="y"></param>
+            <param name="z"></param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector4(System.String,OpenTK.Vector4)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector4(System.String,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="x"></param>
+            <param name="y"></param>
+            <param name="z"></param>
+            <param name="w"></param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetMatrix4x4(System.String,OpenTK.Matrix4@)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetTexture(System.String,System.Int32,OpenTK.Graphics.OpenGL.TextureTarget,System.Int32)">
+            <summary>
+            <paramref name="textureId"/> is bound to <paramref name="textureUnit"/> before 
+            setting the uniform. Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="textureId">The integer ID generated by GL.GenTexture()</param>
+            <param name="textureTarget">The target to which <paramref name="textureId"/> is bound</param>
+            <param name="textureUnit">The texture unit to which <paramref name="textureId"/> is bound</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetVertexAttributeUniformLocation(System.String)">
+            <summary>
+            Gets the index of the vertex attribute or uniform variable. Returns -1 if not found.
+            </summary>
+            <param name="name">The name of the vertex attribute or uniform</param>
+            <returns>The index of the attribute/uniform or -1 if not found </returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.EnableVertexAttributes">
+            <summary>
+            Enables the vertex attribute arrays for all active attributes.
+            Ensures that extra attributes aren't enabled, which causes crashes on Geforce drivers.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.DisableVertexAttributes">
+            <summary>
+            Disables the vertex attribute arrays for all active attributes.
+            Ensures that extra attributes aren't enabled, which causes crashes on Geforce drivers.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetErrorLog">
+            <summary>
+            Gets the error log containing hardware info, version number, compilation/linker errors, 
+            and attempts to initialize invalid uniform or vertex attribute names.
+            </summary>
+            <returns>A String of all detected errors</returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.CreateGlShader(System.String,OpenTK.Graphics.OpenGL.ShaderType)">
+            <summary>
+            Returns the integer ID created by GL.CreateShader(). Compiles the shader.
+            This method can reduce load times by avoiding redundant shader compilations when used
+            in conjunction with <see cref="M:SFGraphics.GLObjects.Shaders.Shader.AttachShader(System.Int32,OpenTK.Graphics.OpenGL.ShaderType)"/>
+            </summary>
+            <param name="shaderSource">A string containing the shader source text</param>
+            <param name="shaderType">Supported types are ShaderType.FragmentShader, ShaderType.VertexShader, or ShaderType.GeometryShader</param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.LoadShader(System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String)">
+            <summary>
+            Attempts to compile and attach the shader. 
+            The value returned by <see cref="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully"/> is updated.
+            Supported shader types are fragment, vertex , and geometry.
+            </summary>
+            <param name="shaderSource">A string containing the shader source text</param>
+            <param name="shaderType">The type of shader to load. Ex: ShaderType.FragmentShader</param>
+            <param name="shaderName">The title used for the compilation errors section of the error log</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.AttachShader(System.Int32,OpenTK.Graphics.OpenGL.ShaderType)">
+            <summary>
+            Attaches <paramref name="shaderId"/> and links the program. 
+            The value returned by <see cref="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully"/> is updated.
+            </summary>
+            <param name="shaderId">The integer ID returned by <see cref="M:SFGraphics.GLObjects.Shaders.Shader.CreateGlShader(System.String,OpenTK.Graphics.OpenGL.ShaderType)"/></param>
+            <param name="shaderType">Supported types are ShaderType.FragmentShader, ShaderType.VertexShader, or ShaderType.GeometryShader</param>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Shaders.ShaderLog">
+            <summary>
+            Stores hardware info, OpenGL/GLSL version, invalid uniform/attribute names, shader compilation errors, and linker errors.
+            </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Textures.MipmapLoading">
+            <summary>
+            Provides methods for loading mipmaps for OpenGL textures from byte arrays of image data.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadCompressedMipMaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{System.Byte[]},OpenTK.Graphics.OpenGL.InternalFormat)">
+            <summary>
+            Loads compressed 2D image data of the compressed format <paramref name="internalFormat"/> 
+            for all the mip levels in <paramref name="mipmaps"/>.
+            The texture must first be bound to the proper target before calling this method.
+            </summary>
+            <param name="textureTarget">The target of the texture or cube face for loading mip maps. 
+            Ex: Texture2D or TextureCubeMapPositiveX.</param>
+            <param name="width">The width of the texture or cube map face in pixels</param>
+            <param name="height">The height of the texture or cube map face in pixels</param>
+            <param name="mipmaps">The list of mipmaps to load for <paramref name="textureTarget"/></param>
+            <param name="internalFormat"></param>
+        </member>
+        <member name="F:SFGraphics.GLObjects.Textures.CompressedBlockSize.blockSizeByFormat">
+            <summary>
+            A string is used instead of the enum because there are Ext versions of 
+            some enum values with identical associated integers.
+            </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Textures.TextureExceptionMessages">
+            <summary>
+            Error messages thrown by constructors for classes inheriting from <see cref="T:SFGraphics.GLObjects.Textures.Texture"/>.
+            </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Textures.TextureFormatTools">
+            <summary>
+            Helpful tools for working with PixelInternalFormat and InternalFormat 
+            with OpenTK's OpenGL texture functions.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.TextureFormatTools.CalculateImageSize(System.Int32,System.Int32,OpenTK.Graphics.OpenGL.InternalFormat)">
+            <summary>
+            Calculates the imageSize parameter for GL.CompressedTexImage. 
+            The imageSize should be recalculated for each mip level when reading mipmaps from existing image data.
+            </summary>
+            <param name="width">The width of the mip level in pixels</param>
+            <param name="height">The height of the mip level in pixels</param>
+            <param name="internalFormat">The <paramref name="internalFormat"/> should be a compressed format.</param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.TextureFormatTools.IsCompressed(OpenTK.Graphics.OpenGL.InternalFormat)">
+            <summary>
+            Determines whether a format is compressed.
+            Compressed formats should use GL.CompressedTexImage instead of GL.TexImage.
+            </summary>
+            <param name="internalFormat">The image format for the texture data</param>
+            <returns>True if the format is compressed</returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.TextureFormatTools.IsCompressed(OpenTK.Graphics.OpenGL.PixelInternalFormat)">
+            <summary>
+            Determines whether a format is compressed.
+            Compressed formats should use GL.CompressedTexImage instead of GL.TexImage.
+            </summary>
+            <param name="pixelInternalFormat">The image format for the texture data</param>
+            <returns>True if the format is compressed</returns>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Textures.DepthTexture">
+            <summary>
+            A simple texture for storing depth information. 
+            The texture can be attached to a <see cref="T:SFGraphics.GLObjects.Framebuffer"/> object for shadow mapping and other effects.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.DepthTexture.Width">
+            <summary>
+            The width of the texture in pixels.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.DepthTexture.Height">
+            <summary>
+            The height of the texture in pixels.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.DepthTexture.#ctor(System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
+            <summary>
+            Creates an empty depth texture of the specified dimensions and format. 
+            This texture does not use mipmaps.
+            The border color is set to white, so attempts to sample outside the texture's border will return white.
+            </summary>
+            <param name="width">The width of the texture in pixels</param>
+            <param name="height">The height of the texture in pixels</param>
+            <param name="pixelInternalFormat">The internal format of the image data. This should be a valid depth format.</param>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Textures.Texture">
+            <summary>
+            Encapsulates the state for an OpenGL texture object. To support texture types other than 
+            <see cref="T:SFGraphics.GLObjects.Textures.Texture2D"/> and <see cref="T:SFGraphics.GLObjects.Textures.TextureCubeMap"/>, inherit from this class
+            and add the necessary additional methods. 
+            <para></para> <para></para>
+            Avoid creating textures manually to prevent issues with textures being deleted by 
+            <see cref="M:SFGraphics.GLObjects.GLObjectManager.DeleteUnusedGLObjects"/>.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.Texture.Id">
+            <summary>
+            The value generated by GL.GenTexture(). Do not bind <see cref="P:SFGraphics.GLObjects.Textures.Texture.Id"/> when this object is unreachable.
+            </summary>
+        </member>
+        <member name="F:SFGraphics.GLObjects.Textures.Texture.textureTarget">
+            <summary>
+            The <see cref="T:OpenTK.Graphics.OpenGL.TextureTarget"/> used for all GL functions.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.Texture.MinFilter">
+            <summary>
+            Binds and updates the TextureParameter when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.Texture.MagFilter">
+            <summary>
+            Binds and updates the TextureParameter when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.Texture.TextureWrapS">
+            <summary>
+            Binds and updates the TextureParameter when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.Texture.TextureWrapT">
+            <summary>
+            Binds and updates the TextureParameter when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.Texture.TextureWrapR">
+            <summary>
+            Binds and updates the TextureParameter when set.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture.#ctor(OpenTK.Graphics.OpenGL.TextureTarget)">
+            <summary>
+            Creates an empty texture of the specified target and internal format.
+            </summary>
+            <param name="target">The target to which <see cref="P:SFGraphics.GLObjects.Textures.Texture.Id"/> is bound.</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture.Finalize">
+            <summary>
+            Decrement the reference count for <see cref="P:SFGraphics.GLObjects.Textures.Texture.Id"/>. The context probably isn't current, so the data is deleted later by <see cref="T:SFGraphics.GLObjects.GLObjectManager"/>.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture.Bind">
+            <summary>
+            Binds the Id to <see cref="F:SFGraphics.GLObjects.Textures.Texture.textureTarget"/>.
+            </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Textures.Texture2D">
+            <summary>
+            A <see cref="T:SFGraphics.GLObjects.Textures.Texture"/> class for TextureTarget.Texture2D textures that
+            provides constructors to initialize the image data from bitmaps or byte arrays 
+            in the specified image format. 
+            <para></para><para></para>
+            The texture data can be compressed, uncompressed, or a <see cref="T:System.Drawing.Bitmap"/> object.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.Texture2D.Width">
+            <summary>
+            The width of the base mip level in pixels.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.Texture2D.Height">
+            <summary>
+            The height of the base mip level in pixels.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initialize an empty Texture2D of the specified dimensions.
+            </summary>
+            <param name="width"></param>
+            <param name="height"></param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor(System.Drawing.Bitmap)">
+            <summary>
+            Initialize an RGBA texture from the specified bitmap.
+            </summary>
+            <param name="image"></param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor(System.Int32,System.Int32,System.Byte[],System.Int32,OpenTK.Graphics.OpenGL.InternalFormat)">
+            <summary>
+            Initializes a texture of the specified format and initializes the first mip level.
+            Mipmaps are autogenerated with a max level of <paramref name="mipCount"/>
+            </summary>
+            <param name="width">The width of <paramref name="baseMipLevel"/> in pixels</param>
+            <param name="height">The height of <paramref name="baseMipLevel"/> in pixels</param>
+            <param name="baseMipLevel"></param>
+            <param name="mipCount">The number of mipmaps to generate</param>
+            <param name="internalFormat">The image format of <paramref name="baseMipLevel"/></param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor(System.Int32,System.Int32,System.Byte[],System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat,OpenTK.Graphics.OpenGL.PixelFormat,OpenTK.Graphics.OpenGL.PixelType)">
+            <summary>
+            Initializes an uncompressed texture of the specified format 
+            and initializes the first mip level.
+            Mipmaps are autogenerated with a max level of <paramref name="mipCount"/>
+            </summary>
+            <param name="width">The width of <paramref name="baseMipLevel"/> in pixels</param>
+            <param name="height">The height of <paramref name="baseMipLevel"/> in pixels</param>
+            <param name="baseMipLevel"></param>
+            <param name="mipCount">The number of mipmaps to generate</param>
+            <param name="pixelInternalFormat"></param>
+            <param name="pixelFormat"></param>
+            <param name="pixelType"></param>
+            <exception cref="T:System.ArgumentException"><paramref name="pixelInternalFormat"/> is a compressed format.</exception>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor(System.Int32,System.Int32,System.Collections.Generic.List{System.Byte[]},OpenTK.Graphics.OpenGL.InternalFormat)">
+            <summary>
+            Initializes a compressed texture of the specified format 
+            and loads all mipmaps from <paramref name="mipmaps"/>.
+            </summary>
+            <param name="width">The width of the base mip level</param>
+            <param name="height">The height of the base mip level</param>
+            <param name="mipmaps">A list of byte arrays for each mip level</param>
+            <param name="internalFormat">The image format of <paramref name="mipmaps"/></param>
+            <exception cref="T:System.ArgumentException"><paramref name="internalFormat"/> is not a compressed format.</exception>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Textures.TextureCubeMap">
+            <summary>
+            A <see cref="T:SFGraphics.GLObjects.Textures.Texture"/> class for TextureTarget.TextureCubeMap textures. 
+            Provides a constructor for initializing the cube map faces from faces arranged vertically in a single bitmap.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.TextureCubeMap.#ctor(System.Drawing.Bitmap,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="cubeMapFaces">Faces arranged from top to bottom in the order
+            X+, X-, Y+, Y-, Z+, Z- </param>
+            <param name="sideLength">The length in pixels of a side of any of the faces</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.TextureCubeMap.#ctor(System.Int32,System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]})">
+            <summary>
+            Initializes a compressed cube map with mipmaps.
+            Each face should have the same dimensions, image format, and number of mipmaps.
+            </summary>
+            <param name="faceWidth">The width in pixels of each face</param>
+            <param name="faceHeight">The height in pixels of each face</param>
+            <param name="internalFormat"></param>
+            <param name="mipsPosX">Mipmaps for the positive x target</param>
+            <param name="mipsNegX">Mipmaps for the negative x target</param>
+            <param name="mipsPosY">Mipmaps for the positive y target</param>
+            <param name="mipsNegY">Mipmaps for the negative y target</param>
+            <param name="mipsPosZ">Mipmaps for the positive z target</param>
+            <param name="mipsNegZ">Mipmaps for the negative z target</param>
+            <exception cref="T:System.ArgumentException"><paramref name="internalFormat"/> is not a compressed format.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">The mipmap counts are not equal for all faces.</exception>
+        </member>
+        <member name="T:SFGraphics.Tools.BoundingSphereGenerator">
+            <summary>
+            Generates bounding spheres for a collection of vertices.
+            This can be used with <see cref="M:SFGraphics.Cameras.Camera.FrameBoundingSphere(OpenTK.Vector3,System.Single,System.Single)"/> to make models visible in the viewport.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Tools.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.List{OpenTK.Vector3})">
+            <summary>
+            The center is the average of the min and max values for X, Y, Z.
+            The radius is calculated based on the smallest sphere that will contain all of <paramref name="vertexPositions"/>.
+            Returns Vector4(center.Xyz, radius).
+            </summary>
+            <param name="vertexPositions"></param>
+            <returns>Vector4(center.Xyz, radius)</returns>
+        </member>
+        <member name="T:SFGraphics.Tools.ColorTools">
+            <summary>
+            Conversion methods for HSV, RGB, color temperature, and system Colors using floats or OpenTK vectors.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Tools.ColorTools.Vector4FromColor(System.Drawing.Color)">
+            <summary>
+            Converts the byte channel values of the input color [0,255] to float [0.0,1.0]. XYZW = RGBA.
+            </summary>
+            <param name="color"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGraphics.Tools.ColorTools.HsvToRgb(System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Single@)">
+            <summary>
+            
+            </summary>
+            <param name="h">Hue in range [0,360]</param>
+            <param name="s">Saturation in range [0,1]. Values outside range are clamped.</param>
+            <param name="v">Value</param>
+            <param name="r"></param>
+            <param name="g"></param>
+            <param name="b"></param>
+        </member>
+        <member name="M:SFGraphics.Tools.ColorTools.HsvToRgb(OpenTK.Vector3)">
+            <summary>
+            Calculates a floating point RGB color given HSV values.
+            </summary>
+            <param name="hsv">
+            X: Hue in range [0.0,1.0],
+            Y: Saturation in range [0.0,1.0],
+            Z: Value
+            </param>
+            <returns>The given HSV color in RGB</returns>
+        </member>
+        <member name="M:SFGraphics.Tools.ColorTools.RgbToHsv(System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Single@)">
+            <summary>
+            
+            </summary>
+            <param name="r"></param>
+            <param name="g"></param>
+            <param name="b"></param>
+            <param name="h"></param>
+            <param name="s"></param>
+            <param name="v"></param>
+        </member>
+        <member name="M:SFGraphics.Tools.ColorTools.RgbToHsv(OpenTK.Vector3)">
+            <summary>
+            Converts the floating point color in RGB to HSV. 
+            output.X: hue in range [0,1], output.Y: saturation in range [0,1], 
+            output.Z: value.
+            </summary>
+            <param name="rgb"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGraphics.Tools.ColorTools.ColorTemp2RGB(System.Single,System.Single@,System.Single@,System.Single@)">
+            <summary>
+            Calculates a visually similar RGB color to a blackbody.
+            </summary>
+            <param name="temp">The color temperature in Kelvin. Ex: temp = 6500 for a calibrated PC monitor.</param>
+            <param name="R"></param>
+            <param name="G"></param>
+            <param name="B"></param>
+        </member>
+        <member name="M:SFGraphics.Tools.ColorTools.ClampInt(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Returns an int restricted between min and max.
+            </summary>
+            <param name="i"></param>
+            <param name="min">Values lower than min are clamped to min.</param>
+            <param name="max">Values higher than max are clamped to max.</param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGraphics.Tools.ColorTools.ClampFloat(System.Single,System.Single,System.Single)">
+            <summary>
+            Returns a float restricted between min and max.
+            </summary>
+            <param name="f"></param>
+            <param name="min">Values lower than min are clamped to min.</param>
+            <param name="max">Values higher than max are clamped to max.</param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGraphics.Tools.ColorTools.InvertColor(System.Drawing.Color)">
+            <summary>
+            Creates a new color with inverted RGB channels. Alpha is unchanged.
+            </summary>
+            <param name="color">The color used to calculate the inverted color</param>
+            <returns>A color with inverted RGB but identical alpha as color</returns>
+        </member>
+        <member name="M:SFGraphics.Tools.ColorTools.FloatToIntClamp(System.Single,System.Int32,System.Int32)">
+            <summary>
+            Converts f to an int clamped to the specified range.
+            </summary>
+            <param name="f">Multiplied by 255 and casted to int before being clamped</param>
+            <param name="min">Values lower than min are clamped to min.</param>
+            <param name="max">Values higher than max are clamped to max.</param>
+            <returns></returns>
+        </member>
+        <member name="T:SFGraphics.Tools.OpenGLExtensions">
+            <summary>
+            This class contains methods for checking the availability of OpenGL extensions.
+            Extensions that aren't core for the current OpenGL version may not be available on all graphics processors.
+            For example, an application can target OpenGL 3.30 but still use newer features if available.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Tools.OpenGLExtensions.IsAvailable(System.String)">
+            <summary>
+            Returns true if an extension is available. 
+            There is no need to check core extensions for the current OpenGL version.
+            Initializes the list of current extensions again if empty.
+            </summary>
+            <param name="extensionName">The name of the OpenGL extension. 
+            Ex: GL_KHR_debug. Names are not case sensitive. </param>
+            <returns>True if the extension is available</returns>
+        </member>
+        <member name="M:SFGraphics.Tools.OpenGLExtensions.InitializeCurrentExtensions">
+            <summary>
+            Clears and initializes the available extensions for searching with <see cref="M:SFGraphics.Tools.OpenGLExtensions.IsAvailable(System.String)"/>.
+            </summary>
+        </member>
+        <member name="T:SFGraphics.Tools.VectorTools">
+            <summary>
+            Utility methods for normals, tangents, bitangents, and angle conversions
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Tools.VectorTools.GetDegrees(System.Double)">
+            <summary>
+            Converts <paramref name="radians"/> to degrees.
+            </summary>
+            <param name="radians">The number of radians</param>
+            <returns>The angle converted to degrees</returns>
+        </member>
+        <member name="M:SFGraphics.Tools.VectorTools.GetRadians(System.Double)">
+            <summary>
+            Converts <paramref name="degrees"/> to radians.
+            </summary>
+            <param name="degrees">The number of degrees</param>
+            <returns>The angle converted to radians</returns>
+        </member>
+        <member name="M:SFGraphics.Tools.VectorTools.Orthogonalize(OpenTK.Vector3,OpenTK.Vector3)">
+            <summary>
+            Uses the Gran-Schmidt method for orthogonalizing a vector to another vector.
+            The resulting vector is normalized.    
+            <para></para>
+            <para>
+            Ex: <c>Vector3 tanOrthoToNrm = Orthogonalize(tan, nrm);</c>
+            </para>
+            </summary>
+            <param name="target">The vector to normalize</param>
+            <param name="source">The vector to normalize against</param>
+            <returns><paramref name="target"/> orthogonalized to <paramref name="source"/></returns>
+        </member>
+        <member name="M:SFGraphics.Tools.VectorTools.GenerateTangentBitangent(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector3@,OpenTK.Vector3@)">
+            <summary>
+            Generates a tangent vector <paramref name="tangent"/> and a bitangent vector
+            <paramref name="bitangent"/> for a triangle face. 
+            If the three vertices have the same UVs or position, <paramref name="tangent"/> is set to (1, 0, 0)
+            and <paramref name="bitangent"/> is set to (0, 1, 0). This prevents black shading artifacts.
+            <para></para><para></para>
+            <paramref name="tangent"/> and <paramref name="bitangent"/> should be added to the existing tangent
+            and bitangent value for each vertex in the triangle. Normalizing the final sum 
+            averages the tangents and bitangents for smoother results.
+            </summary>
+            <param name="v1">The position of the first vertex</param>
+            <param name="v2">The position of the second vertex</param>
+            <param name="v3">The position of the third vertex</param>
+            <param name="uv1">The UV coordinates of the first vertex</param>
+            <param name="uv2">The UV coordinates of the second vertex</param>
+            <param name="uv3">The UV coordinates of the third vertex</param>
+            <param name="tangent">The generated tangent vector</param>
+            <param name="bitangent">The generated bitangent vector</param>
+        </member>
+        <member name="M:SFGraphics.Tools.VectorTools.CalculateNormal(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3)">
+            <summary>
+            Calculates the face normal of a triangle. The result is not normalized.
+            A triangle facing the camera will have a positive normal when 
+            the verts are ordered counter-clockwise.
+            </summary>
+            <param name="v1">The position of the first vertex</param>
+            <param name="v2">The position of the second vertex</param>
+            <param name="v3">The position of the third vertex</param>
+            <returns>The calculated face normal</returns>
+        </member>
+    </members>
+</doc>
