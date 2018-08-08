@@ -17,6 +17,8 @@ build:
 
 build_script:
   - msbuild "SFGraphics/SFGraphics.sln"
+  - copy /Y "%APPVEYOR_BUILD_FOLDER%\SFGraphics\bin\Release\SFGraphics.dll" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\lib\"
+  - copy /Y "%APPVEYOR_BUILD_FOLDER%\SFGraphics\bin\Release\SFGraphics.xml" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\lib\"
   - msbuild "Smash Forge.sln"
 
 deploy:
@@ -37,8 +39,6 @@ install:
   - git submodule update --init --recursive
 
 after_build:
-  - copy /Y "%APPVEYOR_BUILD_FOLDER%\SFGraphics\bin\Release\SFGraphics.dll" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\lib\"
-  - copy /Y "%APPVEYOR_BUILD_FOLDER%\SFGraphics\bin\Release\SFGraphics.xml" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\lib\"
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\Smash Forge.exe"
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\Smash Forge.exe.config"
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\lib\"
