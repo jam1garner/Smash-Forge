@@ -7,8 +7,16 @@ branches:
   only:
     - master
 
+environment:
+  matrix:
+  - solution_name: "Smash Forge.sln" 
+  - solution_name: "SFGraphics/SFGraphics.sln"
+
 build:
   verbosity: minimal
+
+build_script:
+  - msbuild %solution_name%
 
 deploy:
   tag: LatestCommit
