@@ -1283,8 +1283,17 @@ namespace Smash_Forge
 
                 if (magic2 == "BNTX") //SARC compressed
                 {
-                    BNTXEditor editor = new BNTXEditor(fileByteData);
+                    ModelContainer modelContainer = new ModelContainer();
+
+                    modelContainer.BNTX = new BNTX();
+                    modelContainer.BNTX.ReadBNTXFile(fileByteData);
+                    Runtime.BNTXList.Add(modelContainer.BNTX);
+                    Runtime.glTexturesNeedRefreshing = true;
+
+                    BNTXEditor editor = new BNTXEditor(modelContainer.BNTX);
                     AddDockedControl(editor);
+
+                    mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
                 }
 
                 if (magic2 == "SARC") //SARC compressed
@@ -1372,12 +1381,17 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".bntx"))
             {
-                FileData f = new FileData(fileName);
+                ModelContainer modelContainer = new ModelContainer();
 
-                byte[] data = f.getSection(0, f.eof());
+                modelContainer.BNTX = new BNTX();
+                modelContainer.BNTX.ReadBNTXFile(fileName);
+                Runtime.BNTXList.Add(modelContainer.BNTX);
+                Runtime.glTexturesNeedRefreshing = true;
 
-                BNTXEditor editor = new BNTXEditor(data);
+                BNTXEditor editor = new BNTXEditor(modelContainer.BNTX);
                 AddDockedControl(editor);
+
+                mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
             }
 
             if (fileName.EndsWith(".tex"))

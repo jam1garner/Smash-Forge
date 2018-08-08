@@ -895,22 +895,25 @@ namespace Smash_Forge
                 {
                     if (bntx.glTexByName.TryGetValue(tex.Name, out texture))
                     {
-                        BindBRTTexture(tex, texture);
+                        BindGLTexture(tex, texture);
                     }
                 }
             }
             else
             {
-                if (FTEXtextures.ContainsKey(tex.Name))
+                foreach (FTEXContainer ftexC in Runtime.FTEXContainerList)
                 {
-                    //  BindBRTTexture(tex, FTEXtextures[tex.Name].texture.display);
+                    if (ftexC.glTexByName.TryGetValue(tex.Name, out texture))
+                    {
+                        BindGLTexture(tex, texture);
+                    }
                 }
             }
 
             return tex.hash + 1;
         }
 
-        private static void BindBRTTexture(MatTexture matTexture, SFGraphics.GLObjects.Textures.Texture texture)
+        private static void BindGLTexture(MatTexture matTexture, SFGraphics.GLObjects.Textures.Texture texture)
         {
             // Set the texture's parameters based on the material settings.
             texture.Bind();
