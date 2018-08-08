@@ -9,8 +9,8 @@ branches:
 
 environment:
   matrix:
-  - solution_name: "Smash Forge.sln" 
   - solution_name: "SFGraphics/SFGraphics.sln"
+  - solution_name: "Smash Forge.sln" 
 
 build:
   verbosity: minimal
