@@ -144,6 +144,7 @@ namespace Smash_Forge
         {
             bool compressedFormatWithMipMaps = SFGraphics.GLObjects.Textures.TextureFormatTools.IsCompressed(tex.pixelInternalFormat);
 
+            //Todo. Use mip maps from FTEX
             if (compressedFormatWithMipMaps)
             {
                 if (tex.mipMapData.Count > 1)
