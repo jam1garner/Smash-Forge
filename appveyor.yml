@@ -17,6 +17,7 @@ build:
 
 build_script:
   - msbuild "SFGraphics/SFGraphics.sln"
+  - tree
   - copy /Y "%APPVEYOR_BUILD_FOLDER%\SFGraphics\bin\Release\SFGraphics.dll" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\lib\"
   - copy /Y "%APPVEYOR_BUILD_FOLDER%\SFGraphics\bin\Release\SFGraphics.xml" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\lib\"
   - msbuild "Smash Forge.sln"
