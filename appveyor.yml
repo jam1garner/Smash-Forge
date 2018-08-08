@@ -12,6 +12,9 @@ environment:
   - solution_name: "SFGraphics/SFGraphics.sln"
   - solution_name: "Smash Forge.sln" 
 
+before_build:
+- ps: nuget restore
+
 build:
   verbosity: minimal
 
