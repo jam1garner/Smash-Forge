@@ -7,11 +7,6 @@ branches:
   only:
     - master
 
-environment:
-  matrix:
-  - solution_name: "SFGraphics/SFGraphics.sln"
-  - solution_name: "Smash Forge.sln" 
-
 before_build:
 - cmd: cd SFGraphics
 - ps: nuget restore
@@ -21,7 +16,8 @@ build:
   verbosity: minimal
 
 build_script:
-  - msbuild "%solution_name%"
+  - msbuild "SFGraphics/SFGraphics.sln"
+  - msbuild "Smash Forge.sln"
 
 deploy:
   tag: LatestCommit
