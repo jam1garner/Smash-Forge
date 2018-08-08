@@ -248,7 +248,7 @@ namespace Smash_Forge
 
                     GL.DeleteTexture(t.texture.display);
 
-                    //Todo. Create new texture 2d object for this
+                    BNTX.glTexByName.Add(ofd.FileName, BRTI.CreateTexture2D(t.texture));
 
                     if (newTexture == null)
                         return;
