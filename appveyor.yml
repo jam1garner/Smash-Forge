@@ -16,7 +16,7 @@ build:
   verbosity: minimal
 
 build_script:
-  - msbuild %solution_name%
+  - msbuild "%solution_name%"
 
 deploy:
   tag: LatestCommit
