@@ -13,7 +13,9 @@ environment:
   - solution_name: "Smash Forge.sln" 
 
 before_build:
+- cmd: cd SFGraphics
 - ps: nuget restore
+- cmd: cd ..
 
 build:
   verbosity: minimal
