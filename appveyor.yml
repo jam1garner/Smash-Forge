@@ -39,6 +39,11 @@ deploy:
 install:
   - git submodule update --init --recursive
 
+test:
+  assemblies:
+    except:
+    - '%APPVEYOR_BUILD_FOLDER%\SFGraphics\test\SFGraphicsRenderTests\bin\$(configuration)\SFGraphicsRenderTests.dll'
+
 after_build:
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\Smash Forge.exe"
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\Smash Forge.exe.config"
