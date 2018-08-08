@@ -50,6 +50,21 @@ namespace Smash_Forge
         }
         private NUT nut;
 
+        public BNTX BNTX
+        {
+            get
+            {
+                return bntx;
+            }
+            set
+            {
+                bntx = value;
+                Refresh();
+
+            }
+        }
+        private BNTX bntx;
+
         public VBN VBN
         {
             get

@@ -306,6 +306,7 @@ void main()
     // Fragment alpha calculations.
     fragColor.a *= texture(tex0, displayTexCoord).a;
 
+
     if (renderType == 1) // normals vertexColor
     {
         vec3 displayNormal = (bumpMapNormal * 0.5) + 0.5;

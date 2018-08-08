@@ -364,6 +364,7 @@ namespace Smash_Forge
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SRGB)
                     {
+                        //fix SRGB textures.
                         byte[] fixBC1 = DDS_Decompress.DecompressBC1(texture.data, texture.width, texture.height, true);
                         texture.data = fixBC1;
                         texture.pixelInternalFormat = PixelInternalFormat.Rgba;
@@ -396,20 +397,10 @@ namespace Smash_Forge
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
                     {
                         texture.pixelInternalFormat = PixelInternalFormat.CompressedRedRgtc1;
-
-                        //        byte[] fixBC4 = DecompressBC4(texture.data, texture.width, texture.height, false);
-                        //       texture.data = fixBC4;
-                        //      texture.type = PixelInternalFormat.Rgba;
-                        //     texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
                     {
                         texture.pixelInternalFormat = PixelInternalFormat.CompressedSignedRedRgtc1;
-
-                        //       byte[] fixBC4 = DecompressBC4(texture.data, texture.width, texture.height, true);
-                        //       texture.data = fixBC4;
-                        //          texture.type = PixelInternalFormat.Rgba;
-                        //         texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else
                         throw new Exception("Unsupported data type for BC4");
@@ -417,10 +408,7 @@ namespace Smash_Forge
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC5):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
                     {
-                        //      byte[] fixBC5 = DecompressBC5(texture.data, texture.width, texture.height, false);
-                        //    texture.data = fixBC5;
                         texture.pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
-                        //    texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
                     {

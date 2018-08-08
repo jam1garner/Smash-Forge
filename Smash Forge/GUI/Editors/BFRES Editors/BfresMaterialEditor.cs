@@ -188,13 +188,19 @@ namespace Smash_Forge
             }
             else
             {
-                foreach (var texure in mat.textures)
+                foreach (FTEXContainer ftexC in Runtime.FTEXContainerList)
                 {
-                    if (BFRES.FTEXtextures.ContainsKey(texure.Name))
+                    foreach (var tex in ftexC.FTEXtextures.Values)
                     {
-                        Bitmap bmp = FTEXRGBA(BFRES.FTEXtextures[texure.Name].texture, BFRES.FTEXtextures[texure.Name].texture.display);
+                        foreach (var texure in mat.textures)
+                        {
+                            if (tex.Text == texure.Name)
+                            {
+                                Bitmap bmp = FTEXRGBA(tex.texture, tex.display);
 
-                        SetTexturePanel(bmp, texure);
+                                SetTexturePanel(bmp, texure);
+                            }
+                        }
                     }
                 }
             }    

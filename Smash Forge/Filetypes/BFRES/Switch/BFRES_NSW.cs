@@ -39,31 +39,6 @@ namespace Smash_Forge
 
             Console.WriteLine("Name = " + TargetSwitchBFRES.Name);
 
-            foreach (ExternalFile ext in TargetSwitchBFRES.ExternalFiles)
-            {
-                f = new FileData(ext.Data);
-
-                if (ext.Data.Length > 4) //BOTW has some external files that are smaller than 4 which i need to read for magic
-                {
-
-                    int EmMagic = f.readInt();
-
-                    if (EmMagic == 0x424E5458) //Textures
-                    {
-                        f.Endian = Endianness.Little;
-                        f.skip(-4);
-
-
-                        int temp = f.pos();
-                        BNTX t = new BNTX();
-                        t.ReadBNTX(f);
-                        TEmbedded.Nodes.Add(t);
-                    }
-                }
-
-            }
-
-
             int ModelCur = 0;
             //FMDLs -Models-
             foreach (Model mdl in TargetSwitchBFRES.Models)

@@ -36,17 +36,17 @@ namespace Smash_Forge
 
             AnimationCountTotal = FSKACount + FTXPCount + FSHUCount;
 
+            FTEXContainer = new FTEXContainer();
             foreach (Texture tex in TargetWiiUBFRES.Textures.Values)
             {
                 string TextureName = tex.Name;
                 FTEX texture = new FTEX();
                 texture.ReadFTEX(tex);
-
-                if (!FTEXtextures.ContainsKey(texture.Text))
-                {
-                    FTEXtextures.Add(TextureName, texture);
-                }
+         
                 TTextures.Nodes.Add(texture);
+
+                FTEXContainer.FTEXtextures.Add(texture.Text, texture);
+                Runtime.FTEXContainerList.Add(FTEXContainer);
             }
 
             int ModelCur = 0;

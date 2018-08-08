@@ -431,13 +431,18 @@ namespace Smash_Forge
 
             modelContainer.Bfres = new BFRES(fileName, fileData);
 
+            modelContainer.BNTX = modelContainer.Bfres.getBntx();
+
+            if (modelContainer.BNTX != null)
+                Runtime.BNTXList.Add(modelContainer.BNTX);
+
             if (modelContainer.Bfres.models.Count != 0)
             {
                 Runtime.TargetVBN = modelContainer.Bfres.models[0].skeleton;
                 resyncTargetVBN();
             }
 
-            if (BNTX.textures.Count > 0)
+            if (Runtime.BNTXList.Count > 0 || Runtime.FTEXContainerList.Count > 0)
                 Runtime.glTexturesNeedRefreshing = true;
 
             if (modelContainer.Bfres.AnimationCountTotal != 0)

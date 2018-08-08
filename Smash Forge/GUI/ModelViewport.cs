@@ -2196,23 +2196,13 @@ namespace Smash_Forge
 
                 if (m.NUT != null)
                     m.NUT.RefreshGlTexturesByHashId();
+                if (m.BNTX != null)
+                {
+                    m.BNTX.RefreshGlTexturesByName();
+                }
                 if (m.Bfres != null)
                 {
-                    foreach (TreeNode subNode in m.Bfres.Nodes)
-                    {
-                        if (subNode.Text == "Embedded Files")
-                        {
-                            foreach (TreeNode emb in subNode.Nodes)
-                            {
-                                if (emb is BNTX)
-                                {
-                                    BNTX B = (BNTX)emb;
-
-                                    B.RefreshGlTexturesByName();
-                                }
-                            }
-                        }
-                    }
+                    m.Bfres.FTEXContainer.RefreshGlTexturesByName();
                 }
             }
         }

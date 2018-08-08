@@ -46,6 +46,8 @@ namespace Smash_Forge
         public ResNSW.ResFile TargetSwitchBFRES;
         public static bool IsSwitchBFRES;
 
+        public FTEXContainer FTEXContainer;
+
         //Switch TreeNodes
         public TreeNode TModels = new TreeNode() { Text = "Models", Checked = true };
         public TreeNode TMaterialAnim = new TreeNode() { Text = "Material Animations" };
@@ -228,6 +230,33 @@ namespace Smash_Forge
                 scale = new Vector3(1, 1, 1);
                 rotation = new Vector3(0, 0, 0);
             }
+        }
+
+        public BNTX getBntx()
+        {
+            BNTX NewBntx = null;
+            if (TargetSwitchBFRES != null)
+            {
+                foreach (ResNSW.ExternalFile ext in TargetSwitchBFRES.ExternalFiles)
+                {
+                    FileData f = new FileData(ext.Data);
+                    if (ext.Data.Length > 4) //BOTW has some external files that are smaller than 4 which i need to read for magic
+                    {
+                        int EmMagic = f.readInt();
+                        if (EmMagic == 0x424E5458) //Textures
+                        {
+                            f.Endian = Endianness.Little;
+                            f.skip(-4);
+                            int temp = f.pos();
+                            NewBntx = new BNTX();
+                            NewBntx.ReadBNTX(f);
+                            TEmbedded.Nodes.Add(NewBntx);
+                        }
+
+                    }
+                }
+            }
+            return NewBntx;
         }
 
         public Matrix4 BonePosExtra;
