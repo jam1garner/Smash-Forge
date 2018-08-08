@@ -25,7 +25,10 @@ namespace Smash_Forge
 
             foreach (FTEX tex in FTEXtextures.Values)
             {
-                glTexByName.Add(tex.Text, FTEX.CreateTexture2D(tex.texture));
+                SFTex.Texture2D texture2d = FTEX.CreateTexture2D(tex.texture);
+                glTexByName.Add(tex.Text, texture2d);
+
+                tex.texture.display = texture2d.Id;
                 tex.display = tex.texture.display;
             }
         }
@@ -57,11 +60,25 @@ namespace Smash_Forge
             texture.data = GTX.swizzleBC(tex.Data, texture.width, texture.height, format, (int)tex.TileMode, pitch, swizzle);
             Text = tex.Name;
 
+
             //Setup variables for treenode data
 
             width = texture.width;
             height = texture.height;
             texture.mipMapCount = (int)tex.MipCount;
+
+            FileData f = new FileData(tex.MipData);
+            for (int level = 0; level < tex.MipCount; level++)
+            {
+                if (level != 0)
+                {
+
+                }
+
+                //  byte[] mip = f.getSection((int)tex.MipOffsets[level - 1], (int)tex.MipOffsets[level + 1]);
+
+                //  texture.mipMapData.Add(mip);
+            }
 
             switch (format)
             {
@@ -73,7 +90,7 @@ namespace Smash_Forge
                     byte[] fixBC1 = DDS_Decompress.DecompressBC1(texture.data, texture.width, texture.height, true);
                     texture.data = fixBC1;
                     texture.pixelInternalFormat = PixelInternalFormat.Rgba;
-                    texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    texture.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_UNORM):
                     texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
@@ -101,12 +118,12 @@ namespace Smash_Forge
                     byte[] fixBC5 = DDS_Decompress.DecompressBC5(texture.data, texture.width, texture.height, true);
                     texture.data = fixBC5;
                     texture.pixelInternalFormat = PixelInternalFormat.Rgba;
-                    texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    texture.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
 
                     break;
                 case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM):
                     texture.pixelInternalFormat = PixelInternalFormat.Rgba;
-                    texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    texture.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
             }
         }
@@ -117,78 +134,38 @@ namespace Smash_Forge
             public int width, height;
             public int display = 0;
             public PixelInternalFormat pixelInternalFormat;
-            public OpenTK.Graphics.OpenGL.PixelFormat utype;
+            public PixelFormat pixelFormat;
+            public PixelType pixelType = PixelType.UnsignedByte;
             public int mipMapCount;
-        }
-        public static int getImageSize(FTEX_Texture t)
-        {
-            switch (t.pixelInternalFormat)
-            {
-                case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
-                case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext:
-                case PixelInternalFormat.CompressedRedRgtc1:
-                case PixelInternalFormat.CompressedSignedRedRgtc1:
-                    return (t.width * t.height / 2);
-                case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
-                case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext:
-                case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
-                case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext:
-                case PixelInternalFormat.CompressedSignedRgRgtc2:
-                case PixelInternalFormat.CompressedRgRgtc2:
-                    return (t.width * t.height);
-                case PixelInternalFormat.Rgba:
-                    return t.data.Length;
-                default:
-                    return t.data.Length;
-            }
+            public List<byte[]> mipMapData = new List<byte[]>();
         }
 
         public static SFTex.Texture2D CreateTexture2D(FTEX_Texture tex, int surfaceIndex = 0)
         {
-            bool compressedFormatWithMipMaps = tex.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext
-    || tex.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt3Ext
-    || tex.pixelInternalFormat == PixelInternalFormat.CompressedRgbaS3tcDxt5Ext
-    || tex.pixelInternalFormat == PixelInternalFormat.CompressedRedRgtc1
-    || tex.pixelInternalFormat == PixelInternalFormat.CompressedRgRgtc2
-    || tex.pixelInternalFormat == PixelInternalFormat.CompressedSignedRgRgtc2
-    || tex.pixelInternalFormat == PixelInternalFormat.CompressedRgbaBptcUnorm
-    || tex.pixelInternalFormat == PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext
-    || tex.pixelInternalFormat == PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
+            bool compressedFormatWithMipMaps = SFGraphics.GLObjects.Textures.TextureFormatTools.IsCompressed(tex.pixelInternalFormat);
 
+            //Todo. Use mip maps from FTEX
             if (compressedFormatWithMipMaps)
             {
-                //Todo. Use mip maps from BNTX
+                if (tex.mipMapData.Count > 1)
+                {
+                    // Only load the first level and generate the rest.
+                    return new SFTex.Texture2D(tex.width, tex.height, tex.data, tex.mipMapData.Count,
+                        (InternalFormat)tex.pixelInternalFormat);
+                }
+                else
+                {
+                    // Only load the first level and generate the rest.
+                    return new SFTex.Texture2D(tex.width, tex.height, tex.data, tex.mipMapData.Count,
+                        (InternalFormat)tex.pixelInternalFormat);
+                }
             }
             else
             {
-
+                // Uncompressed.
+                return new SFTex.Texture2D(tex.width, tex.height, tex.data, tex.mipMapCount,
+                    tex.pixelInternalFormat, tex.pixelFormat, tex.pixelType);
             }
-
-            SFTex.Texture2D texture = new SFTex.Texture2D(tex.width, tex.height, tex.pixelInternalFormat);
-            texture.Bind();
-            AutoGenerateMipMaps(tex);
-            tex.display = texture.Id;
-            return texture;
-        }
-
-        private static void AutoGenerateMipMaps(FTEX_Texture t)
-        {
-            // Only load the first level and generate the other mip maps.
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.mipMapCount);
-
-            if (t.pixelInternalFormat != PixelInternalFormat.Rgba)
-            {
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, (InternalFormat)t.pixelInternalFormat,
-                    t.width, t.height, 0, getImageSize(t), t.data);
-            }
-            else
-            {
-                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.width, t.height, 0,
-                    t.utype, PixelType.UnsignedByte, t.data);
-            }
-
-            GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.width, t.height, 0, t.utype, PixelType.UnsignedByte, t.data);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
     }
 }

@@ -11,6 +11,9 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL;
+using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {
@@ -19,6 +22,8 @@ namespace Smash_Forge
         private BNTX BNTX;
         private BRTI BRTI;
         private bool _loaded = false;
+
+        private Texture textureToRender = null;
 
         private bool renderR = true;
         private bool renderG = true;
@@ -152,7 +157,7 @@ namespace Smash_Forge
             tex.width = bmp.Width;
             tex.height = bmp.Height;
             tex.pixelInternalFormat = PixelInternalFormat.Rgba;
-            tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+            tex.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
 
             return tex;
         }
@@ -243,11 +248,12 @@ namespace Smash_Forge
                     t.texture.width = newTexture.width;
                     t.texture.pixelInternalFormat = newTexture.pixelInternalFormat;
                     t.texture.mipmaps = newTexture.mipmaps;
-                    t.texture.utype = newTexture.utype;
+                    t.texture.pixelFormat = newTexture.pixelFormat;
                     t.texture.data = newTexture.data;
 
                     GL.DeleteTexture(t.texture.display);
-                    t.texture.display = BRTI.loadImage(t.texture);
+
+                    BNTX.glTexByName.Add(ofd.FileName, BRTI.CreateTexture2D(t.texture));
 
                     if (newTexture == null)
                         return;
@@ -300,6 +306,9 @@ namespace Smash_Forge
 
                 label3.Text = f.ToString() + " " + t.ToString();
 
+                // Render the selected texture.
+                if (BNTX.glTexByName.ContainsKey(b.Text))
+                    textureToRender = BNTX.glTexByName[b.Text];
             }
             else
             {
@@ -311,7 +320,10 @@ namespace Smash_Forge
 
         private void RenderTexture()
         {
-            if (!_loaded || glControl1 == null)
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || glControl1 == null)
+                return;
+
+            if (!OpenTKSharedResources.shaders["Texture"].ProgramCreatedSuccessfully)
                 return;
 
             glControl1.MakeCurrent();
@@ -328,8 +340,12 @@ namespace Smash_Forge
 
             int texture = ((BRTI)textureListBox.SelectedItem).display;
 
-            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio,
-                          currentMipLevel);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            if (textureToRender != null)
+            {
+                ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
+                    currentMipLevel);
+            }
 
             glControl1.SwapBuffers();
         }
@@ -350,8 +366,7 @@ namespace Smash_Forge
 
         private void glControl1_Load(object sender, EventArgs e)
         {
-            // Load RGB channel
-
+            SetUpRendering();
         }
 
         private void BNTXEditor_Load(object sender, EventArgs e)
@@ -366,9 +381,6 @@ namespace Smash_Forge
 
         private void glControl2_Load(object sender, EventArgs e)
         {
-            //Load Alpha channel
-
-
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
@@ -384,6 +396,7 @@ namespace Smash_Forge
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             RenderTexture();
+            GLObjectManager.DeleteUnusedGLObjects();
         }
 
         private void renderChannelR_Click(object sender, EventArgs e)
@@ -450,6 +463,15 @@ namespace Smash_Forge
                     textureListBox.SelectedIndex = itemindex;
                     TextureMenu.Show(this, new System.Drawing.Point(e.X, e.Y));
                 }
+            }
+        }
+        private void SetUpRendering()
+        {
+            // Make sure the shaders and textures are ready for rendering.
+            OpenTKSharedResources.InitializeSharedResources();
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            {
+                BNTX.RefreshGlTexturesByName();
             }
         }
     }
