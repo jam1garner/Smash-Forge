@@ -389,7 +389,7 @@ namespace Smash_Forge
                 case 0x0:
                     size = 4f;
                     tex.pixelInternalFormat = PixelInternalFormat.SrgbAlpha;
-                    tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    tex.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 case 0x31545844:
                     size = 1 / 2f;

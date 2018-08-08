@@ -152,7 +152,7 @@ namespace Smash_Forge
             tex.width = bmp.Width;
             tex.height = bmp.Height;
             tex.pixelInternalFormat = PixelInternalFormat.Rgba;
-            tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+            tex.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
 
             return tex;
         }
@@ -243,11 +243,12 @@ namespace Smash_Forge
                     t.texture.width = newTexture.width;
                     t.texture.pixelInternalFormat = newTexture.pixelInternalFormat;
                     t.texture.mipmaps = newTexture.mipmaps;
-                    t.texture.utype = newTexture.utype;
+                    t.texture.pixelFormat = newTexture.pixelFormat;
                     t.texture.data = newTexture.data;
 
                     GL.DeleteTexture(t.texture.display);
-                    t.texture.display = BRTI.loadImage(t.texture);
+
+                    BNTX.glTexByName.Add(ofd.FileName, BRTI.CreateTexture2D(t.texture));
 
                     if (newTexture == null)
                         return;
