@@ -113,7 +113,7 @@ float Luminance(vec3 rgb);
 vec3 CalcBumpedNormal(vec3 normal, sampler2D normalMap, VertexAttributes vert, float uking_texture2_texcoord);
 float AmbientOcclusionBlend(sampler2D BakeShadowMap, VertexAttributes vert, float ao_density);
 vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float uking_texture2_texcoord, vec3 emission_color);
-vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap, vec3 specular_color, VertexAttributes vert);
+vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap, vec3 specular_color, VertexAttributes vert, float uking_texture2_texcoord);
 
 void main()
 {
@@ -198,7 +198,7 @@ void main()
     // Render Passes
     if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
 		fragColor.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);
-    fragColor.rgb += SpecularPass(I, normal, HasSpecularMap, SpecularMap, specular_color, vert);
+    fragColor.rgb += SpecularPass(I, normal, HasSpecularMap, SpecularMap, specular_color, vert, uking_texture2_texcoord);
 
     if (HasAmbientOcclusionMap == 1)
     {

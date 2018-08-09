@@ -16,10 +16,12 @@ struct VertexAttributes
 // Defined in Utility.frag.
 float Luminance(vec3 rgb);
 
-vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap, vec3 SpecColor, VertexAttributes vert)
+vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap, vec3 SpecColor, VertexAttributes vert, float texcoord2)
 {
     float specBrdf = max(dot(I, normal), 0);
     float exponent = 8;
+
+
 
 	if (SpecColor == vec3(0)) //Color shouldn't be black unless it's not set
 	    SpecColor = vec3(1);
@@ -30,7 +32,11 @@ vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap
 	}
 
     // TODO: Different games use the channels for separate textures.
-    vec3 specularTex = texture(SpecularMap, vert.texCoord).rrr;
+	vec3 specularTex = vec3(1);
+	if (texcoord2 == 1)
+	    specularTex = texture(SpecularMap, vert.texCoord2).rrr;
+	else
+	    specularTex = texture(SpecularMap, vert.texCoord).rrr;
 
     vec3 result = specularTex * SpecColor * pow(specBrdf, exponent);
 	result *= SpecColor.rgb;
