@@ -169,7 +169,7 @@ void main()
         float ambient = 0.6;
         smoothLambert = clamp(smoothLambert + ambient, 0, 1);
 
-		brightness = smoothLambert * 3;
+		brightness = smoothLambert * 1.2;
 	}
 	else
 	{

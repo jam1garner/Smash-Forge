@@ -312,8 +312,17 @@ void main()
 
     if (enableCellShading == 1)
 	{
-		float level = floor(NdotL * levels);
-		NdotL = level / levels;
+       // Higher blend values make the dark region smoother and larger.
+        float smoothness = 0.1;
+        float center = 0.5;
+        float edgeL = center;
+        float edgeR = center + (smoothness * 0.5);
+        float smoothLambert = smoothstep(edgeL, edgeR, NdotL);
+
+        float ambient = 0.6;
+        smoothLambert = clamp(smoothLambert + ambient, 0, 1);
+
+		NdotL = smoothLambert * 0.8;
 	}
 
     // add to outgoing radiance Lo
