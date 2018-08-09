@@ -1283,17 +1283,13 @@ namespace Smash_Forge
 
                 if (magic2 == "BNTX") //SARC compressed
                 {
-                    ModelContainer modelContainer = new ModelContainer();
+                    BNTX BNTX = new BNTX();
+                    BNTX.ReadBNTXFile(fileByteData);
+                    Runtime.BNTXList.Add(BNTX);
 
-                    modelContainer.BNTX = new BNTX();
-                    modelContainer.BNTX.ReadBNTXFile(fileByteData);
-                    Runtime.BNTXList.Add(modelContainer.BNTX);
-                    Runtime.glTexturesNeedRefreshing = true;
-
-                    BNTXEditor editor = new BNTXEditor(modelContainer.BNTX);
+                    BNTXEditor editor = new BNTXEditor(BNTX);
                     AddDockedControl(editor);
 
-                    mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
                 }
 
                 if (magic2 == "SARC") //SARC compressed
