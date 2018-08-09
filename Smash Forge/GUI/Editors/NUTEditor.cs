@@ -846,17 +846,19 @@ namespace Smash_Forge
         {
             if (nut.ContainsGtxTextures())
             {
-                DialogResult result = MessageBox.Show("Mipmaps will not be exported correctly for some textures. " +
-                    "Would you like to regenerate all mipmaps? Note: this will modify the existing textures.",
-                    "GTX textures detected", MessageBoxButtons.YesNo);
+                MessageBox.Show("Mipmaps will not be exported correctly for some textures.", "GTX textures detected");
 
-                if (result == DialogResult.Yes)
-                {
-                    foreach (NutTexture texture in nut.Nodes)
-                    {
-                        NUT.RegenerateMipmapsFromTexture2D(texture);
-                    }
-                }
+                // TODO: Doesn't work properly in game.
+                //DialogResult result = MessageBox.Show("Mipmaps will not be exported correctly for some textures. " +
+                //    "Would you like to regenerate all mipmaps? Note: this will modify the existing textures.",
+                //    "GTX textures detected", MessageBoxButtons.YesNo);
+                //if (result == DialogResult.Yes)
+                //{
+                //    foreach (NutTexture texture in nut.Nodes)
+                //    {
+                //        NUT.RegenerateMipmapsFromTexture2D(texture);
+                //    }
+                //}
             }
         }
 
