@@ -151,7 +151,7 @@
     <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\KCL\KCL.cs" />
     <Compile Include="Filetypes\Application\MaterialXML.cs" />
-    <Compile Include="Filetypes\MaterialParamTools.cs" />
+    <Compile Include="Filetypes\Params\LightSetParam.cs" />
     <Compile Include="Filetypes\Melee\DAT.cs" />
     <Compile Include="Filetypes\Melee\DAT_Animation.cs" />
     <Compile Include="Filetypes\LVD.cs" />
@@ -167,8 +167,8 @@
     <Compile Include="Filetypes\PAC.cs" />
     <Compile Include="Filetypes\Animation\PATH.cs" />
     <Compile Include="Filetypes\Animation\LIGH.cs" />
-    <Compile Include="Filetypes\Models\Params\LightSetParam.cs" />
-    <Compile Include="Filetypes\Models\Params\ParamTools.cs" />
+    <Compile Include="Filetypes\Params\MaterialParamTools.cs" />
+    <Compile Include="Filetypes\Params\ParamTools.cs" />
     <Compile Include="Filetypes\SARC.cs" />
     <Compile Include="Filetypes\Sounds\NUS3BANK.cs" />
     <Compile Include="Filetypes\Sounds\VGMStreamNative.cs" />
