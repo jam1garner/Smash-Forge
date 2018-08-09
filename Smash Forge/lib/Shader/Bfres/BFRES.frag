@@ -198,7 +198,7 @@ void main()
     // Render Passes
     if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
 		fragColor.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);
-    fragColor.rgb += SpecularPass(I, normal, HasSpecularMap, SpecularMap, specular_color, vert, uking_texture2_texcoord);
+    fragColor.rgb += SpecularPass(I, N, HasSpecularMap, SpecularMap, specular_color, vert, uking_texture2_texcoord);
 
     if (HasAmbientOcclusionMap == 1)
     {
