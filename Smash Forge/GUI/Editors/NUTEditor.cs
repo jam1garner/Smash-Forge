@@ -153,6 +153,8 @@ namespace Smash_Forge
                 SaveAs();
                 return;
             }
+            PromptUserToConfirmMipRegenIfGtx(currentNut);
+
             FileOutput fileOutput = new FileOutput();
             byte[] n = currentNut.Rebuild();
 
@@ -816,6 +818,9 @@ namespace Smash_Forge
                 {
                     if (!Directory.Exists(f.SelectedPath))
                         Directory.CreateDirectory(f.SelectedPath);
+
+                    PromptUserToConfirmMipRegenIfGtx(currentNut);
+
                     foreach (NutTexture tex in currentNut.Nodes)
                     {
                         if (tex.pixelInternalFormat == PixelInternalFormat.Rgba)
@@ -833,6 +838,24 @@ namespace Smash_Forge
                     }
 
                     Process.Start("explorer.exe", f.SelectedPath);
+                }
+            }
+        }
+
+        public static void PromptUserToConfirmMipRegenIfGtx(NUT nut)
+        {
+            if (nut.ContainsGtxTextures())
+            {
+                DialogResult result = MessageBox.Show("Mipmaps will not be exported correctly for some textures. " +
+                    "Would you like to regenerate all mipmaps? Note: this will modify the existing textures.",
+                    "GTX textures detected", MessageBoxButtons.YesNo);
+
+                if (result == DialogResult.Yes)
+                {
+                    foreach (NutTexture texture in nut.Nodes)
+                    {
+                        NUT.RegenerateMipmapsFromTexture2D(texture);
+                    }
                 }
             }
         }

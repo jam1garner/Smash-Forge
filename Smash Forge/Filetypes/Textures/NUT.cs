@@ -295,6 +295,9 @@ namespace Smash_Forge
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
+                    // TODO: Put these methods somewhere that makes sense.
+                    NUTEditor.PromptUserToConfirmMipRegenIfGtx(this);
+
                     File.WriteAllBytes(sfd.FileName, Rebuild());
                 }
             }
@@ -316,8 +319,7 @@ namespace Smash_Forge
             uint headerLength = 0;
 
             foreach (NutTexture texture in Nodes)
-            {
-                
+            {         
                 byte surfaceCount = (byte)texture.surfaces.Count;
                 bool isCubemap = surfaceCount == 6;
                 if (surfaceCount < 1 || surfaceCount > 6)
@@ -880,6 +882,16 @@ namespace Smash_Forge
                 return new Texture2D(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count,
                     nutTexture.pixelInternalFormat, nutTexture.pixelFormat, nutTexture.pixelType);
             }
+        }
+
+        public bool ContainsGtxTextures()
+        {
+            foreach (NutTexture texture in Nodes)
+            {
+                if (!texture.isDds)
+                    return true;
+            }
+            return false;
         }
 
         public static TextureCubeMap CreateTextureCubeMap(NutTexture t)
