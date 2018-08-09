@@ -1171,11 +1171,53 @@ namespace Smash_Forge
             }
         }
 
-        private void BatchRenderModels()
+        public void BatchRenderNudModels()
         {
             // Ignore warnings.
             Runtime.checkNudTexIdOnOpen = false;
 
+            // Get the source model folder and then the output folder. 
+            using (var folderSelect = new FolderSelectDialog())
+            {
+                folderSelect.Title = "Models Directory";
+                if (folderSelect.ShowDialog() == DialogResult.OK)
+                {
+                    string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*model.nud", SearchOption.AllDirectories);
+
+                    using (var outputFolderSelect = new FolderSelectDialog())
+                    {
+                        outputFolderSelect.Title = "Output Renders Directory";
+                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
+                        {
+                            for (int i = 0; i < files.Length; i++)
+                            {
+                                try
+                                {
+                                    MainForm.Instance.OpenNud(files[i], "", this);
+                                    BatchRenderViewportToFile(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+                                }
+                                catch (Exception e)
+                                {
+                                    // Suppress all exceptions and just keep rendering.
+                                    Debug.WriteLine(e.Message);
+                                    Debug.WriteLine(e.StackTrace);
+                                }
+
+                                // Cleanup the models and nodes but keep the same viewport.
+                                ClearModelContainers();
+                                // Make sure the reference counts get updated for all the GLObjects so we can clean up next frame.
+                                GC.WaitForPendingFinalizers();
+                            }
+                        }
+                    }
+                }
+            }
+
+            Runtime.checkNudTexIdOnOpen = true;
+        }
+
+        public void BatchRenderBotwBfresModels()
+        {
             // Get the source model folder and then the output folder. 
             using (var folderSelect = new FolderSelectDialog())
             {
@@ -1203,7 +1245,6 @@ namespace Smash_Forge
 
                                     if (File.Exists(textureFileName))
                                         MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
-                                    //MainForm.Instance.OpenNud(files[i], "", this);
                                 }
                                 catch (Exception e)
                                 {
@@ -1221,8 +1262,6 @@ namespace Smash_Forge
                     }
                 }
             }
-
-            Runtime.checkNudTexIdOnOpen = true;
         }
 
         private void BatchRenderStages()
@@ -1923,9 +1962,6 @@ namespace Smash_Forge
         private void ModelViewport_KeyDown(object sender, KeyEventArgs e)
         {
             // Super secret commands. I'm probably going to be the only one that uses them anyway...
-            if (Keyboard.GetState().IsKeyDown(Key.C) && Keyboard.GetState().IsKeyDown(Key.H) && Keyboard.GetState().IsKeyDown(Key.M))
-                BatchRenderModels();
-
             if (Keyboard.GetState().IsKeyDown(Key.X) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.L))
                 MaterialXmlBatchExport.ExportAllMaterialsFromFolder();
 

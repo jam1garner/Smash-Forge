@@ -2313,5 +2313,19 @@ namespace Smash_Forge
                 }
             }
         }
+
+        private void batchRenderNUDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
+            if (mvp != null)
+                mvp.BatchRenderNudModels();
+        }
+
+        private void batchRenderBOTWBfresToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
+            if (mvp != null)
+                mvp.BatchRenderBotwBfresModels();
+        }
     }
 }
