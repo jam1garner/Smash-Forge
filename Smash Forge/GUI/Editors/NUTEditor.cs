@@ -101,7 +101,7 @@ namespace Smash_Forge
             remove.Click += RemoveToolStripMenuItem1_Click_1;
             TextureMenu.MenuItems.Add(remove);
 
-            MenuItem regenerateMipMaps = new MenuItem("Regenerate Mipmaps");
+            MenuItem regenerateMipMaps = new MenuItem("Regenerate Existing Mipmaps");
             regenerateMipMaps.Click += RegenerateMipMaps_Click;
             TextureMenu.MenuItems.Add(regenerateMipMaps);
         }
@@ -133,11 +133,16 @@ namespace Smash_Forge
             texid.Click += texIDToolStripMenuItem_Click;
             NUTMenu.MenuItems.Add(texid);
 
+            MenuItem regenerateAllMipMaps = new MenuItem("Regenerate All Existing Mipmaps");
+            regenerateAllMipMaps.Click += RegenerateAllMipMaps_Click;
+            NUTMenu.MenuItems.Add(regenerateAllMipMaps);
+
             // Disable unavailable options.
             if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Failed)
             {
                 exportAllPng.Enabled = false;
                 exportAllPngAlpha.Enabled = false;
+                regenerateAllMipMaps.Enabled = false;
             }
         }
 
@@ -234,7 +239,11 @@ namespace Smash_Forge
             // Display the total mip maps.
             mipmapGroupBox.Text = "Mipmaps";
             mipLevelLabel.Text = "Mip Level";
+
             mipLevelTrackBar.Maximum = tex.surfaces[0].mipmaps.Count - 1;
+            int newMipLevel = Math.Min(currentMipLevel, mipLevelTrackBar.Maximum);
+            mipLevelTrackBar.Value = newMipLevel;
+
             minMipLevelLabel.Text = "1";
             maxMipLevelLabel.Text = "Total:" + tex.surfaces[0].mipmaps.Count + "";
         }
@@ -353,6 +362,18 @@ namespace Smash_Forge
 
                 glControl1.Invalidate();
             }
+        }
+
+        private void RegenerateAllMipMaps_Click(object sender, EventArgs e)
+        {
+            foreach (NutTexture texture in currentNut.Nodes)
+            {
+                NUT.RegenerateMipmapsFromTexture2D(texture);
+            }
+
+            // Refresh the textures.
+            currentNut.RefreshGlTexturesByHashId();
+            glControl1.Invalidate();
         }
 
         private void exportNutAsPngToolStripMenuItem_Click(object sender, EventArgs e)
@@ -797,11 +818,12 @@ namespace Smash_Forge
                         Directory.CreateDirectory(f.SelectedPath);
                     foreach (NutTexture tex in currentNut.Nodes)
                     {
-                        if(tex.pixelInternalFormat == PixelInternalFormat.Rgba)
+                        if (tex.pixelInternalFormat == PixelInternalFormat.Rgba)
                         {
                             string filename = Path.Combine(f.SelectedPath, $"{tex.HashId.ToString("X")}.png");
                             ExportPNG(filename, tex);
-                        }else
+                        }
+                        else
                         {
                             string filename = Path.Combine(f.SelectedPath, $"{tex.HashId.ToString("X")}.dds");
                             DDS dds = new DDS();
