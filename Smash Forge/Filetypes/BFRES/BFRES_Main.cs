@@ -357,7 +357,9 @@ namespace Smash_Forge
         public void Render(Matrix4 mvpMatrix)
         {
             Shader shader;
-            if (Runtime.renderBfresPbr)
+            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+                shader = OpenTKSharedResources.shaders["BFRES_Debug"];
+            else if (Runtime.renderBfresPbr)
                 shader = OpenTKSharedResources.shaders["BFRES_PBR"];
             else
                 shader = OpenTKSharedResources.shaders["BFRES"];
@@ -666,7 +668,7 @@ namespace Smash_Forge
             SetUniformData(mat, shader, "ao_density");
             SetUniformData(mat, shader, "base_color_mul_color");
             SetUniformData(mat, shader, "emission_color");
-
+            SetUniformData(mat, shader, "specular_color");
 
             //   Shader option data
             // These enable certain effects
@@ -841,7 +843,7 @@ namespace Smash_Forge
             shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 10);
             shader.SetTexture("weightRamp1", RenderTools.boneWeightGradient.Id, TextureTarget.Texture2D, 11);
             shader.SetTexture("weightRamp2", RenderTools.boneWeightGradient2.Id, TextureTarget.Texture2D, 12);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("nrm"), 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), 0);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("BakeShadowMap"), 0);
 
             //So this loops through each type and maps by tex hash. This is done because there is no particular order in the list
@@ -851,7 +853,7 @@ namespace Smash_Forge
                 if (matex.Type == MatTexture.TextureType.Diffuse)
                     TextureUniform(shader, materialData, materialData.HasDiffuseMap, "tex0", matex);
                 else if (matex.Type == MatTexture.TextureType.Normal)
-                    TextureUniform(shader, materialData, materialData.HasNormalMap, "nrm", matex);
+                    TextureUniform(shader, materialData, materialData.HasNormalMap, "normalMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Emission)
                     TextureUniform(shader, materialData, materialData.HasEmissionMap, "EmissionMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Specular)
