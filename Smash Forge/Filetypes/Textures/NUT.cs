@@ -770,6 +770,34 @@ namespace Smash_Forge
             }
         }
 
+        public static void RegenerateMipmapsFromTexture2D(NutTexture tex)
+        {
+            if (!TextureFormatTools.IsCompressed(tex.pixelInternalFormat))
+                return;
+
+            Rendering.OpenTKSharedResources.dummyResourceWindow.MakeCurrent();
+
+            // Create an OpenGL texture with generated mipmaps.
+            Texture2D texture2D = new Texture2D(tex.Width, tex.Height, tex.surfaces[0].mipmaps[0], 
+                tex.surfaces[0].mipmaps.Count, (InternalFormat)tex.pixelInternalFormat);
+
+            texture2D.Bind();
+
+            for (int i = 0; i < tex.surfaces[0].mipmaps.Count; i++)
+            {
+                // Get the image size for the current mip level of the bound texture.
+                int imageSize;
+                GL.GetTexLevelParameter(TextureTarget.Texture2D, i,
+                    GetTextureParameter.TextureCompressedImageSize, out imageSize);
+
+                byte[] mipLevelData = new byte[imageSize];
+
+                // Replace the Nut texture with the OpenGL texture's data.
+                GL.GetCompressedTexImage(TextureTarget.Texture2D, i, mipLevelData);
+                tex.surfaces[0].mipmaps[i] = mipLevelData;
+            }
+        }
+
         public static bool texIdUsed(int texId)
         {
             foreach (var nut in Runtime.TextureContainers)

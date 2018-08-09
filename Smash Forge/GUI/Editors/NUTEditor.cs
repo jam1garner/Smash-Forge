@@ -82,6 +82,12 @@ namespace Smash_Forge
 
         private void SetUpContextMenus()
         {
+            SetUpTextureContextMenu();
+            SetUpNutContextMenu();
+        }
+
+        private void SetUpTextureContextMenu()
+        {
             // Texture Context Menu
             MenuItem replace = new MenuItem("Replace");
             replace.Click += replaceToolStripMenuItem_Click;
@@ -95,6 +101,13 @@ namespace Smash_Forge
             remove.Click += RemoveToolStripMenuItem1_Click_1;
             TextureMenu.MenuItems.Add(remove);
 
+            MenuItem regenerateMipMaps = new MenuItem("Regenerate Mipmaps");
+            regenerateMipMaps.Click += RegenerateMipMaps_Click;
+            TextureMenu.MenuItems.Add(regenerateMipMaps);
+        }
+
+        private void SetUpNutContextMenu()
+        {
             // NUT Context Menu
             MenuItem import = new MenuItem("Import New Texture");
             import.Click += importToolStripMenuItem_Click;
@@ -320,6 +333,25 @@ namespace Smash_Forge
             using (Bitmap image = Rendering.TextureToBitmap.RenderBitmap(texture, r, g, b, a))
             {
                 image.Save(outputPath);
+            }
+        }
+
+        private void RegenerateMipMaps_Click(object sender, EventArgs e)
+        {
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+                return;
+
+            if (textureListBox.SelectedItem != null)
+            {
+                NutTexture tex = ((NutTexture)textureListBox.SelectedItem);
+                NUT.RegenerateMipmapsFromTexture2D(tex);
+
+                // Render the selected texture again.
+                currentNut.RefreshGlTexturesByHashId();
+                if (currentNut.glTexByHashId.ContainsKey(tex.HashId))
+                    textureToRender = currentNut.glTexByHashId[tex.HashId];
+
+                glControl1.Invalidate();
             }
         }
 
