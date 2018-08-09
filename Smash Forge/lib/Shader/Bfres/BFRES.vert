@@ -33,7 +33,7 @@ uniform vec4 gsys_bake_st0;
 uniform vec4 gsys_bake_st1;
 
 // Skinning uniforms
-uniform mat4 bones[150];
+uniform mat4 bones[200];
 uniform int NoSkinning;
 uniform int RigidSkinning;
 uniform int SingleBoneIndex;

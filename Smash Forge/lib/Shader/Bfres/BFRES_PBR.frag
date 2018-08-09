@@ -54,7 +54,7 @@ uniform int renderAlpha;
 uniform sampler2D tex0;
 uniform sampler2D BakeShadowMap;
 uniform sampler2D spl;
-uniform sampler2D nrm;
+uniform sampler2D normalMap;
 uniform sampler2D BakeLightMap;
 uniform sampler2D UVTestPattern;
 uniform sampler2D TransparencyMap;
@@ -110,13 +110,26 @@ uniform int UseRoughnessMap;
 
 int isTransparent;
 
+struct VertexAttributes {
+    vec3 objectPosition;
+    vec2 texCoord;
+    vec2 texCoord2;
+    vec2 texCoord3;
+    vec4 vertexColor;
+    vec3 normal;
+    vec3 tangent;
+    vec3 bitangent;
+};
+
 out vec4 fragColor;
 
 #define gamma 2.2
 const float PI = 3.14159265359;
 
-// TODO: Remove this global.
-vec2 displayTexCoord = f_texcoord0;
+// Defined in BFRES_Utility.frag.
+vec3 CalcBumpedNormal(vec3 normal, sampler2D normalMap, VertexAttributes vert, float uking_texture2_texcoord);
+float AmbientOcclusionBlend(sampler2D BakeShadowMap, VertexAttributes vert, float ao_density);
+vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float uking_texture2_texcoord, vec3 emission_color);
 
 // Shader code adapted from learnopengl.com's PBR tutorial:
 // https://learnopengl.com/PBR/Theory
@@ -166,42 +179,6 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
     return ggx1 * ggx2;
 }
 
-vec3 CalcBumpedNormal(vec3 inputNormal) //Currently reused some bits from nud shader.
-{
-    // if no normal map, then return just the normal
-    if(useNormalMap == 0 || HasNormalMap == 0)
-	   return inputNormal;
-
-    float normalIntensity = 1;
-
-	//if (normal_map_weight != 0) //MK8 and splatoon 1/2 uses this param
-	//      normalIntensity = normal_map_weight;
-
-	vec3 BumpMapNormal = vec3(1);
-	if (uking_texture2_texcoord == 1 || cSpecularType == 2) //Spec type makes normals use second uv
-        BumpMapNormal = vec3(texture(nrm, f_texcoord1).rg, 1);
-    else
-        BumpMapNormal = vec3(texture(nrm, displayTexCoord).rg, 1);
-    BumpMapNormal = mix(vec3(0.5, 0.5, 1), BumpMapNormal, normalIntensity); // probably a better way to do this
-    BumpMapNormal = 2.0 * BumpMapNormal - vec3(1);
-
-	vec3 B = vec3(0);
-	vec3 T = vec3(0);
-
-    vec3 NewNormal;
-    vec3 Normal = normalize(normal);
-	if (bitangent != vec3(0))
-	    B = normalize(bitangent);
-	if (tangent != vec3(0))
-	    T = normalize(tangent);
-
-    mat3 TBN = mat3(T, B, Normal);
-    NewNormal = TBN * BumpMapNormal;
-    NewNormal = normalize(NewNormal);
-
-    return NewNormal;
-}
-
 vec3 saturation(vec3 rgb, float adjustment)
 {
     const vec3 W = vec3(0.2125, 0.7154, 0.0721);
@@ -213,12 +190,18 @@ void main()
 {
     fragColor = vec4(1);
 
-    vec3 lightColor = vec3(10);
+    // Create a struct for passing all the vertex attributes to other functions.
+    VertexAttributes vert;
+    vert.objectPosition = objectPosition;
+    vert.texCoord = f_texcoord0;
+    vert.texCoord2 = f_texcoord1;
+    vert.texCoord3 = f_texcoord2;
+    vert.vertexColor = vertexColor;
+    vert.normal = normal;
+    vert.tangent = tangent;
+    vert.bitangent = bitangent;
 
-    if (uvChannel == 2)
-        displayTexCoord = f_texcoord1;
-    if (uvChannel == 3)
-        displayTexCoord = f_texcoord3;
+    vec3 lightColor = vec3(10);
 
     // Wireframe color.
     if (colorOverride == 1)
@@ -229,15 +212,15 @@ void main()
 
 	vec3 albedo = vec3(1);
     if (HasDiffuse == 1)
-        albedo = pow(texture(tex0, displayTexCoord).rgb, vec3(gamma));
+        albedo = pow(texture(tex0, f_texcoord0).rgb, vec3(gamma));
 
 	float metallic = DefaultMetalness;
     if (HasMetalnessMap == 1)
-        metallic = texture(MetalnessMap, displayTexCoord).r;
+        metallic = texture(MetalnessMap, f_texcoord0).r;
 
 	float roughness = DefaultRoughness;
     if (HasRoughnessMap == 1)
-        roughness = texture(RoughnessMap, displayTexCoord).r;
+        roughness = texture(RoughnessMap, f_texcoord0).r;
 
 	float ao = 1;
     if (HasShadowMap == 1 && UseAOMap == 1)
@@ -250,8 +233,8 @@ void main()
 	float cavity = 1;
 
 	vec3 emission = vec3(0);
-    if (HasEmissionMap == 1)
-        emission = pow(texture(EmissionMap, displayTexCoord).rgb, vec3(gamma));
+   if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
+		emission.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);
 
 	vec3 lightMapColor = vec3(1);
 	float lightMapIntensity = 0;
@@ -270,31 +253,32 @@ void main()
 	   {
 	       metallic = texture(BOTWSpecularMap, f_texcoord1).g;
 	       specIntensity = texture(BOTWSpecularMap, f_texcoord1).r;
-	       emission = texture(EmissionMap, f_texcoord1).rgb;
 	   }
 	   else
 	   {
-	       metallic = texture(BOTWSpecularMap, displayTexCoord).g;
-	       specIntensity = texture(BOTWSpecularMap, displayTexCoord).r;
-	       emission = texture(EmissionMap, displayTexCoord).rgb;
+	       metallic = texture(BOTWSpecularMap, f_texcoord0).g;
+	       specIntensity = texture(BOTWSpecularMap, f_texcoord0).r;
 	   }
 	}
 
 	if (HasMRA == 1) //Kirby Star Allies PBR map
 	{
 		if(UseRoughnessMap == 1)
-			metallic = texture(MRA, displayTexCoord).r;
+			metallic = texture(MRA, f_texcoord0).r;
 		if(UseRoughnessMap == 1)
-			roughness = texture(MRA, displayTexCoord).g;
+			roughness = texture(MRA, f_texcoord0).g;
 		if(UseCavityMap == 1)
-			cavity = texture(MRA, displayTexCoord).b;
+			cavity = texture(MRA, f_texcoord0).b;
 		if(UseAOMap == 1)
-			ao = texture(MRA, displayTexCoord).a;
+			ao = texture(MRA, f_texcoord0).a;
 	}
 
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
 
-    vec3 N = CalcBumpedNormal(normal);
+    vec3 N = normal;
+	if (HasNormalMap == 1 && useNormalMap == 1)
+		N = CalcBumpedNormal(normal, normalMap, vert, uking_texture2_texcoord);
+
     vec3 V = normalize(I); //Eye View
 	vec3 L = normalize(specLightDirection); //Light
 	vec3 H = normalize(specLightDirection + I); //Half Angle
@@ -328,8 +312,17 @@ void main()
 
     if (enableCellShading == 1)
 	{
-		float level = floor(NdotL * levels);
-		NdotL = level / levels;
+       // Higher blend values make the dark region smoother and larger.
+        float smoothness = 0.1;
+        float center = 0.5;
+        float edgeL = center;
+        float edgeR = center + (smoothness * 0.5);
+        float smoothLambert = smoothstep(edgeL, edgeR, NdotL);
+
+        float ambient = 0.6;
+        smoothLambert = clamp(smoothLambert + ambient, 0, 1);
+
+		NdotL = smoothLambert * 0.8;
 	}
 
     // add to outgoing radiance Lo
@@ -383,7 +376,7 @@ void main()
 
     color = pow(color, vec3(1.0 / gamma));
 
-	float alpha = texture(tex0, displayTexCoord).a;
+	float alpha = texture(tex0, f_texcoord0).a;
 
 	fragColor = vec4(color, alpha);
 
