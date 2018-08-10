@@ -10,6 +10,9 @@ branches:
 before_build:
 - cmd: cd SFGraphics
 - ps: nuget restore
+# Update SFGraphics to the latest build from master.
+- git checkout master
+- git pull
 - cmd: cd ..
 
 build:
