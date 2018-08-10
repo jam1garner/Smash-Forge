@@ -900,7 +900,7 @@ namespace Smash_Forge
         public static TextureCubeMap CreateTextureCubeMap(NutTexture t)
         {
             // TODO: Uncompressed cube maps.
-            TextureCubeMap texture = new TextureCubeMap(t.Width, t.Height, (InternalFormat)t.pixelInternalFormat,
+            TextureCubeMap texture = new TextureCubeMap(t.Width, (InternalFormat)t.pixelInternalFormat,
                 t.surfaces[0].mipmaps, t.surfaces[1].mipmaps, t.surfaces[2].mipmaps, t.surfaces[3].mipmaps, t.surfaces[4].mipmaps, t.surfaces[5].mipmaps);
              return texture;
         }
