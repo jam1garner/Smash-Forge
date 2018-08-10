@@ -2,7 +2,7 @@ Smash Forge
 ===========
 <a href="url"><img src="https://github.com/jam1garner/Smash-Forge/wiki/Images/Application Main.png" align="top" height="auto" width="auto" ></a>
 
-[Bug Tracker](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Request a feature](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Forge Wiki](https://github.com/jam1garner/Smash-Forge/wiki) | [![Build status](https://ci.appveyor.com/api/projects/status/o73kaah41uewf1kx/branch/master?svg=true)](https://ci.appveyor.com/project/Sammi-Husky/smash-4-bone-animator/branch/master)
+[Bug Tracker](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Request a feature](https://github.com/jam1garner/Smash-4-Bone-Animator/issues) | [Forge Wiki](https://github.com/jam1garner/Smash-Forge/wiki) | [![Build status](https://ci.appveyor.com/api/projects/status/vc7t6b10t3trd7g6?svg=true)](https://ci.appveyor.com/project/jam1garner19387/smash-forge)
 
 ## Installation
 Download the latest commit from the [releases page](https://github.com/jam1garner/Smash-Forge/releases). See the wiki for more information and basic usage. **Do not accidentally download the source code (contains a .sln).**
