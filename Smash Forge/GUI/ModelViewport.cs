@@ -1387,7 +1387,6 @@ namespace Smash_Forge
         private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
         {
             ClearModelContainers();
-            GC.Collect();
         }
 
         public void ClearModelContainers()
@@ -2218,6 +2217,13 @@ namespace Smash_Forge
                     }
                 }
             }
+        }
+
+        private void viewportPanel_Resize(object sender, EventArgs e)
+        {
+            int spacing = 8;
+            glViewport.Width = viewportPanel.Width - spacing;
+            glViewport.Height = viewportPanel.Height - spacing;
         }
 
         private void RefreshGlTextures()

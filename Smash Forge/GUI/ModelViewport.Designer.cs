@@ -49,7 +49,7 @@
             this.RenderButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.GIFButton = new System.Windows.Forms.ToolStripButton();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.animationGroupBox = new System.Windows.Forms.GroupBox();
             this.animationTrackBar = new System.Windows.Forms.TrackBar();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -61,11 +61,13 @@
             this.prevButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
             this.glViewport = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
+            this.viewportPanel = new System.Windows.Forms.Panel();
             this.toolStrip1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.animationGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animationTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalFrame)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.currentFrame)).BeginInit();
+            this.viewportPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -284,29 +286,29 @@
             this.GIFButton.ToolTipText = "Render GIF of Current Animation";
             this.GIFButton.Click += new System.EventHandler(this.GIFButton_Click);
             // 
-            // groupBox1
+            // animationGroupBox
             // 
-            this.groupBox1.Controls.Add(this.animationTrackBar);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.totalFrame);
-            this.groupBox1.Controls.Add(this.currentFrame);
-            this.groupBox1.Controls.Add(this.endButton);
-            this.groupBox1.Controls.Add(this.nextButton);
-            this.groupBox1.Controls.Add(this.beginButton);
-            this.groupBox1.Controls.Add(this.prevButton);
-            this.groupBox1.Controls.Add(this.playButton);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox1.Location = new System.Drawing.Point(0, 348);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(662, 120);
-            this.groupBox1.TabIndex = 1;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Animation Controls";
+            this.animationGroupBox.Controls.Add(this.animationTrackBar);
+            this.animationGroupBox.Controls.Add(this.label2);
+            this.animationGroupBox.Controls.Add(this.label1);
+            this.animationGroupBox.Controls.Add(this.totalFrame);
+            this.animationGroupBox.Controls.Add(this.currentFrame);
+            this.animationGroupBox.Controls.Add(this.endButton);
+            this.animationGroupBox.Controls.Add(this.nextButton);
+            this.animationGroupBox.Controls.Add(this.beginButton);
+            this.animationGroupBox.Controls.Add(this.prevButton);
+            this.animationGroupBox.Controls.Add(this.playButton);
+            this.animationGroupBox.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.animationGroupBox.Location = new System.Drawing.Point(0, 348);
+            this.animationGroupBox.Name = "animationGroupBox";
+            this.animationGroupBox.Size = new System.Drawing.Size(662, 120);
+            this.animationGroupBox.TabIndex = 1;
+            this.animationGroupBox.TabStop = false;
+            this.animationGroupBox.Text = "Animation Controls";
             // 
             // animationTrackBar
             // 
-            this.animationTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.animationTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.animationTrackBar.Location = new System.Drawing.Point(12, 16);
             this.animationTrackBar.Name = "animationTrackBar";
@@ -407,7 +409,7 @@
             // 
             // playButton
             // 
-            this.playButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.playButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.playButton.Location = new System.Drawing.Point(90, 64);
             this.playButton.MinimumSize = new System.Drawing.Size(44, 44);
@@ -424,7 +426,7 @@
             this.glViewport.Dock = System.Windows.Forms.DockStyle.Fill;
             this.glViewport.Location = new System.Drawing.Point(0, 0);
             this.glViewport.Name = "glViewport";
-            this.glViewport.Size = new System.Drawing.Size(662, 468);
+            this.glViewport.Size = new System.Drawing.Size(662, 317);
             this.glViewport.TabIndex = 0;
             this.glViewport.VSync = false;
             this.glViewport.Load += new System.EventHandler(this.glViewport_Load);
@@ -436,14 +438,24 @@
             this.glViewport.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseUp);
             this.glViewport.Resize += new System.EventHandler(this.glViewport_Resize);
             // 
+            // viewportPanel
+            // 
+            this.viewportPanel.Controls.Add(this.glViewport);
+            this.viewportPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.viewportPanel.Location = new System.Drawing.Point(0, 31);
+            this.viewportPanel.Name = "viewportPanel";
+            this.viewportPanel.Size = new System.Drawing.Size(662, 317);
+            this.viewportPanel.TabIndex = 3;
+            this.viewportPanel.Resize += new System.EventHandler(this.viewportPanel_Resize);
+            // 
             // ModelViewport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(662, 468);
+            this.Controls.Add(this.viewportPanel);
             this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.glViewport);
+            this.Controls.Add(this.animationGroupBox);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.KeyPreview = true;
             this.Name = "ModelViewport";
@@ -454,11 +466,12 @@
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModelViewport_KeyDown);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.animationGroupBox.ResumeLayout(false);
+            this.animationGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animationTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalFrame)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.currentFrame)).EndInit();
+            this.viewportPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -467,7 +480,7 @@
         #endregion
 
         public OpenTK.GLControl glViewport;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox animationGroupBox;
         private System.Windows.Forms.Button playButton;
         private System.Windows.Forms.Button endButton;
         private System.Windows.Forms.Button nextButton;
@@ -498,5 +511,6 @@
         private System.Windows.Forms.ToolStripButton stripRot;
         private System.Windows.Forms.ToolStripButton stripSca;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.Panel viewportPanel;
     }
 }
