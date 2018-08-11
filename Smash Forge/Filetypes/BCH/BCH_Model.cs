@@ -428,7 +428,7 @@ namespace Smash_Forge
             RenderTools.uvTestPattern.Bind();
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("UVTestPattern"), 10);
 
-            Matrix4[] f = skeleton.getShaderMatrix();
+            Matrix4[] f = skeleton.GetShaderMatrices();
 
             int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
             int boneCount = skeleton.bones.Count;

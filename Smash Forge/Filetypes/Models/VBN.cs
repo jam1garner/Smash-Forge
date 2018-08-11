@@ -876,7 +876,7 @@ namespace Smash_Forge
         public Matrix4[] bonemat = { };
         public Matrix4[] bonematIT = { };
 
-        public Matrix4[] getShaderMatrix()
+        public Matrix4[] GetShaderMatrices()
         {
             if (Updated)
             {
@@ -887,9 +887,6 @@ namespace Smash_Forge
                 for (int i = 0; i < bones.Count; i++)
                 {
                      bonemat[i] = bones[i].invert * bones[i].transform;
-                    //bonematIT[i] = bones[i].invert * bones[i].transform;
-                    //bonematIT[i].Invert();
-                    //bonematIT[i].Transpose();
                 }
             }
 

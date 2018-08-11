@@ -351,33 +351,27 @@ namespace Smash_Forge
 
         private void UpdateBonesBuffer(VBN vbn, Shader shader, BufferObject bonesUbo)
         {
-            if (vbn != null)
-            {
-                Matrix4[] f = vbn.getShaderMatrix();
-
-                int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
-                int boneCount = vbn.bones.Count;
-                int dataSize = boneCount * Vector4.SizeInBytes * sizeof(float);
-
-                bonesUbo.Bind();
-                GL.BufferData(bonesUbo.BufferTarget, (IntPtr)(dataSize), IntPtr.Zero, BufferUsageHint.DynamicDraw);
-                GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-
-                var blockIndex = GL.GetUniformBlockIndex(shader.Id, "bones");
-                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, blockIndex, bonesUbo.Id);
-
-                if (f.Length > 0)
-                {
-                    bonesUbo.Bind();
-                    GL.BufferSubData(bonesUbo.BufferTarget, IntPtr.Zero, (IntPtr)(f.Length * Vector4.SizeInBytes * sizeof(float)), f);
-                }
-
-                shader.SetBoolToInt("useBones", true);
-            }
-            else
+            if (vbn == null)
             {
                 shader.SetBoolToInt("useBones", false);
+                return;
             }
+
+            Matrix4[] boneMatrices = vbn.GetShaderMatrices();
+            if (boneMatrices.Length == 0)
+            {
+                shader.SetBoolToInt("useBones", false);
+                return;
+            }
+
+            // Update bone matrices for the shader.
+            int blockIndex = GL.GetUniformBlockIndex(shader.Id, "bones");
+            bonesUbo.BindBase(BufferRangeTarget.UniformBuffer, blockIndex);
+
+            int matrix4SizeInBytes = Vector4.SizeInBytes * sizeof(float) * 4;
+            bonesUbo.BufferData(boneMatrices, matrix4SizeInBytes, BufferUsageHint.DynamicDraw);
+
+            shader.SetBoolToInt("useBones", true);
         }
 
         private void DrawBoundingSpheres()

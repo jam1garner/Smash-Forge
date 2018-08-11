@@ -219,8 +219,15 @@
         </member>
         <member name="M:SFGraphics.GLObjects.BufferObject.Bind">
             <summary>
-            Binds the buffer to the target specified at creation.
+            Binds <see cref="P:SFGraphics.GLObjects.BufferObject.Id"/> to the buffer target specified at creation.
             </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.BufferObject.BindBase(OpenTK.Graphics.OpenGL.BufferRangeTarget,System.Int32)">
+            <summary>
+            Binds <see cref="P:SFGraphics.GLObjects.BufferObject.Id"/> to an indexed buffer target.
+            </summary>
+            <param name="target"></param>
+            <param name="index"></param>
         </member>
         <member name="M:SFGraphics.GLObjects.BufferObject.BufferData``1(``0[],System.Int32,OpenTK.Graphics.OpenGL.BufferUsageHint)">
             <summary>
@@ -232,6 +239,17 @@
             <param name="data">The data used to initialize the buffer's data</param>
             <param name="itemSizeInBytes">The size of <typeparamref name="T"/> in bytes</param>
             <param name="bufferUsageHint">A hint on how the data will be used, which allows performance optimizations</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.BufferObject.BufferSubData``1(``0[],System.Int32,System.Int32)">
+            <summary>
+            Initializes a portion of the buffer's data with the specified array.
+            <paramref name="data"/> should be contiguous in memory, so only 
+            non nullable structs containing value types as members will work properly.
+            </summary>
+            <typeparam name="T">The type of each item. This includes arithmetic types like <see cref="T:System.Int32"/>.</typeparam>
+            <param name="data">The data used to initialize the buffer's data</param>
+            <param name="offset">The offset in bytes where data replacement will begin</param>
+            <param name="itemSizeInBytes">The size of <typeparamref name="T"/> in bytes</param>
         </member>
         <member name="T:SFGraphics.GLObjects.Framebuffer">
             <summary>

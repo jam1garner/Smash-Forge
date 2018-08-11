@@ -397,7 +397,7 @@ namespace Smash_Forge
 
             if (bones != null)
             {
-                Matrix4[] f = bones.getShaderMatrix();
+                Matrix4[] f = bones.GetShaderMatrices();
 
                 if (f.Length > 0)
                 {
