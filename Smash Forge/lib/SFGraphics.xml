@@ -680,7 +680,7 @@
             <param name="textureTarget"></param>
             <param name="image"></param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipMaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Byte[],System.Int32,OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Byte[],System.Int32,OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             
             </summary>
@@ -691,7 +691,7 @@
             <param name="mipCount"></param>
             <param name="internalFormat"></param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipMaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Byte[],System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat,OpenTK.Graphics.OpenGL.PixelFormat,OpenTK.Graphics.OpenGL.PixelType)">
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Byte[],System.Int32,SFGraphics.GLObjects.Textures.TextureFormatUncompressed)">
             <summary>
             
             </summary>
@@ -700,9 +700,7 @@
             <param name="height"></param>
             <param name="baseMipLevel"></param>
             <param name="mipCount"></param>
-            <param name="pixelInternalFormat"></param>
-            <param name="pixelFormat"></param>
-            <param name="pixelType"></param>
+            <param name="textureFormat"></param>
         </member>
         <member name="F:SFGraphics.GLObjects.Textures.CompressedBlockSize.blockSizeByFormat">
             <summary>
@@ -714,6 +712,35 @@
             <summary>
             Error messages thrown by constructors for classes inheriting from <see cref="T:SFGraphics.GLObjects.Textures.Texture"/>.
             </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Textures.TextureFormatUncompressed">
+            <summary>
+            An immutable cotainer for storing format information for uncompressed texture image data.
+            </summary>
+        </member>
+        <member name="F:SFGraphics.GLObjects.Textures.TextureFormatUncompressed.pixelInternalFormat">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGraphics.GLObjects.Textures.TextureFormatUncompressed.pixelFormat">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGraphics.GLObjects.Textures.TextureFormatUncompressed.pixelType">
+            <summary>
+            An immutable container for storing 
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.TextureFormatUncompressed.#ctor(OpenTK.Graphics.OpenGL.PixelInternalFormat,OpenTK.Graphics.OpenGL.PixelFormat,OpenTK.Graphics.OpenGL.PixelType)">
+            <summary>
+            
+            </summary>
+            <param name="pixelInternalFormat"></param>
+            <param name="pixelFormat"></param>
+            <param name="pixelType"></param>
+            <exception cref="T:System.ArgumentException"><paramref name="pixelInternalFormat"/> is compressed</exception>
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.TextureFormatTools">
             <summary>
@@ -885,7 +912,7 @@
             <param name="mipCount">The number of mipmaps to generate</param>
             <param name="internalFormat">The image format of <paramref name="baseMipLevel"/></param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor(System.Int32,System.Int32,System.Byte[],System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat,OpenTK.Graphics.OpenGL.PixelFormat,OpenTK.Graphics.OpenGL.PixelType)">
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor(System.Int32,System.Int32,System.Byte[],System.Int32,SFGraphics.GLObjects.Textures.TextureFormatUncompressed)">
             <summary>
             Initializes an uncompressed texture of the specified format 
             and initializes the first mip level.
@@ -895,10 +922,7 @@
             <param name="height">The height of <paramref name="baseMipLevel"/> in pixels</param>
             <param name="baseMipLevel"></param>
             <param name="mipCount">The number of mipmaps to generate</param>
-            <param name="pixelInternalFormat"></param>
-            <param name="pixelFormat"></param>
-            <param name="pixelType"></param>
-            <exception cref="T:System.ArgumentException"><paramref name="pixelInternalFormat"/> is a compressed format.</exception>
+            <param name="textureFormat">The format information for the uncompressed format</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor(System.Int32,System.Int32,System.Collections.Generic.List{System.Byte[]},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
@@ -940,6 +964,20 @@
             <param name="mipsNegZ">Mipmaps for the negative z target</param>
             <exception cref="T:System.ArgumentException"><paramref name="internalFormat"/> is not a compressed format.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">The mipmap counts are not equal for all faces.</exception>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.TextureCubeMap.#ctor(System.Int32,SFGraphics.GLObjects.Textures.TextureFormatUncompressed,System.Byte[],System.Byte[],System.Byte[],System.Byte[],System.Byte[],System.Byte[])">
+            <summary>
+            Initializes an uncompressed cube map without mipmaps.
+            Each face should have the same dimensions and image format.
+            </summary>
+            <param name="faceSideLength"></param>
+            <param name="textureFormat"></param>
+            <param name="facePosX">The base mip level for the positive x target</param>
+            <param name="faceNegX">The base mip level for the negative x target</param>
+            <param name="facePosY">The base mip level for the positive y target</param>
+            <param name="faceNegY">The base mip level for the negative y target</param>
+            <param name="facePosZ">The base mip level for the positive z target</param>
+            <param name="faceNegZ">The base mip level for the negative z target</param>
         </member>
         <member name="T:SFGraphics.Tools.BoundingSphereGenerator">
             <summary>

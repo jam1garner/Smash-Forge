@@ -882,7 +882,7 @@ namespace Smash_Forge
             {
                 // Uncompressed.
                 return new Texture2D(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count,
-                    nutTexture.pixelInternalFormat, nutTexture.pixelFormat, nutTexture.pixelType);
+                    new TextureFormatUncompressed(nutTexture.pixelInternalFormat, nutTexture.pixelFormat, nutTexture.pixelType));
             }
         }
 
@@ -898,10 +898,20 @@ namespace Smash_Forge
 
         public static TextureCubeMap CreateTextureCubeMap(NutTexture t)
         {
-            // TODO: Uncompressed cube maps.
-            TextureCubeMap texture = new TextureCubeMap(t.Width, (InternalFormat)t.pixelInternalFormat,
-                t.surfaces[0].mipmaps, t.surfaces[1].mipmaps, t.surfaces[2].mipmaps, t.surfaces[3].mipmaps, t.surfaces[4].mipmaps, t.surfaces[5].mipmaps);
-             return texture;
+            if (TextureFormatTools.IsCompressed(t.pixelInternalFormat))
+            {
+                // Compressed cubemap with mipmaps.
+                return new TextureCubeMap(t.Width, (InternalFormat)t.pixelInternalFormat,
+                    t.surfaces[0].mipmaps, t.surfaces[1].mipmaps, t.surfaces[2].mipmaps, 
+                    t.surfaces[3].mipmaps, t.surfaces[4].mipmaps, t.surfaces[5].mipmaps);
+            }
+            else
+            {
+                // Uncompressed cube map with no mipmaps.
+                return new TextureCubeMap(t.Width, new TextureFormatUncompressed(t.pixelInternalFormat, t.pixelFormat, t.pixelType),
+                    t.surfaces[0].mipmaps[0], t.surfaces[1].mipmaps[0], t.surfaces[2].mipmaps[0], 
+                    t.surfaces[3].mipmaps[0], t.surfaces[4].mipmaps[0], t.surfaces[5].mipmaps[0]);
+            }
         }
     }
 }

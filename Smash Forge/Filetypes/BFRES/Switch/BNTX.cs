@@ -487,7 +487,7 @@ namespace Smash_Forge
             {
                 // Uncompressed.
                 return new Texture2D(tex.width, tex.height, tex.data, tex.mipMapCount,
-                    tex.pixelInternalFormat, tex.pixelFormat, tex.pixelType);
+                    new TextureFormatUncompressed(tex.pixelInternalFormat, tex.pixelFormat, tex.pixelType));
             }
         }
 

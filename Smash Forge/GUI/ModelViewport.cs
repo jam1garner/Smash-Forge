@@ -1194,7 +1194,6 @@ namespace Smash_Forge
                                 try
                                 {
                                     MainForm.Instance.OpenNud(files[i], "", this);
-                                    BatchRenderViewportToFile(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
                                 }
                                 catch (Exception e)
                                 {
@@ -1202,6 +1201,8 @@ namespace Smash_Forge
                                     Debug.WriteLine(e.Message);
                                     Debug.WriteLine(e.StackTrace);
                                 }
+
+                                BatchRenderViewportToFile(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
 
                                 // Cleanup the models and nodes but keep the same viewport.
                                 ClearModelContainers();
