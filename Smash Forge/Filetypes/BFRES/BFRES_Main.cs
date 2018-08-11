@@ -615,12 +615,9 @@ namespace Smash_Forge
             Vertices = Vs.ToArray();
             Faces = Ds.ToArray();
 
-            // Bind only once!
-            positionVbo.Bind();
-            GL.BufferData<DisplayVertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
-
-            elementsIbo.Bind();
-            GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
+            // Initialize the buffer data.
+            positionVbo.BufferData(Vertices, DisplayVertex.Size, BufferUsageHint.StaticDraw);
+            elementsIbo.BufferData(Faces, sizeof(int), BufferUsageHint.StaticDraw);
         }
 
         private static void ApplyTransformFix(FMDL_Model fmdl, Mesh m, Shader shader)

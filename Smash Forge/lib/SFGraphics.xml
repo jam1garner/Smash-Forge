@@ -222,6 +222,17 @@
             Binds the buffer to the target specified at creation.
             </summary>
         </member>
+        <member name="M:SFGraphics.GLObjects.BufferObject.BufferData``1(``0[],System.Int32,OpenTK.Graphics.OpenGL.BufferUsageHint)">
+            <summary>
+            Initializes the buffer's data with the specified array.
+            <paramref name="data"/> should be contiguous in memory, so only 
+            non nullable structs containing value types as members will work properly.
+            </summary>
+            <typeparam name="T">The type of each item. This includes arithmetic types like <see cref="T:System.Int32"/>.</typeparam>
+            <param name="data">The data used to initialize the buffer's data</param>
+            <param name="itemSizeInBytes">The size of <typeparamref name="T"/> in bytes</param>
+            <param name="bufferUsageHint">A hint on how the data will be used, which allows performance optimizations</param>
+        </member>
         <member name="T:SFGraphics.GLObjects.Framebuffer">
             <summary>
             Encapsulates an OpenGL framebuffer, including any attached color or depth attachments.
@@ -281,7 +292,7 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffer.GetStatus">
             <summary>
-            Gets the named framebuffer status for this framebuffer.
+            Gets the framebuffer status for this framebuffer.
             </summary>
             <returns></returns>
         </member>
@@ -314,12 +325,14 @@
         <member name="M:SFGraphics.GLObjects.Framebuffer.SetDrawBuffers(OpenTK.Graphics.OpenGL.DrawBuffersEnum[])">
             <summary>
             Sets which buffers or attachments receive fragment shader outputs.
+            Binds the framebuffer.
             </summary>
             <param name="drawBuffers">The buffers used for fragment shader output</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffer.SetReadBuffer(OpenTK.Graphics.OpenGL.ReadBufferMode)">
             <summary>
             Sets the color buffer used for GL.ReadPixels and GL.CopyTexImage methods.
+            Binds the framebuffer.
             </summary>
             <param name="readBufferMode">The buffer used for read operations</param>
         </member>

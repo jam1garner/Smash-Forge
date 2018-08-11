@@ -306,11 +306,8 @@ namespace Smash_Forge
             displayVerticesArray = displayVerticesList.ToArray();
             vertexIndicesArray = vertexIndicesList.ToArray();
 
-            positionVbo.Bind();
-            GL.BufferData<DisplayVertex>(positionVbo.BufferTarget, (IntPtr)(displayVerticesArray.Length * DisplayVertex.Size), displayVerticesArray, BufferUsageHint.StaticDraw);
-
-            elementsIbo.Bind();
-            GL.BufferData<int>(elementsIbo.BufferTarget, (IntPtr)(vertexIndicesArray.Length * sizeof(int)), vertexIndicesArray, BufferUsageHint.StaticDraw);
+            positionVbo.BufferData(displayVerticesArray, DisplayVertex.Size, BufferUsageHint.StaticDraw);
+            elementsIbo.BufferData(vertexIndicesArray, sizeof(int), BufferUsageHint.StaticDraw);
         }
 
         public void UpdateVertexBuffers()
@@ -1257,8 +1254,9 @@ namespace Smash_Forge
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
 
                     selectVbo.Bind();
-                    if (p.selectedVerts == null) return;
-                    GL.BufferData<int>(selectVbo.BufferTarget, (IntPtr)(p.selectedVerts.Length * sizeof(int)), p.selectedVerts, BufferUsageHint.StaticDraw);
+                    if (p.selectedVerts == null)
+                        return;
+                    selectVbo.BufferData(p.selectedVerts, sizeof(int), BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
                     elementsIbo.Bind();
