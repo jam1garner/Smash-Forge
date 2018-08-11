@@ -13,6 +13,7 @@ using ResNSW = Syroot.NintenTools.NSW.Bfres;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects;
+using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
@@ -354,26 +355,10 @@ namespace Smash_Forge
             }
         }
 
-        public void Render(Matrix4 mvpMatrix)
+        public void Render(Camera camera)
         {
-            Shader shader;
-            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                shader = OpenTKSharedResources.shaders["BFRES_Debug"];
-            else if (Runtime.renderBfresPbr)
-                shader = OpenTKSharedResources.shaders["BFRES_PBR"];
-            else
-                shader = OpenTKSharedResources.shaders["BFRES"];
-
-            shader.UseProgram();
-
-            shader.EnableVertexAttributes();
-
             if (Runtime.renderBoundingSphere)
                 DrawBoundingBoxes();
-
-            SetRenderSettings(shader);
-
-            shader.SetMatrix4x4("mvpMatrix", ref mvpMatrix);
 
             foreach (FMDL_Model fmdl in models)
             {
@@ -384,11 +369,6 @@ namespace Smash_Forge
                 //Render Skeleton
 
                 //Go through each node in the list and index the bones in the skeleton then use that transform
-                for (int i = 0; i < fmdl.Node_Array.Length; i++)
-                {
-                    Matrix4 transform = fmdl.skeleton.bones[fmdl.Node_Array[i]].invert * fmdl.skeleton.bones[fmdl.Node_Array[i]].transform;
-                    GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, String.Format("bones[{0}]", i)), false, ref transform);
-                }
 
                 foreach (Mesh m in fmdl.depthSortedMeshes)
                 {
@@ -402,23 +382,25 @@ namespace Smash_Forge
 
                 foreach (Mesh m in opaque)
                 {
-                    ApplyTransformFix(fmdl, m, shader);
-
                     if (m.Parent != null && (m.Parent).Checked)
-                        DrawMesh(m, shader, m.material);
+                        DrawMesh(m, fmdl, camera);
                 }
 
                 foreach (Mesh m in transparent)
                 {
-                    ApplyTransformFix(fmdl, m, shader);
-
                     if (((FMDL_Model)m.Parent).Checked)
-                        DrawMesh(m, shader, m.material);
+                        DrawMesh(m, fmdl, camera);
                 }
             }
+        }
 
-
-            shader.DisableVertexAttributes();
+        private static void SetBoneUniforms(Shader shader, FMDL_Model fmdl)
+        {
+            for (int i = 0; i < fmdl.Node_Array.Length; i++)
+            {
+                Matrix4 transform = fmdl.skeleton.bones[fmdl.Node_Array[i]].invert * fmdl.skeleton.bones[fmdl.Node_Array[i]].transform;
+                GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, String.Format("bones[{0}]", i)), false, ref transform);
+            }
         }
 
         private void CheckChildren(TreeNode rootNode, bool isChecked)
@@ -443,41 +425,96 @@ namespace Smash_Forge
             shader.SetBoolToInt("renderFog", Runtime.renderFog);
             shader.SetBoolToInt("useImageBasedLighting", false);
         }
-        private void DrawMesh(Mesh m, Shader shader, MaterialData mat, bool drawSelection = false)
+
+        private static void SetMiscUniforms(Camera camera, Shader shader)
         {
-            if (m.lodMeshes[m.DisplayLODIndex].faces.Count <= 3)
+            Rendering.Lights.LightColor diffuseColor = Runtime.lightSetParam.characterDiffuse.diffuseColor;
+            Rendering.Lights.LightColor ambientColor = Runtime.lightSetParam.characterDiffuse.ambientColor;
+            shader.SetVector3("difLightColor", diffuseColor.R, diffuseColor.G, diffuseColor.B);
+            shader.SetVector3("ambLightColor", ambientColor.R, ambientColor.G, ambientColor.B);
+
+            Matrix4 invertedCamera = camera.MvpMatrix.Inverted();
+            Vector3 lightDirection = new Vector3(0f, 0f, -1f);
+
+            //Todo. Maybe change direction via AAMP file (configs shader data)
+            shader.SetVector3("lightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+            shader.SetVector3("specLightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+            shader.SetVector3("difLightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+
+            shader.SetInt("debugOption", (int)Runtime.uvChannel);
+
+            // This cube map is for a quick test.
+            shader.SetTexture("cmap", RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh].Id, TextureTarget.TextureCubeMap, 2);
+        }
+
+        private void DrawMesh(Mesh mesh, FMDL_Model fmdl, Camera camera, bool drawSelection = false)
+        {
+            if (mesh.lodMeshes[mesh.DisplayLODIndex].faces.Count <= 3)
                 return;
 
-            SetVertexAttributes(m, shader);
-            SetUniforms(mat, shader, m);
-            SetTextureUniforms(mat, m, shader);
-            SetAlphaBlending(mat);
-            SetAlphaTesting(mat);
+            Shader shader;
+            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+                shader = OpenTKSharedResources.shaders["BFRES_Debug"];
+            else if (mesh.material.shaderassign.ShaderModel == "uking_mat")
+                shader = OpenTKSharedResources.shaders["BFRES_Botw"];
+            else if (Runtime.renderBfresPbr)
+                shader = OpenTKSharedResources.shaders["BFRES_PBR"];
+            else
+                shader = OpenTKSharedResources.shaders["BFRES"];
 
-            foreach (RenderInfoData r in mat.renderinfo)
+            shader.UseProgram();
+
+            shader.EnableVertexAttributes();
+
+            // Shader Uniforms
+            ApplyTransformFix(fmdl, mesh, shader);
+
+            SetMiscUniforms(camera, shader);
+
+            SetVertexAttributes(mesh, shader);
+
+            SetRenderSettings(shader);
+
+            Matrix4 mvpMatrix = camera.MvpMatrix;
+            shader.SetMatrix4x4("mvpMatrix", ref mvpMatrix);
+
+            SetUniforms(mesh.material, shader, mesh);
+            SetTextureUniforms(mesh.material, mesh, shader);
+            SetBoneUniforms(shader, fmdl);
+
+            SetAlphaBlending(mesh.material);
+            SetAlphaTesting(mesh.material);
+
+            foreach (RenderInfoData renderInfo in mesh.material.renderinfo)
             {
-                SetFaceCulling(mat, r);
+                SetFaceCulling(mesh.material, renderInfo);
             }
 
-            if (m.Checked)
+            DrawGeometry(mesh, shader);
+
+            shader.DisableVertexAttributes();
+        }
+
+        private static void DrawGeometry(Mesh mesh, Shader shader)
+        {
+            if (mesh.Checked)
             {
-                if ((m.IsSelected || m.Parent.IsSelected))
+                if ((mesh.IsSelected || mesh.Parent.IsSelected))
                 {
-                    DrawModelSelection(m, shader);
+                    DrawModelSelection(mesh, shader);
                 }
                 else
                 {
                     if (Runtime.renderModelWireframe)
                     {
-                        DrawModelWireframe(m, shader);
+                        DrawModelWireframe(mesh, shader);
                     }
 
                     if (Runtime.renderModel)
                     {
-                        GL.DrawElements(PrimitiveType.Triangles, m.lodMeshes[m.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, m.Offset);
+                        GL.DrawElements(PrimitiveType.Triangles, mesh.lodMeshes[mesh.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, mesh.Offset);
                     }
                 }
-
             }
         }
 
@@ -634,7 +671,6 @@ namespace Smash_Forge
             if (m.VertexSkinCount == 0)
             {
                 shader.SetInt("NoSkinning", 1);
-
             }
         }
 

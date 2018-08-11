@@ -341,33 +341,7 @@ namespace Smash_Forge
 
             if (Bfres != null)
             {
-                if (Runtime.renderBfresPbr)
-                    shader = OpenTKSharedResources.shaders["BFRES_PBR"];
-                else
-                    shader = OpenTKSharedResources.shaders["BFRES"];
-
-                if (!shader.ProgramCreatedSuccessfully)
-                    return;
-
-                shader.UseProgram();
-
-                shader.SetVector3("difLightColor", diffuseColor.R, diffuseColor.G, diffuseColor.B);
-                shader.SetVector3("ambLightColor", ambientColor.R, ambientColor.G, ambientColor.B);
-
-                Matrix4 invertedCamera = camera.MvpMatrix.Inverted();
-                Vector3 lightDirection = new Vector3(0f, 0f, -1f);
-
-                //Todo. Maybe change direction via AAMP file (configs shader data)
-                shader.SetVector3("lightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
-                shader.SetVector3("specLightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
-                shader.SetVector3("difLightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
-
-                shader.SetInt("debugOption", (int)Runtime.uvChannel);
-
-                // This cube map is for a quick test.
-                shader.SetTexture("cmap", RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh].Id, TextureTarget.TextureCubeMap, 2);
-
-                Bfres.Render(camera.MvpMatrix);
+                Bfres.Render(camera);
             }
 
             if (NUD != null && OpenTKSharedResources.shaders["Nud"].ProgramCreatedSuccessfully && OpenTKSharedResources.shaders["NudDebug"].ProgramCreatedSuccessfully)

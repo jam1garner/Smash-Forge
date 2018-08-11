@@ -56,31 +56,30 @@ namespace Smash_Forge.Rendering
 
         private static void SetUpBfresShaders()
         {
-            string[] bfresDebugShaders = new string[]
+            List<string> bfresSharedShaders = new List<string>
             {
-                "Bfres\\BFRES_Debug.frag",
                 "Bfres\\BFRES.vert",
                 "Bfres\\BFRES_utility.frag",
-                "Utility\\Utility.frag",
-            };
-            string[] bfresShaders = new string[]
-            {
-                "Bfres\\BFRES.frag",
-                "Bfres\\BFRES.vert",
-                "Bfres\\BFRES_utility.frag",
-                "Utility\\Utility.frag",
-            };
-            string[] bfresPBRShaders = new string[]
-            {
-                "Bfres\\BFRES_PBR.frag",
-                "Bfres\\BFRES.vert",
-                "Bfres\\BFRES_utility.frag",
-                "Utility\\Utility.frag",
+                "Utility\\Utility.frag"
             };
 
-            CreateAndAddShader("BFRES", bfresShaders);
-            CreateAndAddShader("BFRES_PBR", bfresPBRShaders);
-            CreateAndAddShader("BFRES_Debug", bfresDebugShaders);
+            List<string> bfresDebugShaders = new List<string>(bfresSharedShaders);
+            bfresDebugShaders.Add("Bfres\\BFRES_Debug.frag");
+
+            List<string> bfresShaders = new List<string>(bfresSharedShaders);
+            bfresShaders.Add("Bfres\\BFRES.frag");
+
+            List<string> bfresPBRShaders = new List<string>(bfresSharedShaders);
+            bfresPBRShaders.Add("Bfres\\BFRES_PBR.frag");
+
+
+            List<string> bfresBotwShaders = new List<string>(bfresSharedShaders);
+            bfresBotwShaders.Add("Bfres\\BFRES_Botw.frag");
+
+            CreateAndAddShader("BFRES", bfresShaders.ToArray());
+            CreateAndAddShader("BFRES_PBR", bfresPBRShaders.ToArray());
+            CreateAndAddShader("BFRES_Debug", bfresDebugShaders.ToArray());
+            CreateAndAddShader("BFRES_Botw", bfresBotwShaders.ToArray());
             CreateAndAddShader("KCL", "KCL.frag", "KCL.vert");
         }
 

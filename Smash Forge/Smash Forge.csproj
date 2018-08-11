@@ -878,6 +878,9 @@
     <None Include="Shader\Bfres\BFRES.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Shader\Bfres\BFRES_Botw.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Shader\Bfres\BFRES_Debug.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
