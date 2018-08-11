@@ -19,17 +19,31 @@ namespace Smash_Forge.Rendering
         private static string shaderSourceDirectory;
         private static string shaderCacheDirectory;
 
-        public static void SetupShaders()
+        public static void SetupShaders(bool forceBinaryUpdate = false)
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             shaderSourceDirectory = Path.Combine(MainForm.executableDir, "Shader");
             shaderCacheDirectory = Path.Combine(MainForm.executableDir, "Shader", "Shader Cache");
+
+            if (forceBinaryUpdate)
+                DeleteShaderBinaries(forceBinaryUpdate);
 
             // Reset the shaders first so that shaders can be replaced.
             OpenTKSharedResources.shaders.Clear();
             SetupAllShaders();
 
             System.Diagnostics.Debug.WriteLine("Shader Setup: {0} ms", stopwatch.ElapsedMilliseconds);
+        }
+
+        private static void DeleteShaderBinaries(bool clearBinaries)
+        {
+            if (Directory.Exists(shaderCacheDirectory))
+            {
+                foreach (string file in Directory.EnumerateFiles(shaderCacheDirectory))
+                {
+                    File.Delete(file);
+                }
+            }
         }
 
         private static void SetupAllShaders()

@@ -2012,7 +2012,8 @@ namespace Smash_Forge
 
         private void reloadShadersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ShaderTools.SetupShaders();
+            // Force the binaries to be regenerated.
+            ShaderTools.SetupShaders(true);
         }
 
         private void open3DSCharacterToolStripMenuItem_Click(object sender, EventArgs e)
