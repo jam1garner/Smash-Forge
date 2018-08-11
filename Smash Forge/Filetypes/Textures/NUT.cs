@@ -865,7 +865,6 @@ namespace Smash_Forge
             {
                 // TODO: Skip loading mipmaps for non square textures for now.
                 // The existing mipmaps don't display properly for some reason.
-
                 if (nutTexture.surfaces[0].mipmaps.Count > 1 && nutTexture.isDds && (nutTexture.Width == nutTexture.Height))
                 {
                     // Reading mipmaps past the first level is only supported for DDS currently.
