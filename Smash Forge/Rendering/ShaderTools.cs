@@ -14,17 +14,22 @@ using SFGraphics.Tools;
 
 namespace Smash_Forge.Rendering
 {
-    class ShaderTools
+    static class ShaderTools
     {
-        private static string shaderMainDir;
+        private static string shaderSourceDirectory;
+        private static string shaderCacheDirectory;
 
         public static void SetupShaders()
         {
-            shaderMainDir = Path.Combine(MainForm.executableDir, "Shader");
+            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            shaderSourceDirectory = Path.Combine(MainForm.executableDir, "Shader");
+            shaderCacheDirectory = Path.Combine(MainForm.executableDir, "Shader", "Shader Cache");
 
             // Reset the shaders first so that shaders can be replaced.
             OpenTKSharedResources.shaders.Clear();
             SetupAllShaders();
+
+            System.Diagnostics.Debug.WriteLine("Shader Setup: {0} ms", stopwatch.ElapsedMilliseconds);
         }
 
         private static void SetupAllShaders()
@@ -130,16 +135,65 @@ namespace Smash_Forge.Rendering
         {
             if (!OpenTKSharedResources.shaders.ContainsKey(shaderProgramName))
             {
-                Shader shader = CreateShader(shaderRelativePaths);
+                Shader shader = CreateShader(shaderProgramName, shaderRelativePaths);
                 OpenTKSharedResources.shaders.Add(shaderProgramName, shader);
             }
         }
 
-        private static Shader CreateShader(string[] shaderRelativePaths)
+        private static Shader CreateShader(string shaderProgramName, string[] shaderRelativePaths)
         {
             Shader shader = new Shader();
-            LoadShaderFiles(shader, shaderRelativePaths);
+
+            if (!Directory.Exists(shaderCacheDirectory))
+                Directory.CreateDirectory(shaderCacheDirectory);
+
+            // Loading precompiled binaries isn't core in 3.30.
+            // Most people will have more modern GPUs that support this, however.
+            bool canLoadBinaries = OpenGLExtensions.IsAvailable("GL_ARB_get_program_binary");
+
+            // We can't load the binary without the proper format.
+            string compiledBinaryPath = Path.Combine(shaderCacheDirectory, shaderProgramName + ".bin");
+            string compiledFormatPath = Path.Combine(shaderCacheDirectory, shaderProgramName + "_format.bin");
+
+            if (canLoadBinaries && File.Exists(compiledBinaryPath) && File.Exists(compiledFormatPath))
+            {
+                LoadFromPrecompiledBinary(shader, compiledBinaryPath, compiledFormatPath);
+
+                if (!shader.ProgramCreatedSuccessfully)
+                {
+                    // Load from source and generate binary.
+                    LoadShaderFiles(shader, shaderRelativePaths);
+                }
+            }
+            else
+            {
+                // Load from source.
+                LoadShaderFiles(shader, shaderRelativePaths);
+                if (canLoadBinaries)
+                    SavePrecompiledBinaryAndFormat(shader, compiledBinaryPath, compiledFormatPath);
+            }
+
             return shader;
+        }
+
+        private static void LoadFromPrecompiledBinary(Shader shader, string compiledBinaryPath, string compiledFormatPath)
+        {
+            byte[] programBinary = File.ReadAllBytes(compiledBinaryPath);
+
+            int formatValue = BitConverter.ToInt32(File.ReadAllBytes(compiledFormatPath), 0);
+            BinaryFormat binaryFormat = (BinaryFormat)formatValue;
+
+            shader.LoadProgramBinary(programBinary, binaryFormat);
+        }
+
+        private static void SavePrecompiledBinaryAndFormat(Shader shader, string compiledBinaryPath, string compiledFormatPath)
+        {
+            // Save program binary and format.
+            BinaryFormat binaryFormat;
+            byte[] programBinary = shader.GetProgramBinary(out binaryFormat);
+
+            File.WriteAllBytes(compiledBinaryPath, programBinary);
+            File.WriteAllBytes(compiledFormatPath, BitConverter.GetBytes((int)binaryFormat));
         }
 
         private static void LoadShaderFiles(Shader shader, string[] shaderRelativePaths)
@@ -147,7 +201,7 @@ namespace Smash_Forge.Rendering
             foreach (string file in shaderRelativePaths)
             {
                 // The input paths are relative to the main shader directory.
-                string shaderPath = shaderMainDir + "\\" + file;
+                string shaderPath = shaderSourceDirectory + "\\" + file;
                 if (!File.Exists(shaderPath))
                     continue;
 

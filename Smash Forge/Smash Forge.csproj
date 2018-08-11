@@ -1415,6 +1415,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="GUI\Editors\2D\" />
+    <Folder Include="Shader\Shader Cache\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
