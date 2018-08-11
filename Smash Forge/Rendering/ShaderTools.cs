@@ -20,7 +20,7 @@ namespace Smash_Forge.Rendering
 
         public static void SetupShaders()
         {
-            shaderMainDir = MainForm.executableDir + " \\lib\\Shader\\";
+            shaderMainDir = Path.Combine(MainForm.executableDir, "Shader");
 
             // Reset the shaders first so that shaders can be replaced.
             OpenTKSharedResources.shaders.Clear();

@@ -642,7 +642,7 @@
     <Compile Include="Rendering\OpenTKSharedResources.cs" />
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\Drawing\ScreenDrawing.cs" />
-    <Compile Include="Rendering\Shader\ShaderTools.cs" />
+    <Compile Include="Rendering\ShaderTools.cs" />
     <Compile Include="Rendering\Drawing\ShapeDrawing.cs" />
     <Compile Include="Rendering\Drawing\TextureToBitmap.cs" />
     <Compile Include="Updates.cs" />
@@ -872,118 +872,118 @@
     <None Include="hashTable.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Bfres\BFRES.frag">
+    <None Include="Shader\Bfres\BFRES.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Bfres\BFRES.vert">
+    <None Include="Shader\Bfres\BFRES.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Bfres\BFRES_Debug.frag">
+    <None Include="Shader\Bfres\BFRES_Debug.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Bfres\BFRES_PBR.frag">
+    <None Include="Shader\Bfres\BFRES_PBR.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Bfres\BFRES_utility.frag">
+    <None Include="Shader\Bfres\BFRES_utility.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Melee\Dat.frag">
+    <None Include="Shader\Melee\Dat.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Melee\Dat.vert">
+    <None Include="Shader\Melee\Dat.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\Bayo.frag">
+    <None Include="Shader\Nud\Bayo.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\EdgeDistance.geom">
+    <None Include="Shader\Nud\EdgeDistance.geom">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\StageLighting.frag">
+    <None Include="Shader\Nud\StageLighting.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\UV.frag">
+    <None Include="Shader\Nud\UV.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\UV.geom">
+    <None Include="Shader\Nud\UV.geom">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\UV.vert">
+    <None Include="Shader\Nud\UV.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\PostProcessing\Gradient.frag">
+    <None Include="Shader\PostProcessing\Gradient.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\3ds\Mbn.frag">
+    <None Include="Shader\3ds\Mbn.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\3ds\Mbn.vert">
+    <None Include="Shader\3ds\Mbn.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\Nud.frag">
+    <None Include="Shader\Nud\Nud.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\Nud.geom">
+    <None Include="Shader\Nud\Nud.geom">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\Nud.vert">
+    <None Include="Shader\Nud\Nud.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\NudDebug.frag">
+    <None Include="Shader\Nud\NudDebug.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\NudDebug.geom">
+    <None Include="Shader\Nud\NudDebug.geom">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\NudDebug.vert">
+    <None Include="Shader\Nud\NudDebug.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\NudEffect.frag">
+    <None Include="Shader\Nud\NudEffect.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\NudEffect.vert">
+    <None Include="Shader\Nud\NudEffect.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\NudSphere.frag">
+    <None Include="Shader\Nud\NudSphere.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\NudSphere.vert">
+    <None Include="Shader\Nud\NudSphere.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Point.frag">
+    <None Include="Shader\Point.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Point.vert">
+    <None Include="Shader\Point.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\PostProcessing\ScreenQuad.frag">
+    <None Include="Shader\PostProcessing\ScreenQuad.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Nud\SmashShader.frag">
+    <None Include="Shader\Nud\SmashShader.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\PostProcessing\ScreenTexCoordMain.vert">
+    <None Include="Shader\PostProcessing\ScreenTexCoordMain.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Shadow.frag">
+    <None Include="Shader\Shadow.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Shadow.vert">
+    <None Include="Shader\Shadow.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\SolidColor3D.frag">
+    <None Include="Shader\SolidColor3D.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\SolidColor3D.vert">
+    <None Include="Shader\SolidColor3D.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Texture.frag">
+    <None Include="Shader\Texture.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Utility\Utility.frag">
+    <None Include="Shader\Utility\Utility.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\Utility\Wireframe.frag">
+    <None Include="Shader\Utility\Wireframe.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="lib\Skapon.zip">
@@ -1348,10 +1348,10 @@
     <Content Include="lib\SFGraphics.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="lib\Shader\KCL.frag">
+    <None Include="Shader\KCL.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="lib\Shader\KCL.vert">
+    <None Include="Shader\KCL.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="lib\Syroot.BinaryData.dll">
