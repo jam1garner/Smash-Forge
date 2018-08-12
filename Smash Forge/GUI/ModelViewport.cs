@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -13,7 +12,6 @@ using System.IO;
 using Gif.Components;
 using System.Diagnostics;
 using System.Globalization;
-using System.Threading;
 using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
 using Smash_Forge.Params;
@@ -21,6 +19,7 @@ using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects;
 using SFGraphics.Tools;
 using SFGraphics.Cameras;
+using Smash_Forge.Rendering.Meshes;
 
 
 namespace Smash_Forge
@@ -1715,16 +1714,16 @@ namespace Smash_Forge
 
             List<Vector3> vertices = ShapeDrawing.GetRectangularPrismPositions().ToList();
 
-            Mesh<Vector3> cubeMesh = new Mesh<Vector3>(vertices, Vector3.SizeInBytes);
-            cubeMesh.color = ColorTools.Vector4FromColor(Color.Aquamarine);
-            cubeMesh.scale = new Vector3(5, 2, 3);
+            Vector4 aquamarine = ColorTools.Vector4FromColor(Color.Aquamarine);
+            // If we don't need to access fields, we can use the base type.
+            MeshSimple3D cubeMesh = new MeshColored3D(vertices, aquamarine);
 
             // Test shader rendering.
             Stopwatch stopwatch = Stopwatch.StartNew();
             for (int i = 0; i < count; i++)
             {
                 // Identical speeds to fixed function pipeline for small scale values.
-                cubeMesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera.MvpMatrix);
+                cubeMesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera);
                 //GL.Begin(PrimitiveType.TriangleStrip);
                 //foreach (Vector3 vert in vertices)
                 //{

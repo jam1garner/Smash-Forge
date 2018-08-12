@@ -4,8 +4,9 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects;
+using SFGraphics.Cameras;
 
-namespace Smash_Forge.Rendering
+namespace Smash_Forge.Rendering.Meshes
 {
     class Mesh<T> where T : struct
     {
@@ -13,10 +14,6 @@ namespace Smash_Forge.Rendering
         private int vertexSizeInBytes;
         private BufferObject vertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
 
-        // Shader uniform values.
-        public Vector3 center = new Vector3(0);
-        public Vector3 scale = new Vector3(1);
-        public Vector4 color = new Vector4(1);
 
         public Mesh(List<T> vertices, int vertexSizeInBytes)
         {
@@ -26,14 +23,7 @@ namespace Smash_Forge.Rendering
             InitializeBufferData();
         }
 
-        public Mesh(List<T> vertices, int vertexSizeInBytes, Vector4 color, Vector3 scale, Vector3 center) 
-            : this(vertices, vertexSizeInBytes)
-        {
-            this.scale = scale;
-            this.center = center;
-        }
-
-        public void Draw(Shader shader, Matrix4 mvpMatrix)
+        public void Draw(Shader shader, Camera camera)
         {
             if (!shader.ProgramCreatedSuccessfully)
                 return;
@@ -43,15 +33,12 @@ namespace Smash_Forge.Rendering
             shader.EnableVertexAttributes();
 
             // Set shader values.
-            Matrix4 matrix = mvpMatrix;
-            shader.SetMatrix4x4("mvpMatrix", ref matrix);
+            SetCameraUniforms(shader, camera);
 
-            shader.SetVector4("color", color);
-            shader.SetVector3("scale", scale);
-            shader.SetVector3("center", center);
+            SetUniforms(shader);
 
             vertexBuffer.Bind();
-            VertexAttributeInfo positionAttribute = new VertexAttributeInfo("position", 3, 
+            VertexAttributeInfo positionAttribute = new VertexAttributeInfo("position", 3,
                 VertexAttribPointerType.Float, Vector3.SizeInBytes);
 
             SetVertexAttributes(shader, positionAttribute);
@@ -59,6 +46,19 @@ namespace Smash_Forge.Rendering
             GL.DrawArrays(PrimitiveType.TriangleFan, 0, vertices.Count);
 
             shader.DisableVertexAttributes();
+        }
+
+        protected virtual void SetCameraUniforms(Shader shader, Camera camera)
+        {
+            Matrix4 matrix = camera.MvpMatrix;
+            shader.SetMatrix4x4("mvpMatrix", ref matrix);
+        }
+
+        protected virtual void SetUniforms(Shader shader)
+        {
+            shader.SetVector4("color", new Vector4(1));
+            shader.SetVector3("scale", new Vector3(1));
+            shader.SetVector3("center", new Vector3(0));
         }
 
         private void InitializeBufferData()

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
 
-namespace Smash_Forge.Rendering
+namespace Smash_Forge.Rendering.Meshes
 {           
     struct VertexAttributeInfo
     {
