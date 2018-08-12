@@ -1697,7 +1697,7 @@ namespace Smash_Forge
                 ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id);
             }
 
-            //BenchmarkShapeDrawing();
+            BenchmarkShapeDrawing();
 
             FixedFunctionRendering();
 
@@ -1715,7 +1715,8 @@ namespace Smash_Forge
 
             List<Vector3> vertices = ShapeDrawing.GetRectangularPrismPositions().ToList();
 
-            Mesh3d cubeMesh = new Mesh3d(vertices, ColorTools.Vector4FromColor(Color.Aquamarine));
+            Mesh<Vector3> cubeMesh = new Mesh<Vector3>(vertices, Vector3.SizeInBytes);
+            cubeMesh.color = ColorTools.Vector4FromColor(Color.Aquamarine);
             cubeMesh.scale = new Vector3(5, 2, 3);
 
             // Test shader rendering.
