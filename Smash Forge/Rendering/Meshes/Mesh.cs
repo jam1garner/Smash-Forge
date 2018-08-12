@@ -8,12 +8,11 @@ using SFGraphics.Cameras;
 
 namespace Smash_Forge.Rendering.Meshes
 {
-    class Mesh<T> where T : struct
+    abstract class Mesh<T> where T : struct
     {
         private List<T> vertices = new List<T>();
         private int vertexSizeInBytes;
         private BufferObject vertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
-
 
         public Mesh(List<T> vertices, int vertexSizeInBytes)
         {
@@ -37,11 +36,7 @@ namespace Smash_Forge.Rendering.Meshes
 
             SetUniforms(shader);
 
-            vertexBuffer.Bind();
-            VertexAttributeInfo positionAttribute = new VertexAttributeInfo("position", 3,
-                VertexAttribPointerType.Float, Vector3.SizeInBytes);
-
-            SetVertexAttributes(shader, positionAttribute);
+            SetVertexAttributes(shader);
 
             GL.DrawArrays(PrimitiveType.TriangleFan, 0, vertices.Count);
 
@@ -61,13 +56,17 @@ namespace Smash_Forge.Rendering.Meshes
             shader.SetVector3("center", new Vector3(0));
         }
 
+        protected abstract List<VertexAttributeInfo> GetVertexAttributes();
+
         private void InitializeBufferData()
         {
             vertexBuffer.BufferData(vertices.ToArray(), Vector3.SizeInBytes, BufferUsageHint.StaticDraw);
         }
 
-        private void SetVertexAttributes(Shader shader, params VertexAttributeInfo[] vertexAttributes)
+        private void SetVertexAttributes(Shader shader)
         {
+            // Setting vertex attributes is handled automatically. 
+            List<VertexAttributeInfo> vertexAttributes = GetVertexAttributes();
             foreach (VertexAttributeInfo attribute in vertexAttributes)
             {
                 GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation(attribute.name), 
