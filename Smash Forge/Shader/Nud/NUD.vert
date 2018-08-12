@@ -10,7 +10,6 @@ in vec2 vUV2;
 in vec2 vUV3;
 in vec4 vBone;
 in vec4 vWeight;
-in vec4 vBoneHash;
 
 // Outputs for geometry shader.
 out vec3 geomNormal;

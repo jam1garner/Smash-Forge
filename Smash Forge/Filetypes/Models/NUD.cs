@@ -12,6 +12,7 @@ using SALT.Graphics;
 using System.Text;
 using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Meshes;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects;
@@ -272,12 +273,26 @@ namespace Smash_Forge
             DisplayVertex[] displayVerticesArray;
             int[] vertexIndicesArray;
 
+            // Store all of the polygon vert data in one buffer.
+            List<DisplayVertex> displayVerticesList;
+            List<int> vertexIndicesList;
+            GetDisplayVerticesAndIndices(out displayVerticesList, out vertexIndicesList);
+
+            // Initialize the buffers.
+            displayVerticesArray = displayVerticesList.ToArray();
+            vertexIndicesArray = vertexIndicesList.ToArray();
+
+            positionVbo.BufferData(displayVerticesArray, DisplayVertex.Size, BufferUsageHint.StaticDraw);
+            elementsIbo.BufferData(vertexIndicesArray, sizeof(int), BufferUsageHint.StaticDraw);
+        }
+
+        private void GetDisplayVerticesAndIndices(out List<DisplayVertex> displayVerticesList, out List<int> vertexIndicesList)
+        {
             int polygonOffset = 0;
             int vertexOffset = 0;
 
-            // Store all of the polygon vert data in one buffer.
-            List<DisplayVertex> displayVerticesList = new List<DisplayVertex>();
-            List<int> vertexIndicesList = new List<int>();
+            displayVerticesList = new List<DisplayVertex>();
+            vertexIndicesList = new List<int>();
 
             // Loop backwards?
             for (int meshIndex = Nodes.Count - 1; meshIndex >= 0; meshIndex--)
@@ -301,13 +316,6 @@ namespace Smash_Forge
                     vertexOffset += polygonDisplayVertices.Count;
                 }
             }
-
-            // Initialize the buffers.
-            displayVerticesArray = displayVerticesList.ToArray();
-            vertexIndicesArray = vertexIndicesList.ToArray();
-
-            positionVbo.BufferData(displayVerticesArray, DisplayVertex.Size, BufferUsageHint.StaticDraw);
-            elementsIbo.BufferData(vertexIndicesArray, sizeof(int), BufferUsageHint.StaticDraw);
         }
 
         public void UpdateVertexBuffers()
@@ -620,6 +628,12 @@ namespace Smash_Forge
             // Draw the model normally.
             elementsIbo.Bind();
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+
+            //List<DisplayVertex> vertices;
+            //List<int> indices;
+            //GetDisplayVerticesAndIndices(out vertices, out indices);
+            //ForgeMesh mesh = new ForgeMesh(vertices);
+            //mesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera);
         }
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<DummyTextures, Texture> dummyTextures, int id = 0, bool drawId = false)

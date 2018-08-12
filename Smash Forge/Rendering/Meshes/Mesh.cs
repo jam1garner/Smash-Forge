@@ -10,15 +10,26 @@ namespace Smash_Forge.Rendering.Meshes
 {
     abstract class Mesh<T> where T : struct
     {
-        private List<T> vertices = new List<T>();
         private int vertexSizeInBytes;
+
+        private List<T> vertices = new List<T>();
         private BufferObject vertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
+
+        private List<int> vertexIndices = new List<int>();
+        private BufferObject vertexIndexBuffer = new BufferObject(BufferTarget.ElementArrayBuffer);
+
 
         public Mesh(List<T> vertices, int vertexSizeInBytes)
         {
             // The vertex data is immutable, so buffers only need to be initialized once.
             this.vertices = vertices;
             this.vertexSizeInBytes = vertexSizeInBytes;
+
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                vertexIndices.Add(i);
+            }
+            vertexIndexBuffer.BufferData(vertexIndices.ToArray(), sizeof(int), BufferUsageHint.StaticDraw);
             InitializeBufferData();
         }
 
@@ -38,7 +49,8 @@ namespace Smash_Forge.Rendering.Meshes
 
             SetVertexAttributes(shader);
 
-            GL.DrawArrays(PrimitiveType.TriangleFan, 0, vertices.Count);
+            vertexIndexBuffer.Bind();
+            GL.DrawElements(PrimitiveType.TriangleFan, vertices.Count, DrawElementsType.UnsignedInt, 0);
 
             shader.DisableVertexAttributes();
         }

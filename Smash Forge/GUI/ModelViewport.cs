@@ -1734,7 +1734,7 @@ namespace Smash_Forge
             }
             stopwatch.Stop();
 
-            Debug.WriteLine(String.Format("{0}", stopwatch.ElapsedMilliseconds));
+            //Debug.WriteLine(String.Format("{0}", stopwatch.ElapsedMilliseconds));
         }
 
         private void DrawModelsNormally(int width, int height, int defaultFbo)
