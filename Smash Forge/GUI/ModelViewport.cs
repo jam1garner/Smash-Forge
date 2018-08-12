@@ -1723,7 +1723,7 @@ namespace Smash_Forge
             for (int i = 0; i < count; i++)
             {
                 // Identical speeds to fixed function pipeline for small scale values.
-                cubeMesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera);
+                //cubeMesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera);
                 //GL.Begin(PrimitiveType.TriangleStrip);
                 //foreach (Vector3 vert in vertices)
                 //{
@@ -1954,7 +1954,7 @@ namespace Smash_Forge
 
             if (e.KeyChar == 'i')
             {
-                ShaderTools.SetupShaders();
+                ShaderTools.SetupShaders(true);
                 ShaderTools.SaveErrorLogs();
             }
         }

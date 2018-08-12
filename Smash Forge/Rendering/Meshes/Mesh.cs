@@ -18,7 +18,6 @@ namespace Smash_Forge.Rendering.Meshes
         private List<int> vertexIndices = new List<int>();
         private BufferObject vertexIndexBuffer = new BufferObject(BufferTarget.ElementArrayBuffer);
 
-
         public Mesh(List<T> vertices, int vertexSizeInBytes)
         {
             // The vertex data is immutable, so buffers only need to be initialized once.
@@ -33,7 +32,18 @@ namespace Smash_Forge.Rendering.Meshes
             InitializeBufferData();
         }
 
-        public void Draw(Shader shader, Camera camera)
+        public Mesh(List<T> vertices, List<int> vertexIndices, int vertexSizeInBytes)
+        {
+            // The vertex data is immutable, so buffers only need to be initialized once.
+            this.vertices = vertices;
+            this.vertexIndices = vertexIndices;
+            this.vertexSizeInBytes = vertexSizeInBytes;
+
+            vertexIndexBuffer.BufferData(vertexIndices.ToArray(), sizeof(int), BufferUsageHint.StaticDraw);
+            InitializeBufferData();
+        }
+
+        public void Draw(Shader shader, Camera camera, int count, int offset = 0)
         {
             if (!shader.ProgramCreatedSuccessfully)
                 return;
@@ -47,10 +57,13 @@ namespace Smash_Forge.Rendering.Meshes
 
             SetUniforms(shader);
 
+            vertexBuffer.Bind();
             SetVertexAttributes(shader);
 
+            // TODO: How to handle count and offset?
+            // NUD uses one buffer for multiple meshes.
             vertexIndexBuffer.Bind();
-            GL.DrawElements(PrimitiveType.TriangleFan, vertices.Count, DrawElementsType.UnsignedInt, 0);
+            GL.DrawElements(PrimitiveType.Triangles, count, DrawElementsType.UnsignedInt, offset);
 
             shader.DisableVertexAttributes();
         }

@@ -350,7 +350,7 @@ namespace Smash_Forge
             // Render using the selected shader.
             shader.UseProgram();
             shader.EnableVertexAttributes();
-            UpdateBonesBuffer(vbn, shader, bonesUbo);
+            //UpdateBonesBuffer(vbn, shader, bonesUbo);
 
             DrawAllPolygons(shader, camera, drawPolyIds);
 
@@ -617,8 +617,8 @@ namespace Smash_Forge
             Material material = p.materials[0];
 
             // Set Shader Values.
-            SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
-            SetVertexAttributes(shader, positionVbo);
+            //SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
+            //SetVertexAttributes(shader, positionVbo);
 
             // Set OpenTK Render Options.
             SetAlphaBlending(material);
@@ -626,14 +626,14 @@ namespace Smash_Forge
             SetFaceCulling(material);
 
             // Draw the model normally.
-            elementsIbo.Bind();
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+            //elementsIbo.Bind();
+            //GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
 
-            //List<DisplayVertex> vertices;
-            //List<int> indices;
-            //GetDisplayVerticesAndIndices(out vertices, out indices);
-            //ForgeMesh mesh = new ForgeMesh(vertices);
-            //mesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera);
+            List<DisplayVertex> vertices;
+            List<int> indices;
+            GetDisplayVerticesAndIndices(out vertices, out indices);
+            ForgeMesh mesh = new ForgeMesh(vertices, indices);
+            mesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, p.displayFaceSize, p.Offset);
         }
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<DummyTextures, Texture> dummyTextures, int id = 0, bool drawId = false)
