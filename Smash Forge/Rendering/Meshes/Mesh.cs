@@ -85,7 +85,7 @@ namespace Smash_Forge.Rendering.Meshes
 
         private void InitializeBufferData()
         {
-            vertexBuffer.BufferData(vertices.ToArray(), Vector3.SizeInBytes, BufferUsageHint.StaticDraw);
+            vertexBuffer.BufferData(vertices.ToArray(), vertexSizeInBytes, BufferUsageHint.StaticDraw);
         }
 
         private void SetVertexAttributes(Shader shader)
@@ -94,8 +94,10 @@ namespace Smash_Forge.Rendering.Meshes
             List<VertexAttributeInfo> vertexAttributes = GetVertexAttributes();
             foreach (VertexAttributeInfo attribute in vertexAttributes)
             {
-                GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation(attribute.name), 
-                    attribute.valueCount, attribute.vertexAttribPointerType, false, attribute.sizeInBytes, 0);
+                // -1 means not found, which is usually a result of the attribute being unused.
+                int index = shader.GetVertexAttributeUniformLocation(attribute.name);
+                if (index != -1)
+                    GL.VertexAttribPointer(index, attribute.valueCount, attribute.vertexAttribPointerType, false, attribute.sizeInBytes, 0);
             }
         }
     }
