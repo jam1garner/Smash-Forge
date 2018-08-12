@@ -8,7 +8,7 @@ using SFGraphics.Cameras;
 
 namespace Smash_Forge.Rendering.Meshes
 {
-    abstract class Mesh<T> where T : struct
+    public abstract class Mesh<T> where T : struct
     {
         private int vertexSizeInBytes;
 

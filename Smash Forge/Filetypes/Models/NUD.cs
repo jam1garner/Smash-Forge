@@ -282,8 +282,16 @@ namespace Smash_Forge
             displayVerticesArray = displayVerticesList.ToArray();
             vertexIndicesArray = vertexIndicesList.ToArray();
 
-            positionVbo.BufferData(displayVerticesArray, DisplayVertex.Size, BufferUsageHint.StaticDraw);
-            elementsIbo.BufferData(vertexIndicesArray, sizeof(int), BufferUsageHint.StaticDraw);
+            //positionVbo.BufferData(displayVerticesArray, DisplayVertex.Size, BufferUsageHint.StaticDraw);
+            //elementsIbo.BufferData(vertexIndicesArray, sizeof(int), BufferUsageHint.StaticDraw);
+
+            foreach (Mesh mesh in Nodes)
+            {
+                foreach (Polygon p in mesh.Nodes)
+                {
+                    p.forgeMesh = new ForgeMesh(displayVerticesList, vertexIndicesList);
+                }
+            }
         }
 
         private void GetDisplayVerticesAndIndices(out List<DisplayVertex> displayVerticesList, out List<int> vertexIndicesList)
@@ -617,8 +625,8 @@ namespace Smash_Forge
             Material material = p.materials[0];
 
             // Set Shader Values.
-            //SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
-            //SetVertexAttributes(shader, positionVbo);
+            SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
+            SetVertexAttributes(shader, positionVbo);
 
             // Set OpenTK Render Options.
             SetAlphaBlending(material);
@@ -629,11 +637,7 @@ namespace Smash_Forge
             //elementsIbo.Bind();
             //GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
 
-            List<DisplayVertex> vertices;
-            List<int> indices;
-            GetDisplayVerticesAndIndices(out vertices, out indices);
-            ForgeMesh mesh = new ForgeMesh(vertices, indices);
-            mesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, p.displayFaceSize, p.Offset);
+            p.forgeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, p.displayFaceSize, p.Offset);
         }
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<DummyTextures, Texture> dummyTextures, int id = 0, bool drawId = false)
@@ -2835,6 +2839,8 @@ namespace Smash_Forge
             private static List<int> previousDisplayIds = new List<int>();
             public int DisplayId { get { return displayId; } }
             private int displayId = 0;
+
+            public ForgeMesh forgeMesh;
 
             // The number of vertices is vertexIndices.Count because many vertices are shared.
             public List<Vertex> vertices = new List<Vertex>();

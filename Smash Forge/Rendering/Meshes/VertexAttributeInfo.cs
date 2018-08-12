@@ -7,7 +7,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge.Rendering.Meshes
 {           
-    struct VertexAttributeInfo
+    public struct VertexAttributeInfo
     {
         public readonly string name;
         public readonly int valueCount;

@@ -1712,18 +1712,31 @@ namespace Smash_Forge
             // Depth testing has a huge performance impact.
             GL.Disable(EnableCap.DepthTest);
 
-            List<Vector3> vertices = ShapeDrawing.GetRectangularPrismPositions().ToList();
+            List<Vector3> cubePositions = ShapeDrawing.GetRectangularPrismPositions().ToList();
 
-            Vector4 aquamarine = ColorTools.Vector4FromColor(Color.Aquamarine);
-            // If we don't need to access fields, we can use the base type.
-            MeshSimple3D cubeMesh = new MeshColored3D(vertices, aquamarine);
+            List<NUD.DisplayVertex> vertices = new List<NUD.DisplayVertex>();
+            foreach (Vector3 vert in cubePositions)
+            {
+                vertices.Add(new NUD.DisplayVertex()
+                {
+                    pos = vert
+                });
+            }
+
+            List<int> indices = new List<int>();
+            for (int i = 0; i < vertices.Count; i++)
+			{
+                indices.Add(i);
+			}
+
+            ForgeMesh cubeMesh = new ForgeMesh(vertices, indices);
 
             // Test shader rendering.
             Stopwatch stopwatch = Stopwatch.StartNew();
             for (int i = 0; i < count; i++)
             {
                 // Identical speeds to fixed function pipeline for small scale values.
-                //cubeMesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera);
+                //cubeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, vertices.Count, 0);
                 //GL.Begin(PrimitiveType.TriangleStrip);
                 //foreach (Vector3 vert in vertices)
                 //{

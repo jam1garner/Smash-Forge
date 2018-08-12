@@ -6,7 +6,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge.Rendering.Meshes
 {
-    class ForgeMesh : Mesh<NUD.DisplayVertex>
+    public class ForgeMesh : Mesh<NUD.DisplayVertex>
     {
         public ForgeMesh(List<NUD.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices, NUD.DisplayVertex.Size)
         {
