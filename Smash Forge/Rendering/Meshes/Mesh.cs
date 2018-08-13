@@ -113,7 +113,7 @@ namespace Smash_Forge.Rendering.Meshes
                 // -1 means not found, which is usually a result of the attribute being unused.
                 int index = shader.GetVertexAttributeUniformLocation(attribute.name);
                 if (index != -1)
-                    GL.VertexAttribPointer(index, attribute.valueCount, attribute.vertexAttribPointerType, false, attribute.sizeInBytes, 0);
+                    GL.VertexAttribPointer(index, attribute.valueCount, attribute.vertexAttribPointerType, false, attribute.sizeInBytes, attribute.offset);
             }
         }
     }

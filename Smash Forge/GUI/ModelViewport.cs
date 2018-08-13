@@ -1724,10 +1724,10 @@ namespace Smash_Forge
 
             List<Vector3> positions = new List<Vector3>()
             {
-                new Vector3(10, 10, 0),
-                new Vector3(10, -10, 0),
-                new Vector3(-10, -10, 0),
-                new Vector3(-10, 10, 0)
+                new Vector3(5, 5, 0),
+                new Vector3(5, -5, 0),
+                new Vector3(-5, -5, 0),
+                new Vector3(-5, 5, 0)
             };
 
             List<NUD.DisplayVertex> vertices = new List<NUD.DisplayVertex>();
@@ -1738,13 +1738,14 @@ namespace Smash_Forge
 
             List<int> indices = new List<int>() { 0, 1, 3, 1, 2, 3 };
 
+            // Doesn't render correctly at the moment. 
             if (forgeMesh == null)
                 forgeMesh = new ForgeMesh(vertices, indices);
-            forgeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, indices.Count, 0);
+            //forgeMesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera, indices.Count, 0);
 
             if (simpleMesh == null)
-                simpleMesh = new MeshSimple3D(positions);
-            simpleMesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera, positions.Count, 0);
+                simpleMesh = new MeshSimple3D(positions, indices);
+            simpleMesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera, indices.Count, 0);
         }
 
         private void DrawModelsNormally(int width, int height, int defaultFbo)

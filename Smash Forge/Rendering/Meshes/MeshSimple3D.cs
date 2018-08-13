@@ -13,6 +13,11 @@ namespace Smash_Forge.Rendering.Meshes
 
         }
 
+        public MeshSimple3D(List<Vector3> vertices, List<int> indices) : base(vertices, indices, Vector3.SizeInBytes)
+        {
+
+        }
+
         protected override List<VertexAttributeInfo> GetVertexAttributes()
         {
             return new List<VertexAttributeInfo>()

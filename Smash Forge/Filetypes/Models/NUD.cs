@@ -46,6 +46,8 @@ namespace Smash_Forge
         public bool hasBones = false;
         public float[] boundingSphere = new float[4];
 
+        private MeshSimple3D renderMesh;
+
         // Just used for rendering.
         private List<Mesh> depthSortedMeshes = new List<Mesh>();
 
@@ -287,13 +289,13 @@ namespace Smash_Forge
             positionVbo.BufferData(displayVerticesArray, DisplayVertex.Size, BufferUsageHint.StaticDraw);
             elementsIbo.BufferData(vertexIndicesArray, sizeof(int), BufferUsageHint.StaticDraw);
 
-            foreach (Mesh mesh in Nodes)
+            List<Vector3> positions = new List<Vector3>();
+            foreach (DisplayVertex displayVertex in displayVerticesList)
             {
-                foreach (Polygon p in mesh.Nodes)
-                {
-                    p.forgeMesh = new ForgeMesh(displayVerticesList, vertexIndicesList);
-                }
+                positions.Add(displayVertex.pos);
             }
+
+            renderMesh = new MeshSimple3D(positions, vertexIndicesList);
         }
 
         private void GetDisplayVerticesAndIndices(out List<DisplayVertex> displayVerticesList, out List<int> vertexIndicesList)
@@ -638,10 +640,10 @@ namespace Smash_Forge
 
             // Draw the model normally.
             nudVao.Bind();
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+            //GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             nudVao.Unbind();
 
-            //p.forgeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, p.displayFaceSize, p.Offset);
+            renderMesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera, p.displayFaceSize, p.Offset);
         }
 
         private void ConfigureVertexAttributes(Shader shader)
@@ -2862,8 +2864,6 @@ namespace Smash_Forge
             private static List<int> previousDisplayIds = new List<int>();
             public int DisplayId { get { return displayId; } }
             private int displayId = 0;
-
-            public ForgeMesh forgeMesh;
 
             // The number of vertices is vertexIndices.Count because many vertices are shared.
             public List<Vertex> vertices = new List<Vertex>();
