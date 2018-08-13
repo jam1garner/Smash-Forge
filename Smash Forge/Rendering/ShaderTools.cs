@@ -163,7 +163,6 @@ namespace Smash_Forge.Rendering
             // Loading precompiled binaries isn't core in 3.30.
             // Most people will have more modern GPUs that support this, however.
             bool canLoadBinaries = OpenGLExtensions.IsAvailable("GL_ARB_get_program_binary");
-            canLoadBinaries = false; // quick fix.
 
             // We can't load the binary without the proper format.
             string compiledBinaryPath = Path.Combine(shaderCacheDirectory, shaderProgramName + ".bin");
@@ -182,8 +181,10 @@ namespace Smash_Forge.Rendering
             else
             {
                 // Load from source.
+                // Don't generate binaries for programs that did not link.
+                // Attempting to load them will crash.
                 LoadShaderFiles(shader, shaderRelativePaths);
-                if (canLoadBinaries)
+                if (canLoadBinaries && shader.ProgramCreatedSuccessfully)
                     SavePrecompiledBinaryAndFormat(shader, compiledBinaryPath, compiledFormatPath);
             }
 

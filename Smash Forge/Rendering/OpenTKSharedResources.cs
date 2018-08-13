@@ -40,7 +40,7 @@ namespace Smash_Forge.Rendering
             if (setupStatus == SharedResourceStatus.Initialized)
                 return;
 
-            //try
+            try
             {
                 // Make a permanent context to share resources.
                 GraphicsContext.ShareContexts = true;
@@ -56,11 +56,11 @@ namespace Smash_Forge.Rendering
 
                 setupStatus = SharedResourceStatus.Initialized;
             }
-            //catch (AccessViolationException)
-            //{
+            catch (AccessViolationException)
+            {
                 // Context creation failed.
-                //setupStatus = SharedResourceStatus.Failed;
-            //}
+                setupStatus = SharedResourceStatus.Failed;
+            }
         }
 
         public static void EnableOpenTKDebugOutput()

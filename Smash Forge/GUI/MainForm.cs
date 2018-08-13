@@ -107,11 +107,11 @@ namespace Smash_Forge
             openFiles();
 
             OpenTKSharedResources.InitializeSharedResources();
-            //else
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Failed)
             {
                 // Disable options that would cause crashes.
-                //reloadShadersToolStripMenuItem.Enabled = false;
-                //exportErrorLogToolStripMenuItem.Enabled = false;
+                reloadShadersToolStripMenuItem.Enabled = false;
+                exportErrorLogToolStripMenuItem.Enabled = false;
             }
         }
 
