@@ -357,12 +357,12 @@ namespace Smash_Forge
 
             // Render using the selected shader.
             shader.UseProgram();
-            shader.EnableVertexAttributes();
+            //shader.EnableVertexAttributes();
             //UpdateBonesBuffer(vbn, shader, bonesUbo);
 
             DrawAllPolygons(shader, camera, drawPolyIds);
 
-            shader.DisableVertexAttributes();
+            //shader.DisableVertexAttributes();
         }
 
         private void UpdateBonesBuffer(VBN vbn, Shader shader, BufferObject bonesUbo)

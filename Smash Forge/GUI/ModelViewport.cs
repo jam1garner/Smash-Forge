@@ -39,6 +39,8 @@ namespace Smash_Forge
         // Used for screen renders and color picking.
         private Framebuffer offscreenRenderFbo;
 
+        private VertexArrayObject screenVao;
+
         // Shadow Mapping
         private Framebuffer depthMapFbo;
         private DepthTexture depthMap;
@@ -1689,13 +1691,13 @@ namespace Smash_Forge
                 // Draw the texture to the screen into a smaller FBO.
                 imageBrightHdrFbo.Bind();
                 GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
-                ScreenDrawing.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1].Id, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
+                ScreenDrawing.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1].Id, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, width, height);
 
-                ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id);
+                ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id, screenVao);
             }
 
             BenchmarkShapeDrawing();
@@ -1796,16 +1798,16 @@ namespace Smash_Forge
             DrawOverlays();
         }
 
-        private static void DrawViewportBackground()
+        private void DrawViewportBackground()
         {
             Vector3 topColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
             Vector3 bottomColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
 
             // Only use the top color for solid color rendering.
             if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
-                ScreenDrawing.DrawQuadGradient(topColor, topColor, ScreenDrawing.screenTriangleVbo);
+                ScreenDrawing.DrawQuadGradient(topColor, topColor, screenVao);
             else
-                ScreenDrawing.DrawQuadGradient(topColor, bottomColor, ScreenDrawing.screenTriangleVbo);
+                ScreenDrawing.DrawQuadGradient(topColor, bottomColor, screenVao);
         }
 
         private void SetupViewport(int width, int height)
@@ -2076,10 +2078,10 @@ namespace Smash_Forge
             switch (tex.format >> 8)
             {
                 case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC4:
-                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, false, false);
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height, screenVao, true, false, false);
                     break;
                 default:
-                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height, screenVao);
                     break;
             }
 
@@ -2093,14 +2095,14 @@ namespace Smash_Forge
         {
             GL.PopAttrib();
             NutTexture tex = ((NutTexture)meshList.filesTreeView.SelectedNode);
-            ScreenDrawing.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HashId].Id, tex.Width, tex.Height);
+            ScreenDrawing.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HashId].Id, tex.Width, tex.Height, screenVao);
         }
 
         private void DrawBchTex()
         {
             GL.PopAttrib();
             BCH_Texture tex = ((BCH_Texture)meshList.filesTreeView.SelectedNode);
-            ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+            ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height, screenVao);
         }
 
         private void DrawFTEXTexAndUvs()
@@ -2111,13 +2113,13 @@ namespace Smash_Forge
             switch (tex.format)
             {
                 case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM:
-                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, screenVao, true, false, false);
                     break;
                 case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM:
-                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, screenVao, true, false, false);
                     break;
                 default:
-                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height);
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, screenVao);
                     break;
             }
 
@@ -2218,18 +2220,19 @@ namespace Smash_Forge
         private void glViewport_Load(object sender, EventArgs e)
         {
             glViewport.MakeCurrent();
-            if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
-            {
-                OpenTKSharedResources.InitializeSharedResources();
-                if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
-                {
-                    SetUpBuffersAndTextures();
 
-                    if (Runtime.enableOpenTKDebugOutput)
-                    {
-                        glViewport.MakeCurrent();
-                        OpenTKSharedResources.EnableOpenTKDebugOutput();
-                    }
+            OpenTKSharedResources.InitializeSharedResources();
+
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            {
+                screenVao = ScreenDrawing.CreateScreenTriangleVao();
+
+                SetUpBuffersAndTextures();
+
+                if (Runtime.enableOpenTKDebugOutput)
+                {
+                    glViewport.MakeCurrent();
+                    OpenTKSharedResources.EnableOpenTKDebugOutput();
                 }
             }
         }

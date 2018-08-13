@@ -50,7 +50,6 @@ namespace Smash_Forge.Rendering
                     EnableOpenTKDebugOutput();
 
                 RenderTools.LoadTextures();
-                ScreenDrawing.screenTriangleVbo = ScreenDrawing.CreateScreenTriangleBuffer();
                 GetOpenGLSystemInfo();
                 ShaderTools.SetupShaders();
 

@@ -21,10 +21,6 @@ namespace Smash_Forge
 {
     public partial class NUDMaterialEditor : DockContent
     {
-        public NUD.Polygon currentPolygon;
-        public List<NUD.Material> currentMaterialList;
-        public static Dictionary<string, Params.MatParam> materialParamList = new Dictionary<string, Params.MatParam>();
-
         public static Dictionary<int, string> cullModeByMatValue = new Dictionary<int, string>()
         {
             { 0x000, "Cull None"},
@@ -87,6 +83,11 @@ namespace Smash_Forge
             { 0x06, "4 mip levels, trilinear, anisotropic"}
         };
 
+        public static Dictionary<string, Params.MatParam> materialParamList = new Dictionary<string, Params.MatParam>();
+
+        public NUD.Polygon currentPolygon;
+        public List<NUD.Material> currentMaterialList;
+
         private int currentMatIndex = 0;
         private string currentPropertyName = "";
         private ImageList textureThumbnails = new ImageList()
@@ -94,6 +95,8 @@ namespace Smash_Forge
             ColorDepth = ColorDepth.Depth32Bit,
             ImageSize = new Size(64, 64)
         };
+
+        private SFGraphics.GLObjects.VertexArrayObject screenVao;
 
         // Set to false while using the sliders to avoid a loop of scroll and text changed events.
         // Set to true when focus on the slider is lost (ex. clicking on text box).
@@ -121,9 +124,13 @@ namespace Smash_Forge
 
             // The dummy textures will be used later. 
             OpenTKSharedResources.InitializeSharedResources();
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            {
+                screenVao = ScreenDrawing.CreateScreenTriangleVao();
 
-            // Only happens once.
-            UpdateMaterialThumbnails();
+                // Only happens once.
+                UpdateMaterialThumbnails();
+            }
         }
 
         private void RefreshTexturesImageList()
@@ -870,14 +877,14 @@ namespace Smash_Forge
             {
                 texAlphaGlControl.MakeCurrent();
                 GL.Viewport(texAlphaGlControl.ClientRectangle);
-                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, false, false, false, true);
+                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenVao, false, false, false, true);
                 texAlphaGlControl.SwapBuffers();
             }
             else
             {
                 texRgbGlControl.MakeCurrent();
                 GL.Viewport(texRgbGlControl.ClientRectangle);
-                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1);
+                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenVao);
                 texRgbGlControl.SwapBuffers();
             }
         }

@@ -17,10 +17,11 @@ namespace Smash_Forge
 
         public ImageList il = new ImageList();
         public List<Bitmap> texturesCol = new List<Bitmap>();
-        Bitmap alpha;
 
         private bool _loadedC = false;
         private bool _loadedA = false;
+
+        private SFGraphics.GLObjects.VertexArrayObject screenVao;
 
         public BntxTextureList()
         {
@@ -45,9 +46,13 @@ namespace Smash_Forge
                 string[] row1 = { tex.Height.ToString(), tex.Width.ToString()};
 
                 listView1.Items.Add(tex.Text, count++).SubItems.AddRange(row1);
-
             }
 
+            Rendering.OpenTKSharedResources.InitializeSharedResources();
+            if (Rendering.OpenTKSharedResources.SetupStatus == Rendering.OpenTKSharedResources.SharedResourceStatus.Initialized)
+            {
+                screenVao = Rendering.ScreenDrawing.CreateScreenTriangleVao();
+            }
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
@@ -61,6 +66,9 @@ namespace Smash_Forge
         private void RenderTextureColor(BRTI tex)
         {
             if (!_loadedC || glControl1 == null)
+                return;
+
+            if (Rendering.OpenTKSharedResources.SetupStatus != Rendering.OpenTKSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             glControl1.MakeCurrent();
@@ -77,13 +85,16 @@ namespace Smash_Forge
 
             int texture = tex.display;
 
-            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, true, true, true, false);
+            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, screenVao, true, true, true, false);
 
             glControl1.SwapBuffers();
         }
         private void RenderTextureAlpha(BRTI tex)
         {
             if (!_loadedA || glControl2 == null)
+                return;
+
+            if (Rendering.OpenTKSharedResources.SetupStatus != Rendering.OpenTKSharedResources.SharedResourceStatus.Initialized)
                 return;
 
             glControl2.MakeCurrent();
@@ -100,7 +111,7 @@ namespace Smash_Forge
 
             int texture = tex.display;
 
-            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, false, false, false, true);
+            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, screenVao, false, false, false, true);
 
             glControl2.SwapBuffers();
         }

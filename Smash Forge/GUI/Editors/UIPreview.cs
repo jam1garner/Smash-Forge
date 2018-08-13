@@ -18,6 +18,8 @@ namespace Smash_Forge
     {
         public string chr_00_loc, chr_11_loc, chr_13_loc, stock_90_loc;
 
+        private SFGraphics.GLObjects.VertexArrayObject screenVao;
+
         public UIPreview(NUT chr_00, NUT chr_11, NUT chr_13, NUT stock_90)
         {
             InitializeComponent();
@@ -312,7 +314,7 @@ namespace Smash_Forge
 
             foreach(NutTexture tex in nut.Nodes)
             {
-                ScreenDrawing.DrawTexturedQuad(nut.glTexByHashId[tex.HashId].Id, tex.Width, tex.Height, true, true, true, true, true);
+                ScreenDrawing.DrawTexturedQuad(nut.glTexByHashId[tex.HashId].Id, tex.Width, tex.Height, screenVao, true, true, true, true, true);
             }
 
             glControl1.SwapBuffers();

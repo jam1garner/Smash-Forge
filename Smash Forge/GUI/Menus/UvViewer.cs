@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Smash_Forge.Rendering;
+using SFGraphics.GLObjects;
 using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge.GUI.Menus
@@ -16,6 +17,8 @@ namespace Smash_Forge.GUI.Menus
     {
         private NUD sourceNud;
         private NUD.Polygon polygonToRender;
+
+        private VertexArrayObject screenVao;
 
         public UvViewer(NUD sourceNud, NUD.Polygon polygonToRender)
         {
@@ -30,6 +33,7 @@ namespace Smash_Forge.GUI.Menus
             OpenTKSharedResources.InitializeSharedResources();
             if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
             {
+                screenVao = ScreenDrawing.CreateScreenTriangleVao();
                 if (sourceNud != null)
                 {
                     NudUvRendering.InitializeUVBufferData(sourceNud);
@@ -45,7 +49,7 @@ namespace Smash_Forge.GUI.Menus
             glControl1.MakeCurrent();
             GL.Viewport(glControl1.ClientRectangle);
             // Draw darker to make the UVs visible.
-            ScreenDrawing.DrawTexturedQuad(RenderTools.uvTestPattern.Id, 0.5f);
+            ScreenDrawing.DrawTexturedQuad(RenderTools.uvTestPattern.Id, 0.5f, screenVao);
             NudUvRendering.DrawUv(polygonToRender, glControl1.Width, glControl1.Height);
             glControl1.SwapBuffers();
         }
