@@ -1803,9 +1803,9 @@ namespace Smash_Forge
 
             // Only use the top color for solid color rendering.
             if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
-                ScreenDrawing.DrawQuadGradient(topColor, topColor, ScreenDrawing.screenQuadVbo);
+                ScreenDrawing.DrawQuadGradient(topColor, topColor, ScreenDrawing.screenTriangleVbo);
             else
-                ScreenDrawing.DrawQuadGradient(topColor, bottomColor, ScreenDrawing.screenQuadVbo);
+                ScreenDrawing.DrawQuadGradient(topColor, bottomColor, ScreenDrawing.screenTriangleVbo);
         }
 
         private void SetupViewport(int width, int height)

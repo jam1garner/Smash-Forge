@@ -20,6 +20,8 @@ namespace Smash_Forge.Rendering
         // Resources for rendering.
         // These need to be regenerated every time due to using a separate thread.
         private static BufferObject screenVbo;
+        private static VertexArrayObject screenVao;
+
         private static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
         private static Shader shader;
 
@@ -44,7 +46,7 @@ namespace Smash_Forge.Rendering
             using (GameWindow gameWindow = OpenTKSharedResources.CreateGameWindowContext(width, height))
             {
                 // Resource creation.
-                screenVbo = ScreenDrawing.CreateScreenQuadBuffer();
+                screenVbo = ScreenDrawing.CreateScreenTriangleBuffer();
                 shader = OpenTKSharedResources.shaders["NudSphere"];
 
                 // Skip thumbnail generation if the shader didn't compile.
@@ -92,7 +94,7 @@ namespace Smash_Forge.Rendering
             framebuffer.Bind();
 
             // Draw the material to a textured quad.
-            NudMatSphereDrawing.DrawNudMaterialSphere(shader, material, screenVbo, dummyTextures);
+            NudMatSphereDrawing.DrawNudMaterialSphere(shader, material, screenVao, dummyTextures);
 
             // Save output.
             using (Bitmap image = framebuffer.ReadImagePixels(true))

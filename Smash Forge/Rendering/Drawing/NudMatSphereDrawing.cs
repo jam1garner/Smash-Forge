@@ -23,7 +23,7 @@ namespace Smash_Forge.Rendering
 
         private static ForgeCamera nudSphereCamera = new ForgeCamera();
 
-        public static void DrawNudMaterialSphere(Shader shader, NUD.Material material, BufferObject screenVbo, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
+        public static void DrawNudMaterialSphere(Shader shader, NUD.Material material, VertexArrayObject screenVao, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
         {
             if (!shader.ProgramCreatedSuccessfully)
                 return;
@@ -58,7 +58,7 @@ namespace Smash_Forge.Rendering
             shader.SetTexture("bitanTex", sphereBitanTex.Id, TextureTarget.Texture2D, 18);
 
             // Draw full screen "quad" (big triangle)
-            ScreenDrawing.DrawScreenTriangle(shader, screenVbo);
+            ScreenDrawing.DrawScreenTriangle(shader, screenVao);
         }
 
         public static void LoadMaterialSphereTextures()

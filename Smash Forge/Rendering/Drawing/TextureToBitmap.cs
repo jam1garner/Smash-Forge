@@ -57,7 +57,7 @@ namespace Smash_Forge.Rendering
 
         private static Framebuffer DrawTextureToNewFbo(Texture2D texture, int width, int height, bool r, bool g, bool b, bool a)
         {
-            BufferObject screenVbo = ScreenDrawing.CreateScreenQuadBuffer();
+            BufferObject screenVbo = ScreenDrawing.CreateScreenTriangleBuffer();
             Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
             framebuffer.Bind();
 

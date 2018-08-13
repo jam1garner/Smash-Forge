@@ -657,50 +657,88 @@
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.MipmapLoading">
             <summary>
-            Provides methods for loading mipmaps for OpenGL textures from byte arrays of image data.
+            Provides methods for loading mipmaps for OpenGL textures from arrays of image data.
+            The arrays can be of any value type. As long as the correct image format information is used,
+            OpenGL will still interpret the data correctly.
+            Make sure to bind the texture before calling these methods.
             </summary>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadCompressedMipMaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{System.Byte[]},OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadCompressedMipMaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             Loads compressed 2D image data of the compressed format <paramref name="internalFormat"/> 
             for all the mip levels in <paramref name="mipmaps"/>.
             The texture must first be bound to the proper target before calling this method.
             </summary>
+            <typeparam name="T"></typeparam>
             <param name="textureTarget">The target of the texture or cube face for loading mip maps. 
             Ex: Texture2D or TextureCubeMapPositiveX.</param>
             <param name="width">The width of the texture or cube map face in pixels</param>
             <param name="height">The height of the texture or cube map face in pixels</param>
             <param name="mipmaps">The list of mipmaps to load for <paramref name="textureTarget"/></param>
-            <param name="internalFormat"></param>
+            <param name="internalFormat">The format for all mipmaps</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Drawing.Bitmap)">
             <summary>
             
             </summary>
-            <param name="textureTarget"></param>
+            <param name="textureTarget">The target of the texture or cube face for loading mip maps. 
+            Ex: Texture2D or TextureCubeMapPositiveX.</param>
             <param name="image"></param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Byte[],System.Int32,OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,``0[],System.Int32,OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             
             </summary>
-            <param name="textureTarget"></param>
-            <param name="width"></param>
-            <param name="height"></param>
+            <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
+            <param name="textureTarget">The target of the texture or cube face for loading mip maps. 
+            Ex: Texture2D or TextureCubeMapPositiveX.</param>
+            <param name="width">The width of the texture or cube map face in pixels</param>
+            <param name="height">The height of the texture or cube map face in pixels</param>
             <param name="baseMipLevel"></param>
-            <param name="mipCount"></param>
-            <param name="internalFormat"></param>
+            <param name="mipCount">The total number of mipmaps</param>
+            <param name="internalFormat">The format for all mipmaps</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Byte[],System.Int32,SFGraphics.GLObjects.Textures.TextureFormatUncompressed)">
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,``0[],System.Int32,SFGraphics.GLObjects.Textures.TextureFormatUncompressed)">
             <summary>
             
             </summary>
-            <param name="textureTarget"></param>
-            <param name="width"></param>
-            <param name="height"></param>
+            <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
+            <param name="textureTarget">The target of the texture or cube face for loading mip maps. 
+            Ex: Texture2D or TextureCubeMapPositiveX.</param>
+            <param name="width">The width of the texture or cube map face in pixels</param>
+            <param name="height">The height of the texture or cube map face in pixels</param>
             <param name="baseMipLevel"></param>
-            <param name="mipCount"></param>
+            <param name="mipCount">The total number of mipmaps</param>
+            <param name="textureFormat">The uncompressed format information</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadFacesBaseLevel``1(System.Int32,SFGraphics.GLObjects.Textures.TextureFormatUncompressed,``0[],``0[],``0[],``0[],``0[],``0[])">
+            <summary>
+            Loads image data for all six faces of a cubemap. No mipmaps are generated, so use a min filter
+            that does not use mipmaps.
+            </summary>
+            <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
+            <param name="length">The width and heigh of each cube map face in pixels</param>
             <param name="textureFormat"></param>
+            <param name="facePosX"></param>
+            <param name="faceNegX"></param>
+            <param name="facePosY"></param>
+            <param name="faceNegY"></param>
+            <param name="facePosZ"></param>
+            <param name="faceNegZ"></param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadFacesMipmaps``1(System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]})">
+            <summary>
+            Loads image data and mipmaps for all six faces of a cube map.
+            </summary>
+            <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
+            <param name="length">The width and heigh of each cube map face in pixels</param>
+            <param name="internalFormat"></param>
+            <param name="mipsPosX"></param>
+            <param name="mipsNegX"></param>
+            <param name="mipsPosY"></param>
+            <param name="mipsNegY"></param>
+            <param name="mipsPosZ"></param>
+            <param name="mipsNegZ"></param>
         </member>
         <member name="F:SFGraphics.GLObjects.Textures.CompressedBlockSize.blockSizeByFormat">
             <summary>
@@ -978,6 +1016,33 @@
             <param name="faceNegY">The base mip level for the negative y target</param>
             <param name="facePosZ">The base mip level for the positive z target</param>
             <param name="faceNegZ">The base mip level for the negative z target</param>
+        </member>
+        <member name="T:SFGraphics.GLObjects.VertexArrayObject">
+            <summary>
+            Encapsulates an OpenGL vertex array object.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.VertexArrayObject.Id">
+            <summary>
+            The value generated by GL.GenVertexArray(). 
+            Do not attempt to bind <see cref="P:SFGraphics.GLObjects.VertexArrayObject.Id"/> when the object has become unreachable.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.VertexArrayObject.#ctor">
+            <summary>
+            Creates an empty vertex array object.
+            The vertex array object must first be bound with <see cref="M:SFGraphics.GLObjects.VertexArrayObject.Bind"/>.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.VertexArrayObject.Bind">
+            <summary>
+            Binds the vertex array <see cref="P:SFGraphics.GLObjects.VertexArrayObject.Id"/>.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.VertexArrayObject.Unbind">
+            <summary>
+            Binds the default vertex array value of 0.
+            </summary>
         </member>
         <member name="T:SFGraphics.Tools.BoundingSphereGenerator">
             <summary>
