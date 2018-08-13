@@ -951,12 +951,16 @@ namespace Smash_Forge
 
         private void FrameAllModelContainers(float maxBoundingRadius = 400)
         {
+            bool hasModelContainers = false;
+
             // Find the max NUD bounding box for all models. 
             float[] boundingSphere = new float[] { 0, 0, 0, 0 };
+
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (node is ModelContainer)
                 {
+                    hasModelContainers = true;
                     ModelContainer modelContainer = (ModelContainer)node;
 
                     // Use the main bounding box for the NUD.
@@ -1006,7 +1010,11 @@ namespace Smash_Forge
                 }
             }
 
-            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 0);
+            if (hasModelContainers)
+                camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 0);
+            else
+                camera.ResetToDefaultPosition();
+
             camera.UpdateMatrices();
         }
 
@@ -1710,13 +1718,9 @@ namespace Smash_Forge
 
         private void BenchmarkShapeDrawing()
         {
-            int count = 1;
-            ShapeDrawing.SetUp();
-
             // Depth testing has a huge performance impact.
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
-
 
             List<NUD.DisplayVertex> vertices = new List<NUD.DisplayVertex>();
             vertices.Add(new NUD.DisplayVertex() { pos = new Vector3(10, 10, 0) } );
@@ -1729,23 +1733,6 @@ namespace Smash_Forge
             if (cubeMesh == null)
                 cubeMesh = new ForgeMesh(vertices, indices);
             cubeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, indices.Count, 0);
-
-            // Test shader rendering.
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            for (int i = 0; i < count; i++)
-            {
-                // Identical speeds to fixed function pipeline for small scale values.
-                //GL.Begin(PrimitiveType.TriangleStrip);
-                //foreach (NUD.DisplayVertex vert in vertices)
-                //{
-                //    GL.Vertex3(vert.pos);
-                //}
-                //GL.End();
-
-            }
-            stopwatch.Stop();
-
-            //Debug.WriteLine(String.Format("{0}", stopwatch.ElapsedMilliseconds));
         }
 
         private void DrawModelsNormally(int width, int height, int defaultFbo)
