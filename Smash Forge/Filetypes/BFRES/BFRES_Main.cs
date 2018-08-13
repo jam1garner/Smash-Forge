@@ -485,6 +485,11 @@ namespace Smash_Forge
             Matrix4 mvpMatrix = camera.MvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref mvpMatrix);
 
+            Matrix4 sphereMatrix = camera.ModelViewMatrix;
+            sphereMatrix.Invert();
+            sphereMatrix.Transpose();
+            shader.SetMatrix4x4("sphereMatrix", ref sphereMatrix);
+
             SetUniforms(mesh.material, shader, mesh, mesh.DisplayId, drawPolyIds);
             SetTextureUniforms(mesh.material, mesh, shader);
             SetBoneUniforms(shader, fmdl);

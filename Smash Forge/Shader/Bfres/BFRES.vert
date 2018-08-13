@@ -27,6 +27,7 @@ out vec3 boneWeightsColored;
 
 // Viewport Camera/Lighting
 uniform mat4 mvpMatrix;
+uniform mat4 sphereMatrix;
 
 // Shader Options
 uniform vec4 gsys_bake_st0;
@@ -146,6 +147,8 @@ void main()
 	    normal = mat3(singleBoneBindTransform) * vNormal.xyz * 1;
 		normal = normalize(normal);
 	}
+
+    viewNormal = mat3(sphereMatrix) * normal.xyz;
 
 	if (sampler2.x + sampler2.y != 0) //BOTW has scale values to 0 if unused so set them to 1
         f_texcoord1 = vec2((vUV1 * sampler2.xy) + sampler2.zw);
