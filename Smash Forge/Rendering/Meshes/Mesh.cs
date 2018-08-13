@@ -58,16 +58,29 @@ namespace Smash_Forge.Rendering.Meshes
             SetCameraUniforms(shader, camera);
             SetUniforms(shader);
 
-            // TODO: How to handle count and offset?
-            // NUD uses one buffer for multiple meshes.
+            // TODO: Only do this once.
+            ConfigureVertexAttributes(shader);
+
+            vao.Bind();
+            GL.DrawElements(PrimitiveType.Triangles, count, DrawElementsType.UnsignedInt, offset);
+            vao.Unbind();
+        }
+
+        private void ConfigureVertexAttributes(Shader shader)
+        {
             vao.Bind();
 
-            // TODO: Only do this once.
+            vertexBuffer.Bind();
+            vertexIndexBuffer.Bind();
+
             shader.EnableVertexAttributes();
             SetVertexAttributes(shader);
 
-            GL.DrawElements(PrimitiveType.Triangles, count, DrawElementsType.UnsignedInt, offset);
+            // Unbind all the buffers.
+            // This step may not be necessary.
             vao.Unbind();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         }
 
         protected virtual void SetCameraUniforms(Shader shader, Camera camera)

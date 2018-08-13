@@ -1,26 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Windows.Forms;
+using Gif.Components;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
-using System.Security.Cryptography;
 using SALT.Moveset.AnimCMD;
-using System.IO;
-using Gif.Components;
-using System.Diagnostics;
-using System.Globalization;
-using Smash_Forge.Rendering.Lights;
-using Smash_Forge.Rendering;
-using Smash_Forge.Params;
-using SFGraphics.GLObjects.Textures;
-using SFGraphics.GLObjects;
-using SFGraphics.Tools;
 using SFGraphics.Cameras;
+using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.Textures;
+using SFGraphics.Tools;
+using Smash_Forge.Params;
+using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering.Meshes;
-
+using System.Collections.Generic;
 
 namespace Smash_Forge
 {
@@ -53,8 +52,9 @@ namespace Smash_Forge
         private int fboRenderWidth;
         private int fboRenderHeight;
 
-        private ForgeMesh cubeMesh;
-
+        private ForgeMesh forgeMesh;
+        private MeshSimple3D simpleMesh;
+    
         // Functions of Viewer
         public enum Mode
         {
@@ -1722,17 +1722,29 @@ namespace Smash_Forge
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.CullFace);
 
+            List<Vector3> positions = new List<Vector3>()
+            {
+                new Vector3(10, 10, 0),
+                new Vector3(10, -10, 0),
+                new Vector3(-10, -10, 0),
+                new Vector3(-10, 10, 0)
+            };
+
             List<NUD.DisplayVertex> vertices = new List<NUD.DisplayVertex>();
-            vertices.Add(new NUD.DisplayVertex() { pos = new Vector3(10, 10, 0) } );
-            vertices.Add(new NUD.DisplayVertex() { pos = new Vector3(10, -10, 0) });
-            vertices.Add(new NUD.DisplayVertex() { pos = new Vector3(-10, -10, 0) });
-            vertices.Add(new NUD.DisplayVertex() { pos = new Vector3(-10, 10, 0) });
+            foreach (Vector3 position in positions)
+            {
+                vertices.Add(new NUD.DisplayVertex() { pos = position });
+            }
 
             List<int> indices = new List<int>() { 0, 1, 3, 1, 2, 3 };
 
-            if (cubeMesh == null)
-                cubeMesh = new ForgeMesh(vertices, indices);
-            cubeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, indices.Count, 0);
+            if (forgeMesh == null)
+                forgeMesh = new ForgeMesh(vertices, indices);
+            forgeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, indices.Count, 0);
+
+            if (simpleMesh == null)
+                simpleMesh = new MeshSimple3D(positions);
+            simpleMesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera, positions.Count, 0);
         }
 
         private void DrawModelsNormally(int width, int height, int defaultFbo)

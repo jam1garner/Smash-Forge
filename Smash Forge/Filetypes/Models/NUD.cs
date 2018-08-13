@@ -26,7 +26,7 @@ namespace Smash_Forge
     {
         // OpenGL Buffers
         private BufferObject vertexDataVbo;
-        private BufferObject elementsIbo;
+        private BufferObject vertexIndexEbo;
         private BufferObject bonesUbo;
         private BufferObject selectVbo;
         private VertexArrayObject nudVao;
@@ -170,7 +170,7 @@ namespace Smash_Forge
         private void GenerateBuffers()
         {
             vertexDataVbo = new BufferObject(BufferTarget.ArrayBuffer);
-            elementsIbo = new BufferObject(BufferTarget.ElementArrayBuffer);
+            vertexIndexEbo = new BufferObject(BufferTarget.ElementArrayBuffer);
             bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
             selectVbo = new BufferObject(BufferTarget.ArrayBuffer);
             nudVao = new VertexArrayObject();
@@ -284,12 +284,8 @@ namespace Smash_Forge
             displayVerticesArray = displayVerticesList.ToArray();
             vertexIndicesArray = vertexIndicesList.ToArray();
 
-            nudVao.Bind();
-
             positionVbo.BufferData(displayVerticesArray, DisplayVertex.Size, BufferUsageHint.StaticDraw);
             elementsIbo.BufferData(vertexIndicesArray, sizeof(int), BufferUsageHint.StaticDraw);
-
-            nudVao.Unbind();
 
             foreach (Mesh mesh in Nodes)
             {
@@ -335,17 +331,17 @@ namespace Smash_Forge
         public void UpdateVertexBuffers()
         {
             if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
-                UpdateVertexBuffers(vertexDataVbo, elementsIbo);
+                UpdateVertexBuffers(vertexDataVbo, vertexIndexEbo);
         }
 
         public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)
         {
             // Binding 0 to a buffer target will crash. This also means the NUD buffers weren't generated yet.
-            bool buffersWereInitialized = elementsIbo != null && vertexDataVbo != null && bonesUbo != null && selectVbo != null;
+            bool buffersWereInitialized = vertexIndexEbo != null && vertexDataVbo != null && bonesUbo != null && selectVbo != null;
             if (!buffersWereInitialized)
             {
                 GenerateBuffers();
-                UpdateVertexBuffers(vertexDataVbo, elementsIbo);
+                UpdateVertexBuffers(vertexDataVbo, vertexIndexEbo);
             }
 
             // Main function for NUD rendering.
@@ -638,16 +634,30 @@ namespace Smash_Forge
             SetAlphaTesting(material);
             SetFaceCulling(material);
 
-            nudVao.Bind();
-            shader.EnableVertexAttributes();
-            SetVertexAttributes(shader);
+            ConfigureVertexAttributes(shader);
 
             // Draw the model normally.
+            nudVao.Bind();
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
-
             nudVao.Unbind();
 
             //p.forgeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, p.displayFaceSize, p.Offset);
+        }
+
+        private void ConfigureVertexAttributes(Shader shader)
+        {
+            nudVao.Bind();
+
+            vertexDataVbo.Bind();
+            vertexIndexEbo.Bind();
+
+            shader.EnableVertexAttributes();
+            SetVertexAttributes(shader);
+
+            nudVao.Unbind();
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         }
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<DummyTextures, Texture> dummyTextures, int id = 0, bool drawId = false)
@@ -1281,7 +1291,7 @@ namespace Smash_Forge
                     selectVbo.BufferData(p.selectedVerts, sizeof(int), BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
-                    elementsIbo.Bind();
+                    vertexIndexEbo.Bind();
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                     
                     GL.PointSize(6f);
