@@ -1,10 +1,9 @@
 #version 330
 
-in vec3 vPosition;
-
+in vec3 position;
 
 uniform mat4 mvpMatrix;
 
 void main() {
-    gl_Position = vec4(vPosition, 1);
+    gl_Position = mvpMatrix * vec4(position, 1);
 }
