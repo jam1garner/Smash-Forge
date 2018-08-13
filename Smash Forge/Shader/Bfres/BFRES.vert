@@ -148,7 +148,7 @@ void main()
 		normal = normalize(normal);
 	}
 
-    viewNormal = mat3(sphereMatrix) * normal.xyz;
+    vec3 viewNormal = mat3(sphereMatrix) * normal.xyz;
 
 	if (sampler2.x + sampler2.y != 0) //BOTW has scale values to 0 if unused so set them to 1
         f_texcoord1 = vec2((vUV1 * sampler2.xy) + sampler2.zw);

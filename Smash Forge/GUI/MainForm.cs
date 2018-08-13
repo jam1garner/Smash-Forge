@@ -72,17 +72,6 @@ namespace Smash_Forge
             if (Smash_Forge.Update.Downloaded && Instance.greenArrowPictureBox.Image == null)
                 Instance.greenArrowPictureBox.Image = Resources.Resources.sexy_green_down_arrow;
             DiscordSettings.Update();
-
-            // Avoid constantly failing slow setup.
-            // It may work again when creating a GLControl.
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Failed)
-                OpenTKSharedResources.InitializeSharedResources();
-            else
-            {
-                // Disable options that would cause crashes.
-                reloadShadersToolStripMenuItem.Enabled = false;
-                exportErrorLogToolStripMenuItem.Enabled = false;
-            }
         }
 
         ~MainForm()
@@ -116,6 +105,14 @@ namespace Smash_Forge
             DiscordSettings.Update();
 
             openFiles();
+
+            OpenTKSharedResources.InitializeSharedResources();
+            //else
+            {
+                // Disable options that would cause crashes.
+                //reloadShadersToolStripMenuItem.Enabled = false;
+                //exportErrorLogToolStripMenuItem.Enabled = false;
+            }
         }
 
         public void openFiles()
