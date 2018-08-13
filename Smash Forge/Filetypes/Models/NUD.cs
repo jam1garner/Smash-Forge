@@ -619,19 +619,19 @@ namespace Smash_Forge
 
         private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<DummyTextures, Texture> dummyTextures, bool drawId = false)
         {
-            if (p.vertexIndices.Count <= 3)
-                return;
+            //if (p.vertexIndices.Count <= 3)
+            //    return;
 
-            Material material = p.materials[0];
+            //Material material = p.materials[0];
 
             // Set Shader Values.
-            SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
-            SetVertexAttributes(shader, positionVbo);
+            //SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
+            //SetVertexAttributes(shader, positionVbo);
 
             // Set OpenTK Render Options.
-            SetAlphaBlending(material);
-            SetAlphaTesting(material);
-            SetFaceCulling(material);
+            //SetAlphaBlending(material);
+            //SetAlphaTesting(material);
+            //SetFaceCulling(material);
 
             // Draw the model normally.
             //elementsIbo.Bind();

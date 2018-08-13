@@ -10,12 +10,12 @@ namespace Smash_Forge.Rendering.Meshes
 {
     public abstract class Mesh<T> where T : struct
     {
-        private int vertexSizeInBytes;
+        private readonly int vertexSizeInBytes;
 
-        private List<T> vertices = new List<T>();
+        private readonly List<T> vertices = new List<T>();
         private BufferObject vertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
 
-        private List<int> vertexIndices = new List<int>();
+        private readonly List<int> vertexIndices = new List<int>();
         private BufferObject vertexIndexBuffer = new BufferObject(BufferTarget.ElementArrayBuffer);
 
         public Mesh(List<T> vertices, int vertexSizeInBytes)
@@ -24,11 +24,12 @@ namespace Smash_Forge.Rendering.Meshes
             this.vertices = vertices;
             this.vertexSizeInBytes = vertexSizeInBytes;
 
+            // Generate basic indices.
             for (int i = 0; i < vertices.Count; i++)
             {
                 vertexIndices.Add(i);
             }
-            vertexIndexBuffer.BufferData(vertexIndices.ToArray(), sizeof(int), BufferUsageHint.StaticDraw);
+
             InitializeBufferData();
         }
 
@@ -39,7 +40,6 @@ namespace Smash_Forge.Rendering.Meshes
             this.vertexIndices = vertexIndices;
             this.vertexSizeInBytes = vertexSizeInBytes;
 
-            vertexIndexBuffer.BufferData(vertexIndices.ToArray(), sizeof(int), BufferUsageHint.StaticDraw);
             InitializeBufferData();
         }
 
@@ -52,17 +52,21 @@ namespace Smash_Forge.Rendering.Meshes
             shader.UseProgram();
             shader.EnableVertexAttributes();
 
+            vertexBuffer.Bind();
+            vertexIndexBuffer.Bind();
+
             // Set shader values.
             SetCameraUniforms(shader, camera);
 
             SetUniforms(shader);
 
-            vertexBuffer.Bind();
             SetVertexAttributes(shader);
+
+            int[] test = new int[vertexIndices.Count];
+            GL.GetBufferSubData(BufferTarget.ElementArrayBuffer, IntPtr.Zero, vertexIndices.Count * sizeof(int), test);
 
             // TODO: How to handle count and offset?
             // NUD uses one buffer for multiple meshes.
-            vertexIndexBuffer.Bind();
             GL.DrawElements(PrimitiveType.Triangles, count, DrawElementsType.UnsignedInt, offset);
 
             shader.DisableVertexAttributes();
@@ -86,6 +90,8 @@ namespace Smash_Forge.Rendering.Meshes
         private void InitializeBufferData()
         {
             vertexBuffer.BufferData(vertices.ToArray(), vertexSizeInBytes, BufferUsageHint.StaticDraw);
+            vertexIndexBuffer.BufferData(vertexIndices.ToArray(), sizeof(int), BufferUsageHint.StaticDraw);
+            MainForm.Instance.Text = String.Format("{0} {1}", vertexBuffer.Id, vertexIndexBuffer.Id);
         }
 
         private void SetVertexAttributes(Shader shader)

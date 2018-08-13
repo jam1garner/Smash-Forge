@@ -51,6 +51,8 @@ namespace Smash_Forge
         private int fboRenderWidth;
         private int fboRenderHeight;
 
+        private ForgeMesh cubeMesh;
+
         // Functions of Viewer
         public enum Mode
         {
@@ -1711,36 +1713,35 @@ namespace Smash_Forge
 
             // Depth testing has a huge performance impact.
             GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.CullFace);
 
-            List<Vector3> cubePositions = ShapeDrawing.GetRectangularPrismPositions().ToList();
 
             List<NUD.DisplayVertex> vertices = new List<NUD.DisplayVertex>();
-            foreach (Vector3 vert in cubePositions)
-            {
-                vertices.Add(new NUD.DisplayVertex()
-                {
-                    pos = vert
-                });
-            }
+            vertices.Add(new NUD.DisplayVertex() { pos = new Vector3(10, 10, 0) } );
+            vertices.Add(new NUD.DisplayVertex() { pos = new Vector3(10, -10, 0) });
+            vertices.Add(new NUD.DisplayVertex() { pos = new Vector3(-10, 10, 0) });
 
             List<int> indices = new List<int>();
-            for (int i = 0; i < vertices.Count; i++)
-			{
-                indices.Add(i);
-			}
+            indices.Add(0);
+            indices.Add(1);
+            indices.Add(3);
+            indices.Add(1);
+            indices.Add(2);
+            indices.Add(3);
 
-            ForgeMesh cubeMesh = new ForgeMesh(vertices, indices);
+            if (cubeMesh == null)
+                cubeMesh = new ForgeMesh(vertices, indices);
+            cubeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, indices.Count, 0);
 
             // Test shader rendering.
             Stopwatch stopwatch = Stopwatch.StartNew();
             for (int i = 0; i < count; i++)
             {
                 // Identical speeds to fixed function pipeline for small scale values.
-                //cubeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, vertices.Count, 0);
                 //GL.Begin(PrimitiveType.TriangleStrip);
-                //foreach (Vector3 vert in vertices)
+                //foreach (NUD.DisplayVertex vert in vertices)
                 //{
-                //    GL.Vertex3(vert * 15);
+                //    GL.Vertex3(vert.pos);
                 //}
                 //GL.End();
 
