@@ -1397,6 +1397,12 @@ namespace Smash_Forge
                 if (node is ModelContainer)
                 {
                     Runtime.TextureContainers.Remove(((ModelContainer)node).NUT);
+                    Runtime.BNTXList.Remove(((ModelContainer)node).BNTX);
+
+                    if (((ModelContainer)node).Bfres != null && ((ModelContainer)node).Bfres.FTEXContainer != null)
+                    {
+                        Runtime.FTEXContainerList.Remove(((ModelContainer)node).Bfres.FTEXContainer);
+                    }
                 }
             }
 
