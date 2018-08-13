@@ -358,7 +358,10 @@ namespace Smash_Forge
             // This also means the buffers weren't generated yet.
             bool buffersWereInitialized = elementsIbo != null && positionVbo != null;
             if (!buffersWereInitialized)
+            {
                 GenerateBuffers();
+                UpdateVertexData();
+            }
 
             if (Runtime.renderBoundingSphere)
                 DrawBoundingBoxes();

@@ -45,7 +45,7 @@ vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap
     return result * intensity;
 }
 
-vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float uking_texture2_texcoord, vec3 emission_color)
+vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float texCoordIndex, vec3 emission_color)
 {
     vec3 result = vec3(0);
     float emissionIntensity2 = emission_intensity * emission_intensity;
@@ -59,7 +59,7 @@ vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttribu
     
         // BOTW somtimes uses second uv channel for emission map
         vec3 emission = vec3(1);
-        if (uking_texture2_texcoord == 1)
+        if (texCoordIndex == 1)
             emission = texture2D(EmissionMap, vert.texCoord2).rgb * vec3(1);
         else
             emission = texture2D(EmissionMap, vert.texCoord).rgb * emission_color;
@@ -81,7 +81,7 @@ float AmbientOcclusionBlend(sampler2D BakeShadowMap, VertexAttributes vert, floa
     return mix(aoMap, 1, ao_density);
 }
 
-vec3 CalcBumpedNormal(vec3 inputNormal, sampler2D normalMap, VertexAttributes vert, float uking_texture2_texcoord)
+vec3 CalcBumpedNormal(vec3 inputNormal, sampler2D normalMap, VertexAttributes vert, float texCoordIndex)
 {
     float normalIntensity = 1;
 
@@ -90,7 +90,7 @@ vec3 CalcBumpedNormal(vec3 inputNormal, sampler2D normalMap, VertexAttributes ve
 
     // Calculate the resulting normal map and intensity.
 	vec3 normalMapColor = vec3(1);
-	if (uking_texture2_texcoord == 1)
+	if (texCoordIndex == 1)
         normalMapColor = vec3(texture(normalMap, vert.texCoord2).rg, 1);
     else
         normalMapColor = vec3(texture(normalMap, vert.texCoord).rg, 1);
