@@ -8,6 +8,7 @@ in vec2 f_texcoord3;
 in vec3 objectPosition;
 
 in vec3 normal;
+in vec3 viewNormal;
 in vec4 vertexColor;
 in vec3 tangent;
 in vec3 bitangent;

@@ -157,12 +157,12 @@ void main()
 
 	f_texcoord0 = vec2(vUV0);
 
-	//Set SRT values43
-	if (SRT_Scale.x + SRT_Scale.y != 0)
-	    f_texcoord0 = vec2((vUV0 * SRT_Scale) + SRT_Translate);
+	//Disable SRT for now. The values can break UVs and i need to figure out the animations
+	//Set SRT values
+//	if (SRT_Scale.x + SRT_Scale.y != 0)
+//	    f_texcoord0 = vec2((vUV0 * SRT_Scale) + SRT_Translate);
 
-
-	f_texcoord0 = rotateUV(f_texcoord0, SRT_Rotate);
+//	f_texcoord0 = rotateUV(f_texcoord0, SRT_Rotate);
 
 	tangent = vTangent;
 	bitangent = vBitangent;

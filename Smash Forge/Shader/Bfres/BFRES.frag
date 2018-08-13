@@ -99,6 +99,7 @@ struct VertexAttributes {
     vec4 vertexColor;
     vec3 normal;
     vec3 viewNormal;
+    vec3 tangent;
     vec3 bitangent;
 };
 

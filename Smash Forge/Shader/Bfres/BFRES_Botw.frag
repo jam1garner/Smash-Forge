@@ -121,7 +121,7 @@ struct VertexAttributes {
     vec3 viewNormal;
     vec3 tangent;
     vec3 bitangent;
-};
+	};
 
 out vec4 fragColor;
 
