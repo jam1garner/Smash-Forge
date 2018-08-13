@@ -52,26 +52,20 @@ namespace Smash_Forge.Rendering.Meshes
             if (!shader.ProgramCreatedSuccessfully)
                 return;
 
-            // Set up.
             shader.UseProgram();
 
-            // TODO: Only do this once.
-            vao.Bind();
-
-            shader.EnableVertexAttributes();
-
-            vao.Unbind();
-
-            // Set shader values.
+            // Set shader uniforms.
             SetCameraUniforms(shader, camera);
-
             SetUniforms(shader);
-
-            SetVertexAttributes(shader);
 
             // TODO: How to handle count and offset?
             // NUD uses one buffer for multiple meshes.
             vao.Bind();
+
+            // TODO: Only do this once.
+            shader.EnableVertexAttributes();
+            SetVertexAttributes(shader);
+
             GL.DrawElements(PrimitiveType.Triangles, count, DrawElementsType.UnsignedInt, offset);
             vao.Unbind();
         }
@@ -95,7 +89,6 @@ namespace Smash_Forge.Rendering.Meshes
         {
             vertexBuffer.BufferData(vertices.ToArray(), vertexSizeInBytes, BufferUsageHint.StaticDraw);
             vertexIndexBuffer.BufferData(vertexIndices.ToArray(), sizeof(int), BufferUsageHint.StaticDraw);
-            MainForm.Instance.Text = String.Format("{0} {1}", vertexBuffer.Id, vertexIndexBuffer.Id);
         }
 
         private void SetVertexAttributes(Shader shader)

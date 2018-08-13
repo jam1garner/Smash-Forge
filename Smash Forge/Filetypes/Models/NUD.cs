@@ -25,7 +25,7 @@ namespace Smash_Forge
     public class NUD : FileBase
     {
         // OpenGL Buffers
-        private BufferObject positionVbo;
+        private BufferObject vertexDataVbo;
         private BufferObject elementsIbo;
         private BufferObject bonesUbo;
         private BufferObject selectVbo;
@@ -169,7 +169,7 @@ namespace Smash_Forge
 
         private void GenerateBuffers()
         {
-            positionVbo = new BufferObject(BufferTarget.ArrayBuffer);
+            vertexDataVbo = new BufferObject(BufferTarget.ArrayBuffer);
             elementsIbo = new BufferObject(BufferTarget.ElementArrayBuffer);
             bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
             selectVbo = new BufferObject(BufferTarget.ArrayBuffer);
@@ -335,17 +335,17 @@ namespace Smash_Forge
         public void UpdateVertexBuffers()
         {
             if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
-                UpdateVertexBuffers(positionVbo, elementsIbo);
+                UpdateVertexBuffers(vertexDataVbo, elementsIbo);
         }
 
         public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)
         {
             // Binding 0 to a buffer target will crash. This also means the NUD buffers weren't generated yet.
-            bool buffersWereInitialized = elementsIbo != null && positionVbo != null && bonesUbo != null && selectVbo != null;
+            bool buffersWereInitialized = elementsIbo != null && vertexDataVbo != null && bonesUbo != null && selectVbo != null;
             if (!buffersWereInitialized)
             {
                 GenerateBuffers();
-                UpdateVertexBuffers(positionVbo, elementsIbo);
+                UpdateVertexBuffers(vertexDataVbo, elementsIbo);
             }
 
             // Main function for NUD rendering.
@@ -640,7 +640,7 @@ namespace Smash_Forge
 
             nudVao.Bind();
             shader.EnableVertexAttributes();
-            SetVertexAttributes(shader, positionVbo);
+            SetVertexAttributes(shader);
 
             // Draw the model normally.
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
@@ -837,9 +837,9 @@ namespace Smash_Forge
             }
         }
 
-        private void SetVertexAttributes(Shader shader, BufferObject bufferObject)
+        private void SetVertexAttributes(Shader shader)
         {
-            bufferObject.Bind();
+            vertexDataVbo.Bind();
 
             // Check indices in case the vertex attributes were optimized out by the shader compiler.
             int posIndex = shader.GetVertexAttributeUniformLocation("vPosition");
@@ -1270,7 +1270,7 @@ namespace Smash_Forge
             {
                 foreach (Polygon p in m.Nodes)
                 {
-                    positionVbo.Bind();
+                    vertexDataVbo.Bind();
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 72);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
