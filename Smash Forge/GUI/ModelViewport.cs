@@ -1405,7 +1405,6 @@ namespace Smash_Forge
                     }
                 }
             }
-
             draw.Clear();
         }
 

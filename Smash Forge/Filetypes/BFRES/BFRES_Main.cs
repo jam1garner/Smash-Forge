@@ -115,7 +115,6 @@ namespace Smash_Forge
                 TargetSwitchBFRES = new ResNSW.ResFile(new MemoryStream(file_data));
                 path = Text;
                 Read(TargetSwitchBFRES, f); //Temp add FileData for now till I parse BNTX with lib
-                UpdateVertexData();
                 ModelTransform();
             }
             else
@@ -125,8 +124,6 @@ namespace Smash_Forge
                 TargetWiiUBFRES = new ResFile(new MemoryStream(file_data));
                 path = Text;
                 Read(TargetWiiUBFRES);
-                UpdateVertexData();
-
             }
         }
 
@@ -357,6 +354,12 @@ namespace Smash_Forge
 
         public void Render(Camera camera)
         {
+            // Binding 0 to a buffer target will crash. 
+            // This also means the buffers weren't generated yet.
+            bool buffersWereInitialized = elementsIbo != null && positionVbo != null;
+            if (!buffersWereInitialized)
+                GenerateBuffers();
+
             if (Runtime.renderBoundingSphere)
                 DrawBoundingBoxes();
 
@@ -618,12 +621,6 @@ namespace Smash_Forge
 
         public void UpdateVertexData()
         {
-            // Binding 0 to a buffer target will crash. 
-            // This also means the buffers weren't generated yet.
-            bool buffersWereInitialized = elementsIbo != null && positionVbo != null;
-            if (!buffersWereInitialized)
-                GenerateBuffers();
-
             DisplayVertex[] Vertices;
             int[] Faces;
 
