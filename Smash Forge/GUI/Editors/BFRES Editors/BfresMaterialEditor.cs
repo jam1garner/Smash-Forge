@@ -75,66 +75,58 @@ namespace Smash_Forge
                     DisplayValue = mat.matparam[prm.Key].Value_float3.ToString();
 
                     bool IsColor = prm.Key.Contains("Color") || prm.Key.Contains("color");
-
                     if (IsColor)
                     {
-                        int someIntX = (int)Math.Ceiling(mat.matparam[prm.Key].Value_float3.X * 255);
-                        int someIntY = (int)Math.Ceiling(mat.matparam[prm.Key].Value_float3.Y * 255);
-                        int someIntZ = (int)Math.Ceiling(mat.matparam[prm.Key].Value_float3.Z * 255);
+                        Vector3 col = mat.matparam[prm.Key].Value_float3;
 
-                        if (someIntX <= 255 && someIntY <= 255 && someIntZ <= 255)
+                        float someIntX = col.X;
+                        float someIntY = col.Y;
+                        float someIntZ = col.Z;
+
+                        someIntX = (float)Math.Pow(someIntX, 2.2f);
+                        someIntY = (float)Math.Pow(someIntY, 2.2f);
+                        someIntZ = (float)Math.Pow(someIntZ, 2.2f);
+
+                        if (someIntX <= 1 && someIntY <= 1 && someIntZ <= 1)
                         {
-                            Console.WriteLine($"{prm.Key} R {someIntX} G {someIntY} B {someIntZ}");
 
                             SetColor = Color.FromArgb(
-                        255,
-                        someIntX,
-                        someIntY,
-                        someIntZ
+                         255,
+                        (int)Math.Ceiling(someIntX * 255.0f),
+                        (int)Math.Ceiling(someIntY * 255.0f),
+                        (int)Math.Ceiling(someIntZ * 255.0f)
                         );
                         }
 
                     }
-
                 }
                 if (prm.Value.Type == ShaderParamType.Float4)
                 {
                     DisplayValue = mat.matparam[prm.Key].Value_float4.ToString();
 
-
-          
-
                     bool IsColor = prm.Key.Contains("Color") || prm.Key.Contains("color") || prm.Key.Contains("konst0");
-
-
                     if (IsColor)
                     {
-
                         Vector4 col = mat.matparam[prm.Key].Value_float4;
 
-                        int someIntX = (int)Math.Ceiling(col.X);
-                        int someIntY = (int)Math.Ceiling(col.Y);
-                        int someIntZ = (int)Math.Ceiling(col.Z);
+                        float someIntX = col.X;
+                        float someIntY = col.Y;
+                        float someIntZ = col.Z;
 
-                        if (mat.shaderassign.ShaderArchive == "uking_mat") //BOTW uses gamma correction
+                        someIntX = (float)Math.Pow(someIntX, 2.2f);
+                        someIntY = (float)Math.Pow(someIntY, 2.2f);
+                        someIntZ = (float)Math.Pow(someIntZ, 2.2f);
+
+                        System.Diagnostics.Debug.WriteLine($"{prm.Key} R {someIntX} G {someIntY} B {someIntZ}");
+
+                        if (someIntX <= 1 && someIntY <= 1 && someIntZ <= 1)
                         {
-                            someIntX = MathHelper.Clamp((int)((255.0 * System.Math.Pow(255.0, 1.0 / mat.matparam[prm.Key].Value_float4.X)) + 0.5), 255, 0);
-                            someIntY = MathHelper.Clamp((int)((255.0 * System.Math.Pow(255.0, 1.0 / mat.matparam[prm.Key].Value_float4.Y)) + 0.5), 255, 0);
-                            someIntZ = MathHelper.Clamp((int)((255.0 * System.Math.Pow(255.0, 1.0 / mat.matparam[prm.Key].Value_float4.Z)) + 0.5), 255, 0);
-                        }
-             
-
-
-
-                        if (someIntX <= 255 && someIntY <= 255 && someIntZ <= 255)
-                        {
-                            Console.WriteLine($"{prm.Key} R {someIntX} G {someIntY} B {someIntZ}");
 
                             SetColor = Color.FromArgb(
                          255,
-                        someIntX,
-                        someIntY,
-                        someIntZ
+                        (int)Math.Ceiling(someIntX * 255.0f),
+                        (int)Math.Ceiling(someIntY * 255.0f),
+                        (int)Math.Ceiling(someIntZ * 255.0f)
                         );
                         }
                     }
