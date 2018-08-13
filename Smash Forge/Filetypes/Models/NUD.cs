@@ -1334,10 +1334,13 @@ namespace Smash_Forge
             texture.MinFilter = minfilter[matTexture.minFilter];
             texture.MagFilter = magfilter[matTexture.magFilter];
 
-            // TODO: These aren't controlled by the Texture class yet.
-            GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 0.0f);
-            if (matTexture.mipDetail == 0x4 || matTexture.mipDetail == 0x6)
-                GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 4.0f);
+            if (OpenGLExtensions.IsAvailable("GL_EXT_texture_filter_anisotropic") && (texture is Texture2D))
+            {
+                TextureParameterName anisotropy = (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt;
+                GL.TexParameter(TextureTarget.Texture2D, anisotropy, 0.0f);
+                if (matTexture.mipDetail == 0x4 || matTexture.mipDetail == 0x6)
+                    GL.TexParameter(TextureTarget.Texture2D, anisotropy, 4.0f);
+            }
         }
 
         public void ClearMta()
