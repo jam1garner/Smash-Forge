@@ -8,6 +8,7 @@ in vec2 f_texcoord3;
 in vec3 objectPosition;
 
 in vec3 normal;
+in vec3 viewNormal;
 in vec4 vertexColor;
 in vec3 tangent;
 in vec3 bitangent;
@@ -117,6 +118,7 @@ struct VertexAttributes {
     vec2 texCoord3;
     vec4 vertexColor;
     vec3 normal;
+    vec3 viewNormal;
     vec3 tangent;
     vec3 bitangent;
 };
@@ -198,6 +200,7 @@ void main()
     vert.texCoord3 = f_texcoord2;
     vert.vertexColor = vertexColor;
     vert.normal = normal;
+    vert.viewNormal = viewNormal;
     vert.tangent = tangent;
     vert.bitangent = bitangent;
 

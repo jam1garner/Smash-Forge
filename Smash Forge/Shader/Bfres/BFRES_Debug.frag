@@ -5,6 +5,7 @@ in vec2 f_texcoord1;
 in vec2 f_texcoord2;
 in vec2 f_texcoord3;
 in vec3 normal;
+in vec3 viewNormal;
 in vec4 vertexColor;
 in vec3 tangent;
 in vec3 bitangent;
@@ -106,6 +107,7 @@ struct VertexAttributes {
     vec2 texCoord3;
     vec4 vertexColor;
     vec3 normal;
+    vec3 viewNormal;
     vec3 tangent;
     vec3 bitangent;
 };
@@ -118,9 +120,9 @@ out vec4 fragColor;
 float Luminance(vec3 rgb);
 
 // Defined in BFRES_Utility.frag.
-vec3 CalcBumpedNormal(vec3 normal, sampler2D normalMap, VertexAttributes vert, float uking_texture2_texcoord);
+vec3 CalcBumpedNormal(vec3 normal, sampler2D normalMap, VertexAttributes vert, float texCoordIndex);
 float AmbientOcclusionBlend(sampler2D BakeShadowMap, VertexAttributes vert, float ao_density);
-vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float uking_texture2_texcoord, vec3 emission_color);
+vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float texCoordIndex, vec3 emission_color);
 
 vec2 displayTexCoord =  f_texcoord0;
 
@@ -136,6 +138,7 @@ void main()
     vert.texCoord3 = f_texcoord2;
     vert.vertexColor = vertexColor;
     vert.normal = normal;
+    vert.viewNormal = viewNormal;
     vert.tangent = tangent;
     vert.bitangent = bitangent;
 

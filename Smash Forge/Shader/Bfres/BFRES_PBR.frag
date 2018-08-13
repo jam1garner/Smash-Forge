@@ -116,6 +116,7 @@ struct VertexAttributes {
     vec2 texCoord3;
     vec4 vertexColor;
     vec3 normal;
+    vec3 viewNormal;
     vec3 tangent;
     vec3 bitangent;
 };
@@ -197,6 +198,7 @@ void main()
     vert.texCoord3 = f_texcoord2;
     vert.vertexColor = vertexColor;
     vert.normal = normal;
+    vert.viewNormal = viewNormal;
     vert.tangent = tangent;
     vert.bitangent = bitangent;
 
@@ -247,18 +249,16 @@ void main()
 
 	if (HasMRA == 1) //Kirby Star Allies PBR map
 	{
-		if(UseRoughnessMap == 1)
-			metallic = texture(MRA, f_texcoord0).r;
-		if(UseRoughnessMap == 1)
-			roughness = texture(MRA, f_texcoord0).g;
-		if(UseCavityMap == 1)
-			cavity = texture(MRA, f_texcoord0).b;
-		if(UseAOMap == 1)
-			ao = texture(MRA, f_texcoord0).a;
+	    //Note KSA has no way to tell if one gets unused or not because shaders :(
+		//Usually it's just metalness with roughness and works fine
+		metallic = texture(MRA, f_texcoord0).r;
+		roughness = texture(MRA, f_texcoord0).g;
+		cavity = texture(MRA, f_texcoord0).b;
+		ao = texture(MRA, f_texcoord0).a;
 	}
 
+    // Calculate shading vectors.
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
-
     vec3 N = normal;
 	if (HasNormalMap == 1 && useNormalMap == 1)
 		N = CalcBumpedNormal(normal, normalMap, vert, 0);
