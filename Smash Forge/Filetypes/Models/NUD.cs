@@ -29,6 +29,7 @@ namespace Smash_Forge
         private BufferObject elementsIbo;
         private BufferObject bonesUbo;
         private BufferObject selectVbo;
+        private VertexArrayObject nudVao;
 
         // Default bind location for dummy textures.
         private static readonly TextureUnit dummyTextureUnit = TextureUnit.Texture20;
@@ -172,6 +173,7 @@ namespace Smash_Forge
             elementsIbo = new BufferObject(BufferTarget.ElementArrayBuffer);
             bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
             selectVbo = new BufferObject(BufferTarget.ArrayBuffer);
+            nudVao = new VertexArrayObject();
         }
 
         public void CheckTexIdErrors(NUT nut)
@@ -282,8 +284,12 @@ namespace Smash_Forge
             displayVerticesArray = displayVerticesList.ToArray();
             vertexIndicesArray = vertexIndicesList.ToArray();
 
-            //positionVbo.BufferData(displayVerticesArray, DisplayVertex.Size, BufferUsageHint.StaticDraw);
-            //elementsIbo.BufferData(vertexIndicesArray, sizeof(int), BufferUsageHint.StaticDraw);
+            nudVao.Bind();
+
+            positionVbo.BufferData(displayVerticesArray, DisplayVertex.Size, BufferUsageHint.StaticDraw);
+            elementsIbo.BufferData(vertexIndicesArray, sizeof(int), BufferUsageHint.StaticDraw);
+
+            nudVao.Unbind();
 
             foreach (Mesh mesh in Nodes)
             {
@@ -619,25 +625,29 @@ namespace Smash_Forge
 
         private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<DummyTextures, Texture> dummyTextures, bool drawId = false)
         {
-            //if (p.vertexIndices.Count <= 3)
-            //    return;
+            if (p.vertexIndices.Count <= 3)
+                return;
 
-            //Material material = p.materials[0];
+            Material material = p.materials[0];
 
             // Set Shader Values.
-            //SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
-            //SetVertexAttributes(shader, positionVbo);
+            SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
 
             // Set OpenTK Render Options.
-            //SetAlphaBlending(material);
-            //SetAlphaTesting(material);
-            //SetFaceCulling(material);
+            SetAlphaBlending(material);
+            SetAlphaTesting(material);
+            SetFaceCulling(material);
+
+            nudVao.Bind();
+            shader.EnableVertexAttributes();
+            SetVertexAttributes(shader, positionVbo);
 
             // Draw the model normally.
-            //elementsIbo.Bind();
-            //GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
 
-            p.forgeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, p.displayFaceSize, p.Offset);
+            nudVao.Unbind();
+
+            //p.forgeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, p.displayFaceSize, p.Offset);
         }
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<DummyTextures, Texture> dummyTextures, int id = 0, bool drawId = false)
@@ -1255,7 +1265,7 @@ namespace Smash_Forge
                 shader.SetVector3("col2", 1, 0, 0);
             }
 
-            shader.EnableVertexAttributes();
+            //shader.EnableVertexAttributes();
             foreach (Mesh m in Nodes)
             {
                 foreach (Polygon p in m.Nodes)
@@ -1279,7 +1289,7 @@ namespace Smash_Forge
                     GL.DrawElements(type, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                 }
             }
-            shader.DisableVertexAttributes();
+            //shader.DisableVertexAttributes();
         }
 
         public static int BindTexture(MatTexture matTexture, int hash, int loc, Dictionary<DummyTextures, Texture> dummyTextures)

@@ -1721,15 +1721,10 @@ namespace Smash_Forge
             List<NUD.DisplayVertex> vertices = new List<NUD.DisplayVertex>();
             vertices.Add(new NUD.DisplayVertex() { pos = new Vector3(10, 10, 0) } );
             vertices.Add(new NUD.DisplayVertex() { pos = new Vector3(10, -10, 0) });
+            vertices.Add(new NUD.DisplayVertex() { pos = new Vector3(-10, -10, 0) });
             vertices.Add(new NUD.DisplayVertex() { pos = new Vector3(-10, 10, 0) });
 
-            List<int> indices = new List<int>();
-            indices.Add(0);
-            indices.Add(1);
-            indices.Add(3);
-            indices.Add(1);
-            indices.Add(2);
-            indices.Add(3);
+            List<int> indices = new List<int>() { 0, 1, 3, 1, 2, 3 };
 
             if (cubeMesh == null)
                 cubeMesh = new ForgeMesh(vertices, indices);

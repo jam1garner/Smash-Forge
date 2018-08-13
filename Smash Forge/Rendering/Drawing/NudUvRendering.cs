@@ -31,7 +31,7 @@ namespace Smash_Forge.Rendering
         {
             Shader shader = OpenTKSharedResources.shaders["UV"];
             shader.UseProgram();
-            shader.EnableVertexAttributes();
+            //shader.EnableVertexAttributes();
             uvPositionVbo.Bind();
 
             // Draw over everything
@@ -52,7 +52,7 @@ namespace Smash_Forge.Rendering
             uvElementsIbo.Bind();
             GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
 
-            shader.DisableVertexAttributes();
+            //shader.DisableVertexAttributes();
         }
 
         private static void SetVertexAttributes(Shader shader)
