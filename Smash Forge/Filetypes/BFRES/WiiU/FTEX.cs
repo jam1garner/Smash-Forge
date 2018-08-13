@@ -86,11 +86,7 @@ namespace Smash_Forge
                     texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                     break;
                 case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_SRGB):
-                    //fix SRGB textures.
-                    byte[] fixBC1 = DDS_Decompress.DecompressBC1(texture.data, texture.width, texture.height, true);
-                    texture.data = fixBC1;
-                    texture.pixelInternalFormat = PixelInternalFormat.Rgba;
-                    texture.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                     break;
                 case ((int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC2_UNORM):
                     texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
