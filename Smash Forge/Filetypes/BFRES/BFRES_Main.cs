@@ -670,6 +670,9 @@ namespace Smash_Forge
             }
             if (m.VertexSkinCount == 0)
             {
+                Matrix4 transform = fmdl.skeleton.bones[m.boneIndx].invert * fmdl.skeleton.bones[m.boneIndx].transform;
+                shader.SetMatrix4x4("singleBoneBindTransform", ref transform);
+				
                 shader.SetInt("NoSkinning", 1);
             }
         }

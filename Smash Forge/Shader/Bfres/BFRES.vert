@@ -34,9 +34,10 @@ uniform vec4 gsys_bake_st1;
 
 // Skinning uniforms
 uniform mat4 bones[200];
+ //Meshes have a bone index and will use their transform depending on skin influence amount
+uniform mat4 singleBoneBindTransform;
 uniform int NoSkinning;
 uniform int RigidSkinning;
-uniform int SingleBoneIndex;
 
 uniform int selectedBoneIndex;
 
@@ -141,8 +142,8 @@ void main()
 
 	if (NoSkinning == 1)
     {
-	    gl_Position = mvpMatrix * bones[SingleBoneIndex] * vec4(vPosition, 1.0);
-	    normal = mat3(bones[SingleBoneIndex]) * vNormal.xyz * 1;
+	    gl_Position = mvpMatrix * singleBoneBindTransform * vec4(vPosition, 1.0);
+	    normal = mat3(singleBoneBindTransform) * vNormal.xyz * 1;
 		normal = normalize(normal);
 	}
 
