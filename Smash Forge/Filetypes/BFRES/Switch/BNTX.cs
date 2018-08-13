@@ -368,20 +368,7 @@ namespace Smash_Forge
             switch (surf.format >> 8)
             {
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC1):
-                    if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
-                    {
-                        texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
-                    }
-                    else if (DataType == (byte)Formats.BNTXImageTypes.SRGB)
-                    {
-                        //fix SRGB textures.
-                        byte[] fixBC1 = DDS_Decompress.DecompressBC1(texture.data, texture.width, texture.height, true);
-                        texture.data = fixBC1;
-                        texture.pixelInternalFormat = PixelInternalFormat.Rgba;
-                        texture.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
-                    }
-                    else
-                        throw new Exception("Unsupported data type for BC1");
+                    texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC2):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)

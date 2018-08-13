@@ -8,6 +8,7 @@ in vec2 f_texcoord3;
 in vec3 objectPosition;
 
 in vec3 normal;
+in vec3 viewNormal;
 in vec4 vertexColor;
 in vec3 tangent;
 in vec3 bitangent;
@@ -79,7 +80,6 @@ uniform vec4 base_color_mul_color;
 uniform vec3 emission_color;
 
 // Shader Options
-uniform float uking_texture2_texcoord;
 uniform float bake_shadow_type;
 uniform float enable_fresnel;
 uniform float enable_emission;
@@ -117,6 +117,7 @@ struct VertexAttributes {
     vec2 texCoord3;
     vec4 vertexColor;
     vec3 normal;
+    vec3 viewNormal;
     vec3 tangent;
     vec3 bitangent;
 };
@@ -127,9 +128,9 @@ out vec4 fragColor;
 const float PI = 3.14159265359;
 
 // Defined in BFRES_Utility.frag.
-vec3 CalcBumpedNormal(vec3 normal, sampler2D normalMap, VertexAttributes vert, float uking_texture2_texcoord);
+vec3 CalcBumpedNormal(vec3 normal, sampler2D normalMap, VertexAttributes vert, float texCoordIndex);
 float AmbientOcclusionBlend(sampler2D BakeShadowMap, VertexAttributes vert, float ao_density);
-vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float uking_texture2_texcoord, vec3 emission_color);
+vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float texCoordIndex, vec3 emission_color);
 
 // Shader code adapted from learnopengl.com's PBR tutorial:
 // https://learnopengl.com/PBR/Theory
@@ -198,6 +199,7 @@ void main()
     vert.texCoord3 = f_texcoord2;
     vert.vertexColor = vertexColor;
     vert.normal = normal;
+    vert.viewNormal = viewNormal;
     vert.tangent = tangent;
     vert.bitangent = bitangent;
 
@@ -234,7 +236,7 @@ void main()
 
 	vec3 emission = vec3(0);
    if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
-		emission.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);
+		emission.rgb += EmissionPass(EmissionMap, emission_intensity, vert, 0, emission_color);
 
 	vec3 lightMapColor = vec3(1);
 	float lightMapIntensity = 0;
@@ -246,38 +248,21 @@ void main()
 
 	float specIntensity = 1;
 
-	if (HasBOTWSpecularMap == 1)
-	{
-    	//Botw uses PBR in a way however will need modifications to look right.
-	   if (uking_texture2_texcoord == 1)
-	   {
-	       metallic = texture(BOTWSpecularMap, f_texcoord1).g;
-	       specIntensity = texture(BOTWSpecularMap, f_texcoord1).r;
-	   }
-	   else
-	   {
-	       metallic = texture(BOTWSpecularMap, f_texcoord0).g;
-	       specIntensity = texture(BOTWSpecularMap, f_texcoord0).r;
-	   }
-	}
-
 	if (HasMRA == 1) //Kirby Star Allies PBR map
 	{
-		if(UseRoughnessMap == 1)
-			metallic = texture(MRA, f_texcoord0).r;
-		if(UseRoughnessMap == 1)
-			roughness = texture(MRA, f_texcoord0).g;
-		if(UseCavityMap == 1)
-			cavity = texture(MRA, f_texcoord0).b;
-		if(UseAOMap == 1)
-			ao = texture(MRA, f_texcoord0).a;
+	    //Note KSA has no way to tell if one gets unused or not because shaders :(
+		//Usually it's just metalness with roughness and works fine
+		metallic = texture(MRA, f_texcoord0).r;
+		roughness = texture(MRA, f_texcoord0).g;
+		cavity = texture(MRA, f_texcoord0).b;
+		ao = texture(MRA, f_texcoord0).a;
 	}
 
+    // Calculate shading vectors.
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
-
     vec3 N = normal;
 	if (HasNormalMap == 1 && useNormalMap == 1)
-		N = CalcBumpedNormal(normal, normalMap, vert, uking_texture2_texcoord);
+		N = CalcBumpedNormal(normal, normalMap, vert, 0);
 
     vec3 V = normalize(I); //Eye View
 	vec3 L = normalize(specLightDirection); //Light

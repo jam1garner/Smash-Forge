@@ -393,7 +393,7 @@ namespace Smash_Forge
             return mvp;
         }
 
-        public ModelViewport OpenKcl(string fileName, string viewportTitle = "", ModelViewport mvp = null)
+        public ModelViewport OpenKcl(byte[] fileData, string fileName, string viewportTitle = "", ModelViewport mvp = null)
         {
             if (mvp == null)
             {
@@ -406,7 +406,6 @@ namespace Smash_Forge
             modelContainer.Text = fileName;
             mvp.Text = fileName;
 
-            byte[] fileData = GetUncompressedSzsSbfresData(fileName);
             modelContainer.Kcl = new KCL(fileData);
 
             return mvp;
@@ -1237,16 +1236,16 @@ namespace Smash_Forge
                     DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
-                        OpenKcl(fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
+                        OpenKcl(data, fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
                     }
                     if (dialogResult == DialogResult.No)
                     {
-                        OpenKcl(fileName);
+                        OpenKcl(data, fileName);
                     }
                 }
                 else
                 {
-                    OpenKcl(fileName);
+                    OpenKcl(data, fileName);
                 }
             }
 
@@ -1278,7 +1277,7 @@ namespace Smash_Forge
 
                 if (hexM == 0x02020000) //YAZO compressed
                 {
-                    OpenKcl(fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
+                    OpenKcl(fileByteData, fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
                 }
 
                 if (magic2 == "BNTX") //SARC compressed
@@ -1313,7 +1312,7 @@ namespace Smash_Forge
                             fileByteData = SzsFiles[s];
                             uncompressedFileData = new FileData(fileByteData);
 
-                            OpenKcl(s, s, (ModelViewport)dockPanel1.ActiveContent);
+                            OpenKcl(fileByteData, s, s, (ModelViewport)dockPanel1.ActiveContent);
                         }
                     }
                 }

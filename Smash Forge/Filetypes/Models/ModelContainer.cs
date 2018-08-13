@@ -341,7 +341,7 @@ namespace Smash_Forge
 
             if (Bfres != null)
             {
-                Bfres.Render(camera);
+                Bfres.Render(camera, Runtime.drawNudColorIdPass);
             }
 
             if (NUD != null && OpenTKSharedResources.shaders["Nud"].ProgramCreatedSuccessfully && OpenTKSharedResources.shaders["NudDebug"].ProgramCreatedSuccessfully)

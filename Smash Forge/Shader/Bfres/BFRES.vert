@@ -27,6 +27,7 @@ out vec3 boneWeightsColored;
 
 // Viewport Camera/Lighting
 uniform mat4 mvpMatrix;
+uniform mat4 sphereMatrix;
 
 // Shader Options
 uniform vec4 gsys_bake_st0;
@@ -34,9 +35,10 @@ uniform vec4 gsys_bake_st1;
 
 // Skinning uniforms
 uniform mat4 bones[200];
+ //Meshes have a bone index and will use their transform depending on skin influence amount
+uniform mat4 singleBoneBindTransform;
 uniform int NoSkinning;
 uniform int RigidSkinning;
-uniform int SingleBoneIndex;
 
 uniform int selectedBoneIndex;
 
@@ -141,10 +143,12 @@ void main()
 
 	if (NoSkinning == 1)
     {
-	    gl_Position = mvpMatrix * bones[SingleBoneIndex] * vec4(vPosition, 1.0);
-	    normal = mat3(bones[SingleBoneIndex]) * vNormal.xyz * 1;
+	    gl_Position = mvpMatrix * singleBoneBindTransform * vec4(vPosition, 1.0);
+	    normal = mat3(singleBoneBindTransform) * vNormal.xyz * 1;
 		normal = normalize(normal);
 	}
+
+    viewNormal = mat3(sphereMatrix) * normal.xyz;
 
 	if (sampler2.x + sampler2.y != 0) //BOTW has scale values to 0 if unused so set them to 1
         f_texcoord1 = vec2((vUV1 * sampler2.xy) + sampler2.zw);
@@ -156,12 +160,12 @@ void main()
 
 	f_texcoord0 = vec2(vUV0);
 
-	//Set SRT values43
-	if (SRT_Scale.x + SRT_Scale.y != 0)
-	    f_texcoord0 = vec2((vUV0 * SRT_Scale) + SRT_Translate);
+	//Disable SRT for now. The values can break UVs and i need to figure out the animations
+	//Set SRT values
+//	if (SRT_Scale.x + SRT_Scale.y != 0)
+//	    f_texcoord0 = vec2((vUV0 * SRT_Scale) + SRT_Translate);
 
-
-	f_texcoord0 = rotateUV(f_texcoord0, SRT_Rotate);
+//	f_texcoord0 = rotateUV(f_texcoord0, SRT_Rotate);
 
 	tangent = vTangent;
 	bitangent = vBitangent;

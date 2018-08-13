@@ -5,6 +5,7 @@ in vec2 f_texcoord1;
 in vec2 f_texcoord2;
 in vec2 f_texcoord3;
 in vec3 normal;
+in vec3 viewNormal;
 in vec4 vertexColor;
 in vec3 tangent;
 in vec3 bitangent;
@@ -69,7 +70,6 @@ uniform vec3 specular_color;
 //
 //------------------------------------------------------------------------------------
 
-uniform float uking_texture2_texcoord;
 uniform float bake_shadow_type;
 uniform float enable_fresnel;
 uniform float enable_emission;
@@ -98,6 +98,7 @@ struct VertexAttributes {
     vec2 texCoord3;
     vec4 vertexColor;
     vec3 normal;
+    vec3 viewNormal;
     vec3 tangent;
     vec3 bitangent;
 };
@@ -110,10 +111,10 @@ out vec4 fragColor;
 float Luminance(vec3 rgb);
 
 // Defined in BFRES_Utility.frag.
-vec3 CalcBumpedNormal(vec3 normal, sampler2D normalMap, VertexAttributes vert, float uking_texture2_texcoord);
+vec3 CalcBumpedNormal(vec3 normal, sampler2D normalMap, VertexAttributes vert, float texCoordIndex);
 float AmbientOcclusionBlend(sampler2D BakeShadowMap, VertexAttributes vert, float ao_density);
-vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float uking_texture2_texcoord, vec3 emission_color);
-vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap, vec3 specular_color, VertexAttributes vert, float uking_texture2_texcoord);
+vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float texCoordIndex, vec3 emission_color);
+vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap, vec3 specular_color, VertexAttributes vert, float texCoordIndex);
 
 void main()
 {
@@ -127,6 +128,7 @@ void main()
     vert.texCoord3 = f_texcoord2;
     vert.vertexColor = vertexColor;
     vert.normal = normal;
+    vert.viewNormal = viewNormal;
     vert.tangent = tangent;
     vert.bitangent = bitangent;
 
@@ -145,7 +147,7 @@ void main()
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
     vec3 N = normal;
 	if (HasNormalMap == 1 && useNormalMap == 1)
-		N = CalcBumpedNormal(normal, normalMap, vert, uking_texture2_texcoord);
+		N = CalcBumpedNormal(normal, normalMap, vert, 0);
 
     // Light Map
     vec4 LightMapColor = texture(BakeLightMap, f_texcoord2);
@@ -197,20 +199,9 @@ void main()
 
     // Render Passes
     if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
-		fragColor.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);
-    fragColor.rgb += SpecularPass(I, N, HasSpecularMap, SpecularMap, specular_color, vert, uking_texture2_texcoord);
+		fragColor.rgb += EmissionPass(EmissionMap, emission_intensity, vert, 0, emission_color);
+    fragColor.rgb += SpecularPass(I, N, HasSpecularMap, SpecularMap, specular_color, vert, 0);
 
-    if (HasAmbientOcclusionMap == 1)
-    {
-         vec4 A0Tex = vec4(1);
-
-         if (uking_texture2_texcoord == 1)
-               A0Tex = vec4(texture(BakeShadowMap, f_texcoord1).rrr, 1);
-		 else
-		      A0Tex = vec4(texture(BakeShadowMap, f_texcoord0).rrr, 1);
-
-	    fragColor *= A0Tex;
-    }
 	if (HasShadowMap == 1)
 	{
 	     if (bake_shadow_type == 0)

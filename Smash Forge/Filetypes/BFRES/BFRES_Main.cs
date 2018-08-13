@@ -15,6 +15,7 @@ using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Textures;
+using SFGraphics.Tools;
 
 namespace Smash_Forge
 {
@@ -115,7 +116,6 @@ namespace Smash_Forge
                 TargetSwitchBFRES = new ResNSW.ResFile(new MemoryStream(file_data));
                 path = Text;
                 Read(TargetSwitchBFRES, f); //Temp add FileData for now till I parse BNTX with lib
-                UpdateVertexData();
                 ModelTransform();
             }
             else
@@ -125,8 +125,6 @@ namespace Smash_Forge
                 TargetWiiUBFRES = new ResFile(new MemoryStream(file_data));
                 path = Text;
                 Read(TargetWiiUBFRES);
-                UpdateVertexData();
-
             }
         }
 
@@ -355,8 +353,17 @@ namespace Smash_Forge
             }
         }
 
-        public void Render(Camera camera)
+        public void Render(Camera camera, bool drawPolyIds)
         {
+            // Binding 0 to a buffer target will crash. 
+            // This also means the buffers weren't generated yet.
+            bool buffersWereInitialized = elementsIbo != null && positionVbo != null;
+            if (!buffersWereInitialized)
+            {
+                GenerateBuffers();
+                UpdateVertexData();
+            }
+
             if (Runtime.renderBoundingSphere)
                 DrawBoundingBoxes();
 
@@ -383,13 +390,13 @@ namespace Smash_Forge
                 foreach (Mesh m in opaque)
                 {
                     if (m.Parent != null && (m.Parent).Checked)
-                        DrawMesh(m, fmdl, camera);
+                        DrawMesh(m, fmdl, camera, drawPolyIds);
                 }
 
                 foreach (Mesh m in transparent)
                 {
                     if (((FMDL_Model)m.Parent).Checked)
-                        DrawMesh(m, fmdl, camera);
+                        DrawMesh(m, fmdl, camera, drawPolyIds);
                 }
             }
         }
@@ -447,7 +454,7 @@ namespace Smash_Forge
             shader.SetTexture("cmap", RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh].Id, TextureTarget.TextureCubeMap, 2);
         }
 
-        private void DrawMesh(Mesh mesh, FMDL_Model fmdl, Camera camera, bool drawSelection = false)
+        private void DrawMesh(Mesh mesh, FMDL_Model fmdl, Camera camera, bool drawPolyIds = false, bool drawSelection = false)
         {
             if (mesh.lodMeshes[mesh.DisplayLODIndex].faces.Count <= 3)
                 return;
@@ -478,7 +485,12 @@ namespace Smash_Forge
             Matrix4 mvpMatrix = camera.MvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref mvpMatrix);
 
-            SetUniforms(mesh.material, shader, mesh);
+            Matrix4 sphereMatrix = camera.ModelViewMatrix;
+            sphereMatrix.Invert();
+            sphereMatrix.Transpose();
+            shader.SetMatrix4x4("sphereMatrix", ref sphereMatrix);
+
+            SetUniforms(mesh.material, shader, mesh, mesh.DisplayId, drawPolyIds);
             SetTextureUniforms(mesh.material, mesh, shader);
             SetBoneUniforms(shader, fmdl);
 
@@ -618,12 +630,6 @@ namespace Smash_Forge
 
         public void UpdateVertexData()
         {
-            // Binding 0 to a buffer target will crash. 
-            // This also means the buffers weren't generated yet.
-            bool buffersWereInitialized = elementsIbo != null && positionVbo != null;
-            if (!buffersWereInitialized)
-                GenerateBuffers();
-
             DisplayVertex[] Vertices;
             int[] Faces;
 
@@ -670,17 +676,22 @@ namespace Smash_Forge
             }
             if (m.VertexSkinCount == 0)
             {
+                Matrix4 transform = fmdl.skeleton.bones[m.boneIndx].invert * fmdl.skeleton.bones[m.boneIndx].transform;
+                shader.SetMatrix4x4("singleBoneBindTransform", ref transform);
+				
                 shader.SetInt("NoSkinning", 1);
             }
         }
 
-        private static void SetUniforms(MaterialData mat, Shader shader, Mesh m)
+        private static void SetUniforms(MaterialData mat, Shader shader, Mesh m, int id, bool drawId)
         {
             shader.SetVector4("SamplerUV1", new Vector4(1, 1, 0, 0));
             shader.SetVector4("gsys_bake_st0", new Vector4(1, 1, 0, 0));
             shader.SetVector4("gsys_bake_st1", new Vector4(1, 1, 0, 0));
             shader.SetInt("enableCellShading", 0);
 
+            shader.SetVector3("colorId", ColorTools.Vector4FromColor(Color.FromArgb(id)).Xyz);
+            shader.SetBoolToInt("drawId", drawId);
 
             //BOTW uses this shader so lets add in cell shading
             if (mat.shaderassign.ShaderModel == "uking_mat")
@@ -1219,6 +1230,11 @@ namespace Smash_Forge
             public List<BoundingBox> boundingBoxes = new List<BoundingBox>();
             public Dictionary<string, int> BoneIndexList = new Dictionary<string, int>();
 
+            // Used to generate a unique color for viewport selection.
+            private static List<int> previousDisplayIds = new List<int>();
+            public int DisplayId { get { return displayId; } }
+            private int displayId = 0;
+
             public int DisplayLODIndex = 0;
             public List<LOD_Mesh> lodMeshes = new List<LOD_Mesh>();
             public class LOD_Mesh
@@ -1301,18 +1317,30 @@ namespace Smash_Forge
 
             public float sortingDistance = 0;
 
-
-
             public Mesh()
             {
                 Checked = true;
                 ImageKey = "mesh";
                 SelectedImageKey = "mesh";
+                GenerateDisplayId();
             }
             // for drawing
             public int[] display;
             public int[] selectedVerts;
             public int Offset; // For Rendering
+
+            private void GenerateDisplayId()
+            {
+                // Find last used ID. Next ID will be last ID + 1.
+                // A color is generated from the integer as hexadecimal, but alpha is ignored.
+                // Incrementing will affect RGB before it affects Alpha (ARGB color).
+                int index = 0;
+                if (previousDisplayIds.Count > 0)
+                    index = previousDisplayIds.Last();
+                index++;
+                previousDisplayIds.Add(index);
+                displayId = index;
+            }
 
             //Store list of all existing vertex attribute. This is for saving
             public List<VertexAttribute> vertexAttributes = new List<VertexAttribute>();
