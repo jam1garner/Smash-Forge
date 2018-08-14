@@ -871,7 +871,8 @@ namespace Smash_Forge
             shader.SetBoolToInt("HasSpecularMap", materialData.HasSpecularMap);
             shader.SetBoolToInt("HasTeamColorMap", materialData.HasTeamColorMap);
             shader.SetBoolToInt("hasDummyRamp", materialData.HasTransparencyMap);
-
+            shader.SetBoolToInt("HasSphereMap", materialData.HasSphereMap);
+            
             //Unused atm untill I do PBR shader
             shader.SetBoolToInt("HasMetalnessMap", materialData.HasMetalnessMap);
             shader.SetBoolToInt("HasRoughnessMap", materialData.HasRoughnessMap);

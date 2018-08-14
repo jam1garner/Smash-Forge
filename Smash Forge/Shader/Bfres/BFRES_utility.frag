@@ -69,7 +69,8 @@ vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintCol
 
     vec3 viewNormal = mat3(sphereMatrix) * normalize(N.xyz);
     vec3 sphereMapColor = SphereMapColor(vert.viewNormal, sphereMap);
-	reflectionPass += sphereMapColor * 1;
+
+	reflectionPass += sphereMapColor * HasSphereMap;
 
     // Very crude energy conservation approximation.
     reflectionPass -= 0.5 * Luminance(diffuseMap.rgb);
