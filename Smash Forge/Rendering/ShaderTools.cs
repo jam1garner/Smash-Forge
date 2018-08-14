@@ -96,10 +96,8 @@ namespace Smash_Forge.Rendering
 
         private static void SetUpNudShaders()
         {
-            // Wii U NUD Shaders.
-            string[] nudShaders = new string[]
+            List<string> sharedNudShaders = new List<string>()
             {
-                "Nud\\NUD.frag",
                 "Nud\\NUD.vert",
                 "Nud\\NUD.geom",
                 "Nud\\StageLighting.frag",
@@ -108,20 +106,17 @@ namespace Smash_Forge.Rendering
                 "Utility\\Wireframe.frag",
                 "Utility\\Utility.frag", "Nud\\EdgeDistance.geom"
             };
-            CreateAndAddShader("Nud", nudShaders);
 
-            string[] nudDebugShaders = new string[]
-            {
-                "Nud\\NudDebug.frag",
-                "Nud\\NudDebug.vert",
-                "Nud\\NudDebug.geom",
-                "Nud\\StageLighting.frag",
-                "Nud\\Bayo.frag",
-                "Nud\\SmashShader.frag",
-                "Utility\\Wireframe.frag",
-                "Utility\\Utility.frag", "Nud\\EdgeDistance.geom"
-            };
-            CreateAndAddShader("NudDebug", nudDebugShaders);
+            // Wii U NUD Shaders.
+            List<string> nudShaders = new List<string>(sharedNudShaders);
+            nudShaders.Add("Nud\\NUD.frag");
+
+            CreateAndAddShader("Nud", nudShaders.ToArray());
+
+            List<string> nudDebugShaders = new List<string>(sharedNudShaders);
+            nudDebugShaders.Add("Nud\\NudDebug.frag");
+                
+            CreateAndAddShader("NudDebug", nudDebugShaders.ToArray());
 
             // Wii U NUD Material Preview Shaders.
             string[] nudMatShaders = new string[]

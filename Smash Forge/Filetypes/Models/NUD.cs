@@ -255,7 +255,7 @@ namespace Smash_Forge
 
             // Order by the distance from the camera to the closest point on the bounding sphere. 
             // Positive values are usually closer to camera. Negative values are usually farther away. 
-            depthSortedMeshes = unsortedMeshes.OrderBy(o => (o.sortingDistance)).ToList();
+            depthSortedMeshes = unsortedMeshes.OrderBy(m => m.sortingDistance).ToList();
         }
 
         private void SortMeshesByObjHeirarchy()
@@ -346,7 +346,7 @@ namespace Smash_Forge
 
         private void UpdateBonesBuffer(VBN vbn, Shader shader, BufferObject bonesUbo)
         {
-            if (vbn == null)
+            //if (vbn == null)
             {
                 shader.SetBoolToInt("useBones", false);
                 return;
