@@ -289,12 +289,6 @@ namespace Smash_Forge
             positionVbo.BufferData(displayVerticesArray, DisplayVertex.Size, BufferUsageHint.StaticDraw);
             elementsIbo.BufferData(vertexIndicesArray, sizeof(int), BufferUsageHint.StaticDraw);
 
-            List<Vector3> positions = new List<Vector3>();
-            foreach (DisplayVertex displayVertex in displayVerticesList)
-            {
-                positions.Add(displayVertex.pos);
-            }
-
             renderMesh = new ForgeMesh(displayVerticesList, vertexIndicesList);
         }
 
