@@ -1242,7 +1242,7 @@ namespace Smash_Forge
                                     MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(files[i]), files[i], "", this);
 
                                     string nameNoExtension = Path.GetFileNameWithoutExtension(files[i]);
-                                    string textureFileName = Path.GetDirectoryName(files[i]) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
+                                    string textureFileName = Path.GetDirectoryName(files[i]) + "\\" + String.Format("{0}.Tex.sbfres", nameNoExtension);
 
                                     if (File.Exists(textureFileName))
                                         MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
@@ -1396,12 +1396,20 @@ namespace Smash_Forge
             {
                 if (node is ModelContainer)
                 {
-                    Runtime.TextureContainers.Remove(((ModelContainer)node).NUT);
-                    Runtime.BNTXList.Remove(((ModelContainer)node).BNTX);
+                    ModelContainer m = (ModelContainer)node;
+                    Runtime.TextureContainers.Remove(m.NUT);
 
-                    if (((ModelContainer)node).Bfres != null && ((ModelContainer)node).Bfres.FTEXContainer != null)
+                    if (m.BNTX != null)
                     {
-                        Runtime.FTEXContainerList.Remove(((ModelContainer)node).Bfres.FTEXContainer);
+                        m.BNTX.textures.Clear();
+                        m.BNTX.glTexByName.Clear();
+                        Runtime.BNTXList.Remove(m.BNTX);
+                    }
+                    if (m.Bfres != null && m.Bfres.FTEXContainer != null)
+                    {
+                        m.Bfres.FTEXContainer.FTEXtextures.Clear();
+                        m.Bfres.FTEXContainer.glTexByName.Clear();
+                        Runtime.FTEXContainerList.Remove(m.Bfres.FTEXContainer);
                     }
                 }
             }

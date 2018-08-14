@@ -113,7 +113,7 @@ namespace Smash_Forge
     public class BNTX : TreeNode
     {
         //Todo: Have these 2 combined into one list
-        public static List<BRTI> textures = new List<BRTI>(); //For loading a list of texture instances
+        public List<BRTI> textures = new List<BRTI>(); //For loading a list of texture instances
         public Dictionary<string, Texture> glTexByName = new Dictionary<string, Texture>();
         int BRTIOffset;
 
@@ -259,8 +259,6 @@ namespace Smash_Forge
 
             }
             Nodes.AddRange(textures.ToArray());
-
-            Runtime.BNTXList.Add(this);
         }
     }
 
@@ -275,7 +273,6 @@ namespace Smash_Forge
 
         public int Width, Height, display;
         public uint format;
-        public static List<BRTI_Texture> RenderableTex = new List<BRTI_Texture>();
         public uint blkWidth, blkHeight, bpp;
 
         public override string ToString()
@@ -433,9 +430,6 @@ namespace Smash_Forge
                         throw new Exception("Unsupported data type for R8_G8_B8_A8");
                     break;
             }
-
-            RenderableTex.Add(texture);
-
         }
 
         public class BRTI_Texture
