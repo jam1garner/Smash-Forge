@@ -46,7 +46,7 @@ namespace Smash_Forge
         public bool hasBones = false;
         public float[] boundingSphere = new float[4];
 
-        private MeshSimple3D renderMesh;
+        private ForgeMesh renderMesh;
 
         // Just used for rendering.
         private List<Mesh> depthSortedMeshes = new List<Mesh>();
@@ -295,7 +295,7 @@ namespace Smash_Forge
                 positions.Add(displayVertex.pos);
             }
 
-            renderMesh = new MeshSimple3D(positions, vertexIndicesList);
+            renderMesh = new ForgeMesh(displayVerticesList, vertexIndicesList);
         }
 
         private void GetDisplayVerticesAndIndices(out List<DisplayVertex> displayVerticesList, out List<int> vertexIndicesList)
@@ -643,7 +643,7 @@ namespace Smash_Forge
             //GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             nudVao.Unbind();
 
-            renderMesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera, p.displayFaceSize, p.Offset);
+            renderMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, p.displayFaceSize, p.Offset);
         }
 
         private void ConfigureVertexAttributes(Shader shader)

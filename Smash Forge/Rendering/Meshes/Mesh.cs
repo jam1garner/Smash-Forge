@@ -108,12 +108,15 @@ namespace Smash_Forge.Rendering.Meshes
         {
             // Setting vertex attributes is handled automatically. 
             List<VertexAttributeInfo> vertexAttributes = GetVertexAttributes();
+            int offset = 0;
             foreach (VertexAttributeInfo attribute in vertexAttributes)
             {
                 // -1 means not found, which is usually a result of the attribute being unused.
                 int index = shader.GetVertexAttributeUniformLocation(attribute.name);
                 if (index != -1)
-                    GL.VertexAttribPointer(index, attribute.valueCount, attribute.vertexAttribPointerType, false, attribute.sizeInBytes, attribute.offset);
+                    GL.VertexAttribPointer(index, attribute.valueCount, attribute.vertexAttribPointerType, false, vertexSizeInBytes, offset);
+                // Move offset to next attribute.
+                offset += attribute.sizeInBytes;
             }
         }
     }
