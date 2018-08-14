@@ -25,7 +25,7 @@ namespace Smash_Forge.Rendering.Meshes
                 new VertexAttributeInfo("vPosition",   3, VertexAttribPointerType.Float, Vector3.SizeInBytes),
                 new VertexAttributeInfo("vNormal",     3, VertexAttribPointerType.Float, Vector3.SizeInBytes),
                 new VertexAttributeInfo("vTangent",    3, VertexAttribPointerType.Float, Vector3.SizeInBytes),
-                new VertexAttributeInfo("vBitangent",  3, VertexAttribPointerType.Float, Vector3.SizeInBytes),
+                new VertexAttributeInfo("vBiTangent",  3, VertexAttribPointerType.Float, Vector3.SizeInBytes),
                 new VertexAttributeInfo("vUV",         2, VertexAttribPointerType.Float, Vector2.SizeInBytes),
                 new VertexAttributeInfo("vColor",      4, VertexAttribPointerType.Float, Vector4.SizeInBytes),
                 new VertexAttributeInfo("vBone",       4, VertexAttribPointerType.Float, Vector4.SizeInBytes),

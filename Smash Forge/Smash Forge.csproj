@@ -629,7 +629,6 @@
     </Compile>
     <Compile Include="Rendering\Drawing\MaterialPreviewRendering.cs" />
     <Compile Include="Rendering\Drawing\NudMatSphereDrawing.cs" />
-    <Compile Include="Rendering\Drawing\NudUvRendering.cs" />
     <Compile Include="Rendering\ForgeCamera.cs" />
     <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
