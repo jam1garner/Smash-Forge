@@ -19,6 +19,7 @@ out vec2 f_texcoord3;
 out vec3 objectPosition;
 
 out vec3 normal;
+out vec3 viewNormal;
 out vec4 vertexColor;
 out vec3 tangent;
 out vec3 bitangent;
@@ -148,7 +149,7 @@ void main()
 		normal = normalize(normal);
 	}
 
-    vec3 viewNormal = mat3(sphereMatrix) * normal.xyz;
+    viewNormal = mat3(sphereMatrix) * normal.xyz;
 
 	if (sampler2.x + sampler2.y != 0) //BOTW has scale values to 0 if unused so set them to 1
         f_texcoord1 = vec2((vUV1 * sampler2.xy) + sampler2.zw);

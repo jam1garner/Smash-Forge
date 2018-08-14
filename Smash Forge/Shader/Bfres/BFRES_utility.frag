@@ -1,5 +1,10 @@
 ﻿#version 330
 
+uniform mat4 sphereMatrix;
+uniform samplerCube cube;
+uniform sampler2D sphereMap;
+uniform int HasSphereMap;
+
 // A struct is used for what would normally be attributes from the vert/geom shader.
 struct VertexAttributes
 {
@@ -16,6 +21,12 @@ struct VertexAttributes
 
 // Defined in Utility.frag.
 float Luminance(vec3 rgb);
+
+vec3 SphereMapColor(vec3 viewNormal, sampler2D spheremap) {
+    // Calculate UVs based on view space normals.
+    vec2 sphereTexcoord = vec2(viewNormal.x, (1 - viewNormal.y));
+    return texture(spheremap, sphereTexcoord * 0.5 + 0.5).rgb;
+}
 
 vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap, vec3 SpecColor, VertexAttributes vert, float texcoord2)
 {
@@ -44,6 +55,27 @@ vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap
 
     float intensity = 0.3;
     return result * intensity;
+}
+
+vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, VertexAttributes vert) {
+    vec3 reflectionPass = vec3(0);
+	// cubemap reflection
+	vec3 R = reflect(I, N);
+	R.y *= -1.0;
+
+    vec3 cubeColor = texture(cube, R).aaa;
+
+    reflectionPass += diffuseMap.aaa * cubeColor * tintColor;
+
+    vec3 viewNormal = mat3(sphereMatrix) * normalize(N.xyz);
+    vec3 sphereMapColor = SphereMapColor(vert.viewNormal, sphereMap);
+	reflectionPass += sphereMapColor * 1;
+
+    // Very crude energy conservation approximation.
+    reflectionPass -= 0.5 * Luminance(diffuseMap.rgb);
+    reflectionPass = max(reflectionPass, vec3(0));
+
+    return reflectionPass;
 }
 
 vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float texCoordIndex, vec3 emission_color)

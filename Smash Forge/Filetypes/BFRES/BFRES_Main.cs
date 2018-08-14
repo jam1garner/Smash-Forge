@@ -875,6 +875,7 @@ namespace Smash_Forge
             //Unused atm untill I do PBR shader
             shader.SetBoolToInt("HasMetalnessMap", materialData.HasMetalnessMap);
             shader.SetBoolToInt("HasRoughnessMap", materialData.HasRoughnessMap);
+            shader.SetBoolToInt("HasMRA", materialData.HasMRA);
         }
 
         private static void SetTextureUniforms(MaterialData materialData, Mesh mesh, Shader shader)
@@ -916,6 +917,10 @@ namespace Smash_Forge
                     TextureUniform(shader, materialData, materialData.HasTransparencyMap, "TransparencyMap", matex);
                 else if (matex.Type == MatTexture.TextureType.DiffuseLayer2)
                     TextureUniform(shader, materialData, materialData.HasDiffuseLayer, "DiffuseLayer", matex);
+                else if (matex.Type == MatTexture.TextureType.MRA)
+                    TextureUniform(shader, materialData, materialData.HasMRA, "MRA", matex);
+                else if (matex.Type == MatTexture.TextureType.SphereMap)
+                    TextureUniform(shader, materialData, materialData.HasSphereMap, "sphereMap", matex);
             }
         }
 
@@ -1728,10 +1733,13 @@ namespace Smash_Forge
             public bool HasTransparencyMap = false;
             public bool HasShadowMap = false;
             public bool HasLightMap = false;
+            public bool HasSphereMap = false;
+            
 
             //PBR (Switch) data
             public bool HasMetalnessMap = false;
             public bool HasRoughnessMap = false;
+            public bool HasMRA = false;
 
             public MaterialFlags IsVisable = MaterialFlags.Visible;
 
@@ -1803,6 +1811,7 @@ namespace Smash_Forge
                 Roughness = 11,
                 Metalness = 12,
                 MRA = 13, //Combined pbr texture HAL uses for KSA
+                SphereMap = 14,
             }
 
             public MatTexture()
