@@ -272,25 +272,14 @@ namespace Smash_Forge
             }
         }
 
-        public ForgeMesh UpdateVertexBuffers(BufferObject positionVbo, BufferObject elementsIbo)
+        public void UpdateRenderMesh()
         {
-            DisplayVertex[] displayVerticesArray;
-            int[] vertexIndicesArray;
-
             // Store all of the polygon vert data in one buffer.
             List<DisplayVertex> displayVerticesList;
             List<int> vertexIndicesList;
             GetDisplayVerticesAndIndices(out displayVerticesList, out vertexIndicesList);
 
-            // Initialize the buffers.
-            displayVerticesArray = displayVerticesList.ToArray();
-            vertexIndicesArray = vertexIndicesList.ToArray();
-
-            positionVbo.BufferData(displayVerticesArray, DisplayVertex.Size, BufferUsageHint.StaticDraw);
-            elementsIbo.BufferData(vertexIndicesArray, sizeof(int), BufferUsageHint.StaticDraw);
-
             renderMesh = new ForgeMesh(displayVerticesList, vertexIndicesList);
-            return new ForgeMesh(displayVerticesList, vertexIndicesList);
         }
 
         private void GetDisplayVerticesAndIndices(out List<DisplayVertex> displayVerticesList, out List<int> vertexIndicesList)
@@ -325,21 +314,10 @@ namespace Smash_Forge
             }
         }
 
-        public void UpdateVertexBuffers()
-        {
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
-                UpdateVertexBuffers(vertexDataVbo, vertexIndexEbo);
-        }
-
         public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)
         {
-            // Binding 0 to a buffer target will crash. This also means the NUD buffers weren't generated yet.
-            bool buffersWereInitialized = vertexIndexEbo != null && vertexDataVbo != null && bonesUbo != null && selectVbo != null;
-            if (!buffersWereInitialized)
-            {
-                GenerateBuffers();
-                UpdateVertexBuffers(vertexDataVbo, vertexIndexEbo);
-            }
+            if (renderMesh == null)
+                UpdateRenderMesh();
 
             // Main function for NUD rendering.
             if (Runtime.renderBoundingSphere)
@@ -356,12 +334,14 @@ namespace Smash_Forge
 
             // Render using the selected shader.
             shader.UseProgram();
-            //shader.EnableVertexAttributes();
+
+            // Set bone matrices.
+            if (bonesUbo == null)
+                bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
+            // Broken currently.
             //UpdateBonesBuffer(vbn, shader, bonesUbo);
 
             DrawAllPolygons(shader, camera, drawPolyIds);
-
-            //shader.DisableVertexAttributes();
         }
 
         private void UpdateBonesBuffer(VBN vbn, Shader shader, BufferObject bonesUbo)
@@ -631,13 +611,7 @@ namespace Smash_Forge
             SetAlphaTesting(material);
             SetFaceCulling(material);
 
-            //ConfigureVertexAttributes(shader);
-
             // Draw the model normally.
-            nudVao.Bind();
-            //GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
-            nudVao.Unbind();
-
             renderMesh.Draw(shader, camera, p.displayFaceSize, p.Offset);
         }
 

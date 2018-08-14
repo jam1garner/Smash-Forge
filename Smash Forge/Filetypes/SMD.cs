@@ -268,7 +268,7 @@ namespace Smash_Forge
             }
 
             nud.OptimizeFileSize();
-            nud.UpdateVertexBuffers();
+            nud.UpdateRenderMesh();
             return nud;
         }
 

@@ -42,9 +42,7 @@ namespace Smash_Forge.Rendering.Meshes
             this.vertexIndices = vertexIndices;
             this.vertexSizeInBytes = vertexSizeInBytes;
 
-            vao.Bind();
             InitializeBufferData();
-            vao.Unbind();
         }
 
         public void Draw(Shader shader, Camera camera, int count, int offset = 0)

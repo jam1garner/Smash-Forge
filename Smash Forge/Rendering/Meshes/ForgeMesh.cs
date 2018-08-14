@@ -15,9 +15,7 @@ namespace Smash_Forge.Rendering.Meshes
 
         protected override void SetUniforms(Shader shader)
         {
-            shader.SetInt("renderType", (int)Runtime.renderType);
-            shader.SetInt("uvChannel", (int)Runtime.uvChannel);
-            shader.SetTexture("uvPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 0);
+
         }
 
         protected override List<VertexAttributeInfo> GetVertexAttributes()

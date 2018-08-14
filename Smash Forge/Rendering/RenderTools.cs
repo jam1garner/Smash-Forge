@@ -866,6 +866,8 @@ namespace Smash_Forge.Rendering
 
         public static void DrawFloor(Matrix4 mvpMatrix)
         {
+            // TODO: This breaks bitangents.
+            // #justopenglthings
             float scale = Runtime.floorSize;
 
             GL.UseProgram(0);
@@ -878,7 +880,7 @@ namespace Smash_Forge.Rendering
 
             GL.Color3(Runtime.floorColor);
             GL.LineWidth(1f);
-
+        
             if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
             {
                 GL.Enable(EnableCap.Texture2D);
@@ -968,7 +970,6 @@ namespace Smash_Forge.Rendering
 
                 GL.Begin(PrimitiveType.Lines);
                 GL.Vertex3(0, 0f, 0f);
-                GL.Color3(Color.Olive);
                 GL.Vertex3(0, 0f, 5f);
                 GL.End();
             }

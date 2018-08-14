@@ -79,7 +79,7 @@ namespace Smash_Forge.Rendering
             uvPositionVbo = new BufferObject(BufferTarget.ArrayBuffer);
             uvElementsIbo = new BufferObject(BufferTarget.ElementArrayBuffer);
 
-            forgeMesh = nud.UpdateVertexBuffers(uvPositionVbo, uvElementsIbo);
+            //forgeMesh = nud.UpdateVertexBuffers(uvPositionVbo, uvElementsIbo);
         }
 
         private static void InitializeUVBufferData(BufferObject uvPositionVBO, List<Vector2> uvs)
