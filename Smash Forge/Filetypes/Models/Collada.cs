@@ -981,7 +981,7 @@ namespace Smash_Forge
             Dictionary<Bitmap, string> texbank = new Dictionary<Bitmap, string>();
             int tid = 0;
 
-            foreach (BRTI tex in BNTX.textures)
+   /*         foreach (BRTI tex in BNTX.textures)
             {
                 ColladaImages image = new ColladaImages();
                 dae.library_images.Add(image);
@@ -991,7 +991,7 @@ namespace Smash_Forge
 
                 tex.ExportAsImage(tex.texture, tex.display, fname.Substring(0, fname.LastIndexOf("\\") + 1) + tex.Text + ".png");
                 tid++;
-            }
+            }*/
 
             // geometry
             int g = 0;
