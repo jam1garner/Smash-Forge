@@ -346,7 +346,7 @@ namespace Smash_Forge
 
         private void UpdateBonesBuffer(VBN vbn, Shader shader, BufferObject bonesUbo)
         {
-            //if (vbn == null)
+            if (vbn == null)
             {
                 shader.SetBoolToInt("useBones", false);
                 return;
