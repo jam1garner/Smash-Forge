@@ -18,7 +18,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects;
-
+using SFGraphics.GLObjects.GLObjectManagement;
 
 namespace Smash_Forge
 {

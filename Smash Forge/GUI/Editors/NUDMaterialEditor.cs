@@ -16,7 +16,7 @@ using System.Diagnostics;
 using Smash_Forge.Rendering;
 using SFGraphics.Tools;
 using SFGraphics.GLObjects;
-
+using SFGraphics.GLObjects.GLObjectManagement;
 
 namespace Smash_Forge
 {

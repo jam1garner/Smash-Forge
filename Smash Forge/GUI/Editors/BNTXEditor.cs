@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.GLObjectManagement;
 using Smash_Forge.Rendering;
 
 namespace Smash_Forge

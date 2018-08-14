@@ -339,7 +339,7 @@ namespace Smash_Forge
             if (bonesUbo == null)
                 bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
             // Broken currently.
-            //UpdateBonesBuffer(vbn, shader, bonesUbo);
+            UpdateBonesBuffer(vbn, shader, bonesUbo);
 
             DrawAllPolygons(shader, camera, drawPolyIds);
         }
