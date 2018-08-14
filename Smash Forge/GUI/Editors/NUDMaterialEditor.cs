@@ -15,6 +15,7 @@ using System.Timers;
 using System.Diagnostics;
 using Smash_Forge.Rendering;
 using SFGraphics.Tools;
+using SFGraphics.GLObjects;
 
 
 namespace Smash_Forge
@@ -96,8 +97,6 @@ namespace Smash_Forge
             ImageSize = new Size(64, 64)
         };
 
-        private SFGraphics.GLObjects.VertexArrayObject screenVao;
-
         // Set to false while using the sliders to avoid a loop of scroll and text changed events.
         // Set to true when focus on the slider is lost (ex. clicking on text box).
         private bool enableParam1SliderUpdates = true;
@@ -126,8 +125,6 @@ namespace Smash_Forge
             OpenTKSharedResources.InitializeSharedResources();
             if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
             {
-                screenVao = ScreenDrawing.CreateScreenTriangleVao();
-
                 // Only happens once.
                 UpdateMaterialThumbnails();
             }
@@ -873,9 +870,13 @@ namespace Smash_Forge
                 }
             }
 
+            // We can't share these vaos across both contexts.
             if (justRenderAlpha)
             {
                 texAlphaGlControl.MakeCurrent();
+
+                VertexArrayObject screenVao = ScreenDrawing.CreateScreenTriangleVao();
+
                 GL.Viewport(texAlphaGlControl.ClientRectangle);
                 ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenVao, false, false, false, true);
                 texAlphaGlControl.SwapBuffers();
@@ -883,6 +884,9 @@ namespace Smash_Forge
             else
             {
                 texRgbGlControl.MakeCurrent();
+
+                VertexArrayObject screenVao = ScreenDrawing.CreateScreenTriangleVao();
+
                 GL.Viewport(texRgbGlControl.ClientRectangle);
                 ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenVao);
                 texRgbGlControl.SwapBuffers();
@@ -964,11 +968,13 @@ namespace Smash_Forge
         private void texRgbGlControl_Paint(object sender, PaintEventArgs e)
         {
             RenderTexture();
+            GLObjectManager.DeleteUnusedGLObjects();
         }
 
         private void texAlphaGlControl_Paint(object sender, PaintEventArgs e)
         {
             RenderTexture(true);
+            GLObjectManager.DeleteUnusedGLObjects();
         }
 
         private void param1TrackBar_Scroll(object sender, EventArgs e)

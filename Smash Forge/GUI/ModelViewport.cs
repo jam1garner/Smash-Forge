@@ -1738,13 +1738,12 @@ namespace Smash_Forge
 
             List<int> indices = new List<int>() { 0, 1, 3, 1, 2, 3 };
 
-            // Doesn't render correctly at the moment. 
-            if (forgeMesh == null)
-                forgeMesh = new ForgeMesh(vertices, indices);
-            forgeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, indices.Count, 0);
+            //if (forgeMesh == null)
+            //    forgeMesh = new ForgeMesh(vertices, indices);
+            //forgeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, indices.Count, 0);
 
-            if (simpleMesh == null)
-                simpleMesh = new MeshSimple3D(positions, indices);
+            //if (simpleMesh == null)
+            //    simpleMesh = new MeshSimple3D(positions, indices);
             //simpleMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, indices.Count, 0);
         }
 

@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
+using Smash_Forge.Rendering.Meshes;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects;
 
@@ -18,6 +19,7 @@ namespace Smash_Forge.Rendering
         // Used for UV drawing.
         private static BufferObject uvPositionVbo;
         private static BufferObject uvElementsIbo;
+        private static ForgeMesh forgeMesh;
 
         public static void DrawUv(NUD.Polygon polygon, int windowWidth, int windowHeight)
         {
@@ -29,7 +31,7 @@ namespace Smash_Forge.Rendering
 
         private static void DrawPolygonUv(NUD.Polygon p, int windowWidth, int windowHeight)
         {
-            Shader shader = OpenTKSharedResources.shaders["UV"];
+            /*Shader shader = OpenTKSharedResources.shaders["UV"];
             shader.UseProgram();
             //shader.EnableVertexAttributes();
             uvPositionVbo.Bind();
@@ -50,9 +52,10 @@ namespace Smash_Forge.Rendering
             GL.Enable(EnableCap.LineSmooth);
 
             uvElementsIbo.Bind();
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);*/
 
             //shader.DisableVertexAttributes();
+            forgeMesh.Draw(OpenTKSharedResources.shaders["UV"], null, p.displayFaceSize, p.Offset);
         }
 
         private static void SetVertexAttributes(Shader shader)
@@ -76,7 +79,7 @@ namespace Smash_Forge.Rendering
             uvPositionVbo = new BufferObject(BufferTarget.ArrayBuffer);
             uvElementsIbo = new BufferObject(BufferTarget.ElementArrayBuffer);
 
-            nud.UpdateVertexBuffers(uvPositionVbo, uvElementsIbo);
+            forgeMesh = nud.UpdateVertexBuffers(uvPositionVbo, uvElementsIbo);
         }
 
         private static void InitializeUVBufferData(BufferObject uvPositionVBO, List<Vector2> uvs)

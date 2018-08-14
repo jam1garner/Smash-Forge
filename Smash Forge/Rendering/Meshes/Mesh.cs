@@ -55,8 +55,8 @@ namespace Smash_Forge.Rendering.Meshes
             shader.UseProgram();
 
             // Set shader uniforms.
-            SetCameraUniforms(shader, camera);
-            SetUniforms(shader);
+            //SetCameraUniforms(shader, camera);
+            //SetUniforms(shader);
 
             // TODO: Only do this once.
             ConfigureVertexAttributes(shader);
@@ -85,6 +85,10 @@ namespace Smash_Forge.Rendering.Meshes
 
         protected virtual void SetCameraUniforms(Shader shader, Camera camera)
         {
+            // Not all shaders will use camera uniforms.
+            if (camera == null)
+                return;
+
             Matrix4 matrix = camera.MvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref matrix);
         }

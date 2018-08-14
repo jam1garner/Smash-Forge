@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects;
 using OpenTK.Graphics.OpenGL;
+using Smash_Forge.Rendering.Meshes;
 
 namespace Smash_Forge.GUI.Menus
 {
@@ -17,8 +18,7 @@ namespace Smash_Forge.GUI.Menus
     {
         private NUD sourceNud;
         private NUD.Polygon polygonToRender;
-
-        private VertexArrayObject screenVao;
+        private ForgeMesh forgeMesh;
 
         public UvViewer(NUD sourceNud, NUD.Polygon polygonToRender)
         {
@@ -33,10 +33,9 @@ namespace Smash_Forge.GUI.Menus
             OpenTKSharedResources.InitializeSharedResources();
             if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
             {
-                screenVao = ScreenDrawing.CreateScreenTriangleVao();
                 if (sourceNud != null)
                 {
-                    NudUvRendering.InitializeUVBufferData(sourceNud);
+                    //forgeMesh = sourceNud.UpdateVertexBuffers(null, null);
                 }
             }
         }
@@ -46,11 +45,24 @@ namespace Smash_Forge.GUI.Menus
             if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
                 return;
 
+            RenderUvs();
+
+            GLObjectManager.DeleteUnusedGLObjects();
+        }
+
+        private void RenderUvs()
+        {
             glControl1.MakeCurrent();
+
+            VertexArrayObject screenVao = ScreenDrawing.CreateScreenTriangleVao();
+
+
             GL.Viewport(glControl1.ClientRectangle);
             // Draw darker to make the UVs visible.
             ScreenDrawing.DrawTexturedQuad(RenderTools.uvTestPattern.Id, 0.5f, screenVao);
-            NudUvRendering.DrawUv(polygonToRender, glControl1.Width, glControl1.Height);
+
+            forgeMesh.Draw(OpenTKSharedResources.shaders["UV"], null, polygonToRender.displayFaceSize, polygonToRender.Offset);
+
             glControl1.SwapBuffers();
         }
 

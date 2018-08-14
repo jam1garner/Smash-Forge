@@ -272,7 +272,7 @@ namespace Smash_Forge
             }
         }
 
-        public void UpdateVertexBuffers(BufferObject positionVbo, BufferObject elementsIbo)
+        public ForgeMesh UpdateVertexBuffers(BufferObject positionVbo, BufferObject elementsIbo)
         {
             DisplayVertex[] displayVerticesArray;
             int[] vertexIndicesArray;
@@ -290,6 +290,7 @@ namespace Smash_Forge
             elementsIbo.BufferData(vertexIndicesArray, sizeof(int), BufferUsageHint.StaticDraw);
 
             renderMesh = new ForgeMesh(displayVerticesList, vertexIndicesList);
+            return new ForgeMesh(displayVerticesList, vertexIndicesList);
         }
 
         private void GetDisplayVerticesAndIndices(out List<DisplayVertex> displayVerticesList, out List<int> vertexIndicesList)
@@ -630,14 +631,14 @@ namespace Smash_Forge
             SetAlphaTesting(material);
             SetFaceCulling(material);
 
-            ConfigureVertexAttributes(shader);
+            //ConfigureVertexAttributes(shader);
 
             // Draw the model normally.
             nudVao.Bind();
             //GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
             nudVao.Unbind();
 
-            renderMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, p.displayFaceSize, p.Offset);
+            renderMesh.Draw(shader, camera, p.displayFaceSize, p.Offset);
         }
 
         private void ConfigureVertexAttributes(Shader shader)
