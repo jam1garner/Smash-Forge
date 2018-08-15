@@ -193,7 +193,11 @@
         </member>
         <member name="T:SFGraphics.GLObjects.BufferObject">
             <summary>
-            Encapsulates an OpenGL buffer object. Like other GLOBjects, memory is handled by GLObjectManager.
+            Encapsulates an OpenGL buffer object.
+            Data can be read from and written to the buffer using any value type, including user created structs.
+            <para></para><para></para>
+            This class does not permanently store its data. Once the buffer's data is initialized, the source data
+            used to initialize the buffer can be safely deleted. 
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.BufferObject.ObjectType">
@@ -245,6 +249,8 @@
             <param name="data">The data used to initialize the buffer's data</param>
             <param name="offset">The offset in bytes where data replacement will begin</param>
             <param name="itemSizeInBytes">The size of <typeparamref name="T"/> in bytes</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">The specified range includes data 
+            outside the buffer's current capacity.</exception>        
         </member>
         <member name="M:SFGraphics.GLObjects.BufferObject.GetBufferData``1">
             <summary>
@@ -255,7 +261,20 @@
             GL.BufferSubData(). In this case, use GL.GetBufferSubData() with the appropriate arguments.
             </summary>
             <typeparam name="T">The type specified for each item when initializing the buffer's data.</typeparam>
-            <returns>The buffer's data in the specified type</returns>
+            <returns>An array of all the buffer's initialized data</returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.BufferObject.GetBufferSubData``1(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Binds the buffer and reads <paramref name="itemCount"/> elements of type <typeparamref name="T"/> 
+            starting at <paramref name="offset"/>.
+            </summary>
+            <typeparam name="T">The type of each item. This includes arithmetic types like <see cref="T:System.Int32"/>.</typeparam>
+            <param name="offset">The offset in bytes where data replacement will begin</param>
+            <param name="itemCount">The number of items of type <typeparamref name="T"/> to read.</param>
+            <param name="itemSizeInBytes">The size of <typeparamref name="T"/> in bytes</param>
+            <returns>An array of size <paramref name="itemCount"/></returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">The specified range includes data 
+            outside the buffer's current capacity.</exception>
         </member>
         <member name="T:SFGraphics.GLObjects.Framebuffer">
             <summary>
@@ -289,8 +308,7 @@
         </member>
         <member name="P:SFGraphics.GLObjects.Framebuffer.ColorAttachments">
             <summary>
-            All color attachment textures. This list may be empty if <c>0</c> is specified for the color attachment count.
-            Attempting to modify the textures in this list may result in unexpected behavior.
+            All color attachment textures. 
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget)">
@@ -327,6 +345,13 @@
             </summary>
             <param name="framebufferAttachment">The attachment target for the texture</param>
             <param name="texture">The texture to attach</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Framebuffer.AttachDepthTexture(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Textures.DepthTexture)">
+            <summary>
+            Attaches <paramref name="depthTexture"/> to <paramref name="framebufferAttachment"/>.
+            </summary>
+            <param name="framebufferAttachment">The attachment target for the texture. This should be a depth attachment.</param>
+            <param name="depthTexture">The depth texture to attach</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffer.AttachRenderbuffer(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Renderbuffer)">
             <summary>
@@ -446,12 +471,12 @@
             Enables <see cref="T:SFGraphics.GLObjects.GLObjectManagement.GLObjectManager"/> to call the appropriate delete function.
             </summary>
         </member>
-        <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.Framebuffer">
+        <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.FramebufferObject">
             <summary>
             <see cref="T:SFGraphics.GLObjects.Framebuffer"/>
             </summary>
         </member>
-        <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.Renderbuffer">
+        <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.RenderbufferObject">
             <summary>
             <see cref="T:SFGraphics.GLObjects.Renderbuffer"/>
             </summary>
@@ -461,17 +486,17 @@
             <see cref="T:SFGraphics.GLObjects.Textures.Texture"/>
             </summary>
         </member>
-        <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.Program">
+        <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.ShaderProgram">
             <summary>
             <see cref="T:SFGraphics.GLObjects.Shaders.Shader"/>
             </summary>
         </member>
-        <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.Buffer">
+        <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.BufferObject">
             <summary>
             <see cref="T:SFGraphics.GLObjects.BufferObject"/>
             </summary>
         </member>
-        <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.VertexArray">
+        <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.VertexArrayObject">
             <summary>
             <see cref="T:SFGraphics.GLObjects.VertexArrayObject"/>
             </summary>
@@ -497,6 +522,13 @@
             Decrements the reference count for <see cref="F:SFGraphics.GLObjects.GLObject.Id"/>.
             The object can't be deleted here because finalizers are called from a separate thread.
             </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.GLObject.ToString">
+            <summary>
+            Returns the type of OpenGL object and the integer ID generated by OpenGL.
+            Example: "ShaderProgram ID: 1"
+            </summary>
+            <returns>The object's type and ID</returns>
         </member>
         <member name="T:SFGraphics.GLObjects.Renderbuffer">
             <summary>
@@ -997,11 +1029,10 @@
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.Texture2D">
             <summary>
-            A <see cref="T:SFGraphics.GLObjects.Textures.Texture"/> class for TextureTarget.Texture2D textures that
-            provides constructors to initialize the image data from bitmaps or byte arrays 
-            in the specified image format. 
+            Provides methods for TextureTarget.Texture2D textures to load compressed or uncompressed 
+            image data from bitmaps or arrays of any value type. 
             <para></para><para></para>
-            The texture data can be compressed, uncompressed, or a <see cref="T:System.Drawing.Bitmap"/> object.
+            Textures are incomplete until their dimensions and format are set.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Textures.Texture2D.Width">
@@ -1025,7 +1056,7 @@
             Initialize an RGBA texture with mipmaps generated from the specified bitmap.
             Binds the texture.
             </summary>
-            <param name="image"></param>
+            <param name="image">the bitmap used to load uncompressed image data</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData``1(System.Int32,System.Int32,``0[],System.Int32,OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
@@ -1034,7 +1065,7 @@
             </summary>
             <param name="width">The width of <paramref name="baseMipLevel"/> in pixels</param>
             <param name="height">The height of <paramref name="baseMipLevel"/> in pixels</param>
-            <param name="baseMipLevel"></param>
+            <param name="baseMipLevel">The image data to load for the first mip level. The other levels are generated.</param>
             <param name="mipCount">The number of mipmaps to generate</param>
             <param name="internalFormat">The image format of <paramref name="baseMipLevel"/></param>
         </member>
@@ -1046,7 +1077,7 @@
             </summary>
             <param name="width">The width of <paramref name="baseMipLevel"/> in pixels</param>
             <param name="height">The height of <paramref name="baseMipLevel"/> in pixels</param>
-            <param name="baseMipLevel"></param>
+            <param name="baseMipLevel">The image data to load for the first mip level. The other levels are generated.</param>
             <param name="mipCount">The number of mipmaps to generate</param>
             <param name="textureFormat">The format information for the uncompressed format</param>
         </member>

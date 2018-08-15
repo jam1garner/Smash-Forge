@@ -388,14 +388,12 @@ namespace Smash_Forge
         {
             // Set up the depth map fbo.
             depthMapFbo = new Framebuffer(FramebufferTarget.Framebuffer);
-            depthMapFbo.Bind();
+            depthMapFbo.SetDrawBuffers(DrawBuffersEnum.None);
+            depthMapFbo.SetReadBuffer(ReadBufferMode.None);
 
-            // Set up the depth map texture.
+            // Attach the depth map texture.
             depthMap = new DepthTexture(shadowWidth, shadowHeight, PixelInternalFormat.DepthComponent24);
-            depthMapFbo.Bind();
-            GL.FramebufferTexture2D(depthMapFbo.FramebufferTarget, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthMap.Id, 0);
-            GL.DrawBuffer(DrawBufferMode.None);
-            GL.ReadBuffer(ReadBufferMode.None);
+            depthMapFbo.AttachDepthTexture(FramebufferAttachment.DepthAttachment, depthMap);
         }
 
         public Camera GetCamera()
