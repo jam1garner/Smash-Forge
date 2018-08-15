@@ -10,7 +10,6 @@ in vec2 vUV2;
 in vec2 vUV3;
 in vec4 vBone;
 in vec4 vWeight;
-in vec4 vBoneHash;
 
 // Outputs for geometry shader.
 out vec3 geomNormal;
@@ -21,13 +20,14 @@ out vec4 geomFragPos;
 out vec4 geomFragPosLightSpace;
 out vec3 geomViewPosition;
 out vec3 geomObjectPosition;
-
-out vec4 geomVertexColor;
-
+// Texture Samplers
 out vec2 geomTexCoord;
 out vec2 geomTexCoord2;
 out vec2 geomTexCoord3;
 out vec2 geomNormaltexCoord;
+// Vertex Colors
+out vec4 geomVertexColor;
+out vec3 geomBoneWeightsColored;
 
 uniform vec4 colorSamplerUV;
 uniform vec4 colorSampler2UV;
@@ -47,18 +47,52 @@ uniform vec4 zOffset;
 
 uniform float elapsedTime;
 uniform int useDirectUVTime;
-uniform int selectedBoneIndex;
 
 uniform int hasNrmSamplerAUV;
 uniform int hasNrmSamplerBUV;
 
+// Bone Weight Display
+uniform sampler2D weightRamp1;
+uniform sampler2D weightRamp2;
+uniform int selectedBoneIndex;
+
 uniform int useBones;
+
+uniform int debug1;
+uniform int debug2;
+uniform int debugOption;
 
 uniform bones
 {
     mat4 transforms[200];
 } bones_;
 
+float TotalSelectedBoneWeight()
+{
+    float weight = 0;
+    if (selectedBoneIndex == vBone.x)
+        weight += vWeight.x;
+    if (selectedBoneIndex == vBone.y)
+        weight += vWeight.y;
+    if (selectedBoneIndex == vBone.z)
+        weight += vWeight.z;
+    if (selectedBoneIndex == vBone.w)
+        weight += vWeight.w;
+
+    return weight;
+}
+
+vec3 BoneWeightColor(float weights)
+{
+	float rampInputLuminance = weights;
+	rampInputLuminance = clamp((rampInputLuminance), 0.001, 0.999);
+    if (debugOption == 1) // Greyscale
+        return vec3(weights);
+    else if (debugOption == 2) // Color 1
+	   return texture(weightRamp1, vec2(1 - rampInputLuminance, 0.50)).rgb;
+    else // Color 2
+        return texture(weightRamp2, vec2(1 - rampInputLuminance, 0.50)).rgb;
+}
 
 vec4 skin(vec3 po, ivec4 index)
 {
@@ -122,12 +156,15 @@ void main()
     geomNormaltexCoord = vec2(nrmSampler.xy * (vUV + nrmSampler.zw));
 
     geomVertexColor = vColor;
-	geomFragPos = vec4(objPos.xyz, 1.0);
+	geomFragPos = objPos;
     geomFragPosLightSpace = lightMatrix * vec4(vPosition.xyz, 1.0);
     geomObjectPosition = vPosition.xyz;
     geomTangent.xyz = vTangent.xyz;
     geomBitangent.xyz = vBiTangent.xyz;
     geomViewPosition = vec3(vPosition * mat3(mvpMatrix));
+
+    float totalWeight = TotalSelectedBoneWeight();
+    geomBoneWeightsColored = BoneWeightColor(totalWeight);
 
     geomNormal = vNormal;
     if (useBones == 1 && vBone.x != -1)

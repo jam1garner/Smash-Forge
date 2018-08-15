@@ -20,6 +20,8 @@ in vec2 geomTexCoord2[];
 in vec2 geomTexCoord3[];
 in vec2 geomNormaltexCoord[];
 
+in vec3 geomBoneWeightsColored[];
+
 // Outputs to fragment shader.
 out vec3 viewPosition;
 out vec3 objectPosition;
@@ -34,16 +36,19 @@ out vec3 tangent;
 out vec3 bitangent;
 out vec4 fragPos;
 out vec4 fragPosLightSpace;
+out vec3 boneWeightsColored;
 noperspective out vec3 edgeDistance;
 
 // Defined in EdgeDistance.geom.
 vec3 EdgeDistances();
 
-void main() {
+void main()
+{
     vec3 distances = EdgeDistances();
 
     // Create a triangle and assign the vertex attributes.
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         gl_Position = gl_in[i].gl_Position;
         viewPosition = geomViewPosition[i];
         objectPosition = geomObjectPosition[i];
@@ -58,9 +63,9 @@ void main() {
         bitangent = geomBitangent[i];
         fragPos = geomFragPos[i];
         fragPosLightSpace = geomFragPosLightSpace[i];
+        boneWeightsColored = geomBoneWeightsColored[i];
 
         // The distance from a point to each of the edges.
-        // This benefits from interpolation.
         if (i == 0)
             edgeDistance = vec3(distances.x, 0, 0);
         else if (i == 1)

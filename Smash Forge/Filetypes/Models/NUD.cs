@@ -12,6 +12,7 @@ using SALT.Graphics;
 using System.Text;
 using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Meshes;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects;
@@ -24,8 +25,6 @@ namespace Smash_Forge
     public class NUD : FileBase
     {
         // OpenGL Buffers
-        private BufferObject positionVbo;
-        private BufferObject elementsIbo;
         private BufferObject bonesUbo;
         private BufferObject selectVbo;
 
@@ -43,6 +42,8 @@ namespace Smash_Forge
         public int boneCount = 0;
         public bool hasBones = false;
         public float[] boundingSphere = new float[4];
+
+        private ForgeMesh renderMesh;
 
         // Just used for rendering.
         private List<Mesh> depthSortedMeshes = new List<Mesh>();
@@ -167,8 +168,6 @@ namespace Smash_Forge
 
         private void GenerateBuffers()
         {
-            positionVbo = new BufferObject(BufferTarget.ArrayBuffer);
-            elementsIbo = new BufferObject(BufferTarget.ElementArrayBuffer);
             bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
             selectVbo = new BufferObject(BufferTarget.ArrayBuffer);
         }
@@ -250,7 +249,7 @@ namespace Smash_Forge
 
             // Order by the distance from the camera to the closest point on the bounding sphere. 
             // Positive values are usually closer to camera. Negative values are usually farther away. 
-            depthSortedMeshes = unsortedMeshes.OrderBy(o => (o.sortingDistance)).ToList();
+            depthSortedMeshes = unsortedMeshes.OrderBy(m => m.sortingDistance).ToList();
         }
 
         private void SortMeshesByObjHeirarchy()
@@ -267,17 +266,28 @@ namespace Smash_Forge
             }
         }
 
-        public void UpdateVertexBuffers(BufferObject positionVbo, BufferObject elementsIbo)
+        public void UpdateRenderMesh()
         {
-            DisplayVertex[] displayVerticesArray;
-            int[] vertexIndicesArray;
+            renderMesh = CreateRenderMesh();
+        }
 
+        public ForgeMesh CreateRenderMesh()
+        {
+            // Store all of the polygon vert data in one buffer.
+            List<DisplayVertex> displayVerticesList;
+            List<int> vertexIndicesList;
+            GetDisplayVerticesAndIndices(out displayVerticesList, out vertexIndicesList);
+
+            return new ForgeMesh(displayVerticesList, vertexIndicesList);
+        }
+
+        private void GetDisplayVerticesAndIndices(out List<DisplayVertex> displayVerticesList, out List<int> vertexIndicesList)
+        {
             int polygonOffset = 0;
             int vertexOffset = 0;
 
-            // Store all of the polygon vert data in one buffer.
-            List<DisplayVertex> displayVerticesList = new List<DisplayVertex>();
-            List<int> vertexIndicesList = new List<int>();
+            displayVerticesList = new List<DisplayVertex>();
+            vertexIndicesList = new List<int>();
 
             // Loop backwards?
             for (int meshIndex = Nodes.Count - 1; meshIndex >= 0; meshIndex--)
@@ -301,29 +311,14 @@ namespace Smash_Forge
                     vertexOffset += polygonDisplayVertices.Count;
                 }
             }
-
-            // Initialize the buffers.
-            displayVerticesArray = displayVerticesList.ToArray();
-            vertexIndicesArray = vertexIndicesList.ToArray();
-
-            positionVbo.BufferData(displayVerticesArray, DisplayVertex.Size, BufferUsageHint.StaticDraw);
-            elementsIbo.BufferData(vertexIndicesArray, sizeof(int), BufferUsageHint.StaticDraw);
-        }
-
-        public void UpdateVertexBuffers()
-        {
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
-                UpdateVertexBuffers(positionVbo, elementsIbo);
         }
 
         public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)
         {
-            // Binding 0 to a buffer target will crash. This also means the NUD buffers weren't generated yet.
-            bool buffersWereInitialized = elementsIbo != null && positionVbo != null && bonesUbo != null && selectVbo != null;
-            if (!buffersWereInitialized)
+            if (renderMesh == null)
             {
+                UpdateRenderMesh();
                 GenerateBuffers();
-                UpdateVertexBuffers(positionVbo, elementsIbo);
             }
 
             // Main function for NUD rendering.
@@ -341,12 +336,11 @@ namespace Smash_Forge
 
             // Render using the selected shader.
             shader.UseProgram();
-            shader.EnableVertexAttributes();
+
+            // Set bone matrices.
             UpdateBonesBuffer(vbn, shader, bonesUbo);
 
             DrawAllPolygons(shader, camera, drawPolyIds);
-
-            shader.DisableVertexAttributes();
         }
 
         private void UpdateBonesBuffer(VBN vbn, Shader shader, BufferObject bonesUbo)
@@ -546,10 +540,10 @@ namespace Smash_Forge
         private void DrawAllPolygons(Shader shader, Camera camera, bool drawPolyIds)
         {
             DrawShadedPolygons(shader, camera, drawPolyIds);
-            DrawSelectionOutlines(shader);
+            DrawSelectionOutlines(shader, camera);
         }
 
-        private void DrawSelectionOutlines(Shader shader)
+        private void DrawSelectionOutlines(Shader shader, Camera camera)
         {
             foreach (Mesh m in Nodes)
             {
@@ -559,7 +553,7 @@ namespace Smash_Forge
                     {
                         if ((p.IsSelected || p.Parent.IsSelected))
                         {
-                            DrawModelSelection(p, shader);
+                            DrawModelSelection(p, shader, camera);
                         }
                     }
                 }
@@ -610,16 +604,13 @@ namespace Smash_Forge
 
             // Set Shader Values.
             SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
-            SetVertexAttributes(shader, positionVbo);
 
             // Set OpenTK Render Options.
             SetAlphaBlending(material);
             SetAlphaTesting(material);
             SetFaceCulling(material);
 
-            // Draw the model normally.
-            elementsIbo.Bind();
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+            renderMesh.Draw(shader, camera, p.displayFaceSize, p.Offset);
         }
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<DummyTextures, Texture> dummyTextures, int id = 0, bool drawId = false)
@@ -809,53 +800,7 @@ namespace Smash_Forge
             }
         }
 
-        private void SetVertexAttributes(Shader shader, BufferObject bufferObject)
-        {
-            bufferObject.Bind();
-
-            // Check indices in case the vertex attributes were optimized out by the shader compiler.
-            int posIndex = shader.GetVertexAttributeUniformLocation("vPosition");
-            if (posIndex != -1)
-                GL.VertexAttribPointer(posIndex, 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
-
-            int normalIndex = shader.GetVertexAttributeUniformLocation("vNormal");
-            if (normalIndex != -1)
-                GL.VertexAttribPointer(normalIndex, 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
-
-            int tanIndex = shader.GetVertexAttributeUniformLocation("vTangent");
-            if (tanIndex != -1)
-                GL.VertexAttribPointer(tanIndex, 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
-
-            int bitanIndex = shader.GetVertexAttributeUniformLocation("vBiTangent");
-            if (bitanIndex != -1)
-                GL.VertexAttribPointer(bitanIndex, 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 36);
-
-            int uvIndex = shader.GetVertexAttributeUniformLocation("vUV");
-            if (uvIndex != -1)
-                GL.VertexAttribPointer(uvIndex, 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 48);
-
-            int colIndex = shader.GetVertexAttributeUniformLocation("vColor");
-            if (colIndex != -1)
-                GL.VertexAttribPointer(colIndex, 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 56);
-
-            int boneIndex = shader.GetVertexAttributeUniformLocation("vBone");
-            if (boneIndex != -1)
-                GL.VertexAttribIPointer(boneIndex, 4, VertexAttribIntegerType.Int, DisplayVertex.Size, new IntPtr(72));
-
-            int weightIndex = shader.GetVertexAttributeUniformLocation("vWeight");
-            if (weightIndex != -1)
-                GL.VertexAttribPointer(weightIndex, 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
-
-            int uv2Index = shader.GetVertexAttributeUniformLocation("vUV2");
-            if (uv2Index != -1)
-                GL.VertexAttribPointer(uv2Index, 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
-
-            int uv3Index = shader.GetVertexAttributeUniformLocation("vUV3");
-            if (uv3Index != -1)
-                GL.VertexAttribPointer(uv3Index, 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
-        }
-
-        private static void DrawModelSelection(Polygon p, Shader shader)
+        private void DrawModelSelection(Polygon p, Shader shader, Camera camera)
         {
             // This might have been changed to reverse subtract.
             GL.BlendEquation(BlendEquationMode.FuncAdd);
@@ -871,7 +816,7 @@ namespace Smash_Forge
             GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
             GL.StencilMask(0xFF);
 
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+            renderMesh.Draw(shader, camera, p.displayFaceSize, p.Offset);
 
             GL.ColorMask(cwm[0], cwm[1], cwm[2], cwm[3]);
 
@@ -883,7 +828,7 @@ namespace Smash_Forge
 
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.LineWidth(2.0f);
-            GL.DrawElements(PrimitiveType.Triangles, p.displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+            renderMesh.Draw(shader, camera, p.displayFaceSize, p.Offset);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
             shader.SetInt("drawSelection", 0);
@@ -1221,6 +1166,7 @@ namespace Smash_Forge
 
         public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)
         {
+            // I doubt this even still works.
             Shader shader = OpenTKSharedResources.shaders["Point"];
             shader.UseProgram();
             Matrix4 mat = camera.MvpMatrix;
@@ -1237,12 +1183,12 @@ namespace Smash_Forge
                 shader.SetVector3("col2", 1, 0, 0);
             }
 
-            shader.EnableVertexAttributes();
+            //shader.EnableVertexAttributes();
             foreach (Mesh m in Nodes)
             {
                 foreach (Polygon p in m.Nodes)
                 {
-                    positionVbo.Bind();
+                    //vertexDataVbo.Bind();
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 72);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
@@ -1253,7 +1199,7 @@ namespace Smash_Forge
                     selectVbo.BufferData(p.selectedVerts, sizeof(int), BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
-                    elementsIbo.Bind();
+                    //vertexIndexEbo.Bind();
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                     
                     GL.PointSize(6f);
@@ -1261,7 +1207,7 @@ namespace Smash_Forge
                     GL.DrawElements(type, p.displayFaceSize, DrawElementsType.UnsignedInt, 0);
                 }
             }
-            shader.DisableVertexAttributes();
+            //shader.DisableVertexAttributes();
         }
 
         public static int BindTexture(MatTexture matTexture, int hash, int loc, Dictionary<DummyTextures, Texture> dummyTextures)
@@ -1306,10 +1252,13 @@ namespace Smash_Forge
             texture.MinFilter = minfilter[matTexture.minFilter];
             texture.MagFilter = magfilter[matTexture.magFilter];
 
-            // TODO: These aren't controlled by the Texture class yet.
-            GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 0.0f);
-            if (matTexture.mipDetail == 0x4 || matTexture.mipDetail == 0x6)
-                GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, 4.0f);
+            if (OpenGLExtensions.IsAvailable("GL_EXT_texture_filter_anisotropic") && (texture is Texture2D))
+            {
+                TextureParameterName anisotropy = (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt;
+                GL.TexParameter(TextureTarget.Texture2D, anisotropy, 0.0f);
+                if (matTexture.mipDetail == 0x4 || matTexture.mipDetail == 0x6)
+                    GL.TexParameter(TextureTarget.Texture2D, anisotropy, 4.0f);
+            }
         }
 
         public void ClearMta()

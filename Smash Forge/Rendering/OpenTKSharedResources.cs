@@ -50,7 +50,6 @@ namespace Smash_Forge.Rendering
                     EnableOpenTKDebugOutput();
 
                 RenderTools.LoadTextures();
-                ScreenDrawing.screenQuadVbo = ScreenDrawing.CreateScreenQuadBuffer();
                 GetOpenGLSystemInfo();
                 ShaderTools.SetupShaders();
 

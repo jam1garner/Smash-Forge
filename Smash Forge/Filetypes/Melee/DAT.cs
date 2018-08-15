@@ -741,7 +741,7 @@ namespace Smash_Forge
                 mesh.Nodes.Add(polygon);
             }
 
-            nud.UpdateVertexBuffers();
+            nud.UpdateRenderMesh();
 
 
             return con;

@@ -15,16 +15,13 @@ using System.Timers;
 using System.Diagnostics;
 using Smash_Forge.Rendering;
 using SFGraphics.Tools;
-
+using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.GLObjectManagement;
 
 namespace Smash_Forge
 {
     public partial class NUDMaterialEditor : DockContent
     {
-        public NUD.Polygon currentPolygon;
-        public List<NUD.Material> currentMaterialList;
-        public static Dictionary<string, Params.MatParam> materialParamList = new Dictionary<string, Params.MatParam>();
-
         public static Dictionary<int, string> cullModeByMatValue = new Dictionary<int, string>()
         {
             { 0x000, "Cull None"},
@@ -87,6 +84,11 @@ namespace Smash_Forge
             { 0x06, "4 mip levels, trilinear, anisotropic"}
         };
 
+        public static Dictionary<string, Params.MatParam> materialParamList = new Dictionary<string, Params.MatParam>();
+
+        public NUD.Polygon currentPolygon;
+        public List<NUD.Material> currentMaterialList;
+
         private int currentMatIndex = 0;
         private string currentPropertyName = "";
         private ImageList textureThumbnails = new ImageList()
@@ -121,9 +123,11 @@ namespace Smash_Forge
 
             // The dummy textures will be used later. 
             OpenTKSharedResources.InitializeSharedResources();
-
-            // Only happens once.
-            UpdateMaterialThumbnails();
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            {
+                // Only happens once.
+                UpdateMaterialThumbnails();
+            }
         }
 
         private void RefreshTexturesImageList()
@@ -866,18 +870,25 @@ namespace Smash_Forge
                 }
             }
 
+            // We can't share these vaos across both contexts.
             if (justRenderAlpha)
             {
                 texAlphaGlControl.MakeCurrent();
+
+                VertexArrayObject screenVao = ScreenDrawing.CreateScreenTriangleVao();
+
                 GL.Viewport(texAlphaGlControl.ClientRectangle);
-                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, false, false, false, true);
+                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenVao, false, false, false, true);
                 texAlphaGlControl.SwapBuffers();
             }
             else
             {
                 texRgbGlControl.MakeCurrent();
+
+                VertexArrayObject screenVao = ScreenDrawing.CreateScreenTriangleVao();
+
                 GL.Viewport(texRgbGlControl.ClientRectangle);
-                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1);
+                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenVao);
                 texRgbGlControl.SwapBuffers();
             }
         }
@@ -957,11 +968,13 @@ namespace Smash_Forge
         private void texRgbGlControl_Paint(object sender, PaintEventArgs e)
         {
             RenderTexture();
+            GLObjectManager.DeleteUnusedGLObjects();
         }
 
         private void texAlphaGlControl_Paint(object sender, PaintEventArgs e)
         {
             RenderTexture(true);
+            GLObjectManager.DeleteUnusedGLObjects();
         }
 
         private void param1TrackBar_Scroll(object sender, EventArgs e)

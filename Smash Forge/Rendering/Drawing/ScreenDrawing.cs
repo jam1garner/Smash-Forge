@@ -12,26 +12,34 @@ namespace Smash_Forge.Rendering
     {
         // A triangle that extends past the screen.
         // Avoids the need for a second triangle to fill a rectangular screen.
-        public static BufferObject screenQuadVbo;
-        private static float[] screenQuadVertices =
+        private static float[] screenTriangleVertices =
         {
             -1f, -1f, 0.0f,
              3f, -1f, 0.0f,
             -1f,  3f, 0.0f
         };
 
-        public static BufferObject CreateScreenQuadBuffer()
+        public static VertexArrayObject CreateScreenTriangleVao()
         {
             // Create buffer for vertex positions. The data won't change, so only initialize once.
-            BufferObject screenQuad = new BufferObject(BufferTarget.ArrayBuffer);
-            screenQuad.Bind();
-            GL.BufferData(screenQuad.BufferTarget, (IntPtr)(sizeof(float) * screenQuadVertices.Length),
-                screenQuadVertices, BufferUsageHint.StaticDraw);
-            return screenQuad;
+            VertexArrayObject vao = new VertexArrayObject();
+
+            vao.Bind();
+            BufferObject screenBuffer = new BufferObject(BufferTarget.ArrayBuffer);
+            screenBuffer.BufferData(screenTriangleVertices, sizeof(float), BufferUsageHint.StaticDraw);
+
+            // Create position attribute.
+            GL.EnableVertexAttribArray(0);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
+
+            vao.Unbind();
+
+            return vao;
         }
 
-        public static void DrawTexturedQuad(int texture, int width, int height, bool renderR = true, bool renderG = true, bool renderB = true,
-            bool renderA = false, bool keepAspectRatio = false, float intensity = 1, int currentMipLevel = 0)
+        public static void DrawTexturedQuad(int texture, int width, int height, VertexArrayObject screenVao,
+            bool renderR = true, bool renderG = true, bool renderB = true, bool renderA = false, 
+            bool keepAspectRatio = false, float intensity = 1, int currentMipLevel = 0)
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = OpenTKSharedResources.shaders["Texture"];
@@ -63,15 +71,15 @@ namespace Smash_Forge.Rendering
             shader.SetInt("currentMipLevel", currentMipLevel);
 
             // Draw full screen "quad" (big triangle)
-            DrawScreenTriangle(shader, screenQuadVbo);
+            DrawScreenTriangle(shader, screenVao);
         }
 
-        public static void DrawTexturedQuad(int texture, float intensity)
+        public static void DrawTexturedQuad(int texture, float intensity, VertexArrayObject screenVao)
         {
-            DrawTexturedQuad(texture, 1, 1, true, true, true, true, false, intensity, 0);
+            DrawTexturedQuad(texture, 1, 1, screenVao, true, true, true, true, false, intensity, 0);
         }
 
-        public static void DrawScreenQuadPostProcessing(int texture0, int texture1)
+        public static void DrawScreenQuadPostProcessing(int texture0, int texture1, VertexArrayObject screenVao)
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = OpenTKSharedResources.shaders["ScreenQuad"];
@@ -87,10 +95,10 @@ namespace Smash_Forge.Rendering
             ShaderTools.SystemColorVector3Uniform(shader, Runtime.backgroundGradientTop, "backgroundTopColor");
 
             // Draw full screen "quad" (big triangle)
-            DrawScreenTriangle(shader, screenQuadVbo);
+            DrawScreenTriangle(shader, screenVao);
         }
 
-        public static void DrawQuadGradient(Vector3 topColor, Vector3 bottomColor, BufferObject screenVbo)
+        public static void DrawQuadGradient(Vector3 topColor, Vector3 bottomColor, VertexArrayObject screenVao)
         {
             // draw RGB and alpha channels of texture to screen quad
             Shader shader = OpenTKSharedResources.shaders["Gradient"];
@@ -101,7 +109,7 @@ namespace Smash_Forge.Rendering
             shader.SetVector3("topColor", topColor);
             shader.SetVector3("bottomColor", bottomColor);
 
-            DrawScreenTriangle(shader, screenVbo);
+            DrawScreenTriangle(shader, screenVao);
         }
 
         public static void EnableAlphaBlendingWhiteBackground()
@@ -115,17 +123,13 @@ namespace Smash_Forge.Rendering
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         }
 
-        public static void DrawScreenTriangle(Shader shader, BufferObject vbo)
+        public static void DrawScreenTriangle(Shader shader, VertexArrayObject vao)
         {
-            shader.EnableVertexAttributes();
-            vbo.Bind();
-
-            // Set everytime because multiple shaders use this for drawing.
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
+            vao.Bind();
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-            shader.DisableVertexAttributes();
-        }
 
+            vao.Unbind();
+        }
     }
 }

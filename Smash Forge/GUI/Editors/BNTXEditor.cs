@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.GLObjectManagement;
 using Smash_Forge.Rendering;
 
 namespace Smash_Forge
@@ -21,7 +22,6 @@ namespace Smash_Forge
     {
         private BNTX BNTX;
         private BRTI BRTI;
-        private bool _loaded = false;
 
         private Texture textureToRender = null;
 
@@ -31,6 +31,8 @@ namespace Smash_Forge
         private bool renderAlpha = true;
         private bool keepAspectRatio = false;
         private int currentMipLevel = 0;
+
+        private VertexArrayObject screenVao;
 
         private FileSystemWatcher fw;
 
@@ -56,6 +58,12 @@ namespace Smash_Forge
             MenuItem replace = new MenuItem("Replace");
             replace.Click += replaceTextureToolStripMenuItem_Click;
             TextureMenu.MenuItems.Add(replace);
+
+            OpenTKSharedResources.InitializeSharedResources();
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            {
+                screenVao = ScreenDrawing.CreateScreenTriangleVao();
+            }
         }
 
         public void SelectBNTX(BNTX b)
@@ -343,7 +351,7 @@ namespace Smash_Forge
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             if (textureToRender != null)
             {
-                ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
+                ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, screenVao, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
                     currentMipLevel);
             }
 
@@ -371,7 +379,7 @@ namespace Smash_Forge
 
         private void BNTXEditor_Load(object sender, EventArgs e)
         {
-            _loaded = true;
+
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)

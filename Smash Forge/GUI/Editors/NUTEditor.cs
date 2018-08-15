@@ -18,7 +18,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects;
-
+using SFGraphics.GLObjects.GLObjectManagement;
 
 namespace Smash_Forge
 {
@@ -30,8 +30,9 @@ namespace Smash_Forge
         private Dictionary<string, NutTexture> textureFromFile = new Dictionary<string, NutTexture>();
 
         // Rendering Stuff
-        private Texture textureToRender = null;
+        private Texture textureToRender;
         Framebuffer pngExportFramebuffer;
+        VertexArrayObject screenVao;
 
         private bool renderR = true;
         private bool renderG = true;
@@ -327,7 +328,7 @@ namespace Smash_Forge
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             if (textureToRender != null)
             {
-                ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
+                ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, screenVao, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
                     currentMipLevel);
             }
 
@@ -1113,6 +1114,7 @@ namespace Smash_Forge
             {
                 currentNut.RefreshGlTexturesByHashId();
                 pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
+                screenVao = ScreenDrawing.CreateScreenTriangleVao();
             }
         }
     }
