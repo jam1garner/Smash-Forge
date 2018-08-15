@@ -67,7 +67,8 @@ namespace Smash_Forge
                     case "default_texture":
                         if (File.Exists(node.InnerText) && node.InnerText.ToLower().EndsWith(".png"))
                         {
-                            Rendering.RenderTools.defaultTex = new Texture2D(new Bitmap(node.InnerText));
+                            Rendering.RenderTools.defaultTex = new Texture2D();
+                            Rendering.RenderTools.defaultTex.LoadImageData(new Bitmap(node.InnerText));
                         }
                         break;
                     case "size":

@@ -14,15 +14,15 @@ namespace Smash_Forge.Rendering
 {
     class RenderTools
     {
-        public static Texture defaultTex;
-        public static Texture floorTexture;
-        public static Texture backgroundTexture;
+        public static Texture2D defaultTex;
+        public static Texture2D floorTexture;
+        public static Texture2D backgroundTexture;
 
         public static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
 
-        public static Texture uvTestPattern;
-        public static Texture boneWeightGradient;
-        public static Texture boneWeightGradient2;
+        public static Texture2D uvTestPattern;
+        public static Texture2D boneWeightGradient;
+        public static Texture2D boneWeightGradient2;
 
         public static void LoadTextures()
         {
@@ -31,19 +31,27 @@ namespace Smash_Forge.Rendering
             NudMatSphereDrawing.LoadMaterialSphereTextures();
 
             // Helpful textures. 
-            uvTestPattern = new Texture2D(Properties.Resources.UVPattern);
+            uvTestPattern = new Texture2D();
+            uvTestPattern.LoadImageData(Properties.Resources.UVPattern);
             uvTestPattern.TextureWrapS = TextureWrapMode.Repeat;
             uvTestPattern.TextureWrapT = TextureWrapMode.Repeat;
 
-            boneWeightGradient = new Texture2D(Properties.Resources.boneWeightGradient);
-            boneWeightGradient2 = new Texture2D(Properties.Resources.boneWeightGradient2);
+            boneWeightGradient = new Texture2D();
+            boneWeightGradient.LoadImageData(Properties.Resources.boneWeightGradient);
 
-            defaultTex = new Texture2D(Resources.Resources.DefaultTexture);
+            boneWeightGradient2 = new Texture2D();
+            boneWeightGradient2.LoadImageData(Properties.Resources.boneWeightGradient2);
+
+            defaultTex = new Texture2D();
+            defaultTex.LoadImageData(Resources.Resources.DefaultTexture);
 
             try
             {
-                floorTexture = new Texture2D(new Bitmap(Runtime.floorTexFilePath));
-                backgroundTexture = new Texture2D(new Bitmap(Runtime.backgroundTexFilePath));
+                floorTexture = new Texture2D();
+                floorTexture.LoadImageData(new Bitmap(Runtime.floorTexFilePath));
+
+                backgroundTexture = new Texture2D();
+                backgroundTexture.LoadImageData(new Bitmap(Runtime.backgroundTexFilePath));
             }
             catch (Exception)
             {
@@ -70,22 +78,26 @@ namespace Smash_Forge.Rendering
             Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
 
             // Dummy textures. 
-            Texture stageMapHigh = new TextureCubeMap(Properties.Resources._10102000, 128);
+            TextureCubeMap stageMapHigh = new TextureCubeMap(Properties.Resources._10102000, 128);
             dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
 
-            Texture stageMapLow = new TextureCubeMap(Properties.Resources._10101000, 128);
+            TextureCubeMap stageMapLow = new TextureCubeMap(Properties.Resources._10101000, 128);
             dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
 
-            Texture dummyRamp = new Texture2D(Properties.Resources._10080000);
+            Texture2D dummyRamp = new Texture2D();
+            dummyRamp.LoadImageData(Properties.Resources._10080000);
             dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp);
 
-            Texture pokemonStadiumDummyTex = new Texture2D(Properties.Resources._10040001);
+            Texture2D pokemonStadiumDummyTex = new Texture2D();
+            pokemonStadiumDummyTex.LoadImageData(Properties.Resources._10040001);
             dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex);
 
-            Texture punchOutDummyTex = new Texture2D(Properties.Resources._10040000);
+            Texture2D punchOutDummyTex = new Texture2D();
+            punchOutDummyTex.LoadImageData(Properties.Resources._10040000);
             dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex);
 
-            Texture shadowMapDummyTex = new Texture2D(Properties.Resources._10100000);
+            Texture2D shadowMapDummyTex = new Texture2D();
+            shadowMapDummyTex.LoadImageData(Properties.Resources._10100000);
             dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
 
             return dummyTextures;

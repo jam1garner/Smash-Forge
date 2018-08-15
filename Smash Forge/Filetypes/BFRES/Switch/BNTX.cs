@@ -460,21 +460,27 @@ namespace Smash_Forge
                 if (tex.mipMapCount > 1)
                 {
                     // Only load the first level and generate the rest.
-                    return new Texture2D(tex.width, tex.height, tex.data, tex.mipMapCount,
+                    Texture2D texture = new Texture2D();
+                    texture.LoadImageData(tex.width, tex.height, tex.data, tex.mipMapCount,
                         (InternalFormat)tex.pixelInternalFormat);
+                    return texture;
                 }
                 else
                 {
                     // Only load the first level and generate the rest.
-                    return new Texture2D(tex.width, tex.height, tex.data, tex.mipMapCount,
+                    Texture2D texture = new Texture2D();
+                    texture.LoadImageData(tex.width, tex.height, tex.data, tex.mipMapCount,
                         (InternalFormat)tex.pixelInternalFormat);
+                    return texture;
                 }
             }
             else
             {
                 // Uncompressed.
-                return new Texture2D(tex.width, tex.height, tex.data, tex.mipMapCount,
+                Texture2D texture = new Texture2D();
+                texture.LoadImageData(tex.width, tex.height, tex.data, tex.mipMapCount,
                     new TextureFormatUncompressed(tex.pixelInternalFormat, tex.pixelFormat, tex.pixelType));
+                return texture;
             }
         }
 

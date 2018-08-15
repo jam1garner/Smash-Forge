@@ -780,7 +780,8 @@ namespace Smash_Forge
             Rendering.OpenTKSharedResources.dummyResourceWindow.MakeCurrent();
 
             // Create an OpenGL texture with generated mipmaps.
-            Texture2D texture2D = new Texture2D(tex.Width, tex.Height, tex.surfaces[0].mipmaps[0], 
+            Texture2D texture2D = new Texture2D();
+            texture2D.LoadImageData(tex.Width, tex.Height, tex.surfaces[0].mipmaps[0],
                 tex.surfaces[0].mipmaps.Count, (InternalFormat)tex.pixelInternalFormat);
 
             texture2D.Bind();
@@ -868,21 +869,27 @@ namespace Smash_Forge
                 if (nutTexture.surfaces[0].mipmaps.Count > 1 && nutTexture.isDds && (nutTexture.Width == nutTexture.Height))
                 {
                     // Reading mipmaps past the first level is only supported for DDS currently.
-                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps,
+                    Texture2D texture = new Texture2D();
+                    texture.LoadImageData(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps,
                         (InternalFormat)nutTexture.pixelInternalFormat);
+                    return texture;
                 }
                 else
                 {
                     // Only load the first level and generate the rest.
-                    return new Texture2D(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count, 
+                    Texture2D texture = new Texture2D();
+                    texture.LoadImageData(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count, 
                         (InternalFormat)nutTexture.pixelInternalFormat);
+                    return texture;
                 }
             }
             else
             {
                 // Uncompressed.
-                return new Texture2D(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count,
+                Texture2D texture = new Texture2D();
+                texture.LoadImageData(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count,
                     new TextureFormatUncompressed(nutTexture.pixelInternalFormat, nutTexture.pixelFormat, nutTexture.pixelType));
+                return texture;
             }
         }
 

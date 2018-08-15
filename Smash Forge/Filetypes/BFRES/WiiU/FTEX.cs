@@ -138,7 +138,7 @@ namespace Smash_Forge
 
         public static SFTex.Texture2D CreateTexture2D(FTEX_Texture tex, int surfaceIndex = 0)
         {
-            bool compressedFormatWithMipMaps = SFGraphics.GLObjects.Textures.TextureFormatTools.IsCompressed(tex.pixelInternalFormat);
+            bool compressedFormatWithMipMaps = SFTex.TextureFormatTools.IsCompressed(tex.pixelInternalFormat);
 
             //Todo. Use mip maps from FTEX
             if (compressedFormatWithMipMaps)
@@ -146,21 +146,27 @@ namespace Smash_Forge
                 if (tex.mipMapData.Count > 1)
                 {
                     // Only load the first level and generate the rest.
-                    return new SFTex.Texture2D(tex.width, tex.height, tex.data, tex.mipMapData.Count,
+                    SFTex.Texture2D texture = new SFTex.Texture2D();
+                    texture.LoadImageData(tex.width, tex.height, tex.data, tex.mipMapData.Count,
                         (InternalFormat)tex.pixelInternalFormat);
+                    return texture;
                 }
                 else
                 {
                     // Only load the first level and generate the rest.
-                    return new SFTex.Texture2D(tex.width, tex.height, tex.data, tex.mipMapData.Count,
+                    SFTex.Texture2D texture = new SFTex.Texture2D();
+                    texture.LoadImageData(tex.width, tex.height, tex.data, tex.mipMapData.Count,
                         (InternalFormat)tex.pixelInternalFormat);
+                    return texture;
                 }
             }
             else
             {
                 // Uncompressed.
-                return new SFTex.Texture2D(tex.width, tex.height, tex.data, tex.mipMapCount,
+                SFTex.Texture2D texture = new SFTex.Texture2D();
+                texture.LoadImageData(tex.width, tex.height, tex.data, tex.mipMapCount,
                     new SFTex.TextureFormatUncompressed(tex.pixelInternalFormat, tex.pixelFormat, tex.pixelType));
+                return texture;
             }
         }
     }
