@@ -53,7 +53,7 @@ namespace Smash_Forge
         private int fboRenderWidth;
         private int fboRenderHeight;
 
-        private ForgeMesh forgeMesh;
+        private NudRenderMesh forgeMesh;
         private MeshSimple3D simpleMesh;
     
         // Functions of Viewer

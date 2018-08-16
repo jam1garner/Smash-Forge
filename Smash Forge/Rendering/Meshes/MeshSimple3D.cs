@@ -6,7 +6,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Smash_Forge.Rendering.Meshes
 {
-    class MeshSimple3D : Mesh<Vector3>
+    class MeshSimple3D : GenericMesh<Vector3>
     {
         public MeshSimple3D(List<Vector3> vertices) : base(vertices, Vector3.SizeInBytes)
         {

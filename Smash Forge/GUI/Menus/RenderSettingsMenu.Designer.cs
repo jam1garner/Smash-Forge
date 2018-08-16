@@ -1,6 +1,6 @@
 ﻿namespace Smash_Forge.GUI
 {
-    partial class RenderSettings
+    partial class RenderSettingsMenu
     {
         /// <summary>
         /// Required designer variable.

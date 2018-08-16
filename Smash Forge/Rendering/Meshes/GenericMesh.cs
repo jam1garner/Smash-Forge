@@ -8,7 +8,7 @@ using SFGraphics.Cameras;
 
 namespace Smash_Forge.Rendering.Meshes
 {
-    public abstract class Mesh<T> where T : struct
+    public abstract class GenericMesh<T> where T : struct
     {
         private readonly int vertexSizeInBytes;
 
@@ -20,7 +20,7 @@ namespace Smash_Forge.Rendering.Meshes
 
         private VertexArrayObject vao = new VertexArrayObject();
 
-        public Mesh(List<T> vertices, int vertexSizeInBytes)
+        public GenericMesh(List<T> vertices, int vertexSizeInBytes)
         {
             // The vertex data is immutable, so buffers only need to be initialized once.
             this.vertices = vertices;
@@ -35,7 +35,7 @@ namespace Smash_Forge.Rendering.Meshes
             InitializeBufferData();
         }
 
-        public Mesh(List<T> vertices, List<int> vertexIndices, int vertexSizeInBytes)
+        public GenericMesh(List<T> vertices, List<int> vertexIndices, int vertexSizeInBytes)
         {
             // The vertex data is immutable, so buffers only need to be initialized once.
             this.vertices = vertices;
@@ -53,8 +53,8 @@ namespace Smash_Forge.Rendering.Meshes
             shader.UseProgram();
 
             // Set shader uniforms.
-            //SetCameraUniforms(shader, camera);
-            //SetUniforms(shader);
+            SetCameraUniforms(shader, camera);
+            SetUniforms(shader);
 
             // TODO: Only do this once.
             ConfigureVertexAttributes(shader);
@@ -93,9 +93,17 @@ namespace Smash_Forge.Rendering.Meshes
 
         protected virtual void SetUniforms(Shader shader)
         {
-            shader.SetVector4("color", new Vector4(1));
-            shader.SetVector3("scale", new Vector3(1));
-            shader.SetVector3("center", new Vector3(0));
+
+        }
+
+        private void SetFaceCulling(bool enableCulling, CullFaceMode cullFaceMode)
+        {
+            if (enableCulling)
+                GL.Enable(EnableCap.CullFace);
+            else
+                GL.Disable(EnableCap.CullFace);
+
+            GL.CullFace(cullFaceMode);
         }
 
         protected abstract List<VertexAttributeInfo> GetVertexAttributes();

@@ -43,7 +43,7 @@ namespace Smash_Forge
         public bool hasBones = false;
         public float[] boundingSphere = new float[4];
 
-        private ForgeMesh renderMesh;
+        private NudRenderMesh renderMesh;
 
         // Just used for rendering.
         private List<Mesh> depthSortedMeshes = new List<Mesh>();
@@ -271,14 +271,14 @@ namespace Smash_Forge
             renderMesh = CreateRenderMesh();
         }
 
-        public ForgeMesh CreateRenderMesh()
+        public NudRenderMesh CreateRenderMesh()
         {
             // Store all of the polygon vert data in one buffer.
             List<DisplayVertex> displayVerticesList;
             List<int> vertexIndicesList;
             GetDisplayVerticesAndIndices(out displayVerticesList, out vertexIndicesList);
 
-            return new ForgeMesh(displayVerticesList, vertexIndicesList);
+            return new NudRenderMesh(displayVerticesList, vertexIndicesList);
         }
 
         private void GetDisplayVerticesAndIndices(out List<DisplayVertex> displayVerticesList, out List<int> vertexIndicesList)

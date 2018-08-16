@@ -14,7 +14,7 @@ namespace Smash_Forge.GUI.Menus
     {
         private NUD sourceNud;
         private NUD.Polygon polygonToRender;
-        private ForgeMesh forgeMesh;
+        private NudRenderMesh forgeMesh;
 
         public UvViewer(NUD sourceNud, NUD.Polygon polygonToRender)
         {

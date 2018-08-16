@@ -6,9 +6,9 @@ using SFGraphics.GLObjects.Shaders;
 
 namespace Smash_Forge.Rendering.Meshes
 {
-    public class ForgeMesh : Mesh<NUD.DisplayVertex>
+    public class NudRenderMesh : GenericMesh<NUD.DisplayVertex>
     {
-        public ForgeMesh(List<NUD.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices, NUD.DisplayVertex.Size)
+        public NudRenderMesh(List<NUD.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices, NUD.DisplayVertex.Size)
         {
 
         }
