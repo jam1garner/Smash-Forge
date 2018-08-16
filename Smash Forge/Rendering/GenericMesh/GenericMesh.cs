@@ -75,6 +75,7 @@ namespace Smash_Forge.Rendering.Meshes
         {
             SetFaceCulling(renderSettings.faceCullingSettings);
             SetAlphaBlending(renderSettings.alphaBlendSettings);
+            SetAlphaTesting(renderSettings.alphaTestSettings);
         }
 
         protected abstract List<VertexAttributeInfo> GetVertexAttributes();
@@ -123,6 +124,14 @@ namespace Smash_Forge.Rendering.Meshes
 
             GL.BlendFunc(settings.sourceFactor, settings.destinationFactor);
             GL.BlendEquationSeparate(settings.blendingEquationRgb, settings.blendingEquationAlpha);
+        }
+
+        private void SetAlphaTesting(RenderSettings.AlphaTestSettings settings)
+        {
+            SetGLEnableCap(EnableCap.AlphaTest, settings.enableAlphaTesting);
+
+            // TODO: Should this be a float or an int?
+            GL.AlphaFunc(settings.alphaFunction, settings.referenceAlpha / 255.0f);
         }
 
         private void InitializeBufferData(List<T> vertices, List<int> vertexIndices)

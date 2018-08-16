@@ -13,6 +13,48 @@ namespace Smash_Forge.Rendering.Meshes
 
         }
 
+        public void SetRenderSettings(NUD.Material material)
+        {
+            SetAlphaBlending(material);
+            SetAlphaTesting(material);
+            SetDepthTesting(material);
+        }
+
+        private void SetAlphaTesting(NUD.Material material)
+        {
+            renderSettings.alphaTestSettings.enableAlphaTesting = (material.alphaTest == (int)NUD.Material.AlphaTest.Enabled);
+
+            renderSettings.alphaTestSettings.alphaFunction = AlphaFunction.Always;
+            if (NUD.Material.alphaFunctionByMatValue.ContainsKey(material.alphaFunction))
+                renderSettings.alphaTestSettings.alphaFunction = NUD.Material.alphaFunctionByMatValue[material.alphaFunction];
+
+            renderSettings.alphaTestSettings.referenceAlpha = material.RefAlpha;
+        }
+
+        private void SetDepthTesting(NUD.Material material)
+        {
+            if ((material.srcFactor == 4) || (material.srcFactor == 51) || (material.srcFactor == 50))
+                renderSettings.depthTestSettings.depthMask = false;
+            else
+                renderSettings.depthTestSettings.depthMask = true;
+        }
+
+        private void SetAlphaBlending(NUD.Material material)
+        {
+            renderSettings.alphaBlendSettings.enableAlphaBlending = material.srcFactor != 0 || material.dstFactor != 0;
+            if (NUD.srcFactorsByMatValue.ContainsKey(material.srcFactor))
+                renderSettings.alphaBlendSettings.sourceFactor = NUD.srcFactorsByMatValue[material.srcFactor];
+
+            if (NUD.dstFactorsByMatValue.ContainsKey(material.dstFactor))
+                renderSettings.alphaBlendSettings.destinationFactor = NUD.dstFactorsByMatValue[material.dstFactor];
+
+            renderSettings.alphaBlendSettings.blendingEquationRgb = BlendEquationMode.FuncAdd;
+            if (material.dstFactor == 3)
+                renderSettings.alphaBlendSettings.blendingEquationRgb = BlendEquationMode.FuncReverseSubtract;
+
+            renderSettings.alphaBlendSettings.blendingEquationAlpha = BlendEquationMode.FuncAdd;
+        }
+
         protected override List<VertexAttributeInfo> GetVertexAttributes()
         {
             return new List<VertexAttributeInfo>()

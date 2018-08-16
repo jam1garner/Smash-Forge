@@ -56,7 +56,7 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
-        private static readonly Dictionary<int, BlendingFactor> srcFactorsByMatValue = new Dictionary<int, BlendingFactor>()
+        public static readonly Dictionary<int, BlendingFactor> srcFactorsByMatValue = new Dictionary<int, BlendingFactor>()
         {
             { 0x00, BlendingFactor.One },
             { 0x01, BlendingFactor.SrcAlpha},
@@ -65,7 +65,7 @@ namespace Smash_Forge
             { 0x04, BlendingFactor.SrcAlpha},
         };
 
-        private static readonly Dictionary<int, BlendingFactor> dstFactorsByMatValue = new Dictionary<int, BlendingFactor>()
+        public static readonly Dictionary<int, BlendingFactor> dstFactorsByMatValue = new Dictionary<int, BlendingFactor>()
         {
             { 0x00, BlendingFactor.Zero },
             { 0x01, BlendingFactor.OneMinusSrcAlpha},
@@ -282,7 +282,11 @@ namespace Smash_Forge
             List<int> vertexIndicesList;
             p.GetDisplayVerticesAndIndices(out displayVerticesList, out vertexIndicesList);
 
-            return new NudRenderMesh(displayVerticesList, vertexIndicesList);
+            NudRenderMesh nudRenderMesh = new NudRenderMesh(displayVerticesList, vertexIndicesList);
+            // Only use the first material for now.
+            if (p.materials.Count > 0)
+                nudRenderMesh.SetRenderSettings(p.materials[0]);
+            return nudRenderMesh;
         }
 
         public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)
@@ -578,8 +582,6 @@ namespace Smash_Forge
             SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
 
             // Set OpenTK Render Options.
-            SetAlphaBlending(material);
-            SetAlphaTesting(material);
             SetFaceCulling(material);
 
             p.renderMesh.Draw(shader, camera, p.displayFaceSize);
@@ -610,75 +612,6 @@ namespace Smash_Forge
             // This fixes the alpha output for PNG renders.
             p.isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
             shader.SetBoolToInt("isTransparent", p.isTransparent);
-        }
-
-        private void SetAlphaBlending(Material material)
-        {
-            // Disable alpha blending for debug shading.
-            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-            {
-                GL.Disable(EnableCap.Blend);
-                return;
-            }
-
-            // Src and dst of 0 don't use alpha blending.
-            if (material.srcFactor == 0 && material.dstFactor == 0)
-            {
-                GL.Disable(EnableCap.Blend);
-                return;
-            }
-
-            // Set the alpha blending based on the material.
-            // If the values are not researched, use a default blending mode.
-            GL.Enable(EnableCap.Blend);
-
-            // Hacks for Game & Watch.
-            if ((material.srcFactor == 4) || (material.srcFactor == 51) || (material.srcFactor == 50))
-                GL.DepthMask(false);
-            else
-                GL.DepthMask(true);
-
-            // Set the source factor.
-            BlendingFactor blendSrc = BlendingFactor.SrcAlpha;
-            if (srcFactorsByMatValue.ContainsKey(material.srcFactor))
-                blendSrc = srcFactorsByMatValue[material.srcFactor];
-
-            // Set the destination factor.
-            BlendingFactor blendDst = BlendingFactor.OneMinusSrcAlpha;
-            if (dstFactorsByMatValue.ContainsKey(material.dstFactor))
-                blendDst = dstFactorsByMatValue[material.dstFactor];
-
-            // The dstFactor can also set the blending equation.
-            BlendEquationMode blendEquation = BlendEquationMode.FuncAdd;
-            if (material.dstFactor == 3)
-                blendEquation = BlendEquationMode.FuncReverseSubtract;
-
-            // Use separate equations for better alpha value blending.
-            GL.BlendFunc(blendSrc, blendDst);
-            GL.BlendEquationSeparate(blendEquation, BlendEquationMode.FuncAdd);
-        }
-
-        private static void SetAlphaTesting(Material material)
-        {
-            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-            {
-                // Disable alpha testing for debug shading.
-                GL.Disable(EnableCap.AlphaTest);
-                return;
-            }
-
-            if (material.alphaTest == (int)Material.AlphaTest.Enabled)
-                GL.Enable(EnableCap.AlphaTest);
-            else
-                GL.Disable(EnableCap.AlphaTest);
-
-            AlphaFunction alphaFunction = AlphaFunction.Always;
-            if (Material.alphaFunctionByMatValue.ContainsKey(material.alphaFunction))
-                alphaFunction = Material.alphaFunctionByMatValue[material.alphaFunction];
-
-            float refAlpha = material.RefAlpha / 255f;
-
-            GL.AlphaFunc(alphaFunction, refAlpha);
         }
 
         private static void SetFaceCulling(Material material)
