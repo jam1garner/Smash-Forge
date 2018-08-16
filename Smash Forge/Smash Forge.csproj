@@ -151,6 +151,13 @@
     <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\KCL\KCL.cs" />
     <Compile Include="Filetypes\Application\MaterialXML.cs" />
+    <Compile Include="Filetypes\Models\Nuds\DisplayVertex.cs" />
+    <Compile Include="Filetypes\Models\Nuds\Material.cs" />
+    <Compile Include="Filetypes\Models\Nuds\MatTexture.cs" />
+    <Compile Include="Filetypes\Models\Nuds\Mesh.cs" />
+    <Compile Include="Filetypes\Models\Nuds\NudUniforms.cs" />
+    <Compile Include="Filetypes\Models\Nuds\Polygon.cs" />
+    <Compile Include="Filetypes\Models\Nuds\Vertex.cs" />
     <Compile Include="Filetypes\Params\LightSetParam.cs" />
     <Compile Include="Filetypes\Melee\DAT.cs" />
     <Compile Include="Filetypes\Melee\DAT_Animation.cs" />
@@ -1286,7 +1293,7 @@
     <Compile Include="SkelAnimation.cs" />
     <Compile Include="Filetypes\SMD.cs" />
     <Compile Include="Filetypes\Textures\DDS.cs" />
-    <Compile Include="Filetypes\Models\NUD.cs" />
+    <Compile Include="Filetypes\Models\Nuds\NUD.cs" />
     <Compile Include="Filetypes\Textures\NUT.cs" />
     <Compile Include="Filetypes\Textures\GTX.cs" />
     <Compile Include="Filetypes\Models\JTB.cs" />

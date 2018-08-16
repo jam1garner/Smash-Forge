@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SFGraphics.GLObjects.Shaders;
+using Smash_Forge.Filetypes.Models.Nuds;
 
 namespace Smash_Forge.Rendering.Meshes
 {
@@ -16,7 +16,7 @@ namespace Smash_Forge.Rendering.Meshes
         public void SetMaterialValues(NUD.Material nudMaterial)
         {
             material = new GenericMaterial();
-            NUD.SetMaterialPropertyUniforms(material, nudMaterial);
+            NudUniforms.SetMaterialPropertyUniforms(material, nudMaterial);
         }
 
         public void SetRenderSettings(NUD.Material material)

@@ -5,8 +5,6 @@ namespace Smash_Forge
 {
     public partial class NUD
     {
-        #region ClassStructure
-
         public struct DisplayVertex
         {
             // Used for rendering.
