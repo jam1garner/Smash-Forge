@@ -59,14 +59,22 @@ namespace Smash_Forge.Rendering.Meshes
 
             // Set shader uniforms.
             SetCameraUniforms(shader, camera);
-            SetUniforms(shader, material);
+            SetMaterialUniforms(shader, material);
 
             // TODO: Only do this once.
             ConfigureVertexAttributes(shader);
 
+            SetRenderSettings();
+
             vertexArrayObject.Bind();
             GL.DrawElements(PrimitiveType.Triangles, count, DrawElementsType.UnsignedInt, offset);
             vertexArrayObject.Unbind();
+        }
+
+        private void SetRenderSettings()
+        {
+            SetFaceCulling(renderSettings.faceCullingSettings);
+            SetAlphaBlending(renderSettings.alphaBlendSettings);
         }
 
         protected abstract List<VertexAttributeInfo> GetVertexAttributes();
@@ -81,7 +89,7 @@ namespace Smash_Forge.Rendering.Meshes
             shader.SetMatrix4x4("mvpMatrix", ref matrix);
         }
 
-        private void SetUniforms(Shader shader, GenericMaterial material)
+        private void SetMaterialUniforms(Shader shader, GenericMaterial material)
         {
             material.SetShaderUniforms(shader);
         }

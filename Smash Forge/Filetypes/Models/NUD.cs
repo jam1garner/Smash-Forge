@@ -43,8 +43,6 @@ namespace Smash_Forge
         public bool hasBones = false;
         public float[] boundingSphere = new float[4];
 
-        private NudRenderMesh renderMesh;
-
         // Just used for rendering.
         private List<Mesh> depthSortedMeshes = new List<Mesh>();
 
@@ -266,58 +264,32 @@ namespace Smash_Forge
             }
         }
 
-        public void UpdateRenderMesh()
+        public void UpdateRenderMeshes()
         {
-            renderMesh = CreateRenderMesh();
-        }
-
-        public NudRenderMesh CreateRenderMesh()
-        {
-            // Store all of the polygon vert data in one buffer.
-            List<DisplayVertex> displayVerticesList;
-            List<int> vertexIndicesList;
-            GetDisplayVerticesAndIndices(out displayVerticesList, out vertexIndicesList);
-
-            return new NudRenderMesh(displayVerticesList, vertexIndicesList);
-        }
-
-        private void GetDisplayVerticesAndIndices(out List<DisplayVertex> displayVerticesList, out List<int> vertexIndicesList)
-        {
-            int polygonOffset = 0;
-            int vertexOffset = 0;
-
-            displayVerticesList = new List<DisplayVertex>();
-            vertexIndicesList = new List<int>();
-
-            // Loop backwards?
-            for (int meshIndex = Nodes.Count - 1; meshIndex >= 0; meshIndex--)
+            foreach (Mesh mesh in Nodes)
             {
-                Mesh m = (Mesh)Nodes[meshIndex];
-
-                for (int polyIndex = m.Nodes.Count - 1; polyIndex >= 0; polyIndex--)
+                foreach (Polygon p in mesh.Nodes)
                 {
-                    Polygon p = (Polygon)m.Nodes[polyIndex];
-                    p.Offset = polygonOffset * sizeof(float);
-
-                    List<DisplayVertex> polygonDisplayVertices = p.CreateDisplayVertices();
-                    displayVerticesList.AddRange(polygonDisplayVertices);
-
-                    for (int i = 0; i < p.displayFaceSize; i++)
-                    {
-                        vertexIndicesList.Add(p.display[i] + vertexOffset);
-                    }
-
-                    polygonOffset += p.displayFaceSize;
-                    vertexOffset += polygonDisplayVertices.Count;
+                    p.renderMesh = CreateRenderMesh(p);
                 }
             }
         }
 
+        public NudRenderMesh CreateRenderMesh(Polygon p)
+        {
+            // Store all of the polygon vert data in one buffer.
+            List<DisplayVertex> displayVerticesList;
+            List<int> vertexIndicesList;
+            p.GetDisplayVerticesAndIndices(out displayVerticesList, out vertexIndicesList);
+
+            return new NudRenderMesh(displayVerticesList, vertexIndicesList);
+        }
+
         public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)
         {
-            if (renderMesh == null)
+            if (bonesUbo == null || selectVbo == null)
             {
-                UpdateRenderMesh();
+                UpdateRenderMeshes();
                 GenerateBuffers();
             }
 
@@ -610,7 +582,7 @@ namespace Smash_Forge
             SetAlphaTesting(material);
             SetFaceCulling(material);
 
-            renderMesh.Draw(shader, camera, p.displayFaceSize, p.Offset);
+            p.renderMesh.Draw(shader, camera, p.displayFaceSize);
         }
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<DummyTextures, Texture> dummyTextures, int id = 0, bool drawId = false)
@@ -816,7 +788,7 @@ namespace Smash_Forge
             GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
             GL.StencilMask(0xFF);
 
-            renderMesh.Draw(shader, camera, p.displayFaceSize, p.Offset);
+            p.renderMesh.Draw(shader, camera, p.displayFaceSize);
 
             GL.ColorMask(cwm[0], cwm[1], cwm[2], cwm[3]);
 
@@ -828,7 +800,7 @@ namespace Smash_Forge
 
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.LineWidth(2.0f);
-            renderMesh.Draw(shader, camera, p.displayFaceSize, p.Offset);
+            p.renderMesh.Draw(shader, camera, p.displayFaceSize);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
             shader.SetInt("drawSelection", 0);
@@ -2776,6 +2748,8 @@ namespace Smash_Forge
             public List<int> vertexIndices = new List<int>();
             public int displayFaceSize = 0;
 
+            public NudRenderMesh renderMesh;
+
             public List<Material> materials = new List<Material>();
 
             // defaults to a basic bone weighted vertex format
@@ -2789,8 +2763,6 @@ namespace Smash_Forge
             public bool isTransparent = false;
             public int[] display;
             public int[] selectedVerts;
-            public int Offset; // For Rendering
-
 
             public Polygon()
             {
@@ -2831,7 +2803,25 @@ namespace Smash_Forge
                 }
             }
 
-            public List<DisplayVertex> CreateDisplayVertices()
+            public void GetDisplayVerticesAndIndices(out List<DisplayVertex> displayVerticesList, out List<int> vertexIndicesList)
+            {
+                int vertexOffset = 0;
+
+                displayVerticesList = new List<DisplayVertex>();
+                vertexIndicesList = new List<int>();
+
+                List<DisplayVertex> polygonDisplayVertices = CreateDisplayVertices();
+                displayVerticesList.AddRange(polygonDisplayVertices);
+
+                for (int i = 0; i < displayFaceSize; i++)
+                {
+                    vertexIndicesList.Add(display[i] + vertexOffset);
+                }
+
+                vertexOffset += polygonDisplayVertices.Count;
+            }
+
+            private List<DisplayVertex> CreateDisplayVertices()
             {
                 // rearrange faces
                 display = GetRenderingVertexIndices().ToArray();

@@ -288,7 +288,7 @@ namespace Smash_Forge
             }
 
             n.OptimizeFileSize();
-            n.UpdateRenderMesh();
+            n.UpdateRenderMeshes();
 
             return n;
         }
