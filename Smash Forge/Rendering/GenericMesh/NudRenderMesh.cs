@@ -13,6 +13,12 @@ namespace Smash_Forge.Rendering.Meshes
 
         }
 
+        public void SetMaterialValues(NUD.Material nudMaterial)
+        {
+            material = new GenericMaterial();
+            NUD.SetMaterialPropertyUniforms(material, nudMaterial);
+        }
+
         public void SetRenderSettings(NUD.Material material)
         {
             SetAlphaBlending(material);

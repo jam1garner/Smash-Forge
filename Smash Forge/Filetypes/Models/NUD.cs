@@ -581,6 +581,12 @@ namespace Smash_Forge
             // Set Shader Values.
             SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
 
+            // Update render mesh settings.
+            // This is slow, but performance isn't an issue for NUDs.
+            p.renderMesh.SetRenderSettings(material);
+            p.renderMesh.SetMaterialValues(material);
+
+
             // Set OpenTK Render Options.
             SetFaceCulling(material);
 
@@ -593,7 +599,7 @@ namespace Smash_Forge
             shader.SetUint("flags", material.Flags);
             shader.SetBoolToInt("renderVertColor", Runtime.renderVertColor && material.useVertexColor);
             SetTextureUniforms(shader, material, dummyTextures);
-            SetMaterialPropertyUniforms(shader, material);
+
             SetStageLightingUniforms(shader, lightSetNumber);
             SetXMBUniforms(shader, p);
             SetNscUniform(p, shader);
@@ -744,71 +750,71 @@ namespace Smash_Forge
             GL.Enable(EnableCap.DepthTest);
         }
 
-        public static void SetMaterialPropertyUniforms(Shader shader, Material mat)
+        public static void SetMaterialPropertyUniforms(GenericMaterial genericMaterial, Material mat)
         {
             // UV samplers
-            MatPropertyShaderUniform(shader, mat, "NU_colorSamplerUV",   1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_colorSampler2UV",  1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_colorSampler3UV",  1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_normalSamplerBUV", 1, 1, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_colorSamplerUV",   1, 1, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_colorSampler2UV",  1, 1, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_colorSampler3UV",  1, 1, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_normalSamplerAUV", 1, 1, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_normalSamplerBUV", 1, 1, 0, 0);
 
             // Diffuse Color
-            MatPropertyShaderUniform(shader, mat, "NU_aoMinGain",       0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_colorGain",       1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_finalColorGain",  1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_finalColorGain2", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_finalColorGain3", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_colorOffset",     0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_diffuseColor",    1, 1, 1, 0.5f);
-            MatPropertyShaderUniform(shader, mat, "NU_characterColor",  1, 1, 1, 1);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_aoMinGain",       0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_colorGain",       1, 1, 1, 1);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_finalColorGain",  1, 1, 1, 1);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_finalColorGain2", 1, 1, 1, 1);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_finalColorGain3", 1, 1, 1, 1);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_colorOffset",     0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_diffuseColor",    1, 1, 1, 0.5f);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_characterColor",  1, 1, 1, 1);
 
             // Specular
-            MatPropertyShaderUniform(shader, mat, "NU_specularColor",     0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_specularColorGain", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_specularParams",    0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_specularColor",     0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_specularColorGain", 1, 1, 1, 1);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_specularParams",    0, 0, 0, 0);
 
             // Fresnel
-            MatPropertyShaderUniform(shader, mat, "NU_fresnelColor",  0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_fresnelParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_fresnelColor",  0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_fresnelParams", 0, 0, 0, 0);
 
             // Reflections
-            MatPropertyShaderUniform(shader, mat, "NU_reflectionColor",  0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_reflectionParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_reflectionColor",  0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_reflectionParams", 0, 0, 0, 0);
 
             // Fog
-            MatPropertyShaderUniform(shader, mat, "NU_fogColor",  0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_fogParams", 0, 1, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_fogColor",  0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_fogParams", 0, 1, 0, 0);
 
             // Soft Lighting
-            MatPropertyShaderUniform(shader, mat, "NU_softLightingParams",    0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_softLightingParams",    0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_customSoftLightParams", 0, 0, 0, 0);
 
             // Misc Properties
-            MatPropertyShaderUniform(shader, mat, "NU_normalParams",           1, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_zOffset",                0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_angleFadeParams",        0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", 0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_alphaBlendParams",       0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_normalParams",           1, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_zOffset",                0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_angleFadeParams",        0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_dualNormalScrollParams", 0, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_alphaBlendParams",       0, 0, 0, 0);
 
             // Effect Materials
-            MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor0", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor1", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_effColorGain",      1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_effScaleUV",        1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_effTransUV",        1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_effMaxUV",          1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_effUniverseParam",  1, 0, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_effCombinerColor0", 1, 1, 1, 1);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_effCombinerColor1", 1, 1, 1, 1);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_effColorGain",      1, 1, 1, 1);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_effScaleUV",        1, 1, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_effTransUV",        1, 1, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_effMaxUV",          1, 1, 0, 0);
+            MatPropertyShaderUniform(genericMaterial, mat, "NU_effUniverseParam",  1, 0, 0, 0);
 
             // Create some conditionals rather than using different shaders.
-            HasMatPropertyShaderUniform(shader, mat, "NU_softLightingParams",     "hasSoftLight");
-            HasMatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams",  "hasCustomSoftLight");
-            HasMatPropertyShaderUniform(shader, mat, "NU_specularParams",         "hasSpecularParams");
-            HasMatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", "hasDualNormal");
-            HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV",       "hasNrmSamplerAUV");
-            HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerBUV",       "hasNrmSamplerBUV");
-            HasMatPropertyShaderUniform(shader, mat, "NU_finalColorGain",         "hasFinalColorGain");
-            HasMatPropertyShaderUniform(shader, mat, "NU_effUniverseParam",       "hasUniverseParam");
+            HasMatPropertyShaderUniform(genericMaterial, mat, "NU_softLightingParams",     "hasSoftLight");
+            HasMatPropertyShaderUniform(genericMaterial, mat, "NU_customSoftLightParams",  "hasCustomSoftLight");
+            HasMatPropertyShaderUniform(genericMaterial, mat, "NU_specularParams",         "hasSpecularParams");
+            HasMatPropertyShaderUniform(genericMaterial, mat, "NU_dualNormalScrollParams", "hasDualNormal");
+            HasMatPropertyShaderUniform(genericMaterial, mat, "NU_normalSamplerAUV",       "hasNrmSamplerAUV");
+            HasMatPropertyShaderUniform(genericMaterial, mat, "NU_normalSamplerBUV",       "hasNrmSamplerBUV");
+            HasMatPropertyShaderUniform(genericMaterial, mat, "NU_finalColorGain",         "hasFinalColorGain");
+            HasMatPropertyShaderUniform(genericMaterial, mat, "NU_effUniverseParam",       "hasUniverseParam");
         }
 
         public static void SetTextureUniforms(Shader shader, Material mat, Dictionary<DummyTextures, Texture> dummyTextures)
@@ -1000,7 +1006,7 @@ namespace Smash_Forge
             shader.SetBoolToInt("softLightBrighten", mat.softLightBrighten);
         }
 
-        private static void MatPropertyShaderUniform(Shader shader, Material mat, string propertyName, float default1,
+        private static void MatPropertyShaderUniform(GenericMaterial genericMaterial, Material mat, string propertyName, float default1,
             float default2, float default3, float default4)
         {
             // Attempt to get the values from the material's properties. 
@@ -1017,7 +1023,7 @@ namespace Smash_Forge
             string uniformName = propertyName.Substring(3); // remove the NU_ from name
 
             if (values.Length == 4)
-                shader.SetVector4(uniformName, values[0], values[1], values[2], values[3]);
+                genericMaterial.AddVector4(uniformName, new Vector4(values[0], values[1], values[2], values[3]));
             else
                 Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
@@ -1055,7 +1061,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void HasMatPropertyShaderUniform(Shader shader, Material mat, string propertyName, string uniformName)
+        private static void HasMatPropertyShaderUniform(GenericMaterial genericMaterial, Material mat, string propertyName, string uniformName)
         {
             float[] values;
             mat.entries.TryGetValue(propertyName, out values);
@@ -1066,7 +1072,7 @@ namespace Smash_Forge
             if (values == null)
                 hasParam = 0;
 
-            shader.SetInt(uniformName, hasParam);
+            genericMaterial.AddInt(uniformName, hasParam);
         }
 
         public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)

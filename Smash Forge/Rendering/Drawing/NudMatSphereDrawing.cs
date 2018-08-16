@@ -30,9 +30,11 @@ namespace Smash_Forge.Rendering
 
             shader.UseProgram();
 
-
             // Use the same uniforms as the NUD shader. 
-            NUD.SetMaterialPropertyUniforms(shader, material);
+            GenericMaterial genericMaterial = new GenericMaterial();
+            NUD.SetMaterialPropertyUniforms(genericMaterial, material);
+            genericMaterial.SetShaderUniforms(shader);
+
             NUD.SetStageLightingUniforms(shader, 0);
             ModelContainer.SetRenderSettingsUniforms(shader);
 
