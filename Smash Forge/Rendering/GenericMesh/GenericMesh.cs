@@ -57,11 +57,12 @@ namespace Smash_Forge.Rendering.Meshes
 
             shader.UseProgram();
 
+            // TODO: Avoid redundant initializations to optimize performance.            
+
             // Set shader uniforms.
             SetCameraUniforms(shader, camera);
             SetMaterialUniforms(shader, material);
 
-            // TODO: Only do this once.
             ConfigureVertexAttributes(shader);
 
             SetRenderSettings();

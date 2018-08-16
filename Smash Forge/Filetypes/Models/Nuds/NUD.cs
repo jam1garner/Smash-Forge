@@ -301,9 +301,6 @@ namespace Smash_Forge
             else
                 shader = OpenTKSharedResources.shaders["Nud"];
 
-            // Render using the selected shader.
-            shader.UseProgram();
-
             // Set bone matrices.
             UpdateBonesBuffer(vbn, shader, bonesUbo);
 
@@ -312,6 +309,8 @@ namespace Smash_Forge
 
         private void UpdateBonesBuffer(VBN vbn, Shader shader, BufferObject bonesUbo)
         {
+            shader.UseProgram();
+
             if (vbn == null)
             {
                 shader.SetBoolToInt("useBones", false);
@@ -570,16 +569,13 @@ namespace Smash_Forge
             Material material = p.materials[0];
 
             // Set Shader Values.
+            shader.UseProgram();
             SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
 
             // Update render mesh settings.
             // This is slow, but performance isn't an issue for NUDs.
             p.renderMesh.SetRenderSettings(material);
             p.renderMesh.SetMaterialValues(material);
-
-
-            // Set OpenTK Render Options.
-            SetFaceCulling(material);
 
             p.renderMesh.Draw(shader, camera, p.displayFaceSize);
         }
@@ -609,34 +605,6 @@ namespace Smash_Forge
             // This fixes the alpha output for PNG renders.
             p.isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
             shader.SetBoolToInt("isTransparent", p.isTransparent);
-        }
-
-        private static void SetFaceCulling(Material material)
-        {
-            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-            {
-                GL.Enable(EnableCap.CullFace);
-                GL.CullFace(CullFaceMode.Back);
-                return;
-            }
-
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-            switch (material.cullMode)
-            {
-                case 0x0000:
-                    GL.Disable(EnableCap.CullFace);
-                    break;
-                case 0x0404:
-                    GL.CullFace(CullFaceMode.Front);
-                    break;
-                case 0x0405:
-                    GL.CullFace(CullFaceMode.Back);
-                    break;
-                default:
-                    GL.Disable(EnableCap.CullFace);
-                    break;
-            }
         }
 
         public static void SetStageLightingUniforms(Shader shader, int lightSetNumber)

@@ -24,6 +24,28 @@ namespace Smash_Forge.Rendering.Meshes
             SetAlphaBlending(material);
             SetAlphaTesting(material);
             SetDepthTesting(material);
+            SetFaceCulling(material);
+        }
+
+        private void SetFaceCulling(NUD.Material material)
+        {
+            renderSettings.faceCullingSettings.enableFaceCulling = true;
+            renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Back;
+            switch (material.cullMode)
+            {
+                case 0x0000:
+                    renderSettings.faceCullingSettings.enableFaceCulling = false;
+                    break;
+                case 0x0404:
+                    renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Front;
+                    break;
+                case 0x0405:
+                    renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Back;
+                    break;
+                default:
+                    renderSettings.faceCullingSettings.enableFaceCulling = false;
+                    break;
+            }
         }
 
         private void SetAlphaTesting(NUD.Material material)
