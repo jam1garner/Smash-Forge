@@ -13,11 +13,6 @@ namespace Smash_Forge.Rendering.Meshes
 
         }
 
-        protected override void SetUniforms(Shader shader)
-        {
-
-        }
-
         protected override List<VertexAttributeInfo> GetVertexAttributes()
         {
             return new List<VertexAttributeInfo>()

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using OpenTK;
 using SFGraphics.GLObjects.Shaders;
 
-namespace Smash_Forge.Rendering.GenericMesh
+namespace Smash_Forge.Rendering
 {
-    partial class GenericMaterial
+    public partial class GenericMaterial
     {
         // Scalar uniforms
         private Dictionary<string, float> floatUniformsByName = new Dictionary<string, float>();

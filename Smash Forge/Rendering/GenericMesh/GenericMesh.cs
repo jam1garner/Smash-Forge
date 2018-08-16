@@ -17,6 +17,10 @@ namespace Smash_Forge.Rendering.Meshes
         private BufferObject vertexIndexBuffer = new BufferObject(BufferTarget.ElementArrayBuffer);
         private VertexArrayObject vertexArrayObject = new VertexArrayObject();
 
+        // Use default settings.
+        protected RenderSettings renderSettings = new RenderSettings();
+        protected GenericMaterial material = new GenericMaterial();
+
         public GenericMesh(List<T> vertices, int vertexSizeInBytes)
         {
             this.vertexSizeInBytes = vertexSizeInBytes;
@@ -55,7 +59,7 @@ namespace Smash_Forge.Rendering.Meshes
 
             // Set shader uniforms.
             SetCameraUniforms(shader, camera);
-            SetUniforms(shader);
+            SetUniforms(shader, material);
 
             // TODO: Only do this once.
             ConfigureVertexAttributes(shader);
@@ -63,6 +67,60 @@ namespace Smash_Forge.Rendering.Meshes
             vertexArrayObject.Bind();
             GL.DrawElements(PrimitiveType.Triangles, count, DrawElementsType.UnsignedInt, offset);
             vertexArrayObject.Unbind();
+        }
+
+        protected abstract List<VertexAttributeInfo> GetVertexAttributes();
+
+        protected virtual void SetCameraUniforms(Shader shader, Camera camera)
+        {
+            // Not all shaders will use camera uniforms.
+            if (camera == null)
+                return;
+
+            Matrix4 matrix = camera.MvpMatrix;
+            shader.SetMatrix4x4("mvpMatrix", ref matrix);
+        }
+
+        private void SetUniforms(Shader shader, GenericMaterial material)
+        {
+            material.SetShaderUniforms(shader);
+        }
+
+        private static void SetGLEnableCap(EnableCap enableCap, bool enabled)
+        {
+            if (enabled)
+                GL.Enable(enableCap);
+            else
+                GL.Disable(enableCap);
+        }
+
+        private void SetFaceCulling(RenderSettings.FaceCullingSettings settings)
+        {
+            SetGLEnableCap(EnableCap.CullFace, settings.enableFaceCulling);
+
+            GL.CullFace(settings.cullFaceMode);
+        }
+
+        private void SetDepthTesting(RenderSettings.DepthTestSettings settings)
+        {
+            SetGLEnableCap(EnableCap.DepthTest, settings.enableDepthTest);
+
+            GL.DepthFunc(settings.depthFunction);
+            GL.DepthMask(settings.depthMask);
+        }
+
+        private void SetAlphaBlending(RenderSettings.AlphaBlendSettings settings)
+        {
+            SetGLEnableCap(EnableCap.Blend, settings.enableAlphaBlending);
+
+            GL.BlendFunc(settings.sourceFactor, settings.destinationFactor);
+            GL.BlendEquationSeparate(settings.blendingEquationRgb, settings.blendingEquationAlpha);
+        }
+
+        private void InitializeBufferData(List<T> vertices, List<int> vertexIndices)
+        {
+            vertexBuffer.BufferData(vertices.ToArray(), vertexSizeInBytes, BufferUsageHint.StaticDraw);
+            vertexIndexBuffer.BufferData(vertexIndices.ToArray(), sizeof(int), BufferUsageHint.StaticDraw);
         }
 
         private void ConfigureVertexAttributes(Shader shader)
@@ -80,39 +138,6 @@ namespace Smash_Forge.Rendering.Meshes
             vertexArrayObject.Unbind();
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
-        }
-
-        protected virtual void SetCameraUniforms(Shader shader, Camera camera)
-        {
-            // Not all shaders will use camera uniforms.
-            if (camera == null)
-                return;
-
-            Matrix4 matrix = camera.MvpMatrix;
-            shader.SetMatrix4x4("mvpMatrix", ref matrix);
-        }
-
-        protected virtual void SetUniforms(Shader shader)
-        {
-
-        }
-
-        private void SetFaceCulling(RenderSettings.FaceCullingSettings settings)
-        {
-            if (settings.enableFaceCulling)
-                GL.Enable(EnableCap.CullFace);
-            else
-                GL.Disable(EnableCap.CullFace);
-
-            GL.CullFace(settings.cullFaceMode);
-        }
-
-        protected abstract List<VertexAttributeInfo> GetVertexAttributes();
-
-        private void InitializeBufferData(List<T> vertices, List<int> vertexIndices)
-        {
-            vertexBuffer.BufferData(vertices.ToArray(), vertexSizeInBytes, BufferUsageHint.StaticDraw);
-            vertexIndexBuffer.BufferData(vertexIndices.ToArray(), sizeof(int), BufferUsageHint.StaticDraw);
         }
 
         private void SetVertexAttributes(Shader shader)

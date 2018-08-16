@@ -9,10 +9,10 @@ namespace Smash_Forge.Rendering.Meshes
             public bool enableAlphaBlending = true;
 
             public BlendingFactor sourceFactor = BlendingFactor.SrcAlpha;
-
             public BlendingFactor destinationFactor = BlendingFactor.OneMinusSrcAlpha;
 
-            public BlendEquationMode blendingEquation = BlendEquationMode.FuncAdd;
+            public BlendEquationMode blendingEquationRgb = BlendEquationMode.FuncAdd;
+            public BlendEquationMode blendingEquationAlpha = BlendEquationMode.FuncAdd;
         }
     }
 }

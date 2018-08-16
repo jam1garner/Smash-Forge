@@ -1,7 +1,7 @@
 ﻿
 namespace Smash_Forge.Rendering.Meshes
 {
-    partial class RenderSettings
+    public partial class RenderSettings
     {
         public AlphaBlendSettings alphaBlendSettings = new AlphaBlendSettings();
 
