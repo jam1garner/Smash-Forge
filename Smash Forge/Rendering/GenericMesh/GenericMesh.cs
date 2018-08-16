@@ -12,37 +12,38 @@ namespace Smash_Forge.Rendering.Meshes
     {
         private readonly int vertexSizeInBytes;
 
-        private readonly List<T> vertices = new List<T>();
+        // The vertex data is immutable, so buffers only need to be initialized once.
         private BufferObject vertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
-
-        private readonly List<int> vertexIndices = new List<int>();
         private BufferObject vertexIndexBuffer = new BufferObject(BufferTarget.ElementArrayBuffer);
-
-        private VertexArrayObject vao = new VertexArrayObject();
+        private VertexArrayObject vertexArrayObject = new VertexArrayObject();
 
         public GenericMesh(List<T> vertices, int vertexSizeInBytes)
         {
-            // The vertex data is immutable, so buffers only need to be initialized once.
-            this.vertices = vertices;
             this.vertexSizeInBytes = vertexSizeInBytes;
 
+            // Generate a unique index for each vertex.
+            List<int> vertexIndices = GenerateIndices(vertices);
+
             // Generate basic indices.
+            InitializeBufferData(vertices, vertexIndices);
+        }
+
+        public GenericMesh(List<T> vertices, List<int> vertexIndices, int vertexSizeInBytes)
+        {
+            this.vertexSizeInBytes = vertexSizeInBytes;
+
+            InitializeBufferData(vertices, vertexIndices);
+        }
+
+        private static List<int> GenerateIndices(List<T> vertices)
+        {
+            List<int> vertexIndices = new List<int>();
             for (int i = 0; i < vertices.Count; i++)
             {
                 vertexIndices.Add(i);
             }
 
-            InitializeBufferData();
-        }
-
-        public GenericMesh(List<T> vertices, List<int> vertexIndices, int vertexSizeInBytes)
-        {
-            // The vertex data is immutable, so buffers only need to be initialized once.
-            this.vertices = vertices;
-            this.vertexIndices = vertexIndices;
-            this.vertexSizeInBytes = vertexSizeInBytes;
-
-            InitializeBufferData();
+            return vertexIndices;
         }
 
         public void Draw(Shader shader, Camera camera, int count, int offset = 0)
@@ -59,14 +60,14 @@ namespace Smash_Forge.Rendering.Meshes
             // TODO: Only do this once.
             ConfigureVertexAttributes(shader);
 
-            vao.Bind();
+            vertexArrayObject.Bind();
             GL.DrawElements(PrimitiveType.Triangles, count, DrawElementsType.UnsignedInt, offset);
-            vao.Unbind();
+            vertexArrayObject.Unbind();
         }
 
         private void ConfigureVertexAttributes(Shader shader)
         {
-            vao.Bind();
+            vertexArrayObject.Bind();
 
             vertexBuffer.Bind();
             vertexIndexBuffer.Bind();
@@ -76,7 +77,7 @@ namespace Smash_Forge.Rendering.Meshes
 
             // Unbind all the buffers.
             // This step may not be necessary.
-            vao.Unbind();
+            vertexArrayObject.Unbind();
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
         }
@@ -108,7 +109,7 @@ namespace Smash_Forge.Rendering.Meshes
 
         protected abstract List<VertexAttributeInfo> GetVertexAttributes();
 
-        private void InitializeBufferData()
+        private void InitializeBufferData(List<T> vertices, List<int> vertexIndices)
         {
             vertexBuffer.BufferData(vertices.ToArray(), vertexSizeInBytes, BufferUsageHint.StaticDraw);
             vertexIndexBuffer.BufferData(vertexIndices.ToArray(), sizeof(int), BufferUsageHint.StaticDraw);

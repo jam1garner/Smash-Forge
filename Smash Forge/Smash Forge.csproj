@@ -632,12 +632,6 @@
     <Compile Include="Rendering\ForgeCamera.cs" />
     <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\GenericMesh\Materials\GenericMaterial.cs" />
-    <Compile Include="Rendering\GenericMesh\Materials\IMaterialValue.cs" />
-    <Compile Include="Rendering\GenericMesh\Materials\UniformFloat.cs" />
-    <Compile Include="Rendering\GenericMesh\Materials\UniformInt.cs" />
-    <Compile Include="Rendering\GenericMesh\Materials\UniformVec2.cs" />
-    <Compile Include="Rendering\GenericMesh\Materials\UniformVec3.cs" />
-    <Compile Include="Rendering\GenericMesh\Materials\UniformVec4.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
     <Compile Include="Rendering\Lights\DirectionalLight.cs" />
     <Compile Include="Rendering\Lights\HemisphereFresnel.cs" />
