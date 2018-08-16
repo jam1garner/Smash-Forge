@@ -588,11 +588,11 @@
     <Compile Include="GUI\Menus\PolygonSelector.Designer.cs">
       <DependentUpon>PolygonSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Menus\RenderSettings.cs">
+    <Compile Include="GUI\Menus\RenderSettingsMenu.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\Menus\RenderSettings.Designer.cs">
-      <DependentUpon>RenderSettings.cs</DependentUpon>
+    <Compile Include="GUI\Menus\RenderSettingsMenu.Designer.cs">
+      <DependentUpon>RenderSettingsMenu.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Menus\ROM_Injector.cs">
       <SubType>Form</SubType>
@@ -631,17 +631,29 @@
     <Compile Include="Rendering\Drawing\NudMatSphereDrawing.cs" />
     <Compile Include="Rendering\ForgeCamera.cs" />
     <Compile Include="Rendering\FramebufferTools.cs" />
+    <Compile Include="Rendering\GenericMesh\Materials\GenericMaterial.cs" />
+    <Compile Include="Rendering\GenericMesh\Materials\IMaterialValue.cs" />
+    <Compile Include="Rendering\GenericMesh\Materials\UniformFloat.cs" />
+    <Compile Include="Rendering\GenericMesh\Materials\UniformInt.cs" />
+    <Compile Include="Rendering\GenericMesh\Materials\UniformVec2.cs" />
+    <Compile Include="Rendering\GenericMesh\Materials\UniformVec3.cs" />
+    <Compile Include="Rendering\GenericMesh\Materials\UniformVec4.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
     <Compile Include="Rendering\Lights\DirectionalLight.cs" />
     <Compile Include="Rendering\Lights\HemisphereFresnel.cs" />
     <Compile Include="Rendering\Lights\LightColor.cs" />
     <Compile Include="Rendering\Lights\LightMap.cs" />
     <Compile Include="Rendering\Lights\LightTools.cs" />
-    <Compile Include="Rendering\Meshes\ForgeMesh.cs" />
-    <Compile Include="Rendering\Meshes\Mesh.cs" />
-    <Compile Include="Rendering\Meshes\MeshColored3D.cs" />
-    <Compile Include="Rendering\Meshes\MeshSimple3D.cs" />
-    <Compile Include="Rendering\Meshes\VertexAttributeInfo.cs" />
+    <Compile Include="Rendering\GenericMesh\NudRenderMesh.cs" />
+    <Compile Include="Rendering\GenericMesh\GenericMesh.cs" />
+    <Compile Include="Rendering\GenericMesh\MeshColored3D.cs" />
+    <Compile Include="Rendering\GenericMesh\MeshSimple3D.cs" />
+    <Compile Include="Rendering\GenericMesh\RenderSettings\AlphaBlendSettings.cs" />
+    <Compile Include="Rendering\GenericMesh\RenderSettings\AlphaTestSettings.cs" />
+    <Compile Include="Rendering\GenericMesh\RenderSettings\DepthTestSettings.cs" />
+    <Compile Include="Rendering\GenericMesh\RenderSettings\FaceCullingSettings.cs" />
+    <Compile Include="Rendering\GenericMesh\RenderSettings\RenderSettings.cs" />
+    <Compile Include="Rendering\GenericMesh\VertexAttributeInfo.cs" />
     <Compile Include="Rendering\OpenTKSharedResources.cs" />
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\Drawing\ScreenDrawing.cs" />
@@ -869,8 +881,8 @@
     <None Include="characterSpecialBubbles.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="GUI\Menus\RenderSettings.resx">
-      <DependentUpon>RenderSettings.cs</DependentUpon>
+    <None Include="GUI\Menus\RenderSettingsMenu.resx">
+      <DependentUpon>RenderSettingsMenu.cs</DependentUpon>
     </None>
     <None Include="hashTable.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -96,14 +96,14 @@ namespace Smash_Forge.Rendering.Meshes
 
         }
 
-        private void SetFaceCulling(bool enableCulling, CullFaceMode cullFaceMode)
+        private void SetFaceCulling(RenderSettings.FaceCullingSettings settings)
         {
-            if (enableCulling)
+            if (settings.enableFaceCulling)
                 GL.Enable(EnableCap.CullFace);
             else
                 GL.Disable(EnableCap.CullFace);
 
-            GL.CullFace(cullFaceMode);
+            GL.CullFace(settings.cullFaceMode);
         }
 
         protected abstract List<VertexAttributeInfo> GetVertexAttributes();
