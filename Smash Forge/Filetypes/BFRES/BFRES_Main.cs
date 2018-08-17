@@ -430,7 +430,7 @@ namespace Smash_Forge
             shader.SetBoolToInt("renderB", Runtime.renderB);
             shader.SetBoolToInt("renderAlpha", Runtime.renderAlpha);
             shader.SetBoolToInt("renderFog", Runtime.renderFog);
-            shader.SetBoolToInt("useImageBasedLighting", false);
+            shader.SetBoolToInt("useImageBasedLighting", true);
         }
 
         private static void SetMiscUniforms(Camera camera, Shader shader)
@@ -450,8 +450,8 @@ namespace Smash_Forge
 
             shader.SetInt("debugOption", (int)Runtime.uvChannel);
 
-            // This cube map is for a quick test.
-            shader.SetTexture("cmap", RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh].Id, TextureTarget.TextureCubeMap, 2);
+            // PBR IBL
+            shader.SetTexture("specularIbl", RenderTools.specularPbr.Id, TextureTarget.TextureCubeMap, 2);
         }
 
         private void DrawMesh(Mesh mesh, FMDL_Model fmdl, Camera camera, bool drawPolyIds = false, bool drawSelection = false)

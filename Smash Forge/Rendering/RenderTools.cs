@@ -24,6 +24,9 @@ namespace Smash_Forge.Rendering
         public static Texture2D boneWeightGradient;
         public static Texture2D boneWeightGradient2;
 
+        public static TextureCubeMap diffusePbr;
+        public static TextureCubeMap specularPbr;
+
         public static void LoadTextures()
         {
             dummyTextures = CreateNudDummyTextures();
@@ -35,6 +38,13 @@ namespace Smash_Forge.Rendering
             uvTestPattern.LoadImageData(Properties.Resources.UVPattern);
             uvTestPattern.TextureWrapS = TextureWrapMode.Repeat;
             uvTestPattern.TextureWrapT = TextureWrapMode.Repeat;
+
+            // TODO: Simplify this conversion.
+            DDS specularSdr = new DDS(new FileData(Properties.Resources.specularSDR));      
+            specularPbr = NUT.CreateTextureCubeMap(specularSdr.ToNutTexture());
+
+            DDS diffuseSdr = new DDS(new FileData(Properties.Resources.diffuseSDR));
+            diffusePbr = NUT.CreateTextureCubeMap(diffuseSdr.ToNutTexture());
 
             boneWeightGradient = new Texture2D();
             boneWeightGradient.LoadImageData(Properties.Resources.boneWeightGradient);

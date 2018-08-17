@@ -68,7 +68,7 @@ uniform sampler2D MRA;
 uniform sampler2D BOTWSpecularMap;
 
 uniform samplerCube irradianceMap;
-uniform samplerCube prefilterMap;
+uniform samplerCube specularIbl;
 uniform sampler2D brdfLUT;
 
 // Shader Params
@@ -135,12 +135,12 @@ vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttribu
 // Shader code adapted from learnopengl.com's PBR tutorial:
 // https://learnopengl.com/PBR/Theory
 
-vec3 fresnelSchlick(float cosTheta, vec3 F0)
+vec3 FresnelSchlick(float cosTheta, vec3 F0)
 {
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+vec3 FresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 {
     return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
@@ -235,7 +235,7 @@ void main()
 	float cavity = 1;
 
 	vec3 emission = vec3(0);
-   if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
+    if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
 		emission.rgb += EmissionPass(EmissionMap, emission_intensity, vert, 0, emission_color);
 
 	vec3 lightMapColor = vec3(1);
@@ -261,110 +261,44 @@ void main()
     // Calculate shading vectors.
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
     vec3 N = normal;
-	if (HasNormalMap == 1 && useNormalMap == 1)
-		N = CalcBumpedNormal(normal, normalMap, vert, 0);
+    // TODO: This breaks for some reason.
+	// if (HasNormalMap == 1 && useNormalMap == 1)
+	// 	N = CalcBumpedNormal(normal, normalMap, vert, 0);
 
     vec3 V = normalize(I); //Eye View
 	vec3 L = normalize(specLightDirection); //Light
 	vec3 H = normalize(specLightDirection + I); //Half Angle
 
-	// attenuation
-    float A = 20.0 / dot(L - objectPosition, L - objectPosition);
+    // Diffuse pass
+    vec3 diffuseTerm = albedo * dot(L, N);
+    diffuseTerm *= cavity;
+    diffuseTerm *= ao;
+    diffuseTerm *= shadow;
 
-    vec3 F0 = vec3(0.04); //0.04 for dielectric materials
-    F0 = mix(F0, albedo, metallic);
+    // Adjust for metalness.
+    diffuseTerm *= clamp(1 - metallic, 0, 1);
 
-	vec3 Lo = vec3(0.0);
+    // Specular pass.
+    vec3 R = reflect(I, N);
+    int maxSpecularLod = 8;
+    vec3 specularIblColor = textureLod(specularIbl, R, roughness * maxSpecularLod).rgb;
+    vec3 f0 = mix(vec3(0.04), albedo, metallic); // dialectric
+    vec3 kS = FresnelSchlickRoughness(max(dot(N, H), 0.0), f0, roughness);
 
-	vec3 radiance = lightColor; //no attenuation
+    vec3 specularTerm = specularIblColor * kS;
 
-	//calculate Cook-Torrance BRDF
-	float NDF = DistributionGGX(N, H, roughness);
-	float G = GeometrySmith(N, V, L, roughness);
-    vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+    // Add render passes.
+    fragColor.rgb = vec3(0);
+    fragColor.rgb += diffuseTerm;
+    fragColor.rgb += specularTerm;
 
- 	vec3 numerator = NDF * G * F;
-	float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001; // 0.001 to prevent divide by zero.
-	vec3 specular  = numerator / denominator * specIntensity;
+    // Global brightness adjustment.
+    fragColor.rgb *= 1.5;
 
-	// kS is equal to Fresnel
-    vec3 kS = F;
+    // Convert back to sRGB.
+    fragColor.rgb = pow(fragColor.rgb, vec3(1 / gamma));
 
-	vec3 kD = vec3(1.0) - kS;
-	kD *= 1.0 - metallic;
-
-	float NdotL = max(dot(N, L), 0.0);
-
-    if (enableCellShading == 1)
-	{
-       // Higher blend values make the dark region smoother and larger.
-        float smoothness = 0.1;
-        float center = 0.5;
-        float edgeL = center;
-        float edgeR = center + (smoothness * 0.5);
-        float smoothLambert = smoothstep(edgeL, edgeR, NdotL);
-
-        float ambient = 0.6;
-        smoothLambert = clamp(smoothLambert + ambient, 0, 1);
-
-		NdotL = smoothLambert * 0.8;
-	}
-
-    // add to outgoing radiance Lo
-    Lo = (kD * albedo / PI + specular) * radiance * NdotL;
-
-    //Start IBL stuff
-
-	vec3 color = vec3(1);
-
-    // TODO: Renders as invisible on AMD even when useImageBasedLighting != 1.
-	// if (useImageBasedLighting == 1)
-	// {
-    //     vec3 R = reflect(-V, N);
-    //
-    //     // ambient lighting (we now use IBL as the ambient term)
-    //     F = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
-    //     kS = F;
-    //     kD = 1.0 - kS;
-    //     kD *= 1.0 - metallic;
-    //
-    //     vec3 irradiance = texture(irradianceMap, N).rgb;
-    //     vec3 diffuse = irradiance * albedo;
-    //
-    //     const float maxReflectionLod = 8.0;
-    //     vec3 prefilteredColor = textureLod(prefilterMap, R,  roughness * maxReflectionLod).rgb;
-    //
-    //     vec2 envBRDF  = texture(brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
-    //     specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
-    //
-    //     vec3 ambient = (kD * diffuse + specular);
-    //
-    //     color = ambient + Lo;
-    //
-    //     // HDR tonemapping. Raised high to fix brightness issues
-    //     color = color / (color + vec3(10000.0));
-    //
-    //     // correct gamma
-    //     color = pow(color, vec3(1.0/gamma));
-	// }
-	// else
-	{
-	    vec3 ambient = vec3(0.03) * albedo;
-	    color = ambient + Lo;
-	}
-
-    color *= ao;
-    color *= (0.6 + shadow);
-
-    float cavityStrength = 1.0;
-    color *= cavity * cavityStrength + (1.0-cavityStrength);
-
-    color = pow(color, vec3(1.0 / gamma));
-
-	float alpha = texture(tex0, f_texcoord0).a;
-
-	fragColor = vec4(color, alpha);
-
-    if (renderVertColor == 1)
-        fragColor *= min(vertexColor, vec4(1));
+    // Alpha calculations.
+    float alpha = texture(tex0, f_texcoord0).a;
+    fragColor.a = alpha;
 }
