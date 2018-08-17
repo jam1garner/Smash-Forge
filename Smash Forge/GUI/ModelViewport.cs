@@ -39,7 +39,7 @@ namespace Smash_Forge
         // Used for screen renders and color picking.
         private Framebuffer offscreenRenderFbo;
 
-        private VertexArrayObject screenVao;
+        private Mesh3D screenVao;
 
         // Shadow Mapping
         private Framebuffer depthMapFbo;
@@ -52,10 +52,7 @@ namespace Smash_Forge
         // Larger dimensions can be used for higher quality outputs for FBOs.
         private int fboRenderWidth;
         private int fboRenderHeight;
-
-        private NudRenderMesh forgeMesh;
-        private MeshSimple3D simpleMesh;
-    
+  
         // Functions of Viewer
         public enum Mode
         {
@@ -1712,43 +1709,10 @@ namespace Smash_Forge
                 ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id, screenVao);
             }
 
-            BenchmarkShapeDrawing();
-
             FixedFunctionRendering();
 
             GL.PopAttrib();
             glViewport.SwapBuffers();
-        }
-
-        private void BenchmarkShapeDrawing()
-        {
-            // Depth testing has a huge performance impact.
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
-
-            List<Vector3> positions = new List<Vector3>()
-            {
-                new Vector3(5, 5, 0),
-                new Vector3(5, -5, 0),
-                new Vector3(-5, -5, 0),
-                new Vector3(-5, 5, 0)
-            };
-
-            List<NUD.DisplayVertex> vertices = new List<NUD.DisplayVertex>();
-            foreach (Vector3 position in positions)
-            {
-                vertices.Add(new NUD.DisplayVertex() { pos = position, nrm = new Vector3(1, 0, 1) });
-            }
-
-            List<int> indices = new List<int>() { 0, 1, 3, 1, 2, 3 };
-
-            //if (forgeMesh == null)
-            //    forgeMesh = new ForgeMesh(vertices, indices);
-            //forgeMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, indices.Count, 0);
-
-            //if (simpleMesh == null)
-            //    simpleMesh = new MeshSimple3D(positions, indices);
-            //simpleMesh.Draw(OpenTKSharedResources.shaders["ForgeMesh"], camera, indices.Count, 0);
         }
 
         private void DrawModelsNormally(int width, int height, int defaultFbo)
@@ -2223,7 +2187,7 @@ namespace Smash_Forge
 
             if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
             {
-                screenVao = ScreenDrawing.CreateScreenTriangleVao();
+                screenVao = ScreenDrawing.CreateScreenTriangle();
 
                 SetUpBuffersAndTextures();
 

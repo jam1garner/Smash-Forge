@@ -11,6 +11,7 @@ using OpenTK;
 using WeifenLuo.WinFormsUI.Docking;
 using OpenTK.Graphics.OpenGL;
 using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Meshes;
 
 namespace Smash_Forge
 {
@@ -18,7 +19,7 @@ namespace Smash_Forge
     {
         public string chr_00_loc, chr_11_loc, chr_13_loc, stock_90_loc;
 
-        private SFGraphics.GLObjects.VertexArrayObject screenVao;
+        private Mesh3D screenTriangle;
 
         public UIPreview(NUT chr_00, NUT chr_11, NUT chr_13, NUT stock_90)
         {
@@ -314,7 +315,7 @@ namespace Smash_Forge
 
             foreach(NutTexture tex in nut.Nodes)
             {
-                ScreenDrawing.DrawTexturedQuad(nut.glTexByHashId[tex.HashId].Id, tex.Width, tex.Height, screenVao, true, true, true, true, true);
+                ScreenDrawing.DrawTexturedQuad(nut.glTexByHashId[tex.HashId].Id, tex.Width, tex.Height, screenTriangle, true, true, true, true, true);
             }
 
             glControl1.SwapBuffers();

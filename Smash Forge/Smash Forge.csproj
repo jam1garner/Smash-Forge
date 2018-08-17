@@ -648,7 +648,7 @@
     <Compile Include="Rendering\GenericMesh\NudRenderMesh.cs" />
     <Compile Include="Rendering\GenericMesh\GenericMesh.cs" />
     <Compile Include="Rendering\GenericMesh\MeshColored3D.cs" />
-    <Compile Include="Rendering\GenericMesh\MeshSimple3D.cs" />
+    <Compile Include="Rendering\GenericMesh\Mesh3D.cs" />
     <Compile Include="Rendering\GenericMesh\RenderSettings\AlphaBlendSettings.cs" />
     <Compile Include="Rendering\GenericMesh\RenderSettings\AlphaTestSettings.cs" />
     <Compile Include="Rendering\GenericMesh\RenderSettings\DepthTestSettings.cs" />

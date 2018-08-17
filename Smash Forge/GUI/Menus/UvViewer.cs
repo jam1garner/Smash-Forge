@@ -51,12 +51,12 @@ namespace Smash_Forge.GUI.Menus
         {
             glControl1.MakeCurrent();
 
-            VertexArrayObject screenVao = ScreenDrawing.CreateScreenTriangleVao();
+            Mesh3D screenTriangle = ScreenDrawing.CreateScreenTriangle();
 
 
             GL.Viewport(glControl1.ClientRectangle);
             // Draw darker to make the UVs visible.
-            ScreenDrawing.DrawTexturedQuad(RenderTools.uvTestPattern.Id, 0.5f, screenVao);
+            ScreenDrawing.DrawTexturedQuad(RenderTools.uvTestPattern.Id, 0.5f, screenTriangle);
 
             DrawPolygonUvs();
 

@@ -14,6 +14,7 @@ using System.IO;
 using System.Threading;
 using WeifenLuo.WinFormsUI.Docking;
 using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Meshes;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using SFGraphics.GLObjects.Textures;
@@ -32,7 +33,7 @@ namespace Smash_Forge
         // Rendering Stuff
         private Texture textureToRender;
         Framebuffer pngExportFramebuffer;
-        VertexArrayObject screenVao;
+        Mesh3D screenTriangle;
 
         private bool renderR = true;
         private bool renderG = true;
@@ -328,7 +329,7 @@ namespace Smash_Forge
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             if (textureToRender != null)
             {
-                ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, screenVao, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
+                ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, screenTriangle, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
                     currentMipLevel);
             }
 
@@ -1114,7 +1115,7 @@ namespace Smash_Forge
             {
                 currentNut.RefreshGlTexturesByHashId();
                 pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
-                screenVao = ScreenDrawing.CreateScreenTriangleVao();
+                screenTriangle = ScreenDrawing.CreateScreenTriangle();
             }
         }
     }

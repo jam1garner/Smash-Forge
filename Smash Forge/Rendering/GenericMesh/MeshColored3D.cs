@@ -5,7 +5,7 @@ using SFGraphics.GLObjects.Shaders;
 
 namespace Smash_Forge.Rendering.Meshes
 {
-    class MeshColored3D : MeshSimple3D
+    class MeshColored3D : Mesh3D
     {
         // Basic material data.
         private Vector4 color = new Vector4(1);

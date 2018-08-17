@@ -6,6 +6,7 @@ using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using SFGraphics.GLObjects;
 using SFGraphics.GLObjects.Textures;
+using Smash_Forge.Rendering.Meshes;
 
 namespace Smash_Forge.Rendering
 {
@@ -57,13 +58,13 @@ namespace Smash_Forge.Rendering
 
         private static Framebuffer DrawTextureToNewFbo(Texture2D texture, int width, int height, bool r, bool g, bool b, bool a)
         {
-            VertexArrayObject screenVao = ScreenDrawing.CreateScreenTriangleVao(); 
+            Mesh3D screenTriangle = ScreenDrawing.CreateScreenTriangle(); 
             Framebuffer framebuffer = new Framebuffer(FramebufferTarget.Framebuffer, width, height, PixelInternalFormat.Rgba);
             framebuffer.Bind();
 
             // Draw the specified color channels.
             GL.Viewport(0, 0, width, height);
-            ScreenDrawing.DrawTexturedQuad(texture.Id, 1, 1, screenVao, r, g, b, a);
+            ScreenDrawing.DrawTexturedQuad(texture.Id, 1, 1, screenTriangle, r, g, b, a);
             return framebuffer;
         }
     }
