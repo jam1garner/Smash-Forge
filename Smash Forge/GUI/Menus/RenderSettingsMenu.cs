@@ -13,12 +13,12 @@ using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge.GUI
 {
-    public partial class RenderSettings : Form
+    public partial class RenderSettingsMenu : Form
     {
         private bool disableRuntimeUpdates;
         private List<Color> hitboxColors;
 
-        public RenderSettings()
+        public RenderSettingsMenu()
         {
             InitializeComponent();
             disableRuntimeUpdates = true;

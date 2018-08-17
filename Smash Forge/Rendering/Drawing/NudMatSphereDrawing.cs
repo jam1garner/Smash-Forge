@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects;
+using Smash_Forge.Filetypes.Models.Nuds;
+using Smash_Forge.Rendering.Meshes;
 
 namespace Smash_Forge.Rendering
 {
@@ -23,16 +25,18 @@ namespace Smash_Forge.Rendering
 
         private static ForgeCamera nudSphereCamera = new ForgeCamera();
 
-        public static void DrawNudMaterialSphere(Shader shader, NUD.Material material, VertexArrayObject screenVao, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
+        public static void DrawNudMaterialSphere(Shader shader, NUD.Material material, Mesh3D screenTriangle, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
         {
             if (!shader.ProgramCreatedSuccessfully)
                 return;
 
             shader.UseProgram();
 
-
             // Use the same uniforms as the NUD shader. 
-            NUD.SetMaterialPropertyUniforms(shader, material);
+            GenericMaterial genericMaterial = new GenericMaterial();
+            NudUniforms.SetMaterialPropertyUniforms(genericMaterial, material);
+            genericMaterial.SetShaderUniforms(shader);
+
             NUD.SetStageLightingUniforms(shader, 0);
             ModelContainer.SetRenderSettingsUniforms(shader);
 
@@ -41,7 +45,7 @@ namespace Smash_Forge.Rendering
             ModelContainer.SetCameraMatrixUniforms(nudSphereCamera, shader);
 
             // Use default textures rather than textures from the NUT.
-            NUD.SetTextureUniformsNudMatSphere(shader, material, dummyTextures);
+            NudUniforms.SetTextureUniformsNudMatSphere(shader, material, dummyTextures);
 
             // These values aren't needed in the shader currently.
             shader.SetVector3("cameraPosition", 0, 0, 0);
@@ -58,7 +62,7 @@ namespace Smash_Forge.Rendering
             shader.SetTexture("bitanTex", sphereBitanTex.Id, TextureTarget.Texture2D, 18);
 
             // Draw full screen "quad" (big triangle)
-            ScreenDrawing.DrawScreenTriangle(shader, screenVao);
+            ScreenDrawing.DrawScreenTriangle(shader, screenTriangle);
         }
 
         public static void LoadMaterialSphereTextures()

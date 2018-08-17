@@ -15,6 +15,7 @@ using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects;
 using SFGraphics.GLObjects.GLObjectManagement;
 using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Meshes;
 
 namespace Smash_Forge
 {
@@ -32,7 +33,7 @@ namespace Smash_Forge
         private bool keepAspectRatio = false;
         private int currentMipLevel = 0;
 
-        private VertexArrayObject screenVao;
+        private Mesh3D screenTriangle;
 
         private FileSystemWatcher fw;
 
@@ -62,7 +63,7 @@ namespace Smash_Forge
             OpenTKSharedResources.InitializeSharedResources();
             if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
             {
-                screenVao = ScreenDrawing.CreateScreenTriangleVao();
+                screenTriangle = ScreenDrawing.CreateScreenTriangle();
             }
         }
 
@@ -351,7 +352,7 @@ namespace Smash_Forge
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             if (textureToRender != null)
             {
-                ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, screenVao, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
+                ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, screenTriangle, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
                     currentMipLevel);
             }
 

@@ -8,6 +8,7 @@ using System.Drawing;
 using SFGraphics.GLObjects;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects.Textures;
+using Smash_Forge.Rendering.Meshes;
 
 
 namespace Smash_Forge.Rendering
@@ -19,7 +20,7 @@ namespace Smash_Forge.Rendering
 
         // Resources for rendering.
         // These need to be regenerated every time due to using a separate thread.
-        private static VertexArrayObject screenVao;
+        private static Mesh3D screenTriangle;
 
         private static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
         private static Shader shader;
@@ -45,7 +46,7 @@ namespace Smash_Forge.Rendering
             using (GameWindow gameWindow = OpenTKSharedResources.CreateGameWindowContext(width, height))
             {
                 // Resource creation.
-                screenVao = ScreenDrawing.CreateScreenTriangleVao();
+                screenTriangle = ScreenDrawing.CreateScreenTriangle();
                 shader = OpenTKSharedResources.shaders["NudSphere"];
 
                 // Skip thumbnail generation if the shader didn't compile.
@@ -93,7 +94,7 @@ namespace Smash_Forge.Rendering
             framebuffer.Bind();
 
             // Draw the material to a textured quad.
-            NudMatSphereDrawing.DrawNudMaterialSphere(shader, material, screenVao, dummyTextures);
+            NudMatSphereDrawing.DrawNudMaterialSphere(shader, material, screenTriangle, dummyTextures);
 
             // Save output.
             using (Bitmap image = framebuffer.ReadImagePixels(true))

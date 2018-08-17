@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using Smash_Forge.Rendering.Meshes;
 
 namespace Smash_Forge
 {
@@ -21,7 +22,7 @@ namespace Smash_Forge
         private bool _loadedC = false;
         private bool _loadedA = false;
 
-        private SFGraphics.GLObjects.VertexArrayObject screenVao;
+        private Mesh3D screenTriangle;
 
         public BntxTextureList()
         {
@@ -51,7 +52,7 @@ namespace Smash_Forge
             Rendering.OpenTKSharedResources.InitializeSharedResources();
             if (Rendering.OpenTKSharedResources.SetupStatus == Rendering.OpenTKSharedResources.SharedResourceStatus.Initialized)
             {
-                screenVao = Rendering.ScreenDrawing.CreateScreenTriangleVao();
+                screenTriangle = Rendering.ScreenDrawing.CreateScreenTriangle();
             }
         }
 
@@ -85,7 +86,7 @@ namespace Smash_Forge
 
             int texture = tex.display;
 
-            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, screenVao, true, true, true, false);
+            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, screenTriangle, true, true, true, false);
 
             glControl1.SwapBuffers();
         }
@@ -111,7 +112,7 @@ namespace Smash_Forge
 
             int texture = tex.display;
 
-            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, screenVao, false, false, false, true);
+            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, screenTriangle, false, false, false, true);
 
             glControl2.SwapBuffers();
         }

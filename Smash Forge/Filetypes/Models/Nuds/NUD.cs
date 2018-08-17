@@ -2,7 +2,6 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
@@ -18,23 +17,15 @@ using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects;
 using SFGraphics.Tools;
 using SFGraphics.Cameras;
-
+using Smash_Forge.Filetypes.Models.Nuds;
 
 namespace Smash_Forge
 {
-    public class NUD : FileBase
+    public partial class NUD : FileBase
     {
         // OpenGL Buffers
         private BufferObject bonesUbo;
         private BufferObject selectVbo;
-
-        // Default bind location for dummy textures.
-        private static readonly TextureUnit dummyTextureUnit = TextureUnit.Texture20;
-        private static readonly int dummyTextureUnitOffset = 20;
-
-        // Default bind location for NUT textures.
-        private static readonly int nutTextureUnitOffset = 3;
-        private static readonly TextureUnit nutTextureUnit = TextureUnit.Texture3;
 
         public const int SMASH = 0;
         public const int POKKEN = 1;
@@ -42,8 +33,6 @@ namespace Smash_Forge
         public int boneCount = 0;
         public bool hasBones = false;
         public float[] boundingSphere = new float[4];
-
-        private ForgeMesh renderMesh;
 
         // Just used for rendering.
         private List<Mesh> depthSortedMeshes = new List<Mesh>();
@@ -58,7 +47,7 @@ namespace Smash_Forge
 
         public override Endianness Endian { get; set; }
 
-        private static readonly Dictionary<int, BlendingFactor> srcFactorsByMatValue = new Dictionary<int, BlendingFactor>()
+        public static readonly Dictionary<int, BlendingFactor> srcFactorsByMatValue = new Dictionary<int, BlendingFactor>()
         {
             { 0x00, BlendingFactor.One },
             { 0x01, BlendingFactor.SrcAlpha},
@@ -67,7 +56,7 @@ namespace Smash_Forge
             { 0x04, BlendingFactor.SrcAlpha},
         };
 
-        private static readonly Dictionary<int, BlendingFactor> dstFactorsByMatValue = new Dictionary<int, BlendingFactor>()
+        public static readonly Dictionary<int, BlendingFactor> dstFactorsByMatValue = new Dictionary<int, BlendingFactor>()
         {
             { 0x00, BlendingFactor.Zero },
             { 0x01, BlendingFactor.OneMinusSrcAlpha},
@@ -75,14 +64,14 @@ namespace Smash_Forge
             { 0x03, BlendingFactor.One},
         };
 
-        private static readonly Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
+        public static readonly Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
         {
             { 0x01, TextureWrapMode.Repeat},
             { 0x02, TextureWrapMode.MirroredRepeat},
             { 0x03, TextureWrapMode.ClampToEdge}
         };
 
-        private static readonly Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
+        public static readonly Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
         {
             { 0x00, TextureMinFilter.LinearMipmapLinear},
             { 0x01, TextureMinFilter.Nearest},
@@ -90,7 +79,7 @@ namespace Smash_Forge
             { 0x03, TextureMinFilter.NearestMipmapLinear},
         };
 
-        static readonly Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
+        public static readonly Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
         {
             { 0x00, TextureMagFilter.Linear},
             { 0x01, TextureMagFilter.Nearest},
@@ -266,58 +255,36 @@ namespace Smash_Forge
             }
         }
 
-        public void UpdateRenderMesh()
+        public void UpdateRenderMeshes()
         {
-            renderMesh = CreateRenderMesh();
-        }
-
-        public ForgeMesh CreateRenderMesh()
-        {
-            // Store all of the polygon vert data in one buffer.
-            List<DisplayVertex> displayVerticesList;
-            List<int> vertexIndicesList;
-            GetDisplayVerticesAndIndices(out displayVerticesList, out vertexIndicesList);
-
-            return new ForgeMesh(displayVerticesList, vertexIndicesList);
-        }
-
-        private void GetDisplayVerticesAndIndices(out List<DisplayVertex> displayVerticesList, out List<int> vertexIndicesList)
-        {
-            int polygonOffset = 0;
-            int vertexOffset = 0;
-
-            displayVerticesList = new List<DisplayVertex>();
-            vertexIndicesList = new List<int>();
-
-            // Loop backwards?
-            for (int meshIndex = Nodes.Count - 1; meshIndex >= 0; meshIndex--)
+            foreach (Mesh mesh in Nodes)
             {
-                Mesh m = (Mesh)Nodes[meshIndex];
-
-                for (int polyIndex = m.Nodes.Count - 1; polyIndex >= 0; polyIndex--)
+                foreach (Polygon p in mesh.Nodes)
                 {
-                    Polygon p = (Polygon)m.Nodes[polyIndex];
-                    p.Offset = polygonOffset * sizeof(float);
-
-                    List<DisplayVertex> polygonDisplayVertices = p.CreateDisplayVertices();
-                    displayVerticesList.AddRange(polygonDisplayVertices);
-
-                    for (int i = 0; i < p.displayFaceSize; i++)
-                    {
-                        vertexIndicesList.Add(p.display[i] + vertexOffset);
-                    }
-
-                    polygonOffset += p.displayFaceSize;
-                    vertexOffset += polygonDisplayVertices.Count;
+                    p.renderMesh = CreateRenderMesh(p);
                 }
             }
         }
 
+        public NudRenderMesh CreateRenderMesh(Polygon p)
+        {
+            // Store all of the polygon vert data in one buffer.
+            List<DisplayVertex> displayVerticesList;
+            List<int> vertexIndicesList;
+            p.GetDisplayVerticesAndIndices(out displayVerticesList, out vertexIndicesList);
+
+            NudRenderMesh nudRenderMesh = new NudRenderMesh(displayVerticesList, vertexIndicesList);
+            // Only use the first material for now.
+            if (p.materials.Count > 0)
+                nudRenderMesh.SetRenderSettings(p.materials[0]);
+            return nudRenderMesh;
+        }
+
         public void Render(VBN vbn, Camera camera, bool drawShadow = false, bool drawPolyIds = false)
         {
-            if (renderMesh == null)
+            if (bonesUbo == null || selectVbo == null)
             {
-                UpdateRenderMesh();
+                UpdateRenderMeshes();
                 GenerateBuffers();
             }
 
@@ -334,9 +301,6 @@ namespace Smash_Forge
             else
                 shader = OpenTKSharedResources.shaders["Nud"];
 
-            // Render using the selected shader.
-            shader.UseProgram();
-
             // Set bone matrices.
             UpdateBonesBuffer(vbn, shader, bonesUbo);
 
@@ -345,6 +309,8 @@ namespace Smash_Forge
 
         private void UpdateBonesBuffer(VBN vbn, Shader shader, BufferObject bonesUbo)
         {
+            shader.UseProgram();
+
             if (vbn == null)
             {
                 shader.SetBoolToInt("useBones", false);
@@ -603,14 +569,15 @@ namespace Smash_Forge
             Material material = p.materials[0];
 
             // Set Shader Values.
+            shader.UseProgram();
             SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
 
-            // Set OpenTK Render Options.
-            SetAlphaBlending(material);
-            SetAlphaTesting(material);
-            SetFaceCulling(material);
+            // Update render mesh settings.
+            // This is slow, but performance isn't an issue for NUDs.
+            p.renderMesh.SetRenderSettings(material);
+            p.renderMesh.SetMaterialValues(material);
 
-            renderMesh.Draw(shader, camera, p.displayFaceSize, p.Offset);
+            p.renderMesh.Draw(shader, camera, p.displayFaceSize);
         }
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<DummyTextures, Texture> dummyTextures, int id = 0, bool drawId = false)
@@ -618,8 +585,8 @@ namespace Smash_Forge
             // Shader Uniforms
             shader.SetUint("flags", material.Flags);
             shader.SetBoolToInt("renderVertColor", Runtime.renderVertColor && material.useVertexColor);
-            SetTextureUniforms(shader, material, dummyTextures);
-            SetMaterialPropertyUniforms(shader, material);
+            NudUniforms.SetTextureUniforms(shader, material, dummyTextures);
+
             SetStageLightingUniforms(shader, lightSetNumber);
             SetXMBUniforms(shader, p);
             SetNscUniform(p, shader);
@@ -638,103 +605,6 @@ namespace Smash_Forge
             // This fixes the alpha output for PNG renders.
             p.isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
             shader.SetBoolToInt("isTransparent", p.isTransparent);
-        }
-
-        private void SetAlphaBlending(Material material)
-        {
-            // Disable alpha blending for debug shading.
-            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-            {
-                GL.Disable(EnableCap.Blend);
-                return;
-            }
-
-            // Src and dst of 0 don't use alpha blending.
-            if (material.srcFactor == 0 && material.dstFactor == 0)
-            {
-                GL.Disable(EnableCap.Blend);
-                return;
-            }
-
-            // Set the alpha blending based on the material.
-            // If the values are not researched, use a default blending mode.
-            GL.Enable(EnableCap.Blend);
-
-            // Hacks for Game & Watch.
-            if ((material.srcFactor == 4) || (material.srcFactor == 51) || (material.srcFactor == 50))
-                GL.DepthMask(false);
-            else
-                GL.DepthMask(true);
-
-            // Set the source factor.
-            BlendingFactor blendSrc = BlendingFactor.SrcAlpha;
-            if (srcFactorsByMatValue.ContainsKey(material.srcFactor))
-                blendSrc = srcFactorsByMatValue[material.srcFactor];
-
-            // Set the destination factor.
-            BlendingFactor blendDst = BlendingFactor.OneMinusSrcAlpha;
-            if (dstFactorsByMatValue.ContainsKey(material.dstFactor))
-                blendDst = dstFactorsByMatValue[material.dstFactor];
-
-            // The dstFactor can also set the blending equation.
-            BlendEquationMode blendEquation = BlendEquationMode.FuncAdd;
-            if (material.dstFactor == 3)
-                blendEquation = BlendEquationMode.FuncReverseSubtract;
-
-            // Use separate equations for better alpha value blending.
-            GL.BlendFunc(blendSrc, blendDst);
-            GL.BlendEquationSeparate(blendEquation, BlendEquationMode.FuncAdd);
-        }
-
-        private static void SetAlphaTesting(Material material)
-        {
-            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-            {
-                // Disable alpha testing for debug shading.
-                GL.Disable(EnableCap.AlphaTest);
-                return;
-            }
-
-            if (material.alphaTest == (int)Material.AlphaTest.Enabled)
-                GL.Enable(EnableCap.AlphaTest);
-            else
-                GL.Disable(EnableCap.AlphaTest);
-
-            AlphaFunction alphaFunction = AlphaFunction.Always;
-            if (Material.alphaFunctionByMatValue.ContainsKey(material.alphaFunction))
-                alphaFunction = Material.alphaFunctionByMatValue[material.alphaFunction];
-
-            float refAlpha = material.RefAlpha / 255f;
-
-            GL.AlphaFunc(alphaFunction, refAlpha);
-        }
-
-        private static void SetFaceCulling(Material material)
-        {
-            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-            {
-                GL.Enable(EnableCap.CullFace);
-                GL.CullFace(CullFaceMode.Back);
-                return;
-            }
-
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-            switch (material.cullMode)
-            {
-                case 0x0000:
-                    GL.Disable(EnableCap.CullFace);
-                    break;
-                case 0x0404:
-                    GL.CullFace(CullFaceMode.Front);
-                    break;
-                case 0x0405:
-                    GL.CullFace(CullFaceMode.Back);
-                    break;
-                default:
-                    GL.Disable(EnableCap.CullFace);
-                    break;
-            }
         }
 
         public static void SetStageLightingUniforms(Shader shader, int lightSetNumber)
@@ -816,7 +686,7 @@ namespace Smash_Forge
             GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
             GL.StencilMask(0xFF);
 
-            renderMesh.Draw(shader, camera, p.displayFaceSize, p.Offset);
+            p.renderMesh.Draw(shader, camera, p.displayFaceSize);
 
             GL.ColorMask(cwm[0], cwm[1], cwm[2], cwm[3]);
 
@@ -828,7 +698,7 @@ namespace Smash_Forge
 
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.LineWidth(2.0f);
-            renderMesh.Draw(shader, camera, p.displayFaceSize, p.Offset);
+            p.renderMesh.Draw(shader, camera, p.displayFaceSize);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
             shader.SetInt("drawSelection", 0);
@@ -837,303 +707,6 @@ namespace Smash_Forge
             GL.Clear(ClearBufferMask.StencilBufferBit);
             GL.Disable(EnableCap.StencilTest);
             GL.Enable(EnableCap.DepthTest);
-        }
-
-        public static void SetMaterialPropertyUniforms(Shader shader, Material mat)
-        {
-            // UV samplers
-            MatPropertyShaderUniform(shader, mat, "NU_colorSamplerUV",   1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_colorSampler2UV",  1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_colorSampler3UV",  1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_normalSamplerBUV", 1, 1, 0, 0);
-
-            // Diffuse Color
-            MatPropertyShaderUniform(shader, mat, "NU_aoMinGain",       0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_colorGain",       1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_finalColorGain",  1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_finalColorGain2", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_finalColorGain3", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_colorOffset",     0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_diffuseColor",    1, 1, 1, 0.5f);
-            MatPropertyShaderUniform(shader, mat, "NU_characterColor",  1, 1, 1, 1);
-
-            // Specular
-            MatPropertyShaderUniform(shader, mat, "NU_specularColor",     0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_specularColorGain", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_specularParams",    0, 0, 0, 0);
-
-            // Fresnel
-            MatPropertyShaderUniform(shader, mat, "NU_fresnelColor",  0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_fresnelParams", 0, 0, 0, 0);
-
-            // Reflections
-            MatPropertyShaderUniform(shader, mat, "NU_reflectionColor",  0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_reflectionParams", 0, 0, 0, 0);
-
-            // Fog
-            MatPropertyShaderUniform(shader, mat, "NU_fogColor",  0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_fogParams", 0, 1, 0, 0);
-
-            // Soft Lighting
-            MatPropertyShaderUniform(shader, mat, "NU_softLightingParams",    0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams", 0, 0, 0, 0);
-
-            // Misc Properties
-            MatPropertyShaderUniform(shader, mat, "NU_normalParams",           1, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_zOffset",                0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_angleFadeParams",        0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", 0, 0, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_alphaBlendParams",       0, 0, 0, 0);
-
-            // Effect Materials
-            MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor0", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_effCombinerColor1", 1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_effColorGain",      1, 1, 1, 1);
-            MatPropertyShaderUniform(shader, mat, "NU_effScaleUV",        1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_effTransUV",        1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_effMaxUV",          1, 1, 0, 0);
-            MatPropertyShaderUniform(shader, mat, "NU_effUniverseParam",  1, 0, 0, 0);
-
-            // Create some conditionals rather than using different shaders.
-            HasMatPropertyShaderUniform(shader, mat, "NU_softLightingParams",     "hasSoftLight");
-            HasMatPropertyShaderUniform(shader, mat, "NU_customSoftLightParams",  "hasCustomSoftLight");
-            HasMatPropertyShaderUniform(shader, mat, "NU_specularParams",         "hasSpecularParams");
-            HasMatPropertyShaderUniform(shader, mat, "NU_dualNormalScrollParams", "hasDualNormal");
-            HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerAUV",       "hasNrmSamplerAUV");
-            HasMatPropertyShaderUniform(shader, mat, "NU_normalSamplerBUV",       "hasNrmSamplerBUV");
-            HasMatPropertyShaderUniform(shader, mat, "NU_finalColorGain",         "hasFinalColorGain");
-            HasMatPropertyShaderUniform(shader, mat, "NU_effUniverseParam",       "hasUniverseParam");
-        }
-
-        public static void SetTextureUniforms(Shader shader, Material mat, Dictionary<DummyTextures, Texture> dummyTextures)
-        {
-            SetHasTextureUniforms(shader, mat);
-            SetRenderModeTextureUniforms(shader);
-
-            // This is necessary to prevent some models from disappearing. 
-            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex.Id);
-
-            // The order of the textures in the following section is critical. 
-            int textureUnitIndexOffset = 0;
-            if (mat.hasDiffuse && textureUnitIndexOffset < mat.textures.Count)
-            {
-                int hash = mat.textures[textureUnitIndexOffset].hash;
-                if (mat.displayTexId != -1) hash = mat.displayTexId;
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), BindTexture(mat.textures[textureUnitIndexOffset], hash, textureUnitIndexOffset, RenderTools.dummyTextures));
-                mat.diffuse1ID = mat.textures[textureUnitIndexOffset].hash;
-                textureUnitIndexOffset++;
-            }
-
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasSphereMap, "spheremap", ref textureUnitIndexOffset, ref mat.sphereMapID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse2, "dif2", ref textureUnitIndexOffset, ref mat.diffuse2ID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse3, "dif3", ref textureUnitIndexOffset, ref mat.diffuse3ID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasStageMap, "stagecube", ref textureUnitIndexOffset, ref mat.stageMapID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasCubeMap, "cube", ref textureUnitIndexOffset, ref mat.cubeMapID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasAoMap, "ao", ref textureUnitIndexOffset, ref mat.aoMapID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasNormalMap, "normalMap", ref textureUnitIndexOffset, ref mat.normalID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasRamp, "ramp", ref textureUnitIndexOffset, ref mat.rampID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasDummyRamp, "dummyRamp", ref textureUnitIndexOffset, ref mat.dummyRampID, dummyTextures);
-        }
-
-        public static void SetTextureUniformsNudMatSphere(Shader shader, Material mat, Dictionary<DummyTextures, Texture> dummyTextures)
-        {
-            SetHasTextureUniforms(shader, mat);
-            SetRenderModeTextureUniforms(shader);
-
-            // This is necessary to prevent some models from disappearing. 
-            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex.Id);
-
-            // The material shader just uses predefined textures from the Resources folder.
-            MatTexture diffuse = new MatTexture((int)DummyTextures.DummyRamp);
-            MatTexture cubeMapHigh = new MatTexture((int)DummyTextures.StageMapHigh);
-
-            // The order of the textures in the following section is critical. 
-            int textureUnitIndexOffset = 0;
-            if (mat.hasDiffuse && textureUnitIndexOffset < mat.textures.Count)
-            {
-                GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
-                GL.BindTexture(TextureTarget.Texture2D, NudMatSphereDrawing.sphereDifTex.Id);
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif"), nutTextureUnitOffset + textureUnitIndexOffset);
-                textureUnitIndexOffset++;
-            }
-
-            // Jigglypuff has weird eyes.
-            if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
-            {
-                if (mat.hasDiffuse2)
-                {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasNormalMap)
-                {
-                    GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
-                    GL.BindTexture(TextureTarget.Texture2D, NudMatSphereDrawing.sphereNrmMapTex.Id);
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), nutTextureUnitOffset + textureUnitIndexOffset);
-                    textureUnitIndexOffset++;
-                }
-            }
-            else if ((mat.Flags & 0xFFFFFFFF) == 0x92F01101)
-            {
-                // Final smash mats and Mega Man's eyes.
-                if (mat.hasDiffuse2)
-                {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasRamp)
-                {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasDummyRamp)
-                {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-            }
-            else
-            {
-                if (mat.hasSphereMap)
-                {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("spheremap"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasDiffuse2)
-                {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasDiffuse3)
-                {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dif3"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                // The stage cube maps already use the appropriate dummy texture.
-                if (mat.hasStageMap)
-                {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("stagecube"), BindTexture(mat.textures[textureUnitIndexOffset], mat.stageMapID, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasCubeMap)
-                {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("cube"), BindTexture(cubeMapHigh, cubeMapHigh.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasAoMap)
-                {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ao"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasNormalMap)
-                {
-                    GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
-                    GL.BindTexture(TextureTarget.Texture2D, NudMatSphereDrawing.sphereNrmMapTex.Id);
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), nutTextureUnitOffset + textureUnitIndexOffset);
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasRamp)
-                {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, RenderTools.dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasDummyRamp)
-                {
-                    GL.Uniform1(shader.GetVertexAttributeUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, RenderTools.dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-            }
-        }
-
-        private static void SetTextureUniformsToDefaultTexture(Shader shader, int texture)
-        {
-            shader.SetTexture("dif", texture, TextureTarget.Texture2D, 0);
-            shader.SetTexture("dif2", texture, TextureTarget.Texture2D, 0);
-            shader.SetTexture("normalMap", texture, TextureTarget.Texture2D, 0);
-            shader.SetTexture("cube", texture, TextureTarget.Texture2D, 2);
-            shader.SetTexture("stagecube", texture, TextureTarget.Texture2D, 2);
-            shader.SetTexture("spheremap", texture, TextureTarget.Texture2D, 0);
-            shader.SetTexture("ao", texture, TextureTarget.Texture2D, 0);
-            shader.SetTexture("ramp", texture, TextureTarget.Texture2D, 0);
-        }
-
-        private static void SetRenderModeTextureUniforms(Shader shader)
-        {
-            shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 10);
-            shader.SetTexture("weightRamp1", RenderTools.boneWeightGradient.Id, TextureTarget.Texture2D, 11);
-            shader.SetTexture("weightRamp2", RenderTools.boneWeightGradient2.Id, TextureTarget.Texture2D, 12);
-        }
-
-        private static void SetHasTextureUniforms(Shader shader, Material mat)
-        {
-            shader.SetBoolToInt("hasDif", mat.hasDiffuse);
-            shader.SetBoolToInt("hasDif2", mat.hasDiffuse2);
-            shader.SetBoolToInt("hasDif3", mat.hasDiffuse3);
-            shader.SetBoolToInt("hasStage", mat.hasStageMap);
-            shader.SetBoolToInt("hasCube", mat.hasCubeMap);
-            shader.SetBoolToInt("hasAo", mat.hasAoMap);
-            shader.SetBoolToInt("hasNrm", mat.hasNormalMap);
-            shader.SetBoolToInt("hasRamp", mat.hasRamp);
-            shader.SetBoolToInt("hasDummyRamp", mat.hasDummyRamp);
-            shader.SetBoolToInt("hasColorGainOffset", mat.useColorGainOffset);
-            shader.SetBoolToInt("useDiffuseBlend", mat.useDiffuseBlend);
-            shader.SetBoolToInt("hasSphereMap", mat.hasSphereMap);
-            shader.SetBoolToInt("hasBayoHair", mat.hasBayoHair);
-            shader.SetBoolToInt("useDifRefMask", mat.useReflectionMask);
-            shader.SetBoolToInt("softLightBrighten", mat.softLightBrighten);
-        }
-
-        private static void MatPropertyShaderUniform(Shader shader, Material mat, string propertyName, float default1,
-            float default2, float default3, float default4)
-        {
-            // Attempt to get the values from the material's properties. 
-            // Otherwise, use the specified default values.
-            float[] values;
-            mat.entries.TryGetValue(propertyName, out values);
-            if (mat.anims.ContainsKey(propertyName))
-            {
-                values = mat.anims[propertyName];
-            }
-            if (values == null)
-                values = new float[] { default1, default2, default3, default4 };
-
-            string uniformName = propertyName.Substring(3); // remove the NU_ from name
-
-            if (values.Length == 4)
-                shader.SetVector4(uniformName, values[0], values[1], values[2], values[3]);
-            else
-                Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
-        }
-
-        private static void SetTextureUniformAndSetTexId(Shader shader, Material mat, bool hasTex, string name, ref int textureIndex, ref int texIdForCurrentTextureType, Dictionary<DummyTextures, Texture> dummyTextures)
-        {
-            // Bind the texture and create the uniform if the material has the right textures and flags. 
-            if (hasTex && textureIndex < mat.textures.Count)
-            {
-                // Find the index for the shader uniform.
-                // Bind the texture to a texture unit and then find where it was bound.
-                int uniformLocation = shader.GetVertexAttributeUniformLocation(name);
-                int textureUnit = BindTexture(mat.textures[textureIndex], mat.textures[textureIndex].hash, textureIndex, dummyTextures);
-                GL.Uniform1(uniformLocation, textureUnit);
-
-                // We won't know what type a texture is used for until we iterate through the textures.
-                texIdForCurrentTextureType = mat.textures[textureIndex].hash;
-
-                // Move on to the next texture.
-                textureIndex++;
-            }
         }
 
         public void MakeMetal(int newDifTexId, int newCubeTexId, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor, bool preserveDiffuse = false, bool preserveNrmMap = true)
@@ -1148,20 +721,6 @@ namespace Smash_Forge
                     }
                 }
             }
-        }
-
-        private static void HasMatPropertyShaderUniform(Shader shader, Material mat, string propertyName, string uniformName)
-        {
-            float[] values;
-            mat.entries.TryGetValue(propertyName, out values);
-            if (mat.anims.ContainsKey(propertyName))
-                values = mat.anims[propertyName];
-
-            int hasParam = 1;
-            if (values == null)
-                hasParam = 0;
-
-            shader.SetInt(uniformName, hasParam);
         }
 
         public void DrawPoints(Camera camera, VBN vbn, PrimitiveType type)
@@ -1208,57 +767,6 @@ namespace Smash_Forge
                 }
             }
             //shader.DisableVertexAttributes();
-        }
-
-        public static int BindTexture(MatTexture matTexture, int hash, int loc, Dictionary<DummyTextures, Texture> dummyTextures)
-        {
-            if (Enum.IsDefined(typeof(DummyTextures), hash))
-            {
-                return BindDummyTexture(loc, dummyTextures[(DummyTextures)hash]);
-            }
-            else
-            {
-                GL.ActiveTexture(nutTextureUnit + loc);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex.Id);
-            }
-
-            // Look through all loaded textures and not just the current modelcontainer.
-            foreach (NUT nut in Runtime.TextureContainers)
-            {
-                Texture texture;
-                if (nut.glTexByHashId.TryGetValue(hash, out texture))
-                {
-                    BindNutTexture(matTexture, texture);
-                    break;
-                }
-            }
-
-            return nutTextureUnitOffset + loc;
-        }
-
-        private static int BindDummyTexture(int loc, Texture texture)
-        {
-            GL.ActiveTexture(dummyTextureUnit + loc);
-            texture.Bind();
-            return dummyTextureUnitOffset + loc;
-        }
-
-        private static void BindNutTexture(MatTexture matTexture, Texture texture)
-        {
-            // Set the texture's parameters based on the material settings.
-            texture.Bind();
-            texture.TextureWrapS = wrapmode[matTexture.wrapModeS];
-            texture.TextureWrapT = wrapmode[matTexture.wrapModeT];
-            texture.MinFilter = minfilter[matTexture.minFilter];
-            texture.MagFilter = magfilter[matTexture.magFilter];
-
-            if (OpenGLExtensions.IsAvailable("GL_EXT_texture_filter_anisotropic") && (texture is Texture2D))
-            {
-                TextureParameterName anisotropy = (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt;
-                GL.TexParameter(TextureTarget.Texture2D, anisotropy, 0.0f);
-                if (matTexture.mipDetail == 0x4 || matTexture.mipDetail == 0x6)
-                    GL.TexParameter(TextureTarget.Texture2D, anisotropy, 4.0f);
-            }
         }
 
         public void ClearMta()
@@ -2231,1044 +1739,7 @@ namespace Smash_Forge
             return 0;
         }
 
-        #region ClassStructure
-
-        public struct DisplayVertex
-        {
-            // Used for rendering.
-            public Vector3 pos;
-            public Vector3 nrm;
-            public Vector3 tan;
-            public Vector3 bit;
-            public Vector2 uv;
-            public Vector4 col;
-            public Vector4 boneIds;
-            public Vector4 weight;
-            public Vector2 uv2;
-            public Vector2 uv3;
-
-            public static int Size = 4 * (3 + 3 + 3 + 3 + 2 + 4 + 4 + 4 + 2 + 2);
-        }
-
-        public class Vertex
-        {
-            public Vector3 pos = new Vector3(0, 0, 0), nrm = new Vector3(0, 0, 0);
-            public Vector4 bitan = new Vector4(0, 0, 0, 1);
-            public Vector4 tan = new Vector4(0, 0, 0, 1);
-            public Vector4 color = new Vector4(127, 127, 127, 127);
-            public List<Vector2> uv = new List<Vector2>();
-            public List<int> boneIds = new List<int>();
-            public List<float> boneWeights = new List<float>();
-
-            public Vertex()
-            {
-            }
-
-            public Vertex(float x, float y, float z)
-            {
-                pos = new Vector3(x, y, z);
-            }
-
-            public bool Equals(Vertex p)
-            {
-                return pos.Equals(p.pos) && nrm.Equals(p.nrm) && new HashSet<Vector2>(uv).SetEquals(p.uv) && color.Equals(p.color)
-                    && new HashSet<int>(boneIds).SetEquals(p.boneIds) && new HashSet<float>(boneWeights).SetEquals(p.boneWeights);
-            }
-
-            public override string ToString()
-            {
-                return pos.ToString();
-            }
-        }
-
-        public class MatTexture
-        {
-            public int hash;
-            public int mapMode = 0;
-            public int wrapModeS = 1;
-            public int wrapModeT = 1;
-            public int minFilter = 3;
-            public int magFilter = 2;
-            public int mipDetail = 6;
-            public int unknown = 0;
-            public short unknown2 = 0;
-
-            public MatTexture()
-            {
-
-            }
-
-            public MatTexture(int hash)
-            {
-                this.hash = hash;
-            }
-
-            public MatTexture Clone()
-            {
-                MatTexture t = new MatTexture();
-                t.hash = hash;
-                t.mapMode = mapMode;
-                t.wrapModeS = wrapModeS;
-                t.wrapModeT = wrapModeT;
-                t.minFilter = minFilter;
-                t.magFilter = magFilter;
-                t.mipDetail = mipDetail;
-                t.unknown = unknown;
-                t.unknown2 = unknown2;
-                return t;
-            }
-
-            public static MatTexture GetDefault()
-            {
-                MatTexture defaultTex = new MatTexture((int)DummyTextures.DummyRamp);
-                return defaultTex;
-            }
-        }
-
-        public class Material
-        {
-            public enum AlphaTest
-            {
-                Enabled = 0x02,
-                Disabled = 0x00
-            }
-
-            // TODO: How are 0x4 and 0x6 different?
-            public enum AlphaFunction
-            {
-                Never = 0x0,
-                GequalRefAlpha1 = 0x4,
-                GequalRefAlpha2 = 0x6
-            }
-
-            public static Dictionary<int, OpenTK.Graphics.OpenGL.AlphaFunction> alphaFunctionByMatValue = new Dictionary<int, OpenTK.Graphics.OpenGL.AlphaFunction>()
-            {
-                { 0x0, OpenTK.Graphics.OpenGL.AlphaFunction.Never },
-                { 0x4, OpenTK.Graphics.OpenGL.AlphaFunction.Gequal },
-                { 0x6, OpenTK.Graphics.OpenGL.AlphaFunction.Gequal },
-            };
-
-            public Dictionary<string, float[]> entries = new Dictionary<string, float[]>();
-            public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
-            public List<MatTexture> textures = new List<MatTexture>();
-
-            private uint flag;
-            public uint Flags
-            {
-                get
-                {
-                    return RebuildFlag4thByte();
-                }
-                set
-                {
-                    flag = value;
-                    CheckFlags();
-                    UpdateLabelledTextureIds();
-                }
-            }
-
-            private void UpdateLabelledTextureIds()
-            {
-                int textureIndex = 0;
-                if ((flag & 0xFFFFFFFF) == 0x9AE11163)
-                {
-                    UpdateLabelledId(hasDiffuse,   ref diffuse1ID, ref textureIndex);
-                    UpdateLabelledId(hasDiffuse2,  ref diffuse2ID, ref textureIndex);
-                    UpdateLabelledId(hasNormalMap, ref normalID,   ref textureIndex);
-                }
-                else
-                {
-                    // The order of the textures here is critical. 
-                    UpdateLabelledId(hasDiffuse,   ref diffuse1ID,  ref textureIndex);
-                    UpdateLabelledId(hasSphereMap, ref sphereMapID, ref textureIndex);
-                    UpdateLabelledId(hasDiffuse2,  ref diffuse2ID,  ref textureIndex);
-                    UpdateLabelledId(hasDiffuse3,  ref diffuse3ID,  ref textureIndex);
-                    UpdateLabelledId(hasStageMap,  ref stageMapID,  ref textureIndex);
-                    UpdateLabelledId(hasCubeMap ,  ref cubeMapID,   ref textureIndex);
-                    UpdateLabelledId(hasAoMap,     ref aoMapID,     ref textureIndex);
-                    UpdateLabelledId(hasNormalMap, ref normalID,    ref textureIndex);
-                    UpdateLabelledId(hasRamp,      ref rampID,      ref textureIndex);
-                    UpdateLabelledId(hasDummyRamp, ref dummyRampID, ref textureIndex);
-                }
-            }
-
-            private void UpdateLabelledId(bool hasTexture, ref int textureId, ref int textureIndex)
-            {
-                if (hasTexture && textureIndex < textures.Count)
-                {
-                    textureId = textures[textureIndex].hash;
-                    textureIndex += 1;
-                }
-            }
-
-            public int blendMode = 0;
-            public int dstFactor = 0;
-            public int srcFactor = 0;
-            public int alphaTest = 0;
-            public int alphaFunction = 0;
-            public int RefAlpha = 0;
-            public int cullMode = 0;
-            public int displayTexId = -1;
-
-            public int unknown1 = 0;
-            public int unkownWater = 0;
-            public int zBufferOffset = 0;
-
-            //flags
-            public bool glow = false;
-            public bool hasShadow = false;
-            public bool useVertexColor = false;
-            public bool useReflectionMask = false;
-            public bool useColorGainOffset = false;
-            public bool hasBayoHair = false;
-            public bool useDiffuseBlend = false;
-            public bool softLightBrighten = false;
-
-            // Texture flags
-            public bool hasDiffuse = false;
-            public bool hasNormalMap = false;
-            public bool hasDiffuse2 = false;
-            public bool hasDiffuse3 = false;
-            public bool hasAoMap = false;
-            public bool hasStageMap = false;
-            public bool hasCubeMap = false;
-            public bool hasRamp = false;
-            public bool hasSphereMap = false;
-            public bool hasDummyRamp = false;
-
-            // texture IDs for preserving existing textures
-            public int diffuse1ID = 0;
-            public int diffuse2ID = 0;
-            public int diffuse3ID = 0;
-            public int normalID = 0;
-            public int rampID = (int)DummyTextures.DummyRamp;
-            public int dummyRampID = (int)DummyTextures.DummyRamp;
-            public int sphereMapID = 0;
-            public int aoMapID = 0;
-            public int stageMapID = (int)DummyTextures.StageMapHigh;
-            public int cubeMapID = 0;
-
-            public Material()
-            {
-
-            }
-
-            public Material Clone()
-            {
-                Material m = new Material();
-
-                foreach (KeyValuePair<string, float[]> e in entries)
-                    m.entries.Add(e.Key, e.Value);
-
-                m.Flags = Flags;
-                m.blendMode = blendMode;
-                m.dstFactor = dstFactor;
-                m.srcFactor = srcFactor;
-                m.alphaTest = alphaTest;
-                m.alphaFunction = alphaFunction;
-                m.RefAlpha = RefAlpha;
-                m.cullMode = cullMode;
-                m.displayTexId = displayTexId;
-
-                m.unknown1 = 0;
-                m.unkownWater = 0;
-                m.zBufferOffset = 0;
-
-                foreach(MatTexture t in textures)
-                {
-                    m.textures.Add(t.Clone());
-                }
-
-                return m;
-            }
-
-            public static Material GetDefault()
-            {
-                Material material = new Material();
-                material.Flags = 0x94010161;
-                material.cullMode = 0x0405;
-                material.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
-                material.entries.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });
-                material.entries.Add("NU_blinkColor", new float[] { 0, 0, 0, 0 });
-                material.entries.Add("NU_aoMinGain", new float[] { 0, 0, 0, 0 });
-                material.entries.Add("NU_lightMapColorOffset", new float[] { 0, 0, 0, 0 });
-                material.entries.Add("NU_fresnelParams", new float[] { 1, 0, 0, 0 });
-                material.entries.Add("NU_alphaBlendParams", new float[] { 0, 0, 0, 0 });
-                material.entries.Add("NU_materialHash", new float[] { FileData.toFloat(0x7E538F65), 0, 0, 0 });
-
-                material.textures.Add(new MatTexture(0x10000000));
-                material.textures.Add(MatTexture.GetDefault());
-                return material;
-            }
-
-            public static Material GetStageDefault()
-            {
-                Material material = new Material();
-                material.Flags = 0xA2001001;
-                material.RefAlpha = 128;
-                material.cullMode = 1029;
-
-                // Display a default texture rather than a dummy texture.
-                material.textures.Add(new MatTexture(0));
-
-                material.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
-                material.entries.Add("NU_diffuseColor", new float[] { 1, 1, 1, 0.5f });
-                material.entries.Add("NU_materialHash", new float[] { BitConverter.ToSingle(new byte[] { 0x12, 0xEE, 0x2A, 0x1B }, 0), 0, 0, 0 });
-                return material;
-            }
-
-            public void CopyTextureIds(Material other)
-            {
-                // Copies all the texture IDs from the source material to the current material. 
-                // This is useful for preserving Tex IDs when using a preset or changing flags. 
-
-                for (int i = 0; i < Math.Min(textures.Count, other.textures.Count); i++)
-                {
-                    if (hasDiffuse)
-                    {
-                        textures[i].hash = other.textures[i].hash;
-                        continue;
-                    }
-                    if (hasDiffuse2)
-                    {
-                        textures[i].hash = other.textures[i].hash;
-                        continue;
-                    }
-                    if (hasDiffuse3)
-                    {
-                        textures[i].hash = other.textures[i].hash;
-                        continue;
-                    }
-                    if (hasStageMap)
-                    {
-                        // Don't preserve stageMap ID.
-                        continue;
-                    }
-                    if (hasCubeMap)
-                    {
-                        textures[i].hash = other.textures[i].hash;
-                        continue;
-                    }
-                    if (hasSphereMap)
-                    {
-                        textures[i].hash = other.textures[i].hash;
-                        continue;
-                    }
-                    if (hasAoMap)
-                    {
-                        textures[i].hash = other.textures[i].hash;
-                        continue;
-                    }
-                    if (hasNormalMap)
-                    {
-                        textures[i].hash = other.textures[i].hash;
-                        continue;
-                    }
-                    if (hasRamp)
-                    {
-                        textures[i].hash = other.textures[i].hash;
-                        continue;
-                    }
-                    if (hasDummyRamp)
-                    {
-                        // Dummy ramp should almost always be 0x10080000.
-                        continue;
-                    }
-                }
-            }
-
-            public void MakeMetal(int newDifTexId, int newCubeTexId, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor, bool preserveDiffuse = false, bool preserveNrmMap = true)
-            {
-                UpdateLabelledTextureIds();
-
-                float materialHash = -1f;
-                if (entries.ContainsKey("NU_materialHash"))
-                    materialHash = entries["NU_materialHash"][0];
-                anims.Clear();
-                entries.Clear();
-
-                // The texture ID used for diffuse later. 
-                int difTexID = newDifTexId;
-                if (preserveDiffuse)
-                    difTexID = diffuse1ID;
-
-                // add all the textures
-                textures.Clear();
-                displayTexId = -1;
-
-                MatTexture diffuse = new MatTexture(difTexID);
-                MatTexture cube = new MatTexture(newCubeTexId);
-                MatTexture normal = new MatTexture(normalID);
-                MatTexture dummyRamp = MatTexture.GetDefault();
-                dummyRamp.hash = 0x10080000;
-
-                if (hasNormalMap && preserveNrmMap)
-                {
-                    Flags = 0x9601106B;
-                    textures.Add(diffuse);
-                    textures.Add(cube);
-                    textures.Add(normal);
-                    textures.Add(dummyRamp);
-                }
-                else
-                {
-                    Flags = 0x96011069;
-                    textures.Add(diffuse);
-                    textures.Add(cube);
-                    textures.Add(dummyRamp);
-                }
-
-                // add material properties
-                entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
-                entries.Add("NU_fresnelColor", fresColor);
-                entries.Add("NU_blinkColor", new float[] { 0f, 0f, 0f, 0 });
-                entries.Add("NU_reflectionColor", refColor);
-                entries.Add("NU_aoMinGain", minGain);
-                entries.Add("NU_lightMapColorOffset", new float[] { 0f, 0f, 0f, 0 });
-                entries.Add("NU_fresnelParams", fresParams);
-                entries.Add("NU_alphaBlendParams", new float[] { 0f, 0f, 0f, 0 });
-                entries.Add("NU_materialHash", new float[] { materialHash, 0f, 0f, 0 });
-            }
-
-            public uint RebuildFlag4thByte()
-            {
-                byte new4thByte = 0;
-                if (hasDiffuse)
-                    new4thByte |= (byte)TextureFlags.DiffuseMap;
-                if (hasNormalMap)
-                    new4thByte |= (byte)TextureFlags.NormalMap;
-                if (hasCubeMap || hasRamp)
-                    new4thByte |= (byte)TextureFlags.RampCubeMap;
-                if (hasStageMap || hasAoMap)
-                    new4thByte |= (byte)TextureFlags.StageAOMap;
-                if (hasSphereMap)
-                    new4thByte |= (byte)TextureFlags.SphereMap;
-                if (glow)
-                    new4thByte |= (byte) TextureFlags.Glow;
-                if (hasShadow)
-                    new4thByte |= (byte) TextureFlags.Shadow;
-                if (hasDummyRamp)
-                    new4thByte |= (byte) TextureFlags.DummyRamp; 
-                flag = (flag & 0xFFFFFF00) | new4thByte;
-
-                return flag;
-            }
-
-            private void CheckFlags()
-            {
-                int intFlags = ((int)flag);
-                glow = (intFlags & (int)TextureFlags.Glow) > 0;
-                hasShadow = (intFlags & (int)TextureFlags.Shadow) > 0;
-                CheckMisc(intFlags);
-                CheckTextures(flag);
-            }
-
-            private void CheckMisc(int matFlags)
-            {
-                // Some hacky workarounds until I understand flags better.
-                useColorGainOffset = CheckColorGain(flag);
-                useDiffuseBlend = (matFlags & 0xD0090000) == 0xD0090000 || (matFlags & 0x90005000) == 0x90005000;
-                useVertexColor = CheckVertexColor(flag);
-                useReflectionMask = (matFlags & 0xFFFFFF00) == 0xF8820000;
-                hasBayoHair = (matFlags & 0x00FF0000) == 0x00420000;
-                softLightBrighten = ((matFlags & 0x00FF0000) == 0x00810000 || (matFlags & 0xFFFF0000) == 0xFA600000);
-            }
-
-            private bool CheckVertexColor(uint matFlags)
-            {
-                // Characters and stages use different values for enabling vertex color.
-                // Always use vertex color for effect materials for now.
-                byte byte1 = (byte) ((matFlags & 0xFF000000) >> 24);
-                bool vertexColor = (byte1 == 0x94) || (byte1 == 0x9A) || (byte1 == 0x9C) || (byte1 == 0xA2) 
-                    || (byte1 == 0xA4) || (byte1 == 0xB0);
-
-                return vertexColor;
-            }
-
-            private bool CheckColorGain(uint matFlags)
-            {
-                byte byte1 = (byte)(matFlags >> 24);
-                byte byte2 = (byte)(matFlags >> 16);
-                byte byte4 = (byte)(matFlags & 0xFF);
-
-                bool hasLightingChannel = (byte1 & 0x0C) == 0x0C;
-                bool hasByte2 = (byte2 == 0x61) || (byte2== 0x42) || (byte2 == 0x44);
-                bool hasByte4 = (byte4 == 0x61);
-
-                return hasLightingChannel && hasByte2 && hasByte4;
-            }
-
-            private void CheckTextures(uint matFlags)
-            {
-                // Why figure out how these values work when you can just hardcode all the important ones?
-                // Effect materials use 4th byte 00 but often still have a diffuse texture.
-                byte byte1 = (byte)(matFlags >> 24);
-                byte byte2 = (byte)(matFlags >> 16);
-                byte byte3 = (byte)(matFlags >> 8);
-                byte byte4 = (byte)(matFlags & 0xFF);
-
-                bool isEffectMaterial = (byte1 & 0xF0) == 0xB0;
-                hasDiffuse = (matFlags & (byte)TextureFlags.DiffuseMap) > 0 || isEffectMaterial;
-
-                hasSphereMap = (byte4 & (byte)TextureFlags.SphereMap) > 0;
-
-                hasNormalMap = (byte4 & (byte)TextureFlags.NormalMap) > 0;
-
-                hasDummyRamp = (byte4 & (byte)TextureFlags.DummyRamp) > 0;
-
-                hasAoMap = (byte4 & (byte)TextureFlags.StageAOMap) > 0 && !hasDummyRamp;
-
-                hasStageMap = (byte4 & (byte)TextureFlags.StageAOMap) > 0 && hasDummyRamp;
-
-                bool hasRampCubeMap = (matFlags & (int)TextureFlags.RampCubeMap) > 0;
-                hasCubeMap = (matFlags & (int)TextureFlags.RampCubeMap) > 0 && (!hasDummyRamp) && (!hasSphereMap);
-                hasRamp = (matFlags & (int)TextureFlags.RampCubeMap) > 0 && hasDummyRamp;
-
-                hasDiffuse3 = (byte3 & 0x91) == 0x91 || (byte3 & 0x96) == 0x96 || (byte3 & 0x99) == 0x99;
-
-                hasDiffuse2 = hasRampCubeMap && ((matFlags & (int)TextureFlags.NormalMap) == 0)
-                    && (hasDummyRamp || hasDiffuse3);
-
-                // Jigglypuff has weird eyes, so just hardcode it.
-                if ((matFlags & 0xFFFFFFFF) == 0x9AE11163)
-                {
-                    hasDiffuse2 = true;
-                    hasNormalMap = true;
-                }
-
-                // Mega Man also has strange eyes.
-                if ((matFlags & 0xFFFFFFFF) == 0x92F01101)
-                {
-                    hasDiffuse2 = true;
-                    hasRamp = true;
-                    hasDummyRamp = true;
-                }
-            }
-        }
-
-        public class Polygon : TreeNode
-        {
-            // Bone types and vertex types control two bytes of the vertsize.
-            public enum BoneTypes
-            {
-                NoBones =  0x00,
-                Float = 0x10,
-                HalfFloat = 0x20,
-                Byte = 0x40
-            }
-
-            public enum VertexTypes
-            {
-                NoNormals = 0x0,
-                NormalsFloat = 0x1,
-                NormalsTanBiTanFloat = 0x3,
-                NormalsHalfFloat = 0x6,
-                NormalsTanBiTanHalfFloat = 0x7
-            }
-
-            // Used to generate a unique color for viewport selection.
-            private static List<int> previousDisplayIds = new List<int>();
-            public int DisplayId { get { return displayId; } }
-            private int displayId = 0;
-
-            // The number of vertices is vertexIndices.Count because many vertices are shared.
-            public List<Vertex> vertices = new List<Vertex>();
-            public List<int> vertexIndices = new List<int>();
-            public int displayFaceSize = 0;
-
-            public List<Material> materials = new List<Material>();
-
-            // defaults to a basic bone weighted vertex format
-            public int vertSize = (int)BoneTypes.Byte | (int)VertexTypes.NormalsHalfFloat;
-
-            public int UVSize = 0x12;
-            public int strip = 0x40;
-            public int polflag = 0x04;
-
-            // for drawing
-            public bool isTransparent = false;
-            public int[] display;
-            public int[] selectedVerts;
-            public int Offset; // For Rendering
-
-
-            public Polygon()
-            {
-                Checked = true;
-                Text = "Polygon";
-                ImageKey = "polygon";
-                SelectedImageKey = "polygon";
-                GenerateDisplayId();
-            }
-
-            public void AddVertex(Vertex v)
-            {
-                vertices.Add(v);
-            }
-
-            private void GenerateDisplayId()
-            {
-                // Find last used ID. Next ID will be last ID + 1.
-                // A color is generated from the integer as hexadecimal, but alpha is ignored.
-                // Incrementing will affect RGB before it affects Alpha (ARGB color).
-                int index = 0;
-                if (previousDisplayIds.Count > 0)
-                    index = previousDisplayIds.Last();
-                index++;
-                previousDisplayIds.Add(index);
-                displayId = index;
-            }
-
-            public void AOSpecRefBlend()
-            {
-                // change aomingain to only affect specular and reflection. ignore 2nd material
-                if (materials[0].entries.ContainsKey("NU_aoMinGain"))
-                {
-                    materials[0].entries["NU_aoMinGain"][0] = 15.0f;
-                    materials[0].entries["NU_aoMinGain"][1] = 15.0f;
-                    materials[0].entries["NU_aoMinGain"][2] = 15.0f;
-                    materials[0].entries["NU_aoMinGain"][3] = 0.0f;
-                }
-            }
-
-            public List<DisplayVertex> CreateDisplayVertices()
-            {
-                // rearrange faces
-                display = GetRenderingVertexIndices().ToArray();
-
-                List<DisplayVertex> displayVertList = new List<DisplayVertex>();
-
-                if (vertexIndices.Count <= 3)
-                    return displayVertList;
-                foreach (Vertex v in vertices)
-                {
-                    DisplayVertex displayVert = new DisplayVertex()
-                    {
-                        pos = v.pos,
-                        nrm = v.nrm,
-                        tan = v.tan.Xyz,
-                        bit = v.bitan.Xyz,
-                        col = v.color / 127,
-                        uv = v.uv.Count > 0 ? v.uv[0] : new Vector2(0, 0),
-                        uv2 = v.uv.Count > 1 ? v.uv[1] : new Vector2(0, 0),
-                        uv3 = v.uv.Count > 2 ? v.uv[2] : new Vector2(0, 0),
-                        boneIds = new Vector4(
-                            v.boneIds.Count > 0 ? v.boneIds[0] : -1,
-                            v.boneIds.Count > 1 ? v.boneIds[1] : -1,
-                            v.boneIds.Count > 2 ? v.boneIds[2] : -1,
-                            v.boneIds.Count > 3 ? v.boneIds[3] : -1),
-                        weight = new Vector4(
-                            v.boneWeights.Count > 0 ? v.boneWeights[0] : 0,
-                            v.boneWeights.Count > 1 ? v.boneWeights[1] : 0,
-                            v.boneWeights.Count > 2 ? v.boneWeights[2] : 0,
-                            v.boneWeights.Count > 3 ? v.boneWeights[3] : 0),
-                    };
-                    displayVertList.Add(displayVert);
-                }
-
-                selectedVerts = new int[displayVertList.Count];
-                return displayVertList;
-            }
-
-            public void CalculateTangentBitangent()
-            {
-                // Don't generate tangents and bitangents if the vertex format doesn't support them. 
-                int vertType = vertSize & 0xF;
-                if (!(vertType == 3 || vertType == 7))
-                    return;
-
-                List<int> f = GetRenderingVertexIndices();
-                Vector3[] tanArray = new Vector3[vertices.Count];
-                Vector3[] bitanArray = new Vector3[vertices.Count];
-
-                CalculateTanBitanArrays(f, tanArray, bitanArray);
-                ApplyTanBitanArray(tanArray, bitanArray);
-            }
-
-            public void SetVertexColor(Vector4 intColor)
-            {
-                // (127, 127, 127, 127) is white.
-                foreach (Vertex v in vertices)
-                {
-                    v.color = intColor;
-                }
-            }
-
-
-            private void ApplyTanBitanArray(Vector3[] tanArray, Vector3[] bitanArray)
-            {
-                for (int i = 0; i < vertices.Count; i++)
-                {
-                    Vertex v = vertices[i];
-                    Vector3 newTan = tanArray[i];
-                    Vector3 newBitan = bitanArray[i];
-
-                    // The tangent and bitangent should be orthogonal to the normal but not each other. 
-                    // Bitangents are not calculated with a cross product to prevent flipped shading with mirrored normal maps.
-                    v.tan = new Vector4(VectorTools.Orthogonalize(newTan, v.nrm), 1);
-                    v.bitan = new Vector4(VectorTools.Orthogonalize(newBitan, v.nrm), 1);
-                    v.bitan *= -1;
-                }
-            }
-
-            private void CalculateTanBitanArrays(List<int> faces, Vector3[] tanArray, Vector3[] bitanArray)
-            {
-                // Three verts per face.
-                for (int i = 0; i < displayFaceSize; i += 3)
-                {
-                    Vertex v1 = vertices[faces[i]];
-                    Vertex v2 = vertices[faces[i + 1]];
-                    Vertex v3 = vertices[faces[i + 2]];
-
-                    // Check for index out of range errors and just skip this face.
-                    if (v1.uv.Count < 1 || v2.uv.Count < 1 || v3.uv.Count < 1)
-                        continue;
-
-                    Vector3 s = new Vector3();
-                    Vector3 t = new Vector3();
-                    VectorTools.GenerateTangentBitangent(v1.pos, v2.pos, v3.pos, v1.uv[0], v2.uv[0], v3.uv[0], out s, out t);
-
-                    // Average tangents and bitangents.
-                    tanArray[faces[i]] += s;
-                    tanArray[faces[i + 1]] += s;
-                    tanArray[faces[i + 2]] += s;
-
-                    bitanArray[faces[i]] += t;
-                    bitanArray[faces[i + 1]] += t;
-                    bitanArray[faces[i + 2]] += t;
-                }
-            }
-
-            public void SmoothNormals()
-            {
-                Vector3[] normals = new Vector3[vertices.Count];
-
-                List<int> f = GetRenderingVertexIndices();
-
-                for (int i = 0; i < displayFaceSize; i += 3)
-                {
-                    Vertex v1 = vertices[f[i]];
-                    Vertex v2 = vertices[f[i+1]];
-                    Vertex v3 = vertices[f[i+2]];
-                    Vector3 nrm = VectorTools.CalculateNormal(v1.pos, v2.pos, v3.pos);
-
-                    normals[f[i + 0]] += nrm;
-                    normals[f[i + 1]] += nrm;
-                    normals[f[i + 2]] += nrm;
-                }
-                
-                for (int i = 0; i < normals.Length; i++)
-                    vertices[i].nrm = normals[i].Normalized();
-
-                // Compare each vertex with all the remaining vertices. This might skip some.
-                for (int i = 0; i < vertices.Count; i++)
-                {
-                    Vertex v = vertices[i];
-
-                    for (int j = i + 1; j < vertices.Count; j++)
-                    {
-                        Vertex v2 = vertices[j];
-
-                        if (v == v2)
-                            continue;
-                        float dis = (float)Math.Sqrt(Math.Pow(v.pos.X - v2.pos.X, 2) + Math.Pow(v.pos.Y - v2.pos.Y, 2) + Math.Pow(v.pos.Z - v2.pos.Z, 2));
-                        if (dis <= 0f) // Extra smooth
-                        {
-                            Vector3 nn = ((v2.nrm + v.nrm) / 2).Normalized();
-                            v.nrm = nn;
-                            v2.nrm = nn;
-                        }
-                    }
-                }
-            }
-
-            public void CalculateNormals()
-            {
-                Vector3[] normals = new Vector3[vertices.Count];
-
-                for (int i = 0; i < normals.Length; i++)
-                    normals[i] = new Vector3(0, 0, 0);
-
-                List<int> f = GetRenderingVertexIndices();
-
-                for (int i = 0; i < displayFaceSize; i += 3)
-                {
-                    Vertex v1 = vertices[f[i]];
-                    Vertex v2 = vertices[f[i + 1]];
-                    Vertex v3 = vertices[f[i + 2]];
-                    Vector3 nrm = VectorTools.CalculateNormal(v1.pos, v2.pos, v3.pos);
-
-                    normals[f[i + 0]] += nrm * (nrm.Length / 2);
-                    normals[f[i + 1]] += nrm * (nrm.Length / 2);
-                    normals[f[i + 2]] += nrm * (nrm.Length / 2);
-                }
-
-                for (int i = 0; i < normals.Length; i++)
-                    vertices[i].nrm = normals[i].Normalized();
-            }
-
-            public void AddDefaultMaterial()
-            {
-                Material mat = Material.GetDefault();
-                materials.Add(mat);
-                mat.textures.Add(new MatTexture(0x10000000));
-                mat.textures.Add(MatTexture.GetDefault());
-            }
-
-            public List<int> GetRenderingVertexIndices()
-            {
-                if ((strip >> 4) == 4)
-                {
-                    displayFaceSize = vertexIndices.Count;
-                    return vertexIndices;
-                }
-                else
-                {
-                    List<int> vertexIndices = new List<int>();
-
-                    int startDirection = 1;
-                    int p = 0;
-                    int f1 = this.vertexIndices[p++];
-                    int f2 = this.vertexIndices[p++];
-                    int faceDirection = startDirection;
-                    int f3;
-                    do
-                    {
-                        f3 = this.vertexIndices[p++];
-                        if (f3 == 0xFFFF)
-                        {
-                            f1 = this.vertexIndices[p++];
-                            f2 = this.vertexIndices[p++];
-                            faceDirection = startDirection;
-                        }
-                        else
-                        {
-                            faceDirection *= -1;
-                            if ((f1 != f2) && (f2 != f3) && (f3 != f1))
-                            {
-                                if (faceDirection > 0)
-                                {
-                                    vertexIndices.Add(f3);
-                                    vertexIndices.Add(f2);
-                                    vertexIndices.Add(f1);
-                                }
-                                else
-                                {
-                                    vertexIndices.Add(f2);
-                                    vertexIndices.Add(f3);
-                                    vertexIndices.Add(f1);
-                                }
-                            }
-                            f1 = f2;
-                            f2 = f3;
-                        }
-                    } while (p < this.vertexIndices.Count);
-
-                    displayFaceSize = vertexIndices.Count;
-                    return vertexIndices;
-                }
-            }
-        }
-
-        // typically a mesh will just have 1 polygon
-        // but you can just use the mesh class without polygons
-        public class Mesh : TreeNode
-        {
-            public enum BoneFlags
-            {
-                NotRigged = 0,
-                Rigged = 4,
-                SingleBind = 8
-            }
-
-            // Used to generate a unique color for mesh viewport selection.
-            private static List<int> previousDisplayIds = new List<int>();
-            private int displayId = 0;
-            public int DisplayId { get { return displayId; } }
-
-            public int boneflag = (int)BoneFlags.Rigged;
-            public short singlebind = -1;
-            public int sortBias = 0;
-            public bool billboardY = false;
-            public bool billboard = false;
-            public bool useNsc = false;
-
-            public bool sortByObjHeirarchy = true;
-            public float[] boundingSphere = new float[8];
-            public float sortingDistance = 0;
-
-            public Mesh()
-            {
-                Checked = true;
-                ImageKey = "mesh";
-                SelectedImageKey = "mesh";
-                GenerateDisplayId();
-            }
-
-            private void GenerateDisplayId()
-            {
-                // Find last used ID. Next ID will be last ID + 1.
-                // A color is generated from the integer as hexadecimal, but alpha is ignored.
-                // Incrementing will affect RGB before it affects Alpha (ARGB color).
-                int index = 0;
-                if (previousDisplayIds.Count > 0)
-                    index = previousDisplayIds.Last();
-                index++;
-                previousDisplayIds.Add(index);
-                displayId = index;
-            }
-
-            public void addVertex(Vertex v)
-            {
-                if (Nodes.Count == 0)
-                    Nodes.Add(new Polygon());
-
-                ((Polygon)Nodes[0]).AddVertex(v);
-            }
-
-            public void generateBoundingSphere()
-            {
-                Vector3 cen1 = new Vector3(0,0,0), cen2 = new Vector3(0,0,0);
-                double rad1 = 0, rad2 = 0;
-
-                //Get first vert
-                int vertCount = 0;
-                Vector3 vert0 = new Vector3();
-                foreach (Polygon p in Nodes)
-                {
-                    foreach (Vertex v in p.vertices)
-                    {
-                        vert0 = v.pos;
-                        vertCount++;
-                        break;
-                    }
-                    break;
-                }
-
-                if (vertCount == 0)
-                    return;
-
-                //Calculate average and min/max
-                Vector3 min = new Vector3(vert0);
-                Vector3 max = new Vector3(vert0);
-
-                vertCount = 0;
-                foreach (Polygon p in Nodes)
-                {
-                    foreach(Vertex v in p.vertices)
-                    {
-                        for (int i = 0; i < 3; i++)
-                        {
-                            min[i] = Math.Min(min[i], v.pos[i]);
-                            max[i] = Math.Max(max[i], v.pos[i]);
-                        }
-
-                        cen1 += v.pos;
-                        vertCount++;
-                    }
-                }
-
-                cen1 /= vertCount;
-                for (int i = 0; i < 3; i++)
-                    cen2[i] = (min[i]+max[i])/2;
-
-                //Calculate the radius of each
-                double dist1, dist2;
-                foreach (Polygon p in Nodes)
-                {
-                    foreach (Vertex v in p.vertices)
-                    {
-                        dist1 = ((Vector3)(v.pos - cen1)).Length;
-                        if (dist1 > rad1)
-                            rad1 = dist1;
-
-                        dist2 = ((Vector3)(v.pos - cen2)).Length;
-                        if (dist2 > rad2)
-                            rad2 = dist2;
-                    }
-                }
-
-                // Use the one with the lowest radius.
-                Vector3 temp;
-                double radius;
-                if (rad1 < rad2)
-                {
-                    temp = cen1;
-                    radius = rad1;
-                }
-                else
-                {
-                    temp = cen2;
-                    radius = rad2;
-                }
-
-                // Set
-                for (int i = 0; i < 3; i++)
-                {
-                    boundingSphere[i] = temp[i];
-                    boundingSphere[i+4] = temp[i];
-                }
-                boundingSphere[3] = (float)radius;
-                boundingSphere[7] = 0;
-            }
-
-            public float CalculateSortingDistance(Vector3 cameraPosition)
-            {
-                Vector3 meshCenter = new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]);
-                if (useNsc && singlebind != -1)
-                {
-                    // Use the bone position as the bounding box center
-                    ModelContainer modelContainer = (ModelContainer)Parent.Parent;
-                    meshCenter = modelContainer.VBN.bones[singlebind].pos;
-                }
-
-                Vector3 distanceVector = new Vector3(cameraPosition - meshCenter);
-                return distanceVector.Length + boundingSphere[3] + sortBias;
-            }
-
-            private int CalculateSortBias()
-            {
-                if (!(Text.Contains("SORTBIAS")))
-                    return 0;
-
-                // Isolate the integer value from the mesh name.
-                string sortBiasKeyWord = "SORTBIAS";
-                string sortBiasText = GetSortBiasNumbers(sortBiasKeyWord);
-
-                int sortBiasValue = 0;
-                int.TryParse(sortBiasText, out sortBiasValue);
-
-                // TODO: What does "m" do? Ex: SORTBIASm50_
-                int firstSortBiasCharIndex = Text.IndexOf(sortBiasKeyWord) + sortBiasKeyWord.Length;
-                if (Text[firstSortBiasCharIndex] == 'm')
-                    sortBiasValue *= -1;
-
-                return sortBiasValue;
-            }
-
-            private string GetSortBiasNumbers(string sortBiasKeyWord)
-            {
-                string sortBiasText = "";
-                for (int i = Text.IndexOf(sortBiasKeyWord) + sortBiasKeyWord.Length; i < Text.Length; i++)
-                {
-                    if (Text[i] != '_')
-                        sortBiasText += Text[i];
-                    else
-                        break;
-                }
-
-                return sortBiasText;
-            }
-
-            public void SetMeshAttributesFromName()
-            {
-                sortBias = CalculateSortBias();
-                billboard = Text.Contains("BILLBOARD");
-                billboardY = Text.Contains("BILLBOARDYAXIS");
-                useNsc = Text.Contains("NSC");
-                sortByObjHeirarchy = Text.Contains("HIR");
-            }
-        }
+#region ClassStructure
 
         #endregion
 

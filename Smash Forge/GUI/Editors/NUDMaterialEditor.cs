@@ -14,6 +14,7 @@ using OpenTK.Graphics.OpenGL;
 using System.Timers;
 using System.Diagnostics;
 using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Meshes;
 using SFGraphics.Tools;
 using SFGraphics.GLObjects;
 using SFGraphics.GLObjects.GLObjectManagement;
@@ -875,20 +876,20 @@ namespace Smash_Forge
             {
                 texAlphaGlControl.MakeCurrent();
 
-                VertexArrayObject screenVao = ScreenDrawing.CreateScreenTriangleVao();
+                Mesh3D screenTriangle = ScreenDrawing.CreateScreenTriangle();
 
                 GL.Viewport(texAlphaGlControl.ClientRectangle);
-                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenVao, false, false, false, true);
+                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenTriangle, false, false, false, true);
                 texAlphaGlControl.SwapBuffers();
             }
             else
             {
                 texRgbGlControl.MakeCurrent();
 
-                VertexArrayObject screenVao = ScreenDrawing.CreateScreenTriangleVao();
+                Mesh3D screenTriangle = ScreenDrawing.CreateScreenTriangle();
 
                 GL.Viewport(texRgbGlControl.ClientRectangle);
-                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenVao);
+                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenTriangle);
                 texRgbGlControl.SwapBuffers();
             }
         }

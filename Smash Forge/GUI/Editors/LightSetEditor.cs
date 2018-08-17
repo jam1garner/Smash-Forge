@@ -16,7 +16,7 @@ using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
 using SFGraphics.Tools;
 using SFGraphics.GLObjects;
-
+using Smash_Forge.Rendering.Meshes;
 
 namespace Smash_Forge.GUI.Editors
 {
@@ -27,7 +27,7 @@ namespace Smash_Forge.GUI.Editors
         private AreaLight selectedAreaLight = new AreaLight("");
         private LightColor selectedFogColor = new LightColor();
 
-        private VertexArrayObject screenVao;
+        private Mesh3D screenTriangle;
 
         public LightSetEditor()
         {
@@ -297,9 +297,9 @@ namespace Smash_Forge.GUI.Editors
 
         private void DrawGradient(Vector3 topColor, Vector3 bottomColor)
         {
-            if (screenVao == null)
-                screenVao = ScreenDrawing.CreateScreenTriangleVao();
-            ScreenDrawing.DrawQuadGradient(topColor, bottomColor, screenVao);
+            if (screenTriangle == null)
+                screenTriangle = ScreenDrawing.CreateScreenTriangle();
+            ScreenDrawing.DrawQuadGradient(topColor, bottomColor, screenTriangle);
         }
 
         private void RenderLightMapColor()

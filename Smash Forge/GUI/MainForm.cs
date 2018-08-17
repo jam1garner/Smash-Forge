@@ -718,7 +718,7 @@ namespace Smash_Forge
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GUI.RenderSettings renderSettings = new GUI.RenderSettings();
+            GUI.RenderSettingsMenu renderSettings = new GUI.RenderSettingsMenu();
             renderSettings.Show();
         }
 
