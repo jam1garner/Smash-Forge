@@ -451,7 +451,8 @@ namespace Smash_Forge
             shader.SetInt("debugOption", (int)Runtime.uvChannel);
 
             // PBR IBL
-            shader.SetTexture("specularIbl", RenderTools.specularPbr.Id, TextureTarget.TextureCubeMap, 2);
+            shader.SetTexture("irradianceMap", RenderTools.diffusePbr.Id, TextureTarget.TextureCubeMap, 18);
+            shader.SetTexture("specularIbl", RenderTools.specularPbr.Id, TextureTarget.TextureCubeMap, 19);
         }
 
         private void DrawMesh(Mesh mesh, FMDL_Model fmdl, Camera camera, bool drawPolyIds = false, bool drawSelection = false)
@@ -585,7 +586,9 @@ namespace Smash_Forge
 
         }
 
-        //Here I'll use the same enums as NUDs does. BFRES for switch is inconsistent with the strings and data though multiple games and wii u uses flags so it's best to have them all in one
+        // Here I'll use the same enums as NUDs does. 
+        // BFRES for switch is inconsistent with the strings and data.
+        // multiple games and wii u uses flags, so it's best to have them all in one.
         Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
                     { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
                     { 0x02, BlendingFactorDest.One},
@@ -890,8 +893,7 @@ namespace Smash_Forge
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), 0);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("BakeShadowMap"), 0);
 
-            //So this loops through each type and maps by tex hash. This is done because there is no particular order in the list
-
+            // There is no particular order in the list.
             foreach (MatTexture matex in materialData.textures)
             {
                 if (matex.Type == MatTexture.TextureType.Diffuse)
@@ -919,12 +921,12 @@ namespace Smash_Forge
             }
         }
 
-        private static void TextureUniform(Shader shader, MaterialData mat, bool hasTex, string name, MatTexture mattex)
+        private static void TextureUniform(Shader shader, MaterialData mat, bool hasTex, string name, MatTexture matTexture)
         {
             // Bind the texture and create the uniform if the material has the right textures. 
             if (hasTex)
             {
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation(name), BindTexture(mattex));
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation(name), BindTexture(matTexture));
             }
         }
 

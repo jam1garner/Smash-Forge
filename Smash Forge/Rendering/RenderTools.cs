@@ -45,6 +45,9 @@ namespace Smash_Forge.Rendering
 
             DDS diffuseSdr = new DDS(new FileData(Properties.Resources.diffuseSDR));
             diffusePbr = NUT.CreateTextureCubeMap(diffuseSdr.ToNutTexture());
+            // Don't use mipmaps.
+            diffusePbr.MinFilter = TextureMinFilter.Linear;
+            diffusePbr.MagFilter = TextureMagFilter.Linear;
 
             boneWeightGradient = new Texture2D();
             boneWeightGradient.LoadImageData(Properties.Resources.boneWeightGradient);

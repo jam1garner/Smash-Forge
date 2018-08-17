@@ -148,7 +148,10 @@ void main()
 		normal = normalize(normal);
 	}
 
-	if (sampler2.x + sampler2.y != 0) //BOTW has scale values to 0 if unused so set them to 1
+    f_texcoord0 = vUV0;
+
+    // BOTW has scale values set to 0 if unused.
+	if (sampler2.x != 0 && sampler2.y != 0)
         f_texcoord1 = vec2((vUV1 * sampler2.xy) + sampler2.zw);
      else
         f_texcoord1 = vec2((vUV1 * vec2(1)) + sampler2.zw);
@@ -156,7 +159,6 @@ void main()
     f_texcoord2 = vec2((vUV1 * sampler3.xy) + sampler3.zw);
     f_texcoord3 = vUV2;
 
-	f_texcoord0 = vec2(vUV0);
 
 	//Disable SRT for now. The values can break UVs and i need to figure out the animations
 	//Set SRT values

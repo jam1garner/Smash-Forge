@@ -41,8 +41,6 @@ uniform int renderVertColor;
 uniform vec3 difLightColor;
 uniform vec3 ambLightColor;
 uniform int colorOverride;
-uniform float DefaultMetalness;
-uniform float DefaultRoughness;
 
 // Channel Toggles
 uniform int renderR;
@@ -214,11 +212,11 @@ void main()
     if (HasDiffuse == 1)
         albedo = pow(texture(tex0, f_texcoord0).rgb, vec3(gamma));
 
-	float metallic = DefaultMetalness;
+	float metallic = 0;
     if (HasMetalnessMap == 1)
         metallic = texture(MetalnessMap, f_texcoord0).r;
 
-	float roughness = DefaultRoughness;
+	float roughness = 0.5;
     if (HasRoughnessMap == 1)
         roughness = texture(RoughnessMap, f_texcoord0).r;
 
@@ -260,15 +258,17 @@ void main()
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
     vec3 N = normal;
     // TODO: This breaks for some reason.
-	// if (HasNormalMap == 1 && useNormalMap == 1)
-	// 	N = CalcBumpedNormal(normal, normalMap, vert, 0);
+	if (HasNormalMap == 1 && useNormalMap == 1)
+		N = CalcBumpedNormal(normal, normalMap, vert, 0);
 
-    vec3 V = normalize(I); //Eye View
-	vec3 L = normalize(specLightDirection); //Light
-	vec3 H = normalize(specLightDirection + I); //Half Angle
+    vec3 V = normalize(I); // view
+	vec3 L = normalize(specLightDirection); // Light
+	vec3 H = normalize(specLightDirection + I); // half angle
+    vec3 R = reflect(I, N); // reflection
 
     // Diffuse pass
-    vec3 diffuseTerm = albedo * dot(L, N);
+    vec3 diffuseIblColor = texture(irradianceMap, R).rgb;
+    vec3 diffuseTerm = albedo * diffuseIblColor;
     diffuseTerm *= cavity;
     diffuseTerm *= ao;
     diffuseTerm *= shadow;
@@ -277,7 +277,6 @@ void main()
     diffuseTerm *= clamp(1 - metallic, 0, 1);
 
     // Specular pass.
-    vec3 R = reflect(I, N);
     int maxSpecularLod = 8;
     vec3 specularIblColor = textureLod(specularIbl, R, roughness * maxSpecularLod).rgb;
     vec3 f0 = mix(vec3(0.04), albedo, metallic); // dialectric
@@ -291,7 +290,7 @@ void main()
     fragColor.rgb += specularTerm;
 
     // Global brightness adjustment.
-    fragColor.rgb *= 1.5;
+    fragColor.rgb *= 2.5;
 
     // Convert back to sRGB.
     fragColor.rgb = pow(fragColor.rgb, vec3(1 / gamma));
