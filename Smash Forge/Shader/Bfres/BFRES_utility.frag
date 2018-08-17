@@ -1,4 +1,4 @@
-﻿#version 330
+#version 330
 
 // A struct is used for what would normally be attributes from the vert/geom shader.
 struct VertexAttributes
@@ -21,8 +21,6 @@ vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap
 {
     float specBrdf = max(dot(I, normal), 0);
     float exponent = 8;
-
-
 
 	if (SpecColor == vec3(0)) //Color shouldn't be black unless it's not set
 	    SpecColor = vec3(1);
@@ -57,7 +55,7 @@ vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttribu
         result += emission;
     }
 
-    
+
         // BOTW somtimes uses second uv channel for emission map
         vec3 emission = vec3(1);
         if (texCoordIndex == 1)
@@ -71,7 +69,7 @@ vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttribu
             result += vec3(emission_intensity) * emission_color;
         else
             result += emission.rgb;
-    
+
 
     return result;
 }

@@ -1,11 +1,10 @@
-﻿#version 330
+#version 330
 
 in vec2 f_texcoord0;
 in vec2 f_texcoord1;
 in vec2 f_texcoord2;
 in vec2 f_texcoord3;
 in vec3 normal;
-in vec3 viewNormal;
 in vec4 vertexColor;
 in vec3 tangent;
 in vec3 bitangent;
@@ -138,7 +137,6 @@ void main()
     vert.texCoord3 = f_texcoord2;
     vert.vertexColor = vertexColor;
     vert.normal = normal;
-    vert.viewNormal = viewNormal;
     vert.tangent = tangent;
     vert.bitangent = bitangent;
 
@@ -206,7 +204,7 @@ void main()
 	    fragColor.rgb = texture2D(BakeLightMap, vert.texCoord2).rgb;
 
         if (HasEmissionMap == 1 || enable_emission == 1)
-	        fragColor.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);; 
+	        fragColor.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);;
 	}
 
     // Toggles rendering of individual color channels for all render modes.
