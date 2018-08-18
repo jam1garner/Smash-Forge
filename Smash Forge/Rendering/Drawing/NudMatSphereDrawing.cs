@@ -1,13 +1,11 @@
 ﻿using System;
-using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
-using SFGraphics.GLObjects;
 using Smash_Forge.Filetypes.Models.Nuds;
 using Smash_Forge.Rendering.Meshes;
+using SFGenericModel.Materials;
 
 namespace Smash_Forge.Rendering
 {

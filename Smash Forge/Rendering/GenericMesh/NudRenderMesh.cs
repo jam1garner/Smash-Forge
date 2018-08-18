@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Smash_Forge.Filetypes.Models.Nuds;
+using SFGenericModel;
+using SFGenericModel.Materials;
 
 namespace Smash_Forge.Rendering.Meshes
 {

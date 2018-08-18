@@ -1,22 +1,13 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
-using System.Windows.Forms;
-using SALT.Graphics;
-using System.Text;
-using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering;
-using Smash_Forge.Rendering.Meshes;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
-using SFGraphics.GLObjects;
 using SFGraphics.Tools;
-using SFGraphics.Cameras;
+using SFGenericModel.Materials;
 
 namespace Smash_Forge.Filetypes.Models.Nuds
 {

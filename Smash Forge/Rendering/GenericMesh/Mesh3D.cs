@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-
+using SFGenericModel;
 
 namespace Smash_Forge.Rendering.Meshes
 {
