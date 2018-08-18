@@ -4,5 +4,217 @@
         <name>SFGenericModel</name>
     </assembly>
     <members>
+        <member name="T:SFGenericModel.RenderState.RenderSettings">
+            <summary>
+            Stores the rendering state set before <see cref="T:SFGenericModel.GenericMesh`1"/> is drawn.
+            </summary>
+        </member>
+        <member name="T:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings">
+            <summary>
+            The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="T:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings">
+            <summary>
+            The alpha testing state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="T:SFGenericModel.RenderState.RenderSettings.DepthTestSettings">
+            <summary>
+            The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="T:SFGenericModel.RenderState.RenderSettings.FaceCullingSettings">
+            <summary>
+            The face culling state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.alphaBlendSettings">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.alphaTestSettings">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.depthTestSettings">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.faceCullingSettings">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:SFGenericModel.Materials.GenericMaterial">
+            <summary>
+            Used to store uniform data for <see cref="T:SFGenericModel.GenericMesh`1"/>. 
+            Duplicate uniform names are not allowed, regardless of type differences.
+            <para></para><para></para>
+            Custom material data should be converted to a <see cref="T:SFGenericModel.Materials.GenericMaterial"/> to update shader uniforms.
+            Avoid updating shader uniforms directly.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.AddFloat(System.String,System.Single)">
+            <summary>
+            
+            </summary>
+            <param name="uniformName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.AddInt(System.String,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="uniformName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.AddVector2(System.String,OpenTK.Vector2)">
+            <summary>
+            
+            </summary>
+            <param name="uniformName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.AddVector3(System.String,OpenTK.Vector3)">
+            <summary>
+            
+            </summary>
+            <param name="uniformName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.AddVector4(System.String,OpenTK.Vector4)">
+            <summary>
+            
+            </summary>
+            <param name="uniformName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.AddMatrix4(System.String,OpenTK.Matrix4)">
+            <summary>
+            
+            </summary>
+            <param name="uniformName"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.SetShaderUniforms(SFGraphics.GLObjects.Shaders.Shader)">
+            <summary>
+            Sets uniform values for all the added uniform values.
+            </summary>
+            <param name="shader">The shader whose uniforms will be set</param>
+        </member>
+        <member name="T:SFGenericModel.GenericMesh`1">
+            <summary>
+            A vertex container that supports drawing indexed vertex data using a user defined 
+            vertex struct <typeparamref name="T"/>.
+            <para></para><para></para>
+            Inherit from this class to override the default 
+            materials and rendering state.
+            </summary>
+            <typeparam name="T">The struct used to define vertex data</typeparam>
+        </member>
+        <member name="F:SFGenericModel.GenericMesh`1.renderSettings">
+            <summary>
+            The collection of OpenGL state set prior to drawing.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.GenericMesh`1.material">
+            <summary>
+            The collection of shader uniforms updated during drawing.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.GenericMesh`1.PrimitiveType">
+            <summary>
+            The type of primitive used for drawing.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},System.Int32)">
+            <summary>
+            Creates a new mesh and initializes the vertex buffer data.
+            An index is generated for each vertex in <paramref name="vertices"/>.
+            Vertex data is initialized only once.
+            </summary>
+            <param name="vertices"></param>
+            <param name="vertexSizeInBytes"></param>
+        </member>
+        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},System.Int32)">
+            <summary>
+            Creates a new mesh and initializes the vertex buffer data.
+            Vertex data is initialized only once.
+            </summary>
+            <param name="vertices"></param>
+            <param name="vertexIndices"></param>
+            <param name="vertexSizeInBytes">The total size in bytes of <typeparamref name="T"/></param>
+        </member>
+        <member name="M:SFGenericModel.GenericMesh`1.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera,System.Int32,System.Int32)">
+            <summary>
+            Sets the uniforms, sets render state, and draws the mesh.
+            </summary>
+            <param name="shader"></param>
+            <param name="camera">The camera used to set matrix uniforms if not <c>null</c></param>
+            <param name="count"></param>
+            <param name="offset"></param>
+        </member>
+        <member name="M:SFGenericModel.GenericMesh`1.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
+            <summary>
+            Sets the uniforms, sets render state, and draws the mesh.
+            </summary>
+            <param name="shader"></param>
+            <param name="camera"></param>
+        </member>
+        <member name="M:SFGenericModel.GenericMesh`1.GetVertexAttributes">
+            <summary>
+            The order of vertex attributes in the list should match 
+            the order of the fields in <typeparamref name="T"/>.
+            </summary>
+            <returns>Vertex attribute information</returns>
+        </member>
+        <member name="M:SFGenericModel.GenericMesh`1.SetCameraUniforms(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
+            <summary>
+            Sets <c>uniform mat4 mvpMatrix</c> in the shader using <see cref="P:SFGraphics.Cameras.Camera.MvpMatrix"/>.
+            Override this method to provide custom matrices. 
+            </summary>
+            <param name="shader">The shader used for drawing</param>
+            <param name="camera">The camera used for drawing"/></param>
+        </member>
+        <member name="T:SFGenericModel.VertexAttributeInfo">
+            <summary>
+            Stores the information used to configure vertex attributes for <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributeInfo.name">
+            <summary>
+            The name of the attribute in the shader.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributeInfo.valueCount">
+            <summary>
+            The number of components. Ex: 1 for <see cref="T:System.Single"/> or
+            4 for Vector4.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributeInfo.vertexAttribPointerType">
+            <summary>
+            The data type of the attribute value.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributeInfo.sizeInBytes">
+            <summary>
+            The total size of the attribute in bytes.
+            This is usually <c>sizeof(float) * valueCount</c>.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributeInfo.#ctor(System.String,System.Int32,OpenTK.Graphics.OpenGL.VertexAttribPointerType,System.Int32)">
+            <summary>
+            Creates a new vertex attribute.
+            </summary>
+            <param name="name">The name of the attribute in the shader</param>
+            <param name="valueCount">The number of components for the value</param>
+            <param name="vertexAttribPointerType">The data type of the value</param>
+            <param name="sizeInBytes">The total size in bytes of the value</param>
+        </member>
     </members>
 </doc>

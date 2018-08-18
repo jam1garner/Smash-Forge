@@ -29,6 +29,11 @@ namespace Smash_Forge.Rendering.Meshes
             SetFaceCulling(material);
         }
 
+        public void ResetRenderSettings()
+        {
+            renderSettings = new SFGenericModel.RenderState.RenderSettings();
+        }
+
         private void SetFaceCulling(NUD.Material material)
         {
             renderSettings.faceCullingSettings.enableFaceCulling = true;

@@ -577,7 +577,7 @@ namespace Smash_Forge
             p.renderMesh.SetRenderSettings(material);
             p.renderMesh.SetMaterialValues(material);
 
-            p.renderMesh.Draw(shader, camera, p.displayFaceSize);
+            p.renderMesh.Draw(shader, camera);
         }
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<DummyTextures, Texture> dummyTextures, int id = 0, bool drawId = false)
@@ -686,7 +686,7 @@ namespace Smash_Forge
             GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
             GL.StencilMask(0xFF);
 
-            p.renderMesh.Draw(shader, camera, p.displayFaceSize);
+            p.renderMesh.Draw(shader, camera);
 
             GL.ColorMask(cwm[0], cwm[1], cwm[2], cwm[3]);
 
@@ -698,7 +698,7 @@ namespace Smash_Forge
 
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.LineWidth(2.0f);
-            p.renderMesh.Draw(shader, camera, p.displayFaceSize);
+            p.renderMesh.Draw(shader, camera);
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
 
             shader.SetInt("drawSelection", 0);

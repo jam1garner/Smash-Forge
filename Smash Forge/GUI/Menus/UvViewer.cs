@@ -33,6 +33,8 @@ namespace Smash_Forge.GUI.Menus
                 {
                     glControl1.MakeCurrent();
                     forgeMesh = sourceNud.CreateRenderMesh(polygonToRender);
+                    // Ignore the material values.
+                    forgeMesh.ResetRenderSettings();
                 }
             }
         }
@@ -70,7 +72,7 @@ namespace Smash_Forge.GUI.Menus
             Matrix4 matrix = Matrix4.CreateOrthographicOffCenter(0, 1, 1, 0, -1, 1);
             shader.SetMatrix4x4("mvpMatrix", ref matrix);
 
-            forgeMesh.Draw(shader, null, polygonToRender.displayFaceSize);
+            forgeMesh.Draw(shader, null);
         }
 
         private void glControl1_Resize(object sender, EventArgs e)
