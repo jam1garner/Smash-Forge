@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Diagnostics;
 using System.IO;
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects.Textures.TextureFormats;
 
 namespace Smash_Forge
 {
@@ -908,16 +904,20 @@ namespace Smash_Forge
             if (TextureFormatTools.IsCompressed(t.pixelInternalFormat))
             {
                 // Compressed cubemap with mipmaps.
-                return new TextureCubeMap(t.Width, (InternalFormat)t.pixelInternalFormat,
-                    t.surfaces[0].mipmaps, t.surfaces[1].mipmaps, t.surfaces[2].mipmaps, 
+                TextureCubeMap texture = new TextureCubeMap();
+                texture.LoadImageData(t.Width, (InternalFormat)t.pixelInternalFormat,
+                    t.surfaces[0].mipmaps, t.surfaces[1].mipmaps, t.surfaces[2].mipmaps,
                     t.surfaces[3].mipmaps, t.surfaces[4].mipmaps, t.surfaces[5].mipmaps);
+                return texture;
             }
             else
             {
                 // Uncompressed cube map with no mipmaps.
-                return new TextureCubeMap(t.Width, new TextureFormatUncompressed(t.pixelInternalFormat, t.pixelFormat, t.pixelType),
-                    t.surfaces[0].mipmaps[0], t.surfaces[1].mipmaps[0], t.surfaces[2].mipmaps[0], 
+                TextureCubeMap texture = new TextureCubeMap();
+                texture.LoadImageData(t.Width, new TextureFormatUncompressed(t.pixelInternalFormat, t.pixelFormat, t.pixelType),
+                    t.surfaces[0].mipmaps[0], t.surfaces[1].mipmaps[0], t.surfaces[2].mipmaps[0],
                     t.surfaces[3].mipmaps[0], t.surfaces[4].mipmaps[0], t.surfaces[5].mipmaps[0]);
+                return texture;
             }
         }
     }

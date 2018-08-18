@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Diagnostics;
 using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects.Textures.TextureFormats;
 
 namespace Smash_Forge
 {
@@ -453,7 +454,7 @@ namespace Smash_Forge
 
         public static Texture2D CreateTexture2D(BRTI_Texture tex, int surfaceIndex = 0)
         {
-            bool compressedFormatWithMipMaps = SFGraphics.GLObjects.Textures.TextureFormatTools.IsCompressed(tex.pixelInternalFormat);
+            bool compressedFormatWithMipMaps = SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatTools.IsCompressed(tex.pixelInternalFormat);
 
             if (compressedFormatWithMipMaps)
             {

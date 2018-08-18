@@ -138,7 +138,7 @@ namespace Smash_Forge
 
         public static SFTex.Texture2D CreateTexture2D(FTEX_Texture tex, int surfaceIndex = 0)
         {
-            bool compressedFormatWithMipMaps = SFTex.TextureFormatTools.IsCompressed(tex.pixelInternalFormat);
+            bool compressedFormatWithMipMaps = SFTex.TextureFormats.TextureFormatTools.IsCompressed(tex.pixelInternalFormat);
 
             //Todo. Use mip maps from FTEX
             if (compressedFormatWithMipMaps)
@@ -165,7 +165,7 @@ namespace Smash_Forge
                 // Uncompressed.
                 SFTex.Texture2D texture = new SFTex.Texture2D();
                 texture.LoadImageData(tex.width, tex.height, tex.data, tex.mipMapCount,
-                    new SFTex.TextureFormatUncompressed(tex.pixelInternalFormat, tex.pixelFormat, tex.pixelType));
+                    new SFTex.TextureFormats.TextureFormatUncompressed(tex.pixelInternalFormat, tex.pixelFormat, tex.pixelType));
                 return texture;
             }
         }

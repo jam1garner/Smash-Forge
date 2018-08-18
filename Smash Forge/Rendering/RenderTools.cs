@@ -91,10 +91,12 @@ namespace Smash_Forge.Rendering
             Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
 
             // Dummy textures. 
-            TextureCubeMap stageMapHigh = new TextureCubeMap(Properties.Resources._10102000, 128);
+            TextureCubeMap stageMapHigh = new TextureCubeMap();
+            stageMapHigh.LoadImageData(Properties.Resources._10102000, 128);
             dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
 
-            TextureCubeMap stageMapLow = new TextureCubeMap(Properties.Resources._10101000, 128);
+            TextureCubeMap stageMapLow = new TextureCubeMap();
+            stageMapLow.LoadImageData(Properties.Resources._10101000, 128);
             dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
 
             Texture2D dummyRamp = new Texture2D();
