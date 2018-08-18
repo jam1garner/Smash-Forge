@@ -860,7 +860,7 @@ namespace Smash_Forge
 
             if (compressedFormatWithMipMaps)
             {
-                // TODO: Skip loading mipmaps for non square textures for now.
+                // HACK: Skip loading mipmaps for non square textures for now.
                 // The existing mipmaps don't display properly for some reason.
                 if (nutTexture.surfaces[0].mipmaps.Count > 1 && nutTexture.isDds && (nutTexture.Width == nutTexture.Height))
                 {

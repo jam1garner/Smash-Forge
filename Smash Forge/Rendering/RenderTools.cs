@@ -2,17 +2,15 @@
 using System.Drawing;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using System.Diagnostics;
 using SALT.PARAMS;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.Cameras;
 
-
 namespace Smash_Forge.Rendering
 {
-    class RenderTools
+    static class RenderTools
     {
         public static Texture2D defaultTex;
         public static Texture2D floorTexture;
@@ -70,20 +68,6 @@ namespace Smash_Forge.Rendering
             {
                 // File paths are incorrect or never set. 
             }
-        }
-
-        //For conversions
-        public static int HDRTextureMap = -1; //The raw HDR texture
-        public static int envCubemap = -1; //HDR to cubemap.
-
-        //Used in PBR shader
-        public static int irradianceMap = -1; //For scene lighting
-        public static int preFilterMap = -1; //Stores roughness values in mip maps. Gets more blurry
-        public static int brdfLUTMap = -1; //Used with prefilter to get proper specular
-
-        public static void LoadIBLTextures()
-        {
-
         }
 
         public static Dictionary<NUD.DummyTextures, Texture> CreateNudDummyTextures()
