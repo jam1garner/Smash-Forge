@@ -215,6 +215,8 @@ namespace Smash_Forge
                                 textureImageList.Images.Add(tex.Text, bmp);
 
                                 TextureRefListView.Items.Add(texure.Name);
+
+                                bmp.Dispose();
                             }
                         }
                     }

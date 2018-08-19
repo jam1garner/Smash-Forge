@@ -45,7 +45,7 @@ namespace Smash_Forge
                     il.Images.Add(color);
                     texturesCol.Add(color);
 
-                   
+                    color.Dispose();
                     string[] row1 = { tex.Height.ToString(), tex.Width.ToString() };
                     listView1.Items.Add(tex.Text, count++).SubItems.AddRange(row1);
                 }
