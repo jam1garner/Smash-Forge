@@ -25,7 +25,7 @@ namespace Smash_Forge.Rendering
 
         public ForgeCamera()
         {
-
+            NearClipPlane = 0.01f;
         }
 
         public void SetFromBone(Bone b)
