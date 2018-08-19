@@ -10,6 +10,8 @@ in vec4 vBone;
 in vec4 vWeight;
 in vec3 vTangent;
 in vec3 vBitangent;
+in vec3 vPosition2;
+in vec3 vPosition3;
 
 out vec2 f_texcoord0;
 out vec2 f_texcoord1;
@@ -119,6 +121,9 @@ void main()
 
     vec4 objPos = vec4(vPosition.xyz, 1.0);
 
+    vec4 objMorphPos = vec4(vPosition2.xyz, 1.0);
+    vec4 objMorphPos2 = vec4(vPosition3.xyz, 1.0);
+
     objectPosition = vPosition.xyz;
 
     vec4 sampler2 = gsys_bake_st0;
@@ -162,10 +167,10 @@ void main()
 
 	//Disable SRT for now. The values can break UVs and i need to figure out the animations
 	//Set SRT values
-//	if (SRT_Scale.x + SRT_Scale.y != 0)
-//	    f_texcoord0 = vec2((vUV0 * SRT_Scale) + SRT_Translate);
+	if (SRT_Scale.x + SRT_Scale.y != 0)
+	    vec2 SRTScale = vec2((vUV0 * SRT_Scale) + SRT_Translate);
 
-//	f_texcoord0 = rotateUV(f_texcoord0, SRT_Rotate);
+	vec2 SRTRot = rotateUV(f_texcoord0, SRT_Rotate);
 
 	tangent = vTangent;
 	bitangent = vBitangent;

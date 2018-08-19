@@ -4,11 +4,13 @@ in vec2 f_texcoord0;
 in vec2 f_texcoord1;
 in vec2 f_texcoord2;
 in vec2 f_texcoord3;
+
+in vec3 objectPosition;
+
 in vec3 normal;
 in vec4 vertexColor;
 in vec3 tangent;
 in vec3 bitangent;
-in vec3 objectPosition;
 
 in vec3 boneWeightsColored;
 
@@ -16,8 +18,17 @@ in vec3 boneWeightsColored;
 uniform mat4 mvpMatrix;
 uniform vec3 specLightDirection;
 uniform vec3 difLightDirection;
+uniform mat4 projMatrix;
+uniform mat4 normalMatrix;
+uniform mat4 modelViewMatrix;
+uniform mat4 rotationMatrix;
 
+uniform int useImageBasedLighting;
 uniform int enableCellShading;
+
+uniform vec3 camPos;
+
+uniform vec3 light1Pos;
 
 const float levels = 3.0;
 
@@ -30,16 +41,18 @@ uniform int renderVertColor;
 uniform vec3 difLightColor;
 uniform vec3 ambLightColor;
 uniform int colorOverride;
+uniform float DefaultMetalness;
+uniform float DefaultRoughness;
 
-//------------------------------------------------------------------------------------
-//
-//      Texture Samplers
-//
-//------------------------------------------------------------------------------------
+// Channel Toggles
+uniform int renderR;
+uniform int renderG;
+uniform int renderB;
+uniform int renderAlpha;
 
+// Texture Samplers
 uniform sampler2D tex0;
 uniform sampler2D BakeShadowMap;
-uniform sampler2D spl;
 uniform sampler2D normalMap;
 uniform sampler2D BakeLightMap;
 uniform sampler2D UVTestPattern;
@@ -47,13 +60,16 @@ uniform sampler2D TransparencyMap;
 uniform sampler2D EmissionMap;
 uniform sampler2D SpecularMap;
 uniform sampler2D DiffuseLayer;
+uniform sampler2D MetalnessMap;
+uniform sampler2D RoughnessMap;
+uniform sampler2D MRA;
+uniform sampler2D TeamColorMap;
 
-//------------------------------------------------------------------------------------
-//
-//      Shader Params
-//
-//------------------------------------------------------------------------------------
+uniform samplerCube irradianceMap;
+uniform samplerCube specularIbl;
+uniform sampler2D brdfLUT;
 
+// Shader Params
 uniform float normal_map_weight;
 uniform float ao_density;
 uniform float emission_intensity;
@@ -62,24 +78,16 @@ uniform vec4 base_color_mul_color;
 uniform vec3 emission_color;
 uniform vec3 specular_color;
 
-
-//------------------------------------------------------------------------------------
-//
-//      Shader Options
-//
-//------------------------------------------------------------------------------------
-
+// Shader Options
+uniform float uking_texture2_texcoord;
 uniform float bake_shadow_type;
 uniform float enable_fresnel;
 uniform float enable_emission;
+uniform float cSpecularType;
 
 
-//------------------------------------------------------------------------------------
-//
-//      Texture Map Toggles
-//
-//------------------------------------------------------------------------------------
-
+// Texture Map Toggles
+uniform int HasDiffuse;
 uniform int HasNormalMap;
 uniform int HasSpecularMap;
 uniform int HasShadowMap;
@@ -88,7 +96,18 @@ uniform int HasLightMap;
 uniform int HasTransparencyMap;
 uniform int HasEmissionMap;
 uniform int HasDiffuseLayer;
-uniform int isTransparent;
+uniform int HasMetalnessMap;
+uniform int HasRoughnessMap;
+uniform int HasMRA;
+
+uniform int roughnessAmount;
+
+uniform int UseAOMap;
+uniform int UseCavityMap;
+uniform int UseMetalnessMap;
+uniform int UseRoughnessMap;
+
+int isTransparent;
 
 struct VertexAttributes {
     vec3 objectPosition;
@@ -100,7 +119,7 @@ struct VertexAttributes {
     vec3 viewNormal;
     vec3 tangent;
     vec3 bitangent;
-};
+	};
 
 out vec4 fragColor;
 

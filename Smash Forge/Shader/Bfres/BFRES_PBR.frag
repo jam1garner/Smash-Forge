@@ -41,6 +41,8 @@ uniform int renderVertColor;
 uniform vec3 difLightColor;
 uniform vec3 ambLightColor;
 uniform int colorOverride;
+uniform float DefaultMetalness;
+uniform float DefaultRoughness;
 
 // Channel Toggles
 uniform int renderR;
@@ -75,8 +77,10 @@ uniform float emission_intensity;
 uniform vec4 fresnelParams;
 uniform vec4 base_color_mul_color;
 uniform vec3 emission_color;
+uniform vec3 specular_color;
 
 // Shader Options
+uniform float uking_texture2_texcoord;
 uniform float bake_shadow_type;
 uniform float enable_fresnel;
 uniform float enable_emission;
@@ -117,7 +121,7 @@ struct VertexAttributes {
     vec3 viewNormal;
     vec3 tangent;
     vec3 bitangent;
-};
+	};
 
 out vec4 fragColor;
 

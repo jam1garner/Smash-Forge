@@ -53,7 +53,6 @@ uniform int renderAlpha;
 // Texture Samplers
 uniform sampler2D tex0;
 uniform sampler2D BakeShadowMap;
-uniform sampler2D spl;
 uniform sampler2D normalMap;
 uniform sampler2D BakeLightMap;
 uniform sampler2D UVTestPattern;
@@ -64,10 +63,10 @@ uniform sampler2D DiffuseLayer;
 uniform sampler2D MetalnessMap;
 uniform sampler2D RoughnessMap;
 uniform sampler2D MRA;
-uniform sampler2D BOTWSpecularMap;
+uniform sampler2D TeamColorMap;
 
 uniform samplerCube irradianceMap;
-uniform samplerCube prefilterMap;
+uniform samplerCube specularIbl;
 uniform sampler2D brdfLUT;
 
 // Shader Params
@@ -77,6 +76,7 @@ uniform float emission_intensity;
 uniform vec4 fresnelParams;
 uniform vec4 base_color_mul_color;
 uniform vec3 emission_color;
+uniform vec3 specular_color;
 
 // Shader Options
 uniform float uking_texture2_texcoord;
@@ -99,7 +99,6 @@ uniform int HasDiffuseLayer;
 uniform int HasMetalnessMap;
 uniform int HasRoughnessMap;
 uniform int HasMRA;
-uniform int HasBOTWSpecularMap;
 
 uniform int roughnessAmount;
 
@@ -247,17 +246,17 @@ void main()
 
 	float specIntensity = 1;
 
-	if (HasBOTWSpecularMap == 1)
+	if (HasSpecularMap == 1)
 	{
 	   if (uking_texture2_texcoord == 1)
 	   {
-	       metallic = texture(BOTWSpecularMap, f_texcoord1).g;
-	       specIntensity = texture(BOTWSpecularMap, f_texcoord1).r;
+	       metallic = texture(SpecularMap, f_texcoord1).g;
+	       specIntensity = texture(SpecularMap, f_texcoord1).r;
 	   }
 	   else
 	   {
-	       metallic = texture(BOTWSpecularMap, f_texcoord0).g;
-	       specIntensity = texture(BOTWSpecularMap, f_texcoord0).r;
+	       metallic = texture(SpecularMap, f_texcoord0).g;
+	       specIntensity = texture(SpecularMap, f_texcoord0).r;
 	   }
 	}
 

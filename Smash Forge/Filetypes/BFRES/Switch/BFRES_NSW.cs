@@ -434,7 +434,7 @@ namespace Smash_Forge
                 else if (TextureName.Contains("rgh"))
                 {
                     texture.Type = MatTexture.TextureType.Roughness;
-                    texture.hash = 18;
+                    texture.hash = 15;
                     poly.material.HasRoughnessMap = true;
                 }
                 texture.Name = TextureName;
