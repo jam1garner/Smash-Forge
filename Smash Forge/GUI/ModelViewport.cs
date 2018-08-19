@@ -257,11 +257,10 @@ namespace Smash_Forge
             Text = "Model Viewport";
 
             // Limit to 60 fps.
-            glViewport.VSync = true;
+            //glViewport.VSync = true;
 
             // Wait for everything to be visible.
             Shown += ModelViewport_Shown;
-            Paint += ModelViewport_Paint;         
 
             SetUpMeshList();
             SetUpAnimListPanel();
@@ -296,11 +295,6 @@ namespace Smash_Forge
             ViewComboBox.SelectedIndex = 0;
 
             draw = meshList.filesTreeView.Nodes;
-        }
-
-        private void ModelViewport_Paint(object sender, PaintEventArgs e)
-        {
-
         }
 
         private void SetUpVariableViewer()
@@ -474,14 +468,10 @@ namespace Smash_Forge
 
         private void ModelViewport_Shown(object sender, EventArgs e)
         {
-            if (!hasStartedRenderThread)
-            {
-                // Frame time control.
-                renderThread = new Thread(new ThreadStart(RaiseViewportRenderFrames));
-                renderThread.Start();
-                isRendering = true;
-                hasStartedRenderThread = true;
-            }
+            // Frame time control.
+            renderThread = new Thread(new ThreadStart(RaiseViewportRenderFrames));
+            renderThread.Start();
+            isRendering = true;
         }
 
         private void RaiseViewportRenderFrames()
@@ -490,6 +480,13 @@ namespace Smash_Forge
                 return;
 
             Stopwatch stopwatch = Stopwatch.StartNew();
+
+            while(!hasStartedRenderThread)
+            {
+                if (stopwatch.ElapsedMilliseconds > 500)
+                    hasStartedRenderThread = true;
+            }
+
             while (isOpen)
             {
                 /*if (isPlaying)
@@ -499,6 +496,7 @@ namespace Smash_Forge
                     else
                         animationTrackBar.Value++;
                 }*/
+                
                 if (isRendering)
                 {
                     if (stopwatch.ElapsedMilliseconds > 5)
