@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -243,6 +244,8 @@ namespace Smash_Forge
         public int shootWidth = 50;
         public int shootHeight = 50;
 
+        private Thread renderThread;
+
         public ModelViewport()
         {
             InitializeComponent();
@@ -452,27 +455,34 @@ namespace Smash_Forge
         private void ModelViewport_Load(object sender, EventArgs e)
         {
             // HACK: Frame time control.
-            var timer = new System.Windows.Forms.Timer();
-            timer.Interval = 8;
-            timer.Tick += new EventHandler(Application_Idle);
-            timer.Start();
+            renderThread = new Thread(new ThreadStart(Application_Idle));
+            renderThread.Start();
+            //var timer = new System.Windows.Forms.Timer();
+            //timer.Interval = 8;
+            //timer.Tick += new EventHandler(Application_Idle);
+            //timer.Start();
         }
 
-        private void Application_Idle(object sender, EventArgs e)
+        private void Application_Idle()
         {
             if (this.IsDisposed)
                 return;
 
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            while (true)
             {
-                if (isPlaying)
+                /*if (isPlaying)
                 {
                     if (animationTrackBar.Value == totalFrame.Value)
                         animationTrackBar.Value = 0;
                     else
                         animationTrackBar.Value++;
+                }*/
+                if (stopwatch.ElapsedMilliseconds > 5)
+                {
+                    glViewport.Invalidate();
+                    stopwatch.Restart();
                 }
-                glViewport.Invalidate();
             }
         }
 
