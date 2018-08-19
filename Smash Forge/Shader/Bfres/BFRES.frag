@@ -245,7 +245,6 @@ void main()
     fragColor.rgb += ReflectionPass(N, I, diffuseMapColor, aoBlend, tintColor, vert);
 
 
-
    //Mario Odyssey uses this. Often for fur colors
    if (base_color_mul_color != vec4(0))
        fragColor *= min(base_color_mul_color, 1);

@@ -165,17 +165,20 @@ namespace Smash_Forge
 
             if (BFRES.IsSwitchBFRES == true)
             {
-                foreach (BRTI tex in BNTX.textures)
+                foreach (BNTX bntx in Runtime.BNTXList)
                 {
-                    foreach (var texure in mat.textures)
+                    foreach (BRTI tex in bntx.textures)
                     {
-                        if (tex.Text == texure.Name)
+                        foreach (var texure in mat.textures)
                         {
-                            Bitmap bmp = textureRGBA(tex.texture, tex.display);
+                            if (tex.Text == texure.Name)
+                            {
+                                Bitmap bmp = textureRGBA(tex.texture, tex.display);
 
-                            SetTexturePanel(bmp, texure);
+                                SetTexturePanel(bmp, texure);
+                            }
                         }
-                    }
+                    }     
                 }
             }
             else

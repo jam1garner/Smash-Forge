@@ -980,18 +980,20 @@ namespace Smash_Forge
             // images
             Dictionary<Bitmap, string> texbank = new Dictionary<Bitmap, string>();
             int tid = 0;
-
-            foreach (BRTI tex in BNTX.textures)
+            foreach (BNTX bntx in Runtime.BNTXList)
             {
-                ColladaImages image = new ColladaImages();
-                dae.library_images.Add(image);
-                image.id = "Tex" + tid;
-                image.name = tex.Text;
-                image.initref = tex.Text + ".png";
+                foreach (BRTI tex in bntx.textures)
+                {
+                    ColladaImages image = new ColladaImages();
+                    dae.library_images.Add(image);
+                    image.id = "Tex" + tid;
+                    image.name = tex.Text;
+                    image.initref = tex.Text + ".png";
 
-                tex.ExportAsImage(tex.texture, tex.display, fname.Substring(0, fname.LastIndexOf("\\") + 1) + tex.Text + ".png");
-                tid++;
-            }
+                    tex.ExportAsImage(tex.texture, tex.display, fname.Substring(0, fname.LastIndexOf("\\") + 1) + tex.Text + ".png");
+                    tid++;
+                }
+            }   
 
             // geometry
             int g = 0;

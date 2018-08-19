@@ -30,24 +30,22 @@ namespace Smash_Forge
 
             int count = 0;
 
-            foreach (BRTI tex in BNTX.textures)
+            foreach (BNTX bntx in Runtime.BNTXList)
             {
-                Bitmap color = new Bitmap(BfresMaterialEditor.textureRGBA(tex.texture, tex.display));
+                foreach (BRTI tex in bntx.textures)
+                {
+                    Bitmap color = new Bitmap(BfresMaterialEditor.textureRGBA(tex.texture, tex.display));
 
-                il.Images.Add(color);
-                texturesCol.Add(color);
+                    il.Images.Add(color);
+                    texturesCol.Add(color);
+
+                   
+                    string[] row1 = { tex.Height.ToString(), tex.Width.ToString() };
+                    listView1.Items.Add(tex.Text, count++).SubItems.AddRange(row1);
+                }
             }
-
-
             il.ImageSize = new Size(30, 30);
             listView1.SmallImageList = il;
-
-            foreach (BRTI tex in BNTX.textures)
-            {
-                string[] row1 = { tex.Height.ToString(), tex.Width.ToString()};
-
-                listView1.Items.Add(tex.Text, count++).SubItems.AddRange(row1);
-            }
 
             Rendering.OpenTKSharedResources.InitializeSharedResources();
             if (Rendering.OpenTKSharedResources.SetupStatus == Rendering.OpenTKSharedResources.SharedResourceStatus.Initialized)
