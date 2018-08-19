@@ -19,8 +19,6 @@ namespace Smash_Forge
     {
         public BFRES.Mesh poly;
         public BFRES.MaterialData mat;
-        public int TexPanelHeight = 31;
-        public PictureBox[] picboxArray;
         public ImageList paramColorList = new ImageList();
         public ImageList textureImageList = new ImageList();
         public string SelectedMatParam = "";
@@ -39,7 +37,6 @@ namespace Smash_Forge
             listView1.Items.Clear();
             dataGridView3.Rows.Clear();
             dataGridView4.Rows.Clear();
-            TexPanelHeight = 31;
 
             textureImageList.ColorDepth = ColorDepth.Depth32Bit;
             textureImageList.ImageSize = new Size(64, 64);
@@ -57,54 +54,8 @@ namespace Smash_Forge
             listView1.SmallImageList = paramColorList;
             listView1.FullRowSelect = true;  
 
-            Panel[] arr = new Panel[mat.textures.Count];
-            Button[] Btnarr = new Button[mat.textures.Count];
-            picboxArray = new PictureBox[mat.textures.Count];
-
-            textureImageList = SetTextureRefImages();
             TextureRefListView.SmallImageList = textureImageList;
             TextureRefListView.FullRowSelect = true;
-        }
-        public ImageList SetTextureRefImages()
-        {
-            textureImageList.Images.Clear();
-
-            ImageList imageList = new ImageList();
-            if (BFRES.IsSwitchBFRES == true)
-            {
-                foreach (BNTX bntx in Runtime.BNTXList)
-                {
-                    foreach (BRTI tex in bntx.textures)
-                    {
-                        foreach (var texure in mat.textures)
-                        {
-                            if (tex.Text == texure.Name)
-                            {
-                                Bitmap bmp = textureRGBA(tex.texture, tex.display);
-                                imageList.Images.Add(tex.Text, bmp);
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                foreach (FTEXContainer ftexC in Runtime.FTEXContainerList)
-                {
-                    foreach (var tex in ftexC.FTEXtextures.Values)
-                    {
-                        foreach (var texure in mat.textures)
-                        {
-                            if (tex.Text == texure.Name)
-                            {
-                                Bitmap bmp = FTEXRGBA(tex.texture, tex.display);
-                                imageList.Images.Add(tex.Text, bmp);
-                            }
-                        }
-                    }
-                }
-            }
-            return imageList;
         }
 
         public void FillForm()
@@ -228,7 +179,8 @@ namespace Smash_Forge
         }
         private void InitializeTextureListView(BFRES.MaterialData mat)
         {
-            TextureRefListView.Clear();
+            int CurTex = 0;
+            TextureRefListView.Items.Clear();
             if (BFRES.IsSwitchBFRES == true)
             {
                 foreach (BNTX bntx in Runtime.BNTXList)
@@ -239,7 +191,10 @@ namespace Smash_Forge
                         {
                             if (tex.Text == texure.Name)
                             {
-                                TextureRefListView.Items.Add(texure.Name);
+                                Bitmap bmp = textureRGBA(tex.texture, tex.display);
+                                textureImageList.Images.Add(tex.Text, bmp);
+
+                                TextureRefListView.Items.Add(texure.Name, CurTex++);
                             }
                         }
                     }
@@ -255,6 +210,9 @@ namespace Smash_Forge
                         {
                             if (tex.Text == texure.Name)
                             {
+                                Bitmap bmp = FTEXRGBA(tex.texture, tex.display);
+                                textureImageList.Images.Add(tex.Text, bmp);
+
                                 TextureRefListView.Items.Add(texure.Name);
                             }
                         }

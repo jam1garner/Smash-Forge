@@ -44,6 +44,7 @@ namespace Smash_Forge
                     listView1.Items.Add(tex.Text, count++).SubItems.AddRange(row1);
                 }
             }
+            il.ColorDepth = ColorDepth.Depth32Bit;
             il.ImageSize = new Size(30, 30);
             listView1.SmallImageList = il;
 
