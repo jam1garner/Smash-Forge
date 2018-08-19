@@ -210,6 +210,7 @@
             this.TextureRefListView.UseCompatibleStateImageBehavior = false;
             this.TextureRefListView.View = System.Windows.Forms.View.Details;
             this.TextureRefListView.SelectedIndexChanged += new System.EventHandler(this.TextureRefListView_SelectedIndexChanged);
+            this.TextureRefListView.DoubleClick += new System.EventHandler(this.TextureRefListView_DoubleClick);
             // 
             // Texture
             // 
