@@ -34,6 +34,7 @@ namespace Smash_Forge
         // Rendering Stuff
         private Framebuffer colorHdrFbo;
 
+        // Framerate control
         private Thread renderThread;
         private bool hasStartedRenderThread = false;
         private bool isRendering = false;
@@ -256,9 +257,6 @@ namespace Smash_Forge
             FilePath = "";
             Text = "Model Viewport";
 
-            // Limit to 60 fps.
-            //glViewport.VSync = true;
-
             // Wait for everything to be visible.
             Shown += ModelViewport_Shown;
 
@@ -472,6 +470,9 @@ namespace Smash_Forge
             renderThread = new Thread(new ThreadStart(RaiseViewportRenderFrames));
             renderThread.Start();
             isRendering = true;
+
+            // Limit to 60 fps.
+            //glViewport.VSync = true;
         }
 
         private void RaiseViewportRenderFrames()
@@ -479,38 +480,56 @@ namespace Smash_Forge
             if (this.IsDisposed)
                 return;
 
-            Stopwatch stopwatch = Stopwatch.StartNew();
+            // TODO: We don't really need two timers.
+            Stopwatch renderStopwatch = Stopwatch.StartNew();
+            Stopwatch animationStopwatch = Stopwatch.StartNew();
 
-            while(!hasStartedRenderThread)
+            // HACK: Wait for UI to load before triggering paint events.
+            int waitTimeForGuiLoad = 500;
+            while (!hasStartedRenderThread)
             {
-                if (stopwatch.ElapsedMilliseconds > 500)
+                if (renderStopwatch.ElapsedMilliseconds > waitTimeForGuiLoad)
                     hasStartedRenderThread = true;
             }
 
+            int frameUpdateInterval = 5;
+            int animationUpdateInterval = 16;
+
             while (isOpen)
-            {
-                /*if (isPlaying)
-                {
-                    if (animationTrackBar.Value == totalFrame.Value)
-                        animationTrackBar.Value = 0;
-                    else
-                        animationTrackBar.Value++;
-                }*/
-                
+            {             
                 if (isRendering)
                 {
-                    if (stopwatch.ElapsedMilliseconds > 5)
+                    if (renderStopwatch.ElapsedMilliseconds > frameUpdateInterval)
                     {
                         glViewport.Invalidate();
-                        stopwatch.Restart();
+                        renderStopwatch.Restart();
+                    }
+
+                    if (animationStopwatch.ElapsedMilliseconds > animationUpdateInterval)
+                    {
+                        UpdateAnimationFrame();
+                        animationStopwatch.Restart();
                     }
                 }
                 else
                 {
                     // Avoid making the gui less responsive and wasting CPU time
                     // if we don't need to render anything.
-                    stopwatch.Stop();
+                    renderStopwatch.Stop();
+                    animationStopwatch.Stop();
                 }
+            }
+        }
+
+        private void UpdateAnimationFrame()
+        {
+            if (isPlaying)
+            {
+                // Perform a click event to avoid cross thread updating issues.
+                if (animationTrackBar.Value == totalFrame.Value)
+                    animationTrackBar.Value = 0;
+                else
+                    nextButton.PerformClick();
             }
         }
 
