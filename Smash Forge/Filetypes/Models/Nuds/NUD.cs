@@ -636,14 +636,17 @@ namespace Smash_Forge
         {
             Matrix4 nscMatrix = Matrix4.Identity;
 
-            // transform object using the bone's transforms
-            if (p.Parent != null && p.Parent.Text.Contains("_NSC"))
+            // Transform object using the bone's transforms
+            Mesh mesh = (Mesh)p.Parent;
+            if (mesh != null && mesh.Text.Contains("_NSC"))
             {
-                int index = ((Mesh)p.Parent).singlebind;
+                int index = mesh.singlebind;
                 if (index != -1)
                 {
-                    // Very hacky
-                    nscMatrix = ((ModelContainer)p.Parent.Parent.Parent).VBN.bones[index].transform;
+                    // HACK
+                    ModelContainer modelContainer = (ModelContainer)mesh.Parent.Parent;
+                    if (modelContainer.VBN != null)
+                        nscMatrix = modelContainer.VBN.bones[index].transform;
                 }
             }
 
