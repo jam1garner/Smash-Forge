@@ -39,6 +39,8 @@
             this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabTextureMaps = new System.Windows.Forms.TabPage();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.TextureRefListView = new System.Windows.Forms.ListView();
             this.Texture = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.MaterialParamsTab = new System.Windows.Forms.TabPage();
@@ -71,6 +73,9 @@
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
             this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.textureTypeLabel = new System.Windows.Forms.Label();
+            this.samplerLabel = new System.Windows.Forms.Label();
+            this.pxelSamplerLabel = new System.Windows.Forms.Label();
             this.MaterialsTab.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -188,6 +193,11 @@
             // tabTextureMaps
             // 
             this.tabTextureMaps.AutoScroll = true;
+            this.tabTextureMaps.Controls.Add(this.pxelSamplerLabel);
+            this.tabTextureMaps.Controls.Add(this.samplerLabel);
+            this.tabTextureMaps.Controls.Add(this.textureTypeLabel);
+            this.tabTextureMaps.Controls.Add(this.button2);
+            this.tabTextureMaps.Controls.Add(this.button1);
             this.tabTextureMaps.Controls.Add(this.TextureRefListView);
             this.tabTextureMaps.Location = new System.Drawing.Point(4, 22);
             this.tabTextureMaps.Name = "tabTextureMaps";
@@ -198,24 +208,46 @@
             this.tabTextureMaps.UseVisualStyleBackColor = true;
             this.tabTextureMaps.Click += new System.EventHandler(this.tabTextureMaps_Click);
             // 
+            // button2
+            // 
+            this.button2.Enabled = false;
+            this.button2.Location = new System.Drawing.Point(193, 6);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(173, 31);
+            this.button2.TabIndex = 2;
+            this.button2.Text = "Change Texture";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button1
+            // 
+            this.button1.Enabled = false;
+            this.button1.Location = new System.Drawing.Point(6, 6);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(173, 31);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "Open UV Viewer";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
             // TextureRefListView
             // 
+            this.TextureRefListView.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.TextureRefListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.Texture});
-            this.TextureRefListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TextureRefListView.Location = new System.Drawing.Point(3, 3);
+            this.TextureRefListView.Location = new System.Drawing.Point(0, 114);
             this.TextureRefListView.Name = "TextureRefListView";
-            this.TextureRefListView.Size = new System.Drawing.Size(368, 535);
+            this.TextureRefListView.Size = new System.Drawing.Size(368, 421);
             this.TextureRefListView.TabIndex = 0;
             this.TextureRefListView.UseCompatibleStateImageBehavior = false;
             this.TextureRefListView.View = System.Windows.Forms.View.Details;
             this.TextureRefListView.SelectedIndexChanged += new System.EventHandler(this.TextureRefListView_SelectedIndexChanged);
-            this.TextureRefListView.DoubleClick += new System.EventHandler(this.TextureRefListView_DoubleClick);
             // 
             // Texture
             // 
             this.Texture.Text = "Texture";
-            this.Texture.Width = 126;
+            this.Texture.Width = 348;
             // 
             // MaterialParamsTab
             // 
@@ -644,6 +676,34 @@
             this.Column7.HeaderText = "Value";
             this.Column7.Name = "Column7";
             // 
+            // textureTypeLabel
+            // 
+            this.textureTypeLabel.AutoSize = true;
+            this.textureTypeLabel.Location = new System.Drawing.Point(8, 40);
+            this.textureTypeLabel.Name = "textureTypeLabel";
+            this.textureTypeLabel.Size = new System.Drawing.Size(31, 13);
+            this.textureTypeLabel.TabIndex = 3;
+            this.textureTypeLabel.Text = "Type";
+            // 
+            // samplerLabel
+            // 
+            this.samplerLabel.AutoSize = true;
+            this.samplerLabel.Location = new System.Drawing.Point(10, 63);
+            this.samplerLabel.Name = "samplerLabel";
+            this.samplerLabel.Size = new System.Drawing.Size(45, 13);
+            this.samplerLabel.TabIndex = 4;
+            this.samplerLabel.Text = "Sampler";
+            this.samplerLabel.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+            // 
+            // pxelSamplerLabel
+            // 
+            this.pxelSamplerLabel.AutoSize = true;
+            this.pxelSamplerLabel.Location = new System.Drawing.Point(10, 87);
+            this.pxelSamplerLabel.Name = "pxelSamplerLabel";
+            this.pxelSamplerLabel.Size = new System.Drawing.Size(70, 13);
+            this.pxelSamplerLabel.TabIndex = 5;
+            this.pxelSamplerLabel.Text = "Pixel Sampler";
+            // 
             // BfresMaterialEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -660,6 +720,7 @@
             this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).EndInit();
             this.tabTextureMaps.ResumeLayout(false);
+            this.tabTextureMaps.PerformLayout();
             this.MaterialParamsTab.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -723,5 +784,10 @@
         private System.Windows.Forms.Label ShaderArchivelabel1;
         private System.Windows.Forms.ListView TextureRefListView;
         private System.Windows.Forms.ColumnHeader Texture;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label pxelSamplerLabel;
+        private System.Windows.Forms.Label samplerLabel;
+        private System.Windows.Forms.Label textureTypeLabel;
     }
 }

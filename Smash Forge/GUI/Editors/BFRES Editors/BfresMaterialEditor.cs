@@ -22,6 +22,7 @@ namespace Smash_Forge
         public ImageList paramColorList = new ImageList();
         public ImageList textureImageList = new ImageList();
         public string SelectedMatParam = "";
+        public string SelectedTexture = "";
 
         public List<string> ColorBoxMatParmList = new List<string>(new string[] {
            "edge_light_color",
@@ -497,22 +498,30 @@ namespace Smash_Forge
 
         private void TextureRefListView_SelectedIndexChanged(object sender, EventArgs e)
         {
-
-        }
-
-        private void TextureRefListView_DoubleClick(object sender, EventArgs e)
-        {
-            if (BFRES.IsSwitchBFRES)
+            if (TextureRefListView.SelectedItems.Count > 0)
             {
-                BntxTextureList edit = new BntxTextureList();
-                edit.Show();
-
+                SelectedTexture = TextureRefListView.SelectedItems[0].Text;
+                foreach (BFRES.MatTexture matTexure in mat.textures)
+                {
+                    if (matTexure.Name == SelectedTexture)
+                    {
+                        textureTypeLabel.Text = $"Type {matTexure.Type.ToString()}";
+                        samplerLabel.Text = $"Sampler {matTexure.SamplerName}";
+                        pxelSamplerLabel.Text = $"Pixel Sampler {matTexure.FragShaderSampler}";
+                    }
+                }
+            }
+            else
+            {
+                textureTypeLabel.Text = $"Type";
+                samplerLabel.Text = $"Sampler";
+                pxelSamplerLabel.Text = $"Pixel Sampler";
             }
         }
+
         private void TextureBoxClickedOn(object sender, EventArgs e)
         {
-            BNTXMaterialTextureEditor edit = new BNTXMaterialTextureEditor();
-            edit.Show();
+            
         }
 
         public Bitmap FTEXRGBA(FTEX.FTEX_Texture t, int id)
@@ -536,6 +545,38 @@ namespace Smash_Forge
             bitmap.UnlockBits(bitmapData);
 
             return bitmap;
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            if (BFRES.IsSwitchBFRES)
+            {
+                foreach (BNTX bntx in Runtime.BNTXList)
+                {
+                    if (bntx.glTexByName.ContainsKey(SelectedTexture))
+                    {
+                        BntxTextureList edit = new BntxTextureList();
+                        edit.LoadTexture(SelectedTexture);
+                        edit.Show();
+                    }
+                }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (BFRES.IsSwitchBFRES)
+            {
+                foreach (BNTX bntx in Runtime.BNTXList)
+                {
+                    if (bntx.glTexByName.ContainsKey(SelectedTexture))
+                    {
+                        BNTXMaterialTextureEditor edit = new BNTXMaterialTextureEditor();
+                        edit.LoadTexture(poly, bntx.glTexByName[SelectedTexture], SelectedTexture);
+                        edit.Show();
+                    }
+                }
+            }
         }
     }
 }

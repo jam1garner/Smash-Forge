@@ -23,6 +23,12 @@ namespace Smash_Forge
         private bool _loadedA = false;
 
         private Mesh3D screenTriangle;
+        public string CurrentTextureOpen = "";
+
+        public void LoadTexture(string texture)
+        {
+            CurrentTextureOpen = texture;
+        }
 
         public BntxTextureList()
         {
