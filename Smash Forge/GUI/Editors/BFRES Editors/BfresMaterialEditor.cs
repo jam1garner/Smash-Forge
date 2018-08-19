@@ -181,8 +181,13 @@ namespace Smash_Forge
         }
         private void InitializeTextureListView(BFRES.MaterialData mat)
         {
+            // Shaders weren't initialized.
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+                return;
+
             int CurTex = 0;
             TextureRefListView.Items.Clear();
+            textureImageList.Images.Clear();
             if (BFRES.IsSwitchBFRES == true)
             {
                 foreach (BNTX bntx in Runtime.BNTXList)
@@ -197,11 +202,8 @@ namespace Smash_Forge
 
                             TextureRefListView.Items.Add(texure.Name, CurTex++);
 
-                            if (bitmap != null)
-                            {
-                                bitmap.Dispose();
-                                GC.Collect();
-                            }
+                            var dummy = textureImageList.Handle;
+                            bitmap.Dispose();
                         }
                     }
                 }
@@ -210,7 +212,6 @@ namespace Smash_Forge
             {
                 foreach (FTEXContainer ftexC in Runtime.FTEXContainerList)
                 {
-
                     foreach (var texure in mat.textures)
                     {
                         if (ftexC.glTexByName.ContainsKey(texure.Name))
@@ -221,11 +222,8 @@ namespace Smash_Forge
 
                             TextureRefListView.Items.Add(texure.Name, CurTex++);
 
-                            if (bitmap != null)
-                            {
-                                bitmap.Dispose();
-                                GC.Collect();
-                            }
+                            var dummy = textureImageList.Handle;
+                            bitmap.Dispose();
                         }
                     }
                 }
