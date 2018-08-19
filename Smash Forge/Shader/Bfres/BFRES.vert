@@ -1,15 +1,15 @@
 #version 330
 
 in vec3 vPosition;
-in vec4 vColor;
 in vec3 vNormal;
-in vec2 vUV0;
-in vec2 vUV1;
-in vec2 vUV2;
-in vec4 vBone;
-in vec4 vWeight;
 in vec3 vTangent;
 in vec3 vBitangent;
+in vec2 vUV0;
+in vec4 vColor;
+in vec4 vBone;
+in vec4 vWeight;
+in vec2 vUV1;
+in vec2 vUV2;
 in vec3 vPosition2;
 in vec3 vPosition3;
 

@@ -247,7 +247,7 @@ void main()
         lightMapIntensity = texture(BakeLightMap, f_texcoord1).a;
     }
 
-	float specIntensity = 1;
+	float specIntensity = 0;
 
 	if (HasMRA == 1) //Kirby Star Allies PBR map
 	{
@@ -255,7 +255,7 @@ void main()
 		//Usually it's just metalness with roughness and works fine
 		metallic = texture(MRA, f_texcoord0).r;
 		roughness = texture(MRA, f_texcoord0).g;
-		cavity = texture(MRA, f_texcoord0).b;
+		specIntensity = texture(MRA, f_texcoord0).b;
 		ao = texture(MRA, f_texcoord0).a;
 	}
 

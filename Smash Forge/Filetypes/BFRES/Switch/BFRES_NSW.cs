@@ -422,8 +422,8 @@ namespace Smash_Forge
                 }
                 else if (TextureName.Contains("MRA")) //Metalness, Roughness, and Cavity Map in one
                 {
-                    texture.hash = 17;
-                    poly.material.HasRoughnessMap = true;
+                    texture.hash = 21;
+                    poly.material.HasMRA = true;
                     texture.Type = MatTexture.TextureType.MRA;
                 }
                 else if (TextureName.Contains("mtl"))
