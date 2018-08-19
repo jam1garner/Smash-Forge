@@ -21,7 +21,8 @@ namespace Smash_Forge
         public BFRES.MaterialData mat;
         public int TexPanelHeight = 31;
         public PictureBox[] picboxArray;
-        public ImageList il = new ImageList();
+        public ImageList paramColorList = new ImageList();
+        public ImageList textureImageList = new ImageList();
         public string SelectedMatParam = "";
 
         public List<string> ColorBoxMatParmList = new List<string>(new string[] {
@@ -36,9 +37,9 @@ namespace Smash_Forge
         public void LoadMaterial(BFRES.Mesh p)
          {
             listView1.Items.Clear();
+            TextureRefListView.Items.Clear();
             dataGridView3.Rows.Clear();
             dataGridView4.Rows.Clear();
-            tabTextureMaps.Controls.Clear();
             TexPanelHeight = 31;
 
             poly = p;
@@ -140,8 +141,8 @@ namespace Smash_Forge
                 listView1.Items.Add(item);
                 CurParam++;
             }
-            il.ImageSize = new Size(10, 10);
-            listView1.SmallImageList = il;
+            paramColorList.ImageSize = new Size(10, 10);
+            listView1.SmallImageList = paramColorList;
             listView1.FullRowSelect = true;
 
             foreach (var rnd in mat.renderinfo)
@@ -174,7 +175,7 @@ namespace Smash_Forge
                             if (tex.Text == texure.Name)
                             {
                                 Bitmap bmp = textureRGBA(tex.texture, tex.display);
-
+                                textureImageList.Images.Add(bmp);
                                 SetTexturePanel(bmp, texure);
                             }
                         }
@@ -192,64 +193,21 @@ namespace Smash_Forge
                             if (tex.Text == texure.Name)
                             {
                                 Bitmap bmp = FTEXRGBA(tex.texture, tex.display);
-
+                                textureImageList.Images.Add(bmp);
                                 SetTexturePanel(bmp, texure);
                             }
                         }
                     }
                 }
-            }    
+            }
+            textureImageList.ImageSize = new Size(50, 50);
+            TextureRefListView.SmallImageList = textureImageList;
+            TextureRefListView.FullRowSelect = true;
         }
         private void SetTexturePanel(Bitmap bmp, BFRES.MatTexture texure)
         {
-            Panel panel = new Panel();
-            PictureBox picbox = new PictureBox();
-            Button PanelHide = new Button();
-            Button ChangeTex = new Button();
-
-            PanelHide.Text = "Hide " + texure.Name;
-            ChangeTex.Text = "Change Texture";
-
-            picbox.Image = bmp;
-
-
-            panel.Location = new System.Drawing.Point(7, TexPanelHeight);
-            PanelHide.Location = new System.Drawing.Point(7, TexPanelHeight - 27);
-            panel.Size = new Size(360, 142);
-            picbox.Size = new Size(137, 137);
-            PanelHide.Size = new Size(360, 22);
-
-            picbox.SizeMode = PictureBoxSizeMode.StretchImage;
-
-            PanelHide.Click += new System.EventHandler(panelHide_Click);
-            picbox.Click += new System.EventHandler(TextureBoxClickedOn);
-            ChangeTex.Click += new System.EventHandler(ChangeTexClickedOn);
-
-            Label TextueType = new Label();
-            Label SamplerText = new Label();
-
-            ChangeTex.Location = new System.Drawing.Point(144, 3);
-            TextueType.Location = new System.Drawing.Point(144, 66);
-            SamplerText.Location = new System.Drawing.Point(144, 88);
-
-            ChangeTex.Size = new Size(150, 26);
-
-       
-            TextueType.Text = $"Type = {texure.Type.ToString()}";
-            SamplerText.Text = $"Sampler = {texure.SamplerName}";
-
-            if (texure.FragShaderSampler != "")
-                SamplerText.Text = $"Sampler = {texure.FragShaderSampler}";
-
-            TexPanelHeight = TexPanelHeight + 170;
-
-            panel.Controls.Add(picbox);
-            panel.Controls.Add(TextueType);
-            panel.Controls.Add(SamplerText);
-            panel.Controls.Add(ChangeTex);
-
-            tabTextureMaps.Controls.Add(panel);
-            tabTextureMaps.Controls.Add(PanelHide);
+            TextureRefListView.View = View.Details;
+            TextureRefListView.Items.Add(texure.Name);
         }
         private void ChangeTexClickedOn(object sender, EventArgs e)
         {
@@ -573,6 +531,11 @@ namespace Smash_Forge
               mat.matparam[SelectedMatParam] = prm;
               listView1.SelectedItems[0].SubItems[1].Text = Value;
             }
+        }
+
+        private void TextureRefListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

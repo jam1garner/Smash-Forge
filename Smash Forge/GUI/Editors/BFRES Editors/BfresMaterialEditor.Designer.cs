@@ -30,6 +30,8 @@
         {
             this.MaterialsTab = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.ShaderMdllabel2 = new System.Windows.Forms.Label();
+            this.ShaderArchivelabel1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridView4 = new System.Windows.Forms.DataGridView();
@@ -37,6 +39,8 @@
             this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabTextureMaps = new System.Windows.Forms.TabPage();
+            this.TextureRefListView = new System.Windows.Forms.ListView();
+            this.Texture = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.MaterialParamsTab = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
             this.colorboxLabel = new System.Windows.Forms.Label();
@@ -67,12 +71,11 @@
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
             this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ShaderArchivelabel1 = new System.Windows.Forms.Label();
-            this.ShaderMdllabel2 = new System.Windows.Forms.Label();
             this.MaterialsTab.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).BeginInit();
+            this.tabTextureMaps.SuspendLayout();
             this.MaterialParamsTab.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.paramColorBox)).BeginInit();
@@ -115,6 +118,24 @@
             this.tabPage1.Text = "Material Info";
             this.tabPage1.UseVisualStyleBackColor = true;
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
+            // 
+            // ShaderMdllabel2
+            // 
+            this.ShaderMdllabel2.AutoSize = true;
+            this.ShaderMdllabel2.Location = new System.Drawing.Point(4, 56);
+            this.ShaderMdllabel2.Name = "ShaderMdllabel2";
+            this.ShaderMdllabel2.Size = new System.Drawing.Size(73, 13);
+            this.ShaderMdllabel2.TabIndex = 2;
+            this.ShaderMdllabel2.Text = "Shader Model";
+            // 
+            // ShaderArchivelabel1
+            // 
+            this.ShaderArchivelabel1.AutoSize = true;
+            this.ShaderArchivelabel1.Location = new System.Drawing.Point(4, 33);
+            this.ShaderArchivelabel1.Name = "ShaderArchivelabel1";
+            this.ShaderArchivelabel1.Size = new System.Drawing.Size(80, 13);
+            this.ShaderArchivelabel1.TabIndex = 1;
+            this.ShaderArchivelabel1.Text = "Shader Archive";
             // 
             // textBox1
             // 
@@ -167,6 +188,7 @@
             // tabTextureMaps
             // 
             this.tabTextureMaps.AutoScroll = true;
+            this.tabTextureMaps.Controls.Add(this.TextureRefListView);
             this.tabTextureMaps.Location = new System.Drawing.Point(4, 22);
             this.tabTextureMaps.Name = "tabTextureMaps";
             this.tabTextureMaps.Padding = new System.Windows.Forms.Padding(3);
@@ -175,6 +197,24 @@
             this.tabTextureMaps.Text = "Texture Maps";
             this.tabTextureMaps.UseVisualStyleBackColor = true;
             this.tabTextureMaps.Click += new System.EventHandler(this.tabTextureMaps_Click);
+            // 
+            // TextureRefListView
+            // 
+            this.TextureRefListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.Texture});
+            this.TextureRefListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TextureRefListView.Location = new System.Drawing.Point(3, 3);
+            this.TextureRefListView.Name = "TextureRefListView";
+            this.TextureRefListView.Size = new System.Drawing.Size(368, 535);
+            this.TextureRefListView.TabIndex = 0;
+            this.TextureRefListView.UseCompatibleStateImageBehavior = false;
+            this.TextureRefListView.View = System.Windows.Forms.View.Details;
+            this.TextureRefListView.SelectedIndexChanged += new System.EventHandler(this.TextureRefListView_SelectedIndexChanged);
+            // 
+            // Texture
+            // 
+            this.Texture.Text = "Texture";
+            this.Texture.Width = 126;
             // 
             // MaterialParamsTab
             // 
@@ -536,8 +576,7 @@
             // listView1
             // 
             this.listView1.AllowColumnReorder = true;
-            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader4,
             this.columnHeader6,
@@ -604,32 +643,14 @@
             this.Column7.HeaderText = "Value";
             this.Column7.Name = "Column7";
             // 
-            // ShaderArchivelabel1
-            // 
-            this.ShaderArchivelabel1.AutoSize = true;
-            this.ShaderArchivelabel1.Location = new System.Drawing.Point(4, 33);
-            this.ShaderArchivelabel1.Name = "ShaderArchivelabel1";
-            this.ShaderArchivelabel1.Size = new System.Drawing.Size(80, 13);
-            this.ShaderArchivelabel1.TabIndex = 1;
-            this.ShaderArchivelabel1.Text = "Shader Archive";
-            // 
-            // ShaderMdllabel2
-            // 
-            this.ShaderMdllabel2.AutoSize = true;
-            this.ShaderMdllabel2.Location = new System.Drawing.Point(4, 56);
-            this.ShaderMdllabel2.Name = "ShaderMdllabel2";
-            this.ShaderMdllabel2.Size = new System.Drawing.Size(73, 13);
-            this.ShaderMdllabel2.TabIndex = 2;
-            this.ShaderMdllabel2.Text = "Shader Model";
-            // 
-            // BFRES_MaterialEditor
+            // BfresMaterialEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(382, 567);
             this.Controls.Add(this.MaterialsTab);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "BFRES_MaterialEditor";
+            this.Name = "BfresMaterialEditor";
             this.Text = "Material Editor";
             this.Load += new System.EventHandler(this.BFRES_MaterialEditor_Load);
             this.MaterialsTab.ResumeLayout(false);
@@ -637,6 +658,7 @@
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).EndInit();
+            this.tabTextureMaps.ResumeLayout(false);
             this.MaterialParamsTab.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -698,5 +720,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
         private System.Windows.Forms.Label ShaderMdllabel2;
         private System.Windows.Forms.Label ShaderArchivelabel1;
+        private System.Windows.Forms.ListView TextureRefListView;
+        private System.Windows.Forms.ColumnHeader Texture;
     }
 }
