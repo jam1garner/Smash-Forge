@@ -437,6 +437,12 @@ namespace Smash_Forge
                     texture.hash = 15;
                     poly.material.HasRoughnessMap = true;
                 }
+                else if (TextureName.Contains("Mlt"))
+                {
+                    texture.hash = 14;
+                    poly.material.HasSphereMap = true;
+                    texture.Type = MatTexture.TextureType.SphereMap;
+                }
                 texture.Name = TextureName;
 
                 //Now determine the types by sampler from fragment shader

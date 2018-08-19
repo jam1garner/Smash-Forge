@@ -8,6 +8,7 @@ in vec2 f_texcoord3;
 in vec3 objectPosition;
 
 in vec3 normal;
+in vec3 viewNormal;
 in vec4 vertexColor;
 in vec3 tangent;
 in vec3 bitangent;
@@ -64,6 +65,7 @@ uniform sampler2D MetalnessMap;
 uniform sampler2D RoughnessMap;
 uniform sampler2D MRA;
 uniform sampler2D TeamColorMap;
+uniform sampler2D SphereMap;
 
 uniform samplerCube irradianceMap;
 uniform samplerCube specularIbl;
@@ -133,6 +135,7 @@ vec3 CalcBumpedNormal(vec3 normal, sampler2D normalMap, VertexAttributes vert, f
 float AmbientOcclusionBlend(sampler2D BakeShadowMap, VertexAttributes vert, float ao_density);
 vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float texCoordIndex, vec3 emission_color);
 vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap, vec3 specular_color, VertexAttributes vert, float texCoordIndex);
+vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, VertexAttributes vert);
 
 void main()
 {
@@ -146,6 +149,7 @@ void main()
     vert.texCoord3 = f_texcoord2;
     vert.vertexColor = vertexColor;
     vert.normal = normal;
+	vert.viewNormal = viewNormal;
     vert.tangent = tangent;
     vert.bitangent = bitangent;
 
@@ -214,27 +218,33 @@ void main()
     diffuseMapColor *= brightness;
     fragColor.rgb += diffuseMapColor.rgb;
 
-    // Render Passes
-    if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
-		fragColor.rgb += EmissionPass(EmissionMap, emission_intensity, vert, 0, emission_color);
-    fragColor.rgb += SpecularPass(I, N, HasSpecularMap, SpecularMap, specular_color, vert, 0);
-
+	float aoBlend = 1;
 	if (HasShadowMap == 1)
 	{
 	     if (bake_shadow_type == 0)
 		 {
-		       vec4 A0Tex = vec4(texture(BakeShadowMap, f_texcoord1).rrr, 1);
-		       fragColor *= A0Tex;
+		       aoBlend = texture(BakeShadowMap, f_texcoord1).r;
+		       fragColor *= aoBlend;
 		 }
          if (bake_shadow_type == 2)
 		 {
-		       vec4 A0Tex = vec4(texture(BakeShadowMap, f_texcoord1).rrr, 1);
-		       fragColor *= A0Tex;
+		       aoBlend = texture(BakeShadowMap, f_texcoord1).r;
+		       fragColor *= aoBlend;
 
 			   //For this it will need a frame buffer to be used
 			   vec4 ShadowTex = vec4(texture(BakeShadowMap, f_texcoord1).ggg, 1);
 		 }
 	}
+
+	vec3 tintColor = vec3(1);
+
+    // Render Passes
+    if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
+		fragColor.rgb += EmissionPass(EmissionMap, emission_intensity, vert, 0, emission_color);
+    fragColor.rgb += SpecularPass(I, N, HasSpecularMap, SpecularMap, specular_color, vert, 0);
+    fragColor.rgb += ReflectionPass(N, I, diffuseMapColor, aoBlend, tintColor, vert);
+
+
 
    //Mario Odyssey uses this. Often for fur colors
    if (base_color_mul_color != vec4(0))

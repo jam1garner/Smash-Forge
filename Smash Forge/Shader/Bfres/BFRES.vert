@@ -21,6 +21,7 @@ out vec2 f_texcoord3;
 out vec3 objectPosition;
 
 out vec3 normal;
+out vec3 viewNormal;
 out vec4 vertexColor;
 out vec3 tangent;
 out vec3 bitangent;
@@ -130,6 +131,7 @@ void main()
     vec4 sampler3 = gsys_bake_st1;
 
     normal = vNormal;
+    viewNormal = mat3(sphereMatrix) * normal.xyz;
 
 	if (vBone.x != -1.0)
 		objPos = skin(vPosition, index);

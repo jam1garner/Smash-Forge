@@ -65,6 +65,7 @@ uniform sampler2D MetalnessMap;
 uniform sampler2D RoughnessMap;
 uniform sampler2D MRA;
 uniform sampler2D BOTWSpecularMap;
+uniform sampler2D SphereMap;
 
 uniform samplerCube irradianceMap;
 uniform samplerCube specularIbl;
