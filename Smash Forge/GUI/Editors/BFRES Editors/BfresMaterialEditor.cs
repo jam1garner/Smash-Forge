@@ -12,6 +12,7 @@ using Syroot.NintenTools.Bfres.GX2;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using WeifenLuo.WinFormsUI.Docking;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {
@@ -186,16 +187,20 @@ namespace Smash_Forge
             {
                 foreach (BNTX bntx in Runtime.BNTXList)
                 {
-                    foreach (BRTI tex in bntx.textures)
+                    foreach (var texure in mat.textures)
                     {
-                        foreach (var texure in mat.textures)
+                        if (bntx.glTexByName.ContainsKey(texure.Name))
                         {
-                            if (tex.Text == texure.Name)
-                            {
-                                Bitmap bmp = textureRGBA(tex.texture, tex.display);
-                                textureImageList.Images.Add(tex.Text, bmp);
+                            Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)bntx.glTexByName[texure.Name], 64, 64);
 
-                                TextureRefListView.Items.Add(texure.Name, CurTex++);
+                            textureImageList.Images.Add(texure.Name, bitmap);
+
+                            TextureRefListView.Items.Add(texure.Name, CurTex++);
+
+                            if (bitmap != null)
+                            {
+                                bitmap.Dispose();
+                                GC.Collect();
                             }
                         }
                     }
@@ -205,18 +210,21 @@ namespace Smash_Forge
             {
                 foreach (FTEXContainer ftexC in Runtime.FTEXContainerList)
                 {
-                    foreach (var tex in ftexC.FTEXtextures.Values)
+
+                    foreach (var texure in mat.textures)
                     {
-                        foreach (var texure in mat.textures)
+                        if (ftexC.glTexByName.ContainsKey(texure.Name))
                         {
-                            if (tex.Text == texure.Name)
+                            Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)ftexC.glTexByName[texure.Name], 64, 64);
+
+                            textureImageList.Images.Add(texure.Name, bitmap);
+
+                            TextureRefListView.Items.Add(texure.Name, CurTex++);
+
+                            if (bitmap != null)
                             {
-                                Bitmap bmp = FTEXRGBA(tex.texture, tex.display);
-                                textureImageList.Images.Add(tex.Text, bmp);
-
-                                TextureRefListView.Items.Add(texure.Name);
-
-                                bmp.Dispose();
+                                bitmap.Dispose();
+                                GC.Collect();
                             }
                         }
                     }
