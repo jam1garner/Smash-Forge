@@ -234,7 +234,7 @@ void main()
 	float cavity = 1;
 
 	vec3 emission = vec3(0);
-   if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
+    if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
 		emission.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);
 
 	vec3 lightMapColor = vec3(1);
@@ -249,7 +249,6 @@ void main()
 
 	if (HasBOTWSpecularMap == 1)
 	{
-    	//Botw uses PBR in a way however will need modifications to look right.
 	   if (uking_texture2_texcoord == 1)
 	   {
 	       metallic = texture(BOTWSpecularMap, f_texcoord1).g;
@@ -260,18 +259,6 @@ void main()
 	       metallic = texture(BOTWSpecularMap, f_texcoord0).g;
 	       specIntensity = texture(BOTWSpecularMap, f_texcoord0).r;
 	   }
-	}
-
-	if (HasMRA == 1) //Kirby Star Allies PBR map
-	{
-		if(UseRoughnessMap == 1)
-			metallic = texture(MRA, f_texcoord0).r;
-		if(UseRoughnessMap == 1)
-			roughness = texture(MRA, f_texcoord0).g;
-		if(UseCavityMap == 1)
-			cavity = texture(MRA, f_texcoord0).b;
-		if(UseAOMap == 1)
-			ao = texture(MRA, f_texcoord0).a;
 	}
 
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
@@ -341,6 +328,7 @@ void main()
 
 	fragColor = vec4(color, alpha);
 
-    if (renderVertColor == 1)
-        fragColor *= min(vertexColor, vec4(1));
+    // TODO: Renders as black?
+    // if (renderVertColor == 1)
+    //     fragColor *= min(vertexColor, vec4(1));
 }
