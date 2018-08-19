@@ -291,7 +291,7 @@ namespace Smash_Forge
             f.skip(4);
 
             int BRTISize1 = f.readInt();
-            long BRTISize2 = (f.readInt() | f.readInt() << 32);
+            long BRTISize2 = f.readInt64();
             surf = new Swizzle.Surface();
             ushort Flags = (ushort)f.readShort();
             surf.dim = (sbyte)f.readByte();
@@ -317,9 +317,9 @@ namespace Smash_Forge
             surf.alignment = f.readInt();
             int ChannelType = f.readInt();
             int TextureType = f.readInt();
-            Text = f.readString((f.readInt() | f.readInt() << 32) + BNTX.temp + 2, -1);
-            long ParentOffset = f.readInt() | f.readInt() << 32;
-            long PtrsOffset = f.readInt() | f.readInt() << 32;
+            Text = f.readString((int)f.readInt64() + BNTX.temp + 2, -1);
+            long ParentOffset = f.readInt64();
+            long PtrsOffset = f.readInt64();
 
             format = surf.format;
 
