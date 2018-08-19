@@ -161,7 +161,7 @@ namespace Smash_Forge
             {
                 if (bmp.Width / (int)Math.Pow(2, i) < 4 || bmp.Height / (int)Math.Pow(2, i) < 4) break;
                 tex.mipmaps.Add(fromPNG(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
-                tex.data = tex.mipmaps[0];
+                tex.mipmaps[0] = tex.mipmaps[0];
             }
             tex.width = bmp.Width;
             tex.height = bmp.Height;
@@ -258,7 +258,7 @@ namespace Smash_Forge
                     t.texture.pixelInternalFormat = newTexture.pixelInternalFormat;
                     t.texture.mipmaps = newTexture.mipmaps;
                     t.texture.pixelFormat = newTexture.pixelFormat;
-                    t.texture.data = newTexture.data;
+                    newTexture.mipmaps.Add(t.texture.mipmaps[0]);
 
                     GL.DeleteTexture(t.texture.display);
 

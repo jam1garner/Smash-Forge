@@ -444,11 +444,8 @@ namespace Smash_Forge
             Vector3 lightDirection = new Vector3(0f, 0f, -1f);
 
             //Todo. Maybe change direction via AAMP file (configs shader data)
-            shader.SetVector3("lightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
             shader.SetVector3("specLightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
             shader.SetVector3("difLightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
-
-            shader.SetInt("debugOption", (int)Runtime.uvChannel);
 
             // PBR IBL
             shader.SetTexture("irradianceMap", RenderTools.diffusePbr.Id, TextureTarget.TextureCubeMap, 18);
@@ -575,9 +572,8 @@ namespace Smash_Forge
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV1"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
             GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition2"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 124);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition3"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 136);
-
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition2"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 120);
+            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition3"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 132);
             elementsIbo.Bind();
 
             // Disabled these untill I fix transform stuff manually without shaders
@@ -688,7 +684,6 @@ namespace Smash_Forge
 
         private static void SetUniforms(MaterialData mat, Shader shader, Mesh m, int id, bool drawId)
         {
-            shader.SetVector4("SamplerUV1", new Vector4(1, 1, 0, 0));
             shader.SetVector4("gsys_bake_st0", new Vector4(1, 1, 0, 0));
             shader.SetVector4("gsys_bake_st1", new Vector4(1, 1, 0, 0));
             shader.SetInt("enableCellShading", 0);
@@ -873,7 +868,7 @@ namespace Smash_Forge
             shader.SetBoolToInt("HasShadowMap", materialData.HasShadowMap);
             shader.SetBoolToInt("HasSpecularMap", materialData.HasSpecularMap);
             shader.SetBoolToInt("HasTeamColorMap", materialData.HasTeamColorMap);
-            shader.SetBoolToInt("hasDummyRamp", materialData.HasTransparencyMap);
+            shader.SetBoolToInt("HasSphereMap", materialData.HasSphereMap);
 
             //Unused atm untill I do PBR shader
             shader.SetBoolToInt("HasMetalnessMap", materialData.HasMetalnessMap);
@@ -918,6 +913,8 @@ namespace Smash_Forge
                     TextureUniform(shader, materialData, materialData.HasTransparencyMap, "TransparencyMap", matex);
                 else if (matex.Type == MatTexture.TextureType.DiffuseLayer2)
                     TextureUniform(shader, materialData, materialData.HasDiffuseLayer, "DiffuseLayer", matex);
+                else if (matex.Type == MatTexture.TextureType.SphereMap)
+                    TextureUniform(shader, materialData, materialData.HasSphereMap, "SphereMap", matex);
             }
         }
 
@@ -1730,7 +1727,8 @@ namespace Smash_Forge
             public bool HasTransparencyMap = false;
             public bool HasShadowMap = false;
             public bool HasLightMap = false;
-
+            public bool HasSphereMap = false;
+            
             //PBR (Switch) data
             public bool HasMetalnessMap = false;
             public bool HasRoughnessMap = false;
@@ -1805,6 +1803,7 @@ namespace Smash_Forge
                 Roughness = 11,
                 Metalness = 12,
                 MRA = 13, //Combined pbr texture HAL uses for KSA
+                SphereMap = 14,
             }
 
             public MatTexture()

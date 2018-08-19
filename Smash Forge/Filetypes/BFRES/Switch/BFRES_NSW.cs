@@ -139,7 +139,7 @@ namespace Smash_Forge
                     foreach (var smp in mat.ShaderAssign.SamplerAssignDict)
                     {
                  //       Console.WriteLine($"{smp.Key} ---> {mat.ShaderAssign.SamplerAssigns[sa]}");
-                        shaderassign.samplers.Add(smp.Key, mat.ShaderAssign.SamplerAssigns[sa]);
+                        shaderassign.samplers.Add(mat.ShaderAssign.SamplerAssigns[sa], smp.Key);
                         sa++;
                     }
             
@@ -355,17 +355,18 @@ namespace Smash_Forge
                 texture.wrapModeT = (int)mat.Samplers[id].WrapModeV;
                 texture.wrapModeW = (int)mat.Samplers[id].WrapModeW;
                 texture.SamplerName = mat.SamplerDict.Keys.ElementAt(id);
-        /*        try
+
+                if (poly.material.shaderassign.samplers.Count >= id) //Set samplers that get padded to pixel shader
                 {
-                    Console.WriteLine(poly.material.shaderassign.samplers[texture.SamplerName]);
-                    texture.FragShaderSampler = poly.material.shaderassign.samplers[texture.SamplerName];
+                    try
+                    {
+                        texture.FragShaderSampler = poly.material.shaderassign.samplers[texture.SamplerName];
+                    }
+                    catch
+                    {
+                        //This shouldn't happen but just incase
+                    }
                 }
-                catch
-                {
-
-                }*/
-
-
 
                 bool IsAlbedo = HackyTextureList.Any(TextureName.Contains);
 
@@ -434,8 +435,14 @@ namespace Smash_Forge
                 else if (TextureName.Contains("rgh"))
                 {
                     texture.Type = MatTexture.TextureType.Roughness;
-                    texture.hash = 18;
+                    texture.hash = 15;
                     poly.material.HasRoughnessMap = true;
+                }
+                else if (TextureName.Contains("Mlt"))
+                {
+                    texture.hash = 14;
+                    poly.material.HasSphereMap = true;
+                    texture.Type = MatTexture.TextureType.SphereMap;
                 }
                 texture.Name = TextureName;
 

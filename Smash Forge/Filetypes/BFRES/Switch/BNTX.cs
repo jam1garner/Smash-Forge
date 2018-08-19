@@ -114,12 +114,13 @@ namespace Smash_Forge
     public class BNTX : TreeNode
     {
         //Todo: Have these 2 combined into one list
-        public static List<BRTI> textures = new List<BRTI>(); //For loading a list of texture instances
+        public List<BRTI> textures = new List<BRTI>(); //For loading a list of texture instances
         public Dictionary<string, Texture> glTexByName = new Dictionary<string, Texture>();
         int BRTIOffset;
 
         public static int temp; //This variable is so we can get offsets from start of BNTX file
         public static byte[] BNTXFile = new byte[0];
+        public string target;
 
         BNTXEditor Editor;
 
@@ -234,7 +235,8 @@ namespace Smash_Forge
             int strOffset = f.readShort();
             int relocOffset = f.readInt();
             int FileSize = f.readInt();
-            f.skip(4); //NX Magic
+            target = f.readString(f.pos(), 4); //NX
+            f.skip(4);
             int TexturesCount = f.readInt();
             int InfoPtrsOffset = f.readInt();
             int DataBlockOffset = f.readInt();
@@ -254,14 +256,12 @@ namespace Smash_Forge
                 f.seek(BRTIOffset + temp);
 
                 //  textures.Add(new BRTI(f));
-                BRTI texture = new BRTI(f);
+                BRTI texture = new BRTI(f, this);
 
                 textures.Add(texture);
 
             }
             Nodes.AddRange(textures.ToArray());
-
-            Runtime.BNTXList.Add(this);
         }
     }
 
@@ -276,7 +276,6 @@ namespace Smash_Forge
 
         public int Width, Height, display;
         public uint format;
-        public static List<BRTI_Texture> RenderableTex = new List<BRTI_Texture>();
         public uint blkWidth, blkHeight, bpp;
 
         public override string ToString()
@@ -284,7 +283,7 @@ namespace Smash_Forge
             return Text;
         }
 
-        public BRTI(FileData f) //Docs thanks to gdkchan!!
+        public BRTI(FileData f, BNTX bntx) //Docs thanks to AboodXD!!
         {
             ImageKey = "texture";
             SelectedImageKey = "texture";
@@ -292,18 +291,17 @@ namespace Smash_Forge
             f.skip(4);
 
             int BRTISize1 = f.readInt();
-            long BRTISize2 = (f.readInt() | f.readInt() << 32);
+            long BRTISize2 = f.readInt64();
             surf = new Swizzle.Surface();
-
-            surf.tileMode = (sbyte)f.readByte();
-            surf.dim = (sbyte)f.readByte();
             ushort Flags = (ushort)f.readShort();
+            surf.dim = (sbyte)f.readByte();
+            surf.tileMode = (sbyte)f.readByte();
             surf.swizzle = (ushort)f.readShort();
             surf.numMips = (ushort)f.readShort();
-            uint unk18 = (uint)f.readInt();
+            uint numSamples = (uint)f.readInt();
             surf.format = (uint)f.readInt();
             DataType = (byte)(surf.format & 0xFF);
-            uint unk20 = (uint)f.readInt();
+            uint accessFlags = (uint)f.readInt();
             surf.width = f.readInt();
             surf.height = f.readInt();
             surf.depth = f.readInt();
@@ -319,54 +317,66 @@ namespace Smash_Forge
             surf.alignment = f.readInt();
             int ChannelType = f.readInt();
             int TextureType = f.readInt();
-            Text = f.readString((f.readInt() | f.readInt() << 32) + BNTX.temp + 2, -1);
-            long ParentOffset = f.readInt() | f.readInt() << 32;
-            long PtrsOffset = f.readInt() | f.readInt() << 32;
+            Text = f.readString((int)f.readInt64() + BNTX.temp + 2, -1);
+            long ParentOffset = f.readInt64();
+            long PtrsOffset = f.readInt64();
 
             format = surf.format;
 
-            f.seek((int)PtrsOffset + BNTX.temp);
-            long dataOff = f.readInt() | f.readInt() << 32;
-            surf.data = f.getSection((int)dataOff + BNTX.temp, surf.imageSize);
-            //Console.WriteLine(surf.data.Length + " " + dataOff.ToString("x") + " " + surf.imageSize);
+            surf.data = new List<byte[]>();
 
             uint blk_dim = Formats.blk_dims(surf.format >> 8);
             blkWidth = blk_dim >> 4;
             blkHeight = blk_dim & 0xF;
 
+            f.seek((int)PtrsOffset + BNTX.temp);
+            long firstMipOffset = f.readInt64();
+            surf.data.Add(f.getSection((int)firstMipOffset + BNTX.temp, surf.imageSize));
+            for (int mipLevel = 1; mipLevel < surf.numMips; mipLevel++)
+            {
+                long dataOff = f.readInt64();
+                surf.data.Add(f.getSection((int)dataOff + BNTX.temp, (int)firstMipOffset + surf.imageSize - (int)dataOff));
+                //    Debug.WriteLine($"{Name} Height {surf.height}wdith = {surf.width}allignment = {surf.alignment}blkwidth = {blkWidth}blkheight = {blkHeight}blkdims = {blk_dim} format = {surf.format} datatype = {DataType} dataoffset = {dataOff}");
+            }
             bpp = Formats.bpps(surf.format >> 8);
 
-            //     Console.WriteLine($"{Name} Height {surf.height}wdith = {surf.width}allignment = {surf.alignment}blkwidth = {blkWidth}blkheight = {blkHeight}blkdims = {blk_dim} format = {surf.format} datatype = {DataType} dataoffset = {dataOff}");
+            int target = 0;
+            if (bntx.target == "NX  ")
+                target = 1;
 
+            int blockHeightLog2 = surf.sizeRange & 7;
 
-            // byte[] result = surf.data;
+            int linesPerBlockHeight = (1 << blockHeightLog2) * 8;
+            int blockHeightShift = 0;
 
+            for (int mipLevel = 0; mipLevel < surf.numMips; mipLevel++)
+            {
+                uint width = (uint)Math.Max(1, surf.width >> mipLevel);
+                uint height = (uint)Math.Max(1, surf.height >> mipLevel);
 
+                uint size = Swizzle.DIV_ROUND_UP(width, blkWidth) * Swizzle.DIV_ROUND_UP(height, blkHeight) * bpp;
 
-            byte[] result = Swizzle.deswizzle((uint)surf.width, (uint)surf.height, blkWidth, blkHeight, bpp, (uint)surf.tileMode, (uint)surf.alignment, surf.sizeRange, surf.data, 0);
+                if (Swizzle.pow2_round_up(Swizzle.DIV_ROUND_UP(height, blkWidth)) < linesPerBlockHeight)
+                    blockHeightShift += 1;
 
+                byte[] result = Swizzle.deswizzle(width, height, blkWidth, blkHeight, target, bpp, (uint)surf.tileMode, (uint)surf.alignment, Math.Max(0, blockHeightLog2 - blockHeightShift), surf.data[mipLevel], 0);
+                //Create a copy and use that to remove uneeded data
+                result_ = new byte[size];
+                Array.Copy(result, 0, result_, 0, size);
+                texture.mipmaps.Add(result_);
+            }
 
-            uint width = Swizzle.DIV_ROUND_UP((uint)surf.width, blkWidth);
-            uint height = Swizzle.DIV_ROUND_UP((uint)surf.height, blkHeight);
+            LoadFormats(texture, surf.format, 0, surf.width, surf.height);
 
-            result_ = new byte[width * height * bpp];
-
-            Array.Copy(result, 0, result_, 0, width * height * bpp);
-
-            byte[] Swizzled = Swizzle.swizzle((uint)surf.width, (uint)surf.height, blkWidth, blkHeight, bpp, (uint)surf.tileMode, (uint)surf.alignment, surf.sizeRange, surf.data, 1);
-
-
-            texture.data = result_;
             texture.width = surf.width;
             texture.height = surf.height;
 
             Width = surf.width;
             Height = surf.height;
-
-            texture.mipmaps.Add(result_);
-            texture.mipMapCount = surf.numMips;
-
-            switch (surf.format >> 8)
+        }
+        private void LoadFormats(BRTI_Texture texture, uint format, int mipLevel, int width, int height)
+        {
+            switch (format >> 8)
             {
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC1):
                     texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
@@ -410,8 +420,11 @@ namespace Smash_Forge
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
                     {
-                        byte[] fixBC5 = DDS_Decompress.DecompressBC5(texture.data, texture.width, texture.height, true);
-                        texture.data = fixBC5;
+                        //    texture.pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
+
+
+                        byte[] fixBC5 = DDS_Decompress.DecompressBC5(texture.mipmaps[mipLevel], width, height, true);
+                        texture.mipmaps[mipLevel] = fixBC5;
                         texture.pixelInternalFormat = PixelInternalFormat.Rgba;
                         texture.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
@@ -434,15 +447,10 @@ namespace Smash_Forge
                         throw new Exception("Unsupported data type for R8_G8_B8_A8");
                     break;
             }
-
-            RenderableTex.Add(texture);
-
         }
-
         public class BRTI_Texture
         {
             public List<byte[]> mipmaps = new List<byte[]>();
-            public byte[] data;
             public int width, height;
             public int display = 0;
             public PixelInternalFormat pixelInternalFormat;
@@ -462,7 +470,7 @@ namespace Smash_Forge
                 {
                     // Only load the first level and generate the rest.
                     Texture2D texture = new Texture2D();
-                    texture.LoadImageData(tex.width, tex.height, tex.data, tex.mipMapCount,
+                    texture.LoadImageData(tex.width, tex.height, tex.mipmaps,
                         (InternalFormat)tex.pixelInternalFormat);
                     return texture;
                 }
@@ -470,7 +478,7 @@ namespace Smash_Forge
                 {
                     // Only load the first level and generate the rest.
                     Texture2D texture = new Texture2D();
-                    texture.LoadImageData(tex.width, tex.height, tex.data, tex.mipMapCount,
+                    texture.LoadImageData(tex.width, tex.height, tex.mipmaps[0], tex.mipMapCount,
                         (InternalFormat)tex.pixelInternalFormat);
                     return texture;
                 }
@@ -479,7 +487,7 @@ namespace Smash_Forge
             {
                 // Uncompressed.
                 Texture2D texture = new Texture2D();
-                texture.LoadImageData(tex.width, tex.height, tex.data, tex.mipMapCount,
+                texture.LoadImageData(tex.width, tex.height, tex.mipmaps[0], tex.mipMapCount,
                     new TextureFormatUncompressed(tex.pixelInternalFormat, tex.pixelFormat, tex.pixelType));
                 return texture;
             }

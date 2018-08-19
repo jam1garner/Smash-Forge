@@ -12,6 +12,7 @@ using Syroot.NintenTools.Bfres.GX2;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using WeifenLuo.WinFormsUI.Docking;
+using Smash_Forge.Rendering;
 
 namespace Smash_Forge
 {
@@ -19,10 +20,10 @@ namespace Smash_Forge
     {
         public BFRES.Mesh poly;
         public BFRES.MaterialData mat;
-        public int TexPanelHeight = 31;
-        public PictureBox[] picboxArray;
-        public ImageList il = new ImageList();
+        public ImageList paramColorList = new ImageList();
+        public ImageList textureImageList = new ImageList();
         public string SelectedMatParam = "";
+        public string SelectedTexture = "";
 
         public List<string> ColorBoxMatParmList = new List<string>(new string[] {
            "edge_light_color",
@@ -38,20 +39,57 @@ namespace Smash_Forge
             listView1.Items.Clear();
             dataGridView3.Rows.Clear();
             dataGridView4.Rows.Clear();
-            tabTextureMaps.Controls.Clear();
-            TexPanelHeight = 31;
+
+            textureImageList.ColorDepth = ColorDepth.Depth32Bit;
+            textureImageList.ImageSize = new Size(64, 64);
 
             poly = p;
-
-            Console.WriteLine("Material Editor");
-            Console.WriteLine(p.Text);
-
-
             mat = p.material;
+
+            FillForm();
+
             textBox1.Text = mat.Name;
             ShaderArchivelabel1.Text += $" {mat.shaderassign.ShaderArchive}";
             ShaderMdllabel2.Text += $" {mat.shaderassign.ShaderModel}";
 
+            paramColorList.ImageSize = new Size(10, 10);
+            listView1.SmallImageList = paramColorList;
+            listView1.FullRowSelect = true;  
+
+            TextureRefListView.SmallImageList = textureImageList;
+            TextureRefListView.FullRowSelect = true;
+        }
+
+        public void FillForm()
+        {
+            BFRES.MaterialData material = mat;
+
+            InitializeTextureListView(material);
+            InitializeParamListView(material);
+            InitializeShaderOptionList(material);
+            InitializeRenderInfoList(material);
+        }
+        private void InitializeRenderInfoList(BFRES.MaterialData mat)
+        {
+            foreach (var rnd in mat.renderinfo)
+            {
+                if (rnd.Type == RenderInfoType.Int32)
+                    dataGridView4.Rows.Add(rnd.Name, rnd.Value_Int.ToString(), "Int");
+                if (rnd.Type == RenderInfoType.Single)
+                    dataGridView4.Rows.Add(rnd.Name, rnd.Value_Float.ToString(), "Float");
+                if (rnd.Type == RenderInfoType.String)
+                    dataGridView4.Rows.Add(rnd.Name, rnd.Value_String.ToString(), "String");
+            }
+        }
+        private void InitializeShaderOptionList(BFRES.MaterialData mat)
+        {
+            foreach (var op in mat.shaderassign.options)
+            {
+                dataGridView3.Rows.Add(op.Key, op.Value);
+            }
+        }
+        private void InitializeParamListView(BFRES.MaterialData mat)
+        {
             int CurParam = 0;
             foreach (var prm in mat.matparam)
             {
@@ -140,40 +178,32 @@ namespace Smash_Forge
                 listView1.Items.Add(item);
                 CurParam++;
             }
-            il.ImageSize = new Size(10, 10);
-            listView1.SmallImageList = il;
-            listView1.FullRowSelect = true;
+        }
+        private void InitializeTextureListView(BFRES.MaterialData mat)
+        {
+            // Shaders weren't initialized.
+            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
+                return;
 
-            foreach (var rnd in mat.renderinfo)
-            {
-                if (rnd.Type == RenderInfoType.Int32)
-                    dataGridView4.Rows.Add(rnd.Name, rnd.Value_Int.ToString(), "Int");
-                if (rnd.Type == RenderInfoType.Single)
-                    dataGridView4.Rows.Add(rnd.Name, rnd.Value_Float.ToString(), "Float");
-                if (rnd.Type == RenderInfoType.String)
-                    dataGridView4.Rows.Add(rnd.Name, rnd.Value_String.ToString(), "String");
-            }
-
-            foreach (var op in mat.shaderassign.options)
-            {
-                dataGridView3.Rows.Add(op.Key, op.Value);
-            }
-
-            Panel[] arr = new Panel[mat.textures.Count];
-            Button[] Btnarr = new Button[mat.textures.Count];
-            picboxArray = new PictureBox[mat.textures.Count];
-
+            int CurTex = 0;
+            TextureRefListView.Items.Clear();
+            textureImageList.Images.Clear();
             if (BFRES.IsSwitchBFRES == true)
             {
-                foreach (BRTI tex in BNTX.textures)
+                foreach (BNTX bntx in Runtime.BNTXList)
                 {
                     foreach (var texure in mat.textures)
                     {
-                        if (tex.Text == texure.Name)
+                        if (bntx.glTexByName.ContainsKey(texure.Name))
                         {
-                            Bitmap bmp = textureRGBA(tex.texture, tex.display);
+                            Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)bntx.glTexByName[texure.Name], 64, 64);
 
-                            SetTexturePanel(bmp, texure);
+                            textureImageList.Images.Add(texure.Name, bitmap);
+
+                            TextureRefListView.Items.Add(texure.Name, CurTex++);
+
+                            var dummy = textureImageList.Handle;
+                            bitmap.Dispose();
                         }
                     }
                 }
@@ -182,121 +212,23 @@ namespace Smash_Forge
             {
                 foreach (FTEXContainer ftexC in Runtime.FTEXContainerList)
                 {
-                    foreach (var tex in ftexC.FTEXtextures.Values)
+                    foreach (var texure in mat.textures)
                     {
-                        foreach (var texure in mat.textures)
+                        if (ftexC.glTexByName.ContainsKey(texure.Name))
                         {
-                            if (tex.Text == texure.Name)
-                            {
-                                Bitmap bmp = FTEXRGBA(tex.texture, tex.display);
+                            Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)ftexC.glTexByName[texure.Name], 64, 64);
 
-                                SetTexturePanel(bmp, texure);
-                            }
+                            textureImageList.Images.Add(texure.Name, bitmap);
+
+                            TextureRefListView.Items.Add(texure.Name, CurTex++);
+
+                            var dummy = textureImageList.Handle;
+                            bitmap.Dispose();
                         }
                     }
                 }
-            }    
-        }
-        private void SetTexturePanel(Bitmap bmp, BFRES.MatTexture texure)
-        {
-            Panel panel = new Panel();
-            PictureBox picbox = new PictureBox();
-            Button PanelHide = new Button();
-            Button ChangeTex = new Button();
-
-            PanelHide.Text = "Hide " + texure.Name;
-            ChangeTex.Text = "Change Texture";
-
-            picbox.Image = bmp;
-
-
-            panel.Location = new System.Drawing.Point(7, TexPanelHeight);
-            PanelHide.Location = new System.Drawing.Point(7, TexPanelHeight - 27);
-            panel.Size = new Size(360, 142);
-            picbox.Size = new Size(137, 137);
-            PanelHide.Size = new Size(360, 22);
-
-            picbox.SizeMode = PictureBoxSizeMode.StretchImage;
-
-            PanelHide.Click += new System.EventHandler(panelHide_Click);
-            picbox.Click += new System.EventHandler(TextureBoxClickedOn);
-            ChangeTex.Click += new System.EventHandler(ChangeTexClickedOn);
-
-            Label TextueType = new Label();
-            Label SamplerText = new Label();
-
-            ChangeTex.Location = new System.Drawing.Point(144, 3);
-            TextueType.Location = new System.Drawing.Point(144, 66);
-            SamplerText.Location = new System.Drawing.Point(144, 88);
-
-            ChangeTex.Size = new Size(150, 26);
-
-       
-            TextueType.Text = $"Type = {texure.Type.ToString()}";
-            SamplerText.Text = $"Sampler = {texure.SamplerName}";
-
-            if (texure.FragShaderSampler != "")
-                SamplerText.Text = $"Sampler = {texure.FragShaderSampler}";
-
-            TexPanelHeight = TexPanelHeight + 170;
-
-            panel.Controls.Add(picbox);
-            panel.Controls.Add(TextueType);
-            panel.Controls.Add(SamplerText);
-            panel.Controls.Add(ChangeTex);
-
-            tabTextureMaps.Controls.Add(panel);
-            tabTextureMaps.Controls.Add(PanelHide);
-        }
-        private void ChangeTexClickedOn(object sender, EventArgs e)
-        {
-            if (BFRES.IsSwitchBFRES)
-            {
-                BntxTextureList edit = new BntxTextureList();
-                edit.Show();
             }
         }
-
-        private void TextureBoxClickedOn(object sender, EventArgs e)
-        {
-            BNTXMaterialTextureEditor edit = new BNTXMaterialTextureEditor();
-            edit.Show();
-        }
-        private void OpenTextureEditor(BRTI tex)
-        {
-         
-        }
-        private void SetWrapModeItems(ComboBox c)
-        {
-            foreach (GX2TexClamp wr in Enum.GetValues(typeof(GX2TexClamp)))
-            {
-                c.Items.Add(wr);
-            }
-        }
- 
-        public Bitmap FTEXRGBA(FTEX.FTEX_Texture t, int id)
-        {
-            Bitmap bitmap = new Bitmap(t.width, t.height);
-            System.Drawing.Imaging.BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, t.width, t.height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            GL.BindTexture(TextureTarget.Texture2D, id);
-            GL.GetTexImage(TextureTarget.Texture2D, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
-
-            bitmap.UnlockBits(bitmapData);
-
-            return bitmap;
-        }
-        public static Bitmap textureRGBA(BRTI.BRTI_Texture t, int id)
-        {
-            Bitmap bitmap = new Bitmap(t.width, t.height);
-            System.Drawing.Imaging.BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, t.width, t.height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            GL.BindTexture(TextureTarget.Texture2D, id);
-            GL.GetTexImage(TextureTarget.Texture2D, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
-
-            bitmap.UnlockBits(bitmapData);
-
-            return bitmap;
-        }
-
         private void RenderTexture(bool justRenderAlpha = false)
         {
             if (!MaterialsTab.SelectedTab.Text.Equals("Textures"))
@@ -569,6 +501,89 @@ namespace Smash_Forge
 
               mat.matparam[SelectedMatParam] = prm;
               listView1.SelectedItems[0].SubItems[1].Text = Value;
+            }
+        }
+
+        private void TextureRefListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (TextureRefListView.SelectedItems.Count > 0)
+            {
+                SelectedTexture = TextureRefListView.SelectedItems[0].Text;
+                foreach (BFRES.MatTexture matTexure in mat.textures)
+                {
+                    if (matTexure.Name == SelectedTexture)
+                    {
+                        textureTypeLabel.Text = $"Type {matTexure.Type.ToString()}";
+                        samplerLabel.Text = $"Sampler {matTexure.SamplerName}";
+                        pxelSamplerLabel.Text = $"Pixel Sampler {matTexure.FragShaderSampler}";
+                    }
+                }
+            }
+            else
+            {
+                textureTypeLabel.Text = $"Type";
+                samplerLabel.Text = $"Sampler";
+                pxelSamplerLabel.Text = $"Pixel Sampler";
+            }
+        }
+
+        private void TextureBoxClickedOn(object sender, EventArgs e)
+        {
+            
+        }
+
+        public Bitmap FTEXRGBA(FTEX.FTEX_Texture t, int id)
+        {
+            Bitmap bitmap = new Bitmap(t.width, t.height);
+            System.Drawing.Imaging.BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, t.width, t.height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            GL.BindTexture(TextureTarget.Texture2D, id);
+            GL.GetTexImage(TextureTarget.Texture2D, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
+
+            bitmap.UnlockBits(bitmapData);
+
+            return bitmap;
+        }
+        public static Bitmap textureRGBA(BRTI.BRTI_Texture t, int id)
+        {
+            Bitmap bitmap = new Bitmap(t.width, t.height);
+            System.Drawing.Imaging.BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, t.width, t.height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            GL.BindTexture(TextureTarget.Texture2D, id);
+            GL.GetTexImage(TextureTarget.Texture2D, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
+
+            bitmap.UnlockBits(bitmapData);
+
+            return bitmap;
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            if (BFRES.IsSwitchBFRES)
+            {
+                foreach (BNTX bntx in Runtime.BNTXList)
+                {
+                    if (bntx.glTexByName.ContainsKey(SelectedTexture))
+                    {
+                        BntxTextureList edit = new BntxTextureList();
+                        edit.LoadTexture(SelectedTexture);
+                        edit.Show();
+                    }
+                }
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (BFRES.IsSwitchBFRES)
+            {
+                foreach (BNTX bntx in Runtime.BNTXList)
+                {
+                    if (bntx.glTexByName.ContainsKey(SelectedTexture))
+                    {
+                        BNTXMaterialTextureEditor edit = new BNTXMaterialTextureEditor();
+                        edit.LoadTexture(poly, bntx.glTexByName[SelectedTexture], SelectedTexture);
+                        edit.Show();
+                    }
+                }
             }
         }
     }
