@@ -34,6 +34,11 @@ namespace Smash_Forge
         // Rendering Stuff
         private Framebuffer colorHdrFbo;
 
+        private Thread renderThread;
+        private bool hasStartedRenderThread = false;
+        private bool isRendering = false;
+        private bool isOpen = true;
+
         // The texture that will be blurred for bloom.
         private Framebuffer imageBrightHdrFbo;
 
@@ -244,14 +249,19 @@ namespace Smash_Forge
         public int shootWidth = 50;
         public int shootHeight = 50;
 
-        private Thread renderThread;
-
         public ModelViewport()
         {
             InitializeComponent();
             camera = new ForgeCamera();
             FilePath = "";
             Text = "Model Viewport";
+
+            // Limit to 60 fps.
+            glViewport.VSync = true;
+
+            // Wait for everything to be visible.
+            Shown += ModelViewport_Shown;
+            Paint += ModelViewport_Paint;         
 
             SetUpMeshList();
             SetUpAnimListPanel();
@@ -286,6 +296,11 @@ namespace Smash_Forge
             ViewComboBox.SelectedIndex = 0;
 
             draw = meshList.filesTreeView.Nodes;
+        }
+
+        private void ModelViewport_Paint(object sender, PaintEventArgs e)
+        {
+
         }
 
         private void SetUpVariableViewer()
@@ -454,22 +469,28 @@ namespace Smash_Forge
 
         private void ModelViewport_Load(object sender, EventArgs e)
         {
-            // HACK: Frame time control.
-            renderThread = new Thread(new ThreadStart(Application_Idle));
-            renderThread.Start();
-            //var timer = new System.Windows.Forms.Timer();
-            //timer.Interval = 8;
-            //timer.Tick += new EventHandler(Application_Idle);
-            //timer.Start();
+
         }
 
-        private void Application_Idle()
+        private void ModelViewport_Shown(object sender, EventArgs e)
+        {
+            if (!hasStartedRenderThread)
+            {
+                // Frame time control.
+                renderThread = new Thread(new ThreadStart(RaiseViewportRenderFrames));
+                renderThread.Start();
+                isRendering = true;
+                hasStartedRenderThread = true;
+            }
+        }
+
+        private void RaiseViewportRenderFrames()
         {
             if (this.IsDisposed)
                 return;
 
             Stopwatch stopwatch = Stopwatch.StartNew();
-            while (true)
+            while (isOpen)
             {
                 /*if (isPlaying)
                 {
@@ -478,10 +499,19 @@ namespace Smash_Forge
                     else
                         animationTrackBar.Value++;
                 }*/
-                if (stopwatch.ElapsedMilliseconds > 5)
+                if (isRendering)
                 {
-                    glViewport.Invalidate();
-                    stopwatch.Restart();
+                    if (stopwatch.ElapsedMilliseconds > 5)
+                    {
+                        glViewport.Invalidate();
+                        stopwatch.Restart();
+                    }
+                }
+                else
+                {
+                    // Avoid making the gui less responsive and wasting CPU time
+                    // if we don't need to render anything.
+                    stopwatch.Stop();
                 }
             }
         }
@@ -1404,6 +1434,7 @@ namespace Smash_Forge
 
         private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
         {
+            isOpen = false;
             ClearModelContainers();
         }
 
