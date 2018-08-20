@@ -138,8 +138,9 @@ namespace Smash_Forge
                     int sa = 0;
                     foreach (var smp in mat.ShaderAssign.SamplerAssignDict)
                     {
-                 //       Console.WriteLine($"{smp.Key} ---> {mat.ShaderAssign.SamplerAssigns[sa]}");
-                        shaderassign.samplers.Add(mat.ShaderAssign.SamplerAssigns[sa], smp.Key);
+                        //       Console.WriteLine($"{smp.Key} ---> {mat.ShaderAssign.SamplerAssigns[sa]}");
+                        if (!shaderassign.samplers.ContainsKey(mat.ShaderAssign.SamplerAssigns[sa]))
+                            shaderassign.samplers.Add(mat.ShaderAssign.SamplerAssigns[sa], smp.Key);
                         sa++;
                     }
             
@@ -355,6 +356,7 @@ namespace Smash_Forge
                 texture.wrapModeT = (int)mat.Samplers[id].WrapModeV;
                 texture.wrapModeW = (int)mat.Samplers[id].WrapModeW;
                 texture.SamplerName = mat.SamplerDict.Keys.ElementAt(id);
+                texture.Name = TextureName;
 
                 if (poly.material.shaderassign.samplers.Count >= id) //Set samplers that get padded to pixel shader
                 {
@@ -444,7 +446,13 @@ namespace Smash_Forge
                     poly.material.HasSphereMap = true;
                     texture.Type = MatTexture.TextureType.SphereMap;
                 }
-                texture.Name = TextureName;
+                else if (texture.SamplerName == "_a0" && AlbedoCount == 0) //Load the diffuse sampler if it cannot load
+                {
+                    poly.material.HasDiffuseMap = true;
+                    AlbedoCount++;
+                    texture.hash = 0;
+                    texture.Type = MatTexture.TextureType.Diffuse;
+                }
 
                 //Now determine the types by sampler from fragment shader
                 //a0 and a1 will not be defined this way however because KSA using only those in no particular order
