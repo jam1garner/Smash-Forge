@@ -751,7 +751,7 @@ namespace Smash_Forge
                                             }*/
 
                 // AddMaterialsForEachUvChannel(npoly);
-                b.UpdateVertexData();
+                b.UpdateRenderMeshes();
             }
         }
 

@@ -653,7 +653,7 @@ namespace Smash_Forge
                 }
                 CurMdl++;
             }
-            b.UpdateVertexData();
+            b.UpdateRenderMeshes();
         }
     }
 }
