@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using SFGenericModel;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using SFGraphics.Cameras;
+using SFGraphics.GLObjects.Shaders;
 
 namespace Smash_Forge
 {
@@ -15,6 +17,11 @@ namespace Smash_Forge
             : base(vertices, vertexIndices, BFRES.DisplayVertex.Size)
         {
 
+        }
+
+        protected override void SetCameraUniforms(Shader shader, Camera camera)
+        {
+            // Do nothing for now.
         }
 
         protected override List<VertexAttributeInfo> GetVertexAttributes()
