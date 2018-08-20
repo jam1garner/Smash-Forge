@@ -6,7 +6,7 @@ using Smash_Forge.Filetypes.Models.Nuds;
 using SFGenericModel;
 using SFGenericModel.Materials;
 
-namespace Smash_Forge.Rendering.Meshes
+namespace Smash_Forge
 {
     public class NudRenderMesh : GenericMesh<NUD.DisplayVertex>
     {

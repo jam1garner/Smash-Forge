@@ -229,8 +229,9 @@ void main()
    if (base_color_mul_color != vec4(0))
        fragColor *= min(base_color_mul_color, 1);
 
-    if (renderVertColor == 1)
-	    fragColor *= min(vertexColor, vec4(1));
+   // TODO: Broken for Intel Integrated
+   // if (renderVertColor == 1)
+   //     fragColor *= min(vertexColor, vec4(1));
 
     // Fragment alpha calculations.
     fragColor.a *= texture(tex0, f_texcoord0).a;

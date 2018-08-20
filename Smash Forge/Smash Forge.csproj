@@ -136,7 +136,9 @@
     <Compile Include="Filetypes\BCH\BCH_Texture.cs" />
     <Compile Include="Filetypes\BCH\PatriciaTree.cs" />
     <Compile Include="Filetypes\BCH\_3DSGPU.cs" />
+    <Compile Include="Filetypes\BFRES\BfresRenderMesh.cs" />
     <Compile Include="Filetypes\BFRES\BFRES_Main.cs" />
+    <Compile Include="Filetypes\BFRES\DisplayVertex.cs" />
     <Compile Include="Filetypes\BFRES\Switch\BFRES_NSW.cs" />
     <Compile Include="Filetypes\BFRES\Switch\BNTX.cs" />
     <Compile Include="Filetypes\BFRES\Switch\DDS_Decompress.cs" />
@@ -661,7 +663,7 @@
     <Compile Include="Rendering\Lights\LightColor.cs" />
     <Compile Include="Rendering\Lights\LightMap.cs" />
     <Compile Include="Rendering\Lights\LightTools.cs" />
-    <Compile Include="Rendering\GenericMesh\NudRenderMesh.cs" />
+    <Compile Include="Filetypes\Models\Nuds\NudRenderMesh.cs" />
     <Compile Include="Rendering\GenericMesh\MeshColored3D.cs" />
     <Compile Include="Rendering\GenericMesh\Mesh3D.cs" />
     <Compile Include="Rendering\OpenTKSharedResources.cs" />

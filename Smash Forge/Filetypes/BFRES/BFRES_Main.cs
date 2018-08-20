@@ -78,13 +78,12 @@ namespace Smash_Forge
             "Common_Scroll01._13827715"
         });
 
-        BufferObject positionVbo;
-        BufferObject elementsIbo;
-
         public string path = "";
         public static Vector3 position = new Vector3(0, 0, 0);
         public static Vector3 rotation = new Vector3(0, 0, 0);
         public static Vector3 scale = new Vector3(1, 1, 1);
+
+        private bool hasCreatedRenderMeshes = false;
 
         public BNTX Bntx = null;
 
@@ -355,15 +354,6 @@ namespace Smash_Forge
 
         public void Render(Camera camera, bool drawPolyIds)
         {
-            // Binding 0 to a buffer target will crash. 
-            // This also means the buffers weren't generated yet.
-            bool buffersWereInitialized = elementsIbo != null && positionVbo != null;
-            if (!buffersWereInitialized)
-            {
-                GenerateBuffers();
-                UpdateVertexData();
-            }
-
             if (Runtime.renderBoundingSphere)
                 DrawBoundingBoxes();
 
@@ -373,9 +363,11 @@ namespace Smash_Forge
                 List<Mesh> opaque = new List<Mesh>();
                 List<Mesh> transparent = new List<Mesh>();
 
-                //Render Skeleton
-
-                //Go through each node in the list and index the bones in the skeleton then use that transform
+                if (!hasCreatedRenderMeshes)
+                {
+                    UpdateRenderMeshes();
+                    hasCreatedRenderMeshes = true;
+                }
 
                 foreach (Mesh m in fmdl.depthSortedMeshes)
                 {
@@ -469,15 +461,10 @@ namespace Smash_Forge
 
             shader.UseProgram();
 
-            shader.EnableVertexAttributes();
-
             // Shader Uniforms
             ApplyTransformFix(fmdl, mesh, shader);
 
             SetMiscUniforms(camera, shader);
-
-            SetVertexAttributes(mesh, shader);
-
             SetRenderSettings(shader);
 
             Matrix4 mvpMatrix = camera.MvpMatrix;
@@ -500,50 +487,50 @@ namespace Smash_Forge
                 SetFaceCulling(mesh.material, renderInfo);
             }
 
-            DrawGeometry(mesh, shader);
-
-            shader.DisableVertexAttributes();
+            DrawGeometry(mesh, shader, camera);
         }
 
-        private static void DrawGeometry(Mesh mesh, Shader shader)
+        private static void DrawGeometry(Mesh mesh, Shader shader, Camera camera)
         {
             if (mesh.Checked)
             {
                 if ((mesh.IsSelected || mesh.Parent.IsSelected))
                 {
-                    DrawModelSelection(mesh, shader);
+                    DrawModelSelection(mesh, shader, camera);
                 }
                 else
                 {
                     if (Runtime.renderModelWireframe)
                     {
-                        DrawModelWireframe(mesh, shader);
+                        DrawModelWireframe(mesh, shader, camera);
                     }
 
                     if (Runtime.renderModel)
                     {
-                        GL.DrawElements(PrimitiveType.Triangles, mesh.lodMeshes[mesh.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, mesh.Offset);
+                        mesh.renderMesh.Draw(shader, camera);
                     }
                 }
             }
         }
 
-        private static void DrawModelWireframe(Mesh p, Shader shader)
+        private static void DrawModelWireframe(Mesh mesh, Shader shader, Camera camera)
         {
             // use vertex color for wireframe color
             shader.SetInt("colorOverride", 1);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
-            GL.DrawElements(PrimitiveType.Triangles, p.lodMeshes[p.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+
+            mesh.renderMesh.Draw(shader, camera);
+
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             shader.SetInt("colorOverride", 0);
         }
-        private static void DrawModelSelection(Mesh p, Shader shader)
+        private static void DrawModelSelection(Mesh mesh, Shader shader, Camera camera)
         {
             //This part needs to be reworked for proper outline. Currently would make model disappear
 
-            GL.DrawElements(PrimitiveType.Triangles, p.lodMeshes[p.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+            mesh.renderMesh.Draw(shader, camera);
 
             GL.Enable(EnableCap.StencilTest);
             // use vertex color for wireframe color
@@ -551,35 +538,13 @@ namespace Smash_Forge
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
-            GL.DrawElements(PrimitiveType.Triangles, p.lodMeshes[p.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+
+            mesh.renderMesh.Draw(shader, camera);
+
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             shader.SetInt("colorOverride", 0);
 
             GL.Enable(EnableCap.DepthTest);
-        }
-        private void SetVertexAttributes(Mesh m, Shader shader)
-        {
-            //Note on these buffers
-            // - vBone and vWeight have 2 attributes since bfres has 4 weights/bones per vertice. Additional one can allow up to a max of 8
-            positionVbo.Bind();
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBitangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 36);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV0"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 48);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vColor"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 56);
-            GL.VertexAttribIPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribIntegerType.Int, DisplayVertex.Size, new IntPtr(72));
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV1"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition2"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 120);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition3"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 132);
-            elementsIbo.Bind();
-
-            // Disabled these untill I fix transform stuff manually without shaders
-            //     GL.VertexAttribPointer(shader.getAttribute("vBone1"),     4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 84);
-            //     GL.VertexAttribPointer(shader.getAttribute("vWeight1"),   4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 116);
-
         }
 
         // Here I'll use the same enums as NUDs does. 
@@ -621,45 +586,15 @@ namespace Smash_Forge
                     { 0x03, TextureWrapMode.MirroredRepeat},
         };
 
-        private void GenerateBuffers()
+        public void UpdateRenderMeshes()
         {
-            positionVbo = new BufferObject(BufferTarget.ArrayBuffer);
-            elementsIbo = new BufferObject(BufferTarget.ElementArrayBuffer);
-        }
-
-        public void UpdateVertexData()
-        {
-            DisplayVertex[] Vertices;
-            int[] Faces;
-
-            int poffset = 0;
-            int voffset = 0;
-            List<DisplayVertex> Vs = new List<DisplayVertex>();
-            List<int> Ds = new List<int>();
             foreach (FMDL_Model fmdl in models)
             {
                 foreach (Mesh m in fmdl.poly)
                 {
-                    m.Offset = poffset * 4;
-                    List<DisplayVertex> pv = m.CreateDisplayVertices();
-                    Vs.AddRange(pv);
-
-                    for (int i = 0; i < m.lodMeshes[m.DisplayLODIndex].displayFaceSize; i++)
-                    {
-                        Ds.Add(m.display[i] + voffset);
-                    }
-                    poffset += m.lodMeshes[m.DisplayLODIndex].displayFaceSize;
-                    voffset += pv.Count;
+                    m.renderMesh = m.CreateRenderMesh();
                 }
             }
-
-            // Binds
-            Vertices = Vs.ToArray();
-            Faces = Ds.ToArray();
-
-            // Initialize the buffer data.
-            positionVbo.BufferData(Vertices, DisplayVertex.Size, BufferUsageHint.StaticDraw);
-            elementsIbo.BufferData(Faces, sizeof(int), BufferUsageHint.StaticDraw);
         }
 
         private static void ApplyTransformFix(FMDL_Model fmdl, Mesh m, Shader shader)
@@ -1189,27 +1124,6 @@ namespace Smash_Forge
             public Vector3 pos2 = new Vector3();
         }
 
-        public struct DisplayVertex
-        {
-            // Used for rendering.
-            public Vector3 pos;
-            public Vector3 nrm;
-            public Vector3 tan;
-            public Vector3 bit;
-            public Vector2 uv;
-            public Vector4 col;
-            public Vector4 node;
-            public Vector4 weight;
-            public Vector2 uv2;
-            public Vector2 uv3;
-            public Vector3 pos1;
-            public Vector3 pos2;
-
-
-
-            public static int Size = 4 * (3 + 3 + 3 + 3 + 2 + 4 + 4 + 4 + 2 + 2 + 3 + 3);
-        }
-
         public class Mesh : TreeNode
         {
             public List<Vertex> vertices = new List<Vertex>();
@@ -1231,6 +1145,8 @@ namespace Smash_Forge
             public List<float> radius = new List<float>();
             public List<BoundingBox> boundingBoxes = new List<BoundingBox>();
             public Dictionary<string, int> BoneIndexList = new Dictionary<string, int>();
+
+            public BfresRenderMesh renderMesh;
 
             // Used to generate a unique color for viewport selection.
             private static List<int> previousDisplayIds = new List<int>();
@@ -1355,6 +1271,23 @@ namespace Smash_Forge
                 {
                     return Name;
                 }
+            }
+
+            public BfresRenderMesh CreateRenderMesh()
+            {
+                List<DisplayVertex> displayVertices = new List<DisplayVertex>();
+                List<int> displayVertexIndices = new List<int>();
+
+                List<DisplayVertex> pv = CreateDisplayVertices();
+                displayVertices.AddRange(pv);
+
+                for (int i = 0; i < lodMeshes[DisplayLODIndex].displayFaceSize; i++)
+                {
+                    displayVertexIndices.Add(display[i]);
+                }
+
+                BfresRenderMesh bfresRenderMesh = new BfresRenderMesh(displayVertices, displayVertexIndices);
+                return bfresRenderMesh;
             }
 
             public float CalculateSortingDistance(Vector3 cameraPosition)
