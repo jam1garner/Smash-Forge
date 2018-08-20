@@ -345,7 +345,7 @@ namespace Smash_Forge
 
         /*---------------------------------------
          * 
-         * Code ported from Aboood's GTX Extractor https://github.com/aboood40091/GTX-Extractor/blob/master/gtx_extract.py
+         * Code ported from AboodXD's GTX Extractor https://github.com/aboood40091/GTX-Extractor/blob/master/gtx_extract.py
          * 
          * With help by Aelan!
          * 
@@ -376,13 +376,16 @@ namespace Smash_Forge
             sur.data = data;
             sur.imageSize = data.Length;
             //return swizzleBC(sur);
-            return swizzleSurface(sur, ((GX2SurfaceFormat)sur.format != GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM) & (GX2SurfaceFormat)sur.format != GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_SRGB);
+            return swizzleSurface(sur, (GX2SurfaceFormat)sur.format != GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM &
+                (GX2SurfaceFormat)sur.format != GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_SRGB);
         }
 
         public static int getBPP(int i)
         {
             switch ((GX2SurfaceFormat)i)
             {
+                case GX2SurfaceFormat.GX2_SURFACE_FORMAT_TC_R5_G5_B5_A1_UNORM:
+                    return 0x10;
                 case GX2SurfaceFormat.GX2_SURFACE_FORMAT_TCS_R8_G8_B8_A8_UNORM:
                     return 0x20;
                 case GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM:
@@ -413,6 +416,7 @@ namespace Smash_Forge
             int height = surface.height;
 
             int format = getBPP(surface.format);
+            Console.WriteLine(((GX2SurfaceFormat)surface.format).ToString());
 
             if (isCompressed)
             {
@@ -422,7 +426,7 @@ namespace Smash_Forge
                 if ((GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_UNORM ||
                     (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC1_SRGB ||
                     (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM ||
-                        (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM)
+                    (GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM)
                 {
                     blockSize = 8;
                 }
@@ -433,6 +437,11 @@ namespace Smash_Forge
             }
             else
             {
+                /*if ((GX2SurfaceFormat)surface.format == GX2SurfaceFormat.GX2_SURFACE_FORMAT_TC_R5_G5_B5_A1_UNORM)
+                {
+                    blockSize = format / 4;
+                }
+                else*/
                 blockSize = format / 8;
             }
 
@@ -445,8 +454,11 @@ namespace Smash_Forge
 
                     for (int k = 0; k < blockSize; k++)
                     {
-                        if (pos_ + k >= surface.data.Length || pos + k >= original.Length)
+                        if (pos + k >= original.Length || pos_ + k >= surface.data.Length)
+                        {
+                            Console.WriteLine("Break Point " + pos_ + " " + pos);
                             break;
+                        }
                         surface.data[pos_ + k] = original[pos + k];
                     }
                 }
