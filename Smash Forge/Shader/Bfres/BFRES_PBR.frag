@@ -262,7 +262,6 @@ void main()
     // Calculate shading vectors.
     vec3 I = vec3(0,0,-1) * mat3(mvpMatrix);
     vec3 N = normal;
-    // TODO: This breaks for some reason.
 	if (HasNormalMap == 1 && useNormalMap == 1)
 		N = CalcBumpedNormal(normal, normalMap, vert, 0);
 

@@ -178,27 +178,7 @@ void main()
 	float shadow_intensity = LightMapColor.a;
 
     // Diffuse lighting.
-	float brightness = 0;
-	if (enableCellShading == 1)
-	{
-        // Higher blend values make the dark region smoother and larger.
-        float lambert = max(dot(N, difLightDirection), 0);
-        float smoothness = 0.1;
-        float center = 0.5;
-        float edgeL = center;
-        float edgeR = center + (smoothness * 0.5);
-        float smoothLambert = smoothstep(edgeL, edgeR, lambert);
-
-        float ambient = 0.6;
-        smoothLambert = clamp(smoothLambert + ambient, 0, 1);
-
-		brightness = smoothLambert * 1.2;
-	}
-	else
-	{
-        float halfLambert = dot(difLightDirection, N) * 0.5 + 0.5;
-		brightness = halfLambert;
-	}
+    float halfLambert = dot(difLightDirection, N) * 0.5 + 0.5;
 
     //Texture Overlay (Like an emblem in mk8)
     if (HasDiffuseLayer == 1)
@@ -215,7 +195,7 @@ void main()
     }
 
 	vec4 diffuseMapColor = vec4(texture(tex0, f_texcoord0).rgb, 1);
-    diffuseMapColor *= brightness;
+    diffuseMapColor *= halfLambert;
     fragColor.rgb += diffuseMapColor.rgb;
 
 	float aoBlend = 1;
@@ -229,7 +209,7 @@ void main()
          if (bake_shadow_type == 2)
 		 {
 		       aoBlend = texture(BakeShadowMap, f_texcoord1).r;
-		       fragColor *= aoBlend;
+		       // fragColor *= aoBlend;
 
 			   //For this it will need a frame buffer to be used
 			   vec4 ShadowTex = vec4(texture(BakeShadowMap, f_texcoord1).ggg, 1);
