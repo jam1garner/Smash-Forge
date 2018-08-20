@@ -98,20 +98,8 @@ namespace Smash_Forge
 
             public void GetDisplayVerticesAndIndices(out List<DisplayVertex> displayVerticesList, out List<int> vertexIndicesList)
             {
-                int vertexOffset = 0;
-
-                displayVerticesList = new List<DisplayVertex>();
-                vertexIndicesList = new List<int>();
-
-                List<DisplayVertex> polygonDisplayVertices = CreateDisplayVertices();
-                displayVerticesList.AddRange(polygonDisplayVertices);
-
-                for (int i = 0; i < displayFaceSize; i++)
-                {
-                    vertexIndicesList.Add(display[i] + vertexOffset);
-                }
-
-                vertexOffset += polygonDisplayVertices.Count;
+                displayVerticesList = CreateDisplayVertices();
+                vertexIndicesList = new List<int>(display);
             }
 
             private List<DisplayVertex> CreateDisplayVertices()
