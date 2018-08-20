@@ -460,9 +460,7 @@
             this.KeyPreview = true;
             this.Name = "ModelViewport";
             this.Text = "ModelViewport";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ModelViewport_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ModelViewport_FormClosed);
-            this.Load += new System.EventHandler(this.ModelViewport_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModelViewport_KeyDown);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();

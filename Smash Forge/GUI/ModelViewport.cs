@@ -36,6 +36,7 @@ namespace Smash_Forge
 
         // Framerate control
         private Thread renderThread;
+        private System.Windows.Forms.Timer renderTimer = new System.Windows.Forms.Timer();
         private bool hasStartedRenderThread = false;
         private bool isRendering = false;
         private bool isOpen = true;
@@ -459,20 +460,44 @@ namespace Smash_Forge
             Controls.Add(frm);
         }
 
-        private void ModelViewport_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void ModelViewport_Shown(object sender, EventArgs e)
         {
-            // Frame time control.
-            renderThread = new Thread(new ThreadStart(RaiseViewportRenderFrames));
-            renderThread.Start();
-            isRendering = true;
+            // TODO: Using a separate thread results in an unresponsive GUI on systems with fewer cores.
+            if (Environment.ProcessorCount > 2)
+            {
+                // Frame time control.
+                renderThread = new Thread(new ThreadStart(RaiseViewportRenderFrames));
+                renderThread.Start();
+                isRendering = true;
+            }
+            else
+            {
+                // HACK: Frame time control.
+                renderTimer.Interval = 8;
+                renderTimer.Tick += new EventHandler(AnimationRenderTimerTick);
+                renderTimer.Start();
+            }
 
             // Limit to 60 fps.
             //glViewport.VSync = true;
+        }
+
+        private void AnimationRenderTimerTick(object sender, EventArgs e)
+        {
+            if (this.IsDisposed)
+                return;
+
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            {
+                if (isPlaying)
+                {
+                    if (animationTrackBar.Value == totalFrame.Value)
+                        animationTrackBar.Value = 0;
+                    else
+                        animationTrackBar.Value++;
+                }
+                glViewport.Invalidate();
+            }
         }
 
         private void RaiseViewportRenderFrames()
@@ -1453,6 +1478,8 @@ namespace Smash_Forge
         {
             isOpen = false;
             ClearModelContainers();
+            renderTimer.Dispose();
+            glViewport.Dispose();
         }
 
         public void ClearModelContainers()
@@ -1510,11 +1537,6 @@ namespace Smash_Forge
         }
 
         #endregion
-
-        private void ModelViewport_FormClosing(object sender, FormClosingEventArgs e)
-        {
-
-        }
 
         private void toolStripSaveRenderAlphaButton_Click(object sender, EventArgs e)
         {
