@@ -52,29 +52,20 @@ vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap
 vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float texCoordIndex, vec3 emission_color)
 {
     vec3 result = vec3(0);
-    float emissionIntensity2 = emission_intensity * emission_intensity;
 
-    if (emission_intensity > 0.1)
-    {
-        vec3 emission = vec3(emissionIntensity2);
-        result += emission;
-    }
+    // BOTW somtimes uses second uv channel for emission map
+    vec3 emission = vec3(1);
+    if (texCoordIndex == 1)
+        emission = texture2D(EmissionMap, vert.texCoord2).rgb;
+    else
+        emission = texture2D(EmissionMap, vert.texCoord).rgb;
 
+    // If tex is empty then use full brightness.
+    //Some emissive mats have emission but no texture
+    // if (Luminance(emission.rgb) < 0.01)
+    //     result += vec3(emission_intensity) * emission_color;
 
-        // BOTW somtimes uses second uv channel for emission map
-        vec3 emission = vec3(1);
-        if (texCoordIndex == 1)
-            emission = texture2D(EmissionMap, vert.texCoord2).rgb * vec3(1);
-        else
-            emission = texture2D(EmissionMap, vert.texCoord).rgb * emission_color;
-
-        // If tex is empty then use full brightness.
-        //Some emissive mats have emission but no texture
-        if (Luminance(emission.rgb) < 0.01)
-            result += vec3(emission_intensity) * emission_color;
-        else
-            result += emission.rgb;
-
+    result += emission.rgb;
 
     return result;
 }

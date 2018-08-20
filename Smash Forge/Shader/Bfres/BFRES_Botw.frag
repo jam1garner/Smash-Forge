@@ -290,10 +290,6 @@ void main()
 
 	float cavity = 1;
 
-	vec3 emission = vec3(0);
-    if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
-		emission.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);
-
 	vec3 lightMapColor = vec3(1);
 	float lightMapIntensity = 0;
     if (HasLightMap == 1)
@@ -335,6 +331,8 @@ void main()
     outputColor += DiffusePass(albedo, N, L, R);// * kDiffuse;
     // outputColor += SpecularPass(albedo, N, H, R, metallic, specularMapIntensity);
     outputColor += FresnelPass(N, I);
+    if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
+        outputColor.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);
 
     outputColor *= ao;
     outputColor *= (0.6 + shadow);

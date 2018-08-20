@@ -212,13 +212,14 @@ void main()
 
         fragColor = vec4(displayBitangent,1);
     }
-    else if (renderType == 11) //Display lights from second bake map if exists
+    else if (renderType == 11) // NUD light set
 	{
-	    fragColor.rgb = texture2D(BakeLightMap, vert.texCoord2).rgb;
-
-        if (HasEmissionMap == 1 || enable_emission == 1)
-	        fragColor.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);;
+        fragColor.rgb = vec3(0);
 	}
+    else if (renderType == 12)
+    {
+        fragColor.rgb = boneWeightsColored;
+    }
 
     // Toggles rendering of individual color channels for all render modes.
     fragColor.rgb *= vec3(renderR, renderG, renderB);
@@ -229,6 +230,4 @@ void main()
     else if (renderB == 1 && renderR == 0 && renderG == 0)
         fragColor.rgb = fragColor.bbb;
 
-    if (renderType == 12)
-        fragColor.rgb = boneWeightsColored;
 }
