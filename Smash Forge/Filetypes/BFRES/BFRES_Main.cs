@@ -247,7 +247,7 @@ namespace Smash_Forge
                             f.skip(-4);
                             int temp = f.pos();
                             NewBntx = new BNTX();
-                            NewBntx.ReadBNTX(f);
+                            NewBntx.Read(f);
                             TEmbedded.Nodes.Add(NewBntx);
                         }
 
@@ -612,7 +612,7 @@ namespace Smash_Forge
             {
                 Matrix4 transform = fmdl.skeleton.bones[m.boneIndx].invert * fmdl.skeleton.bones[m.boneIndx].transform;
                 shader.SetMatrix4x4("singleBoneBindTransform", ref transform);
-				
+
                 shader.SetInt("NoSkinning", 1);
             }
         }
@@ -1664,7 +1664,7 @@ namespace Smash_Forge
             public bool HasShadowMap = false;
             public bool HasLightMap = false;
             public bool HasSphereMap = false;
-            
+
             //PBR (Switch) data
             public bool HasMetalnessMap = false;
             public bool HasRoughnessMap = false;

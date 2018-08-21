@@ -124,7 +124,7 @@ namespace Smash_Forge
 
         BNTXEditor Editor;
 
-        public BNTX()
+        public BNTX() //Binary Texture Container
         {
             ImageKey = "nut";
             SelectedImageKey = "nut";
@@ -178,7 +178,7 @@ namespace Smash_Forge
 
 
                 bn.Nodes.Clear();
-                bn.ReadBNTX(f);
+                bn.Read(f);
             }
         }
 
@@ -193,14 +193,14 @@ namespace Smash_Forge
             FileData f = new FileData(data);
             f.Endian = Endianness.Little;
 
-            ReadBNTX(f);
+            Read(f);
         }
         public void ReadBNTXFile(byte[] data) //For single BNTX files
         {
             FileData f = new FileData(data);
             f.Endian = Endianness.Little;
 
-            ReadBNTX(f);
+            Read(f);
         }
 
         public void RefreshGlTexturesByName()
@@ -218,7 +218,7 @@ namespace Smash_Forge
             }
         }
 
-        public void ReadBNTX(FileData f)
+        public void Read(FileData f)
         {
             textures.Clear();
 
@@ -256,17 +256,54 @@ namespace Smash_Forge
                 f.seek(BRTIOffset + temp);
 
                 //  textures.Add(new BRTI(f));
-                BRTI texture = new BRTI(f, this);
+                BRTI texture = new BRTI();
+                texture.Read(f, this);
 
                 textures.Add(texture);
 
             }
             Nodes.AddRange(textures.ToArray());
         }
+        public void Save()
+        {
+
+
+
+            foreach (BRTI info in textures)
+            {
+                Swizzle.Surface surf = info.surf;
+
+                int alignment = 0;
+
+
+                if (surf.tileMode == 1)
+                    alignment = 1;
+                else
+                    alignment = 512;
+
+                uint blk_dim = Formats.blk_dims(surf.format >> 8);
+                uint blkWidth = blk_dim >> 4;
+                uint blkHeight = blk_dim & 0xF;
+
+                uint bpp = Formats.bpps(surf.format >> 8);
+
+
+                for (int y = 0; y < info.texture.mipmaps.Count; ++y)
+                {
+
+                }
+
+
+                for (int y = 0; y < info.texture.mipmaps.Count; ++y)
+                {
+
+                }
+            }
+        }
     }
 
 
-    public class BRTI : TreeNode
+    public class BRTI : TreeNode //Binary Texture Info
     {
         public Swizzle.Surface surf;
 
@@ -283,7 +320,7 @@ namespace Smash_Forge
             return Text;
         }
 
-        public BRTI(FileData f, BNTX bntx) //Docs thanks to AboodXD!!
+        public void Read(FileData f, BNTX bntx) //Docs thanks to AboodXD!!
         {
             ImageKey = "texture";
             SelectedImageKey = "texture";
@@ -374,6 +411,11 @@ namespace Smash_Forge
             Width = surf.width;
             Height = surf.height;
         }
+
+
+
+
+
         private void LoadFormats(BRTI_Texture texture, uint format, int mipLevel, int width, int height)
         {
             switch (format >> 8)

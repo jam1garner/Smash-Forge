@@ -125,37 +125,46 @@ namespace Smash_Forge
 
                     MaterialData.ShaderAssign shaderassign = new MaterialData.ShaderAssign();
 
-
-                    shaderassign.ShaderModel = mat.ShaderAssign.ShadingModelName;
-                    shaderassign.ShaderArchive = mat.ShaderAssign.ShaderArchiveName;
-
-                    int o = 0;
-                    foreach (var op in mat.ShaderAssign.ShaderOptionDict)
+                    if (mat.ShaderAssign != null)
                     {
-                        shaderassign.options.Add(op.Key, mat.ShaderAssign.ShaderOptions[o]);
-                        o++;
-                    }
-                    int sa = 0;
-                    foreach (var smp in mat.ShaderAssign.SamplerAssignDict)
-                    {
-                        //       Console.WriteLine($"{smp.Key} ---> {mat.ShaderAssign.SamplerAssigns[sa]}");
-                        if (!shaderassign.samplers.ContainsKey(mat.ShaderAssign.SamplerAssigns[sa]))
-                            shaderassign.samplers.Add(mat.ShaderAssign.SamplerAssigns[sa], smp.Key);
-                        sa++;
-                    }
-            
-                    int va = 0;
-                    foreach (var att in mat.ShaderAssign.AttribAssignDict)
-                    {
-                        shaderassign.attributes.Add(att.Key, mat.ShaderAssign.AttribAssigns[va]);
-                        va++;
-                    }
+                        shaderassign.ShaderModel = mat.ShaderAssign.ShadingModelName;
+                        shaderassign.ShaderArchive = mat.ShaderAssign.ShaderArchiveName;
 
+                        int o = 0;
+                        foreach (var op in mat.ShaderAssign.ShaderOptionDict)
+                        {
+                            shaderassign.options.Add(op.Key, mat.ShaderAssign.ShaderOptions[o]);
+                            o++;
+                        }
+                        int sa = 0;
+                        foreach (var smp in mat.ShaderAssign.SamplerAssignDict)
+                        {
+                            //       Console.WriteLine($"{smp.Key} ---> {mat.ShaderAssign.SamplerAssigns[sa]}");
+                            if (!shaderassign.samplers.ContainsKey(mat.ShaderAssign.SamplerAssigns[sa]))
+                                shaderassign.samplers.Add(mat.ShaderAssign.SamplerAssigns[sa], smp.Key);
+                            sa++;
+                        }
+
+                        int va = 0;
+                        foreach (var att in mat.ShaderAssign.AttribAssignDict)
+                        {
+                            shaderassign.attributes.Add(att.Key, mat.ShaderAssign.AttribAssigns[va]);
+                            va++;
+                        }
+
+                    }
+                    else
+                    {
+                        shaderassign.ShaderModel = "Not Assigned";
+                        shaderassign.ShaderArchive = "Not Assigned";
+                    }
                     poly.material.shaderassign = shaderassign;
 
                     ReadTextureRefs(mat, poly);
-                    ReadShaderParams(mat, poly);
-                    ReadRenderInfo(mat, poly);
+                    if (mat.ShaderParamData != null)
+                        ReadShaderParams(mat, poly);
+                    if (mat.RenderInfos != null)
+                        ReadRenderInfo(mat, poly);
 
                     foreach (Sampler smp in mdl.Materials[shp.MaterialIndex].Samplers)
                     {
@@ -296,17 +305,17 @@ namespace Smash_Forge
                     v.uv2 = new Vector2(vec4uv2[i].X, vec4uv2[i].Y);
                 if (vec4w0.Length > 0)
                 {
-                        v.boneWeights.Add(vec4w0[i].X);
-                        v.boneWeights.Add(vec4w0[i].Y);
-                        v.boneWeights.Add(vec4w0[i].Z);
-                        v.boneWeights.Add(vec4w0[i].W);
+                    v.boneWeights.Add(vec4w0[i].X);
+                    v.boneWeights.Add(vec4w0[i].Y);
+                    v.boneWeights.Add(vec4w0[i].Z);
+                    v.boneWeights.Add(vec4w0[i].W);
                 }
                 if (vec4i0.Length > 0)
                 {
-                        v.boneIds.Add((int)vec4i0[i].X);
-                        v.boneIds.Add((int)vec4i0[i].Y);
-                        v.boneIds.Add((int)vec4i0[i].Z);
-                        v.boneIds.Add((int)vec4i0[i].W);
+                    v.boneIds.Add((int)vec4i0[i].X);
+                    v.boneIds.Add((int)vec4i0[i].Y);
+                    v.boneIds.Add((int)vec4i0[i].Z);
+                    v.boneIds.Add((int)vec4i0[i].W);
                 }
 
                 if (vec4t0.Length > 0)
@@ -319,7 +328,7 @@ namespace Smash_Forge
                 if (poly.VertexSkinCount == 1)
                 {
                     Matrix4 sb = model.skeleton.bones[model.Node_Array[v.boneIds[0]]].transform;
-                  //  Console.WriteLine(model.skeleton.bones[model.Node_Array[v.boneIds[0]]].Text);
+                    //  Console.WriteLine(model.skeleton.bones[model.Node_Array[v.boneIds[0]]].Text);
                     v.pos = Vector3.TransformPosition(v.pos, sb);
                     v.nrm = Vector3.TransformNormal(v.nrm, sb);
                 }
@@ -358,6 +367,7 @@ namespace Smash_Forge
                 texture.SamplerName = mat.SamplerDict.Keys.ElementAt(id);
                 texture.Name = TextureName;
 
+
                 if (poly.material.shaderassign.samplers.Count >= id) //Set samplers that get padded to pixel shader
                 {
                     try
@@ -369,6 +379,8 @@ namespace Smash_Forge
                         //This shouldn't happen but just incase
                     }
                 }
+
+
 
                 bool IsAlbedo = HackyTextureList.Any(TextureName.Contains);
 
@@ -384,9 +396,9 @@ namespace Smash_Forge
                     }
                     if (AlbedoCount == 1)
                     {
-                     //   poly.material.HasDiffuseLayer = true;
-                    //    texture.hash = 19;
-                     //   texture.Type = MatTexture.TextureType.DiffuseLayer2;
+                        //   poly.material.HasDiffuseLayer = true;
+                        //    texture.hash = 19;
+                        //   texture.Type = MatTexture.TextureType.DiffuseLayer2;
 
                     }
                 }
@@ -529,7 +541,7 @@ namespace Smash_Forge
                     if (r.Value_String == "mask")
                     {
                         m.isTransparent = true;
-                    }               
+                    }
                     break;
                 case "mode":
                     if (r.Value_Int == 1)
@@ -693,9 +705,9 @@ namespace Smash_Forge
                         case ShaderParamType.TexSrt:
                             reader.Seek(param.DataOffset, SeekOrigin.Begin);
                             ShaderParam.TextureSRT texSRT = new ShaderParam.TextureSRT();
-                            texSRT.Mode      = reader.ReadSingle(); //Scale mode, Maya, max ect
-                            texSRT.scale     = new Vector2(reader.ReadSingle(), reader.ReadSingle());
-                            texSRT.rotate    = reader.ReadSingle();
+                            texSRT.Mode = reader.ReadSingle(); //Scale mode, Maya, max ect
+                            texSRT.scale = new Vector2(reader.ReadSingle(), reader.ReadSingle());
+                            texSRT.rotate = reader.ReadSingle();
                             texSRT.translate = new Vector2(reader.ReadSingle(), reader.ReadSingle());
                             prm.Value_TexSrt = texSRT;
                             break;
@@ -733,7 +745,7 @@ namespace Smash_Forge
 
                 BufferInjection(writer, reader);
                 BNTXInjectionSameSize(writer, reader);
-            //    FSKAInjection(writer);
+                //    FSKAInjection(writer);
                 FSKLInjection(writer);
 
                 int mdl = 0;
@@ -794,7 +806,7 @@ namespace Smash_Forge
                     {
                         if (vt < msh.vertices.Count)
                         {
-                       
+
                         }
                         else
                         {
