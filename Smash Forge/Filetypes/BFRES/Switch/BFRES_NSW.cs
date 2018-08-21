@@ -9,6 +9,7 @@ using Syroot.NintenTools.Yaz0;
 using Syroot.NintenTools.NSW.Bfres;
 using Syroot.NintenTools.NSW.Bfres.GFX;
 using Syroot.NintenTools.NSW.Bfres.Helpers;
+using Syroot.NintenTools.NSW.Bfres.Core;
 
 namespace Smash_Forge
 {
@@ -832,238 +833,134 @@ namespace Smash_Forge
                         {
                             writer.Seek(fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].DataOffset + att.Offset + fmdl.VertexBuffers[shp.VertexBufferIndex].Buffers[att.BufferIndex].Stride * vt, SeekOrigin.Begin);
                             if (att.Name == "_p0")
-                            {
-                                if (att.Format == AttribFormat.Format_32_32_32_Single)
-                                {
-                                    writer.Write(v.pos.X);
-                                    writer.Write(v.pos.Y);
-                                    writer.Write(v.pos.Z);
-                                }
-                                else if (att.Format == AttribFormat.Format_16_16_16_16_Single)
-                                {
-                                    Syroot.Maths.Vector4F value = new Syroot.Maths.Vector4F(v.pos.X, v.pos.Y, v.pos.Z, 0);
-
-                                    writer.Write((short)fromFloat(value.X));
-                                    writer.Write((short)fromFloat(value.Y));
-                                    writer.Write((short)fromFloat(value.Z));
-                                    writer.Write((short)fromFloat(value.W));
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Unsupported  format for bitans " + att.Format);
-                                }
-                            }
+                                writeBuffer(writer, new Vector4(v.pos, 0), att.Format);
                             if (att.Name == "_n0")
-                            {
-                                if (att.Format == AttribFormat.Format_10_10_10_2_SNorm)
-                                {
-                                    int x = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm.X, -1, 1) * 511);
-                                    int y = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm.Y, -1, 1) * 511);
-                                    int z = SingleToInt10(Syroot.Maths.Algebra.Clamp(v.nrm.Z, -1, 1) * 511);
-                                    int w = SingleToInt2(Syroot.Maths.Algebra.Clamp(0, 0, 1));
-                                    writer.Write(x | (y << 10) | (z << 20) | (w << 30));
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Unsupported  format for normals " + att.Format);
-                                }
-                            }
+                                writeBuffer(writer, new Vector4(v.nrm, 0), att.Format);
                             if (att.Name == "_t0")
-                            {
-                                if (att.Format == AttribFormat.Format_8_8_8_8_SNorm)
-                                {
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tan.X, -1, 1) * 127));
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tan.Y, -1, 1) * 127));
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tan.Z, -1, 1) * 127));
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.tan.W, -1, 1) * 127));
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Unsupported  format for tangents " + att.Format);
-                                }
-                            }
+                                writeBuffer(writer, new Vector4(v.tan), att.Format);
                             if (att.Name == "_b0")
-                            {
-                                if (att.Format == AttribFormat.Format_8_8_8_8_SNorm)
-                                {
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitan.X, -1, 1) * 127));
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitan.Y, -1, 1) * 127));
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitan.Z, -1, 1) * 127));
-                                    writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(v.bitan.W, -1, 1) * 127));
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Unsupported  format for bitans " + att.Format);
-                                }
-                            }
+                                writeBuffer(writer, new Vector4(v.bitan), att.Format);
                             if (att.Name == "_c0")
-                            {
-                                if (att.Format == AttribFormat.Format_8_8_8_8_UNorm)
-                                {
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col.X, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col.Y, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col.Z, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.col.W, 0, 1) * 255));
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Unsupported  format for bitans " + att.Format);
-                                }
-                            }
+                                writeBuffer(writer, new Vector4(v.col), att.Format);
                             if (att.Name == "_u0")
-                            {
-                                if (att.Format == AttribFormat.Format_16_16_UNorm)
-                                {
-                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv0.X, 0, 1) * 65535));
-                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv0.Y, 0, 1) * 65535));
-                                }
-                                else if (att.Format == AttribFormat.Format_32_32_Single)
-                                {
-                                    writer.Write(v.uv0.X);
-                                    writer.Write(v.uv0.Y);
-                                }
-                                else if (att.Format == AttribFormat.Format_16_16_Single)
-                                {
-                                    Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0.X, v.uv0.Y);
-
-                                    writer.Write((short)fromFloat(value.X));
-                                    writer.Write((short)fromFloat(value.Y));
-                                }
-                                else if (att.Format == AttribFormat.Format_16_16_SNorm)
-                                {
-                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv0.X, -1, 1) * 32767));
-                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv0.Y, -1, 1) * 32767));
-                                }
-                                else if (att.Format == AttribFormat.Format_8_8_UNorm)
-                                {
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv0.X, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv0.Y, 0, 1) * 255));
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Unsupported  format for uv0 " + att.Format);
-                                }
-                            }
+                                writeBuffer(writer, new Vector4(v.uv0.X, v.uv0.Y, 0, 0), att.Format);
                             if (att.Name == "_u1")
-                            {
-                                if (att.Format == AttribFormat.Format_16_16_UNorm)
-                                {
-                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv1.X, 0, 1) * 65535));
-                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv1.Y, 0, 1) * 65535));
-                                }
-                                else if (att.Format == AttribFormat.Format_32_32_Single)
-                                {
-                                    writer.Write(v.uv1.X);
-                                    writer.Write(v.uv1.Y);
-                                }
-                                else if (att.Format == AttribFormat.Format_16_16_Single)
-                                {
-                                    Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0.X, v.uv0.Y);
-
-                                    writer.Write((short)fromFloat(value.X));
-                                    writer.Write((short)fromFloat(value.Y));
-                                }
-                                else if (att.Format == AttribFormat.Format_16_16_SNorm)
-                                {
-                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv1.X, -1, 1) * 32767));
-                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv1.Y, -1, 1) * 32767));
-                                }
-                                else if (att.Format == AttribFormat.Format_8_8_UNorm)
-                                {
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv1.X, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv1.Y, 0, 1) * 255));
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Unsupported  format for uv1 " + att.Format);
-                                }
-                            }
+                                writeBuffer(writer, new Vector4(v.uv1.X, v.uv1.Y, 0, 0), att.Format);
                             if (att.Name == "_u2")
-                            {
-                                if (att.Format == AttribFormat.Format_16_16_UNorm)
-                                {
-                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv2.X, 0, 1) * 65535));
-                                    writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(v.uv2.Y, 0, 1) * 65535));
-                                }
-                                else if (att.Format == AttribFormat.Format_32_32_Single)
-                                {
-                                    writer.Write(v.uv2.X);
-                                    writer.Write(v.uv2.Y);
-                                }
-                                else if (att.Format == AttribFormat.Format_16_16_Single)
-                                {
-                                    Syroot.Maths.Vector2F value = new Syroot.Maths.Vector2F(v.uv0.X, v.uv0.Y);
-
-                                    writer.Write((short)fromFloat(value.X));
-                                    writer.Write((short)fromFloat(value.Y));
-                                }
-                                else if (att.Format == AttribFormat.Format_16_16_SNorm)
-                                {
-                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv2.X, -1, 1) * 32767));
-                                    writer.Write((short)(Syroot.Maths.Algebra.Clamp(v.uv2.Y, -1, 1) * 32767));
-                                }
-                                else if (att.Format == AttribFormat.Format_8_8_UNorm)
-                                {
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv2.X, 0, 1) * 255));
-                                    writer.Write((byte)(Syroot.Maths.Algebra.Clamp(v.uv2.Y, 0, 1) * 255));
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Unsupported  format for uv2 " + att.Format);
-                                }
-                            }
+                                writeBuffer(writer, new Vector4(v.uv2.X, v.uv2.Y, 0, 0), att.Format);
                             if (att.Name == "_i0")
                             {
-                                if (att.Format == AttribFormat.Format_8_8_8_8_UInt)
-                                {
-                                    writer.Write(v.boneIds.Count > 0 ? (byte)v.boneIds[0] : (byte)0);
-                                    writer.Write(v.boneIds.Count > 1 ? (byte)v.boneIds[1] : (byte)0);
-                                    writer.Write(v.boneIds.Count > 2 ? (byte)v.boneIds[2] : (byte)0);
-                                    writer.Write(v.boneIds.Count > 3 ? (byte)v.boneIds[3] : (byte)0);
-                                }
-                                else if (att.Format == AttribFormat.Format_8_8_UInt)
-                                {
-                                    writer.Write(v.boneIds.Count > 0 ? (byte)v.boneIds[0] : (byte)0);
-                                    writer.Write(v.boneIds.Count > 1 ? (byte)v.boneIds[1] : (byte)0);
-                                }
-                                else if (att.Format == AttribFormat.Format_8_UInt)
-                                {
-                                    writer.Write(v.boneIds.Count > 0 ? (byte)v.boneIds[0] : (byte)0);
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Unsupported format for indices " + att.Format);
-                                }
+                                Vector4 bufferdata = new Vector4(0);
+                                bufferdata.X = v.boneIds.Count > 0 ? v.boneIds[0] : 0;
+                                bufferdata.Y = v.boneIds.Count > 1 ? v.boneIds[1] : 0;
+                                bufferdata.Z = v.boneIds.Count > 2 ? v.boneIds[2] : 0;
+                                bufferdata.W = v.boneIds.Count > 3 ? v.boneIds[3] : 0;
+
+                                writeBuffer(writer, bufferdata, att.Format);
                             }
                             if (att.Name == "_w0")
                             {
-                                if (att.Format == AttribFormat.Format_8_8_8_8_UNorm)
-                                {
-                                    writer.Write(v.boneWeights.Count > 0 ? (byte)(Syroot.Maths.Algebra.Clamp(v.boneWeights[0], 0, 1) * 255) : (byte)0);
-                                    writer.Write(v.boneWeights.Count > 1 ? (byte)(Syroot.Maths.Algebra.Clamp(v.boneWeights[1], 0, 1) * 255) : (byte)0);
-                                    writer.Write(v.boneWeights.Count > 2 ? (byte)(Syroot.Maths.Algebra.Clamp(v.boneWeights[2], 0, 1) * 255) : (byte)0);
-                                    writer.Write(v.boneWeights.Count > 3 ? (byte)(Syroot.Maths.Algebra.Clamp(v.boneWeights[3], 0, 1) * 255) : (byte)0);
+                                Vector4 bufferdata = new Vector4(0);
+                                bufferdata.X = v.boneWeights.Count > 0 ? v.boneWeights[0] : 0;
+                                bufferdata.Y = v.boneWeights.Count > 1 ? v.boneWeights[1] : 0;
+                                bufferdata.Z = v.boneWeights.Count > 2 ? v.boneWeights[2] : 0;
+                                bufferdata.W = v.boneWeights.Count > 3 ? v.boneWeights[3] : 0;
 
-                                }
-                                else if (att.Format == AttribFormat.Format_8_8_UNorm)
-                                {
-                                    writer.Write(v.boneWeights.Count > 0 ? (byte)(Syroot.Maths.Algebra.Clamp(v.boneWeights[0], 0, 1) * 255) : (byte)0);
-                                    writer.Write(v.boneWeights.Count > 1 ? (byte)(Syroot.Maths.Algebra.Clamp(v.boneWeights[1], 0, 1) * 255) : (byte)0);
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Unsupported format for weights " + att.Format);
-                                }
+                                writeBuffer(writer, bufferdata, att.Format);
                             }
                         }
                         at++;
                     }
-
                     s++;
                 }
                 mdl++;
             }
         }
+        private void writeBuffer(Syroot.BinaryData.BinaryDataWriter writer, Vector4 value, AttribFormat format)
+        {
+            if (format == AttribFormat.Format_32_32_32_Single)
+            {
+                writer.Write(value.X);
+                writer.Write(value.Y);
+                writer.Write(value.Z);
+            }
+            else if (format == AttribFormat.Format_16_16_16_16_Single)
+            {
+                writer.Write((short)BinaryDataWriterExtensions.fromFloat(value.X));
+                writer.Write((short)BinaryDataWriterExtensions.fromFloat(value.Y));
+                writer.Write((short)BinaryDataWriterExtensions.fromFloat(value.Z));
+                writer.Write((short)BinaryDataWriterExtensions.fromFloat(value.W));
+            }
+            else if (format == AttribFormat.Format_16_16_Single)
+            {
+                writer.Write((short)BinaryDataWriterExtensions.fromFloat(value.X));
+                writer.Write((short)BinaryDataWriterExtensions.fromFloat(value.Y));
+            }
+            else if(format == AttribFormat.Format_16_16_UNorm)
+            {
+                writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(value.X, 0, 1) * 65535));
+                writer.Write((ushort)(Syroot.Maths.Algebra.Clamp(value.Y, 0, 1) * 65535));
+            }
+            else if (format == AttribFormat.Format_10_10_10_2_SNorm)
+            {
+                int x = BinaryDataWriterExtensions.FloatToInt10(Syroot.Maths.Algebra.Clamp(value.X, -1, 1) * 511);
+                int y = BinaryDataWriterExtensions.FloatToInt10(Syroot.Maths.Algebra.Clamp(value.Y, -1, 1) * 511);
+                int z = BinaryDataWriterExtensions.FloatToInt10(Syroot.Maths.Algebra.Clamp(value.Z, -1, 1) * 511);
+                int w = BinaryDataWriterExtensions.FloatToInt10(Syroot.Maths.Algebra.Clamp(0, 0, 1));
+                writer.Write(x | (y << 10) | (z << 20) | (w << 30));
+            }
+            else if (format == AttribFormat.Format_8_8_8_8_SNorm)
+            {
+                writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(value.X, -1, 1) * 127));
+                writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(value.Y, -1, 1) * 127));
+                writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(value.Z, -1, 1) * 127));
+                writer.Write((sbyte)(Syroot.Maths.Algebra.Clamp(value.W, -1, 1) * 127));
+            }
+            else if (format == AttribFormat.Format_32_32_Single)
+            {
+                writer.Write(value.X);
+                writer.Write(value.Y);
+            }
+            else if (format == AttribFormat.Format_16_16_SNorm)
+            {
+                writer.Write((short)(Syroot.Maths.Algebra.Clamp(value.X, -1, 1) * 32767));
+                writer.Write((short)(Syroot.Maths.Algebra.Clamp(value.Y, -1, 1) * 32767));
+            }
+            else if (format == AttribFormat.Format_8_8_UNorm)
+            {
+                writer.Write((byte)(Syroot.Maths.Algebra.Clamp(value.X, 0, 1) * 255));
+                writer.Write((byte)(Syroot.Maths.Algebra.Clamp(value.Y, 0, 1) * 255));
+            }
+            else if(format == AttribFormat.Format_8_8_8_8_UNorm)
+            {
+                writer.Write((byte)(Syroot.Maths.Algebra.Clamp(value.X, 0, 1) * 255));
+                writer.Write((byte)(Syroot.Maths.Algebra.Clamp(value.Y, 0, 1) * 255));
+                writer.Write((byte)(Syroot.Maths.Algebra.Clamp(value.Z, 0, 1) * 255));
+                writer.Write((byte)(Syroot.Maths.Algebra.Clamp(value.W, 0, 1) * 255));
+
+            }
+            else if(format == AttribFormat.Format_8_8_8_8_UInt)
+            {
+                writer.Write((byte)value.X);
+                writer.Write((byte)value.Y);
+                writer.Write((byte)value.Z);
+                writer.Write((byte)value.W);
+            }
+            else if (format == AttribFormat.Format_8_8_UInt)
+            {
+                writer.Write((byte)value.X);
+                writer.Write((byte)value.Y);
+            }
+            else if (format == AttribFormat.Format_8_UInt)
+            {
+                writer.Write((byte)value.X);
+            }
+            else
+            {
+                MessageBox.Show("Unsupported format for weights " + format);
+            }
+        }
+
         public void FSKLInjection(Syroot.BinaryData.BinaryDataWriter writer)
         {
             int mdl = 0;
@@ -1213,95 +1110,6 @@ namespace Smash_Forge
                 entry.Value.Callback.Invoke();
             }
         }
-
-        //Thanks stack exchange. This is all temp till i do rebuilding of course
-        public byte[] truncate(float f)
-        {
-            byte[] output = new byte[16];
-            byte[] temp = BitConverter.GetBytes(f);
-            for (int x = 0; x < 16; x++)
-            {
-                output[x] = temp[x];
-            }
-            return output;
-        }
-
-        // ignores the higher 16 bits
-        public static float toFloat(int hbits)
-        {
-            int mant = hbits & 0x03ff;            // 10 bits mantissa
-            int exp = hbits & 0x7c00;            // 5 bits exponent
-            if (exp == 0x7c00)                   // NaN/Inf
-                exp = 0x3fc00;                    // -> NaN/Inf
-            else if (exp != 0)                   // normalized value
-            {
-                exp += 0x1c000;                   // exp - 15 + 127
-                if (mant == 0 && exp > 0x1c400)  // smooth transition
-                    return BitConverter.ToSingle(BitConverter.GetBytes((hbits & 0x8000) << 16
-                                                    | exp << 13 | 0x3ff), 0);
-            }
-            else if (mant != 0)                  // && exp==0 -> subnormal
-            {
-                exp = 0x1c400;                    // make it normal
-                do
-                {
-                    mant <<= 1;                   // mantissa * 2
-                    exp -= 0x400;                 // decrease exp by 1
-                } while ((mant & 0x400) == 0); // while not normal
-                mant &= 0x3ff;                    // discard subnormal bit
-            }                                     // else +/-0 -> +/-0
-            return BitConverter.ToSingle(BitConverter.GetBytes(          // combine all parts
-                (hbits & 0x8000) << 16          // sign  << ( 31 - 15 )
-                | (exp | mant) << 13), 0);         // value << ( 23 - 10 )
-        }
-        // returns all higher 16 bits as 0 for all results
-        public static int fromFloat(float fval)
-        {
-            int fbits = BitConverter.ToInt32(BitConverter.GetBytes(fval), 0);
-            int sign = fbits >> 16 & 0x8000;          // sign only
-            int val = (fbits & 0x7fffffff) + 0x1000; // rounded value
-
-            if (val >= 0x47800000)               // might be or become NaN/Inf
-            {                                     // avoid Inf due to rounding
-                if ((fbits & 0x7fffffff) >= 0x47800000)
-                {                                 // is or must become NaN/Inf
-                    if (val < 0x7f800000)        // was value but too large
-                        return sign | 0x7c00;     // make it +/-Inf
-                    return sign | 0x7c00 |        // remains +/-Inf or NaN
-                        (fbits & 0x007fffff) >> 13; // keep NaN (and Inf) bits
-                }
-                return sign | 0x7bff;             // unrounded not quite Inf
-            }
-            if (val >= 0x38800000)               // remains normalized value
-                return sign | val - 0x38000000 >> 13; // exp - 127 + 15
-            if (val < 0x33000000)                // too small for subnormal
-                return sign;                      // becomes +/-0
-            val = (fbits & 0x7fffffff) >> 23;  // tmp exp for subnormal calc
-            return sign | ((fbits & 0x7fffff | 0x800000) // add subnormal bit
-                 + (0x800000 >> val - 102)     // round depending on cut off
-              >> 126 - val);   // div by 2^(1-(exp-127+15)) and >> 13 | exp=0
-        }
-
-        private static int SingleToInt2(float value)
-        {
-            if (value < -1 || value > 1)
-            {
-                throw new ArgumentException($"{value} cannot be converted to Int2 (exceeds range -1 to 1).",
-                    nameof(value));
-            }
-            return (int)(((uint)value << 30) >> 30) & 0x3;
-        }
-
-        private static int SingleToInt10(float value)
-        {
-            if (value < -512 || value > 511)
-            {
-                throw new ArgumentException($"{value} cannot be converted to Int10 (exceeds range -512 to 511).",
-                    nameof(value));
-            }
-            return (int)(((uint)value << 22) >> 22) & 0x3FF;
-        }
-
         #endregion
     }
 }
