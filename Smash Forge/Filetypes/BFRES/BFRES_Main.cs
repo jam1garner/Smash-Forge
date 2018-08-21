@@ -125,6 +125,8 @@ namespace Smash_Forge
                 path = Text;
                 Read(TargetWiiUBFRES);
             }
+
+          //  SetMaterialToXML();
         }
 
         private void SetMarioPosition(string pathBfres)
@@ -1366,7 +1368,7 @@ namespace Smash_Forge
             public void ExportMaterials2XML()
             {
                 Console.WriteLine("Wring XML");
-                WriteFMATXML(material, this);
+                WriteMaterialXML(material, this);
             }
             public void CopyUVChannel2()
             {

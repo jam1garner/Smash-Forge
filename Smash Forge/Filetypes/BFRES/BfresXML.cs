@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,38 @@ namespace Smash_Forge
 {
     public partial class BFRES
     {
-        public static void WriteFMATXML(MaterialData mat, Mesh msh)
+        public MaterialData SetMaterialToXML(string filename)
+        {
+            MaterialData mat = new MaterialData();
+
+            XmlDocument doc = new XmlDocument();
+            doc.Load(filename);
+
+            XmlNode main = doc.ChildNodes[0];
+            foreach (XmlNode matnode in main.ChildNodes)
+            {
+                System.Diagnostics.Debug.WriteLine(matnode.Name);
+
+                if (matnode.Name.Equals("SamplerArray"))
+                {
+
+                }
+                if (matnode.Name.Equals("RenderInfo"))
+                {
+
+                }
+                if (matnode.Name.Equals("ShaderAssign"))
+                {
+
+                }
+                if (matnode.Name.Equals("ShaderParam"))
+                {
+
+                }
+            }
+            return mat;
+        }
+        public static void WriteMaterialXML(MaterialData mat, Mesh msh)
         {
             SaveFileDialog sfd = new SaveFileDialog();
 
@@ -49,11 +81,8 @@ namespace Smash_Forge
 
                 XmlWriter writer = XmlWriter.Create(sfd.FileName, settings);
 
-          
-
-
                 writer.WriteStartDocument();    
-                 writer.WriteStartElement("Materials");
+                writer.WriteStartElement("Materials");
 
                 writer.WriteStartElement("SamplerArray");
                 int s = 0;
@@ -142,28 +171,44 @@ namespace Smash_Forge
 
                     writer.WriteStartElement("ShaderParam");
                     writer.WriteAttributeString("Index", p.ToString());
-
+                    writer.WriteAttributeString("Name", param.Name);
                     switch (param.Type)
                     {
+                        case ShaderParamType.UInt:
+                            writer.WriteAttributeString("Value", param.Value_UInt.ToString());
+                            break;
                         case ShaderParamType.Float:
-                            writer.WriteAttributeString(prm.Key, param.Value_float.ToString());
+                            writer.WriteAttributeString("Value", param.Value_float.ToString());
                             break;
                         case ShaderParamType.Float2:
-                            writer.WriteAttributeString(prm.Key, param.Value_float2.ToString());
+                            writer.WriteAttributeString("Value", param.Value_float2.ToString());
                             break;
                         case ShaderParamType.Float3:
-                            writer.WriteAttributeString(prm.Key, param.Value_float3.ToString());
+                            writer.WriteAttributeString("Value", param.Value_float3.ToString());
                             break;
                         case ShaderParamType.Float4:
-                            writer.WriteAttributeString(prm.Key, param.Value_float4.ToString());
+                            writer.WriteAttributeString("Value", param.Value_float4.ToString());
                             break;
                         case ShaderParamType.TexSrt:
-                            writer.WriteAttributeString(prm.Key, param.Value_TexSrt.scale.ToString() +
+                            writer.WriteAttributeString("Value", param.Value_TexSrt.scale.ToString() +
                                 " " + param.Value_TexSrt.rotate.ToString() +
                                 " " + param.Value_TexSrt.translate.ToString());
                             break;
                         case ShaderParamType.Bool:
-                            writer.WriteAttributeString(prm.Key, param.Value_bool.ToString());
+                            writer.WriteAttributeString("Value", param.Value_bool.ToString());
+                            break;
+                        case ShaderParamType.Float2x2:
+                            writer.WriteAttributeString("Value", FloatArrayToString(param.Value_float2x2));
+                            break;
+                        case ShaderParamType.Float2x3:
+                            writer.WriteAttributeString("Value", FloatArrayToString(param.Value_float2x3));
+                            break;
+                        case ShaderParamType.Float4x4:
+                            writer.WriteAttributeString("Value", FloatArrayToString(param.Value_float4x4));
+                            break;
+                        default:
+                            writer.WriteAttributeString("Type", " Undefined");
+                            writer.WriteAttributeString("Value", " Undefined");
                             break;
                     }
                     writer.WriteAttributeString("Type", param.Type.ToString());
@@ -176,6 +221,11 @@ namespace Smash_Forge
                 writer.WriteEndDocument();
                 writer.Close();
             }
+        }
+        public static string FloatArrayToString(float[] fa)
+        {
+            string result = String.Join(" ", fa.Select(f => f.ToString(CultureInfo.CurrentCulture)));
+            return result;
         }
     }
 }

@@ -142,7 +142,7 @@
     <Compile Include="Filetypes\BFRES\Switch\BFRES_NSW.cs" />
     <Compile Include="Filetypes\BFRES\Switch\BNTX.cs" />
     <Compile Include="Filetypes\BFRES\Switch\DDS_Decompress.cs" />
-    <Compile Include="Filetypes\BFRES\Switch\Exporter_BFRES_XML.cs" />
+    <Compile Include="Filetypes\BFRES\BfresXML.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FSHA.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FSKA.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FVIS.cs" />
