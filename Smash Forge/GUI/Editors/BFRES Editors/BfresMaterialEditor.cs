@@ -35,7 +35,7 @@ namespace Smash_Forge
             ResetParamUIData();
         }
         public void LoadMaterial(BFRES.Mesh p)
-         {
+        {
             listView1.Items.Clear();
             dataGridView3.Rows.Clear();
             dataGridView4.Rows.Clear();
@@ -49,12 +49,12 @@ namespace Smash_Forge
             FillForm();
 
             textBox1.Text = mat.Name;
-            ShaderArchivelabel1.Text += $" {mat.shaderassign.ShaderArchive}";
-            ShaderMdllabel2.Text += $" {mat.shaderassign.ShaderModel}";
+            ShaderArchivelabel1.Text = $"Shader Archive {mat.shaderassign.ShaderArchive}";
+            ShaderMdllabel2.Text = $"Shader Model {mat.shaderassign.ShaderModel}";
 
             paramColorList.ImageSize = new Size(10, 10);
             listView1.SmallImageList = paramColorList;
-            listView1.FullRowSelect = true;  
+            listView1.FullRowSelect = true;
 
             TextureRefListView.SmallImageList = textureImageList;
             TextureRefListView.FullRowSelect = true;
@@ -188,19 +188,25 @@ namespace Smash_Forge
             int CurTex = 0;
             TextureRefListView.Items.Clear();
             textureImageList.Images.Clear();
+
+            foreach (var texure in mat.textures)
+            {
+                TextureRefListView.Items.Add(texure.Name);
+            }
+
             if (BFRES.IsSwitchBFRES == true)
             {
                 foreach (BNTX bntx in Runtime.BNTXList)
                 {
-                    foreach (var texure in mat.textures)
+                    foreach (ListViewItem texure in TextureRefListView.Items)
                     {
-                        if (bntx.glTexByName.ContainsKey(texure.Name))
+                        if (bntx.glTexByName.ContainsKey(texure.Text))
                         {
-                            Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)bntx.glTexByName[texure.Name], 64, 64);
+                            Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)bntx.glTexByName[texure.Text], 64, 64);
 
-                            textureImageList.Images.Add(texure.Name, bitmap);
+                            textureImageList.Images.Add(texure.Text, bitmap);
 
-                            TextureRefListView.Items.Add(texure.Name, CurTex++);
+                            texure.ImageIndex = CurTex++;
 
                             var dummy = textureImageList.Handle;
                             bitmap.Dispose();
@@ -212,15 +218,15 @@ namespace Smash_Forge
             {
                 foreach (FTEXContainer ftexC in Runtime.FTEXContainerList)
                 {
-                    foreach (var texure in mat.textures)
+                    foreach (ListViewItem texure in TextureRefListView.Items)
                     {
-                        if (ftexC.glTexByName.ContainsKey(texure.Name))
+                        if (ftexC.glTexByName.ContainsKey(texure.Text))
                         {
-                            Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)ftexC.glTexByName[texure.Name], 64, 64);
+                            Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)ftexC.glTexByName[texure.Text], 64, 64);
 
-                            textureImageList.Images.Add(texure.Name, bitmap);
+                            textureImageList.Images.Add(texure.Text, bitmap);
 
-                            TextureRefListView.Items.Add(texure.Name, CurTex++);
+                            texure.ImageIndex = CurTex++;
 
                             var dummy = textureImageList.Handle;
                             bitmap.Dispose();
@@ -285,8 +291,8 @@ namespace Smash_Forge
         }
         private void listView1_ColumnClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
         {
-            if (listView1.Sorting == SortOrder.Ascending)         
-                listView1.Sorting = SortOrder.Descending;          
+            if (listView1.Sorting == SortOrder.Ascending)
+                listView1.Sorting = SortOrder.Descending;
             else
                 listView1.Sorting = SortOrder.Ascending;
         }
@@ -419,7 +425,7 @@ namespace Smash_Forge
 
                     string Value = "";
 
-                 
+
 
                     if (prm.Type == ShaderParamType.Float4)
                     {
@@ -447,7 +453,7 @@ namespace Smash_Forge
                 }
 
                 mat.matparam[SelectedMatParam] = prm;
-        
+
             }
         }
 
@@ -499,8 +505,8 @@ namespace Smash_Forge
                         prm.Value_float4.W = (float)FloatNumUD4.Value;
                 }
 
-              mat.matparam[SelectedMatParam] = prm;
-              listView1.SelectedItems[0].SubItems[1].Text = Value;
+                mat.matparam[SelectedMatParam] = prm;
+                listView1.SelectedItems[0].SubItems[1].Text = Value;
             }
         }
 
@@ -529,7 +535,7 @@ namespace Smash_Forge
 
         private void TextureBoxClickedOn(object sender, EventArgs e)
         {
-            
+
         }
 
         public Bitmap FTEXRGBA(FTEX.FTEX_Texture t, int id)
