@@ -147,7 +147,7 @@
     <Compile Include="Filetypes\BFRES\Switch\FSKA.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FVIS.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FMAA.cs" />
-    <Compile Include="Filetypes\BFRES\Switch\Swizzle.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\TegraX1Swizzle.cs" />
     <Compile Include="Filetypes\BFRES\WiiU\BFRES_WiiU.cs" />
     <Compile Include="Filetypes\BFRES\WiiU\FTEX.cs" />
     <Compile Include="Filetypes\BFRES\WiiU\FSHU.cs" />

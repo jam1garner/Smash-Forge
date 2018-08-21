@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Smash_Forge
 {
-    public class Swizzle
+    public class TegraX1Swizzle
     {
         public struct Surface
         {

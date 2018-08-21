@@ -271,7 +271,7 @@ namespace Smash_Forge
 
             foreach (BRTI info in textures)
             {
-                Swizzle.Surface surf = info.surf;
+                TegraX1Swizzle.Surface surf = info.surf;
 
                 int alignment = 0;
 
@@ -305,7 +305,7 @@ namespace Smash_Forge
 
     public class BRTI : TreeNode //Binary Texture Info
     {
-        public Swizzle.Surface surf;
+        public TegraX1Swizzle.Surface surf;
 
         public BRTI_Texture texture = new BRTI_Texture();
         public byte DataType;
@@ -329,7 +329,7 @@ namespace Smash_Forge
 
             int BRTISize1 = f.readInt();
             long BRTISize2 = f.readInt64();
-            surf = new Swizzle.Surface();
+            surf = new TegraX1Swizzle.Surface();
             ushort Flags = (ushort)f.readShort();
             surf.dim = (sbyte)f.readByte();
             surf.tileMode = (sbyte)f.readByte();
@@ -391,12 +391,12 @@ namespace Smash_Forge
                 uint width = (uint)Math.Max(1, surf.width >> mipLevel);
                 uint height = (uint)Math.Max(1, surf.height >> mipLevel);
 
-                uint size = Swizzle.DIV_ROUND_UP(width, blkWidth) * Swizzle.DIV_ROUND_UP(height, blkHeight) * bpp;
+                uint size = TegraX1Swizzle.DIV_ROUND_UP(width, blkWidth) * TegraX1Swizzle.DIV_ROUND_UP(height, blkHeight) * bpp;
 
-                if (Swizzle.pow2_round_up(Swizzle.DIV_ROUND_UP(height, blkWidth)) < linesPerBlockHeight)
+                if (TegraX1Swizzle.pow2_round_up(TegraX1Swizzle.DIV_ROUND_UP(height, blkWidth)) < linesPerBlockHeight)
                     blockHeightShift += 1;
 
-                byte[] result = Swizzle.deswizzle(width, height, blkWidth, blkHeight, target, bpp, (uint)surf.tileMode, (uint)surf.alignment, Math.Max(0, blockHeightLog2 - blockHeightShift), surf.data[mipLevel], 0);
+                byte[] result = TegraX1Swizzle.deswizzle(width, height, blkWidth, blkHeight, target, bpp, (uint)surf.tileMode, (uint)surf.alignment, Math.Max(0, blockHeightLog2 - blockHeightShift), surf.data[mipLevel], 0);
                 //Create a copy and use that to remove uneeded data
                 result_ = new byte[size];
                 Array.Copy(result, 0, result_, 0, size);
@@ -510,7 +510,6 @@ namespace Smash_Forge
             {
                 if (tex.mipMapCount > 1)
                 {
-                    // Only load the first level and generate the rest.
                     Texture2D texture = new Texture2D();
                     texture.LoadImageData(tex.width, tex.height, tex.mipmaps,
                         (InternalFormat)tex.pixelInternalFormat);
