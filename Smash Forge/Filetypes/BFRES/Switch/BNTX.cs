@@ -124,7 +124,7 @@ namespace Smash_Forge
 
         BNTXEditor Editor;
 
-        public BNTX()
+        public BNTX() //Binary Texture Container
         {
             ImageKey = "nut";
             SelectedImageKey = "nut";
@@ -178,7 +178,7 @@ namespace Smash_Forge
 
 
                 bn.Nodes.Clear();
-                bn.ReadBNTX(f);
+                bn.Read(f);
             }
         }
 
@@ -193,14 +193,14 @@ namespace Smash_Forge
             FileData f = new FileData(data);
             f.Endian = Endianness.Little;
 
-            ReadBNTX(f);
+            Read(f);
         }
         public void ReadBNTXFile(byte[] data) //For single BNTX files
         {
             FileData f = new FileData(data);
             f.Endian = Endianness.Little;
 
-            ReadBNTX(f);
+            Read(f);
         }
 
         public void RefreshGlTexturesByName()
@@ -218,7 +218,7 @@ namespace Smash_Forge
             }
         }
 
-        public void ReadBNTX(FileData f)
+        public void Read(FileData f)
         {
             textures.Clear();
 
@@ -256,19 +256,56 @@ namespace Smash_Forge
                 f.seek(BRTIOffset + temp);
 
                 //  textures.Add(new BRTI(f));
-                BRTI texture = new BRTI(f, this);
+                BRTI texture = new BRTI();
+                texture.Read(f, this);
 
                 textures.Add(texture);
 
             }
             Nodes.AddRange(textures.ToArray());
         }
+        public void Save()
+        {
+
+
+
+            foreach (BRTI info in textures)
+            {
+                TegraX1Swizzle.Surface surf = info.surf;
+
+                int alignment = 0;
+
+
+                if (surf.tileMode == 1)
+                    alignment = 1;
+                else
+                    alignment = 512;
+
+                uint blk_dim = Formats.blk_dims(surf.format >> 8);
+                uint blkWidth = blk_dim >> 4;
+                uint blkHeight = blk_dim & 0xF;
+
+                uint bpp = Formats.bpps(surf.format >> 8);
+
+
+                for (int y = 0; y < info.texture.mipmaps.Count; ++y)
+                {
+
+                }
+
+
+                for (int y = 0; y < info.texture.mipmaps.Count; ++y)
+                {
+
+                }
+            }
+        }
     }
 
 
-    public class BRTI : TreeNode
+    public class BRTI : TreeNode //Binary Texture Info
     {
-        public Swizzle.Surface surf;
+        public TegraX1Swizzle.Surface surf;
 
         public BRTI_Texture texture = new BRTI_Texture();
         public byte DataType;
@@ -283,7 +320,7 @@ namespace Smash_Forge
             return Text;
         }
 
-        public BRTI(FileData f, BNTX bntx) //Docs thanks to AboodXD!!
+        public void Read(FileData f, BNTX bntx) //Docs thanks to AboodXD!!
         {
             ImageKey = "texture";
             SelectedImageKey = "texture";
@@ -292,7 +329,7 @@ namespace Smash_Forge
 
             int BRTISize1 = f.readInt();
             long BRTISize2 = f.readInt64();
-            surf = new Swizzle.Surface();
+            surf = new TegraX1Swizzle.Surface();
             ushort Flags = (ushort)f.readShort();
             surf.dim = (sbyte)f.readByte();
             surf.tileMode = (sbyte)f.readByte();
@@ -354,12 +391,12 @@ namespace Smash_Forge
                 uint width = (uint)Math.Max(1, surf.width >> mipLevel);
                 uint height = (uint)Math.Max(1, surf.height >> mipLevel);
 
-                uint size = Swizzle.DIV_ROUND_UP(width, blkWidth) * Swizzle.DIV_ROUND_UP(height, blkHeight) * bpp;
+                uint size = TegraX1Swizzle.DIV_ROUND_UP(width, blkWidth) * TegraX1Swizzle.DIV_ROUND_UP(height, blkHeight) * bpp;
 
-                if (Swizzle.pow2_round_up(Swizzle.DIV_ROUND_UP(height, blkWidth)) < linesPerBlockHeight)
+                if (TegraX1Swizzle.pow2_round_up(TegraX1Swizzle.DIV_ROUND_UP(height, blkWidth)) < linesPerBlockHeight)
                     blockHeightShift += 1;
 
-                byte[] result = Swizzle.deswizzle(width, height, blkWidth, blkHeight, target, bpp, (uint)surf.tileMode, (uint)surf.alignment, Math.Max(0, blockHeightLog2 - blockHeightShift), surf.data[mipLevel], 0);
+                byte[] result = TegraX1Swizzle.deswizzle(width, height, blkWidth, blkHeight, target, bpp, (uint)surf.tileMode, (uint)surf.alignment, Math.Max(0, blockHeightLog2 - blockHeightShift), surf.data[mipLevel], 0);
                 //Create a copy and use that to remove uneeded data
                 result_ = new byte[size];
                 Array.Copy(result, 0, result_, 0, size);
@@ -374,6 +411,11 @@ namespace Smash_Forge
             Width = surf.width;
             Height = surf.height;
         }
+
+
+
+
+
         private void LoadFormats(BRTI_Texture texture, uint format, int mipLevel, int width, int height)
         {
             switch (format >> 8)
@@ -468,7 +510,6 @@ namespace Smash_Forge
             {
                 if (tex.mipMapCount > 1)
                 {
-                    // Only load the first level and generate the rest.
                     Texture2D texture = new Texture2D();
                     texture.LoadImageData(tex.width, tex.height, tex.mipmaps,
                         (InternalFormat)tex.pixelInternalFormat);
