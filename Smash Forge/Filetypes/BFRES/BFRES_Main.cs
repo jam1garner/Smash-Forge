@@ -260,17 +260,8 @@ namespace Smash_Forge
         public Matrix4 BonePosExtra;
         public Matrix4 BonePosFix;
 
-        //Transform function for single binded meshes
-        //Thanks GDKchan for the function
-        public static Vector3 transform_position(Vector3 input, Matrix4 matrix)
-        {
-            Vector3 output = new Vector3();
-            output.X = input.X * matrix.M11 + input.Y * matrix.M21 + input.Z * matrix.M31 + matrix.M41;
-            output.Y = input.X * matrix.M12 + input.Y * matrix.M22 + input.Z * matrix.M32 + matrix.M42;
-            output.Z = input.X * matrix.M13 + input.Y * matrix.M23 + input.Z * matrix.M33 + matrix.M43;
-            return output;
-        }
-
+        //Note this attempts to move bone transforms (to shift animations) but they will be reset if an animation plays
+        //Todo fix this so they keep transform
         public void ModelTransform()
         {
 
@@ -281,8 +272,6 @@ namespace Smash_Forge
             Matrix4 rotZMat = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(rotation.Z));
             Matrix4 scaleMat = Matrix4.CreateScale(scale);
             BonePosExtra = scaleMat * (rotXMat * rotYMat * rotZMat) * positionMat;
-
-
 
             foreach (FMDL_Model fmdl in models)
             {

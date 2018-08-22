@@ -24,8 +24,6 @@ namespace Smash_Forge
 
             XmlNode main = doc.ChildNodes[1];
 
-           
-
             foreach (XmlNode matnode in main.ChildNodes)
             {
                 if (matnode.Name.Equals("SamplerArray"))
@@ -100,30 +98,9 @@ namespace Smash_Forge
             sfd.Filter = "XML|*.xml|All files(*.*)|*.*";
             sfd.FileName = mat.Name;
 
-      
+            //Todo. Redo this using XmlDocument and organise better
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                /*         StreamWriter file = new StreamWriter(sfd.FileName);
-                         using (JsonWriter writer = new JsonTextWriter(file))
-                         {
-                             writer.Formatting = Formatting.Indented;
-
-                             writer.WriteStartObject();
-                             writer.WritePropertyName("Material");
-                             writer.WriteValue(mat.Name);
-                             writer.WritePropertyName("TextureArray");
-                             writer.WriteStartArray();
-                             int s = 0;
-                             foreach (var tex in mat.textures)
-                             {
-                                 writer.WritePropertyName("TextureArray");
-                                 writer.WriteValue(mat.Samplers.Keys.ElementAt(s));
-                                 s++;
-                             }
-                             writer.WriteEnd();
-                             writer.WriteEndObject();
-
-                         }*/
                 XmlWriterSettings settings = new XmlWriterSettings();
                 settings.Indent = true;
 
