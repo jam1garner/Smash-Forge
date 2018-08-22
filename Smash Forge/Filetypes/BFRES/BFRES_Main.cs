@@ -125,8 +125,6 @@ namespace Smash_Forge
                 path = Text;
                 Read(TargetWiiUBFRES);
             }
-
-          //  SetMaterialToXML();
         }
 
         private void SetMarioPosition(string pathBfres)
@@ -552,7 +550,7 @@ namespace Smash_Forge
         // Here I'll use the same enums as NUDs does. 
         // BFRES for switch is inconsistent with the strings and data.
         // multiple games and wii u uses flags, so it's best to have them all in one.
-        Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
+        public Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
                     { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
                     { 0x02, BlendingFactorDest.One},
                     { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
@@ -561,12 +559,12 @@ namespace Smash_Forge
                     { 0x06, BlendingFactorDest.Zero},
         };
 
-        static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
+        public static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
                     { 0x01, BlendingFactorSrc.SrcAlpha},
                     { 0x02, BlendingFactorSrc.Zero}
         };
 
-        private static readonly Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
+        public static readonly Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
         {
             { 0x00, TextureMinFilter.LinearMipmapLinear},
             { 0x01, TextureMinFilter.Nearest},
@@ -574,14 +572,14 @@ namespace Smash_Forge
             { 0x03, TextureMinFilter.NearestMipmapLinear},
         };
 
-        static readonly Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
+        public static readonly Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
         {
             { 0x00, TextureMagFilter.Linear},
             { 0x01, TextureMagFilter.Nearest},
             { 0x02, TextureMagFilter.Linear}
         };
 
-        static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
+        public static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
                     { 0x00, TextureWrapMode.Repeat},
                     { 0x01, TextureWrapMode.MirroredRepeat},
                     { 0x02, TextureWrapMode.ClampToEdge},
@@ -1368,7 +1366,7 @@ namespace Smash_Forge
             public void ExportMaterials2XML()
             {
                 Console.WriteLine("Wring XML");
-                WriteMaterialXML(material, this);
+                BfresXML.WriteMaterialXML(material, this);
             }
             public void CopyUVChannel2()
             {
