@@ -86,7 +86,6 @@ uniform float enable_fresnel;
 uniform float enable_emission;
 uniform float cSpecularType;
 
-
 // Texture Map Toggles
 uniform int HasDiffuse;
 uniform int HasNormalMap;
@@ -110,7 +109,12 @@ uniform int UseRoughnessMap;
 
 int isTransparent;
 
-struct VertexAttributes {
+uniform int renderDiffuse;
+uniform int renderSpecular;
+uniform int renderFresnel;
+
+struct VertexAttributes
+{
     vec3 objectPosition;
     vec2 texCoord;
     vec2 texCoord2;
@@ -120,7 +124,7 @@ struct VertexAttributes {
     vec3 viewNormal;
     vec3 tangent;
     vec3 bitangent;
-	};
+};
 
 out vec4 fragColor;
 
@@ -236,11 +240,11 @@ vec3 FresnelPass(vec3 N, vec3 I)
     float fresnel = 1 - nDotI;
 
     // TODO: Extract cel shade function.
-    float center = 0.7;
+    float center = 0.75;
     float smoothness = 0.015;
     fresnel = smoothstep(center - smoothness, center + smoothness, fresnel);
 
-    vec3 fresnelTerm = vec3(1, 1, 0.75) * fresnel * 0.15;
+    vec3 fresnelTerm = vec3(1, 1, 0.75) * fresnel * 0.2;
     return fresnelTerm;
 }
 
@@ -268,9 +272,7 @@ void main()
         return;
     }
 
-	vec3 albedo = vec3(1);
-    if (HasDiffuse == 1)
-        albedo = pow(texture(tex0, f_texcoord0).rgb, vec3(gamma));
+	vec3 albedo = pow(texture(tex0, f_texcoord0).rgb, vec3(gamma));
 
 	float metallic = DefaultMetalness;
     if (HasMetalnessMap == 1)
@@ -328,9 +330,9 @@ void main()
     // Render passes
 	vec3 outputColor = vec3(0);
     float kDiffuse = clamp(1.0 - metallic, 0, 1);
-    outputColor += DiffusePass(albedo, N, L, R);// * kDiffuse;
-    // outputColor += SpecularPass(albedo, N, H, R, metallic, specularMapIntensity);
-    outputColor += FresnelPass(N, I);
+    outputColor += DiffusePass(albedo, N, L, R) * renderDiffuse;
+    outputColor += SpecularPass(albedo, N, H, R, metallic, specularMapIntensity) * renderSpecular;
+    outputColor += FresnelPass(N, I) * renderFresnel;
     if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
         outputColor.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);
 

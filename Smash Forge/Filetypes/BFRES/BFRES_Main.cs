@@ -406,12 +406,18 @@ namespace Smash_Forge
             shader.SetInt("renderType", (int)Runtime.renderType);
             shader.SetInt("uvChannel", (int)Runtime.uvChannel);
             shader.SetBoolToInt("useNormalMap", Runtime.renderNormalMap);
+
             shader.SetBoolToInt("renderR", Runtime.renderR);
             shader.SetBoolToInt("renderG", Runtime.renderG);
             shader.SetBoolToInt("renderB", Runtime.renderB);
             shader.SetBoolToInt("renderAlpha", Runtime.renderAlpha);
+
             shader.SetBoolToInt("renderFog", Runtime.renderFog);
             shader.SetBoolToInt("useImageBasedLighting", true);
+
+            shader.SetBoolToInt("renderDiffuse", Runtime.renderDiffuse);
+            shader.SetBoolToInt("renderSpecular", Runtime.renderSpecular);
+            shader.SetBoolToInt("renderFresnel", Runtime.renderFresnel);
         }
 
         private static void SetMiscUniforms(Camera camera, Shader shader)
