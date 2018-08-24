@@ -329,7 +329,7 @@ namespace Smash_Forge
             bonesUbo.BindBase(BufferRangeTarget.UniformBuffer, blockIndex);
 
             int matrix4SizeInBytes = Vector4.SizeInBytes * sizeof(float) * 4;
-            bonesUbo.BufferData(boneMatrices, matrix4SizeInBytes, BufferUsageHint.DynamicDraw);
+            bonesUbo.SetData(boneMatrices, matrix4SizeInBytes, BufferUsageHint.DynamicDraw);
 
             shader.SetBoolToInt("useBones", true);
         }
@@ -758,7 +758,7 @@ namespace Smash_Forge
                     selectVbo.Bind();
                     if (p.selectedVerts == null)
                         return;
-                    selectVbo.BufferData(p.selectedVerts, sizeof(int), BufferUsageHint.StaticDraw);
+                    selectVbo.SetData(p.selectedVerts, sizeof(int), BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
                     //vertexIndexEbo.Bind();

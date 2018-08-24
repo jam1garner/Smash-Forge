@@ -56,7 +56,7 @@ namespace Smash_Forge.Rendering
             rectangularPrismPositionBuffer.Bind();
 
             Vector3[] rectangularPrismPositions = GetRectangularPrismPositions(1, 1, 1);
-            GL.BufferData(rectangularPrismPositionBuffer.BufferTarget, (IntPtr)(sizeof(float) * 3 * rectangularPrismPositions.Length),
+            GL.BufferData(rectangularPrismPositionBuffer.Target, (IntPtr)(sizeof(float) * 3 * rectangularPrismPositions.Length),
                 rectangularPrismPositions, BufferUsageHint.StaticDraw);
         }
 

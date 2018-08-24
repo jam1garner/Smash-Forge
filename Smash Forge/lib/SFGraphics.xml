@@ -203,7 +203,7 @@
             Returns the type of OpenGL object. Used for memory management.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.BufferObject.BufferTarget">
+        <member name="P:SFGraphics.GLObjects.BufferObject.Target">
             <summary>
             The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound when calling Bind().
             </summary>
@@ -212,7 +212,7 @@
             <summary>
             Creates a buffer of the specified target with unitialized data.
             </summary>
-            <param name="bufferTarget">The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound</param>
+            <param name="target">The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound</param>
         </member>
         <member name="M:SFGraphics.GLObjects.BufferObject.Bind">
             <summary>
@@ -226,7 +226,7 @@
             <param name="target"></param>
             <param name="index"></param>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.BufferData``1(``0[],System.Int32,OpenTK.Graphics.OpenGL.BufferUsageHint)">
+        <member name="M:SFGraphics.GLObjects.BufferObject.SetData``1(``0[],System.Int32,OpenTK.Graphics.OpenGL.BufferUsageHint)">
             <summary>
             Initializes the buffer's data with the specified array.
             <paramref name="data"/> should be contiguous in memory, so only 
@@ -234,9 +234,9 @@
             <typeparam name="T">The type of each item. This includes arithmetic types like <see cref="T:System.Int32"/>.</typeparam>
             <param name="data">The data used to initialize the buffer's data</param>
             <param name="itemSizeInBytes">The size of <typeparamref name="T"/> in bytes</param>
-            <param name="bufferUsageHint">A hint on how the data will be used, which allows performance optimizations</param>
+            <param name="usageHint">A hint on how the data will be used, which allows performance optimizations</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.BufferSubData``1(``0[],System.Int32,System.Int32)">
+        <member name="M:SFGraphics.GLObjects.BufferObject.SetSubData``1(``0[],System.Int32,System.Int32)">
             <summary>
             Initializes a portion of the buffer's data with the specified array.
             <paramref name="data"/> should be contiguous in memory, so only 
@@ -249,10 +249,10 @@
             <exception cref="T:System.ArgumentOutOfRangeException">The specified range includes data 
             outside the buffer's current capacity.</exception>        
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.GetBufferData``1">
+        <member name="M:SFGraphics.GLObjects.BufferObject.GetData``1">
             <summary>
-            Binds the buffer and reads all of the data initialized by <see cref="M:SFGraphics.GLObjects.BufferObject.BufferData``1(``0[],System.Int32,OpenTK.Graphics.OpenGL.BufferUsageHint)"/>
-            or <see cref="M:SFGraphics.GLObjects.BufferObject.BufferSubData``1(``0[],System.Int32,System.Int32)"/>. 
+            Binds the buffer and reads all of the data initialized by <see cref="M:SFGraphics.GLObjects.BufferObject.SetData``1(``0[],System.Int32,OpenTK.Graphics.OpenGL.BufferUsageHint)"/>
+            or <see cref="M:SFGraphics.GLObjects.BufferObject.SetSubData``1(``0[],System.Int32,System.Int32)"/>. 
             <para></para><para></para>
             The data returned may not be valid if the buffer's data is manually modified using GL.BufferData() or 
             GL.BufferSubData(). In this case, use GL.GetBufferSubData() with the appropriate arguments.
@@ -260,7 +260,7 @@
             <typeparam name="T">The type specified for each item when initializing the buffer's data.</typeparam>
             <returns>An array of all the buffer's initialized data</returns>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.GetBufferSubData``1(System.Int32,System.Int32,System.Int32)">
+        <member name="M:SFGraphics.GLObjects.BufferObject.GetSubData``1(System.Int32,System.Int32,System.Int32)">
             <summary>
             Binds the buffer and reads <paramref name="itemCount"/> elements of type <typeparamref name="T"/> 
             starting at <paramref name="offsetInBytes"/>.
@@ -273,6 +273,23 @@
             <exception cref="T:System.ArgumentOutOfRangeException">The specified range includes data 
             outside the buffer's current capacity.</exception>
         </member>
+        <member name="M:SFGraphics.GLObjects.BufferObject.MapBuffer(OpenTK.Graphics.OpenGL.BufferAccess)">
+            <summary>
+            Maps and gets a pointer to the buffer's data store.
+            Using the pointer in a manner inconsistent with <paramref name="access"/>
+            will result in system errors.
+            </summary>
+            <param name="access">Specifies read and/or write access for the mapped data</param>
+            <returns>An IntPtr for the buffer's data</returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.BufferObject.Unmap">
+            <summary>
+            Releases the mapping of the buffer's data store.
+            If false, the buffer's data was corrupted while mapped
+            and should be reinitialized.
+            </summary>
+            <returns><c>true</c> if the data was not corrupted while mapped</returns>
+        </member>
         <member name="T:SFGraphics.GLObjects.Framebuffer">
             <summary>
             Encapsulates an OpenGL framebuffer, including any attached color or depth attachments.
@@ -283,7 +300,7 @@
             Returns the type of OpenGL object. Used for memory management.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Framebuffer.FramebufferTarget">
+        <member name="P:SFGraphics.GLObjects.Framebuffer.Target">
             <summary>
             The target which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound when calling <see cref="M:SFGraphics.GLObjects.Framebuffer.Bind"/>.
             </summary>
@@ -321,7 +338,7 @@
             A render buffer of the same dimensions as the color attachment is generated for the depth component.
             Binds the framebuffer.
             </summary>
-            <param name="framebufferTarget">The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound</param>
+            <param name="target">The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound</param>
             <param name="width">The width of attached textures or renderbuffers</param>
             <param name="height">The height of attached textures or renderbuffers</param>
             <param name="pixelInternalFormat">The internal format for all color attachments</param>
@@ -337,25 +354,25 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffer.AttachTexture(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Textures.Texture2D)">
             <summary>
-            Attaches <paramref name="texture"/> to <paramref name="framebufferAttachment"/>.
+            Attaches <paramref name="texture"/> to <paramref name="attachment"/>.
             Draw and read buffers must be configured separately.
             </summary>
-            <param name="framebufferAttachment">The attachment target for the texture</param>
+            <param name="attachment">The attachment target for the texture</param>
             <param name="texture">The texture to attach</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffer.AttachDepthTexture(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Textures.DepthTexture)">
             <summary>
-            Attaches <paramref name="depthTexture"/> to <paramref name="framebufferAttachment"/>.
+            Attaches <paramref name="depthTexture"/> to <paramref name="attachment"/>.
             </summary>
-            <param name="framebufferAttachment">The attachment target for the texture. This should be a depth attachment.</param>
+            <param name="attachment">The attachment target for the texture. This should be a depth attachment.</param>
             <param name="depthTexture">The depth texture to attach</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffer.AttachRenderbuffer(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Renderbuffer)">
             <summary>
-            Attaches <paramref name="renderbuffer"/> to <paramref name="framebufferAttachment"/>.
+            Attaches <paramref name="renderbuffer"/> to <paramref name="attachment"/>.
             Draw and read buffers must be configured separately.
             </summary>
-            <param name="framebufferAttachment">The attachment target for the renderbuffer</param>
+            <param name="attachment">The attachment target for the renderbuffer</param>
             <param name="renderbuffer">The renderbuffer to attach</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffer.Bind">
@@ -414,8 +431,7 @@
         </member>
         <member name="T:SFGraphics.GLObjects.GLObjectManagement.ReferenceCounting">
             <summary>
-            Provides helpers for maintaining object reference counts, which makes object oriented OpenGL
-            slightly less annoying.
+            Provides helpers for maintaining object reference counts.
             <see cref="T:System.Collections.Concurrent.ConcurrentDictionary`2"/> allows references to be incremented and
             decremented from separate threads.
             </summary>
@@ -486,6 +502,11 @@
         <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.VertexArrayObject">
             <summary>
             <see cref="T:SFGraphics.GLObjects.VertexArrayObject"/>
+            </summary>
+        </member>
+        <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.SamplerObject">
+            <summary>
+            <see cref="T:SFGraphics.GLObjects.Samplers.SamplerObject"/>
             </summary>
         </member>
         <member name="F:SFGraphics.GLObjects.GLObject.Id">
@@ -559,6 +580,54 @@
             <summary>
             Binds <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> to the RenderbufferTarget.Renderbuffer target.
             </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Samplers.SamplerObject">
+            <summary>
+            Allows for setting texture state per texture unit rather than per texture.
+            The texture parameters of the bound sampler object are used instead of the texture's parameters.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Samplers.SamplerObject.ObjectType">
+            <summary>
+            Returns the type of OpenGL object. Used for memory management.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Samplers.SamplerObject.MinFilter">
+            <summary>
+            Updates the SamplerParameter when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Samplers.SamplerObject.MagFilter">
+            <summary>
+            Updates the SamplerParameter when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Samplers.SamplerObject.TextureWrapS">
+            <summary>
+            Updates the SamplerParameter when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Samplers.SamplerObject.TextureWrapT">
+            <summary>
+            Updates the SamplerParameter when set.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Samplers.SamplerObject.TextureWrapR">
+            <summary>
+            Updates the SamplerParameter when set.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Samplers.SamplerObject.#ctor">
+            <summary>
+            Creates an unitialized sampler object. 
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Samplers.SamplerObject.Bind(System.Int32)">
+            <summary>
+            Binds the Id to <paramref name="textureUnit"/>.
+            This sampler's state will override the state of the bound texture.
+            </summary>
+            <param name="textureUnit"></param>
         </member>
         <member name="T:SFGraphics.GLObjects.Shaders.Shader">
             <summary>
@@ -788,23 +857,36 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadCompressedMipMaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
-            Loads compressed 2D image data of the compressed format <paramref name="internalFormat"/> 
+            Loads compressed 2D image data of the compressed format <paramref name="format"/> 
             for all the mip levels in <paramref name="mipmaps"/>.
             The texture must first be bound to the proper target before calling this method.
             </summary>
             <typeparam name="T"></typeparam>
-            <param name="textureTarget">The target of the texture or cube face for loading mip maps. 
+            <param name="target">The target of the texture or cube face for loading mip maps. 
             Ex: Texture2D or TextureCubeMapPositiveX.</param>
             <param name="width">The width of the texture or cube map face in pixels</param>
             <param name="height">The height of the texture or cube map face in pixels</param>
-            <param name="mipmaps">The list of mipmaps to load for <paramref name="textureTarget"/></param>
-            <param name="internalFormat">The format for all mipmaps</param>
+            <param name="mipmaps">The list of mipmaps to load for <paramref name="target"/></param>
+            <param name="format">The format for all mipmaps</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Drawing.Bitmap)">
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadCompressedMipMaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObject},OpenTK.Graphics.OpenGL.InternalFormat,OpenTK.Graphics.OpenGL.PixelFormat,OpenTK.Graphics.OpenGL.PixelType)">
             <summary>
             
             </summary>
-            <param name="textureTarget">The target of the texture or cube face for loading mip maps. 
+            <param name="target"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="mipmaps"></param>
+            <param name="format"></param>
+            <param name="pixelFormat"></param>
+            <param name="pixelType"></param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Drawing.Bitmap)">
+            <summary>
+            Loads the base mip level from <paramref name="image"/> and generates mipmaps.
+            Mipmaps are not generated for cube map targets.
+            </summary>
+            <param name="target">The target of the texture or cube face for loading mip maps. 
             Ex: Texture2D or TextureCubeMapPositiveX.</param>
             <param name="image"></param>
         </member>
@@ -813,26 +895,50 @@
             
             </summary>
             <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
-            <param name="textureTarget">The target of the texture or cube face for loading mip maps. 
+            <param name="target">The target of the texture or cube face for loading mip maps. 
             Ex: Texture2D or TextureCubeMapPositiveX.</param>
             <param name="width">The width of the texture or cube map face in pixels</param>
             <param name="height">The height of the texture or cube map face in pixels</param>
             <param name="baseMipLevel"></param>
-            <param name="mipCount">The total number of mipmaps</param>
-            <param name="internalFormat">The format for all mipmaps</param>
+            <param name="mipCount">The total number of mipmaps. Negative values are converted to <c>0</c></param>
+            <param name="format">The format for all mipmaps</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,SFGraphics.GLObjects.BufferObject,System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,OpenTK.Graphics.OpenGL.PixelFormat,OpenTK.Graphics.OpenGL.PixelType)">
+            <summary>
+            
+            </summary>
+            <param name="target"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="baseMipLevel"></param>
+            <param name="mipCount"></param>
+            <param name="internalFormat"></param>
+            <param name="pixelFormat"></param>
+            <param name="pixelType"></param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,``0[],System.Int32,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
             
             </summary>
             <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
-            <param name="textureTarget">The target of the texture or cube face for loading mip maps. 
+            <param name="target">The target of the texture or cube face for loading mip maps. 
             Ex: Texture2D or TextureCubeMapPositiveX.</param>
             <param name="width">The width of the texture or cube map face in pixels</param>
             <param name="height">The height of the texture or cube map face in pixels</param>
             <param name="baseMipLevel"></param>
-            <param name="mipCount">The total number of mipmaps</param>
-            <param name="textureFormat">The uncompressed format information</param>
+            <param name="mipCount">The total number of mipmaps. Negative values are converted to <c>0</c></param>
+            <param name="format">The uncompressed format information</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,SFGraphics.GLObjects.BufferObject,System.Int32,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
+            <summary>
+            
+            </summary>
+            <param name="target"></param>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="baseMipLevel"></param>
+            <param name="mipCount"></param>
+            <param name="format"></param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadFacesBaseLevel``1(System.Int32,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed,``0[],``0[],``0[],``0[],``0[],``0[])">
             <summary>
@@ -841,13 +947,13 @@
             </summary>
             <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
             <param name="length">The width and heigh of each cube map face in pixels</param>
-            <param name="textureFormat"></param>
-            <param name="facePosX"></param>
-            <param name="faceNegX"></param>
-            <param name="facePosY"></param>
-            <param name="faceNegY"></param>
-            <param name="facePosZ"></param>
-            <param name="faceNegZ"></param>
+            <param name="format"></param>
+            <param name="posX"></param>
+            <param name="negX"></param>
+            <param name="posY"></param>
+            <param name="negY"></param>
+            <param name="posZ"></param>
+            <param name="negZ"></param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadFacesMipmaps``1(System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]})">
             <summary>
@@ -855,7 +961,7 @@
             </summary>
             <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
             <param name="length">The width and heigh of each cube map face in pixels</param>
-            <param name="internalFormat"></param>
+            <param name="format"></param>
             <param name="mipsPosX"></param>
             <param name="mipsNegX"></param>
             <param name="mipsPosY"></param>
@@ -1023,7 +1129,7 @@
             <summary>
             Creates an empty texture of the specified target and internal format.
             </summary>
-            <param name="target">The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound.</param>
+            <param name="textureTarget">The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound.</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture.Bind">
             <summary>
@@ -1071,6 +1177,17 @@
             <param name="internalFormat">The image format of <paramref name="baseMipLevel"/></param>
             <exception cref="T:System.ArgumentException"><paramref name="internalFormat"/> is not a compressed format.</exception>
         </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,SFGraphics.GLObjects.BufferObject,System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,OpenTK.Graphics.OpenGL.PixelFormat,OpenTK.Graphics.OpenGL.PixelType)">
+            <summary>
+            
+            </summary>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="baseMipLevel"></param>
+            <param name="mipCount"></param>
+            <param name="internalFormat"></param>
+            <param name="pixelFormat"></param>
+        </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData``1(System.Int32,System.Int32,``0[],System.Int32,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
             Initializes an uncompressed texture of the specified format 
@@ -1084,6 +1201,16 @@
             <param name="mipCount">The number of mipmaps to generate</param>
             <param name="textureFormat">The format information for the uncompressed format</param>
         </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,SFGraphics.GLObjects.BufferObject,System.Int32,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
+            <summary>
+            
+            </summary>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="baseMipLevel"></param>
+            <param name="mipCount"></param>
+            <param name="textureFormat"></param>
+        </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData``1(System.Int32,System.Int32,System.Collections.Generic.List{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             Initializes a compressed texture of the specified format 
@@ -1095,6 +1222,16 @@
             <param name="mipmaps">A list of byte arrays for each mip level</param>
             <param name="internalFormat">The image format of <paramref name="mipmaps"/></param>
             <exception cref="T:System.ArgumentException"><paramref name="internalFormat"/> is not a compressed format.</exception>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObject},OpenTK.Graphics.OpenGL.InternalFormat,OpenTK.Graphics.OpenGL.PixelFormat,OpenTK.Graphics.OpenGL.PixelType)">
+            <summary>
+            
+            </summary>
+            <param name="width"></param>
+            <param name="height"></param>
+            <param name="mipmaps"></param>
+            <param name="internalFormat"></param>
+            <param name="pixelFormat"></param>
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.TextureCubeMap">
             <summary>
