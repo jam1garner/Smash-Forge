@@ -14,7 +14,7 @@ namespace Smash_Forge
     public class BfresRenderMesh : GenericMesh<BFRES.DisplayVertex>
     {
         public BfresRenderMesh(List<BFRES.DisplayVertex> vertices, List<int> vertexIndices) 
-            : base(vertices, vertexIndices, BFRES.DisplayVertex.Size)
+            : base(vertices, vertexIndices)
         {
 
         }

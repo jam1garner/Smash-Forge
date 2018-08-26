@@ -10,7 +10,7 @@ namespace Smash_Forge
 {
     public class NudRenderMesh : GenericMesh<NUD.DisplayVertex>
     {
-        public NudRenderMesh(List<NUD.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices, NUD.DisplayVertex.Size)
+        public NudRenderMesh(List<NUD.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices)
         {
 
         }

@@ -226,17 +226,16 @@
             <param name="target"></param>
             <param name="index"></param>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.SetData``1(``0[],System.Int32,OpenTK.Graphics.OpenGL.BufferUsageHint)">
+        <member name="M:SFGraphics.GLObjects.BufferObject.SetData``1(``0[],OpenTK.Graphics.OpenGL.BufferUsageHint)">
             <summary>
             Initializes the buffer's data with the specified array.
             <paramref name="data"/> should be contiguous in memory, so only 
             </summary>
             <typeparam name="T">The type of each item. This includes arithmetic types like <see cref="T:System.Int32"/>.</typeparam>
             <param name="data">The data used to initialize the buffer's data</param>
-            <param name="itemSizeInBytes">The size of <typeparamref name="T"/> in bytes</param>
             <param name="usageHint">A hint on how the data will be used, which allows performance optimizations</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.SetSubData``1(``0[],System.Int32,System.Int32)">
+        <member name="M:SFGraphics.GLObjects.BufferObject.SetSubData``1(``0[],System.Int32)">
             <summary>
             Initializes a portion of the buffer's data with the specified array.
             <paramref name="data"/> should be contiguous in memory, so only 
@@ -245,22 +244,20 @@
             <typeparam name="T">The type of each item. This includes arithmetic types like <see cref="T:System.Int32"/>.</typeparam>
             <param name="data">The data used to initialize the buffer's data.</param>
             <param name="offsetInBytes">The offset where data replacement will begin</param>
-            <param name="itemSizeInBytes">The size of <typeparamref name="T"/> in bytes</param>
+            
             <exception cref="T:System.ArgumentOutOfRangeException">The specified range includes data 
             outside the buffer's current capacity.</exception>        
         </member>
         <member name="M:SFGraphics.GLObjects.BufferObject.GetData``1">
             <summary>
-            Binds the buffer and reads all of the data initialized by <see cref="M:SFGraphics.GLObjects.BufferObject.SetData``1(``0[],System.Int32,OpenTK.Graphics.OpenGL.BufferUsageHint)"/>
-            or <see cref="M:SFGraphics.GLObjects.BufferObject.SetSubData``1(``0[],System.Int32,System.Int32)"/>. 
+            Reads the buffer's data into structs of type <typeparamref name="T"/>.
             <para></para><para></para>
-            The data returned may not be valid if the buffer's data is manually modified using GL.BufferData() or 
-            GL.BufferSubData(). In this case, use GL.GetBufferSubData() with the appropriate arguments.
+            The data returned may not be valid if the buffer's data is modified using <see cref="M:SFGraphics.GLObjects.BufferObject.MapBuffer(OpenTK.Graphics.OpenGL.BufferAccess)"/>.
             </summary>
             <typeparam name="T">The type specified for each item when initializing the buffer's data.</typeparam>
             <returns>An array of all the buffer's initialized data</returns>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.GetSubData``1(System.Int32,System.Int32,System.Int32)">
+        <member name="M:SFGraphics.GLObjects.BufferObject.GetSubData``1(System.Int32,System.Int32)">
             <summary>
             Binds the buffer and reads <paramref name="itemCount"/> elements of type <typeparamref name="T"/> 
             starting at <paramref name="offsetInBytes"/>.
@@ -268,7 +265,6 @@
             <typeparam name="T">The type of each item. This includes arithmetic types like <see cref="T:System.Int32"/>.</typeparam>
             <param name="offsetInBytes">The starting offset for reading</param>
             <param name="itemCount">The number of items of type <typeparamref name="T"/> to read.</param>
-            <param name="itemSizeInBytes">The size of <typeparamref name="T"/> in bytes</param>
             <returns>An array of size <paramref name="itemCount"/></returns>
             <exception cref="T:System.ArgumentOutOfRangeException">The specified range includes data 
             outside the buffer's current capacity.</exception>
@@ -849,10 +845,7 @@
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.MipmapLoading">
             <summary>
-            Provides methods for loading mipmaps for OpenGL textures from arrays of image data.
-            The arrays can be of any value type. As long as the correct image format information is used,
-            OpenGL will still interpret the data correctly.
-            Make sure to bind the texture before calling these methods.
+            Provides methods for loading mipmaps for OpenGL textures. Bind the texture first.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadCompressedMipMaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
@@ -982,26 +975,26 @@
         </member>
         <member name="F:SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed.pixelInternalFormat">
             <summary>
-            The color components of the image data
+            The format used by OpenGL to store the data
             </summary>
         </member>
         <member name="F:SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed.pixelFormat">
             <summary>
-            The format of the image data
+            The format of the color components for the input data.
             </summary>
         </member>
         <member name="F:SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed.pixelType">
             <summary>
-            The data type of the image data
+            The data type of each color component for the input data
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed.#ctor(OpenTK.Graphics.OpenGL.PixelInternalFormat,OpenTK.Graphics.OpenGL.PixelFormat,OpenTK.Graphics.OpenGL.PixelType)">
             <summary>
             Initializes the format information for an uncompressed format.
             </summary>
-            <param name="pixelInternalFormat">The color components of the image data</param>
-            <param name="pixelFormat">The format of the image data</param>
-            <param name="pixelType">The data type of the image data</param>
+            <param name="pixelInternalFormat"></param>
+            <param name="pixelFormat"></param>
+            <param name="pixelType"></param>
             <exception cref="T:System.ArgumentException"><paramref name="pixelInternalFormat"/> is a compressed format.</exception>
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatTools">
@@ -1159,14 +1152,14 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Drawing.Bitmap)">
             <summary>
-            Loads an RGBA texture data with mipmaps generated from the specified bitmap.
+            Loads RGBA texture data with mipmaps generated from the specified bitmap.
             Binds the texture.
             </summary>
             <param name="image">the image data for the base mip level</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData``1(System.Int32,System.Int32,``0[],System.Int32,OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
-            Initializes a texture of the specified format and initializes the first mip level.
+            Loads texture data of the specified format for the first mip level.
             Mipmaps are autogenerated with a max level of <paramref name="mipCount"/>
             </summary>
             <typeparam name="T"></typeparam>
@@ -1187,11 +1180,11 @@
             <param name="mipCount"></param>
             <param name="internalFormat"></param>
             <param name="pixelFormat"></param>
+            <param name="pixelType"></param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData``1(System.Int32,System.Int32,``0[],System.Int32,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
-            Initializes an uncompressed texture of the specified format 
-            and initializes the first mip level.
+            Loads texture data of the specified format for the first mip level.
             Mipmaps are autogenerated with a max level of <paramref name="mipCount"/>
             </summary>
             <typeparam name="T"></typeparam>
@@ -1209,12 +1202,12 @@
             <param name="height"></param>
             <param name="baseMipLevel"></param>
             <param name="mipCount"></param>
-            <param name="textureFormat"></param>
+            <param name="format"></param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData``1(System.Int32,System.Int32,System.Collections.Generic.List{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
-            Initializes a compressed texture of the specified format 
-            and loads all mipmaps from <paramref name="mipmaps"/>.
+            Loads a mip level of compressed texture texture data
+            for each array in <paramref name="mipmaps"/>.
             </summary>
             <typeparam name="T"></typeparam>
             <param name="width">The width of the base mip level</param>
@@ -1232,6 +1225,7 @@
             <param name="mipmaps"></param>
             <param name="internalFormat"></param>
             <param name="pixelFormat"></param>
+            <param name="pixelType"></param>
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.TextureCubeMap">
             <summary>
