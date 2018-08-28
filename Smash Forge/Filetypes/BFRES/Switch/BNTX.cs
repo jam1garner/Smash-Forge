@@ -519,8 +519,7 @@ namespace Smash_Forge
                 {
                     // Only load the first level and generate the rest.
                     Texture2D texture = new Texture2D();
-                    texture.LoadImageData(tex.width, tex.height, tex.mipmaps[0], tex.mipMapCount,
-                        (InternalFormat)tex.pixelInternalFormat);
+                    texture.LoadImageData(tex.width, tex.height, tex.mipmaps[0], (InternalFormat)tex.pixelInternalFormat);
                     return texture;
                 }
             }
@@ -528,7 +527,7 @@ namespace Smash_Forge
             {
                 // Uncompressed.
                 Texture2D texture = new Texture2D();
-                texture.LoadImageData(tex.width, tex.height, tex.mipmaps[0], tex.mipMapCount,
+                texture.LoadImageData(tex.width, tex.height, tex.mipmaps[0],
                     new TextureFormatUncompressed(tex.pixelInternalFormat, tex.pixelFormat, tex.pixelType));
                 return texture;
             }
