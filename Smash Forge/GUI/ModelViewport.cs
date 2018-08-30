@@ -36,7 +36,6 @@ namespace Smash_Forge
 
         // Framerate control
         private Thread renderThread;
-        private System.Windows.Forms.Timer renderTimer = new System.Windows.Forms.Timer();
         private bool hasStartedRenderThread = false;
         private bool isRendering = false;
         private bool isOpen = true;
@@ -462,21 +461,9 @@ namespace Smash_Forge
 
         private void ModelViewport_Shown(object sender, EventArgs e)
         {
-            // TODO: Using a separate thread results in an unresponsive GUI on systems with fewer cores.
-            if (Environment.ProcessorCount > 2)
-            {
-                // Frame time control.
-                renderThread = new Thread(new ThreadStart(RaiseViewportRenderFrames));
-                renderThread.Start();
-                isRendering = true;
-            }
-            else
-            {
-                // HACK: Frame time control.
-                renderTimer.Interval = 8;
-                renderTimer.Tick += new EventHandler(AnimationRenderTimerTick);
-                renderTimer.Start();
-            }
+            // Frame time control.
+            renderThread = new Thread(new ThreadStart(RaiseViewportRenderFrames));
+            renderThread.Start();
 
             // Limit to 60 fps.
             //glViewport.VSync = true;
@@ -538,10 +525,8 @@ namespace Smash_Forge
                 }
                 else
                 {
-                    // Avoid making the gui less responsive and wasting CPU time
-                    // if we don't need to render anything.
-                    renderStopwatch.Stop();
-                    animationStopwatch.Stop();
+                    // Avoid wasting the CPU if we don't need to render anything.
+                    Thread.Sleep(1);
                 }
             }
         }
@@ -1485,7 +1470,6 @@ namespace Smash_Forge
         {
             isOpen = false;
             ClearModelContainers();
-            renderTimer.Dispose();
             glViewport.Dispose();
         }
 
@@ -2294,6 +2278,19 @@ namespace Smash_Forge
             int spacing = 8;
             glViewport.Width = viewportPanel.Width - spacing;
             glViewport.Height = viewportPanel.Height - spacing;
+        }
+
+        private void glViewport_Enter(object sender, EventArgs e)
+        {
+            // Only render when the control is focused, so the gui remains responsive.
+            isRendering = true;
+        }
+
+        private void glViewport_Leave(object sender, EventArgs e)
+        {
+            // Don't disable rendering if an animation is playing.
+            if (!isPlaying)
+                isRendering = false;
         }
 
         private void RefreshGlTextures()
