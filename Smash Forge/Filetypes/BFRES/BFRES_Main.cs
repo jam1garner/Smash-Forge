@@ -15,7 +15,7 @@ using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Textures;
-using SFGraphics.Tools;
+using SFGraphics.Utils;
 
 namespace Smash_Forge
 {
@@ -1510,7 +1510,7 @@ namespace Smash_Forge
                     vertexPositions.Add(vertex.pos);
                 }
 
-                Vector4 boundingSphere = SFGraphics.Tools.BoundingSphereGenerator.GenerateBoundingSphere(vertexPositions);
+                Vector4 boundingSphere = SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(vertexPositions);
 
                 for (int i = 0; i < BoundingCount; i++)
                 {

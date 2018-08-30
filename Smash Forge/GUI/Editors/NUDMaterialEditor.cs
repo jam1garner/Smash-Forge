@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.GLObjectManagement;
-using SFGraphics.Tools;
+using SFGraphics.Utils;
 using Smash_Forge.Filetypes.Models.Nuds;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Meshes;

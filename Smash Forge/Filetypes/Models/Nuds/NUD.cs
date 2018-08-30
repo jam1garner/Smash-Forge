@@ -5,7 +5,7 @@ using SFGraphics.Cameras;
 using SFGraphics.GLObjects;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects.Textures;
-using SFGraphics.Tools;
+using SFGraphics.Utils;
 using Smash_Forge.Filetypes.Models.Nuds;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Lights;

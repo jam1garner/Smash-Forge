@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using OpenTK;
-using OpenTK.Graphics;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SALT.PARAMS;
-using System.Diagnostics;
-using Smash_Forge.Rendering.Lights;
+using SFGraphics.Utils;
 using Smash_Forge.Rendering;
-using SFGraphics.Tools;
-using SFGraphics.GLObjects;
+using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering.Meshes;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Smash_Forge.GUI.Editors
 {

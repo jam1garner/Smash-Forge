@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using SALT.Graphics;
-using System.Windows.Forms;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using OpenTK;
-using System.Drawing;
-using System.Diagnostics;
-using Smash_Forge.Rendering.Lights;
-using Smash_Forge.Rendering;
-using SFGraphics.GLObjects.Shaders;
-using SFGraphics.Tools;
+using SALT.Graphics;
 using SFGraphics.Cameras;
-
+using SFGraphics.GLObjects.Shaders;
+using SFGraphics.Utils;
+using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Lights;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {

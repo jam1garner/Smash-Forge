@@ -14,7 +14,7 @@ using SALT.Moveset.AnimCMD;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects;
 using SFGraphics.GLObjects.Textures;
-using SFGraphics.Tools;
+using SFGraphics.Utils;
 using Smash_Forge.Params;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Lights;

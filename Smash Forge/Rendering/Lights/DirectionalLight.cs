@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
-using SALT.PARAMS;
-using SALT.Graphics;
-using System.Diagnostics;
-using System.Globalization;
-using SFGraphics.Tools;
+﻿using OpenTK;
+using SFGraphics.Utils;
 
 namespace Smash_Forge.Rendering.Lights
 {

@@ -63,6 +63,9 @@
       <HintPath>lib\SFGraphics.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="SFGraphics.Utils">
+      <HintPath>lib\SFGraphics.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="Syroot.BinaryData, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Syroot.BinaryData.dll</HintPath>
@@ -1383,6 +1386,9 @@
     <None Include="Shader\KCL.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="lib\SFGraphics.Utils.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\Syroot.BinaryData.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
