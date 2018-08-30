@@ -550,11 +550,18 @@ namespace Smash_Forge
         {
             if (isPlaying)
             {
-                // Perform a click event to avoid cross thread updating issues.
-                if (animationTrackBar.Value == totalFrame.Value)
-                    animationTrackBar.Value = 0;
+                if (nextButton.InvokeRequired)
+                {
+                    // Increase playback speed by not waiting for GUI thread.
+                    nextButton.BeginInvoke((Action)(() =>
+                    {
+                        nextButton.PerformClick();
+                    }));
+                }
                 else
+                {
                     nextButton.PerformClick();
+                }
             }
         }
 
@@ -1512,7 +1519,10 @@ namespace Smash_Forge
 
         private void nextButton_Click(object sender, EventArgs e)
         {
-            if (currentFrame.Value != totalFrame.Value)
+            // Loop the animation.
+            if (currentFrame.Value == totalFrame.Value)
+                currentFrame.Value = 0;
+            else
                 currentFrame.Value++;
         }
 
