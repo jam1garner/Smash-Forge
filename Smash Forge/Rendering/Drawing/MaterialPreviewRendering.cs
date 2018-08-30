@@ -9,7 +9,7 @@ using SFGraphics.GLObjects;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects.Textures;
 using Smash_Forge.Rendering.Meshes;
-
+using Smash_Forge.Filetypes.Models.Nuds;
 
 namespace Smash_Forge.Rendering
 {
@@ -22,7 +22,7 @@ namespace Smash_Forge.Rendering
         // These need to be regenerated every time due to using a separate thread.
         private static Mesh3D screenTriangle;
 
-        private static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
+        private static Dictionary<NudEnums.DummyTexture, Texture> dummyTextures = new Dictionary<NudEnums.DummyTexture, Texture>();
         private static Shader shader;
 
         // Reduce file size.
@@ -55,7 +55,7 @@ namespace Smash_Forge.Rendering
 
                 // HACK: This isn't a very clean way to pass resources around.
                 NudMatSphereDrawing.LoadMaterialSphereTextures();
-                Dictionary<NUD.DummyTextures, Texture> dummyTextures = RenderTools.CreateNudDummyTextures();
+                Dictionary<NudEnums.DummyTexture, Texture> dummyTextures = RenderTools.CreateNudDummyTextures();
 
                 CreateNudSphereShader();
 
@@ -85,7 +85,7 @@ namespace Smash_Forge.Rendering
             ShaderTools.CreateAndAddShader("NudSphere", nudMatShaders);
         }
 
-        private static void RenderMaterialPresetToFile(string presetName, NUD.Material material, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
+        private static void RenderMaterialPresetToFile(string presetName, NUD.Material material, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             // Setup new dimensions.
             GL.Viewport(0, 0, width, height);

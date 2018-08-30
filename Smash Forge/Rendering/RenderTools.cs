@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.Cameras;
+using Smash_Forge.Filetypes.Models.Nuds;
 
 namespace Smash_Forge.Rendering
 {
@@ -16,7 +17,7 @@ namespace Smash_Forge.Rendering
         public static Texture2D floorTexture;
         public static Texture2D backgroundTexture;
 
-        public static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
+        public static Dictionary<NudEnums.DummyTexture, Texture> dummyTextures = new Dictionary<NudEnums.DummyTexture, Texture>();
 
         public static Texture2D uvTestPattern;
         public static Texture2D boneWeightGradient;
@@ -70,34 +71,34 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        public static Dictionary<NUD.DummyTextures, Texture> CreateNudDummyTextures()
+        public static Dictionary<NudEnums.DummyTexture, Texture> CreateNudDummyTextures()
         {
-            Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
+            Dictionary<NudEnums.DummyTexture, Texture> dummyTextures = new Dictionary<NudEnums.DummyTexture, Texture>();
 
             // Dummy textures. 
             TextureCubeMap stageMapHigh = new TextureCubeMap();
             stageMapHigh.LoadImageData(Properties.Resources._10102000, 128);
-            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
+            dummyTextures.Add(NudEnums.DummyTexture.StageMapHigh, stageMapHigh);
 
             TextureCubeMap stageMapLow = new TextureCubeMap();
             stageMapLow.LoadImageData(Properties.Resources._10101000, 128);
-            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
+            dummyTextures.Add(NudEnums.DummyTexture.StageMapLow, stageMapLow);
 
             Texture2D dummyRamp = new Texture2D();
             dummyRamp.LoadImageData(Properties.Resources._10080000);
-            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp);
+            dummyTextures.Add(NudEnums.DummyTexture.DummyRamp, dummyRamp);
 
             Texture2D pokemonStadiumDummyTex = new Texture2D();
             pokemonStadiumDummyTex.LoadImageData(Properties.Resources._10040001);
-            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex);
+            dummyTextures.Add(NudEnums.DummyTexture.PokemonStadium, pokemonStadiumDummyTex);
 
             Texture2D punchOutDummyTex = new Texture2D();
             punchOutDummyTex.LoadImageData(Properties.Resources._10040000);
-            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex);
+            dummyTextures.Add(NudEnums.DummyTexture.PunchOut, punchOutDummyTex);
 
             Texture2D shadowMapDummyTex = new Texture2D();
             shadowMapDummyTex.LoadImageData(Properties.Resources._10100000);
-            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
+            dummyTextures.Add(NudEnums.DummyTexture.ShadowMap, shadowMapDummyTex);
 
             return dummyTextures;
         }

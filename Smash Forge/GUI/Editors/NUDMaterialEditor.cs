@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
-using System.IO;
-using OpenTK.Graphics.OpenGL;
-using System.Timers;
-using System.Diagnostics;
+﻿using OpenTK.Graphics.OpenGL;
+using SFGraphics.GLObjects.GLObjectManagement;
+using SFGraphics.Tools;
+using Smash_Forge.Filetypes.Models.Nuds;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Meshes;
-using SFGraphics.Tools;
-using SFGraphics.GLObjects;
-using SFGraphics.GLObjects.GLObjectManagement;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
+using System.Timers;
+using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Smash_Forge
 {
@@ -855,8 +849,8 @@ namespace Smash_Forge
                 int hash = currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash;
 
                 // Display dummy textures from resources. 
-                if (Enum.IsDefined(typeof(NUD.DummyTextures), hash))
-                    displayTexture = RenderTools.dummyTextures[(NUD.DummyTextures)hash].Id;
+                if (Enum.IsDefined(typeof(NudEnums.DummyTexture), hash))
+                    displayTexture = RenderTools.dummyTextures[(NudEnums.DummyTexture)hash].Id;
                 else
                 {
                     foreach (NUT n in Runtime.TextureContainers)

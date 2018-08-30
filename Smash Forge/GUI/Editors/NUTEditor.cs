@@ -222,7 +222,7 @@ namespace Smash_Forge
                 {
                     SetCubeMapText(tex);
                     if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
-                        RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh] = NUT.CreateTextureCubeMap(tex);
+                        RenderTools.dummyTextures[Filetypes.Models.Nuds.NudEnums.DummyTexture.StageMapHigh] = NUT.CreateTextureCubeMap(tex);
                 }
                 else
                 {
