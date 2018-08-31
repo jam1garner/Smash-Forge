@@ -462,32 +462,11 @@ namespace Smash_Forge
         private void ModelViewport_Shown(object sender, EventArgs e)
         {
             // Frame time control.
-            renderThread = new Thread(new ThreadStart(RaiseViewportRenderFrames));
+            renderThread = new Thread(new ThreadStart(RenderAndAnimationLoop));
             renderThread.Start();
-
-            // Limit to 60 fps.
-            //glViewport.VSync = true;
         }
 
-        private void AnimationRenderTimerTick(object sender, EventArgs e)
-        {
-            if (this.IsDisposed)
-                return;
-
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
-            {
-                if (isPlaying)
-                {
-                    if (animationTrackBar.Value == totalFrame.Value)
-                        animationTrackBar.Value = 0;
-                    else
-                        animationTrackBar.Value++;
-                }
-                glViewport.Invalidate();
-            }
-        }
-
-        private void RaiseViewportRenderFrames()
+        private void RenderAndAnimationLoop()
         {
             if (this.IsDisposed)
                 return;
@@ -496,7 +475,7 @@ namespace Smash_Forge
             Stopwatch renderStopwatch = Stopwatch.StartNew();
             Stopwatch animationStopwatch = Stopwatch.StartNew();
 
-            // HACK: Wait for UI to load before triggering paint events.
+            // Wait for UI to load before triggering paint events.
             int waitTimeMs = 200;
             Thread.Sleep(waitTimeMs);
 
@@ -507,7 +486,8 @@ namespace Smash_Forge
 
             while (isOpen)
             {             
-                if (isRendering)
+                // Always refresh the viewport when animations are playing.
+                if (isRendering || isPlaying)
                 {
                     if (renderStopwatch.ElapsedMilliseconds > frameUpdateInterval)
                     {
@@ -744,12 +724,11 @@ namespace Smash_Forge
 
         private void animationTrackBar_ValueChanged(object sender, EventArgs e)
         {
-            if (animationTrackBar.Value > totalFrame.Value)
+            if (animationTrackBar.Value > (int)totalFrame.Value)
                 animationTrackBar.Value = 0;
             if (animationTrackBar.Value < 0)
                 animationTrackBar.Value = (int)totalFrame.Value;
             currentFrame.Value = animationTrackBar.Value;
-
 
             int frameNum = animationTrackBar.Value;
 
@@ -821,7 +800,9 @@ namespace Smash_Forge
                 }
             }
 
-            //Frame = (int)animFrameNum;
+            // If the render thread isn't triggering updates, update the viewport manually.
+            if (!isRendering || !isPlaying)
+                glViewport.Invalidate();
         }
 
         public void ResetModels()
@@ -875,6 +856,8 @@ namespace Smash_Forge
         {
             isPlaying = !isPlaying;
             playButton.Text = isPlaying ? "Pause" : "Play";
+
+
 
             if (isPlaying)
                 directUvTimeStopWatch.Start();
@@ -2290,9 +2273,7 @@ namespace Smash_Forge
 
         private void glViewport_Leave(object sender, EventArgs e)
         {
-            // Don't disable rendering if an animation is playing.
-            if (!isPlaying)
-                isRendering = false;
+            isRendering = false;
         }
 
         private void RefreshGlTextures()
