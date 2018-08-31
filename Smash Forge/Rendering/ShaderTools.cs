@@ -49,6 +49,16 @@ namespace Smash_Forge.Rendering
             SetUpNudShaders();
             SetUpMiscShaders();
             SetUpBfresShaders();
+            SetUpMeleeShaders();
+        }
+        
+        private static void SetUpMeleeShaders()
+        {
+            List<string> datShaders = new List<string>();
+            datShaders.Add("Melee\\Dat.vert");
+            datShaders.Add("Melee\\Dat.frag");
+
+            CreateAndAddShader("DAT", datShaders.ToArray());
         }
 
         private static void SetUpBfresShaders()

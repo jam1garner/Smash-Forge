@@ -413,7 +413,7 @@ namespace Smash_Forge
         {
             //OldStage Stuff
             {
-                DAT dat = new DAT();
+                /*DAT dat = new DAT();
                 dat.filename = fileName;
                 dat.Read(new FileData(fileName));
 
@@ -421,7 +421,7 @@ namespace Smash_Forge
                 {
                     DatStageList stageList = new DatStageList(dat) { ShowHint = DockState.DockLeft };
                     AddDockedControl(stageList);
-                }
+                }*/
             }
 
             if (mvp == null)
@@ -431,6 +431,9 @@ namespace Smash_Forge
             }
             
             ModelContainer modelContainer = new ModelContainer();
+
+            modelContainer.MeleeData = new MeleeDataNode(fileName);
+
             mvp.draw.Add(modelContainer);
             modelContainer.Text = fileName;
             mvp.Text = fileName;
