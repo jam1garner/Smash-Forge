@@ -409,6 +409,35 @@ namespace Smash_Forge
             return mvp;
         }
 
+        public ModelViewport OpenMeleeDat(byte[] fileData, string fileName, string viewportTitle = "", ModelViewport mvp = null)
+        {
+            //OldStage Stuff
+            {
+                DAT dat = new DAT();
+                dat.filename = fileName;
+                dat.Read(new FileData(fileName));
+
+                if (dat.collisions != null)//if the dat is a stage
+                {
+                    DatStageList stageList = new DatStageList(dat) { ShowHint = DockState.DockLeft };
+                    AddDockedControl(stageList);
+                }
+            }
+
+            if (mvp == null)
+            {
+                mvp = new ModelViewport();
+                AddDockedControl(mvp);
+            }
+            
+            ModelContainer modelContainer = new ModelContainer();
+            mvp.draw.Add(modelContainer);
+            modelContainer.Text = fileName;
+            mvp.Text = fileName;
+
+            return mvp;
+        }
+
         public ModelViewport OpenBfres(byte[] fileData, string fileName, string viewportTitle = "", ModelViewport mvp = null)
         {
             //Todo. Support loading bfres texture and animations if seperate and in same directory
@@ -1412,7 +1441,7 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".dat"))
             {
-                if (fileName.EndsWith("AJ.dat"))
+                /*if (fileName.EndsWith("AJ.dat"))
                 {
                     MessageBox.Show("This is animation; load with Animation -> Import");
 
@@ -1435,26 +1464,9 @@ namespace Smash_Forge
                     }
 
                     return;
-                }
-
-                DAT dat = new DAT();
-                dat.filename = fileName;
-                dat.Read(new FileData(fileName));
-
-                dat.PreRender();
-
-                HashMatch();
-
-                if (dat.collisions != null)//if the dat is a stage
-                {
-                    DatStageList stageList = new DatStageList(dat) { ShowHint = DockState.DockLeft };
-                    AddDockedControl(stageList);
-                }
-
-                mvp = new ModelViewport();
-                mvp.draw.Add(new ModelContainer() { DatMelee = dat });
-                mvp.Text = fileName;
-                AddDockedControl(mvp);
+                }*/
+                
+                OpenMeleeDat(File.ReadAllBytes(fileName), fileName);
             }
 
             if (fileName.EndsWith(".lvd"))

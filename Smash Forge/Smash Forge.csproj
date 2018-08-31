@@ -39,6 +39,9 @@
     <ApplicationIcon>Resources\forge.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MeleeLib">
+      <HintPath>..\..\..\Mods\Modlee\MeleeLib\bin\Release\MeleeLib.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -173,6 +176,7 @@
     <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\KCL\KCL.cs" />
     <Compile Include="Filetypes\Application\MaterialXML.cs" />
+    <Compile Include="Filetypes\Melee\MeleeData.cs" />
     <Compile Include="Filetypes\Models\Nuds\DisplayVertex.cs" />
     <Compile Include="Filetypes\Models\Nuds\Material.cs" />
     <Compile Include="Filetypes\Models\Nuds\MatTexture.cs" />
