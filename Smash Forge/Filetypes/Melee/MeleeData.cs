@@ -22,10 +22,11 @@ namespace Smash_Forge
     {
         public DATFile DatFile;
 
+        private bool hasCreatedRenderMeshes = false;
+
         public MeleeDataNode(string fname)
         {
             DatFile = Decompiler.Decompile(File.ReadAllBytes(fname));
-            RefreshDisplay();
         }
 
         public void RefreshDisplay()
@@ -41,7 +42,13 @@ namespace Smash_Forge
 
         public void Render(Camera c)
         {
-            foreach(MeleeRootNode n in Nodes)
+            if (!hasCreatedRenderMeshes)
+            {
+                RefreshDisplay();
+                hasCreatedRenderMeshes = true;
+            }
+
+            foreach (MeleeRootNode n in Nodes)
             {
                 n.Render(c);
             }
@@ -96,7 +103,7 @@ namespace Smash_Forge
             {
                 MeleeDataObjectNode n = new MeleeDataObjectNode(d) { Text = "DataObject" + i++ };
                 DataObjects.Nodes.Add(n);
-                n.Prerender();
+                n.RefreshRenderMeshes();
             }
             
             if (Root.MatAnims.Count > 0)
@@ -146,8 +153,6 @@ namespace Smash_Forge
         public void Render(Camera c)
         {
             Shader shader = OpenTKSharedResources.shaders["DAT"];
-            
-
             shader.UseProgram();
 
             Matrix4 mvpMatrix = c.MvpMatrix;
@@ -157,11 +162,9 @@ namespace Smash_Forge
             {
                 m.Draw(shader, c);
             }
-
-            GL.UseProgram(0);
         }
 
-        public void Prerender()
+        public void RefreshRenderMeshes()
         {
             GXVertexDecompressor decom = new GXVertexDecompressor();
             decom.SetRoot(((MeleeDataNode)Parent.Parent.Parent).DatFile);
