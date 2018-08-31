@@ -1,23 +1,21 @@
-﻿using System;
-using System.IO;
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using SALT.Graphics;
+using SFGraphics.Cameras;
+using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.Shaders;
+using SFGraphics.GLObjects.Textures;
+using SFGraphics.Utils;
+using Smash_Forge.Filetypes.Models.Nuds;
+using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Lights;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Diagnostics;
-using OpenTK.Graphics.OpenGL;
-using OpenTK;
-using System.Windows.Forms;
-using SALT.Graphics;
 using System.Text;
-using Smash_Forge.Rendering.Lights;
-using Smash_Forge.Rendering;
-using Smash_Forge.Rendering.Meshes;
-using SFGraphics.GLObjects.Textures;
-using SFGraphics.GLObjects.Shaders;
-using SFGraphics.GLObjects;
-using SFGraphics.Tools;
-using SFGraphics.Cameras;
-using Smash_Forge.Filetypes.Models.Nuds;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -46,67 +44,6 @@ namespace Smash_Forge
         public string modelType = "";
 
         public override Endianness Endian { get; set; }
-
-        public static readonly Dictionary<int, BlendingFactor> srcFactorsByMatValue = new Dictionary<int, BlendingFactor>()
-        {
-            { 0x00, BlendingFactor.One },
-            { 0x01, BlendingFactor.SrcAlpha},
-            { 0x02, BlendingFactor.One},
-            { 0x03, BlendingFactor.SrcAlpha},
-            { 0x04, BlendingFactor.SrcAlpha},
-        };
-
-        public static readonly Dictionary<int, BlendingFactor> dstFactorsByMatValue = new Dictionary<int, BlendingFactor>()
-        {
-            { 0x00, BlendingFactor.Zero },
-            { 0x01, BlendingFactor.OneMinusSrcAlpha},
-            { 0x02, BlendingFactor.One},
-            { 0x03, BlendingFactor.One},
-        };
-
-        public static readonly Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
-        {
-            { 0x01, TextureWrapMode.Repeat},
-            { 0x02, TextureWrapMode.MirroredRepeat},
-            { 0x03, TextureWrapMode.ClampToEdge}
-        };
-
-        public static readonly Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
-        {
-            { 0x00, TextureMinFilter.LinearMipmapLinear},
-            { 0x01, TextureMinFilter.Nearest},
-            { 0x02, TextureMinFilter.Linear},
-            { 0x03, TextureMinFilter.NearestMipmapLinear},
-        };
-
-        public static readonly Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
-        {
-            { 0x00, TextureMagFilter.Linear},
-            { 0x01, TextureMagFilter.Nearest},
-            { 0x02, TextureMagFilter.Linear}
-        };
-
-        public enum TextureFlags
-        {
-            Glow = 0x00000080,
-            Shadow = 0x00000040,
-            DummyRamp = 0x00000020,
-            SphereMap = 0x00000010,
-            StageAOMap = 0x00000008,
-            RampCubeMap = 0x00000004,
-            NormalMap = 0x00000002,
-            DiffuseMap = 0x00000001
-        }
-
-        public enum DummyTextures
-        {
-            StageMapLow = 0x10101000,
-            StageMapHigh = 0x10102000,
-            PokemonStadium = 0x10040001,
-            PunchOut = 0x10040000,
-            DummyRamp = 0x10080000,
-            ShadowMap = 0x10100000
-        }
 
         public static readonly Dictionary<int, Color> lightSetColorByIndex = new Dictionary<int, Color>()
         {
@@ -199,7 +136,7 @@ namespace Smash_Forge
                             }
 
                             // Checks to see if the texture ID is a valid dummy texture.
-                            foreach (DummyTextures dummyTex in Enum.GetValues(typeof(DummyTextures)))
+                            foreach (NudEnums.DummyTexture dummyTex in Enum.GetValues(typeof(NudEnums.DummyTexture)))
                             {
                                 if (matTex.hash == (int)dummyTex)
                                 {
@@ -328,8 +265,7 @@ namespace Smash_Forge
             int blockIndex = GL.GetUniformBlockIndex(shader.Id, "bones");
             bonesUbo.BindBase(BufferRangeTarget.UniformBuffer, blockIndex);
 
-            int matrix4SizeInBytes = Vector4.SizeInBytes * sizeof(float) * 4;
-            bonesUbo.BufferData(boneMatrices, matrix4SizeInBytes, BufferUsageHint.DynamicDraw);
+            bonesUbo.SetData(boneMatrices, BufferUsageHint.DynamicDraw);
 
             shader.SetBoolToInt("useBones", true);
         }
@@ -561,7 +497,7 @@ namespace Smash_Forge
             }
         }
 
-        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<DummyTextures, Texture> dummyTextures, bool drawId = false)
+        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, bool drawId = false)
         {
             if (p.vertexIndices.Count <= 3)
                 return;
@@ -580,7 +516,7 @@ namespace Smash_Forge
             p.renderMesh.Draw(shader, camera);
         }
 
-        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<DummyTextures, Texture> dummyTextures, int id = 0, bool drawId = false)
+        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, int id = 0, bool drawId = false)
         {
             // Shader Uniforms
             shader.SetUint("flags", material.Flags);
@@ -636,14 +572,17 @@ namespace Smash_Forge
         {
             Matrix4 nscMatrix = Matrix4.Identity;
 
-            // transform object using the bone's transforms
-            if (p.Parent != null && p.Parent.Text.Contains("_NSC"))
+            // Transform object using the bone's transforms
+            Mesh mesh = (Mesh)p.Parent;
+            if (mesh != null && mesh.Text.Contains("_NSC"))
             {
-                int index = ((Mesh)p.Parent).singlebind;
+                int index = mesh.singlebind;
                 if (index != -1)
                 {
-                    // Very hacky
-                    nscMatrix = ((ModelContainer)p.Parent.Parent.Parent).VBN.bones[index].transform;
+                    // HACK
+                    ModelContainer modelContainer = (ModelContainer)mesh.Parent.Parent;
+                    if (modelContainer.VBN != null)
+                        nscMatrix = modelContainer.VBN.bones[index].transform;
                 }
             }
 
@@ -755,7 +694,7 @@ namespace Smash_Forge
                     selectVbo.Bind();
                     if (p.selectedVerts == null)
                         return;
-                    selectVbo.BufferData(p.selectedVerts, sizeof(int), BufferUsageHint.StaticDraw);
+                    selectVbo.SetData(p.selectedVerts, BufferUsageHint.StaticDraw);
                     GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
                     //vertexIndexEbo.Bind();
@@ -1707,7 +1646,7 @@ namespace Smash_Forge
                         foreach (MatTexture matTexture in material.textures)
                         {
                             // Don't change dummy texture IDs.
-                            if (Enum.IsDefined(typeof(DummyTextures), matTexture.hash))
+                            if (Enum.IsDefined(typeof(NudEnums.DummyTexture), matTexture.hash))
                                 continue;
 
                             // Only change the first 3 bytes.

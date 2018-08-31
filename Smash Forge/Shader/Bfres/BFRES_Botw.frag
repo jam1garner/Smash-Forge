@@ -53,7 +53,6 @@ uniform int renderAlpha;
 // Texture Samplers
 uniform sampler2D tex0;
 uniform sampler2D BakeShadowMap;
-uniform sampler2D spl;
 uniform sampler2D normalMap;
 uniform sampler2D BakeLightMap;
 uniform sampler2D UVTestPattern;
@@ -64,10 +63,11 @@ uniform sampler2D DiffuseLayer;
 uniform sampler2D MetalnessMap;
 uniform sampler2D RoughnessMap;
 uniform sampler2D MRA;
-uniform sampler2D BOTWSpecularMap;
+uniform sampler2D TeamColorMap;
+uniform sampler2D SphereMap;
 
 uniform samplerCube irradianceMap;
-uniform samplerCube prefilterMap;
+uniform samplerCube specularIbl;
 uniform sampler2D brdfLUT;
 
 // Shader Params
@@ -77,6 +77,7 @@ uniform float emission_intensity;
 uniform vec4 fresnelParams;
 uniform vec4 base_color_mul_color;
 uniform vec3 emission_color;
+uniform vec3 specular_color;
 
 // Shader Options
 uniform float uking_texture2_texcoord;
@@ -84,7 +85,6 @@ uniform float bake_shadow_type;
 uniform float enable_fresnel;
 uniform float enable_emission;
 uniform float cSpecularType;
-
 
 // Texture Map Toggles
 uniform int HasDiffuse;
@@ -99,7 +99,6 @@ uniform int HasDiffuseLayer;
 uniform int HasMetalnessMap;
 uniform int HasRoughnessMap;
 uniform int HasMRA;
-uniform int HasBOTWSpecularMap;
 
 uniform int roughnessAmount;
 
@@ -110,7 +109,12 @@ uniform int UseRoughnessMap;
 
 int isTransparent;
 
-struct VertexAttributes {
+uniform int renderDiffuse;
+uniform int renderSpecular;
+uniform int renderFresnel;
+
+struct VertexAttributes
+{
     vec3 objectPosition;
     vec2 texCoord;
     vec2 texCoord2;
@@ -120,7 +124,7 @@ struct VertexAttributes {
     vec3 viewNormal;
     vec3 tangent;
     vec3 bitangent;
-	};
+};
 
 out vec4 fragColor;
 
@@ -187,6 +191,63 @@ vec3 saturation(vec3 rgb, float adjustment)
     return mix(intensity, rgb, adjustment);
 }
 
+vec3 DiffusePass(vec3 albedo, vec3 N, vec3 L, vec3 R)
+{
+    float lambert = max(dot(N, L), 0.0);
+
+    // Higher blend values make the dark region smoother and larger.
+    float smoothness = 0.1;
+    float center = 0.5;
+    float edgeL = center;
+    float edgeR = center + (smoothness * 0.5);
+    float smoothLambert = smoothstep(edgeL, edgeR, lambert);
+
+    float ambient = 0.6;
+    smoothLambert = clamp(smoothLambert + ambient, 0, 1);
+
+    vec3 diffuseTerm = albedo;
+    diffuseTerm *= smoothLambert;
+
+    return diffuseTerm * 1.5;
+}
+
+vec3 SpecularPass(vec3 albedo, vec3 N, vec3 H, vec3 R, float metallic, float specularMapIntensity)
+{
+    // Specular pass
+    vec3 specularTerm = vec3(0);
+
+    // TODO: Metalness
+    vec3 specularColor = albedo;
+
+    specularTerm = specularColor;
+
+    // Hack something together for now.
+    vec3 specularLighting = texture(irradianceMap, R).rrr;
+    float center = 0.375;
+    float smoothness = 0.035;
+    specularLighting = smoothstep(vec3(center - smoothness), vec3(center + smoothness), specularLighting);
+
+    specularTerm *= specularLighting;
+    specularTerm *= specularMapIntensity;
+
+    return specularTerm;
+}
+
+vec3 FresnelPass(vec3 N, vec3 I)
+{
+    // Fake edge lighting
+    float nDotI = clamp(dot(N, I), 0, 1);
+    float fresnel = 1 - nDotI;
+
+    // TODO: Extract cel shade function.
+    float center = 0.75;
+    float smoothness = 0.015;
+    fresnel = smoothstep(center - smoothness, center + smoothness, fresnel);
+
+    vec3 fresnelTerm = vec3(1, 1, 0.75) * fresnel * 0.2;
+    return fresnelTerm;
+}
+
 void main()
 {
     fragColor = vec4(1);
@@ -211,9 +272,7 @@ void main()
         return;
     }
 
-	vec3 albedo = vec3(1);
-    if (HasDiffuse == 1)
-        albedo = pow(texture(tex0, f_texcoord0).rgb, vec3(gamma));
+	vec3 albedo = pow(texture(tex0, f_texcoord0).rgb, vec3(gamma));
 
 	float metallic = DefaultMetalness;
     if (HasMetalnessMap == 1)
@@ -233,10 +292,6 @@ void main()
 
 	float cavity = 1;
 
-	vec3 emission = vec3(0);
-    if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
-		emission.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);
-
 	vec3 lightMapColor = vec3(1);
 	float lightMapIntensity = 0;
     if (HasLightMap == 1)
@@ -245,19 +300,19 @@ void main()
         lightMapIntensity = texture(BakeLightMap, f_texcoord1).a;
     }
 
-	float specIntensity = 1;
-
-	if (HasBOTWSpecularMap == 1)
+    // TODO: Extract function.
+	float specularMapIntensity = 1;
+	if (HasSpecularMap == 1)
 	{
 	   if (uking_texture2_texcoord == 1)
 	   {
-	       metallic = texture(BOTWSpecularMap, f_texcoord1).g;
-	       specIntensity = texture(BOTWSpecularMap, f_texcoord1).r;
+	       metallic = texture(SpecularMap, f_texcoord1).g;
+	       specularMapIntensity = texture(SpecularMap, f_texcoord1).r;
 	   }
 	   else
 	   {
-	       metallic = texture(BOTWSpecularMap, f_texcoord0).g;
-	       specIntensity = texture(BOTWSpecularMap, f_texcoord0).r;
+	       metallic = texture(SpecularMap, f_texcoord0).g;
+	       specularMapIntensity = texture(SpecularMap, f_texcoord0).r;
 	   }
 	}
 
@@ -270,65 +325,28 @@ void main()
     vec3 V = normalize(I); //Eye View
 	vec3 L = normalize(specLightDirection); //Light
 	vec3 H = normalize(specLightDirection + I); //Half Angle
+    vec3 R = reflect(I, N); // reflection
 
-	// attenuation
-    float A = 20.0 / dot(L - objectPosition, L - objectPosition);
+    // Render passes
+	vec3 outputColor = vec3(0);
+    float kDiffuse = clamp(1.0 - metallic, 0, 1);
+    outputColor += DiffusePass(albedo, N, L, R) * renderDiffuse;
+    outputColor += SpecularPass(albedo, N, H, R, metallic, specularMapIntensity) * renderSpecular;
+    outputColor += FresnelPass(N, I) * renderFresnel;
+    if (HasEmissionMap == 1 || enable_emission == 1) //Can be without texture map
+        outputColor.rgb += EmissionPass(EmissionMap, emission_intensity, vert, uking_texture2_texcoord, emission_color);
 
-    vec3 F0 = vec3(0.04); //0.04 for dielectric materials
-    F0 = mix(F0, albedo, metallic);
-
-	vec3 Lo = vec3(0.0);
-
-	vec3 radiance = lightColor; //no attenuation
-
-	//calculate Cook-Torrance BRDF
-	float NDF = DistributionGGX(N, H, roughness);
-	float G = GeometrySmith(N, V, L, roughness);
-    vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-
- 	vec3 numerator = NDF * G * F;
-	float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001; // 0.001 to prevent divide by zero.
-	vec3 specular  = numerator / denominator * specIntensity;
-
-	// kS is equal to Fresnel
-    vec3 kS = F;
-
-	vec3 kD = vec3(1.0) - kS;
-	kD *= 1.0 - metallic;
-
-	float NdotL = max(dot(N, L), 0.0);
-
-    // Higher blend values make the dark region smoother and larger.
-    float smoothness = 0.1;
-    float center = 0.5;
-    float edgeL = center;
-    float edgeR = center + (smoothness * 0.5);
-    float smoothLambert = smoothstep(edgeL, edgeR, NdotL);
-
-    float ambient = 0.6;
-    smoothLambert = clamp(smoothLambert + ambient, 0, 1);
-
-	NdotL = smoothLambert * 0.8;
-
-    // add to outgoing radiance Lo
-    Lo = (kD * albedo / PI + specular) * radiance * NdotL;
-
-	vec3 color = Lo;
-
-
-    color *= ao;
-    color *= (0.6 + shadow);
+    outputColor *= ao;
+    outputColor *= (0.6 + shadow);
 
     float cavityStrength = 1.0;
-    color *= cavity * cavityStrength + (1.0-cavityStrength);
-
-    color = pow(color, vec3(1.0 / gamma));
-
-	float alpha = texture(tex0, f_texcoord0).a;
-
-	fragColor = vec4(color, alpha);
+    outputColor *= cavity * cavityStrength + (1.0 - cavityStrength);
 
     // TODO: Renders as black?
     // if (renderVertColor == 1)
     //     fragColor *= min(vertexColor, vec4(1));
+
+    outputColor = pow(outputColor, vec3(1.0 / gamma));
+    float alpha = texture(tex0, f_texcoord0).a;
+	fragColor = vec4(outputColor, alpha);
 }

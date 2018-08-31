@@ -14,6 +14,11 @@ struct VertexAttributes
     vec3 bitangent;
 };
 
+uniform mat4 sphereMatrix;
+uniform sampler2D SphereMap;
+uniform samplerCube specularIbl;
+uniform int HasSphereMap;
+
 // Defined in Utility.frag.
 float Luminance(vec3 rgb);
 
@@ -47,31 +52,47 @@ vec3 SpecularPass(vec3 I, vec3 normal, int HasSpecularMap, sampler2D SpecularMap
 vec3 EmissionPass(sampler2D EmissionMap, float emission_intensity, VertexAttributes vert, float texCoordIndex, vec3 emission_color)
 {
     vec3 result = vec3(0);
-    float emissionIntensity2 = emission_intensity * emission_intensity;
 
-    if (emission_intensity > 0.1)
-    {
-        vec3 emission = vec3(emissionIntensity2);
-        result += emission;
-    }
+    // BOTW somtimes uses second uv channel for emission map
+    vec3 emission = vec3(1);
+    if (texCoordIndex == 1)
+        emission = texture2D(EmissionMap, vert.texCoord2).rgb;
+    else
+        emission = texture2D(EmissionMap, vert.texCoord).rgb;
 
+    // If tex is empty then use full brightness.
+    //Some emissive mats have emission but no texture
+    // if (Luminance(emission.rgb) < 0.01)
+    //     result += vec3(emission_intensity) * emission_color;
 
-        // BOTW somtimes uses second uv channel for emission map
-        vec3 emission = vec3(1);
-        if (texCoordIndex == 1)
-            emission = texture2D(EmissionMap, vert.texCoord2).rgb * vec3(1);
-        else
-            emission = texture2D(EmissionMap, vert.texCoord).rgb * emission_color;
-
-        // If tex is empty then use full brightness.
-        //Some emissive mats have emission but no texture
-        if (Luminance(emission.rgb) < 0.01)
-            result += vec3(emission_intensity) * emission_color;
-        else
-            result += emission.rgb;
-
+    result += emission.rgb;
 
     return result;
+}
+
+vec3 SphereMapColor(vec3 viewNormal, sampler2D spheremap) {
+    // Calculate UVs based on view space normals.
+    vec2 sphereTexcoord = vec2(viewNormal.x, (1 - viewNormal.y));
+    return texture(spheremap, sphereTexcoord * 0.5 + 0.5).rgb;
+}
+
+vec3 ReflectionPass(vec3 N, vec3 I, vec4 diffuseMap, float aoBlend, vec3 tintColor, VertexAttributes vert) {
+    vec3 reflectionPass = vec3(0);
+	// cubemap reflection
+	vec3 R = reflect(I, N);
+	R.y *= -1.0;
+
+    vec3 cubeColor = texture(specularIbl, R).aaa;
+
+ //   reflectionPass += diffuseMap.aaa * cubeColor * tintColor;
+
+    vec3 viewNormal = mat3(sphereMatrix) * normalize(N.xyz);
+    vec3 sphereMapColor = SphereMapColor(vert.viewNormal, SphereMap);
+
+	reflectionPass += sphereMapColor * HasSphereMap;
+    reflectionPass = max(reflectionPass, vec3(0));
+
+    return reflectionPass;
 }
 
 float AmbientOcclusionBlend(sampler2D BakeShadowMap, VertexAttributes vert, float ao_density)

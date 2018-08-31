@@ -158,7 +158,8 @@ namespace Smash_Forge
                 {
                     // Use the bone position as the bounding box center
                     ModelContainer modelContainer = (ModelContainer)Parent.Parent;
-                    meshCenter = modelContainer.VBN.bones[singlebind].pos;
+                    if (modelContainer.VBN != null)
+                        meshCenter = modelContainer.VBN.bones[singlebind].pos;
                 }
 
                 Vector3 distanceVector = new Vector3(cameraPosition - meshCenter);

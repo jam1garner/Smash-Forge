@@ -63,6 +63,9 @@
       <HintPath>lib\SFGraphics.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="SFGraphics.Utils">
+      <HintPath>lib\SFGraphics.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="Syroot.BinaryData, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\Syroot.BinaryData.dll</HintPath>
@@ -136,16 +139,18 @@
     <Compile Include="Filetypes\BCH\BCH_Texture.cs" />
     <Compile Include="Filetypes\BCH\PatriciaTree.cs" />
     <Compile Include="Filetypes\BCH\_3DSGPU.cs" />
+    <Compile Include="Filetypes\BFRES\BfresRenderMesh.cs" />
     <Compile Include="Filetypes\BFRES\BFRES_Main.cs" />
+    <Compile Include="Filetypes\BFRES\DisplayVertex.cs" />
     <Compile Include="Filetypes\BFRES\Switch\BFRES_NSW.cs" />
     <Compile Include="Filetypes\BFRES\Switch\BNTX.cs" />
     <Compile Include="Filetypes\BFRES\Switch\DDS_Decompress.cs" />
-    <Compile Include="Filetypes\BFRES\Switch\Exporter_BFRES_XML.cs" />
+    <Compile Include="Filetypes\BFRES\BfresXML.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FSHA.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FSKA.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FVIS.cs" />
     <Compile Include="Filetypes\BFRES\Switch\FMAA.cs" />
-    <Compile Include="Filetypes\BFRES\Switch\Swizzle.cs" />
+    <Compile Include="Filetypes\BFRES\Switch\TegraX1Swizzle.cs" />
     <Compile Include="Filetypes\BFRES\WiiU\BFRES_WiiU.cs" />
     <Compile Include="Filetypes\BFRES\WiiU\FTEX.cs" />
     <Compile Include="Filetypes\BFRES\WiiU\FSHU.cs" />
@@ -172,6 +177,7 @@
     <Compile Include="Filetypes\Models\Nuds\Material.cs" />
     <Compile Include="Filetypes\Models\Nuds\MatTexture.cs" />
     <Compile Include="Filetypes\Models\Nuds\Mesh.cs" />
+    <Compile Include="Filetypes\Models\Nuds\NudEnums.cs" />
     <Compile Include="Filetypes\Models\Nuds\NudUniforms.cs" />
     <Compile Include="Filetypes\Models\Nuds\Polygon.cs" />
     <Compile Include="Filetypes\Models\Nuds\Vertex.cs" />
@@ -661,7 +667,7 @@
     <Compile Include="Rendering\Lights\LightColor.cs" />
     <Compile Include="Rendering\Lights\LightMap.cs" />
     <Compile Include="Rendering\Lights\LightTools.cs" />
-    <Compile Include="Rendering\GenericMesh\NudRenderMesh.cs" />
+    <Compile Include="Filetypes\Models\Nuds\NudRenderMesh.cs" />
     <Compile Include="Rendering\GenericMesh\MeshColored3D.cs" />
     <Compile Include="Rendering\GenericMesh\Mesh3D.cs" />
     <Compile Include="Rendering\OpenTKSharedResources.cs" />
@@ -1380,6 +1386,9 @@
     <None Include="Shader\KCL.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="lib\SFGraphics.Utils.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\Syroot.BinaryData.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

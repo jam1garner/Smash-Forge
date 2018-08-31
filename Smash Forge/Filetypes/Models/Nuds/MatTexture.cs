@@ -1,4 +1,6 @@
-﻿namespace Smash_Forge
+﻿using Smash_Forge.Filetypes.Models.Nuds;
+
+namespace Smash_Forge
 {
     public partial class NUD
     {
@@ -41,7 +43,7 @@
 
             public static MatTexture GetDefault()
             {
-                MatTexture defaultTex = new MatTexture((int)DummyTextures.DummyRamp);
+                MatTexture defaultTex = new MatTexture((int)NudEnums.DummyTexture.DummyRamp);
                 return defaultTex;
             }
         }

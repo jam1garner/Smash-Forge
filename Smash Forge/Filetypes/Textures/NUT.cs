@@ -777,8 +777,7 @@ namespace Smash_Forge
 
             // Create an OpenGL texture with generated mipmaps.
             Texture2D texture2D = new Texture2D();
-            texture2D.LoadImageData(tex.Width, tex.Height, tex.surfaces[0].mipmaps[0],
-                tex.surfaces[0].mipmaps.Count, (InternalFormat)tex.pixelInternalFormat);
+            texture2D.LoadImageData(tex.Width, tex.Height, tex.surfaces[0].mipmaps[0], (InternalFormat)tex.pixelInternalFormat);
 
             texture2D.Bind();
 
@@ -874,8 +873,7 @@ namespace Smash_Forge
                 {
                     // Only load the first level and generate the rest.
                     Texture2D texture = new Texture2D();
-                    texture.LoadImageData(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count, 
-                        (InternalFormat)nutTexture.pixelInternalFormat);
+                    texture.LoadImageData(nutTexture.Width, nutTexture.Height, mipmaps[0], (InternalFormat)nutTexture.pixelInternalFormat);
                     return texture;
                 }
             }
@@ -883,7 +881,7 @@ namespace Smash_Forge
             {
                 // Uncompressed.
                 Texture2D texture = new Texture2D();
-                texture.LoadImageData(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count,
+                texture.LoadImageData(nutTexture.Width, nutTexture.Height, mipmaps[0],
                     new TextureFormatUncompressed(nutTexture.pixelInternalFormat, nutTexture.pixelFormat, nutTexture.pixelType));
                 return texture;
             }

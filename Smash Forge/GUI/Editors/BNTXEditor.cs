@@ -22,9 +22,11 @@ namespace Smash_Forge
     public partial class BNTXEditor : EditorBase
     {
         private BNTX BNTX;
-        private BRTI BRTI;
+        private BRTI SelectedTexture;
 
         private Texture textureToRender = null;
+        Framebuffer pngExportFramebuffer;
+        Mesh3D screenTriangle;
 
         private bool renderR = true;
         private bool renderG = true;
@@ -32,8 +34,6 @@ namespace Smash_Forge
         private bool renderAlpha = true;
         private bool keepAspectRatio = false;
         private int currentMipLevel = 0;
-
-        private Mesh3D screenTriangle;
 
         private FileSystemWatcher fw;
 
@@ -161,7 +161,7 @@ namespace Smash_Forge
             {
                 if (bmp.Width / (int)Math.Pow(2, i) < 4 || bmp.Height / (int)Math.Pow(2, i) < 4) break;
                 tex.mipmaps.Add(fromPNG(Pixel.ResizeImage(bmp, bmp.Width / (int)Math.Pow(2, i), bmp.Height / (int)Math.Pow(2, i))));
-                tex.data = tex.mipmaps[0];
+                tex.mipmaps[0] = tex.mipmaps[0];
             }
             tex.width = bmp.Width;
             tex.height = bmp.Height;
@@ -245,7 +245,7 @@ namespace Smash_Forge
                     BRTI.BRTI_Texture newTexture = null;
                     if (Path.GetExtension(ofd.FileName).ToLower().Equals(".png"))
                     {
-                        newTexture =  fromPNG(ofd.FileName, 1);
+                        newTexture = fromPNG(ofd.FileName, 1);
                     }
                     if (Path.GetExtension(ofd.FileName).ToLower().Equals(".dds"))
                     {
@@ -258,7 +258,7 @@ namespace Smash_Forge
                     t.texture.pixelInternalFormat = newTexture.pixelInternalFormat;
                     t.texture.mipmaps = newTexture.mipmaps;
                     t.texture.pixelFormat = newTexture.pixelFormat;
-                    t.texture.data = newTexture.data;
+                    newTexture.mipmaps.Add(t.texture.mipmaps[0]);
 
                     GL.DeleteTexture(t.texture.display);
 
@@ -283,7 +283,7 @@ namespace Smash_Forge
             {
                 if (Path.GetExtension(save.FileName).ToLower().Equals(".png"))
                 {
-    
+
                 }
                 if (Path.GetExtension(save.FileName).ToLower().Equals(".tex"))
                 {
@@ -301,14 +301,14 @@ namespace Smash_Forge
         {
             if (textureListBox.SelectedIndex >= 0)
             {
-                BRTI b = ((BRTI)textureListBox.SelectedItem);
-                
+                SelectedTexture = ((BRTI)textureListBox.SelectedItem);
 
-                label1.Text = "Width: " + b.texture.width;
-                label2.Text = "Height: " + b.texture.height;
 
-                uint Format = b.format >> 8;
-                byte DataType = (byte)(b.format & 0xFF);
+                label1.Text = "Width: " + SelectedTexture.texture.width;
+                label2.Text = "Height: " + SelectedTexture.texture.height;
+
+                uint Format = SelectedTexture.format >> 8;
+                byte DataType = (byte)(SelectedTexture.format & 0xFF);
 
                 Formats.BNTXImageFormat f = (Formats.BNTXImageFormat)Format;
                 Formats.BNTXImageTypes t = (Formats.BNTXImageTypes)DataType;
@@ -316,8 +316,8 @@ namespace Smash_Forge
                 label3.Text = f.ToString() + " " + t.ToString();
 
                 // Render the selected texture.
-                if (BNTX.glTexByName.ContainsKey(b.Text))
-                    textureToRender = BNTX.glTexByName[b.Text];
+                if (BNTX.glTexByName.ContainsKey(SelectedTexture.Text))
+                    textureToRender = BNTX.glTexByName[SelectedTexture.Text];
             }
             else
             {
@@ -447,6 +447,13 @@ namespace Smash_Forge
         private void mipLevelTrackBar_Scroll(object sender, EventArgs e)
         {
             currentMipLevel = mipLevelTrackBar.Value;
+
+            int width = Math.Max(1, SelectedTexture.texture.width >> currentMipLevel);
+            int height = Math.Max(1, SelectedTexture.texture.height >> currentMipLevel);
+
+            label1.Text = "Width: " + width;
+            label2.Text = "Height: " + height;
+
             glControl1.Invalidate();
         }
 
@@ -457,7 +464,8 @@ namespace Smash_Forge
 
         private void previewBox_Resize(object sender, EventArgs e)
         {
-            int size = Math.Min(previewGroupBox.Width, previewGroupBox.Height);
+            int padding = 25;
+            int size = Math.Min(previewGroupBox.Width - padding, previewGroupBox.Height - padding);
             glControl1.Width = size;
             glControl1.Height = size;
         }
@@ -481,6 +489,8 @@ namespace Smash_Forge
             if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
             {
                 BNTX.RefreshGlTexturesByName();
+                pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
+                screenTriangle = ScreenDrawing.CreateScreenTriangle();
             }
         }
     }

@@ -6,18 +6,18 @@ using Smash_Forge.Filetypes.Models.Nuds;
 using SFGenericModel;
 using SFGenericModel.Materials;
 
-namespace Smash_Forge.Rendering.Meshes
+namespace Smash_Forge
 {
     public class NudRenderMesh : GenericMesh<NUD.DisplayVertex>
     {
-        public NudRenderMesh(List<NUD.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices, NUD.DisplayVertex.Size)
+        public NudRenderMesh(List<NUD.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices)
         {
 
         }
 
         public void SetMaterialValues(NUD.Material nudMaterial)
         {
-            material = new GenericMaterial();
+            this.material = new GenericMaterial();
             NudUniforms.SetMaterialPropertyUniforms(material, nudMaterial);
         }
 
@@ -77,11 +77,15 @@ namespace Smash_Forge.Rendering.Meshes
         private void SetAlphaBlending(NUD.Material material)
         {
             renderSettings.alphaBlendSettings.enableAlphaBlending = material.srcFactor != 0 || material.dstFactor != 0;
-            if (NUD.srcFactorsByMatValue.ContainsKey(material.srcFactor))
-                renderSettings.alphaBlendSettings.sourceFactor = NUD.srcFactorsByMatValue[material.srcFactor];
+            if (NudEnums.srcFactorByMatValue.ContainsKey(material.srcFactor))
+                renderSettings.alphaBlendSettings.sourceFactor = NudEnums.srcFactorByMatValue[material.srcFactor];
 
-            if (NUD.dstFactorsByMatValue.ContainsKey(material.dstFactor))
-                renderSettings.alphaBlendSettings.destinationFactor = NUD.dstFactorsByMatValue[material.dstFactor];
+            if (NudEnums.dstFactorByMatValue.ContainsKey(material.dstFactor))
+                renderSettings.alphaBlendSettings.destinationFactor = NudEnums.dstFactorByMatValue[material.dstFactor];
+
+            // A weird multiplicative blend mode with premultiplied alpha.
+            if (material.dstFactor == 5)
+                renderSettings.alphaBlendSettings.sourceFactor = BlendingFactor.Zero;
 
             renderSettings.alphaBlendSettings.blendingEquationRgb = BlendEquationMode.FuncAdd;
             if (material.dstFactor == 3)

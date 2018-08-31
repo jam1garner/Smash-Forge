@@ -104,8 +104,7 @@ namespace Smash_Forge
             Config.StartupFromFile(MainForm.executableDir + "\\config.xml");
             DiscordSettings.Update();
 
-            openFiles();
-
+            // Make sure everything is loaded before opening files.
             OpenTKSharedResources.InitializeSharedResources();
             if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Failed)
             {
@@ -113,6 +112,8 @@ namespace Smash_Forge
                 reloadShadersToolStripMenuItem.Enabled = false;
                 exportErrorLogToolStripMenuItem.Enabled = false;
             }
+
+            openFiles();
         }
 
         public void openFiles()

@@ -131,23 +131,22 @@
             The type of primitive used for drawing.
             </summary>
         </member>
-        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},System.Int32)">
+        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0})">
             <summary>
             Creates a new mesh and initializes the vertex buffer data.
             An index is generated for each vertex in <paramref name="vertices"/>.
             Vertex data is initialized only once.
             </summary>
             <param name="vertices"></param>
-            <param name="vertexSizeInBytes"></param>
         </member>
-        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},System.Int32)">
+        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32})">
             <summary>
             Creates a new mesh and initializes the vertex buffer data.
             Vertex data is initialized only once.
             </summary>
             <param name="vertices"></param>
             <param name="vertexIndices"></param>
-            <param name="vertexSizeInBytes">The total size in bytes of <typeparamref name="T"/></param>
+            
         </member>
         <member name="M:SFGenericModel.GenericMesh`1.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera,System.Int32,System.Int32)">
             <summary>

@@ -124,11 +124,11 @@ namespace Smash_Forge.Filetypes.Models.Nuds
                 Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
 
-        public static int BindTexture(NUD.MatTexture matTexture, int hash, int loc, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
+        public static int BindTexture(NUD.MatTexture matTexture, int hash, int loc, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
-            if (Enum.IsDefined(typeof(NUD.DummyTextures), hash))
+            if (Enum.IsDefined(typeof(NudEnums.DummyTexture), hash))
             {
-                return BindDummyTexture(loc, dummyTextures[(NUD.DummyTextures)hash]);
+                return BindDummyTexture(loc, dummyTextures[(NudEnums.DummyTexture)hash]);
             }
             else
             {
@@ -161,10 +161,10 @@ namespace Smash_Forge.Filetypes.Models.Nuds
         {
             // Set the texture's parameters based on the material settings.
             texture.Bind();
-            texture.TextureWrapS = NUD.wrapmode[matTexture.wrapModeS];
-            texture.TextureWrapT = NUD.wrapmode[matTexture.wrapModeT];
-            texture.MinFilter = NUD.minfilter[matTexture.minFilter];
-            texture.MagFilter = NUD.magfilter[matTexture.magFilter];
+            texture.TextureWrapS = NudEnums.wrapModeByMatValue[matTexture.wrapModeS];
+            texture.TextureWrapT = NudEnums.wrapModeByMatValue[matTexture.wrapModeT];
+            texture.MinFilter = NudEnums.minFilterByMatValue[matTexture.minFilter];
+            texture.MagFilter = NudEnums.magFilterByMatValue[matTexture.magFilter];
 
             if (OpenGLExtensions.IsAvailable("GL_EXT_texture_filter_anisotropic") && (texture is Texture2D))
             {
@@ -177,7 +177,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
 
 
 
-        public static void SetTextureUniforms(Shader shader, NUD.Material mat, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
+        public static void SetTextureUniforms(Shader shader, NUD.Material mat, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             SetHasTextureUniforms(shader, mat);
             SetRenderModeTextureUniforms(shader);
@@ -208,7 +208,8 @@ namespace Smash_Forge.Filetypes.Models.Nuds
         }
 
 
-        public static void SetTextureUniformAndSetTexId(Shader shader, NUD.Material mat, bool hasTex, string name, ref int textureIndex, ref int texIdForCurrentTextureType, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
+        public static void SetTextureUniformAndSetTexId(Shader shader, NUD.Material mat, bool hasTex, string name, ref int textureIndex, ref int texIdForCurrentTextureType, 
+            Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             // Bind the texture and create the uniform if the material has the right textures and flags. 
             if (hasTex && textureIndex < mat.textures.Count)
@@ -227,7 +228,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             }
         }
 
-        public static void SetTextureUniformsNudMatSphere(Shader shader, NUD.Material mat, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
+        public static void SetTextureUniformsNudMatSphere(Shader shader, NUD.Material mat, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             SetHasTextureUniforms(shader, mat);
             SetRenderModeTextureUniforms(shader);
@@ -236,8 +237,8 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex.Id);
 
             // The material shader just uses predefined textures from the Resources folder.
-            NUD.MatTexture diffuse = new NUD.MatTexture((int)NUD.DummyTextures.DummyRamp);
-            NUD.MatTexture cubeMapHigh = new NUD.MatTexture((int)NUD.DummyTextures.StageMapHigh);
+            NUD.MatTexture diffuse = new NUD.MatTexture((int)NudEnums.DummyTexture.DummyRamp);
+            NUD.MatTexture cubeMapHigh = new NUD.MatTexture((int)NudEnums.DummyTexture.StageMapHigh);
 
             // The order of the textures in the following section is critical. 
             int textureUnitIndexOffset = 0;

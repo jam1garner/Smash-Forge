@@ -23,7 +23,7 @@ namespace Smash_Forge.Rendering
 
         private static ForgeCamera nudSphereCamera = new ForgeCamera();
 
-        public static void DrawNudMaterialSphere(Shader shader, NUD.Material material, Mesh3D screenTriangle, Dictionary<NUD.DummyTextures, Texture> dummyTextures)
+        public static void DrawNudMaterialSphere(Shader shader, NUD.Material material, Mesh3D screenTriangle, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             if (!shader.ProgramCreatedSuccessfully)
                 return;

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using Smash_Forge.Filetypes.Models.Nuds;
 
 namespace Smash_Forge
 {
@@ -122,11 +122,11 @@ namespace Smash_Forge
             public int diffuse2ID = 0;
             public int diffuse3ID = 0;
             public int normalID = 0;
-            public int rampID = (int)DummyTextures.DummyRamp;
-            public int dummyRampID = (int)DummyTextures.DummyRamp;
+            public int rampID = (int)NudEnums.DummyTexture.DummyRamp;
+            public int dummyRampID = (int)NudEnums.DummyTexture.DummyRamp;
             public int sphereMapID = 0;
             public int aoMapID = 0;
-            public int stageMapID = (int)DummyTextures.StageMapHigh;
+            public int stageMapID = (int)NudEnums.DummyTexture.StageMapHigh;
             public int cubeMapID = 0;
 
             public Material()
@@ -315,21 +315,21 @@ namespace Smash_Forge
             {
                 byte new4thByte = 0;
                 if (hasDiffuse)
-                    new4thByte |= (byte)TextureFlags.DiffuseMap;
+                    new4thByte |= (byte)NudEnums.TextureFlag.DiffuseMap;
                 if (hasNormalMap)
-                    new4thByte |= (byte)TextureFlags.NormalMap;
+                    new4thByte |= (byte)NudEnums.TextureFlag.NormalMap;
                 if (hasCubeMap || hasRamp)
-                    new4thByte |= (byte)TextureFlags.RampCubeMap;
+                    new4thByte |= (byte)NudEnums.TextureFlag.RampCubeMap;
                 if (hasStageMap || hasAoMap)
-                    new4thByte |= (byte)TextureFlags.StageAOMap;
+                    new4thByte |= (byte)NudEnums.TextureFlag.StageAOMap;
                 if (hasSphereMap)
-                    new4thByte |= (byte)TextureFlags.SphereMap;
+                    new4thByte |= (byte)NudEnums.TextureFlag.SphereMap;
                 if (glow)
-                    new4thByte |= (byte) TextureFlags.Glow;
+                    new4thByte |= (byte)NudEnums.TextureFlag.Glow;
                 if (hasShadow)
-                    new4thByte |= (byte) TextureFlags.Shadow;
+                    new4thByte |= (byte)NudEnums.TextureFlag.Shadow;
                 if (hasDummyRamp)
-                    new4thByte |= (byte) TextureFlags.DummyRamp; 
+                    new4thByte |= (byte)NudEnums.TextureFlag.DummyRamp; 
                 flag = (flag & 0xFFFFFF00) | new4thByte;
 
                 return flag;
@@ -338,8 +338,8 @@ namespace Smash_Forge
             private void CheckFlags()
             {
                 int intFlags = ((int)flag);
-                glow = (intFlags & (int)TextureFlags.Glow) > 0;
-                hasShadow = (intFlags & (int)TextureFlags.Shadow) > 0;
+                glow = (intFlags & (int)NudEnums.TextureFlag.Glow) > 0;
+                hasShadow = (intFlags & (int)NudEnums.TextureFlag.Shadow) > 0;
                 CheckMisc(intFlags);
                 CheckTextures(flag);
             }
@@ -389,25 +389,25 @@ namespace Smash_Forge
                 byte byte4 = (byte)(matFlags & 0xFF);
 
                 bool isEffectMaterial = (byte1 & 0xF0) == 0xB0;
-                hasDiffuse = (matFlags & (byte)TextureFlags.DiffuseMap) > 0 || isEffectMaterial;
+                hasDiffuse = (matFlags & (byte)NudEnums.TextureFlag.DiffuseMap) > 0 || isEffectMaterial;
 
-                hasSphereMap = (byte4 & (byte)TextureFlags.SphereMap) > 0;
+                hasSphereMap = (byte4 & (byte)NudEnums.TextureFlag.SphereMap) > 0;
 
-                hasNormalMap = (byte4 & (byte)TextureFlags.NormalMap) > 0;
+                hasNormalMap = (byte4 & (byte)NudEnums.TextureFlag.NormalMap) > 0;
 
-                hasDummyRamp = (byte4 & (byte)TextureFlags.DummyRamp) > 0;
+                hasDummyRamp = (byte4 & (byte)NudEnums.TextureFlag.DummyRamp) > 0;
 
-                hasAoMap = (byte4 & (byte)TextureFlags.StageAOMap) > 0 && !hasDummyRamp;
+                hasAoMap = (byte4 & (byte)NudEnums.TextureFlag.StageAOMap) > 0 && !hasDummyRamp;
 
-                hasStageMap = (byte4 & (byte)TextureFlags.StageAOMap) > 0 && hasDummyRamp;
+                hasStageMap = (byte4 & (byte)NudEnums.TextureFlag.StageAOMap) > 0 && hasDummyRamp;
 
-                bool hasRampCubeMap = (matFlags & (int)TextureFlags.RampCubeMap) > 0;
-                hasCubeMap = (matFlags & (int)TextureFlags.RampCubeMap) > 0 && (!hasDummyRamp) && (!hasSphereMap);
-                hasRamp = (matFlags & (int)TextureFlags.RampCubeMap) > 0 && hasDummyRamp;
+                bool hasRampCubeMap = (matFlags & (int)NudEnums.TextureFlag.RampCubeMap) > 0;
+                hasCubeMap = (matFlags & (int)NudEnums.TextureFlag.RampCubeMap) > 0 && (!hasDummyRamp) && (!hasSphereMap);
+                hasRamp = (matFlags & (int)NudEnums.TextureFlag.RampCubeMap) > 0 && hasDummyRamp;
 
                 hasDiffuse3 = (byte3 & 0x91) == 0x91 || (byte3 & 0x96) == 0x96 || (byte3 & 0x99) == 0x99;
 
-                hasDiffuse2 = hasRampCubeMap && ((matFlags & (int)TextureFlags.NormalMap) == 0)
+                hasDiffuse2 = hasRampCubeMap && ((matFlags & (int)NudEnums.TextureFlag.NormalMap) == 0)
                     && (hasDummyRamp || hasDiffuse3);
 
                 // Jigglypuff has weird eyes, so just hardcode it.

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Smash_Forge
 {
-    public class Swizzle
+    public class TegraX1Swizzle
     {
         public struct Surface
         {
@@ -20,7 +20,7 @@ namespace Smash_Forge
             public int alignment;
             public int sizeRange;
 
-            public byte[] data;
+            public List<byte[]> data;
 
             public int[] mipOffset;
 
@@ -53,8 +53,18 @@ namespace Smash_Forge
         {
             return ((x - 1) | (y - 1)) + 1;
         }
+        public static uint pow2_round_up(uint x)
+        {
+            x -= 1;
+            x |= x >> 1;
+            x |= x >> 2;
+            x |= x >> 4;
+            x |= x >> 8;
+            x |= x >> 16;
+            return x + 1;
+        }
 
-        public static byte[] _swizzle(uint width, uint height, uint blkWidth, uint blkHeight, uint bpp, uint tileMode, uint alignment, int size_range, byte[] data, int toSwizzle)
+        public static byte[] _swizzle(uint width, uint height, uint blkWidth, uint blkHeight, int roundPitch, uint bpp, uint tileMode, uint alignment, int size_range, byte[] data, int toSwizzle)
         {
             uint block_height = (uint)(1 << size_range);
 
@@ -64,15 +74,19 @@ namespace Smash_Forge
 
             uint pitch;
             uint surfSize;
-            if (tileMode == 0)
+            if (tileMode == 1)
             {
-                pitch = round_up(width * bpp, 32);
+                pitch = width * bpp;
+
+                if (roundPitch == 1)
+                    pitch = round_up(pitch, 32);
+
                 surfSize = round_up(pitch * height, alignment);
             }
             else
             {
                 pitch = round_up(width * bpp, 64);
-                surfSize = round_up(pitch * round_up(height, block_height * 8), alignment);
+                surfSize = pitch * round_up(height, block_height * 8);
             }
 
             byte[] result = new byte[surfSize];
@@ -84,7 +98,7 @@ namespace Smash_Forge
                     uint pos;
                     uint pos_;
 
-                    if (tileMode == 0)
+                    if (tileMode == 1)
                         pos = y * pitch + x * bpp;
                     else
                         pos = getAddrBlockLinear(x, y, width, bpp, 0, block_height);
@@ -103,14 +117,14 @@ namespace Smash_Forge
             return result;
         }
 
-        public static byte[] deswizzle(uint width, uint height, uint blkWidth, uint blkHeight, uint bpp, uint tileMode, uint alignment, int size_range, byte[] data, int ToSwizzle)
+        public static byte[] deswizzle(uint width, uint height, uint blkWidth, uint blkHeight, int roundPitch, uint bpp, uint tileMode, uint alignment, int size_range, byte[] data, int ToSwizzle)
         {
-            return _swizzle(width, height, blkWidth, blkHeight, bpp, tileMode, alignment, size_range, data, 0);
+            return _swizzle(width, height, blkWidth, blkHeight, roundPitch, bpp, tileMode, alignment, size_range, data, 0);
         }
 
-        public static byte[] swizzle(uint width, uint height, uint blkWidth, uint blkHeight, uint bpp, uint tileMode, uint alignment, int size_range, byte[] data, int ToSwizzle)
+        public static byte[] swizzle(uint width, uint height, uint blkWidth, uint blkHeight, int roundPitch, uint bpp, uint tileMode, uint alignment, int size_range, byte[] data, int ToSwizzle)
         {
-            return _swizzle(width, height, blkWidth, blkHeight, bpp, tileMode, alignment, size_range, data, 1);
+            return _swizzle(width, height, blkWidth, blkHeight, roundPitch, bpp, tileMode, alignment, size_range, data, 1);
         }
 
         static uint getAddrBlockLinear(uint x, uint y, uint width, uint bytes_per_pixel, uint base_address, uint block_height)

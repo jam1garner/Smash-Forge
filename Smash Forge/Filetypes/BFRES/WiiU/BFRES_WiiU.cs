@@ -46,8 +46,8 @@ namespace Smash_Forge
                 TTextures.Nodes.Add(texture);
 
                 FTEXContainer.FTEXtextures.Add(texture.Text, texture);
-                Runtime.FTEXContainerList.Add(FTEXContainer);
             }
+            Runtime.FTEXContainerList.Add(FTEXContainer);
 
             int ModelCur = 0;
             //FMDLs -Models-
@@ -653,7 +653,7 @@ namespace Smash_Forge
                 }
                 CurMdl++;
             }
-            b.UpdateVertexData();
+            b.UpdateRenderMeshes();
         }
     }
 }

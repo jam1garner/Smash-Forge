@@ -1534,7 +1534,7 @@ namespace Smash_Forge
                     if (con is ModelContainer)
                     {
                         if (((ModelContainer)con).Bfres != null)
-                            ((ModelContainer)con).Bfres.UpdateVertexData();
+                            ((ModelContainer)con).Bfres.UpdateRenderMeshes();
                     }
                 }
             }
@@ -1556,7 +1556,7 @@ namespace Smash_Forge
                     if (con is ModelContainer)
                     {
                         if (((ModelContainer)con).Bfres != null)
-                            ((ModelContainer)con).Bfres.UpdateVertexData();
+                            ((ModelContainer)con).Bfres.UpdateRenderMeshes();
                     }
                 }
             }
@@ -1576,7 +1576,7 @@ namespace Smash_Forge
                 if (con is ModelContainer)
                 {
                     if (((ModelContainer)con).Bfres != null)
-                        ((ModelContainer)con).Bfres.UpdateVertexData();
+                        ((ModelContainer)con).Bfres.UpdateRenderMeshes();
                 }
             }
         }
@@ -1607,7 +1607,7 @@ namespace Smash_Forge
                 if (con is ModelContainer)
                 {
                     if (((ModelContainer)con).Bfres != null)
-                        ((ModelContainer)con).Bfres.UpdateVertexData();
+                        ((ModelContainer)con).Bfres.UpdateRenderMeshes();
                 }
             }
         }
@@ -1627,7 +1627,7 @@ namespace Smash_Forge
                 if (con is ModelContainer)
                 {
                     if (((ModelContainer)con).Bfres != null)
-                        ((ModelContainer)con).Bfres.UpdateVertexData();
+                        ((ModelContainer)con).Bfres.UpdateRenderMeshes();
                 }
             }
         }
@@ -1665,7 +1665,7 @@ namespace Smash_Forge
                 if (con is ModelContainer)
                 {
                     if (((ModelContainer)con).Bfres != null)
-                        ((ModelContainer)con).Bfres.UpdateVertexData();
+                        ((ModelContainer)con).Bfres.UpdateRenderMeshes();
                 }
             }
         }
@@ -1694,7 +1694,7 @@ namespace Smash_Forge
                 if (con is ModelContainer)
                 {
                     if (((ModelContainer)con).Bfres != null)
-                        ((ModelContainer)con).Bfres.UpdateVertexData();
+                        ((ModelContainer)con).Bfres.UpdateRenderMeshes();
                 }
             }
 
@@ -1714,7 +1714,7 @@ namespace Smash_Forge
                         {
                             foreach (BFRES.Mesh m in mdl.poly)
                             {
-                                ((ModelContainer)con).Bfres.UpdateVertexData();
+                                ((ModelContainer)con).Bfres.UpdateRenderMeshes();
                             }
                         }
                     }
@@ -1825,7 +1825,7 @@ namespace Smash_Forge
                     if (((ModelContainer)con).Bfres != null)
                     {
                         m.SingleBindMesh(); //Add BFRES instance so we can use the fmdl and skeleton classes
-                        ((ModelContainer)con).Bfres.UpdateVertexData();
+                        ((ModelContainer)con).Bfres.UpdateRenderMeshes();
                     }
                 }
             }

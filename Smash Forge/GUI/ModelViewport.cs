@@ -15,7 +15,7 @@ using SALT.Moveset.AnimCMD;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects;
 using SFGraphics.GLObjects.Textures;
-using SFGraphics.Tools;
+using SFGraphics.Utils;
 using Smash_Forge.Params;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Lights;
@@ -1263,18 +1263,16 @@ namespace Smash_Forge
                 folderSelect.Title = "Models Directory";
                 if (folderSelect.ShowDialog() == DialogResult.OK)
                 {
-                    string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*model.nud", SearchOption.AllDirectories);
-
                     using (var outputFolderSelect = new FolderSelectDialog())
                     {
                         outputFolderSelect.Title = "Output Renders Directory";
                         if (outputFolderSelect.ShowDialog() == DialogResult.OK)
                         {
-                            for (int i = 0; i < files.Length; i++)
+                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, "*model.nud", SearchOption.AllDirectories))
                             {
                                 try
                                 {
-                                    MainForm.Instance.OpenNud(files[i], "", this);
+                                    MainForm.Instance.OpenNud(file, "", this);
                                 }
                                 catch (Exception e)
                                 {
@@ -1283,7 +1281,7 @@ namespace Smash_Forge
                                     Debug.WriteLine(e.StackTrace);
                                 }
 
-                                BatchRenderViewportToFile(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+                                BatchRenderViewportToFile(file, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
 
                                 // Cleanup the models and nodes but keep the same viewport.
                                 ClearModelContainers();
@@ -1306,24 +1304,22 @@ namespace Smash_Forge
                 folderSelect.Title = "Models Directory";
                 if (folderSelect.ShowDialog() == DialogResult.OK)
                 {
-                    string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*.sbfres", SearchOption.AllDirectories);
-
                     using (var outputFolderSelect = new FolderSelectDialog())
                     {
                         outputFolderSelect.Title = "Output Renders Directory";
                         if (outputFolderSelect.ShowDialog() == DialogResult.OK)
                         {
-                            for (int i = 0; i < files.Length; i++)
+                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, "*.sbfres", SearchOption.AllDirectories))
                             {
-                                if (files[i].ToLower().Contains("tex") || files[i].ToLower().Contains("animation"))
+                                if (file.ToLower().Contains("tex") || file.ToLower().Contains("animation"))
                                     continue;
 
                                 try
                                 {
-                                    MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(files[i]), files[i], "", this);
+                                    MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(file), file, "", this);
 
-                                    string nameNoExtension = Path.GetFileNameWithoutExtension(files[i]);
-                                    string textureFileName = Path.GetDirectoryName(files[i]) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
+                                    string nameNoExtension = Path.GetFileNameWithoutExtension(file);
+                                    string textureFileName = Path.GetDirectoryName(file) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
 
                                     if (File.Exists(textureFileName))
                                         MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
@@ -1333,7 +1329,7 @@ namespace Smash_Forge
                                     Debug.WriteLine(e.Message);
                                     Debug.WriteLine(e.StackTrace);
                                 }
-                                BatchRenderViewportToFile(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+                                BatchRenderViewportToFile(file, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
 
                                 // Cleanup the models and nodes but keep the same viewport.
                                 ClearModelContainers();
@@ -1479,12 +1475,20 @@ namespace Smash_Forge
             {
                 if (node is ModelContainer)
                 {
-                    Runtime.TextureContainers.Remove(((ModelContainer)node).NUT);
-                    Runtime.BNTXList.Remove(((ModelContainer)node).BNTX);
+                    ModelContainer m = (ModelContainer)node;
+                    Runtime.TextureContainers.Remove(m.NUT);
 
-                    if (((ModelContainer)node).Bfres != null && ((ModelContainer)node).Bfres.FTEXContainer != null)
+                    if (m.BNTX != null)
                     {
-                        Runtime.FTEXContainerList.Remove(((ModelContainer)node).Bfres.FTEXContainer);
+                        m.BNTX.textures.Clear();
+                        m.BNTX.glTexByName.Clear();
+                        Runtime.BNTXList.Remove(m.BNTX);
+                    }
+                    if (m.Bfres != null && m.Bfres.FTEXContainer != null)
+                    {
+                        m.Bfres.FTEXContainer.FTEXtextures.Clear();
+                        m.Bfres.FTEXContainer.glTexByName.Clear();
+                        Runtime.FTEXContainerList.Remove(m.Bfres.FTEXContainer);
                     }
                 }
             }

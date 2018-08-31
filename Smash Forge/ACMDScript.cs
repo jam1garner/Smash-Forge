@@ -766,16 +766,31 @@ namespace Smash_Forge
                         break;
                     }
                 case 0xA21BC6EA: //If_Bit_Is_Set
-                case 0x34BCD3F7: //If_Compare
                     {
                         if (IfVariableList.ContainsKey((FighterVariable)cmd.Parameters[0]))
                             readTrue = IfVariableList[(FighterVariable)cmd.Parameters[0]];
                         break;
                     }
-                case 0x477705C2: //unk_477705C2 If_Compare2?
+                case 0x477705C2: //Int_Var_Compare
                     {
                         if (IfVariableValueList.ContainsKey((FighterVariable)cmd.Parameters[0]))
-                            readTrue = IfVariableValueList[(FighterVariable)cmd.Parameters[0]] == (int)cmd.Parameters[2];
+                        {
+                            int variableValue = IfVariableValueList[(FighterVariable)cmd.Parameters[0]];
+                            int compareValue = (int)cmd.Parameters[2];
+                            int method = (int)cmd.Parameters[1];
+                            if (method == 0)
+                                readTrue = variableValue == compareValue;
+                            else if (method == 1)
+                                readTrue = variableValue != compareValue;
+                            else if (method == 2)
+                                readTrue = variableValue <= compareValue;
+                            else if (method == 3)
+                                readTrue = variableValue >= compareValue;
+                            else if (method == 4)
+                                readTrue = variableValue < compareValue;
+                            else if (method == 5)
+                                readTrue = variableValue > compareValue;
+                        }
                         break;
                     }
                 case 0xA5BD4F32: // TRUE
@@ -861,14 +876,13 @@ namespace Smash_Forge
         {
             switch (cmd.Ident)
             {
-                case 0x34BCD3F7: //If_Compare
                 case 0xA21BC6EA: //If_Bit_Is_Set
                     {
                         if (!IfVariableList.ContainsKey((FighterVariable)cmd.Parameters[0]))
                             IfVariableList.Add((FighterVariable)cmd.Parameters[0], true);
                         break;
                     }
-                case 0x477705C2: //unk_477705C2 If_Compare2?
+                case 0x477705C2: //Int_Var_Compare
                     {
                         if (!IfVariableValueList.ContainsKey((FighterVariable)cmd.Parameters[0]))
                         {

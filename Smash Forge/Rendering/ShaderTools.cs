@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using System.IO;
-using Smash_Forge.Rendering.Lights;
-using System.Windows.Forms;
+﻿using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.Shaders;
+using SFGraphics.Utils;
+using Smash_Forge.Rendering.Lights;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 using SFGraphics.Tools;
-
 
 namespace Smash_Forge.Rendering
 {
