@@ -1,23 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using SFGenericModel;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using MeleeLib.DAT;
 using MeleeLib.DAT.Helpers;
-using MeleeLib.IO;
 using MeleeLib.GCX;
 using SFGraphics.Cameras;
-using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
-using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {
@@ -38,6 +28,17 @@ namespace Smash_Forge
             SelectedImageKey = "mesh";
             this.DOBJ = DOBJ;
             Checked = true;
+        }
+
+        public void RecompileVertices(GXVertexDecompressor decompressor, GXVertexCompressor compressor)
+        {
+            foreach(DatPolygon p in DOBJ.Polygons)
+            {
+                foreach(GXDisplayList dl in p.DisplayLists)
+                {
+                    compressor.CompressDisplayList(decompressor.GetFormattedVertices(dl, p), dl.PrimitiveType, p.AttributeGroup);
+                }
+            }
         }
 
         public void Render(Camera c, Shader shader)
@@ -91,8 +92,7 @@ namespace Smash_Forge
                 RenderTextures.Add(tex);
             }
 
-            GXVertexDecompressor decom = new GXVertexDecompressor();
-            decom.SetRoot(((MeleeDataNode)Parent.Parent.Parent).DatFile);
+            GXVertexDecompressor decom = new GXVertexDecompressor(((MeleeDataNode)Parent.Parent.Parent).DatFile);
 
             foreach (DatPolygon p in DOBJ.Polygons)
             {

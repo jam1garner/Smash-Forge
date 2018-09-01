@@ -5,6 +5,7 @@ using OpenTK.Graphics.OpenGL;
 using MeleeLib.DAT;
 using MeleeLib.DAT.Animation;
 using MeleeLib.DAT.MatAnim;
+using MeleeLib.DAT.Helpers;
 using SFGraphics.Cameras;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
@@ -30,6 +31,14 @@ namespace Smash_Forge
 
             SelectedImageKey = "folder";
             ImageKey = "folder";
+        }
+
+        public void RecompileVertices(GXVertexDecompressor decompressor, GXVertexCompressor compressor)
+        {
+            foreach(MeleeDataObjectNode n in DataObjects.Nodes)
+            {
+                n.RecompileVertices(decompressor, compressor);
+            }
         }
 
         public void RefreshDisplay()

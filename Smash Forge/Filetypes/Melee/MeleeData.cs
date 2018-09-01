@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.IO;
 using MeleeLib.DAT;
 using MeleeLib.IO;
+using MeleeLib.DAT.Helpers;
 using SFGraphics.Cameras;
 
 namespace Smash_Forge
@@ -31,6 +32,10 @@ namespace Smash_Forge
             MenuItem Export = new MenuItem("Save As");
             Export.Click += SaveAs;
             ContextMenu.MenuItems.Add(Export);
+
+            MenuItem Recompile = new MenuItem("Recompile");
+            Recompile.Click += RecompileVertices;
+            ContextMenu.MenuItems.Add(Recompile);
         }
 
         public void SaveAs(object sender, EventArgs args)
@@ -49,6 +54,12 @@ namespace Smash_Forge
             }
         }
 
+
+        public void RecompileVertices(object sender, EventArgs args)
+        {
+            RecompileVertices();
+        }
+
         public void RefreshDisplay()
         {
             Nodes.Clear();
@@ -58,6 +69,20 @@ namespace Smash_Forge
                 Nodes.Add(ro);
                 ro.RefreshDisplay();
             }
+        }
+
+        public void RecompileVertices()
+        {
+            GXVertexCompressor compressor = new GXVertexCompressor(DatFile);
+            GXVertexDecompressor decompressor = new GXVertexDecompressor(DatFile);
+
+            foreach (MeleeRootNode root in Nodes)
+            {
+                root.RecompileVertices(decompressor, compressor);
+            }
+
+            DatFile.DataBuffer = compressor.GetBuffer();
+            RefreshDisplay();
         }
 
         public void Render(Camera c)
