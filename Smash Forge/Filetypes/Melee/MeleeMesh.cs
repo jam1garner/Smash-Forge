@@ -12,17 +12,16 @@ namespace Smash_Forge
         public Vector2 UV0;
         public Vector4 Bone;
         public Vector4 Weight;
-
     }
 
     public class MeleeMesh : GenericMesh<MeleeVertex>
     {
-
         public MeleeMesh(List<MeleeVertex> vertices, List<int> vertexIndices)
             : base(vertices, vertexIndices)
         {
             renderSettings.faceCullingSettings.enableFaceCulling = false;
         }
+
         protected override List<VertexAttributeInfo> GetVertexAttributes()
         {
             return new List<VertexAttributeInfo>()
