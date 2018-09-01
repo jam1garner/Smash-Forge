@@ -48,9 +48,7 @@ namespace Smash_Forge
             {
                 shader.SetVector2("UV0Scale", new Vector2(RenderTextures[0].WScale, RenderTextures[0].HScale));
 
-                GL.ActiveTexture(TextureUnit.Texture0);
-                RenderTextures[0].Bind();
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation("TEX1"), 0);
+                shader.SetTexture("TEX1", RenderTextures[0].texture.Id, TextureTarget.Texture2D, 0);
             }
             else
                 shader.SetVector2("UV0Scale", new Vector2(1, 1));
@@ -78,10 +76,6 @@ namespace Smash_Forge
 
         public void RefreshRenderMeshes()
         {
-            foreach (MeleeRenderTexture t in RenderTextures)
-            {
-                t.Dispose();
-            }
             RenderTextures.Clear();
 
             foreach (DatTexture t in DOBJ.Material.Textures)
