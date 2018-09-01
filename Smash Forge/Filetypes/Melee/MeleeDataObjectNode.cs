@@ -8,6 +8,7 @@ using MeleeLib.DAT.Helpers;
 using MeleeLib.GCX;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Shaders;
+using System;
 
 namespace Smash_Forge
 {
@@ -21,6 +22,9 @@ namespace Smash_Forge
         public List<MeleeRenderTexture> RenderTextures = new List<MeleeRenderTexture>();
         public Vector3 BonePosition;
 
+        // for importing
+        public GXVertex[] VertsToImport;
+
 
         public MeleeDataObjectNode(DatDOBJ DOBJ)
         {
@@ -28,16 +32,32 @@ namespace Smash_Forge
             SelectedImageKey = "mesh";
             this.DOBJ = DOBJ;
             Checked = true;
+
+            ContextMenu = new ContextMenu();
+
+            MenuItem Clear = new MenuItem("Clear Polygons");
+            Clear.Click += ClearPolygons;
+            ContextMenu.MenuItems.Add(Clear);
+        }
+
+        public void ClearPolygons(object sender, EventArgs args)
+        {
+            DOBJ.Polygons.Clear();
         }
 
         public void RecompileVertices(GXVertexDecompressor decompressor, GXVertexCompressor compressor)
         {
             foreach(DatPolygon p in DOBJ.Polygons)
             {
+                List<GXDisplayList> newDL = new List<GXDisplayList>();
                 foreach(GXDisplayList dl in p.DisplayLists)
                 {
-                    compressor.CompressDisplayList(decompressor.GetFormattedVertices(dl, p), dl.PrimitiveType, p.AttributeGroup);
+                    newDL.Add(compressor.CompressDisplayList(
+                        VertsToImport == null ? decompressor.GetFormattedVertices(dl, p) : VertsToImport, 
+                        dl.PrimitiveType, 
+                        p.AttributeGroup));
                 }
+                p.DisplayLists = newDL;
             }
         }
 
@@ -85,9 +105,9 @@ namespace Smash_Forge
                 tex.Flag = t.UnkFlags;
                 RenderTextures.Add(tex);
             }
-
+            
+            RenderMeshes.Clear();
             GXVertexDecompressor decom = new GXVertexDecompressor(((MeleeDataNode)Parent.Parent.Parent).DatFile);
-
             foreach (DatPolygon p in DOBJ.Polygons)
             {
                 foreach (GXDisplayList dl in p.DisplayLists)
@@ -112,9 +132,16 @@ namespace Smash_Forge
                             indices.Add(i + j);
                         }
                     }
-                    MeleeMesh m = new MeleeMesh(ConvertVerts(decom.GetFormattedVertices(dl, p)), indices);
-                    m.PrimitiveType = Type;
-                    RenderMeshes.Add(m);
+                    try
+                    {
+
+                        MeleeMesh m = new MeleeMesh(ConvertVerts(decom.GetFormattedVertices(dl, p)), indices);
+                        m.PrimitiveType = Type;
+                        RenderMeshes.Add(m);
+                    } catch (System.Exception e)
+                    {
+
+                    }
                 }
             }
         }
