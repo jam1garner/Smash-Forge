@@ -179,6 +179,11 @@
     <Compile Include="Filetypes\KCL\KCL.cs" />
     <Compile Include="Filetypes\Application\MaterialXML.cs" />
     <Compile Include="Filetypes\Melee\MeleeData.cs" />
+    <Compile Include="Filetypes\Melee\MeleeDataObjectNode.cs" />
+    <Compile Include="Filetypes\Melee\MeleeJointNode.cs" />
+    <Compile Include="Filetypes\Melee\MeleeMesh.cs" />
+    <Compile Include="Filetypes\Melee\MeleeRenderTexture.cs" />
+    <Compile Include="Filetypes\Melee\MeleeRootNode.cs" />
     <Compile Include="Filetypes\Models\Nuds\DisplayVertex.cs" />
     <Compile Include="Filetypes\Models\Nuds\Material.cs" />
     <Compile Include="Filetypes\Models\Nuds\MatTexture.cs" />
