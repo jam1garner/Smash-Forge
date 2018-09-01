@@ -180,7 +180,9 @@
     <Compile Include="Filetypes\Application\MaterialXML.cs" />
     <Compile Include="Filetypes\Melee\MeleeData.cs" />
     <Compile Include="Filetypes\Melee\MeleeDataObjectNode.cs" />
+    <Compile Include="Filetypes\Melee\MeleeJointAnimationNode.cs" />
     <Compile Include="Filetypes\Melee\MeleeJointNode.cs" />
+    <Compile Include="Filetypes\Melee\MeleeMaterialAnimationNode.cs" />
     <Compile Include="Filetypes\Melee\MeleeMesh.cs" />
     <Compile Include="Filetypes\Melee\MeleeRenderTexture.cs" />
     <Compile Include="Filetypes\Melee\MeleeRootNode.cs" />
@@ -1459,6 +1461,7 @@
     <None Include="Resources\icon_model1.png" />
     <None Include="Resources\icon_model2.png" />
     <None Include="Resources\icon_bfres.bmp" />
+    <None Include="Resources\icon_dat.png" />
     <Content Include="Resources\sexy_green_down_arrow.png" />
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />

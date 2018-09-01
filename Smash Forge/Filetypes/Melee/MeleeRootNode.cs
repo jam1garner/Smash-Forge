@@ -1,23 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Forms;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using SFGenericModel;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using MeleeLib.DAT;
-using MeleeLib.DAT.Helpers;
-using MeleeLib.IO;
-using MeleeLib.GCX;
+using MeleeLib.DAT.Animation;
+using MeleeLib.DAT.MatAnim;
 using SFGraphics.Cameras;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
-using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {
@@ -98,11 +88,18 @@ namespace Smash_Forge
             if (Root.MatAnims.Count > 0)
             {
                 Nodes.Add(MatAnims);
+
+                foreach (DatMatAnim anim in Root.MatAnims)
+                    MatAnims.Nodes.Add(new MeleeMaterialAnimationNode(anim));
+
             }
 
             if (Root.Animations.Count > 0)
             {
                 Nodes.Add(JointAnims);
+
+                foreach (DatAnimation anim in Root.Animations)
+                    JointAnims.Nodes.Add(new MeleeJointAnimationNode(anim));
             }
         }
 

@@ -44,6 +44,7 @@ namespace Smash_Forge
             iconList.Images.Add("number", Properties.Resources.icon_number);
             iconList.Images.Add("nut", Properties.Resources.UVPattern);
             iconList.Images.Add("bfres", Properties.Resources.icon_bfres);
+            iconList.Images.Add("dat", Properties.Resources.icon_dat);
             filesTreeView.ImageList = iconList;
 
             MainContextMenu = new ContextMenu();

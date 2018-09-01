@@ -21,6 +21,32 @@ namespace Smash_Forge
         {
             DatFile = Decompiler.Decompile(File.ReadAllBytes(fname));
             Text = "HAL DAT FILE";
+
+            ImageKey = "dat";
+            SelectedImageKey = "dat";
+
+            ContextMenu = new ContextMenu();
+            MenuItem Save = new MenuItem();
+
+            MenuItem Export = new MenuItem("Save As");
+            Export.Click += SaveAs;
+            ContextMenu.MenuItems.Add(Export);
+        }
+
+        public void SaveAs(object sender, EventArgs args)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "HAL DAT|*.dat|" +
+                             "All Files (*.*)|*.*";
+
+                sfd.DefaultExt = "dat";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    Compiler.Compile(DatFile, sfd.FileName);
+
+                }
+            }
         }
 
         public void RefreshDisplay()
