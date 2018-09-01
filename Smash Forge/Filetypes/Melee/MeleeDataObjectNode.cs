@@ -24,8 +24,7 @@ namespace Smash_Forge
 
         // for importing
         public GXVertex[] VertsToImport;
-
-
+        
         public MeleeDataObjectNode(DatDOBJ DOBJ)
         {
             ImageKey = "mesh";
@@ -38,11 +37,64 @@ namespace Smash_Forge
             MenuItem Clear = new MenuItem("Clear Polygons");
             Clear.Click += ClearPolygons;
             ContextMenu.MenuItems.Add(Clear);
+
+            MenuItem smd = new MenuItem("Import from File");
+            smd.Click += ImportModel;
+            ContextMenu.MenuItems.Add(smd);
         }
 
         public void ClearPolygons(object sender, EventArgs args)
         {
             DOBJ.Polygons.Clear();
+        }
+
+        public void ImportModel(object sender, EventArgs args)
+        {
+        }
+
+        public void GetVerticesAsTriangles(VBN Bones, GXVertexDecompressor decompressor, out int[] indices, out List<GXVertex> Verts)
+        {
+            Verts = new List<GXVertex>();
+            List<int> ind = new List<int>();
+
+            int index = 0;
+            foreach (DatPolygon p in DOBJ.Polygons)
+            {
+                foreach (GXDisplayList dl in p.DisplayLists)
+                {
+                    GXVertex[] verts = decompressor.GetFormattedVertices(dl, p);
+                    for(int i = 0; i < verts.Length; i++)
+                    {
+                        if(verts[i].N != null && verts[i].N.Length == 1)
+                        {
+                            Vector3 ToTransform = Vector3.TransformPosition(new Vector3(verts[i].Pos.X, verts[i].Pos.Y, verts[i].Pos.Z), Bones.bones[verts[i].N[0]].transform);
+                            verts[i].Pos.X = ToTransform.X;
+                            verts[i].Pos.Y = ToTransform.Y;
+                            verts[i].Pos.Z = ToTransform.Z;
+                        }
+                    }
+                    Verts.AddRange(verts);
+
+                    List<int> indi = new List<int>();
+                    for (int i = 0; i < dl.Indices.Length; i ++)
+                    {
+                        indi.Add(index + i);
+                    }
+                    switch (dl.PrimitiveType)
+                    {
+                        case GXPrimitiveType.TriangleStrip: ind.AddRange(TriangleTools.fromTriangleStrip(indi)); break;
+                        case GXPrimitiveType.Quads: ind.AddRange(TriangleTools.fromQuad(indi)); break;
+                        case GXPrimitiveType.Triangles: ind.AddRange(indi); break;
+                        default:
+                            Console.WriteLine(dl.PrimitiveType.ToString());
+                            ind.AddRange(indi);
+                            break;
+                    }
+                    index += indi.Count;
+                }
+            }
+
+            indices = ind.ToArray();
         }
 
         public void RecompileVertices(GXVertexDecompressor decompressor, GXVertexCompressor compressor)
@@ -132,16 +184,9 @@ namespace Smash_Forge
                             indices.Add(i + j);
                         }
                     }
-                    try
-                    {
-
-                        MeleeMesh m = new MeleeMesh(ConvertVerts(decom.GetFormattedVertices(dl, p)), indices);
-                        m.PrimitiveType = Type;
-                        RenderMeshes.Add(m);
-                    } catch (System.Exception e)
-                    {
-
-                    }
+                    MeleeMesh m = new MeleeMesh(ConvertVerts(decom.GetFormattedVertices(dl, p)), indices);
+                    m.PrimitiveType = Type;
+                    RenderMeshes.Add(m);
                 }
             }
         }

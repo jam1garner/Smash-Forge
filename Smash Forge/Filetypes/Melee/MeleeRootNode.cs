@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -6,6 +7,7 @@ using MeleeLib.DAT;
 using MeleeLib.DAT.Animation;
 using MeleeLib.DAT.MatAnim;
 using MeleeLib.DAT.Helpers;
+using MeleeLib.GCX;
 using SFGraphics.Cameras;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
@@ -31,6 +33,62 @@ namespace Smash_Forge
 
             SelectedImageKey = "folder";
             ImageKey = "folder";
+
+            ContextMenu = new ContextMenu();
+
+            MenuItem _ExportAs = new MenuItem("Export As");
+            _ExportAs.Click += ExportAs;
+            ContextMenu.MenuItems.Add(_ExportAs);
+        }
+
+        public void ExportAs(object sender, EventArgs args)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Source Model|*.smd|" +
+                             "All Files (*.*)|*.*";
+
+                sfd.DefaultExt = "smd";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    GXVertexDecompressor decom = new GXVertexDecompressor(((MeleeDataNode)Parent).DatFile);
+                    SMD smd = new SMD();
+                    smd.Bones = RenderBones;
+
+                    foreach(MeleeDataObjectNode n in DataObjects.Nodes)
+                    {
+                        int[] ind;
+                        List<GXVertex> verts;
+                        n.GetVerticesAsTriangles(RenderBones, decom, out ind, out verts);
+
+                        for(int i = 0; i < ind.Length; i+=3)
+                        {
+                            SMDTriangle t = new SMDTriangle();
+                            t.Material = "defaultmaterial";
+                            t.v1 = GXVertexToSMDVertex(verts[ind[i]]);
+                            t.v2 = GXVertexToSMDVertex(verts[ind[i+1]]);
+                            t.v3 = GXVertexToSMDVertex(verts[ind[i+2]]);
+                            smd.Triangles.Add(t);
+                        }
+                    }
+
+                    smd.Save(sfd.FileName);
+                }
+            }
+        }
+
+        public SMDVertex GXVertexToSMDVertex(GXVertex v)
+        {
+            SMDVertex smdv = new SMDVertex()
+            {
+                Parent = 0,
+                P = new Vector3(v.Pos.X, v.Pos.Y, v.Pos.Z),
+                N = new Vector3(v.Nrm.X, v.Nrm.Y, v.Nrm.Z),
+                UV = new Vector2(v.TX0.X, v.TX0.Y),
+            };
+            smdv.Bones = v.N;
+            smdv.Weights = v.W;
+            return smdv;
         }
 
         public void RecompileVertices(GXVertexDecompressor decompressor, GXVertexCompressor compressor)
