@@ -7,6 +7,8 @@ in vec2 UV0;
 out vec4 fragColor;
 uniform sampler2D TEX0;
 
+uniform int colorOverride;
+
 uniform vec4 AMB;
 uniform vec4 DIF;
 uniform vec4 SPC;
@@ -40,4 +42,6 @@ void main() {
 		fragColor = vec4(texture2D(TEX0, UV0).rgb, 1);
 	else
 		fragColor = vec4(texture2D(TEX0, UV0).rgb, 1);
+	if(colorOverride == 1)
+		fragColor.rgb = vec3(1);
 }

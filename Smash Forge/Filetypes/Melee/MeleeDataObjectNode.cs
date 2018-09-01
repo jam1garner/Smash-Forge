@@ -9,10 +9,11 @@ using MeleeLib.GCX;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Shaders;
 using System;
+using Smash_Forge.GUI.Melee;
 
 namespace Smash_Forge
 {
-    public class MeleeDataObjectNode : TreeNode
+    public class MeleeDataObjectNode : MeleeNode
     {
         public DatDOBJ DOBJ;
 
@@ -34,6 +35,10 @@ namespace Smash_Forge
 
             ContextMenu = new ContextMenu();
 
+            MenuItem Edit = new MenuItem("Edit");
+            Edit.Click += OpenEditor;
+            ContextMenu.MenuItems.Add(Edit);
+
             MenuItem Clear = new MenuItem("Clear Polygons");
             Clear.Click += ClearPolygons;
             ContextMenu.MenuItems.Add(Clear);
@@ -43,6 +48,12 @@ namespace Smash_Forge
             ContextMenu.MenuItems.Add(smd);
         }
 
+        public void OpenEditor(object sender, EventArgs args)
+        {
+            DOBJEditor editor = new DOBJEditor(DOBJ);
+            editor.Show();
+        }
+
         public void ClearPolygons(object sender, EventArgs args)
         {
             DOBJ.Polygons.Clear();
@@ -50,12 +61,24 @@ namespace Smash_Forge
 
         public void ImportModel(object sender, EventArgs args)
         {
+            using (DOBJImportSettings import = new DOBJImportSettings(this))
+            {
+                import.ShowDialog();
+                if (import.exitStatus == DOBJImportSettings.ExitStatus.Opened)
+                {
+                    GetDatFile().RecompileVertices();
+                    
+                }
+            }
         }
 
-        public void GetVerticesAsTriangles(VBN Bones, GXVertexDecompressor decompressor, out int[] indices, out List<GXVertex> Verts)
+        public void GetVerticesAsTriangles(out int[] indices, out List<GXVertex> Verts)
         {
             Verts = new List<GXVertex>();
             List<int> ind = new List<int>();
+
+            VBN Bones = GetRoot().RenderBones;
+            GXVertexDecompressor decompressor = new GXVertexDecompressor(GetDatFile().DatFile);
 
             int index = 0;
             foreach (DatPolygon p in DOBJ.Polygons)
@@ -71,7 +94,12 @@ namespace Smash_Forge
                             verts[i].Pos.X = ToTransform.X;
                             verts[i].Pos.Y = ToTransform.Y;
                             verts[i].Pos.Z = ToTransform.Z;
+                            Vector3 ToTransformN = Vector3.TransformNormal(new Vector3(verts[i].Nrm.X, verts[i].Nrm.Y, verts[i].Nrm.Z), Bones.bones[verts[i].N[0]].transform);
+                            verts[i].Nrm.X = ToTransformN.X;
+                            verts[i].Nrm.Y = ToTransformN.Y;
+                            verts[i].Nrm.Z = ToTransformN.Z;
                         }
+                        // TODO: Transform by attached jobj
                     }
                     Verts.AddRange(verts);
 
@@ -86,7 +114,7 @@ namespace Smash_Forge
                         case GXPrimitiveType.Quads: ind.AddRange(TriangleTools.fromQuad(indi)); break;
                         case GXPrimitiveType.Triangles: ind.AddRange(indi); break;
                         default:
-                            Console.WriteLine(dl.PrimitiveType.ToString());
+                            Console.WriteLine("Warning: unsupported primitive type " + dl.PrimitiveType.ToString());
                             ind.AddRange(indi);
                             break;
                     }
@@ -99,17 +127,45 @@ namespace Smash_Forge
 
         public void RecompileVertices(GXVertexDecompressor decompressor, GXVertexCompressor compressor)
         {
-            foreach(DatPolygon p in DOBJ.Polygons)
+            if(VertsToImport != null)
             {
-                List<GXDisplayList> newDL = new List<GXDisplayList>();
-                foreach(GXDisplayList dl in p.DisplayLists)
+                if(DOBJ.Polygons.Count == 0)
                 {
-                    newDL.Add(compressor.CompressDisplayList(
-                        VertsToImport == null ? decompressor.GetFormattedVertices(dl, p) : VertsToImport, 
-                        dl.PrimitiveType, 
-                        p.AttributeGroup));
+                    MessageBox.Show("Error injecting vertices into DOBJ: Not enough polygons");
+                    return;
                 }
-                p.DisplayLists = newDL;
+                DatPolygon p = DOBJ.Polygons[0];
+                p.AttributeGroup = GetRoot().Root.Attributes[0];
+                {
+                    List<GXDisplayList> newDL = new List<GXDisplayList>();
+                    for (int i = 0; i < VertsToImport.Length; i += 3)
+                    {
+                        newDL.Add(compressor.CompressDisplayList(
+                            new GXVertex[] { VertsToImport[i + 2], VertsToImport[i + 1], VertsToImport[i] },
+                            GXPrimitiveType.Triangles,
+                            p.AttributeGroup));
+                    }
+                    p.DisplayLists = newDL;
+                }
+                VertsToImport = null;
+            }
+            else
+            {
+                foreach (DatPolygon p in DOBJ.Polygons)
+                {
+                    List<GXDisplayList> newDL = new List<GXDisplayList>();
+                    if (VertsToImport == null)
+                    {
+                        foreach (GXDisplayList dl in p.DisplayLists)
+                        {
+                            newDL.Add(compressor.CompressDisplayList(
+                                decompressor.GetFormattedVertices(dl, p),
+                                dl.PrimitiveType,
+                                p.AttributeGroup));
+                        }
+                    }
+                    p.DisplayLists = newDL;
+                }
             }
         }
 
@@ -135,11 +191,35 @@ namespace Smash_Forge
             shader.SetFloat("glossiness", DOBJ.Material.MaterialColor.Glossiness);
             shader.SetFloat("transparency", DOBJ.Material.MaterialColor.Transparency);
 
-            if(Checked)
-            foreach (MeleeMesh m in RenderMeshes)
-            {
-                m.Draw(shader, c);
-            }
+            if (Checked)
+                foreach (MeleeMesh m in RenderMeshes)
+                {
+                    if (IsSelected)
+                        DrawModelSelection(m, shader, c);
+                    else
+                        m.Draw(shader, c);
+                }
+        }
+
+        private static void DrawModelSelection(MeleeMesh mesh, Shader shader, Camera camera)
+        {
+            //This part needs to be reworked for proper outline. Currently would make model disappear
+
+            mesh.Draw(shader, camera);
+
+            GL.Enable(EnableCap.StencilTest);
+            // use vertex color for wireframe color
+            shader.SetInt("colorOverride", 1);
+            GL.PolygonMode(MaterialFace.Back, PolygonMode.Line);
+            GL.Enable(EnableCap.LineSmooth);
+            GL.LineWidth(1.5f);
+
+            mesh.Draw(shader, camera);
+
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            shader.SetInt("colorOverride", 0);
+
+            GL.Enable(EnableCap.DepthTest);
         }
 
         public void SetColor(Shader s, string name, Color c)

@@ -184,6 +184,7 @@
     <Compile Include="Filetypes\Melee\MeleeJointNode.cs" />
     <Compile Include="Filetypes\Melee\MeleeMaterialAnimationNode.cs" />
     <Compile Include="Filetypes\Melee\MeleeMesh.cs" />
+    <Compile Include="Filetypes\Melee\MeleeNode.cs" />
     <Compile Include="Filetypes\Melee\MeleeRenderTexture.cs" />
     <Compile Include="Filetypes\Melee\MeleeRootNode.cs" />
     <Compile Include="Filetypes\Models\Nuds\DisplayVertex.cs" />
@@ -303,6 +304,18 @@
     </Compile>
     <Compile Include="GUI\Editors\BYAML Editor\BYAMLList.Designer.cs">
       <DependentUpon>BYAMLList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Melee\DOBJEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Melee\DOBJEditor.Designer.cs">
+      <DependentUpon>DOBJEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Melee\DOBJImportSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Melee\DOBJImportSettings.Designer.cs">
+      <DependentUpon>DOBJImportSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Menus\OdysseyCostumeSelector.cs">
       <SubType>Form</SubType>
@@ -841,6 +854,12 @@
     <EmbeddedResource Include="GUI\About.resx">
       <DependentUpon>About.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Melee\DOBJEditor.resx">
+      <DependentUpon>DOBJEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Melee\DOBJImportSettings.resx">
+      <DependentUpon>DOBJImportSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\AddBone.resx">
       <DependentUpon>AddBone.cs</DependentUpon>

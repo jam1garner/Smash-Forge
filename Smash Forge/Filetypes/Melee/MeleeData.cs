@@ -12,7 +12,7 @@ using SFGraphics.Cameras;
 
 namespace Smash_Forge
 {
-    public class MeleeDataNode : TreeNode
+    public class MeleeDataNode : MeleeNode
     {
         public DATFile DatFile;
 
@@ -49,7 +49,6 @@ namespace Smash_Forge
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
                     Compiler.Compile(DatFile, sfd.FileName);
-
                 }
             }
         }

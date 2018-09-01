@@ -8,7 +8,7 @@ using MeleeLib.DAT;
 
 namespace Smash_Forge
 {
-    public class MeleeJointNode : TreeNode
+    public class MeleeJointNode : MeleeNode
     {
         private DatJOBJ JOBJ;
 

@@ -1787,8 +1787,15 @@ namespace Smash_Forge
         {
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
+                {
+                    if (m is MeleeDataNode)
+                    {
+                        ((MeleeDataNode)m).Render(camera);
+                    }
                     if (m is ModelContainer)
                         ((ModelContainer)m).Render(camera, depthMap.Id, lightMatrix, new Vector2(glViewport.Width, glViewport.Height), drawShadow);
+
+                }
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)
@@ -1805,8 +1812,9 @@ namespace Smash_Forge
                 lvd.Render();
 
             if (Runtime.renderBones)
-                foreach (ModelContainer m in draw)
-                    m.RenderBones();
+                foreach (TreeNode m in draw)
+                    if(m is ModelContainer)
+                        ((ModelContainer)m).RenderBones();
 
             // ACMD
             if (paramManager != null && Runtime.renderHurtboxes && draw.Count > 0 && (draw[0] is ModelContainer))

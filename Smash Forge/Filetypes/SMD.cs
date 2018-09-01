@@ -128,6 +128,8 @@ namespace Smash_Forge
                         vert.UV = new Vector2(float.Parse(args[7]), float.Parse(args[8]));
                         int wCount = int.Parse(args[9]);
                         int w = 10;
+                        vert.Bones = new int[wCount];
+                        vert.Weights = new float[wCount];
                         for (int i = 0; i < wCount; i++)
                         {
                             vert.Bones[i] = (int.Parse(args[w++]));

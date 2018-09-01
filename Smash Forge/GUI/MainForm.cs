@@ -430,12 +430,12 @@ namespace Smash_Forge
                 AddDockedControl(mvp);
             }
             
-            ModelContainer modelContainer = new ModelContainer();
+            //ModelContainer modelContainer = new ModelContainer();
 
-            modelContainer.MeleeData = new MeleeDataNode(fileName);
+            //modelContainer.MeleeData = new MeleeDataNode(fileName);
 
-            mvp.draw.Add(modelContainer);
-            modelContainer.Text = fileName;
+            mvp.draw.Add(new MeleeDataNode(fileName) { Text = Path.GetFileName(fileName) });
+            //modelContainer.Text = fileName;
             mvp.Text = fileName;
 
             return mvp;
@@ -1764,7 +1764,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0;*.bntx;*.szs;*.sbfres;*.sarc;*.pack;*.byaml;*.byml;*.kcl|" +
+                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0;*.bntx;*.szs;*.sbfres;*.sarc;*.pack;*.byaml;*.byml;*.kcl;*.dat|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +

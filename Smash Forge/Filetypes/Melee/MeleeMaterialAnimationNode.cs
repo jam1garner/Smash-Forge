@@ -10,7 +10,7 @@ using MeleeLib.DAT.MatAnim;
 
 namespace Smash_Forge
 {
-    public class MeleeMaterialAnimationNode : TreeNode
+    public class MeleeMaterialAnimationNode : MeleeNode
     {
         DatMatAnim Animation;
 

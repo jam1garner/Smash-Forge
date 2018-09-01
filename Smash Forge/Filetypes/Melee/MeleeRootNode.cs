@@ -14,9 +14,9 @@ using SFGraphics.GLObjects.Shaders;
 
 namespace Smash_Forge
 {
-    public class MeleeRootNode : TreeNode
+    public class MeleeRootNode : MeleeNode
     {
-        DATRoot Root;
+        public DATRoot Root;
 
         TreeNode Skeleton = new TreeNode("Joints") { SelectedImageKey = "folder", ImageKey = "folder" };
         TreeNode DataObjects = new TreeNode("Data Objects") { SelectedImageKey = "folder", ImageKey = "folder" };
@@ -59,7 +59,7 @@ namespace Smash_Forge
                     {
                         int[] ind;
                         List<GXVertex> verts;
-                        n.GetVerticesAsTriangles(RenderBones, decom, out ind, out verts);
+                        n.GetVerticesAsTriangles(out ind, out verts);
 
                         for(int i = 0; i < ind.Length; i+=3)
                         {

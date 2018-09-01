@@ -9,7 +9,7 @@ using MeleeLib.DAT.Animation;
 
 namespace Smash_Forge
 {
-    public class MeleeJointAnimationNode : TreeNode
+    public class MeleeJointAnimationNode : MeleeNode
     {
         DatAnimation Animation;
 
