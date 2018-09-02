@@ -45,6 +45,7 @@ namespace Smash_Forge
             iconList.Images.Add("nut", Properties.Resources.UVPattern);
             iconList.Images.Add("bfres", Properties.Resources.icon_bfres);
             iconList.Images.Add("dat", Properties.Resources.icon_dat);
+            iconList.Images.Add("script", Properties.Resources.node_file);
             filesTreeView.ImageList = iconList;
 
             MainContextMenu = new ContextMenu();
@@ -150,6 +151,14 @@ namespace Smash_Forge
             if (filesTreeView.SelectedNode is BCH_Model)
             {
                 Runtime.TargetVBN = ((BCH_Model)e.Node).skeleton;
+            }
+            if (filesTreeView.SelectedNode is MeleeRootNode)
+            {
+                Runtime.TargetVBN = ((MeleeRootNode)e.Node).RenderBones;
+            }
+            if (filesTreeView.SelectedNode is MeleeJointAnimationNode)
+            {
+                ((ModelViewport)Parent).CurrentAnimation = ((MeleeJointAnimationNode)filesTreeView.SelectedNode).GetAnimation();
             }
         }
 

@@ -180,6 +180,7 @@
     <Compile Include="Filetypes\Application\MaterialXML.cs" />
     <Compile Include="Filetypes\Melee\MeleeData.cs" />
     <Compile Include="Filetypes\Melee\MeleeDataObjectNode.cs" />
+    <Compile Include="Filetypes\Melee\MeleeFighterDataNode.cs" />
     <Compile Include="Filetypes\Melee\MeleeJointAnimationNode.cs" />
     <Compile Include="Filetypes\Melee\MeleeJointNode.cs" />
     <Compile Include="Filetypes\Melee\MeleeMaterialAnimationNode.cs" />

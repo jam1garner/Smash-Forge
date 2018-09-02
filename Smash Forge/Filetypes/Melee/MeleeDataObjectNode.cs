@@ -176,7 +176,7 @@ namespace Smash_Forge
             if (RenderTextures.Count > 0)
             {
                 shader.SetVector2("UV0Scale", new Vector2(RenderTextures[0].WScale, RenderTextures[0].HScale));
-
+                
                 shader.SetTexture("TEX1", RenderTextures[0].texture.Id, TextureTarget.Texture2D, 0);
             }
             else

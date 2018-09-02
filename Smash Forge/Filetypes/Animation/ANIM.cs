@@ -315,7 +315,7 @@ namespace Smash_Forge
 
             file.WriteLine("animData {\n input time;\n output linear;\n weighted 1;\n preInfinity constant;\n postInfinity constant;\n keys {");
 
-            if (((Animation.KeyFrame)keys.Keys[0]).InterType == Animation.InterpolationType.COSTANT)
+            if (((Animation.KeyFrame)keys.Keys[0]).InterType == Animation.InterpolationType.CONSTANT)
                 size = 1;
 
             int f = 1;

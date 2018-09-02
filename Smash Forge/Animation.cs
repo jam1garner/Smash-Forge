@@ -157,7 +157,7 @@ namespace Smash_Forge
         public enum InterpolationType
         {
             LINEAR = 0,
-            COSTANT,
+            CONSTANT,
             HERMITE,
             STEP,
         };
@@ -324,7 +324,7 @@ namespace Smash_Forge
                     LastFound = 0;
                 LastFrame = frame;
 
-                if (k1.InterType == InterpolationType.COSTANT)
+                if (k1.InterType == InterpolationType.CONSTANT)
                     return k1.Value;
                 if (k1.InterType == InterpolationType.STEP)
                     return k1.Value;

@@ -713,6 +713,17 @@ namespace Smash_Forge
 
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
+                if(node is MeleeDataNode)
+                {
+                    foreach(TreeNode n in node.Nodes)
+                    {
+                        if(n is MeleeRootNode)
+                        {
+                            currentAnimation.SetFrame(animFrameNum);
+                            currentAnimation.NextFrame(((MeleeRootNode)n).RenderBones);
+                        }
+                    }
+                }
                 if (!(node is ModelContainer)) continue;
                 ModelContainer m = (ModelContainer)node;
                 currentAnimation.SetFrame(animFrameNum);

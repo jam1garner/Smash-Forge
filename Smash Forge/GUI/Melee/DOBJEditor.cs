@@ -65,5 +65,45 @@ namespace Smash_Forge.GUI.Melee
             }
             pictureBox1.Image = TempBitmap;
         }
+
+        private void buttonDIF_Click(object sender, EventArgs e)
+        {
+            DOBJ.Material.MaterialColor.DIF = GetColor(DOBJ.Material.MaterialColor.DIF);
+        }
+
+        private Color GetColor(Color c)
+        {
+            using (ColorDialog cd = new ColorDialog())
+            {
+                cd.Color = c;
+
+                if (cd.ShowDialog() == DialogResult.OK)
+                {
+                    return cd.Color;
+                }
+
+                return c;
+            }
+        }
+
+        private void buttonAMB_Click(object sender, EventArgs e)
+        {
+            DOBJ.Material.MaterialColor.AMB = GetColor(DOBJ.Material.MaterialColor.AMB);
+        }
+
+        private void buttonSPC_Click(object sender, EventArgs e)
+        {
+            DOBJ.Material.MaterialColor.SPC = GetColor(DOBJ.Material.MaterialColor.SPC);
+        }
+
+        private void numericGlossiness_ValueChanged(object sender, EventArgs e)
+        {
+            DOBJ.Material.MaterialColor.Glossiness = (float)numericGlossiness.Value;
+        }
+
+        private void numericTransparency_ValueChanged(object sender, EventArgs e)
+        {
+            DOBJ.Material.MaterialColor.Transparency = (float)numericTransparency.Value;
+        }
     }
 }

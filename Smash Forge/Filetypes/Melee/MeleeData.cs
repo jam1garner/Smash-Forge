@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.IO;
 using MeleeLib.DAT;
 using MeleeLib.IO;
+using MeleeLib.DAT.Script;
 using MeleeLib.DAT.Helpers;
 using SFGraphics.Cameras;
 
@@ -21,7 +22,6 @@ namespace Smash_Forge
         public MeleeDataNode(string fname)
         {
             DatFile = Decompiler.Decompile(File.ReadAllBytes(fname));
-            Text = "HAL DAT FILE";
 
             ImageKey = "dat";
             SelectedImageKey = "dat";
@@ -33,7 +33,7 @@ namespace Smash_Forge
             Export.Click += SaveAs;
             ContextMenu.MenuItems.Add(Export);
 
-            MenuItem Recompile = new MenuItem("Recompile");
+            MenuItem Recompile = new MenuItem("Update Vertices");
             Recompile.Click += RecompileVertices;
             ContextMenu.MenuItems.Add(Recompile);
         }
@@ -48,12 +48,19 @@ namespace Smash_Forge
                 sfd.DefaultExt = "dat";
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
+                    if (DatFile.Roots.Length > 0)
+                    {
+                        if (DatFile.Roots[0].FighterData.Count > 0)
+                        {
+                            MessageBox.Show("Cannot save this dat type yet");
+                            return;
+                        }
+                    }
                     Compiler.Compile(DatFile, sfd.FileName);
                 }
             }
         }
-
-
+        
         public void RecompileVertices(object sender, EventArgs args)
         {
             RecompileVertices();
@@ -95,6 +102,30 @@ namespace Smash_Forge
             foreach (MeleeRootNode n in Nodes)
             {
                 n.Render(c);
+            }
+        }
+
+        public void LoadPlayerAJ(string fname)
+        {
+            FileData d = new FileData(fname);
+
+            //Extract All Animations from the AJ file
+            DATRoot r = new DATRoot();
+            r.Text = Path.GetFileNameWithoutExtension(fname);
+            DatFile.AddRoot(r);
+
+            foreach (DATRoot root in DatFile.Roots)
+            {
+                if(root.FighterData.Count > 0)
+                foreach (DatFighterScript script in root.FighterData[0].Scripts)
+                {
+                    if(script.AnimationOffset != 0)
+                    {
+                        DATFile datfile = Decompiler.Decompile(d.getSection(script.AnimationOffset, script.AnimationSize));
+                        datfile.Roots[0].Animations[0].Text = script.Text;
+                        r.Animations.Add(datfile.Roots[0].Animations[0]);
+                    }
+                }
             }
         }
     }

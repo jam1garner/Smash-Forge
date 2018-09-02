@@ -29,24 +29,24 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.buttonDIF = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.buttonAMB = new System.Windows.Forms.Button();
-            this.buttonSPC = new System.Windows.Forms.Button();
-            this.numericGlossiness = new System.Windows.Forms.NumericUpDown();
             this.numericTransparency = new System.Windows.Forms.NumericUpDown();
+            this.numericGlossiness = new System.Windows.Forms.NumericUpDown();
+            this.buttonSPC = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.buttonAMB = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.buttonDIF = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericGlossiness)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericTransparency)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericGlossiness)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -58,31 +58,6 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Material Data";
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Location = new System.Drawing.Point(158, 168);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(125, 121);
-            this.pictureBox1.TabIndex = 2;
-            this.pictureBox1.TabStop = false;
-            // 
-            // buttonDIF
-            // 
-            this.buttonDIF.Location = new System.Drawing.Point(81, 3);
-            this.buttonDIF.Name = "buttonDIF";
-            this.buttonDIF.Size = new System.Drawing.Size(147, 19);
-            this.buttonDIF.TabIndex = 0;
-            this.buttonDIF.UseVisualStyleBackColor = true;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(40, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Diffuse";
             // 
             // tableLayoutPanel1
             // 
@@ -110,23 +85,30 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(241, 125);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
-            // label2
+            // numericTransparency
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 25);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(39, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Amient";
+            this.numericTransparency.Location = new System.Drawing.Point(81, 103);
+            this.numericTransparency.Name = "numericTransparency";
+            this.numericTransparency.Size = new System.Drawing.Size(147, 20);
+            this.numericTransparency.TabIndex = 3;
+            this.numericTransparency.ValueChanged += new System.EventHandler(this.numericTransparency_ValueChanged);
             // 
-            // label3
+            // numericGlossiness
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 50);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(49, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Specular";
+            this.numericGlossiness.Location = new System.Drawing.Point(81, 78);
+            this.numericGlossiness.Name = "numericGlossiness";
+            this.numericGlossiness.Size = new System.Drawing.Size(147, 20);
+            this.numericGlossiness.TabIndex = 3;
+            this.numericGlossiness.ValueChanged += new System.EventHandler(this.numericGlossiness_ValueChanged);
+            // 
+            // buttonSPC
+            // 
+            this.buttonSPC.Location = new System.Drawing.Point(81, 53);
+            this.buttonSPC.Name = "buttonSPC";
+            this.buttonSPC.Size = new System.Drawing.Size(147, 19);
+            this.buttonSPC.TabIndex = 4;
+            this.buttonSPC.UseVisualStyleBackColor = true;
+            this.buttonSPC.Click += new System.EventHandler(this.buttonSPC_Click);
             // 
             // label4
             // 
@@ -137,6 +119,15 @@
             this.label4.TabIndex = 3;
             this.label4.Text = "Glossiness";
             // 
+            // buttonAMB
+            // 
+            this.buttonAMB.Location = new System.Drawing.Point(81, 28);
+            this.buttonAMB.Name = "buttonAMB";
+            this.buttonAMB.Size = new System.Drawing.Size(147, 19);
+            this.buttonAMB.TabIndex = 3;
+            this.buttonAMB.UseVisualStyleBackColor = true;
+            this.buttonAMB.Click += new System.EventHandler(this.buttonAMB_Click);
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -146,35 +137,50 @@
             this.label5.TabIndex = 4;
             this.label5.Text = "Transparency";
             // 
-            // buttonAMB
+            // label3
             // 
-            this.buttonAMB.Location = new System.Drawing.Point(81, 28);
-            this.buttonAMB.Name = "buttonAMB";
-            this.buttonAMB.Size = new System.Drawing.Size(147, 19);
-            this.buttonAMB.TabIndex = 3;
-            this.buttonAMB.UseVisualStyleBackColor = true;
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(3, 50);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(49, 13);
+            this.label3.TabIndex = 4;
+            this.label3.Text = "Specular";
             // 
-            // buttonSPC
+            // label1
             // 
-            this.buttonSPC.Location = new System.Drawing.Point(81, 53);
-            this.buttonSPC.Name = "buttonSPC";
-            this.buttonSPC.Size = new System.Drawing.Size(147, 19);
-            this.buttonSPC.TabIndex = 4;
-            this.buttonSPC.UseVisualStyleBackColor = true;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(40, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Diffuse";
             // 
-            // numericGlossiness
+            // label2
             // 
-            this.numericGlossiness.Location = new System.Drawing.Point(81, 78);
-            this.numericGlossiness.Name = "numericGlossiness";
-            this.numericGlossiness.Size = new System.Drawing.Size(147, 20);
-            this.numericGlossiness.TabIndex = 3;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 25);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(39, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Amient";
             // 
-            // numericTransparency
+            // buttonDIF
             // 
-            this.numericTransparency.Location = new System.Drawing.Point(81, 103);
-            this.numericTransparency.Name = "numericTransparency";
-            this.numericTransparency.Size = new System.Drawing.Size(147, 20);
-            this.numericTransparency.TabIndex = 3;
+            this.buttonDIF.Location = new System.Drawing.Point(81, 3);
+            this.buttonDIF.Name = "buttonDIF";
+            this.buttonDIF.Size = new System.Drawing.Size(147, 19);
+            this.buttonDIF.TabIndex = 0;
+            this.buttonDIF.UseVisualStyleBackColor = true;
+            this.buttonDIF.Click += new System.EventHandler(this.buttonDIF_Click);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(158, 168);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(125, 121);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox1.TabIndex = 2;
+            this.pictureBox1.TabStop = false;
             // 
             // listBox1
             // 
@@ -196,12 +202,13 @@
             this.Name = "DOBJEditor";
             this.Text = "DOBJEditor";
             this.groupBox1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericGlossiness)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericTransparency)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericGlossiness)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 

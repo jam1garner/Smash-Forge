@@ -11,6 +11,7 @@ using MeleeLib.GCX;
 using SFGraphics.Cameras;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
+using System.IO;
 
 namespace Smash_Forge
 {
@@ -21,7 +22,7 @@ namespace Smash_Forge
         TreeNode Skeleton = new TreeNode("Joints") { SelectedImageKey = "folder", ImageKey = "folder" };
         TreeNode DataObjects = new TreeNode("Data Objects") { SelectedImageKey = "folder", ImageKey = "folder" };
         TreeNode MatAnims = new TreeNode("Material Animations") { SelectedImageKey = "folder", ImageKey = "folder" };
-        TreeNode JointAnims = new TreeNode("Joint Animations") { SelectedImageKey = "folder", ImageKey = "folder" };
+        TreeNode JointAnims = new TreeNode("Joint Animations") { SelectedImageKey = "dat", ImageKey = "dat" };
 
         public VBN RenderBones;
         public Matrix4[] BoneTransforms;
@@ -108,6 +109,7 @@ namespace Smash_Forge
             JointAnims.Nodes.Clear();
 
 
+            // Bones--------------------------------------
             if (Root.GetJOBJinOrder().Length > 0)
                 Nodes.Add(Skeleton);
 
@@ -118,6 +120,7 @@ namespace Smash_Forge
             {
                 Skeleton.Nodes.Add(new MeleeJointNode(j) { Text = "Bone_" + i++ });
                 Bone b = new Bone(RenderBones);
+                b.Text = "Bone_" + (i-1);
                 b.position = new float[] { j.TX, j.TY, j.TZ };
                 b.rotation = new float[] { j.RX, j.RY, j.RZ };
                 b.scale = new float[] { j.SX, j.SY, j.SZ };
@@ -143,6 +146,7 @@ namespace Smash_Forge
                 ImageKey = "model";
             }
 
+            // Data Objects--------------------------------------
             i = 0;
             foreach (DatDOBJ d in Root.GetDataObjects())
             {
@@ -152,6 +156,7 @@ namespace Smash_Forge
                 n.BonePosition = Vector3.TransformPosition(Vector3.Zero, BoneTransforms[JOBJS.IndexOf(n.DOBJ.Parent)]);
             }
 
+            // MaterialAnimation--------------------------------------
             if (Root.MatAnims.Count > 0)
             {
                 Nodes.Add(MatAnims);
@@ -161,12 +166,19 @@ namespace Smash_Forge
 
             }
 
+            // Animation--------------------------------------
             if (Root.Animations.Count > 0)
             {
                 Nodes.Add(JointAnims);
 
                 foreach (DatAnimation anim in Root.Animations)
                     JointAnims.Nodes.Add(new MeleeJointAnimationNode(anim));
+            }
+
+            // Scripts--------------------------------------
+            foreach (MeleeLib.DAT.Script.DatFighterData r in Root.FighterData)
+            {
+                Nodes.Add(new MeleeFighterDataNode(r));
             }
         }
 
@@ -183,15 +195,21 @@ namespace Smash_Forge
             if (BoneTransforms.Length > 0)
                 GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "bones"), BoneTransforms.Length, false, ref BoneTransforms[0].Row0.X);
 
+            Matrix4[] binds = RenderBones.GetShaderMatrices();
+            if(binds.Length > 0)
+            GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "binds"), binds.Length, false, ref binds[0].Row0.X);
+
             foreach (MeleeDataObjectNode n in DataObjects.Nodes)
             {
                 n.Render(c, shader);
             }
 
             GL.UseProgram(0);
+            GL.PushAttrib(AttribMask.DepthBufferBit);
             GL.Disable(EnableCap.DepthTest);
 
             RenderTools.DrawVBN(RenderBones);
+            GL.PopAttrib();
         }
 
         private static void SetRenderSettingsUniforms(Camera c, Shader shader)

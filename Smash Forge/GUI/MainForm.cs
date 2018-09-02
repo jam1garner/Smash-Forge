@@ -14,7 +14,7 @@ using SALT.Graphics;
 using System.ComponentModel;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Lights;
-
+using System.Text.RegularExpressions;
 
 namespace Smash_Forge
 {
@@ -429,12 +429,19 @@ namespace Smash_Forge
                 mvp = new ModelViewport();
                 AddDockedControl(mvp);
             }
-            
+
             //ModelContainer modelContainer = new ModelContainer();
 
             //modelContainer.MeleeData = new MeleeDataNode(fileName);
 
-            mvp.draw.Add(new MeleeDataNode(fileName) { Text = Path.GetFileName(fileName) });
+            MeleeDataNode n = new MeleeDataNode(fileName) { Text = Path.GetFileName(fileName) };
+            if (Regex.Match(Path.GetFileName(fileName), "Pl[A-Z][a-z]\\.dat").Success)
+            {
+                string animationfileName = fileName.Replace(".dat", "AJ.dat");
+                n.LoadPlayerAJ(animationfileName);
+            }
+
+            mvp.draw.Add(n);
             //modelContainer.Text = fileName;
             mvp.Text = fileName;
 
@@ -1468,8 +1475,21 @@ namespace Smash_Forge
 
                     return;
                 }*/
-                
-                OpenMeleeDat(File.ReadAllBytes(fileName), fileName);
+                byte[] data = File.ReadAllBytes(fileName);
+                if (dockPanel1.ActiveContent is ModelViewport)
+                {
+                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
+
+                    if (dialogResult == DialogResult.Yes)
+                        OpenMeleeDat(data, fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
+
+                    if (dialogResult == DialogResult.No)
+                        OpenMeleeDat(data, fileName);
+                }
+                else
+                {
+                    OpenMeleeDat(data, fileName);
+                }
             }
 
             if (fileName.EndsWith(".lvd"))
