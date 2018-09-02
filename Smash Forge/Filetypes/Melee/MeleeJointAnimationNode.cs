@@ -22,6 +22,30 @@ namespace Smash_Forge
             this.DatAnimation = Animation;
 
             Text = DatAnimation.Text;
+
+            ContextMenu = new ContextMenu();
+
+
+            MenuItem ImportM = new MenuItem("Import");
+            ImportM.Click += Import;
+            ContextMenu.MenuItems.Add(ImportM);
+
+            MenuItem SaveAsM = new MenuItem("Save As");
+            SaveAsM.Click += SaveAs;
+            ContextMenu.MenuItems.Add(SaveAsM);
+        }
+
+        public void Import(object sender, EventArgs args)
+        {
+            Animation a = new Animation(Text);
+            a.ReplaceAnimation(sender, args);
+            VBN bonetree = Runtime.TargetVBN;
+        }
+
+        public void SaveAs(object sender, EventArgs args)
+        {
+            //lol haxs
+            GetAnimation().SaveAs(sender, args);
         }
 
         public Animation GetAnimation()
@@ -53,16 +77,16 @@ namespace Smash_Forge
                     float prevTan = 0;
                     Animation.KeyFrame prevkey = null;
                     Animation.KeyGroup Group = new Animation.KeyGroup();
-                    for(int i =0; i < DatAnimation.FrameCount; i++)
+                    /*for(int i =0; i < DatAnimation.FrameCount; i++)
                     {
                         Animation.KeyFrame f = new Animation.KeyFrame();
                         f.Frame = i;
                         f.Value = track.GetValueAt(i);
                         f.InterType = Animation.InterpolationType.LINEAR;
                         Group.Keys.Add(f);
-                    }
+                    }*/
                     
-                    /*foreach(AnimationHelperKeyFrame key in track.KeyFrames)
+                    foreach(AnimationHelperKeyFrame key in track.KeyFrames)
                     {
                         Animation.KeyFrame f = new Animation.KeyFrame();
                         f.Frame = key.Frame;
@@ -77,18 +101,18 @@ namespace Smash_Forge
 
                             case InterpolationType.HermiteValue:
                                 f.InterType = Animation.InterpolationType.HERMITE;
-                                f.Value = track.GetValueAt((int)f.Frame);
-                                f.In = prevTan; break;
-                            case InterpolationType.HermiteCurve:
-                                f.InterType = Animation.InterpolationType.HERMITE;
-                                f.Value = track.GetValueAt((int)f.Frame);
+                                f.In = prevTan;
                                 break;
+                            case InterpolationType.HermiteCurve:
+                                prevkey.Out = key.Tan;
+                                continue;
                         }
                         prevValue = key.Value;
                         prevTan = key.Tan;
                         prevkey = f;
                         Group.Keys.Add(f);
-                    }*/
+                    }
+
                     switch (track.TrackType)
                     {
                         case AnimTrackType.XPOS: node.XPOS = Group; break;
