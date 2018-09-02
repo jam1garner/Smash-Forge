@@ -6,11 +6,11 @@ in vec2 UV0;
 
 uniform sampler2D TEX0;
 
-uniform vec4 DIF;
-uniform vec4 AMB;
-uniform vec4 SPC;
+uniform vec4 diffuseColor;
+uniform vec4 ambientColor;
+uniform vec4 specularColor;
 
-uniform int Flags;
+uniform int flags;
 uniform float Glossiness;
 uniform float Transparency;
 
@@ -35,12 +35,12 @@ void main()
 	// Diffuse
 	float lambert = clamp(dot(normal, V), 0, 1);
 	vec3 diffuseColor = texture2D(TEX0, UV0).rgb;
-	vec3 diffuseTerm = diffuseColor * mix(AMB.rgb, DIF.rgb, lambert);
+	vec3 diffuseTerm = diffuseColor * mix(ambientColor.rgb, diffuseColor.rgb, lambert);
 
 	// Specular
 	float phong = clamp(dot(normal, V), 0, 1);
 	phong = pow(phong, 8);
-	vec3 specularTerm = vec3(phong) * SPC.rgb;
+	vec3 specularTerm = vec3(phong) * specularColor.rgb;
 
 	// Render passes
 	fragColor.rgb += diffuseTerm;

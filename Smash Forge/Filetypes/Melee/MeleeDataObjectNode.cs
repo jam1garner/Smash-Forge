@@ -182,10 +182,12 @@ namespace Smash_Forge
             else
                 shader.SetVector2("UV0Scale", new Vector2(1, 1));
 
-            shader.SetInt("Flags", DOBJ.Material.Flags);
-            SetColor(shader, "AMB", DOBJ.Material.MaterialColor.AMB);
-            SetColor(shader, "DIF", DOBJ.Material.MaterialColor.DIF);
-            SetColor(shader, "SPC", DOBJ.Material.MaterialColor.SPC);
+            shader.SetInt("flags", DOBJ.Material.Flags);
+
+            SetRgbaColor(shader, "ambientColor", DOBJ.Material.MaterialColor.AMB);
+            SetRgbaColor(shader, "diffuseColor", DOBJ.Material.MaterialColor.DIF);
+            SetRgbaColor(shader, "specularColor", DOBJ.Material.MaterialColor.SPC);
+
             shader.SetFloat("glossiness", DOBJ.Material.MaterialColor.Glossiness);
             shader.SetFloat("transparency", DOBJ.Material.MaterialColor.Transparency);
 
@@ -219,10 +221,10 @@ namespace Smash_Forge
 
             GL.Enable(EnableCap.DepthTest);
         }
-
-        public void SetColor(Shader s, string name, Color c)
+        
+        public void SetRgbaColor(Shader shader, string name, Color color)
         {
-            s.SetVector4(name, new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f));
+            shader.SetVector4(name, SFGraphics.Utils.ColorTools.Vector4FromColor(color));
         }
 
         public void RefreshRenderMeshes()
