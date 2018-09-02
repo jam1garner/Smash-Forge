@@ -1,47 +1,48 @@
 #version 330
 
-in vec3 V;
-in vec3 N;
+in vec3 objectPosition;
+in vec3 normal;
 in vec2 UV0;
 
-out vec4 fragColor;
 uniform sampler2D TEX0;
 
-uniform int colorOverride;
-
-uniform vec4 AMB;
 uniform vec4 DIF;
+uniform vec4 AMB;
 uniform vec4 SPC;
 
 uniform int Flags;
 uniform float Glossiness;
 uniform float Transparency;
 
-uniform vec3 Eye;
+uniform int colorOverride;
 
-const vec3 LightPosition = vec3(10, 30, 40);
+uniform mat4 mvpMatrix;
 
-void main() {
-	vec3 L = normalize(LightPosition - V);
-	vec3 R = normalize(-reflect(L, N));
+out vec4 fragColor;
+
+void main()
+{
+	if(colorOverride == 1)
+	{
+		fragColor = vec4(1);
+		return;
+	}
+
+	fragColor = vec4(0, 0, 0, 1);
+
+	vec3 V = vec3(0,0,-1) * mat3(mvpMatrix);
 
 	// Diffuse
-	float diff = max(dot(N, L), 0.0);  
-	diff = clamp(diff, 0.0, 1.0); 
+	float lambert = clamp(dot(normal, V), 0, 1);
+	vec3 diffuseColor = texture2D(TEX0, UV0).rgb;
+	vec3 diffuseTerm = diffuseColor * mix(AMB.rgb, DIF.rgb, lambert);
 
 	// Specular
-	float spec = pow(max(dot(R, normalize(-Eye)),0.0), 0.3);
-	spec = clamp(spec, 0.0, 1.0); 
+	float phong = clamp(dot(normal, V), 0, 1);
+	phong = pow(phong, 8);
+	vec3 specularTerm = vec3(phong) * SPC.rgb;
 
-	// Final Elements
-	vec3 FAMB = vec3(0.3);//AMB.rgb * 0.3;
-	vec3 FDIF = diff * texture2D(TEX0, UV0).rgb * DIF.rgb;
-	vec3 FSPC = spec * SPC.rgb;
-
-	if((Flags & 0xF) == 0xC)
-		fragColor = vec4(texture2D(TEX0, UV0).rgb, 1);
-	else
-		fragColor = vec4(texture2D(TEX0, UV0).rgb, 1);
-	if(colorOverride == 1)
-		fragColor.rgb = vec3(1);
+	// Render passes
+	fragColor.rgb += diffuseTerm;
+	fragColor.rgb += specularTerm;
 }

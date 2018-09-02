@@ -172,7 +172,7 @@ namespace Smash_Forge
 
         public void Render(Camera c)
         {
-            Shader shader = OpenTKSharedResources.shaders["DAT"];
+            Shader shader = OpenTKSharedResources.shaders["Dat"];
             shader.UseProgram();
 
             Matrix4 mvpMatrix = c.MvpMatrix;

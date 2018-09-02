@@ -182,8 +182,6 @@ namespace Smash_Forge
             else
                 shader.SetVector2("UV0Scale", new Vector2(1, 1));
 
-            shader.SetVector3("Eye", Vector3.TransformPosition(Vector3.Zero, c.MvpMatrix));
-
             shader.SetInt("Flags", DOBJ.Material.Flags);
             SetColor(shader, "AMB", DOBJ.Material.MaterialColor.AMB);
             SetColor(shader, "DIF", DOBJ.Material.MaterialColor.DIF);
