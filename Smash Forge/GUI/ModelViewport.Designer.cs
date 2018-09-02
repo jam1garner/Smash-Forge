@@ -437,6 +437,7 @@
             this.glViewport.Leave += new System.EventHandler(this.glViewport_Leave); this.glViewport.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseClick);
             this.glViewport.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseMove);
             this.glViewport.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseUp);
+            this.glViewport.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseWheel);
             this.glViewport.Resize += new System.EventHandler(this.glViewport_Resize);
             // 
             // viewportPanel

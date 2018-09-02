@@ -36,7 +36,6 @@ namespace Smash_Forge
 
         // Framerate control
         private Thread renderThread;
-        private bool hasStartedRenderThread = false;
         private bool isRendering = false;
         private bool isOpen = true;
 
@@ -1177,9 +1176,16 @@ namespace Smash_Forge
         {
             if (currentMode != Mode.Selection && !freezeCamera)
             {
+                isRendering = true;
                 camera.UpdateFromMouse();
                 UpdateBoneSizeRelativeToViewport();
             }
+        }
+
+        private void glViewport_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            isRendering = false;
+            glViewport.Invalidate();
         }
 
         #region Controls
