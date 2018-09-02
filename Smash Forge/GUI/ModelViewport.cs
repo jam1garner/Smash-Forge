@@ -461,6 +461,7 @@ namespace Smash_Forge
         private void ModelViewport_Shown(object sender, EventArgs e)
         {
             // Frame time control.
+            glViewport.VSync = Runtime.enableVSync;
             renderThread = new Thread(new ThreadStart(RenderAndAnimationLoop));
             renderThread.Start();
         }

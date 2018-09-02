@@ -92,6 +92,9 @@ namespace Smash_Forge
                     case "render_depth":
                         float.TryParse(node.InnerText, out Runtime.renderDepth);
                         break;
+                    case "enable_vSync":
+                        bool.TryParse(node.InnerText, out Runtime.enableVSync);
+                        break;
                     case "fov":
                         float.TryParse(node.InnerText, out Runtime.fov);
                         break;
@@ -404,6 +407,8 @@ namespace Smash_Forge
             viewportNode.AppendChild(createNode(doc, "zoom_modifier_multiplier", Runtime.zoomModifierScale.ToString()));
             viewportNode.AppendChild(createNode(doc, "fov", Runtime.fov.ToString()));
             viewportNode.AppendChild(createNode(doc, "render_depth", Runtime.renderDepth.ToString()));
+            viewportNode.AppendChild(createNode(doc, "enable_vSync", Runtime.enableVSync.ToString()));
+
             AppendBackgroundSettings(doc, viewportNode);
             AppendOdysseyCostumeEditor(doc, viewportNode);
 
