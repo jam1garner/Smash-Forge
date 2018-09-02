@@ -11,7 +11,7 @@ uniform vec4 ambientColor;
 uniform vec4 specularColor;
 
 uniform int flags;
-uniform float Glossiness;
+uniform float glossiness;
 uniform float Transparency;
 
 uniform int colorOverride;
@@ -22,7 +22,7 @@ out vec4 fragColor;
 
 void main()
 {
-	if(colorOverride == 1)
+	if (colorOverride == 1)
 	{
 		fragColor = vec4(1);
 		return;
@@ -39,7 +39,7 @@ void main()
 
 	// Specular
 	float phong = clamp(dot(normal, V), 0, 1);
-	phong = pow(phong, 8);
+	phong = pow(phong, glossiness);
 	vec3 specularTerm = vec3(phong) * specularColor.rgb;
 
 	// Render passes

@@ -173,10 +173,11 @@ namespace Smash_Forge
         public void Render(Camera c)
         {
             Shader shader = OpenTKSharedResources.shaders["Dat"];
+            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+                shader = OpenTKSharedResources.shaders["DatDebug"];
             shader.UseProgram();
 
-            Matrix4 mvpMatrix = c.MvpMatrix;
-            shader.SetMatrix4x4("mvpMatrix", ref mvpMatrix);
+            SetRenderSettingsUniforms(c, shader);
 
             //Matrix4[] BoneTransforms = RenderBones.GetShaderMatrices();
             if (BoneTransforms.Length > 0)
@@ -191,6 +192,16 @@ namespace Smash_Forge
             GL.Disable(EnableCap.DepthTest);
 
             RenderTools.DrawVBN(RenderBones);
+        }
+
+        private static void SetRenderSettingsUniforms(Camera c, Shader shader)
+        {
+            Matrix4 mvpMatrix = c.MvpMatrix;
+            shader.SetMatrix4x4("mvpMatrix", ref mvpMatrix);
+
+            shader.SetInt("renderType", (int)Runtime.renderType);
+
+            shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 10);
         }
     }
 }
