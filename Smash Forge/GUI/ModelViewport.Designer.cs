@@ -439,6 +439,7 @@
             this.glViewport.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseUp);
             this.glViewport.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseWheel);
             this.glViewport.Resize += new System.EventHandler(this.glViewport_Resize);
+            this.glViewport.LostFocus += new System.EventHandler(this.glViewport_LostFocus);
             // 
             // viewportPanel
             // 

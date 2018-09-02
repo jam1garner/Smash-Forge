@@ -36,7 +36,7 @@ namespace Smash_Forge
 
         // Framerate control
         private Thread renderThread;
-        private bool isRendering = false;
+        private bool renderThreadIsUpdating = false;
         private bool isOpen = true;
 
         // The texture that will be blurred for bloom.
@@ -487,7 +487,7 @@ namespace Smash_Forge
             while (isOpen)
             {             
                 // Always refresh the viewport when animations are playing.
-                if (isRendering || isPlaying)
+                if (renderThreadIsUpdating || isPlaying)
                 {
                     if (renderStopwatch.ElapsedMilliseconds > frameUpdateInterval)
                     {
@@ -690,6 +690,11 @@ namespace Smash_Forge
             UpdateBoneSizeRelativeToViewport();
         }
 
+        private void glViewport_LostFocus(object sender, EventArgs e)
+        {
+            renderThreadIsUpdating = false;
+        }
+
         private void UpdateBoneSizeRelativeToViewport()
         {
             // TODO: Adjust bones to be a fixed size on screen.
@@ -801,7 +806,7 @@ namespace Smash_Forge
             }
 
             // If the render thread isn't triggering updates, update the viewport manually.
-            if (!isRendering || !isPlaying)
+            if (!renderThreadIsUpdating || !isPlaying)
                 glViewport.Invalidate();
         }
 
@@ -1177,7 +1182,7 @@ namespace Smash_Forge
         {
             if (currentMode != Mode.Selection && !freezeCamera)
             {
-                isRendering = true;
+                renderThreadIsUpdating = true;
                 camera.UpdateFromMouse();
                 UpdateBoneSizeRelativeToViewport();
             }
@@ -1185,7 +1190,7 @@ namespace Smash_Forge
 
         private void glViewport_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            isRendering = false;
+            renderThreadIsUpdating = false;
             glViewport.Invalidate();
         }
 
@@ -2275,12 +2280,12 @@ namespace Smash_Forge
         private void glViewport_Enter(object sender, EventArgs e)
         {
             // Only render when the control is focused, so the gui remains responsive.
-            isRendering = true;
+            renderThreadIsUpdating = true;
         }
 
         private void glViewport_Leave(object sender, EventArgs e)
         {
-            isRendering = false;
+            renderThreadIsUpdating = false;
         }
 
         private void RefreshGlTextures()
