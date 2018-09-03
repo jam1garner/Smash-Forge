@@ -20,7 +20,7 @@ namespace Smash_Forge
             Unk1 = 0x3, // diffuse and/or spec?
             SpecularOrSphereMap = 0x4,
             Diffuse = 0x5,
-            Unk2 = 0x105, // giga bowser ao
+            Unk2 = 0x105, // giga bowser bump map?
             Unk3 = 0x23, // wireframe
             Unk4 = 0x104, // samus grill
             Unk5 = 0x25, // marth hair diffuse + alpha?
@@ -209,7 +209,11 @@ namespace Smash_Forge
         private void SetTextureUniforms(Shader shader)
         {
             // Set default values
-            shader.SetVector2("UV0Scale", new Vector2(1, 1));
+            shader.SetVector2("diffuseScale", new Vector2(1, 1));
+            shader.SetVector2("unk2Scale", new Vector2(1, 1));
+            shader.SetVector2("specularScale", new Vector2(1, 1));
+
+
             shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 0);
             shader.SetTexture("sphereTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 1);
             shader.SetTexture("unk2Tex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 2);
@@ -246,16 +250,19 @@ namespace Smash_Forge
                         if ((renderTex.Flag * 0xF) == 0x1)
                         {
                             hasSphere = true;
+                            shader.SetVector2("diffuseScale", new Vector2(renderTex.WScale, renderTex.HScale));
                             shader.SetTexture("sphereTex", renderTex.texture.Id, TextureTarget.Texture2D, 1);
                         }
                         else
                         {
                             hasSpecular = true;
+                            shader.SetVector2("specularScale", new Vector2(renderTex.WScale, renderTex.HScale));
                             shader.SetTexture("specularTex", renderTex.texture.Id, TextureTarget.Texture2D, 3);
                         }
                         break;
                     case TextureTypeFlag.Unk2:
                         hasUnk2 = true;
+                        shader.SetVector2("unk2Scale", new Vector2(renderTex.WScale, renderTex.HScale));
                         shader.SetTexture("unk2Tex", renderTex.texture.Id, TextureTarget.Texture2D, 2);
                         break;
                 }

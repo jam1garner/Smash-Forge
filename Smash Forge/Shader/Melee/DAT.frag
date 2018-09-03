@@ -6,15 +6,19 @@ in vec2 UV0;
 
 uniform int hasDiffuse;
 uniform sampler2D diffuseTex;
+uniform vec2 diffuseScale;
 
 uniform int hasSpecular;
 uniform sampler2D specularTex;
+uniform vec2 specularScale;
 
 uniform int hasSphere;
 uniform sampler2D sphereTex;
+uniform vec2 sphereScale;
 
 uniform int hasUnk2;
 uniform sampler2D unk2Tex;
+uniform vec2 unk2Scale;
 
 uniform vec4 diffuseColor;
 uniform vec4 ambientColor;
@@ -48,10 +52,11 @@ void main()
 	float lambert = clamp(dot(normal, V), 0, 1);
 	vec4 diffuseMap = vec4(1);
     if (hasDiffuse == 1)
-        diffuseMap = texture2D(diffuseTex, UV0).rgba;
+        diffuseMap = texture2D(diffuseTex, UV0 * diffuseScale).rgba;
 	vec3 diffuseTerm = diffuseMap.rgb * mix(ambientColor.rgb, diffuseColor.rgb, lambert);
+	// TODO: This might also be a bump map.
     if (hasUnk2 == 1)
-        diffuseTerm *= texture(unk2Tex, UV0).rgb;
+        diffuseTerm *= texture(unk2Tex, UV0 * unk2Scale).rgb;
 
     // Set alpha
     fragColor.a = diffuseMap.a * transparency;
@@ -61,7 +66,7 @@ void main()
 	phong = pow(phong, glossiness);
 	vec3 specularTerm = vec3(phong) * specularColor.rgb;
     if (hasSpecular == 1)
-        specularTerm *= texture(specularTex, UV0).rgb;
+        specularTerm *= texture(specularTex, UV0 * specularScale).rgb;
 
 	// Render passes
 	fragColor.rgb += diffuseTerm;
