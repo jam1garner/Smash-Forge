@@ -4,7 +4,7 @@ in vec3 objectPosition;
 in vec3 normal;
 in vec2 UV0;
 
-uniform sampler2D TEX0;
+uniform sampler2D diffuseTex;
 
 uniform sampler2D UVTestPattern;
 
@@ -42,12 +42,14 @@ void main()
     else if (renderType == 2)
     {
         // lighting
-
+        vec3 V = vec3(0,0,-1) * mat3(mvpMatrix);
+        float lambert = clamp(dot(normal, V), 0, 1);
+        fragColor.rgb = mix(ambientColor.rgb, diffuseColor.rgb, lambert);
     }
     else if (renderType == 3)
     {
         // diffuse map
-        fragColor.rgb = texture(TEX0, UV0).rgb;
+        fragColor.rgb = texture(diffuseTex, UV0).rgb;
     }
     else if (renderType == 4)
     {
