@@ -41,6 +41,7 @@ namespace Smash_Forge.GUI.Melee
             buttonAMB.BackColor = DOBJ.Material.MaterialColor.AMB;
             numericGlossiness.Value = (decimal)DOBJ.Material.MaterialColor.Glossiness;
             numericTransparency.Value = (decimal)DOBJ.Material.MaterialColor.Transparency;
+            flagsTB.Text = DOBJ.Material.Flags.ToString("X");
 
             listBox1.Items.Clear();
 
@@ -68,7 +69,9 @@ namespace Smash_Forge.GUI.Melee
 
         private void buttonDIF_Click(object sender, EventArgs e)
         {
-            DOBJ.Material.MaterialColor.DIF = GetColor(DOBJ.Material.MaterialColor.DIF);
+            Color color = GetColor(DOBJ.Material.MaterialColor.DIF);
+            DOBJ.Material.MaterialColor.DIF = color;
+            buttonDIF.BackColor = color;
         }
 
         private Color GetColor(Color c)
@@ -88,7 +91,9 @@ namespace Smash_Forge.GUI.Melee
 
         private void buttonAMB_Click(object sender, EventArgs e)
         {
-            DOBJ.Material.MaterialColor.AMB = GetColor(DOBJ.Material.MaterialColor.AMB);
+            Color color = GetColor(DOBJ.Material.MaterialColor.AMB);
+            DOBJ.Material.MaterialColor.AMB = color;
+            buttonAMB.BackColor = color;
         }
 
         private void buttonSPC_Click(object sender, EventArgs e)
@@ -104,6 +109,11 @@ namespace Smash_Forge.GUI.Melee
         private void numericTransparency_ValueChanged(object sender, EventArgs e)
         {
             DOBJ.Material.MaterialColor.Transparency = (float)numericTransparency.Value;
+        }
+
+        private void flagsTB_TextChanged(object sender, EventArgs e)
+        {
+            DOBJ.Material.Flags = GuiTools.TryParseTBInt(flagsTB, true);
         }
     }
 }
