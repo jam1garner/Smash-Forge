@@ -12,6 +12,7 @@ using SFGraphics.Cameras;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
 using System.IO;
+using System.Xml;
 
 namespace Smash_Forge
 {
@@ -37,9 +38,83 @@ namespace Smash_Forge
 
             ContextMenu = new ContextMenu();
 
-            MenuItem _ExportAs = new MenuItem("Export As");
-            _ExportAs.Click += ExportAs;
-            ContextMenu.MenuItems.Add(_ExportAs);
+            MenuItem exportAs = new MenuItem("Export As");
+            exportAs.Click += ExportAs;
+            ContextMenu.MenuItems.Add(exportAs);
+
+            MenuItem exportMaterialXml = new MenuItem("Export Material XML");
+            exportMaterialXml.Click += ExportMaterialXml_Click;
+            ContextMenu.MenuItems.Add(exportMaterialXml);
+        }
+
+        private void ExportMaterialXml_Click(object sender, EventArgs e)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "XML Material|*.xml";
+                DialogResult result = sfd.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    if (sfd.FileName.EndsWith(".xml"))
+                    {
+                        XmlDocument doc = CreateMaterialXml();
+                        doc.Save(sfd.FileName);
+                    }
+                }
+            }
+        }
+
+        public XmlDocument CreateMaterialXml()
+        {
+            XmlDocument doc = new XmlDocument();
+            XmlNode mainNode = doc.CreateElement("DAT");
+            doc.AppendChild(mainNode);
+
+            DatDOBJ[] dOBJs = Root.GetDataObjects();
+            for (int i = 0; i < dOBJs.Length; i++)
+            {
+                DatDOBJ d = dOBJs[i];
+
+                string name = $"DataObject{ i }";
+                XmlNode dobjNode = doc.CreateElement(name);
+                AppendAttributes(doc, dobjNode, d);
+
+                XmlNode texturesListNode = doc.CreateElement("Textures");
+                foreach (var tex in d.Material.Textures)
+                {
+                    XmlNode texNode = doc.CreateElement("Texture");
+                    AppendTexAttributes(doc, tex, texNode);
+                    texturesListNode.AppendChild(texNode);
+                }
+                dobjNode.AppendChild(texturesListNode);
+
+                mainNode.AppendChild(dobjNode);
+            }
+
+            return doc;
+        }
+
+        private static void AppendTexAttributes(XmlDocument doc, DatTexture tex, XmlNode texNode)
+        {
+            AppendXmlAttribute(doc, texNode, "Flags", tex.UnkFlags.ToString("X"));
+            AppendXmlAttribute(doc, texNode, "WrapS", tex.WrapS.ToString());
+            AppendXmlAttribute(doc, texNode, "WrapT", tex.WrapT.ToString());
+            AppendXmlAttribute(doc, texNode, "MagFilter", tex.MagFilter.ToString());
+        }
+
+        private static void AppendXmlAttribute(XmlDocument doc, XmlNode node, string name, string value)
+        {
+            XmlAttribute attribute = doc.CreateAttribute(name);
+            attribute.Value = value;
+            node.Attributes.Append(attribute);
+        }
+
+        private static void AppendAttributes(XmlDocument doc, XmlNode dobjNode, DatDOBJ d)
+        {
+            XmlAttribute flagsAttribute = doc.CreateAttribute("Flags");
+            flagsAttribute.Value = d.Material.Flags.ToString("X");
+            dobjNode.Attributes.Append(flagsAttribute);
         }
 
         public void ExportAs(object sender, EventArgs args)
@@ -152,7 +227,7 @@ namespace Smash_Forge
             {
                 MeleeDataObjectNode n = new MeleeDataObjectNode(d) { Text = "DataObject" + i++ };
                 DataObjects.Nodes.Add(n);
-                n.RefreshRenderMeshes();
+                n.RefreshRendering();
                 n.BonePosition = Vector3.TransformPosition(Vector3.Zero, BoneTransforms[JOBJS.IndexOf(n.DOBJ.Parent)]);
             }
 
@@ -189,7 +264,7 @@ namespace Smash_Forge
                 shader = OpenTKSharedResources.shaders["DatDebug"];
             shader.UseProgram();
 
-            SetRenderSettingsUniforms(c, shader);
+            SetSharedUniforms(c, shader);
 
             if (BoneTransforms.Length > 0)
                 GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "bones"), BoneTransforms.Length, false, ref BoneTransforms[0].Row0.X);
@@ -212,14 +287,30 @@ namespace Smash_Forge
             GL.PopAttrib();
         }
 
-        private static void SetRenderSettingsUniforms(Camera c, Shader shader)
+        private static void SetSharedUniforms(Camera c, Shader shader)
         {
             Matrix4 mvpMatrix = c.MvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref mvpMatrix);
 
+            Matrix4 sphereMatrix = c.ModelViewMatrix;
+            sphereMatrix.Invert();
+            sphereMatrix.Transpose();
+            shader.SetMatrix4x4("sphereMatrix", ref sphereMatrix);
+
             shader.SetInt("renderType", (int)Runtime.renderType);
 
             shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 10);
+
+            shader.SetBoolToInt("renderR", Runtime.renderR);
+            shader.SetBoolToInt("renderG", Runtime.renderG);
+            shader.SetBoolToInt("renderB", Runtime.renderB);
+            shader.SetBoolToInt("renderAlpha", Runtime.renderAlpha);
+            bool alphaOverride = Runtime.renderAlpha && !Runtime.renderR && !Runtime.renderG && !Runtime.renderB;
+            shader.SetBoolToInt("alphaOverride", alphaOverride);
+
+            shader.SetBoolToInt("renderDiffuse", Runtime.renderDiffuse);
+            shader.SetBoolToInt("renderSpecular", Runtime.renderSpecular);
+            shader.SetBoolToInt("renderReflection", Runtime.renderReflection);
         }
     }
 }

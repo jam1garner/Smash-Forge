@@ -15,8 +15,16 @@ namespace Smash_Forge
 {
     public class MeleeDataObjectNode : MeleeNode
     {
-        public DatDOBJ DOBJ;
+        enum TextureTypeFlag : uint
+        {
+            Diffuse = 0x10,
+            Specular = 0x20,
+            Sphere = 0x81,
+            Unk2 = 0x00, // giga bowser ao?
+            Unk3 = 0x30 // also diffuse?
+        }
 
+        public DatDOBJ DOBJ;
 
         // For Rendering Only
         public List<MeleeMesh> RenderMeshes = new List<MeleeMesh>();
@@ -173,22 +181,11 @@ namespace Smash_Forge
         {
             shader.SetVector3("BonePosition", BonePosition);
 
-            // TODO: Set textures based on the texture flags.
-            if (RenderTextures.Count > 0)
-            {
-                shader.SetVector2("UV0Scale", new Vector2(RenderTextures[0].WScale, RenderTextures[0].HScale));          
-                shader.SetTexture("diffuseTex", RenderTextures[0].texture.Id, TextureTarget.Texture2D, 0);
-            }
-            else
-            {
-                shader.SetVector2("UV0Scale", new Vector2(1, 1));
-                shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 0);
-            }
+            SetTextureUniforms(shader);
 
             shader.SetInt("flags", DOBJ.Material.Flags);
+            shader.SetBoolToInt("enableSpecular", (DOBJ.Material.Flags & 0x0F) == 0xC);
 
-            // Swap diffuse and ambient colors.
-            // Ambient is always darker than diffuse for some reason.
             SetRgbaColor(shader, "ambientColor", DOBJ.Material.MaterialColor.AMB);
             SetRgbaColor(shader, "diffuseColor", DOBJ.Material.MaterialColor.DIF);
             SetRgbaColor(shader, "specularColor", DOBJ.Material.MaterialColor.SPC);
@@ -204,6 +201,93 @@ namespace Smash_Forge
                     else
                         m.Draw(shader, c);
                 }
+        }
+
+        private void SetTextureUniforms(Shader shader)
+        {
+            // Set default values
+            shader.SetVector2("diffuseScale", new Vector2(1, 1));
+            shader.SetVector2("unk2Scale", new Vector2(1, 1));
+            shader.SetVector2("specularScale", new Vector2(1, 1));
+
+
+            shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 0);
+            shader.SetTexture("sphereTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 1);
+            shader.SetTexture("unk2Tex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 2);
+            shader.SetTexture("specularTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 3);
+
+            bool hasDiffuse = false;
+            bool hasUnk2 = false;
+            bool hasSphere = false;
+            bool hasSpecular = false;
+
+            // TODO: Does each texture have its own scale?
+            shader.SetVector2("UV0Scale", new Vector2(1));
+
+            foreach (var renderTex in RenderTextures)
+            {
+                uint type = GetTextureType(renderTex);
+                if (!Enum.IsDefined(typeof(TextureTypeFlag), type))
+                    continue;
+
+                // The "index" probably also determines the texture type.
+                switch ((TextureTypeFlag)type)
+                {
+                    default:
+                        break;
+                    case TextureTypeFlag.Diffuse:
+                    case TextureTypeFlag.Unk3:
+                        hasDiffuse = true;
+                        SetDiffuseTexUniforms(shader, renderTex);
+                        break;
+                    case TextureTypeFlag.Specular:
+                        hasSpecular = true;
+                        SetSpecularTexUniforms(shader, renderTex);
+                        break;
+                    case TextureTypeFlag.Sphere:
+                        hasSphere = true;
+                        SetSphereTexUniforms(shader, renderTex);
+                        break;
+                    case TextureTypeFlag.Unk2:
+                        hasUnk2 = true;
+                        SetUnk2TexUniforms(shader, renderTex);
+                        break;
+                }
+            }
+
+            shader.SetBoolToInt("hasDiffuse", hasDiffuse);
+            shader.SetBoolToInt("hasUnk2", hasUnk2);
+            shader.SetBoolToInt("hasSphere", hasSphere);
+            shader.SetBoolToInt("hasSpecular", hasSpecular);
+        }
+
+        private static void SetSphereTexUniforms(Shader shader, MeleeRenderTexture renderTex)
+        {
+            shader.SetVector2("sphereScale", new Vector2(renderTex.WScale, renderTex.HScale));
+            shader.SetTexture("sphereTex", renderTex.texture.Id, TextureTarget.Texture2D, 1);
+        }
+
+        private static void SetUnk2TexUniforms(Shader shader, MeleeRenderTexture renderTex)
+        {
+            shader.SetVector2("unk2Scale", new Vector2(renderTex.WScale, renderTex.HScale));
+            shader.SetTexture("unk2Tex", renderTex.texture.Id, TextureTarget.Texture2D, 2);
+        }
+
+        private static void SetDiffuseTexUniforms(Shader shader, MeleeRenderTexture renderTex)
+        {
+            shader.SetVector2("diffuseScale", new Vector2(renderTex.WScale, renderTex.HScale));
+            shader.SetTexture("diffuseTex", renderTex.texture.Id, TextureTarget.Texture2D, 0);
+        }
+
+        private static void SetSpecularTexUniforms(Shader shader, MeleeRenderTexture renderTex)
+        {
+            shader.SetVector2("specularScale", new Vector2(renderTex.WScale, renderTex.HScale));
+            shader.SetTexture("specularTex", renderTex.texture.Id, TextureTarget.Texture2D, 3);
+        }
+
+        private static uint GetTextureType(MeleeRenderTexture renderTex)
+        {
+            return renderTex.Flag & 0xFF;
         }
 
         private static void DrawModelSelection(MeleeMesh mesh, Shader shader, Camera camera)
@@ -232,17 +316,14 @@ namespace Smash_Forge
             shader.SetVector4(name, SFGraphics.Utils.ColorTools.Vector4FromColor(color));
         }
 
-        public void RefreshRenderMeshes()
+        public void RefreshRendering()
         {
-            RenderTextures.Clear();
+            RefreshRenderTextures();
+            RefreshRenderMeshes();
+        }
 
-            foreach (DatTexture t in DOBJ.Material.Textures)
-            {
-                MeleeRenderTexture tex = new MeleeRenderTexture(t);
-                tex.Flag = t.UnkFlags;
-                RenderTextures.Add(tex);
-            }
-            
+        private void RefreshRenderMeshes()
+        {
             RenderMeshes.Clear();
             GXVertexDecompressor decom = new GXVertexDecompressor(((MeleeDataNode)Parent.Parent.Parent).DatFile);
             foreach (DatPolygon p in DOBJ.Polygons)
@@ -273,6 +354,18 @@ namespace Smash_Forge
                     m.PrimitiveType = Type;
                     RenderMeshes.Add(m);
                 }
+            }
+        }
+
+        private void RefreshRenderTextures()
+        {
+            RenderTextures.Clear();
+
+            foreach (DatTexture t in DOBJ.Material.Textures)
+            {
+                MeleeRenderTexture tex = new MeleeRenderTexture(t);
+                tex.Flag = t.UnkFlags;
+                RenderTextures.Add(tex);
             }
         }
 

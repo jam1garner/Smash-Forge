@@ -19,7 +19,9 @@ namespace Smash_Forge
         public MeleeMesh(List<MeleeVertex> vertices, List<int> vertexIndices)
             : base(vertices, vertexIndices)
         {
-            renderSettings.faceCullingSettings.enableFaceCulling = false;
+            // TODO: Why is this flipped?
+            renderSettings.faceCullingSettings.enableFaceCulling = true;
+            renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Front;
         }
 
         protected override List<VertexAttributeInfo> GetVertexAttributes()

@@ -2349,9 +2349,7 @@ namespace Smash_Forge
 
         private void batchRenderNUDToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
-            if (mvp != null)
-                mvp.BatchRenderNudModels();
+
         }
 
         private void batchRenderBOTWBfresToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2359,6 +2357,31 @@ namespace Smash_Forge
             ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
             if (mvp != null)
                 mvp.BatchRenderBotwBfresModels();
+        }
+
+        private void nudToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MaterialXmlBatchExport.BatchExportNudMaterialXml();
+
+        }
+
+        private void meleeDatToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MaterialXmlBatchExport.BatchExportMeleeDatMaterialXml();
+        }
+
+        private void nudToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
+            if (mvp != null)
+                mvp.BatchRenderNudModels();
+        }
+
+        private void meleeDatToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
+            if (mvp != null)
+                mvp.BatchRenderMeleeDatModels();
         }
     }
 }

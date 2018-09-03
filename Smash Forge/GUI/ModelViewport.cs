@@ -1191,6 +1191,56 @@ namespace Smash_Forge
 
         public void BatchRenderNudModels()
         {
+            BatchRenderModels("*model.nud", OpenNud);
+        }
+
+        public void BatchRenderMeleeDatModels()
+        {
+            BatchRenderModels("*.dat", OpenMeleeDat);
+        }
+
+        public void BatchRenderBotwBfresModels()
+        {
+            // Get the source model folder and then the output folder. 
+            using (var folderSelect = new FolderSelectDialog())
+            {
+                folderSelect.Title = "Models Directory";
+                if (folderSelect.ShowDialog() == DialogResult.OK)
+                {
+                    using (var outputFolderSelect = new FolderSelectDialog())
+                    {
+                        outputFolderSelect.Title = "Output Renders Directory";
+                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
+                        {
+                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, "*.sbfres", SearchOption.AllDirectories))
+                            {
+                                if (file.ToLower().Contains("tex") || file.ToLower().Contains("animation"))
+                                    continue;
+
+                                try
+                                {
+                                    OpenBfres(file);
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.WriteLine(e.Message);
+                                    Debug.WriteLine(e.StackTrace);
+                                }
+                                BatchRenderViewportToFile(file, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+
+                                // Cleanup the models and nodes but keep the same viewport.
+                                ClearModelContainers();
+                                // Make sure the reference counts get updated for all the GLObjects so we can clean up next frame.
+                                GC.WaitForPendingFinalizers();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void BatchRenderModels(string searchPattern, Action<string> openFiles)
+        {
             // Ignore warnings.
             Runtime.checkNudTexIdOnOpen = false;
 
@@ -1205,11 +1255,11 @@ namespace Smash_Forge
                         outputFolderSelect.Title = "Output Renders Directory";
                         if (outputFolderSelect.ShowDialog() == DialogResult.OK)
                         {
-                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, "*model.nud", SearchOption.AllDirectories))
+                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, searchPattern, SearchOption.AllDirectories))
                             {
                                 try
                                 {
-                                    MainForm.Instance.OpenNud(file, "", this);
+                                    openFiles(file);
                                 }
                                 catch (Exception e)
                                 {
@@ -1233,50 +1283,26 @@ namespace Smash_Forge
             Runtime.checkNudTexIdOnOpen = true;
         }
 
-        public void BatchRenderBotwBfresModels()
+        private void OpenNud(string file)
         {
-            // Get the source model folder and then the output folder. 
-            using (var folderSelect = new FolderSelectDialog())
-            {
-                folderSelect.Title = "Models Directory";
-                if (folderSelect.ShowDialog() == DialogResult.OK)
-                {
-                    using (var outputFolderSelect = new FolderSelectDialog())
-                    {
-                        outputFolderSelect.Title = "Output Renders Directory";
-                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
-                        {
-                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, "*.sbfres", SearchOption.AllDirectories))
-                            {
-                                if (file.ToLower().Contains("tex") || file.ToLower().Contains("animation"))
-                                    continue;
+            MainForm.Instance.OpenNud(file, "", this);
+        }
 
-                                try
-                                {
-                                    MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(file), file, "", this);
+        private void OpenMeleeDat(string file)
+        {
+            byte[] data = File.ReadAllBytes(file);
+            MainForm.Instance.OpenMeleeDat(data, file, "", this);
+        }
 
-                                    string nameNoExtension = Path.GetFileNameWithoutExtension(file);
-                                    string textureFileName = Path.GetDirectoryName(file) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
+        private void OpenBfres(string file)
+        {
+            MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(file), file, "", this);
 
-                                    if (File.Exists(textureFileName))
-                                        MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
-                                }
-                                catch (Exception e)
-                                {
-                                    Debug.WriteLine(e.Message);
-                                    Debug.WriteLine(e.StackTrace);
-                                }
-                                BatchRenderViewportToFile(file, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+            string nameNoExtension = Path.GetFileNameWithoutExtension(file);
+            string textureFileName = Path.GetDirectoryName(file) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
 
-                                // Cleanup the models and nodes but keep the same viewport.
-                                ClearModelContainers();
-                                // Make sure the reference counts get updated for all the GLObjects so we can clean up next frame.
-                                GC.WaitForPendingFinalizers();
-                            }
-                        }
-                    }
-                }
-            }
+            if (File.Exists(textureFileName))
+                MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
         }
 
         private void BatchRenderStages()
@@ -1305,13 +1331,13 @@ namespace Smash_Forge
             }
         }
 
-        private void BatchRenderViewportToFile(string nudFileName, string sourcePath, string outputPath)
+        private void BatchRenderViewportToFile(string fileName, string sourcePath, string outputPath)
         {
             SetUpAndRenderViewport();
 
             using (Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, true))
             {
-                string renderName = ConvertDirSeparatorsToUnderscore(nudFileName, sourcePath);
+                string renderName = ConvertDirSeparatorsToUnderscore(fileName, sourcePath);
                 screenCapture.Save(outputPath + "\\" + renderName + ".png");
             }
         }
@@ -1963,12 +1989,6 @@ namespace Smash_Forge
         private void ModelViewport_KeyDown(object sender, KeyEventArgs e)
         {
             // Super secret commands. I'm probably going to be the only one that uses them anyway...
-            if (Keyboard.GetState().IsKeyDown(Key.X) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.L))
-                MaterialXmlBatchExport.ExportAllMaterialsFromFolder();
-
-            if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T) && Keyboard.GetState().IsKeyDown(Key.M))
-                BatchRenderStages();
-
             if (Keyboard.GetState().IsKeyDown(Key.L) && Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T))
                 ParamTools.BatchExportParamValuesAsCsv("light_set");
 
