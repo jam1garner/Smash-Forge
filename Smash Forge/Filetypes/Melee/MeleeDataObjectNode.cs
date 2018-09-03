@@ -189,8 +189,8 @@ namespace Smash_Forge
 
             // Swap diffuse and ambient colors.
             // Ambient is always darker than diffuse for some reason.
-            SetRgbaColor(shader, "ambientColor", DOBJ.Material.MaterialColor.DIF);
-            SetRgbaColor(shader, "diffuseColor", DOBJ.Material.MaterialColor.AMB);
+            SetRgbaColor(shader, "ambientColor", DOBJ.Material.MaterialColor.AMB);
+            SetRgbaColor(shader, "diffuseColor", DOBJ.Material.MaterialColor.DIF);
             SetRgbaColor(shader, "specularColor", DOBJ.Material.MaterialColor.SPC);
 
             shader.SetFloat("glossiness", DOBJ.Material.MaterialColor.Glossiness);
