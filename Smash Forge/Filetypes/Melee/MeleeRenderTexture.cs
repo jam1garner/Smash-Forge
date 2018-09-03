@@ -37,7 +37,7 @@ namespace Smash_Forge
             switch (wrapMode)
             {
                 case GXWrapMode.CLAMP:
-                    return TextureWrapMode.Clamp;
+                    return TextureWrapMode.ClampToEdge;
                 case GXWrapMode.MIRROR:
                     return TextureWrapMode.MirroredRepeat;
                 case GXWrapMode.REPEAT:

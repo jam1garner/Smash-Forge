@@ -30,21 +30,22 @@ void main()
 
 	fragColor = vec4(0, 0, 0, 1);
 
-	vec3 V = vec3(0,0,-1) * mat3(mvpMatrix);
+	vec3 V = vec3(0,0.1,-0.9) * mat3(mvpMatrix);
 
 	// Diffuse
 	float lambert = clamp(dot(normal, V), 0, 1);
 	vec3 diffuseMap = texture2D(diffuseTex, UV0).rgb;
     if ((flags & 0xF0) == 0)
         diffuseMap = vec3(1); // no diffuse
-	vec3 diffuseTerm = diffuseMap * mix(ambientColor.rgb, diffuseColor.rgb, lambert);
+	vec3 diffuseTerm = diffuseMap * mix(ambientColor.rgb*0.3, diffuseColor.rgb, lambert);
 
 	// Specular
 	float phong = clamp(dot(normal, V), 0, 1);
-	phong = pow(phong, glossiness);
+	phong = pow(phong, glossiness/3);
 	vec3 specularTerm = vec3(phong) * specularColor.rgb;
 
 	// Render passes
 	fragColor.rgb += diffuseTerm;
-	fragColor.rgb += specularTerm;
+    	if ((flags & 0x0F) == 0xC)
+		fragColor.rgb += specularTerm;
 }
