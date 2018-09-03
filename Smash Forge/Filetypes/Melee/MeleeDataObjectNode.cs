@@ -184,7 +184,8 @@ namespace Smash_Forge
             SetTextureUniforms(shader);
 
             shader.SetInt("flags", DOBJ.Material.Flags);
-            shader.SetBoolToInt("enableSpecular", (DOBJ.Material.Flags & 0x0F) == 0xC);
+            shader.SetBoolToInt("enableSpecular", IsSpecularBitEnabled());
+            shader.SetBoolToInt("enableDiffuseLighting", IsDifuseLightingBitEnabled());
 
             SetRgbaColor(shader, "ambientColor", DOBJ.Material.MaterialColor.AMB);
             SetRgbaColor(shader, "diffuseColor", DOBJ.Material.MaterialColor.DIF);
@@ -201,6 +202,16 @@ namespace Smash_Forge
                     else
                         m.Draw(shader, c);
                 }
+        }
+
+        private bool IsDifuseLightingBitEnabled()
+        {
+            return (DOBJ.Material.Flags & 0x4) > 0;
+        }
+
+        private bool IsSpecularBitEnabled()
+        {
+            return (DOBJ.Material.Flags & 0x8) > 0;
         }
 
         private void SetTextureUniforms(Shader shader)

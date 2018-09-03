@@ -26,6 +26,8 @@ uniform vec4 specularColor;
 
 uniform int flags;
 uniform int enableSpecular;
+uniform int enableDiffuseLighting;
+
 uniform float glossiness;
 uniform float transparency;
 
@@ -70,7 +72,9 @@ void main()
 	if (hasUnk2 == 1)
 		diffuseMap.rgb *= texture(unk2Tex, UV0 * unk2Scale).rgb;
 
-	vec3 diffuseTerm = diffuseMap.rgb * mix(ambientColor.rgb, diffuseColor.rgb, lambert);
+	vec3 diffuseTerm = diffuseMap.rgb;
+	if (enableDiffuseLighting == 1)
+	 	diffuseTerm *= mix(ambientColor.rgb, diffuseColor.rgb, lambert);
 
 	// Specular
 	float phong = clamp(dot(normal, V), 0, 1);
