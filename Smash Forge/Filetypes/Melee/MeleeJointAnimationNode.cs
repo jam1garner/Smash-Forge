@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MeleeLib.DAT;
+using MeleeLib.IO;
 using MeleeLib.DAT.Animation;
 using MeleeLib.DAT.Helpers;
 
@@ -33,19 +34,105 @@ namespace Smash_Forge
             MenuItem SaveAsM = new MenuItem("Save As");
             SaveAsM.Click += SaveAs;
             ContextMenu.MenuItems.Add(SaveAsM);
+
+            MenuItem ExportM = new MenuItem("Export As DAT");
+            ExportM.Click += Export;
+            ContextMenu.MenuItems.Add(ExportM);
         }
 
         public void Import(object sender, EventArgs args)
         {
+            VBN bonetree = Runtime.TargetVBN;
+
+            if(bonetree == null)
+            {
+                MessageBox.Show("Select the model root first");
+                return;
+            }
             Animation a = new Animation(Text);
             a.ReplaceAnimation(sender, args);
-            VBN bonetree = Runtime.TargetVBN;
+
+            List<Bone> bones = bonetree.getBoneTreeOrder();
+
+            DatAnimation.FrameCount = a.FrameCount;
+            DatAnimation.Nodes.Clear();
+            foreach (Bone b in bones)
+            {
+                DatAnimationNode node = new DatAnimationNode();
+                string BoneName = b.Text;
+                foreach (Animation.KeyNode n in a.Bones)
+                {
+                    if (n.Text.Equals(BoneName))
+                    {
+                        List<AnimationHelperTrack> tracks = new List<AnimationHelperTrack>();
+
+                        if (n.XPOS.Keys.Count > 0) tracks.Add(EncodeTrack(n.XPOS));
+                        if (n.YPOS.Keys.Count > 0) tracks.Add(EncodeTrack(n.YPOS));
+                        if (n.ZPOS.Keys.Count > 0) tracks.Add(EncodeTrack(n.ZPOS));
+                        if (n.XROT.Keys.Count > 0) tracks.Add(EncodeTrack(n.XROT));
+                        if (n.YROT.Keys.Count > 0) tracks.Add(EncodeTrack(n.YROT));
+                        if (n.ZROT.Keys.Count > 0) tracks.Add(EncodeTrack(n.ZROT));
+                        if (n.XSCA.Keys.Count > 0) tracks.Add(EncodeTrack(n.XSCA));
+                        if (n.YSCA.Keys.Count > 0) tracks.Add(EncodeTrack(n.YSCA));
+                        if (n.ZSCA.Keys.Count > 0) tracks.Add(EncodeTrack(n.ZSCA));
+
+                        node = (AnimationKeyFrameHelper.EncodeKeyFrames(tracks.ToArray(), (int)a.FrameCount));
+                    }
+                }
+                DatAnimation.Nodes.Add(node);
+            }
+        }
+
+        public AnimationHelperTrack EncodeTrack(Animation.KeyGroup Group)
+        {
+            AnimationHelperTrack t = new AnimationHelperTrack();
+            foreach (Animation.KeyFrame kf in Group.Keys)
+            {
+                AnimationHelperKeyFrame f = new AnimationHelperKeyFrame();
+                f.Frame = (int)kf.Frame;
+                f.Value = kf.Value;
+                f.Tan = kf.In;
+                switch (kf.InterType)
+                {
+                    case Animation.InterpolationType.CONSTANT: f.InterpolationType = InterpolationType.Constant; break;
+                    case Animation.InterpolationType.HERMITE: f.InterpolationType = InterpolationType.Hermite; break;
+                    case Animation.InterpolationType.LINEAR: f.InterpolationType = InterpolationType.Linear; break;
+                    case Animation.InterpolationType.STEP: f.InterpolationType = InterpolationType.Step; break;
+                }
+            }
+            return t;
         }
 
         public void SaveAs(object sender, EventArgs args)
         {
             //lol haxs
             GetAnimation().SaveAs(sender, args);
+        }
+
+        public void Export(object sender, EventArgs args)
+        {
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.Filter += "HAL DAT|*.dat";
+
+                sfd.DefaultExt = "dat";
+
+                if(sfd.ShowDialog() == DialogResult.OK)
+                {
+                    Compiler.Compile(GetAsDATFile(), sfd.FileName);
+                }
+            }
+        }
+
+        public DATFile GetAsDATFile()
+        {
+            DATFile d = new DATFile();
+            DATRoot root = new DATRoot();
+            root.Text = Text;
+            root.Animations.Add(DatAnimation);
+            d.AddRoot(root);
+
+            return d;
         }
 
         public Animation GetAnimation()
