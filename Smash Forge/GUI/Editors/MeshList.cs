@@ -124,7 +124,7 @@ namespace Smash_Forge
             numericUpDown1.Visible = false;
             label1.Visible = false;
             matchToNudButton.Visible = false;
-            Runtime.TargetVBN = null;
+            //Runtime.TargetVBN = null;
             if (e.Node is NUD.Mesh)
             {
                 //Since we are changing value but we don't want the entire model order to swap,

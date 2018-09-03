@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MeleeLib.DAT;
 using MeleeLib.DAT.Script;
+using System.Windows.Forms;
+using Smash_Forge.GUI.Melee;
 
 namespace Smash_Forge
 {
@@ -22,6 +24,18 @@ namespace Smash_Forge
             {
                 Text = "No Name 0x" + Script.Flags.ToString("x");
             }
+
+            ContextMenu = new ContextMenu();
+
+            MenuItem Edit = new MenuItem("Edit");
+            Edit.Click += OpenEditor;
+            ContextMenu.MenuItems.Add(Edit);
+        }
+
+        public void OpenEditor(object sender, EventArgs args)
+        {
+            MeleeCMDEditor editor = new MeleeCMDEditor(Script);
+            editor.Show();
         }
         
     }

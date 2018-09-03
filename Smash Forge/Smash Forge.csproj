@@ -318,6 +318,12 @@
     <Compile Include="GUI\Melee\DOBJImportSettings.Designer.cs">
       <DependentUpon>DOBJImportSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Melee\MeleeCMDEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Melee\MeleeCMDEditor.Designer.cs">
+      <DependentUpon>MeleeCMDEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Menus\OdysseyCostumeSelector.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -861,6 +867,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Melee\DOBJImportSettings.resx">
       <DependentUpon>DOBJImportSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Melee\MeleeCMDEditor.resx">
+      <DependentUpon>MeleeCMDEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\AddBone.resx">
       <DependentUpon>AddBone.cs</DependentUpon>

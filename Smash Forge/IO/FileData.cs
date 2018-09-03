@@ -269,6 +269,20 @@ namespace Smash_Forge
             }
         }
 
+        public void writeBytesAt(int p, byte[] bytes)
+        {
+            if(p + bytes.Length > b.Length)
+            {
+                byte[] newb = new byte[b.Length + ((p + bytes.Length + b.Length) - bytes.Length)];
+                Array.Copy(b, newb, b.Length);
+                b = newb;
+            }
+            for(int i =0; i < bytes.Length; i ++)
+            {
+                b[p++] = bytes[i];
+            }
+        }
+
         public void writeInt(int pos, int value)
         {
             byte[] v = BitConverter.GetBytes(value);
