@@ -40,15 +40,21 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.buttonDIF = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.listBox1 = new System.Windows.Forms.ListBox();
             this.label6 = new System.Windows.Forms.Label();
             this.flagsTB = new System.Windows.Forms.TextBox();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.textureListBox = new System.Windows.Forms.ListBox();
+            this.textureGroupBox = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.label7 = new System.Windows.Forms.Label();
+            this.textureFlagsTB = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericTransparency)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericGlossiness)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.textureGroupBox.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -189,24 +195,6 @@
             this.buttonDIF.UseVisualStyleBackColor = true;
             this.buttonDIF.Click += new System.EventHandler(this.buttonDIF_Click);
             // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Location = new System.Drawing.Point(158, 250);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(125, 121);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.pictureBox1.TabIndex = 2;
-            this.pictureBox1.TabStop = false;
-            // 
-            // listBox1
-            // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(12, 250);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(140, 121);
-            this.listBox1.TabIndex = 3;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
-            // 
             // label6
             // 
             this.label6.Anchor = System.Windows.Forms.AnchorStyles.Right;
@@ -226,13 +214,77 @@
             this.flagsTB.TabIndex = 6;
             this.flagsTB.TextChanged += new System.EventHandler(this.flagsTB_TextChanged);
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(158, 237);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(125, 121);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox1.TabIndex = 2;
+            this.pictureBox1.TabStop = false;
+            // 
+            // textureListBox
+            // 
+            this.textureListBox.FormattingEnabled = true;
+            this.textureListBox.Location = new System.Drawing.Point(12, 237);
+            this.textureListBox.Name = "textureListBox";
+            this.textureListBox.Size = new System.Drawing.Size(140, 121);
+            this.textureListBox.TabIndex = 3;
+            this.textureListBox.SelectedIndexChanged += new System.EventHandler(this.textureListBox_SelectedIndexChanged);
+            // 
+            // textureGroupBox
+            // 
+            this.textureGroupBox.Controls.Add(this.tableLayoutPanel2);
+            this.textureGroupBox.Location = new System.Drawing.Point(12, 364);
+            this.textureGroupBox.Name = "textureGroupBox";
+            this.textureGroupBox.Size = new System.Drawing.Size(271, 238);
+            this.textureGroupBox.TabIndex = 4;
+            this.textureGroupBox.TabStop = false;
+            this.textureGroupBox.Text = "Selected Texture Settings";
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 46F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54F));
+            this.tableLayoutPanel2.Controls.Add(this.label7, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.textureFlagsTB, 1, 0);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.43836F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 83.56165F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(265, 219);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // label7
+            // 
+            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(47, 11);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(71, 13);
+            this.label7.TabIndex = 0;
+            this.label7.Text = "Texture Flags";
+            // 
+            // textureFlagsTB
+            // 
+            this.textureFlagsTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.textureFlagsTB.Location = new System.Drawing.Point(124, 8);
+            this.textureFlagsTB.Name = "textureFlagsTB";
+            this.textureFlagsTB.Size = new System.Drawing.Size(138, 20);
+            this.textureFlagsTB.TabIndex = 1;
+            this.textureFlagsTB.TextChanged += new System.EventHandler(this.textureFlagsTB_TextChanged);
+            // 
             // DOBJEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(512, 414);
-            this.Controls.Add(this.listBox1);
+            this.ClientSize = new System.Drawing.Size(293, 608);
             this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.textureGroupBox);
+            this.Controls.Add(this.textureListBox);
             this.Controls.Add(this.groupBox1);
             this.Name = "DOBJEditor";
             this.Text = "DOBJEditor";
@@ -242,6 +294,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericTransparency)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericGlossiness)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.textureGroupBox.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -262,8 +317,12 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button buttonDIF;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListBox textureListBox;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox flagsTB;
+        private System.Windows.Forms.GroupBox textureGroupBox;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox textureFlagsTB;
     }
 }
