@@ -97,9 +97,17 @@ namespace Smash_Forge
 
         private static void AppendTexAttributes(XmlDocument doc, DatTexture tex, XmlNode texNode)
         {
-            XmlAttribute texFlag = doc.CreateAttribute("Flags");
-            texFlag.Value = tex.UnkFlags.ToString("X");
-            texNode.Attributes.Append(texFlag);
+            AppendXmlAttribute(doc, texNode, "Flags", tex.UnkFlags.ToString("X"));
+            AppendXmlAttribute(doc, texNode, "WrapS", tex.WrapS.ToString());
+            AppendXmlAttribute(doc, texNode, "WrapT", tex.WrapT.ToString());
+            AppendXmlAttribute(doc, texNode, "MagFilter", tex.MagFilter.ToString());
+        }
+
+        private static void AppendXmlAttribute(XmlDocument doc, XmlNode node, string name, string value)
+        {
+            XmlAttribute attribute = doc.CreateAttribute(name);
+            attribute.Value = value;
+            node.Attributes.Append(attribute);
         }
 
         private static void AppendAttributes(XmlDocument doc, XmlNode dobjNode, DatDOBJ d)
