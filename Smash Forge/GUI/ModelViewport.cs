@@ -1191,46 +1191,12 @@ namespace Smash_Forge
 
         public void BatchRenderNudModels()
         {
-            // Ignore warnings.
-            Runtime.checkNudTexIdOnOpen = false;
+            BatchRenderModels("*model.nud", OpenNud);
+        }
 
-            // Get the source model folder and then the output folder. 
-            using (var folderSelect = new FolderSelectDialog())
-            {
-                folderSelect.Title = "Models Directory";
-                if (folderSelect.ShowDialog() == DialogResult.OK)
-                {
-                    using (var outputFolderSelect = new FolderSelectDialog())
-                    {
-                        outputFolderSelect.Title = "Output Renders Directory";
-                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
-                        {
-                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, "*model.nud", SearchOption.AllDirectories))
-                            {
-                                try
-                                {
-                                    MainForm.Instance.OpenNud(file, "", this);
-                                }
-                                catch (Exception e)
-                                {
-                                    // Suppress all exceptions and just keep rendering.
-                                    Debug.WriteLine(e.Message);
-                                    Debug.WriteLine(e.StackTrace);
-                                }
-
-                                BatchRenderViewportToFile(file, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
-
-                                // Cleanup the models and nodes but keep the same viewport.
-                                ClearModelContainers();
-                                // Make sure the reference counts get updated for all the GLObjects so we can clean up next frame.
-                                GC.WaitForPendingFinalizers();
-                            }
-                        }
-                    }
-                }
-            }
-
-            Runtime.checkNudTexIdOnOpen = true;
+        public void BatchRenderMeleeDatModels()
+        {
+            BatchRenderModels("*.dat", OpenMeleeDat);
         }
 
         public void BatchRenderBotwBfresModels()
@@ -1253,13 +1219,7 @@ namespace Smash_Forge
 
                                 try
                                 {
-                                    MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(file), file, "", this);
-
-                                    string nameNoExtension = Path.GetFileNameWithoutExtension(file);
-                                    string textureFileName = Path.GetDirectoryName(file) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
-
-                                    if (File.Exists(textureFileName))
-                                        MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
+                                    OpenBfres(file);
                                 }
                                 catch (Exception e)
                                 {
@@ -1277,6 +1237,71 @@ namespace Smash_Forge
                     }
                 }
             }
+        }
+
+        private void BatchRenderModels(string searchPattern, Action<string> openFiles)
+        {
+            // Ignore warnings.
+            Runtime.checkNudTexIdOnOpen = false;
+
+            // Get the source model folder and then the output folder. 
+            using (var folderSelect = new FolderSelectDialog())
+            {
+                folderSelect.Title = "Models Directory";
+                if (folderSelect.ShowDialog() == DialogResult.OK)
+                {
+                    using (var outputFolderSelect = new FolderSelectDialog())
+                    {
+                        outputFolderSelect.Title = "Output Renders Directory";
+                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
+                        {
+                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, searchPattern, SearchOption.AllDirectories))
+                            {
+                                try
+                                {
+                                    openFiles(file);
+                                    BatchRenderViewportToFile(file, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+                                }
+                                catch (Exception e)
+                                {
+                                    // Suppress all exceptions and just keep rendering.
+                                    Debug.WriteLine(e.Message);
+                                    Debug.WriteLine(e.StackTrace);
+                                }
+
+                                // Cleanup the models and nodes but keep the same viewport.
+                                ClearModelContainers();
+                                // Make sure the reference counts get updated for all the GLObjects so we can clean up next frame.
+                                GC.WaitForPendingFinalizers();
+                            }
+                        }
+                    }
+                }
+            }
+
+            Runtime.checkNudTexIdOnOpen = true;
+        }
+
+        private void OpenNud(string file)
+        {
+            MainForm.Instance.OpenNud(file, "", this);
+        }
+
+        private void OpenMeleeDat(string file)
+        {
+            byte[] data = File.ReadAllBytes(file);
+            MainForm.Instance.OpenMeleeDat(data, file, "", this);
+        }
+
+        private void OpenBfres(string file)
+        {
+            MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(file), file, "", this);
+
+            string nameNoExtension = Path.GetFileNameWithoutExtension(file);
+            string textureFileName = Path.GetDirectoryName(file) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
+
+            if (File.Exists(textureFileName))
+                MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
         }
 
         private void BatchRenderStages()
@@ -1305,13 +1330,13 @@ namespace Smash_Forge
             }
         }
 
-        private void BatchRenderViewportToFile(string nudFileName, string sourcePath, string outputPath)
+        private void BatchRenderViewportToFile(string fileName, string sourcePath, string outputPath)
         {
             SetUpAndRenderViewport();
 
             using (Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, true))
             {
-                string renderName = ConvertDirSeparatorsToUnderscore(nudFileName, sourcePath);
+                string renderName = ConvertDirSeparatorsToUnderscore(fileName, sourcePath);
                 screenCapture.Save(outputPath + "\\" + renderName + ".png");
             }
         }
