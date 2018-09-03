@@ -18,8 +18,8 @@ namespace Smash_Forge
         enum TextureTypeFlag : uint
         {
             Diffuse = 0x10,
+            Sphere = 0x1,
             Specular = 0x20,
-            Sphere = 0x81,
             Unk2 = 0x00, // giga bowser ao?
             Unk3 = 0x30 // also diffuse?
         }
@@ -184,8 +184,8 @@ namespace Smash_Forge
             SetTextureUniforms(shader);
 
             shader.SetInt("flags", DOBJ.Material.Flags);
-            shader.SetBoolToInt("enableSpecular", IsSpecularBitEnabled());
-            shader.SetBoolToInt("enableDiffuseLighting", IsDifuseLightingBitEnabled());
+            shader.SetBoolToInt("enableSpecular", IsSpecularBitSet());
+            shader.SetBoolToInt("enableDiffuseLighting", IsDiffuseLightingBitSet());
 
             SetRgbaColor(shader, "ambientColor", DOBJ.Material.MaterialColor.AMB);
             SetRgbaColor(shader, "diffuseColor", DOBJ.Material.MaterialColor.DIF);
@@ -204,12 +204,12 @@ namespace Smash_Forge
                 }
         }
 
-        private bool IsDifuseLightingBitEnabled()
+        private bool IsDiffuseLightingBitSet()
         {
             return (DOBJ.Material.Flags & 0x4) > 0;
         }
 
-        private bool IsSpecularBitEnabled()
+        private bool IsSpecularBitSet()
         {
             return (DOBJ.Material.Flags & 0x8) > 0;
         }
@@ -221,9 +221,7 @@ namespace Smash_Forge
             shader.SetVector2("unk2Scale", new Vector2(1, 1));
             shader.SetVector2("specularScale", new Vector2(1, 1));
 
-
             shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 0);
-            shader.SetTexture("sphereTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 1);
             shader.SetTexture("unk2Tex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 2);
             shader.SetTexture("specularTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 3);
 
@@ -238,38 +236,47 @@ namespace Smash_Forge
             foreach (var renderTex in RenderTextures)
             {
                 uint type = GetTextureType(renderTex);
-                if (!Enum.IsDefined(typeof(TextureTypeFlag), type))
-                    continue;
-
-                // The "index" probably also determines the texture type.
-                switch ((TextureTypeFlag)type)
+                if (Enum.IsDefined(typeof(TextureTypeFlag), type))
                 {
-                    default:
-                        break;
-                    case TextureTypeFlag.Diffuse:
-                    case TextureTypeFlag.Unk3:
-                        hasDiffuse = true;
-                        SetDiffuseTexUniforms(shader, renderTex);
-                        break;
-                    case TextureTypeFlag.Specular:
-                        hasSpecular = true;
-                        SetSpecularTexUniforms(shader, renderTex);
-                        break;
-                    case TextureTypeFlag.Sphere:
-                        hasSphere = true;
-                        SetSphereTexUniforms(shader, renderTex);
-                        break;
-                    case TextureTypeFlag.Unk2:
-                        hasUnk2 = true;
-                        SetUnk2TexUniforms(shader, renderTex);
-                        break;
+                    switch ((TextureTypeFlag)type)
+                    {
+                        default:
+                            break;
+                        case TextureTypeFlag.Specular:
+                            hasSpecular = true;
+                            SetSpecularTexUniforms(shader, renderTex);
+                            break;
+                        case TextureTypeFlag.Unk2:
+                            hasUnk2 = true;
+                            SetUnk2TexUniforms(shader, renderTex);
+                            break;
+                    }
+                }
+
+                if (IsSphereBitSet(renderTex))
+                    hasSphere = true;
+
+                if (IsDiffuseBitSet(renderTex))
+                {
+                    hasDiffuse = true;
+                    SetDiffuseTexUniforms(shader, renderTex);
                 }
             }
 
             shader.SetBoolToInt("hasDiffuse", hasDiffuse);
             shader.SetBoolToInt("hasUnk2", hasUnk2);
-            shader.SetBoolToInt("hasSphere", hasSphere);
             shader.SetBoolToInt("hasSpecular", hasSpecular);
+            shader.SetBoolToInt("hasSphere", hasSphere);
+        }
+
+        private static bool IsDiffuseBitSet(MeleeRenderTexture renderTex)
+        {
+            return (renderTex.Flag & (uint)TextureTypeFlag.Diffuse) > 0;
+        }
+
+        private static bool IsSphereBitSet(MeleeRenderTexture renderTex)
+        {
+            return (renderTex.Flag & (uint)TextureTypeFlag.Sphere) > 0;
         }
 
         private static void SetSphereTexUniforms(Shader shader, MeleeRenderTexture renderTex)
