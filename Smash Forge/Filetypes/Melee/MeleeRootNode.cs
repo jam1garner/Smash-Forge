@@ -191,7 +191,6 @@ namespace Smash_Forge
 
             SetRenderSettingsUniforms(c, shader);
 
-            //Matrix4[] BoneTransforms = RenderBones.GetShaderMatrices();
             if (BoneTransforms.Length > 0)
                 GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "bones"), BoneTransforms.Length, false, ref BoneTransforms[0].Row0.X);
 
@@ -208,7 +207,8 @@ namespace Smash_Forge
             GL.PushAttrib(AttribMask.DepthBufferBit);
             GL.Disable(EnableCap.DepthTest);
 
-            RenderTools.DrawVBN(RenderBones);
+            if (Runtime.renderBones)
+                RenderTools.DrawVBN(RenderBones);
             GL.PopAttrib();
         }
 
