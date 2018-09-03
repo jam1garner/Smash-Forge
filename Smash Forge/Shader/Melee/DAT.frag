@@ -14,6 +14,7 @@ uniform vec4 ambientColor;
 uniform vec4 specularColor;
 
 uniform int flags;
+uniform int enableSpecular;
 uniform float glossiness;
 uniform float transparency;
 
@@ -33,7 +34,7 @@ void main()
 
 	fragColor = vec4(0, 0, 0, 1);
 
-	vec3 V = vec3(0,0,-1) * mat3(mvpMatrix);
+	vec3 V = vec3(0, 0, -1) * mat3(mvpMatrix);
 
 	// Diffuse
 	float lambert = clamp(dot(normal, V), 0, 1);
@@ -49,7 +50,5 @@ void main()
 
 	// Render passes
 	fragColor.rgb += diffuseTerm;
-	fragColor.rgb += specularTerm;
-
-    fragColor.a = transparency;
+	fragColor.rgb += specularTerm * enableSpecular;
 }

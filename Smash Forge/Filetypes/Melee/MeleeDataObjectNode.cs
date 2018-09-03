@@ -188,6 +188,8 @@ namespace Smash_Forge
             shader.SetInt("flags", DOBJ.Material.Flags);
             shader.SetBoolToInt("hasDiffuse", RenderTextures.Count > 0);
 
+            shader.SetBoolToInt("enableSpecular", (DOBJ.Material.Flags & 0x0F) == 0xC);
+
             // Swap diffuse and ambient colors.
             // Ambient is always darker than diffuse for some reason.
             SetRgbaColor(shader, "ambientColor", DOBJ.Material.MaterialColor.AMB);
