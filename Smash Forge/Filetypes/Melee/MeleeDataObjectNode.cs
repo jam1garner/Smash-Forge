@@ -15,8 +15,14 @@ namespace Smash_Forge
 {
     public class MeleeDataObjectNode : MeleeNode
     {
-        public DatDOBJ DOBJ;
+        enum TextureTypeFlag : uint
+        {
+            Unk1 = 0x3, // diffuse and/or spec?
+            Specular = 0x4,
+            Diffuse = 0x5,
+        }
 
+        public DatDOBJ DOBJ;
 
         // For Rendering Only
         public List<MeleeMesh> RenderMeshes = new List<MeleeMesh>();
@@ -176,8 +182,17 @@ namespace Smash_Forge
             // TODO: Set textures based on the texture flags.
             if (RenderTextures.Count > 0)
             {
-                shader.SetVector2("UV0Scale", new Vector2(RenderTextures[0].WScale, RenderTextures[0].HScale));          
-                shader.SetTexture("diffuseTex", RenderTextures[0].texture.Id, TextureTarget.Texture2D, 0);
+                // TODO: Does each texture have its own scale?
+                shader.SetVector2("UV0Scale", new Vector2(RenderTextures[0].WScale, RenderTextures[0].HScale));
+
+                foreach (var renderTex in RenderTextures)
+                {
+                    uint type = renderTex.Flag >> 16;
+                    if (type == (uint)TextureTypeFlag.Diffuse)
+                        shader.SetTexture("diffuseTex", renderTex.texture.Id, TextureTarget.Texture2D, 0);
+                    else if (type == (uint)TextureTypeFlag.Specular)
+                        shader.SetTexture("specularTex", renderTex.texture.Id, TextureTarget.Texture2D, 1);
+                }
             }
             else
             {
@@ -190,8 +205,6 @@ namespace Smash_Forge
 
             shader.SetBoolToInt("enableSpecular", (DOBJ.Material.Flags & 0x0F) == 0xC);
 
-            // Swap diffuse and ambient colors.
-            // Ambient is always darker than diffuse for some reason.
             SetRgbaColor(shader, "ambientColor", DOBJ.Material.MaterialColor.AMB);
             SetRgbaColor(shader, "diffuseColor", DOBJ.Material.MaterialColor.DIF);
             SetRgbaColor(shader, "specularColor", DOBJ.Material.MaterialColor.SPC);
