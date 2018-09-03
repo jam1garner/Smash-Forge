@@ -18,10 +18,12 @@ namespace Smash_Forge
         enum TextureTypeFlag : uint
         {
             Unk1 = 0x3, // diffuse and/or spec?
-            SphereMap = 0x4,
+            SpecularOrSphereMap = 0x4,
             Diffuse = 0x5,
-            Unk2 = 0x105, // ao?
-            Unk3 = 0x23, // wireframe?
+            Unk2 = 0x105, // giga bowser ao
+            Unk3 = 0x23, // wireframe
+            Unk4 = 0x104, // samus grill
+            Unk5 = 0x25, // marth hair diffuse + alpha?
         }
 
         public DatDOBJ DOBJ;
@@ -232,10 +234,11 @@ namespace Smash_Forge
                     case TextureTypeFlag.Diffuse:
                     case TextureTypeFlag.Unk1:
                     case TextureTypeFlag.Unk3:
+                    case TextureTypeFlag.Unk5:
                         hasDiffuse = true;
                         shader.SetTexture("diffuseTex", renderTex.texture.Id, TextureTarget.Texture2D, 0);
                         break;
-                    case TextureTypeFlag.SphereMap:
+                    case TextureTypeFlag.SpecularOrSphereMap:
                         hasSphere = true;
                         shader.SetTexture("sphereTex", renderTex.texture.Id, TextureTarget.Texture2D, 1);
                         break;
