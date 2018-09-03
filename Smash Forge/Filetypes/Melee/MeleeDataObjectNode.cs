@@ -187,7 +187,6 @@ namespace Smash_Forge
             SetTextureUniforms(shader);
 
             shader.SetInt("flags", DOBJ.Material.Flags);
-
             shader.SetBoolToInt("enableSpecular", (DOBJ.Material.Flags & 0x0F) == 0xC);
 
             SetRgbaColor(shader, "ambientColor", DOBJ.Material.MaterialColor.AMB);
@@ -299,17 +298,14 @@ namespace Smash_Forge
             shader.SetVector4(name, SFGraphics.Utils.ColorTools.Vector4FromColor(color));
         }
 
-        public void RefreshRenderMeshes()
+        public void RefreshRendering()
         {
-            RenderTextures.Clear();
+            RefreshRenderTextures();
+            RefreshRenderMeshes();
+        }
 
-            foreach (DatTexture t in DOBJ.Material.Textures)
-            {
-                MeleeRenderTexture tex = new MeleeRenderTexture(t);
-                tex.Flag = t.UnkFlags;
-                RenderTextures.Add(tex);
-            }
-            
+        private void RefreshRenderMeshes()
+        {
             RenderMeshes.Clear();
             GXVertexDecompressor decom = new GXVertexDecompressor(((MeleeDataNode)Parent.Parent.Parent).DatFile);
             foreach (DatPolygon p in DOBJ.Polygons)
@@ -340,6 +336,18 @@ namespace Smash_Forge
                     m.PrimitiveType = Type;
                     RenderMeshes.Add(m);
                 }
+            }
+        }
+
+        private void RefreshRenderTextures()
+        {
+            RenderTextures.Clear();
+
+            foreach (DatTexture t in DOBJ.Material.Textures)
+            {
+                MeleeRenderTexture tex = new MeleeRenderTexture(t);
+                tex.Flag = t.UnkFlags;
+                RenderTextures.Add(tex);
             }
         }
 

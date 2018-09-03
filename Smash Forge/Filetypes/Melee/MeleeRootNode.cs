@@ -12,6 +12,7 @@ using SFGraphics.Cameras;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
 using System.IO;
+using System.Xml;
 
 namespace Smash_Forge
 {
@@ -37,9 +38,75 @@ namespace Smash_Forge
 
             ContextMenu = new ContextMenu();
 
-            MenuItem _ExportAs = new MenuItem("Export As");
-            _ExportAs.Click += ExportAs;
-            ContextMenu.MenuItems.Add(_ExportAs);
+            MenuItem exportAs = new MenuItem("Export As");
+            exportAs.Click += ExportAs;
+            ContextMenu.MenuItems.Add(exportAs);
+
+            MenuItem exportMaterialXml = new MenuItem("Export Material XML");
+            exportMaterialXml.Click += ExportMaterialXml_Click;
+            ContextMenu.MenuItems.Add(exportMaterialXml);
+        }
+
+        private void ExportMaterialXml_Click(object sender, EventArgs e)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "XML Material|*.xml";
+                DialogResult result = sfd.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    if (sfd.FileName.EndsWith(".xml"))
+                    {
+                        XmlDocument doc = CreateMaterialXml();
+                        doc.Save(sfd.FileName);
+                    }
+                }
+            }
+        }
+
+        private XmlDocument CreateMaterialXml()
+        {
+            XmlDocument doc = new XmlDocument();
+            XmlNode mainNode = doc.CreateElement("DAT");
+            doc.AppendChild(mainNode);
+
+            DatDOBJ[] dOBJs = Root.GetDataObjects();
+            for (int i = 0; i < dOBJs.Length; i++)
+            {
+                DatDOBJ d = dOBJs[i];
+
+                string name = $"DataObject{ i }";
+                XmlNode dobjNode = doc.CreateElement(name);
+                AppendAttributes(doc, dobjNode, d);
+
+                XmlNode texturesListNode = doc.CreateElement("Textures");
+                foreach (var tex in d.Material.Textures)
+                {
+                    XmlNode texNode = doc.CreateElement("Texture");
+                    AppendTexAttributes(doc, tex, texNode);
+                    texturesListNode.AppendChild(texNode);
+                }
+                dobjNode.AppendChild(texturesListNode);
+
+                mainNode.AppendChild(dobjNode);
+            }
+
+            return doc;
+        }
+
+        private static void AppendTexAttributes(XmlDocument doc, DatTexture tex, XmlNode texNode)
+        {
+            XmlAttribute texFlag = doc.CreateAttribute("Flags");
+            texFlag.Value = tex.UnkFlags.ToString("X");
+            texNode.Attributes.Append(texFlag);
+        }
+
+        private static void AppendAttributes(XmlDocument doc, XmlNode dobjNode, DatDOBJ d)
+        {
+            XmlAttribute flagsAttribute = doc.CreateAttribute("Flags");
+            flagsAttribute.Value = d.Material.Flags.ToString("X");
+            dobjNode.Attributes.Append(flagsAttribute);
         }
 
         public void ExportAs(object sender, EventArgs args)
@@ -152,7 +219,7 @@ namespace Smash_Forge
             {
                 MeleeDataObjectNode n = new MeleeDataObjectNode(d) { Text = "DataObject" + i++ };
                 DataObjects.Nodes.Add(n);
-                n.RefreshRenderMeshes();
+                n.RefreshRendering();
                 n.BonePosition = Vector3.TransformPosition(Vector3.Zero, BoneTransforms[JOBJS.IndexOf(n.DOBJ.Parent)]);
             }
 
