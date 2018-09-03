@@ -7,6 +7,7 @@ in vec2 UV0;
 uniform int hasDiffuse;
 uniform sampler2D diffuseTex;
 
+uniform int hasSpecular;
 uniform sampler2D specularTex;
 
 uniform int hasSphere;
@@ -59,6 +60,8 @@ void main()
 	float phong = clamp(dot(normal, V), 0, 1);
 	phong = pow(phong, glossiness);
 	vec3 specularTerm = vec3(phong) * specularColor.rgb;
+    if (hasSpecular == 1)
+        specularTerm *= texture(specularTex, UV0).rgb;
 
 	// Render passes
 	fragColor.rgb += diffuseTerm;

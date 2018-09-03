@@ -24,6 +24,7 @@ namespace Smash_Forge
             Unk3 = 0x23, // wireframe
             Unk4 = 0x104, // samus grill
             Unk5 = 0x25, // marth hair diffuse + alpha?
+            Unk6 = 0x45, // dk diffuse
         }
 
         public DatDOBJ DOBJ;
@@ -213,10 +214,12 @@ namespace Smash_Forge
             shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 0);
             shader.SetTexture("sphereTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 1);
             shader.SetTexture("unk2Tex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 2);
+            shader.SetTexture("specularTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 3);
 
             bool hasDiffuse = false;
             bool hasUnk2 = false;
             bool hasSphere = false;
+            bool hasSpecular = false;
 
             // TODO: Does each texture have its own scale?
             shader.SetVector2("UV0Scale", new Vector2(1));
@@ -235,12 +238,22 @@ namespace Smash_Forge
                     case TextureTypeFlag.Unk1:
                     case TextureTypeFlag.Unk3:
                     case TextureTypeFlag.Unk5:
+                    case TextureTypeFlag.Unk6:
                         hasDiffuse = true;
                         shader.SetTexture("diffuseTex", renderTex.texture.Id, TextureTarget.Texture2D, 0);
                         break;
                     case TextureTypeFlag.SpecularOrSphereMap:
-                        hasSphere = true;
-                        shader.SetTexture("sphereTex", renderTex.texture.Id, TextureTarget.Texture2D, 1);
+                        // HACK: Not sure how these flags work.
+                        if ((renderTex.Flag * 0xF) == 0x1)
+                        {
+                            hasSphere = true;
+                            shader.SetTexture("sphereTex", renderTex.texture.Id, TextureTarget.Texture2D, 1);
+                        }
+                        else
+                        {
+                            hasSpecular = true;
+                            shader.SetTexture("specularTex", renderTex.texture.Id, TextureTarget.Texture2D, 3);
+                        }
                         break;
                     case TextureTypeFlag.Unk2:
                         hasUnk2 = true;
@@ -252,6 +265,7 @@ namespace Smash_Forge
             shader.SetBoolToInt("hasDiffuse", hasDiffuse);
             shader.SetBoolToInt("hasUnk2", hasUnk2);
             shader.SetBoolToInt("hasSphere", hasSphere);
+            shader.SetBoolToInt("hasSpecular", hasSpecular);
         }
 
         private static uint GetTextureType(MeleeRenderTexture renderTex)
