@@ -300,6 +300,13 @@ namespace Smash_Forge
             shader.SetInt("renderType", (int)Runtime.renderType);
 
             shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 10);
+
+            shader.SetBoolToInt("renderR", Runtime.renderR);
+            shader.SetBoolToInt("renderG", Runtime.renderG);
+            shader.SetBoolToInt("renderB", Runtime.renderB);
+            shader.SetBoolToInt("renderAlpha", Runtime.renderAlpha);
+            bool alphaOverride = Runtime.renderAlpha && !Runtime.renderR && !Runtime.renderG && !Runtime.renderB;
+            shader.SetBoolToInt("alphaOverride", alphaOverride);
         }
     }
 }
