@@ -1260,7 +1260,6 @@ namespace Smash_Forge
                                 try
                                 {
                                     openFiles(file);
-                                    BatchRenderViewportToFile(file, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
                                 }
                                 catch (Exception e)
                                 {
@@ -1268,6 +1267,8 @@ namespace Smash_Forge
                                     Debug.WriteLine(e.Message);
                                     Debug.WriteLine(e.StackTrace);
                                 }
+
+                                BatchRenderViewportToFile(file, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
 
                                 // Cleanup the models and nodes but keep the same viewport.
                                 ClearModelContainers();

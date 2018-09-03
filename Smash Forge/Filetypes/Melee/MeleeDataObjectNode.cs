@@ -17,14 +17,11 @@ namespace Smash_Forge
     {
         enum TextureTypeFlag : uint
         {
-            Unk1 = 0x3, // diffuse and/or spec?
-            SpecularOrSphereMap = 0x4,
-            Diffuse = 0x5,
-            Unk2 = 0x105, // giga bowser bump map?
-            Unk3 = 0x23, // wireframe
-            Unk4 = 0x104, // samus grill
-            Unk5 = 0x25, // marth hair diffuse + alpha?
-            Unk6 = 0x45, // dk diffuse
+            Diffuse = 0x10,
+            Specular = 0x20,
+            Sphere = 0x81,
+            Unk2 = 0x00, // giga bowser ao?
+            Unk3 = 0x30 // also diffuse?
         }
 
         public DatDOBJ DOBJ;
@@ -239,36 +236,17 @@ namespace Smash_Forge
                     default:
                         break;
                     case TextureTypeFlag.Diffuse:
-                    case TextureTypeFlag.Unk5:
-                    case TextureTypeFlag.Unk6:
                     case TextureTypeFlag.Unk3:
                         hasDiffuse = true;
                         SetDiffuseTexUniforms(shader, renderTex);
                         break;
-                    case TextureTypeFlag.SpecularOrSphereMap:
-                        // HACK: Not sure how these flags work.
-                        if ((renderTex.Flag * 0xF) == 0x1)
-                        {
-                            hasSphere = true;
-                            SetSphereTexUniforms(shader, renderTex);
-                        }
-                        else
-                        {
-                            hasSpecular = true;
-                            SetSpecularTexUniforms(shader, renderTex);
-                        }
+                    case TextureTypeFlag.Specular:
+                        hasSpecular = true;
+                        SetSpecularTexUniforms(shader, renderTex);
                         break;
-                    case TextureTypeFlag.Unk1:
-                        if (((renderTex.Flag >> 4) & 0xF) == 0x1)
-                        {
-                            hasDiffuse = true;
-                            SetDiffuseTexUniforms(shader, renderTex);
-                        }
-                        else
-                        {
-                            hasSpecular = true;
-                            SetSpecularTexUniforms(shader, renderTex);
-                        }
+                    case TextureTypeFlag.Sphere:
+                        hasSphere = true;
+                        SetSphereTexUniforms(shader, renderTex);
                         break;
                     case TextureTypeFlag.Unk2:
                         hasUnk2 = true;
@@ -309,7 +287,7 @@ namespace Smash_Forge
 
         private static uint GetTextureType(MeleeRenderTexture renderTex)
         {
-            return renderTex.Flag >> 16;
+            return renderTex.Flag & 0xFF;
         }
 
         private static void DrawModelSelection(MeleeMesh mesh, Shader shader, Camera camera)

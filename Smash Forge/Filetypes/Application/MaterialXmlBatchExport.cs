@@ -31,7 +31,14 @@ namespace Smash_Forge
                         {
                             foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, searchPattern, SearchOption.AllDirectories))
                             {
-                                saveMaterialXml(folderSelect.SelectedPath, outputFolderSelect.SelectedPath, file);
+                                try
+                                {
+                                    saveMaterialXml(folderSelect.SelectedPath, outputFolderSelect.SelectedPath, file);
+                                }
+                                catch (Exception)
+                                {
+
+                                }
                             }
                         }
                     }
