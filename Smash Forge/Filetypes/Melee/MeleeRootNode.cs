@@ -189,7 +189,7 @@ namespace Smash_Forge
                 shader = OpenTKSharedResources.shaders["DatDebug"];
             shader.UseProgram();
 
-            SetRenderSettingsUniforms(c, shader);
+            SetSharedUniforms(c, shader);
 
             if (BoneTransforms.Length > 0)
                 GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "bones"), BoneTransforms.Length, false, ref BoneTransforms[0].Row0.X);
@@ -212,10 +212,15 @@ namespace Smash_Forge
             GL.PopAttrib();
         }
 
-        private static void SetRenderSettingsUniforms(Camera c, Shader shader)
+        private static void SetSharedUniforms(Camera c, Shader shader)
         {
             Matrix4 mvpMatrix = c.MvpMatrix;
             shader.SetMatrix4x4("mvpMatrix", ref mvpMatrix);
+
+            Matrix4 sphereMatrix = c.ModelViewMatrix;
+            sphereMatrix.Invert();
+            sphereMatrix.Transpose();
+            shader.SetMatrix4x4("sphereMatrix", ref sphereMatrix);
 
             shader.SetInt("renderType", (int)Runtime.renderType);
 

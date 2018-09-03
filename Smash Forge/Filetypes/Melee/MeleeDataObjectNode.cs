@@ -18,8 +18,10 @@ namespace Smash_Forge
         enum TextureTypeFlag : uint
         {
             Unk1 = 0x3, // diffuse and/or spec?
-            Specular = 0x4,
+            SphereMap = 0x4,
             Diffuse = 0x5,
+            Unk2 = 0x105, // ao?
+            Unk3 = 0x23, // wireframe?
         }
 
         public DatDOBJ DOBJ;
@@ -179,29 +181,9 @@ namespace Smash_Forge
         {
             shader.SetVector3("BonePosition", BonePosition);
 
-            // TODO: Set textures based on the texture flags.
-            if (RenderTextures.Count > 0)
-            {
-                // TODO: Does each texture have its own scale?
-                shader.SetVector2("UV0Scale", new Vector2(RenderTextures[0].WScale, RenderTextures[0].HScale));
-
-                foreach (var renderTex in RenderTextures)
-                {
-                    uint type = renderTex.Flag >> 16;
-                    if (type == (uint)TextureTypeFlag.Diffuse)
-                        shader.SetTexture("diffuseTex", renderTex.texture.Id, TextureTarget.Texture2D, 0);
-                    else if (type == (uint)TextureTypeFlag.Specular)
-                        shader.SetTexture("specularTex", renderTex.texture.Id, TextureTarget.Texture2D, 1);
-                }
-            }
-            else
-            {
-                shader.SetVector2("UV0Scale", new Vector2(1, 1));
-                shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 0);
-            }
+            SetTextureUniforms(shader);
 
             shader.SetInt("flags", DOBJ.Material.Flags);
-            shader.SetBoolToInt("hasDiffuse", RenderTextures.Count > 0);
 
             shader.SetBoolToInt("enableSpecular", (DOBJ.Material.Flags & 0x0F) == 0xC);
 
@@ -220,6 +202,58 @@ namespace Smash_Forge
                     else
                         m.Draw(shader, c);
                 }
+        }
+
+        private void SetTextureUniforms(Shader shader)
+        {
+            // Set default values
+            shader.SetVector2("UV0Scale", new Vector2(1, 1));
+            shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 0);
+            shader.SetTexture("sphereTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 1);
+            shader.SetTexture("unk2Tex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 2);
+
+            bool hasDiffuse = false;
+            bool hasUnk2 = false;
+            bool hasSphere = false;
+
+            // TODO: Does each texture have its own scale?
+            shader.SetVector2("UV0Scale", new Vector2(1));
+
+            foreach (var renderTex in RenderTextures)
+            {
+                uint type = GetTextureType(renderTex);
+                if (!Enum.IsDefined(typeof(TextureTypeFlag), type))
+                    continue;
+
+                switch ((TextureTypeFlag)type)
+                {
+                    default:
+                        break;
+                    case TextureTypeFlag.Diffuse:
+                    case TextureTypeFlag.Unk1:
+                    case TextureTypeFlag.Unk3:
+                        hasDiffuse = true;
+                        shader.SetTexture("diffuseTex", renderTex.texture.Id, TextureTarget.Texture2D, 0);
+                        break;
+                    case TextureTypeFlag.SphereMap:
+                        hasSphere = true;
+                        shader.SetTexture("sphereTex", renderTex.texture.Id, TextureTarget.Texture2D, 1);
+                        break;
+                    case TextureTypeFlag.Unk2:
+                        hasUnk2 = true;
+                        shader.SetTexture("unk2Tex", renderTex.texture.Id, TextureTarget.Texture2D, 2);
+                        break;
+                }
+            }
+
+            shader.SetBoolToInt("hasDiffuse", hasDiffuse);
+            shader.SetBoolToInt("hasUnk2", hasUnk2);
+            shader.SetBoolToInt("hasSphere", hasSphere);
+        }
+
+        private static uint GetTextureType(MeleeRenderTexture renderTex)
+        {
+            return renderTex.Flag >> 16;
         }
 
         private static void DrawModelSelection(MeleeMesh mesh, Shader shader, Camera camera)
