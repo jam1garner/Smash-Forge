@@ -42,7 +42,9 @@ void main()
     else if (renderType == 2)
     {
         // lighting
-
+        vec3 V = vec3(0,0,-1) * mat3(mvpMatrix);
+        float lambert = clamp(dot(normal, V), 0, 1);
+        fragColor.rgb = mix(ambientColor.rgb, diffuseColor.rgb, lambert);
     }
     else if (renderType == 3)
     {

@@ -176,17 +176,21 @@ namespace Smash_Forge
             // TODO: Set textures based on the texture flags.
             if (RenderTextures.Count > 0)
             {
-                shader.SetVector2("UV0Scale", new Vector2(RenderTextures[0].WScale, RenderTextures[0].HScale));
-                
+                shader.SetVector2("UV0Scale", new Vector2(RenderTextures[0].WScale, RenderTextures[0].HScale));          
                 shader.SetTexture("diffuseTex", RenderTextures[0].texture.Id, TextureTarget.Texture2D, 0);
             }
             else
+            {
                 shader.SetVector2("UV0Scale", new Vector2(1, 1));
+                shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 0);
+            }
 
             shader.SetInt("flags", DOBJ.Material.Flags);
 
-            SetRgbaColor(shader, "ambientColor", DOBJ.Material.MaterialColor.AMB);
-            SetRgbaColor(shader, "diffuseColor", DOBJ.Material.MaterialColor.DIF);
+            // Swap diffuse and ambient colors.
+            // Ambient is always darker than diffuse for some reason.
+            SetRgbaColor(shader, "ambientColor", DOBJ.Material.MaterialColor.DIF);
+            SetRgbaColor(shader, "diffuseColor", DOBJ.Material.MaterialColor.AMB);
             SetRgbaColor(shader, "specularColor", DOBJ.Material.MaterialColor.SPC);
 
             shader.SetFloat("glossiness", DOBJ.Material.MaterialColor.Glossiness);

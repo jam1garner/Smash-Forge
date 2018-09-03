@@ -34,8 +34,10 @@ void main()
 
 	// Diffuse
 	float lambert = clamp(dot(normal, V), 0, 1);
-	vec3 diffuseColor = texture2D(diffuseTex, UV0).rgb;
-	vec3 diffuseTerm = diffuseColor * mix(ambientColor.rgb, diffuseColor.rgb, lambert);
+	vec3 diffuseMap = texture2D(diffuseTex, UV0).rgb;
+    if ((flags & 0xF0) == 0)
+        diffuseMap = vec3(1); // no diffuse
+	vec3 diffuseTerm = diffuseMap * mix(ambientColor.rgb, diffuseColor.rgb, lambert);
 
 	// Specular
 	float phong = clamp(dot(normal, V), 0, 1);
