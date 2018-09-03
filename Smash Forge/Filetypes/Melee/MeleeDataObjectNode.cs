@@ -186,6 +186,7 @@ namespace Smash_Forge
             }
 
             shader.SetInt("flags", DOBJ.Material.Flags);
+            shader.SetBoolToInt("hasDiffuse", RenderTextures.Count > 0);
 
             // Swap diffuse and ambient colors.
             // Ambient is always darker than diffuse for some reason.

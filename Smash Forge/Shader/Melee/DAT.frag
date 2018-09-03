@@ -5,6 +5,9 @@ in vec3 normal;
 in vec2 UV0;
 
 uniform sampler2D diffuseTex;
+uniform sampler2D specularTex;
+
+uniform int hasDiffuse;
 
 uniform vec4 diffuseColor;
 uniform vec4 ambientColor;
@@ -12,7 +15,7 @@ uniform vec4 specularColor;
 
 uniform int flags;
 uniform float glossiness;
-uniform float Transparency;
+uniform float transparency;
 
 uniform int colorOverride;
 
@@ -35,8 +38,8 @@ void main()
 	// Diffuse
 	float lambert = clamp(dot(normal, V), 0, 1);
 	vec3 diffuseMap = texture2D(diffuseTex, UV0).rgb;
-    if ((flags & 0xF0) == 0)
-        diffuseMap = vec3(1); // no diffuse
+    if (hasDiffuse == 0)
+        diffuseMap = vec3(1);
 	vec3 diffuseTerm = diffuseMap * mix(ambientColor.rgb, diffuseColor.rgb, lambert);
 
 	// Specular
@@ -47,4 +50,6 @@ void main()
 	// Render passes
 	fragColor.rgb += diffuseTerm;
 	fragColor.rgb += specularTerm;
+
+    fragColor.a = transparency;
 }
