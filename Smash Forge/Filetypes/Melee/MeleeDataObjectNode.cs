@@ -233,37 +233,46 @@ namespace Smash_Forge
                 if (!Enum.IsDefined(typeof(TextureTypeFlag), type))
                     continue;
 
+                // The "index" probably also determines the texture type.
                 switch ((TextureTypeFlag)type)
                 {
                     default:
                         break;
                     case TextureTypeFlag.Diffuse:
-                    case TextureTypeFlag.Unk1:
-                    case TextureTypeFlag.Unk3:
                     case TextureTypeFlag.Unk5:
                     case TextureTypeFlag.Unk6:
+                    case TextureTypeFlag.Unk3:
                         hasDiffuse = true;
-                        shader.SetTexture("diffuseTex", renderTex.texture.Id, TextureTarget.Texture2D, 0);
+                        SetDiffuseTexUniforms(shader, renderTex);
                         break;
                     case TextureTypeFlag.SpecularOrSphereMap:
                         // HACK: Not sure how these flags work.
                         if ((renderTex.Flag * 0xF) == 0x1)
                         {
                             hasSphere = true;
-                            shader.SetVector2("diffuseScale", new Vector2(renderTex.WScale, renderTex.HScale));
-                            shader.SetTexture("sphereTex", renderTex.texture.Id, TextureTarget.Texture2D, 1);
+                            SetSphereTexUniforms(shader, renderTex);
                         }
                         else
                         {
                             hasSpecular = true;
-                            shader.SetVector2("specularScale", new Vector2(renderTex.WScale, renderTex.HScale));
-                            shader.SetTexture("specularTex", renderTex.texture.Id, TextureTarget.Texture2D, 3);
+                            SetSpecularTexUniforms(shader, renderTex);
+                        }
+                        break;
+                    case TextureTypeFlag.Unk1:
+                        if (((renderTex.Flag >> 4) & 0xF) == 0x1)
+                        {
+                            hasDiffuse = true;
+                            SetDiffuseTexUniforms(shader, renderTex);
+                        }
+                        else
+                        {
+                            hasSpecular = true;
+                            SetSpecularTexUniforms(shader, renderTex);
                         }
                         break;
                     case TextureTypeFlag.Unk2:
                         hasUnk2 = true;
-                        shader.SetVector2("unk2Scale", new Vector2(renderTex.WScale, renderTex.HScale));
-                        shader.SetTexture("unk2Tex", renderTex.texture.Id, TextureTarget.Texture2D, 2);
+                        SetUnk2TexUniforms(shader, renderTex);
                         break;
                 }
             }
@@ -272,6 +281,30 @@ namespace Smash_Forge
             shader.SetBoolToInt("hasUnk2", hasUnk2);
             shader.SetBoolToInt("hasSphere", hasSphere);
             shader.SetBoolToInt("hasSpecular", hasSpecular);
+        }
+
+        private static void SetSphereTexUniforms(Shader shader, MeleeRenderTexture renderTex)
+        {
+            shader.SetVector2("sphereScale", new Vector2(renderTex.WScale, renderTex.HScale));
+            shader.SetTexture("sphereTex", renderTex.texture.Id, TextureTarget.Texture2D, 1);
+        }
+
+        private static void SetUnk2TexUniforms(Shader shader, MeleeRenderTexture renderTex)
+        {
+            shader.SetVector2("unk2Scale", new Vector2(renderTex.WScale, renderTex.HScale));
+            shader.SetTexture("unk2Tex", renderTex.texture.Id, TextureTarget.Texture2D, 2);
+        }
+
+        private static void SetDiffuseTexUniforms(Shader shader, MeleeRenderTexture renderTex)
+        {
+            shader.SetVector2("diffuseScale", new Vector2(renderTex.WScale, renderTex.HScale));
+            shader.SetTexture("diffuseTex", renderTex.texture.Id, TextureTarget.Texture2D, 0);
+        }
+
+        private static void SetSpecularTexUniforms(Shader shader, MeleeRenderTexture renderTex)
+        {
+            shader.SetVector2("specularScale", new Vector2(renderTex.WScale, renderTex.HScale));
+            shader.SetTexture("specularTex", renderTex.texture.Id, TextureTarget.Texture2D, 3);
         }
 
         private static uint GetTextureType(MeleeRenderTexture renderTex)
