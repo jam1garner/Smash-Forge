@@ -64,6 +64,12 @@
             this.exportParamsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.clearToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.batchRenderExperimentalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.batchRenderNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.batchRenderBOTWBfresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.batchExportXMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.meleeDatToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.texturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.open3DSTEXEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openDATTextureEditorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,9 +86,6 @@
             this.cameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.forgeWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.batchRenderExperimentalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.batchRenderNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.batchRenderBOTWBfresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -105,8 +108,8 @@
             this.toolsToolStripMenuItem,
             this.masterpiecesToolStripMenuItem,
             this.cameraToolStripMenuItem,
-            this.helpToolStripMenuItem,
-            this.batchRenderExperimentalToolStripMenuItem});
+            this.batchRenderExperimentalToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1217, 24);
@@ -379,6 +382,53 @@
             this.clearToolStripMenuItem1.Text = "Clear";
             this.clearToolStripMenuItem1.Click += new System.EventHandler(this.clearParamsToolStripMenuItem_Click);
             // 
+            // batchRenderExperimentalToolStripMenuItem
+            // 
+            this.batchRenderExperimentalToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.batchRenderNUDToolStripMenuItem,
+            this.batchRenderBOTWBfresToolStripMenuItem,
+            this.batchExportXMLToolStripMenuItem});
+            this.batchRenderExperimentalToolStripMenuItem.Name = "batchRenderExperimentalToolStripMenuItem";
+            this.batchRenderExperimentalToolStripMenuItem.Size = new System.Drawing.Size(87, 20);
+            this.batchRenderExperimentalToolStripMenuItem.Text = "Experimental";
+            // 
+            // batchRenderNUDToolStripMenuItem
+            // 
+            this.batchRenderNUDToolStripMenuItem.Name = "batchRenderNUDToolStripMenuItem";
+            this.batchRenderNUDToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.batchRenderNUDToolStripMenuItem.Text = "Batch Render Nud";
+            this.batchRenderNUDToolStripMenuItem.Click += new System.EventHandler(this.batchRenderNUDToolStripMenuItem_Click);
+            // 
+            // batchRenderBOTWBfresToolStripMenuItem
+            // 
+            this.batchRenderBOTWBfresToolStripMenuItem.Name = "batchRenderBOTWBfresToolStripMenuItem";
+            this.batchRenderBOTWBfresToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.batchRenderBOTWBfresToolStripMenuItem.Text = "Batch Render BOTW Bfres";
+            this.batchRenderBOTWBfresToolStripMenuItem.Click += new System.EventHandler(this.batchRenderBOTWBfresToolStripMenuItem_Click);
+            // 
+            // batchExportXMLToolStripMenuItem
+            // 
+            this.batchExportXMLToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.nUDToolStripMenuItem,
+            this.meleeDatToolStripMenuItem});
+            this.batchExportXMLToolStripMenuItem.Name = "batchExportXMLToolStripMenuItem";
+            this.batchExportXMLToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.batchExportXMLToolStripMenuItem.Text = "Batch Export XML";
+            // 
+            // nUDToolStripMenuItem
+            // 
+            this.nUDToolStripMenuItem.Name = "nUDToolStripMenuItem";
+            this.nUDToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.nUDToolStripMenuItem.Text = "NUD";
+            this.nUDToolStripMenuItem.Click += new System.EventHandler(this.nudToolStripMenuItem_Click);
+            // 
+            // meleeDatToolStripMenuItem
+            // 
+            this.meleeDatToolStripMenuItem.Name = "meleeDatToolStripMenuItem";
+            this.meleeDatToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.meleeDatToolStripMenuItem.Text = "Melee Dat";
+            this.meleeDatToolStripMenuItem.Click += new System.EventHandler(this.meleeDatToolStripMenuItem_Click);
+            // 
             // texturesToolStripMenuItem
             // 
             this.texturesToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -502,29 +552,6 @@
             this.forgeWikiToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.forgeWikiToolStripMenuItem.Text = "Forge Wiki";
             this.forgeWikiToolStripMenuItem.Click += new System.EventHandler(this.forgeWikiToolStripMenuItem_Click);
-            // 
-            // batchRenderExperimentalToolStripMenuItem
-            // 
-            this.batchRenderExperimentalToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.batchRenderNUDToolStripMenuItem,
-            this.batchRenderBOTWBfresToolStripMenuItem});
-            this.batchRenderExperimentalToolStripMenuItem.Name = "batchRenderExperimentalToolStripMenuItem";
-            this.batchRenderExperimentalToolStripMenuItem.Size = new System.Drawing.Size(87, 20);
-            this.batchRenderExperimentalToolStripMenuItem.Text = "Experimental";
-            // 
-            // batchRenderNUDToolStripMenuItem
-            // 
-            this.batchRenderNUDToolStripMenuItem.Name = "batchRenderNUDToolStripMenuItem";
-            this.batchRenderNUDToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.batchRenderNUDToolStripMenuItem.Text = "Batch Render Nud";
-            this.batchRenderNUDToolStripMenuItem.Click += new System.EventHandler(this.batchRenderNUDToolStripMenuItem_Click);
-            // 
-            // batchRenderBOTWBfresToolStripMenuItem
-            // 
-            this.batchRenderBOTWBfresToolStripMenuItem.Name = "batchRenderBOTWBfresToolStripMenuItem";
-            this.batchRenderBOTWBfresToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
-            this.batchRenderBOTWBfresToolStripMenuItem.Text = "Batch Render BOTW Bfres";
-            this.batchRenderBOTWBfresToolStripMenuItem.Click += new System.EventHandler(this.batchRenderBOTWBfresToolStripMenuItem_Click);
             // 
             // contextMenuStrip1
             // 
@@ -670,6 +697,9 @@
         private System.Windows.Forms.ToolStripMenuItem batchRenderExperimentalToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem batchRenderNUDToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem batchRenderBOTWBfresToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem batchExportXMLToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nUDToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem meleeDatToolStripMenuItem;
     }
 }
 

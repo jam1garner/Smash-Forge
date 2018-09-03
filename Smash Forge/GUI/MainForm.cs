@@ -2360,5 +2360,16 @@ namespace Smash_Forge
             if (mvp != null)
                 mvp.BatchRenderBotwBfresModels();
         }
+
+        private void nudToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MaterialXmlBatchExport.BatchExportNudMaterialXml();
+
+        }
+
+        private void meleeDatToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MaterialXmlBatchExport.BatchExportMeleeDatMaterialXml();
+        }
     }
 }

@@ -65,7 +65,7 @@ namespace Smash_Forge
             }
         }
 
-        private XmlDocument CreateMaterialXml()
+        public XmlDocument CreateMaterialXml()
         {
             XmlDocument doc = new XmlDocument();
             XmlNode mainNode = doc.CreateElement("DAT");

@@ -1963,12 +1963,6 @@ namespace Smash_Forge
         private void ModelViewport_KeyDown(object sender, KeyEventArgs e)
         {
             // Super secret commands. I'm probably going to be the only one that uses them anyway...
-            if (Keyboard.GetState().IsKeyDown(Key.X) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.L))
-                MaterialXmlBatchExport.ExportAllMaterialsFromFolder();
-
-            if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T) && Keyboard.GetState().IsKeyDown(Key.M))
-                BatchRenderStages();
-
             if (Keyboard.GetState().IsKeyDown(Key.L) && Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T))
                 ParamTools.BatchExportParamValuesAsCsv("light_set");
 
