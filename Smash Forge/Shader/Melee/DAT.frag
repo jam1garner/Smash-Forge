@@ -4,7 +4,7 @@ in vec3 objectPosition;
 in vec3 normal;
 in vec2 UV0;
 
-uniform sampler2D TEX0;
+uniform sampler2D diffuseTex;
 
 uniform vec4 diffuseColor;
 uniform vec4 ambientColor;
@@ -34,7 +34,7 @@ void main()
 
 	// Diffuse
 	float lambert = clamp(dot(normal, V), 0, 1);
-	vec3 diffuseColor = texture2D(TEX0, UV0).rgb;
+	vec3 diffuseColor = texture2D(diffuseTex, UV0).rgb;
 	vec3 diffuseTerm = diffuseColor * mix(ambientColor.rgb, diffuseColor.rgb, lambert);
 
 	// Specular

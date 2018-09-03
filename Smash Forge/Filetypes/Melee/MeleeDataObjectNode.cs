@@ -173,11 +173,12 @@ namespace Smash_Forge
         {
             shader.SetVector3("BonePosition", BonePosition);
 
+            // TODO: Set textures based on the texture flags.
             if (RenderTextures.Count > 0)
             {
                 shader.SetVector2("UV0Scale", new Vector2(RenderTextures[0].WScale, RenderTextures[0].HScale));
                 
-                shader.SetTexture("TEX1", RenderTextures[0].texture.Id, TextureTarget.Texture2D, 0);
+                shader.SetTexture("diffuseTex", RenderTextures[0].texture.Id, TextureTarget.Texture2D, 0);
             }
             else
                 shader.SetVector2("UV0Scale", new Vector2(1, 1));
