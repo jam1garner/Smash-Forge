@@ -15,11 +15,12 @@ namespace Smash_Forge
 {
     public class MeleeDataObjectNode : MeleeNode
     {
-        enum TextureTypeFlag : uint
+        enum TextureFlag : uint
         {
             Diffuse = 0x10,
             Sphere = 0x1,
             Specular = 0x20,
+            AlphaTest = 0x300000, // whispy woods
             Unk4 = 0x80, // diffuse with inverted colors?
             Unk2 = 0x00, // giga bowser ao?
             Unk3 = 0x30 // also diffuse?
@@ -59,7 +60,7 @@ namespace Smash_Forge
 
         public void OpenEditor(object sender, EventArgs args)
         {
-            DOBJEditor editor = new DOBJEditor(DOBJ);
+            DOBJEditor editor = new DOBJEditor(DOBJ, this);
             editor.Show();
         }
 
@@ -234,13 +235,13 @@ namespace Smash_Forge
             foreach (var renderTex in RenderTextures)
             {
                 uint type = GetTextureType(renderTex);
-                if (Enum.IsDefined(typeof(TextureTypeFlag), type))
+                if (Enum.IsDefined(typeof(TextureFlag), type))
                 {
-                    switch ((TextureTypeFlag)type)
+                    switch ((TextureFlag)type)
                     {
                         default:
                             break;
-                        case TextureTypeFlag.Unk2:
+                        case TextureFlag.Unk2:
                             hasUnk2 = true;
                             SetUnk2TexUniforms(shader, renderTex);
                             break;
@@ -271,19 +272,19 @@ namespace Smash_Forge
 
         private static bool IsDiffuseBitSet(MeleeRenderTexture renderTex)
         {
-            bool diffuseBit = (renderTex.Flag & (uint)TextureTypeFlag.Diffuse) > 0;
-            bool unk4Bit = (renderTex.Flag & (uint)TextureTypeFlag.Unk4) > 0;
+            bool diffuseBit = (renderTex.Flag & (uint)TextureFlag.Diffuse) > 0;
+            bool unk4Bit = (renderTex.Flag & (uint)TextureFlag.Unk4) > 0;
             return diffuseBit || unk4Bit;
         }
 
         private static bool IsSpecularBitSet(MeleeRenderTexture renderTex)
         {
-            return (renderTex.Flag & (uint)TextureTypeFlag.Specular) > 0;
+            return (renderTex.Flag & (uint)TextureFlag.Specular) > 0;
         }
 
         private static bool IsSphereBitSet(MeleeRenderTexture renderTex)
         {
-            return (renderTex.Flag & (uint)TextureTypeFlag.Sphere) > 0;
+            return (renderTex.Flag & (uint)TextureFlag.Sphere) > 0;
         }
 
         private static void SetSphereTexUniforms(Shader shader, MeleeRenderTexture renderTex)

@@ -14,6 +14,7 @@ namespace Smash_Forge.GUI.Melee
     public partial class DOBJEditor : Form
     {
         private TextureNode selectedTexture = null;
+        private MeleeDataObjectNode meleeDataObjectNode = null;
 
         private class TextureNode : ListViewItem
         {
@@ -29,10 +30,11 @@ namespace Smash_Forge.GUI.Melee
         private DatDOBJ DOBJ;
         private Bitmap TempBitmap;
 
-        public DOBJEditor(DatDOBJ DOBJ)
+        public DOBJEditor(DatDOBJ DOBJ, MeleeDataObjectNode meleeDataObjectNode)
         {
             InitializeComponent();
             this.DOBJ = DOBJ;
+            this.meleeDataObjectNode = meleeDataObjectNode;
             Reload();
         }
 
@@ -124,6 +126,7 @@ namespace Smash_Forge.GUI.Melee
         private void textureFlagsTB_TextChanged(object sender, EventArgs e)
         {
             selectedTexture.Texture.UnkFlags = GuiTools.TryParseTBUint(textureFlagsTB, true);
+            meleeDataObjectNode.RefreshRendering();
         }
     }
 }
