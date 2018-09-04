@@ -230,9 +230,6 @@ namespace Smash_Forge
             bool hasSphere = false;
             bool hasSpecular = false;
 
-            // TODO: Does each texture have its own scale?
-            shader.SetVector2("UV0Scale", new Vector2(1));
-
             foreach (var renderTex in RenderTextures)
             {
                 uint type = GetTextureType(renderTex);
@@ -241,10 +238,6 @@ namespace Smash_Forge
                     switch ((TextureTypeFlag)type)
                     {
                         default:
-                            break;
-                        case TextureTypeFlag.Specular:
-                            hasSpecular = true;
-                            SetSpecularTexUniforms(shader, renderTex);
                             break;
                         case TextureTypeFlag.Unk2:
                             hasUnk2 = true;
@@ -261,6 +254,12 @@ namespace Smash_Forge
                     hasDiffuse = true;
                     SetDiffuseTexUniforms(shader, renderTex);
                 }
+
+                if (IsSpecularBitSet(renderTex))
+                {
+                    hasSpecular = true;
+                    SetSpecularTexUniforms(shader, renderTex);
+                }
             }
 
             shader.SetBoolToInt("hasDiffuse", hasDiffuse);
@@ -272,6 +271,11 @@ namespace Smash_Forge
         private static bool IsDiffuseBitSet(MeleeRenderTexture renderTex)
         {
             return (renderTex.Flag & (uint)TextureTypeFlag.Diffuse) > 0;
+        }
+
+        private static bool IsSpecularBitSet(MeleeRenderTexture renderTex)
+        {
+            return (renderTex.Flag & (uint)TextureTypeFlag.Specular) > 0;
         }
 
         private static bool IsSphereBitSet(MeleeRenderTexture renderTex)
@@ -396,8 +400,9 @@ namespace Smash_Forge
                 {
                     Pos = new Vector3(v.Pos.X, v.Pos.Y, v.Pos.Z),
                     Nrm = new Vector3(v.Nrm.X, v.Nrm.Y, v.Nrm.Z),
-                    UV0 = new Vector2(v.TX0.X, v.TX0.Y)
+                    UV0 = new Vector2(v.TX0.X, v.TX0.Y),
                 };
+
                 if (v.N != null)
                 {
                     if (v.N.Length > 0)

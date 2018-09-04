@@ -13,7 +13,6 @@ uniform int hasSpecular;
 uniform sampler2D specularTex;
 uniform vec2 specularScale;
 
-
 uniform int hasUnk2;
 uniform sampler2D unk2Tex;
 uniform vec2 unk2Scale;
@@ -36,7 +35,8 @@ uniform mat4 sphereMatrix;
 
 uniform int renderDiffuse;
 uniform int renderSpecular;
-uniform int renderReflection;
+
+uniform int renderAlpha;
 
 out vec4 fragColor;
 
@@ -87,5 +87,6 @@ void main()
 	fragColor.rgb += specularTerm * renderSpecular;
 
 	// Set alpha
-    fragColor.a = diffuseMap.a * transparency;
+    if (renderAlpha == 1)
+        fragColor.a = diffuseMap.a * transparency;
 }
