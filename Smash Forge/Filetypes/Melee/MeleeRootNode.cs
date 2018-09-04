@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
+﻿using MeleeLib.DAT;
+using MeleeLib.DAT.Animation;
+using MeleeLib.DAT.Helpers;
+using MeleeLib.DAT.MatAnim;
+using MeleeLib.GCX;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using MeleeLib.DAT;
-using MeleeLib.DAT.Animation;
-using MeleeLib.DAT.MatAnim;
-using MeleeLib.DAT.Helpers;
-using MeleeLib.GCX;
 using SFGraphics.Cameras;
-using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
-using System.IO;
-using System.Xml;
+using Smash_Forge.Filetypes.Melee;
+using Smash_Forge.Rendering;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -58,63 +57,11 @@ namespace Smash_Forge
                 {
                     if (sfd.FileName.EndsWith(".xml"))
                     {
-                        XmlDocument doc = CreateMaterialXml();
+                        var doc = DatMaterialXml.CreateMaterialXml(this);
                         doc.Save(sfd.FileName);
                     }
                 }
             }
-        }
-
-        public XmlDocument CreateMaterialXml()
-        {
-            XmlDocument doc = new XmlDocument();
-            XmlNode mainNode = doc.CreateElement("DAT");
-            doc.AppendChild(mainNode);
-
-            DatDOBJ[] dOBJs = Root.GetDataObjects();
-            for (int i = 0; i < dOBJs.Length; i++)
-            {
-                DatDOBJ d = dOBJs[i];
-
-                string name = $"DataObject{ i }";
-                XmlNode dobjNode = doc.CreateElement(name);
-                AppendAttributes(doc, dobjNode, d);
-
-                XmlNode texturesListNode = doc.CreateElement("Textures");
-                foreach (var tex in d.Material.Textures)
-                {
-                    XmlNode texNode = doc.CreateElement("Texture");
-                    AppendTexAttributes(doc, tex, texNode);
-                    texturesListNode.AppendChild(texNode);
-                }
-                dobjNode.AppendChild(texturesListNode);
-
-                mainNode.AppendChild(dobjNode);
-            }
-
-            return doc;
-        }
-
-        private static void AppendTexAttributes(XmlDocument doc, DatTexture tex, XmlNode texNode)
-        {
-            AppendXmlAttribute(doc, texNode, "Flags", tex.UnkFlags.ToString("X"));
-            AppendXmlAttribute(doc, texNode, "WrapS", tex.WrapS.ToString());
-            AppendXmlAttribute(doc, texNode, "WrapT", tex.WrapT.ToString());
-            AppendXmlAttribute(doc, texNode, "MagFilter", tex.MagFilter.ToString());
-        }
-
-        private static void AppendXmlAttribute(XmlDocument doc, XmlNode node, string name, string value)
-        {
-            XmlAttribute attribute = doc.CreateAttribute(name);
-            attribute.Value = value;
-            node.Attributes.Append(attribute);
-        }
-
-        private static void AppendAttributes(XmlDocument doc, XmlNode dobjNode, DatDOBJ d)
-        {
-            XmlAttribute flagsAttribute = doc.CreateAttribute("Flags");
-            flagsAttribute.Value = d.Material.Flags.ToString("X");
-            dobjNode.Attributes.Append(flagsAttribute);
         }
 
         public void ExportAs(object sender, EventArgs args)
