@@ -66,37 +66,44 @@ namespace Smash_Forge
                     {
                         List<AnimationHelperTrack> tracks = new List<AnimationHelperTrack>();
 
-                        if (n.XPOS.Keys.Count > 0) tracks.Add(EncodeTrack(n.XPOS));
-                        if (n.YPOS.Keys.Count > 0) tracks.Add(EncodeTrack(n.YPOS));
-                        if (n.ZPOS.Keys.Count > 0) tracks.Add(EncodeTrack(n.ZPOS));
-                        if (n.XROT.Keys.Count > 0) tracks.Add(EncodeTrack(n.XROT));
-                        if (n.YROT.Keys.Count > 0) tracks.Add(EncodeTrack(n.YROT));
-                        if (n.ZROT.Keys.Count > 0) tracks.Add(EncodeTrack(n.ZROT));
-                        if (n.XSCA.Keys.Count > 0) tracks.Add(EncodeTrack(n.XSCA));
-                        if (n.YSCA.Keys.Count > 0) tracks.Add(EncodeTrack(n.YSCA));
-                        if (n.ZSCA.Keys.Count > 0) tracks.Add(EncodeTrack(n.ZSCA));
+                        if (n.XPOS.Keys.Count > 0) tracks.Add(EncodeTrack(n.XPOS, AnimTrackType.XPOS));
+                        if (n.YPOS.Keys.Count > 0) tracks.Add(EncodeTrack(n.YPOS, AnimTrackType.YPOS));
+                        if (n.ZPOS.Keys.Count > 0) tracks.Add(EncodeTrack(n.ZPOS, AnimTrackType.ZPOS));
+                        if (n.XROT.Keys.Count > 0) tracks.Add(EncodeTrack(n.XROT, AnimTrackType.XROT));
+                        if (n.YROT.Keys.Count > 0) tracks.Add(EncodeTrack(n.YROT, AnimTrackType.YROT));
+                        if (n.ZROT.Keys.Count > 0) tracks.Add(EncodeTrack(n.ZROT, AnimTrackType.ZROT));
+                        if (n.XSCA.Keys.Count > 0) tracks.Add(EncodeTrack(n.XSCA, AnimTrackType.XSCA));
+                        if (n.YSCA.Keys.Count > 0) tracks.Add(EncodeTrack(n.YSCA, AnimTrackType.YSCA));
+                        if (n.ZSCA.Keys.Count > 0) tracks.Add(EncodeTrack(n.ZSCA, AnimTrackType.ZSCA));
 
                         node = (AnimationKeyFrameHelper.EncodeKeyFrames(tracks.ToArray(), (int)a.FrameCount));
+                        break;
                     }
                 }
                 DatAnimation.Nodes.Add(node);
             }
         }
 
-        public AnimationHelperTrack EncodeTrack(Animation.KeyGroup Group)
+        public AnimationHelperTrack EncodeTrack(Animation.KeyGroup Group, AnimTrackType Type)
         {
             AnimationHelperTrack t = new AnimationHelperTrack();
+            t.TrackType = Type;
             foreach (Animation.KeyFrame kf in Group.Keys)
             {
                 AnimationHelperKeyFrame f = new AnimationHelperKeyFrame();
                 f.Frame = (int)kf.Frame;
                 f.Value = kf.Value;
                 f.Tan = kf.In;
+                t.KeyFrames.Add(f);
                 switch (kf.InterType)
                 {
                     case Animation.InterpolationType.CONSTANT: f.InterpolationType = InterpolationType.Constant; break;
                     case Animation.InterpolationType.HERMITE: f.InterpolationType = InterpolationType.Hermite; break;
-                    case Animation.InterpolationType.LINEAR: f.InterpolationType = InterpolationType.Linear; break;
+                    case Animation.InterpolationType.LINEAR:
+                        if (Group.Keys.Count == 1)
+                            f.InterpolationType = InterpolationType.Constant;
+                        else
+                            f.InterpolationType = InterpolationType.Linear; break;
                     case Animation.InterpolationType.STEP: f.InterpolationType = InterpolationType.Step; break;
                 }
             }
@@ -145,6 +152,7 @@ namespace Smash_Forge
             foreach(DatAnimationNode bone in DatAnimation.Nodes)
             {
                 Animation.KeyNode node = new Animation.KeyNode("Bone_" + bid++);
+                //Console.WriteLine(node.Text + " " + bone.Tracks.Count);
                 a.Bones.Add(node);
                 node.RotType = Animation.RotationType.EULER;
 
@@ -155,6 +163,7 @@ namespace Smash_Forge
                 }
                 catch (Exception)
                 {
+                    Console.WriteLine("Error Loading animation");
                     helper = new AnimationHelperTrack[0];
                 }
 
