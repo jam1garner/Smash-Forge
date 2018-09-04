@@ -20,6 +20,7 @@ namespace Smash_Forge
             Diffuse = 0x10,
             Sphere = 0x1,
             Specular = 0x20,
+            Unk4 = 0x80, // diffuse with inverted colors?
             Unk2 = 0x00, // giga bowser ao?
             Unk3 = 0x30 // also diffuse?
         }
@@ -270,7 +271,9 @@ namespace Smash_Forge
 
         private static bool IsDiffuseBitSet(MeleeRenderTexture renderTex)
         {
-            return (renderTex.Flag & (uint)TextureTypeFlag.Diffuse) > 0;
+            bool diffuseBit = (renderTex.Flag & (uint)TextureTypeFlag.Diffuse) > 0;
+            bool unk4Bit = (renderTex.Flag & (uint)TextureTypeFlag.Unk4) > 0;
+            return diffuseBit || unk4Bit;
         }
 
         private static bool IsSpecularBitSet(MeleeRenderTexture renderTex)
