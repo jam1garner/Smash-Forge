@@ -310,7 +310,6 @@ namespace Smash_Forge
 
             shader.SetBoolToInt("renderDiffuse", Runtime.renderDiffuse);
             shader.SetBoolToInt("renderSpecular", Runtime.renderSpecular);
-            shader.SetBoolToInt("renderReflection", Runtime.renderReflection);
         }
     }
 }

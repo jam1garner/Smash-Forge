@@ -13,6 +13,8 @@ namespace Smash_Forge.GUI.Melee
 {
     public partial class DOBJEditor : Form
     {
+        private TextureNode selectedTexture = null;
+
         private class TextureNode : ListViewItem
         {
             public DatTexture Texture;
@@ -20,7 +22,7 @@ namespace Smash_Forge.GUI.Melee
             public TextureNode(DatTexture Texture)
             {
                 this.Texture = Texture;
-                Text = Texture.UnkFlags.ToString("x") + "_" + Texture.ImageData.Format.ToString();
+                Text = Texture.UnkFlags.ToString("X") + "_" + Texture.ImageData.Format.ToString();
             }
         }
 
@@ -41,16 +43,17 @@ namespace Smash_Forge.GUI.Melee
             buttonAMB.BackColor = DOBJ.Material.MaterialColor.AMB;
             numericGlossiness.Value = (decimal)DOBJ.Material.MaterialColor.Glossiness;
             numericTransparency.Value = (decimal)DOBJ.Material.MaterialColor.Transparency;
+            flagsTB.Text = DOBJ.Material.Flags.ToString("X");
 
-            listBox1.Items.Clear();
+            textureListBox.Items.Clear();
 
             foreach(DatTexture t in DOBJ.Material.Textures)
             {
-                listBox1.Items.Add(new TextureNode(t));
+                textureListBox.Items.Add(new TextureNode(t));
             }
         }
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void textureListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (TempBitmap != null)
             {
@@ -58,17 +61,22 @@ namespace Smash_Forge.GUI.Melee
                 TempBitmap = null;
             }
 
-            if(listBox1.SelectedItem != null)
+            if(textureListBox.SelectedItem != null)
             {
-                if (((TextureNode)listBox1.SelectedItem).Texture != null)
-                    TempBitmap = ((TextureNode)listBox1.SelectedItem).Texture.GetBitmap();
+                selectedTexture = (TextureNode)textureListBox.SelectedItem;
+                if (selectedTexture != null && selectedTexture.Texture != null)
+                    TempBitmap = selectedTexture.Texture.GetBitmap();
+
+                textureFlagsTB.Text = selectedTexture.Texture.UnkFlags.ToString("X");
             }
             pictureBox1.Image = TempBitmap;
         }
 
         private void buttonDIF_Click(object sender, EventArgs e)
         {
-            DOBJ.Material.MaterialColor.DIF = GetColor(DOBJ.Material.MaterialColor.DIF);
+            Color color = GetColor(DOBJ.Material.MaterialColor.DIF);
+            DOBJ.Material.MaterialColor.DIF = color;
+            buttonDIF.BackColor = color;
         }
 
         private Color GetColor(Color c)
@@ -88,7 +96,9 @@ namespace Smash_Forge.GUI.Melee
 
         private void buttonAMB_Click(object sender, EventArgs e)
         {
-            DOBJ.Material.MaterialColor.AMB = GetColor(DOBJ.Material.MaterialColor.AMB);
+            Color color = GetColor(DOBJ.Material.MaterialColor.AMB);
+            DOBJ.Material.MaterialColor.AMB = color;
+            buttonAMB.BackColor = color;
         }
 
         private void buttonSPC_Click(object sender, EventArgs e)
@@ -104,6 +114,16 @@ namespace Smash_Forge.GUI.Melee
         private void numericTransparency_ValueChanged(object sender, EventArgs e)
         {
             DOBJ.Material.MaterialColor.Transparency = (float)numericTransparency.Value;
+        }
+
+        private void flagsTB_TextChanged(object sender, EventArgs e)
+        {
+            DOBJ.Material.Flags = GuiTools.TryParseTBInt(flagsTB, true);
+        }
+
+        private void textureFlagsTB_TextChanged(object sender, EventArgs e)
+        {
+            selectedTexture.Texture.UnkFlags = GuiTools.TryParseTBUint(textureFlagsTB, true);
         }
     }
 }

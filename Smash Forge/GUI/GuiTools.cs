@@ -66,6 +66,26 @@ namespace Smash_Forge
             return result;
         }
 
+        public static uint TryParseTBUint(TextBox textBox, bool useHex = false, bool changeTextBoxColor = true)
+        {
+            // Returns 0 on failure. Sets the textbox backcolor to red for invalid values.
+            uint result = 0;
+            if (useHex && uint.TryParse(textBox.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out result))
+            {
+                textBox.BackColor = Color.White;
+            }
+            else if (uint.TryParse(textBox.Text, out result))
+            {
+                textBox.BackColor = Color.White;
+            }
+            else if (changeTextBoxColor)
+            {
+                textBox.BackColor = Color.Red;
+            }
+
+            return result;
+        }
+
         public static void ScaleControlsHorizontallyToLayoutWidth(Control containerControl)
         {
             foreach (Control control in containerControl.Controls)

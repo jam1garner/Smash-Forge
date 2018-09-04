@@ -5,16 +5,13 @@ in vec3 normal;
 in vec2 UV0;
 
 uniform int hasDiffuse;
+uniform int hasSphere;
 uniform sampler2D diffuseTex;
 uniform vec2 diffuseScale;
 
 uniform int hasSpecular;
 uniform sampler2D specularTex;
 uniform vec2 specularScale;
-
-uniform int hasSphere;
-uniform sampler2D sphereTex;
-uniform vec2 sphereScale;
 
 uniform int hasUnk2;
 uniform sampler2D unk2Tex;
@@ -26,6 +23,8 @@ uniform vec4 specularColor;
 
 uniform int flags;
 uniform int enableSpecular;
+uniform int enableDiffuseLighting;
+
 uniform float glossiness;
 uniform float transparency;
 
@@ -36,7 +35,8 @@ uniform mat4 sphereMatrix;
 
 uniform int renderDiffuse;
 uniform int renderSpecular;
-uniform int renderReflection;
+
+uniform int renderAlpha;
 
 out vec4 fragColor;
 
@@ -63,14 +63,16 @@ void main()
 	{
 		vec3 viewNormal = mat3(sphereMatrix) * normal.xyz;
 		vec2 sphereCoords = viewNormal.xy * 0.5 + 0.5;
-		diffuseMap = texture(sphereTex, sphereCoords).rgba;
+		diffuseMap = texture(diffuseTex, sphereCoords).rgba;
 	}
 
 	// TODO: This might also be a bump map.
 	if (hasUnk2 == 1)
 		diffuseMap.rgb *= texture(unk2Tex, UV0 * unk2Scale).rgb;
 
-	vec3 diffuseTerm = diffuseMap.rgb * mix(ambientColor.rgb, diffuseColor.rgb, lambert);
+	vec3 diffuseTerm = diffuseMap.rgb;
+	if (enableDiffuseLighting == 1)
+	 	diffuseTerm *= mix(ambientColor.rgb, diffuseColor.rgb, lambert);
 
 	// Specular
 	float phong = clamp(dot(normal, V), 0, 1);
@@ -85,5 +87,6 @@ void main()
 	fragColor.rgb += specularTerm * renderSpecular;
 
 	// Set alpha
-    fragColor.a = diffuseMap.a * transparency;
+    if (renderAlpha == 1)
+        fragColor.a = diffuseMap.a * transparency;
 }

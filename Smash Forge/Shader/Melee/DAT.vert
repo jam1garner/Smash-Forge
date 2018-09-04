@@ -10,7 +10,6 @@ out vec3 objectPosition;
 out vec3 normal;
 out vec2 UV0;
 
-uniform vec2 UV0Scale;
 uniform vec3 BonePosition;
 uniform mat4 mvpMatrix;
 uniform mat4 bones[100];
@@ -29,7 +28,7 @@ vec4 Skin(vec4 P, ivec4 B)
 void main() {
 
 	normal = vNormal;
-	UV0 = vUV0 * UV0Scale;
+	UV0 = vUV0;
 
 	vec4 position = vec4(vPosition, 1.0);
 

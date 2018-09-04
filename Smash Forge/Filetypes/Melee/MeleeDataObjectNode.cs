@@ -18,8 +18,8 @@ namespace Smash_Forge
         enum TextureTypeFlag : uint
         {
             Diffuse = 0x10,
+            Sphere = 0x1,
             Specular = 0x20,
-            Sphere = 0x81,
             Unk2 = 0x00, // giga bowser ao?
             Unk3 = 0x30 // also diffuse?
         }
@@ -184,7 +184,8 @@ namespace Smash_Forge
             SetTextureUniforms(shader);
 
             shader.SetInt("flags", DOBJ.Material.Flags);
-            shader.SetBoolToInt("enableSpecular", (DOBJ.Material.Flags & 0x0F) == 0xC);
+            shader.SetBoolToInt("enableSpecular", IsSpecularBitSet());
+            shader.SetBoolToInt("enableDiffuseLighting", IsDiffuseLightingBitSet());
 
             SetRgbaColor(shader, "ambientColor", DOBJ.Material.MaterialColor.AMB);
             SetRgbaColor(shader, "diffuseColor", DOBJ.Material.MaterialColor.DIF);
@@ -203,6 +204,16 @@ namespace Smash_Forge
                 }
         }
 
+        private bool IsDiffuseLightingBitSet()
+        {
+            return (DOBJ.Material.Flags & 0x4) > 0;
+        }
+
+        private bool IsSpecularBitSet()
+        {
+            return (DOBJ.Material.Flags & 0x8) > 0;
+        }
+
         private void SetTextureUniforms(Shader shader)
         {
             // Set default values
@@ -210,9 +221,7 @@ namespace Smash_Forge
             shader.SetVector2("unk2Scale", new Vector2(1, 1));
             shader.SetVector2("specularScale", new Vector2(1, 1));
 
-
             shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 0);
-            shader.SetTexture("sphereTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 1);
             shader.SetTexture("unk2Tex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 2);
             shader.SetTexture("specularTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 3);
 
@@ -221,44 +230,57 @@ namespace Smash_Forge
             bool hasSphere = false;
             bool hasSpecular = false;
 
-            // TODO: Does each texture have its own scale?
-            shader.SetVector2("UV0Scale", new Vector2(1));
-
             foreach (var renderTex in RenderTextures)
             {
                 uint type = GetTextureType(renderTex);
-                if (!Enum.IsDefined(typeof(TextureTypeFlag), type))
-                    continue;
-
-                // The "index" probably also determines the texture type.
-                switch ((TextureTypeFlag)type)
+                if (Enum.IsDefined(typeof(TextureTypeFlag), type))
                 {
-                    default:
-                        break;
-                    case TextureTypeFlag.Diffuse:
-                    case TextureTypeFlag.Unk3:
-                        hasDiffuse = true;
-                        SetDiffuseTexUniforms(shader, renderTex);
-                        break;
-                    case TextureTypeFlag.Specular:
-                        hasSpecular = true;
-                        SetSpecularTexUniforms(shader, renderTex);
-                        break;
-                    case TextureTypeFlag.Sphere:
-                        hasSphere = true;
-                        SetSphereTexUniforms(shader, renderTex);
-                        break;
-                    case TextureTypeFlag.Unk2:
-                        hasUnk2 = true;
-                        SetUnk2TexUniforms(shader, renderTex);
-                        break;
+                    switch ((TextureTypeFlag)type)
+                    {
+                        default:
+                            break;
+                        case TextureTypeFlag.Unk2:
+                            hasUnk2 = true;
+                            SetUnk2TexUniforms(shader, renderTex);
+                            break;
+                    }
+                }
+
+                if (IsSphereBitSet(renderTex))
+                    hasSphere = true;
+
+                if (IsDiffuseBitSet(renderTex))
+                {
+                    hasDiffuse = true;
+                    SetDiffuseTexUniforms(shader, renderTex);
+                }
+
+                if (IsSpecularBitSet(renderTex))
+                {
+                    hasSpecular = true;
+                    SetSpecularTexUniforms(shader, renderTex);
                 }
             }
 
             shader.SetBoolToInt("hasDiffuse", hasDiffuse);
             shader.SetBoolToInt("hasUnk2", hasUnk2);
-            shader.SetBoolToInt("hasSphere", hasSphere);
             shader.SetBoolToInt("hasSpecular", hasSpecular);
+            shader.SetBoolToInt("hasSphere", hasSphere);
+        }
+
+        private static bool IsDiffuseBitSet(MeleeRenderTexture renderTex)
+        {
+            return (renderTex.Flag & (uint)TextureTypeFlag.Diffuse) > 0;
+        }
+
+        private static bool IsSpecularBitSet(MeleeRenderTexture renderTex)
+        {
+            return (renderTex.Flag & (uint)TextureTypeFlag.Specular) > 0;
+        }
+
+        private static bool IsSphereBitSet(MeleeRenderTexture renderTex)
+        {
+            return (renderTex.Flag & (uint)TextureTypeFlag.Sphere) > 0;
         }
 
         private static void SetSphereTexUniforms(Shader shader, MeleeRenderTexture renderTex)
@@ -378,8 +400,9 @@ namespace Smash_Forge
                 {
                     Pos = new Vector3(v.Pos.X, v.Pos.Y, v.Pos.Z),
                     Nrm = new Vector3(v.Nrm.X, v.Nrm.Y, v.Nrm.Z),
-                    UV0 = new Vector2(v.TX0.X, v.TX0.Y)
+                    UV0 = new Vector2(v.TX0.X, v.TX0.Y),
                 };
+
                 if (v.N != null)
                 {
                     if (v.N.Length > 0)
