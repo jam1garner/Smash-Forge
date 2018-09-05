@@ -32,7 +32,7 @@ namespace Smash_Forge
         public Vector3 BonePosition;
 
         // for importing
-        public GXVertex[] VertsToImport;
+        public List<GXVertex[]> VertsToImport;
         
         public MeleeDataObjectNode(DatDOBJ DOBJ)
         {
@@ -96,7 +96,7 @@ namespace Smash_Forge
                     GXVertex[] verts = decompressor.GetFormattedVertices(dl, p);
                     for(int i = 0; i < verts.Length; i++)
                     {
-                        if(verts[i].N != null && verts[i].N.Length == 1)
+                        if (verts[i].N != null && verts[i].N.Length == 1)
                         {
                             Vector3 ToTransform = Vector3.TransformPosition(new Vector3(verts[i].Pos.X, verts[i].Pos.Y, verts[i].Pos.Z), Bones.bones[verts[i].N[0]].transform);
                             verts[i].Pos.X = ToTransform.X;
@@ -137,23 +137,33 @@ namespace Smash_Forge
         {
             if(VertsToImport != null)
             {
-                if(DOBJ.Polygons.Count == 0)
+                
+                for(int p = 0; p < VertsToImport.Count; p++)
                 {
-                    MessageBox.Show("Error injecting vertices into DOBJ: Not enough polygons");
-                    return;
-                }
-                DatPolygon p = DOBJ.Polygons[0];
-                p.AttributeGroup = GetRoot().Root.Attributes[0];
-                {
-                    List<GXDisplayList> newDL = new List<GXDisplayList>();
-                    for (int i = 0; i < VertsToImport.Length; i += 3)
+                    if (p >= DOBJ.Polygons.Count)
                     {
-                        newDL.Add(compressor.CompressDisplayList(
-                            new GXVertex[] { VertsToImport[i + 2], VertsToImport[i + 1], VertsToImport[i] },
-                            GXPrimitiveType.Triangles,
-                            p.AttributeGroup));
+                        MessageBox.Show("Error injecting vertices into DOBJ: Not enough polygons");
+                        return;
                     }
-                    p.DisplayLists = newDL;
+                    DatPolygon poly = DOBJ.Polygons[p];
+                    List<GXDisplayList> newDL = new List<GXDisplayList>();
+
+                    // maximize vertex groups
+                    int size = 3;
+
+                    for (int i = 0; i < VertsToImport[p].Length; i += size)
+                    {
+                        List<GXVertex> VertList = new List<GXVertex>();
+                        for (int j = 0; j < size; j += 3)
+                        {
+                            VertList.AddRange(new GXVertex[] { VertsToImport[p][i + j + 2], VertsToImport[p][i + j + 1], VertsToImport[p][i + j] });
+                        }
+                        newDL.Add(compressor.CompressDisplayList(
+                            VertList.ToArray(),
+                                GXPrimitiveType.Triangles,
+                                poly.AttributeGroup));
+                    }
+                    poly.DisplayLists = newDL;
                 }
                 VertsToImport = null;
             }
@@ -195,12 +205,36 @@ namespace Smash_Forge
             shader.SetFloat("transparency", DOBJ.Material.MaterialColor.Transparency);
 
             if (Checked)
-                foreach (MeleeMesh m in RenderMeshes)
+                for (int i =0; i < DOBJ.Polygons.Count; i++)
                 {
-                    if (IsSelected)
-                        DrawModelSelection(m, shader, c);
-                    else
-                        m.Draw(shader, c);
+                    MeleeMesh m = RenderMeshes[i];
+
+                    PrimitiveType Type = PrimitiveType.Triangles;
+                    int off = 0;
+                    for (int j = 0; j < DOBJ.Polygons[i].DisplayLists.Count; j++)
+                    {
+                        GXDisplayList dl = DOBJ.Polygons[i].DisplayLists[j];
+                        switch (dl.PrimitiveType)
+                        {
+                            case GXPrimitiveType.Points: Type = PrimitiveType.Points; break;
+                            case GXPrimitiveType.Lines: Type = PrimitiveType.Lines; break;
+                            case GXPrimitiveType.LineStrip: Type = PrimitiveType.LineStrip; break;
+                            case GXPrimitiveType.TriangleFan: Type = PrimitiveType.TriangleFan; break;
+                            case GXPrimitiveType.TriangleStrip: Type = PrimitiveType.TriangleStrip; break;
+                            case GXPrimitiveType.Triangles: Type = PrimitiveType.Triangles; break;
+                            case GXPrimitiveType.Quads: Type = PrimitiveType.Quads; break;
+                        }
+
+                        m.PrimitiveType = Type;
+
+                        if (IsSelected)
+                            DrawModelSelection(m, shader, c, dl.Indices.Length, off * 4);
+                        else
+                        {
+                            m.Draw(shader, c, dl.Indices.Length, off * 4);
+                        }
+                        off += dl.Indices.Length;
+                    }
                 }
         }
 
@@ -312,7 +346,7 @@ namespace Smash_Forge
             return renderTex.Flag & 0xFF;
         }
 
-        private static void DrawModelSelection(MeleeMesh mesh, Shader shader, Camera camera)
+        private static void DrawModelSelection(MeleeMesh mesh, Shader shader, Camera camera, int count, int offset)
         {
             //This part needs to be reworked for proper outline. Currently would make model disappear
 
@@ -325,7 +359,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
 
-            mesh.Draw(shader, camera);
+            mesh.Draw(shader, camera, count, offset);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             shader.SetInt("colorOverride", 0);
@@ -347,35 +381,28 @@ namespace Smash_Forge
         private void RefreshRenderMeshes()
         {
             RenderMeshes.Clear();
-            GXVertexDecompressor decom = new GXVertexDecompressor(((MeleeDataNode)Parent.Parent.Parent).DatFile);
+            GXVertexDecompressor decom = new GXVertexDecompressor(GetDatFile().DatFile);
             foreach (DatPolygon p in DOBJ.Polygons)
             {
+                List<MeleeVertex> Vertices = new List<MeleeVertex>();
+                List<int> indices = new List<int>();
+                int off = 0;
                 foreach (GXDisplayList dl in p.DisplayLists)
                 {
                     int size = 1;
-                    PrimitiveType Type = PrimitiveType.Triangles;
-                    switch (dl.PrimitiveType)
-                    {
-                        case GXPrimitiveType.Points: Type = PrimitiveType.Points; break;
-                        case GXPrimitiveType.Lines: Type = PrimitiveType.Lines; break;
-                        case GXPrimitiveType.LineStrip: Type = PrimitiveType.LineStrip; break;
-                        case GXPrimitiveType.TriangleFan: Type = PrimitiveType.TriangleFan; break;
-                        case GXPrimitiveType.TriangleStrip: Type = PrimitiveType.TriangleStrip; break;
-                        case GXPrimitiveType.Triangles: Type = PrimitiveType.Triangles; break;
-                        case GXPrimitiveType.Quads: Type = PrimitiveType.Quads; break;
-                    }
-                    List<int> indices = new List<int>();
                     for (int i = 0; i < dl.Indices.Length; i += size)
                     {
                         for (int j = size - 1; j >= 0; j--)
                         {
-                            indices.Add(i + j);
+                            indices.Add(off + i + j);
                         }
                     }
-                    MeleeMesh m = new MeleeMesh(ConvertVerts(decom.GetFormattedVertices(dl, p)), indices);
-                    m.PrimitiveType = Type;
-                    RenderMeshes.Add(m);
+                    off += dl.Indices.Length;
+                    Vertices.AddRange(ConvertVerts(decom.GetFormattedVertices(dl, p)));
                 }
+
+                MeleeMesh m = new MeleeMesh(Vertices, indices);
+                RenderMeshes.Add(m);
             }
         }
 

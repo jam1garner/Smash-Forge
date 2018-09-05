@@ -31,10 +31,12 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.buttonImport = new System.Windows.Forms.Button();
-            this.comboBoxBoneType = new System.Windows.Forms.ComboBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.buttonBoneParent = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.comboBoxBoneType = new System.Windows.Forms.ComboBox();
+            this.buttonImport = new System.Windows.Forms.Button();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.listBox2 = new System.Windows.Forms.ListBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -63,6 +65,8 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.listBox2);
+            this.groupBox1.Controls.Add(this.listBox1);
             this.groupBox1.Controls.Add(this.buttonBoneParent);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.comboBoxBoneType);
@@ -70,20 +74,29 @@
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(260, 162);
+            this.groupBox1.Size = new System.Drawing.Size(260, 239);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "FileImport";
             // 
-            // buttonImport
+            // buttonBoneParent
             // 
-            this.buttonImport.Location = new System.Drawing.Point(98, 180);
-            this.buttonImport.Name = "buttonImport";
-            this.buttonImport.Size = new System.Drawing.Size(75, 23);
-            this.buttonImport.TabIndex = 3;
-            this.buttonImport.Text = "Import";
-            this.buttonImport.UseVisualStyleBackColor = true;
-            this.buttonImport.Click += new System.EventHandler(this.buttonImport_Click);
+            this.buttonBoneParent.Enabled = false;
+            this.buttonBoneParent.Location = new System.Drawing.Point(6, 75);
+            this.buttonBoneParent.Name = "buttonBoneParent";
+            this.buttonBoneParent.Size = new System.Drawing.Size(75, 23);
+            this.buttonBoneParent.TabIndex = 5;
+            this.buttonBoneParent.Text = "BoneParent";
+            this.buttonBoneParent.UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 51);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(59, 13);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Bone Type";
             // 
             // comboBoxBoneType
             // 
@@ -99,30 +112,38 @@
             this.comboBoxBoneType.Size = new System.Drawing.Size(184, 21);
             this.comboBoxBoneType.TabIndex = 2;
             // 
-            // label2
+            // buttonImport
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 51);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(59, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Bone Type";
+            this.buttonImport.Location = new System.Drawing.Point(97, 257);
+            this.buttonImport.Name = "buttonImport";
+            this.buttonImport.Size = new System.Drawing.Size(75, 23);
+            this.buttonImport.TabIndex = 3;
+            this.buttonImport.Text = "Import";
+            this.buttonImport.UseVisualStyleBackColor = true;
+            this.buttonImport.Click += new System.EventHandler(this.buttonImport_Click);
             // 
-            // buttonBoneParent
+            // listBox1
             // 
-            this.buttonBoneParent.Enabled = false;
-            this.buttonBoneParent.Location = new System.Drawing.Point(9, 133);
-            this.buttonBoneParent.Name = "buttonBoneParent";
-            this.buttonBoneParent.Size = new System.Drawing.Size(75, 23);
-            this.buttonBoneParent.TabIndex = 5;
-            this.buttonBoneParent.Text = "BoneParent";
-            this.buttonBoneParent.UseVisualStyleBackColor = true;
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(0, 104);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(120, 121);
+            this.listBox1.TabIndex = 6;
+            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            // 
+            // listBox2
+            // 
+            this.listBox2.FormattingEnabled = true;
+            this.listBox2.Location = new System.Drawing.Point(134, 104);
+            this.listBox2.Name = "listBox2";
+            this.listBox2.Size = new System.Drawing.Size(120, 95);
+            this.listBox2.TabIndex = 7;
             // 
             // DOBJImportSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 218);
+            this.ClientSize = new System.Drawing.Size(284, 292);
             this.Controls.Add(this.buttonImport);
             this.Controls.Add(this.groupBox1);
             this.Name = "DOBJImportSettings";
@@ -144,5 +165,7 @@
         private System.Windows.Forms.Button buttonBoneParent;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox comboBoxBoneType;
+        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.ListBox listBox2;
     }
 }

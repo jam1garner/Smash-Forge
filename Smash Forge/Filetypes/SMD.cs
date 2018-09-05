@@ -57,7 +57,7 @@ namespace Smash_Forge
                 line = Regex.Replace(line, @"\s+", " ");
                 string[] args = line.Replace(";", "").TrimStart().Split(' ');
 
-                if (args[0].Equals("triangles") || args[0].Equals("end"))
+                if (args[0].Equals("triangles") || args[0].Equals("end") || args[0].Equals("skeleton") || args[0].Equals("nodes"))
                 {
                     current = args[0];
                     continue;
@@ -125,7 +125,7 @@ namespace Smash_Forge
                         SMDVertex vert = new SMDVertex();
                         vert.P = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
                         vert.N = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
-                        vert.UV = new Vector2(float.Parse(args[7]), float.Parse(args[8]));
+                        vert.UV = new Vector2(float.Parse(args[7]), 1-float.Parse(args[8]));
                         int wCount = int.Parse(args[9]);
                         int w = 10;
                         vert.Bones = new int[wCount];

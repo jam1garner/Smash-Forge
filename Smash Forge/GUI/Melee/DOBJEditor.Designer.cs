@@ -48,6 +48,7 @@
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.label7 = new System.Windows.Forms.Label();
             this.textureFlagsTB = new System.Windows.Forms.TextBox();
+            this.buttonImportTexture = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericTransparency)).BeginInit();
@@ -249,6 +250,7 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54F));
             this.tableLayoutPanel2.Controls.Add(this.label7, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.textureFlagsTB, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.buttonImportTexture, 1, 1);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -277,6 +279,16 @@
             this.textureFlagsTB.TabIndex = 1;
             this.textureFlagsTB.TextChanged += new System.EventHandler(this.textureFlagsTB_TextChanged);
             // 
+            // buttonImportTexture
+            // 
+            this.buttonImportTexture.Location = new System.Drawing.Point(124, 39);
+            this.buttonImportTexture.Name = "buttonImportTexture";
+            this.buttonImportTexture.Size = new System.Drawing.Size(138, 23);
+            this.buttonImportTexture.TabIndex = 2;
+            this.buttonImportTexture.Text = "Import From File";
+            this.buttonImportTexture.UseVisualStyleBackColor = true;
+            this.buttonImportTexture.Click += new System.EventHandler(this.buttonImportTexture_Click);
+            // 
             // DOBJEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -287,7 +299,7 @@
             this.Controls.Add(this.textureListBox);
             this.Controls.Add(this.groupBox1);
             this.Name = "DOBJEditor";
-            this.Text = "DOBJEditor";
+            this.Text = "DOBJ Editor";
             this.groupBox1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
@@ -323,5 +335,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textureFlagsTB;
+        private System.Windows.Forms.Button buttonImportTexture;
     }
 }

@@ -125,5 +125,25 @@ namespace Smash_Forge.GUI.Melee
         {
             selectedTexture.Texture.UnkFlags = GuiTools.TryParseTBUint(textureFlagsTB, true);
         }
+
+        private void buttonImportTexture_Click(object sender, EventArgs e)
+        {
+            if (selectedTexture != null)
+                using (OpenFileDialog ofd = new OpenFileDialog())
+                {
+                    ofd.Filter = "DDS|*.dds";
+
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    {
+                        DDS d = new DDS(new FileData(ofd.FileName));
+                        if (d.header.ddspf.fourCC != 0x31545844)
+                        {
+                            MessageBox.Show("Error Importing Texture:\nOnly DXT1 Files are supported");
+                            return;
+                        }
+                        selectedTexture.Texture.SetFromDXT1(new FileData(d.bdata).getSection(0, (int)(d.header.width*d.header.height/2)), (int)d.header.width, (int)d.header.height);
+                    }
+                }
+        }
     }
 }
