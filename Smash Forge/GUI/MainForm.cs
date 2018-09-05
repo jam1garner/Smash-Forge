@@ -72,17 +72,6 @@ namespace Smash_Forge
             if (Smash_Forge.Update.Downloaded && Instance.greenArrowPictureBox.Image == null)
                 Instance.greenArrowPictureBox.Image = Resources.Resources.sexy_green_down_arrow;
             DiscordSettings.Update();
-
-            // Avoid constantly failing slow setup.
-            // It may work again when creating a GLControl.
-            if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Failed)
-                OpenTKSharedResources.InitializeSharedResources();
-            else
-            {
-                // Disable options that would cause crashes.
-                reloadShadersToolStripMenuItem.Enabled = false;
-                exportErrorLogToolStripMenuItem.Enabled = false;
-            }
         }
 
         ~MainForm()
@@ -114,6 +103,15 @@ namespace Smash_Forge
 
             Config.StartupFromFile(MainForm.executableDir + "\\config.xml");
             DiscordSettings.Update();
+
+            // Make sure everything is loaded before opening files.
+            OpenTKSharedResources.InitializeSharedResources();
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Failed)
+            {
+                // Disable options that would cause crashes.
+                reloadShadersToolStripMenuItem.Enabled = false;
+                exportErrorLogToolStripMenuItem.Enabled = false;
+            }
 
             openFiles();
         }
@@ -393,7 +391,7 @@ namespace Smash_Forge
             return mvp;
         }
 
-        public ModelViewport OpenKcl(string fileName, string viewportTitle = "", ModelViewport mvp = null)
+        public ModelViewport OpenKcl(byte[] fileData, string fileName, string viewportTitle = "", ModelViewport mvp = null)
         {
             if (mvp == null)
             {
@@ -406,7 +404,6 @@ namespace Smash_Forge
             modelContainer.Text = fileName;
             mvp.Text = fileName;
 
-            byte[] fileData = GetUncompressedSzsSbfresData(fileName);
             modelContainer.Kcl = new KCL(fileData);
 
             return mvp;
@@ -431,13 +428,18 @@ namespace Smash_Forge
 
             modelContainer.Bfres = new BFRES(fileName, fileData);
 
+            modelContainer.BNTX = modelContainer.Bfres.getBntx();
+
+            if (modelContainer.BNTX != null)
+                Runtime.BNTXList.Add(modelContainer.BNTX);
+
             if (modelContainer.Bfres.models.Count != 0)
             {
                 Runtime.TargetVBN = modelContainer.Bfres.models[0].skeleton;
                 resyncTargetVBN();
             }
 
-            if (BNTX.textures.Count > 0)
+            if (Runtime.BNTXList.Count > 0 || Runtime.FTEXContainerList.Count > 0)
                 Runtime.glTexturesNeedRefreshing = true;
 
             if (modelContainer.Bfres.AnimationCountTotal != 0)
@@ -717,7 +719,7 @@ namespace Smash_Forge
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GUI.RenderSettings renderSettings = new GUI.RenderSettings();
+            GUI.RenderSettingsMenu renderSettings = new GUI.RenderSettingsMenu();
             renderSettings.Show();
         }
 
@@ -1232,16 +1234,16 @@ namespace Smash_Forge
                     DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
-                        OpenKcl(fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
+                        OpenKcl(data, fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
                     }
                     if (dialogResult == DialogResult.No)
                     {
-                        OpenKcl(fileName);
+                        OpenKcl(data, fileName);
                     }
                 }
                 else
                 {
-                    OpenKcl(fileName);
+                    OpenKcl(data, fileName);
                 }
             }
 
@@ -1273,13 +1275,18 @@ namespace Smash_Forge
 
                 if (hexM == 0x02020000) //YAZO compressed
                 {
-                    OpenKcl(fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
+                    OpenKcl(fileByteData, fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
                 }
 
                 if (magic2 == "BNTX") //SARC compressed
                 {
-                    BNTXEditor editor = new BNTXEditor(fileByteData);
+                    BNTX BNTX = new BNTX();
+                    BNTX.ReadBNTXFile(fileByteData);
+                    Runtime.BNTXList.Add(BNTX);
+
+                    BNTXEditor editor = new BNTXEditor(BNTX);
                     AddDockedControl(editor);
+
                 }
 
                 if (magic2 == "SARC") //SARC compressed
@@ -1303,7 +1310,7 @@ namespace Smash_Forge
                             fileByteData = SzsFiles[s];
                             uncompressedFileData = new FileData(fileByteData);
 
-                            OpenKcl(s, s, (ModelViewport)dockPanel1.ActiveContent);
+                            OpenKcl(fileByteData, s, s, (ModelViewport)dockPanel1.ActiveContent);
                         }
                     }
                 }
@@ -1367,12 +1374,17 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".bntx"))
             {
-                FileData f = new FileData(fileName);
+                ModelContainer modelContainer = new ModelContainer();
 
-                byte[] data = f.getSection(0, f.eof());
+                modelContainer.BNTX = new BNTX();
+                modelContainer.BNTX.ReadBNTXFile(fileName);
+                Runtime.BNTXList.Add(modelContainer.BNTX);
+                Runtime.glTexturesNeedRefreshing = true;
 
-                BNTXEditor editor = new BNTXEditor(data);
+                BNTXEditor editor = new BNTXEditor(modelContainer.BNTX);
                 AddDockedControl(editor);
+
+                mvp.meshList.filesTreeView.Nodes.Add(modelContainer);
             }
 
             if (fileName.EndsWith(".tex"))
@@ -1997,7 +2009,8 @@ namespace Smash_Forge
 
         private void reloadShadersToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ShaderTools.SetupShaders();
+            // Force the binaries to be regenerated.
+            ShaderTools.SetupShaders(true);
         }
 
         private void open3DSCharacterToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2297,6 +2310,20 @@ namespace Smash_Forge
                     OpenBfres(data, s, s, mvp);
                 }
             }
+        }
+
+        private void batchRenderNUDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
+            if (mvp != null)
+                mvp.BatchRenderNudModels();
+        }
+
+        private void batchRenderBOTWBfresToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
+            if (mvp != null)
+                mvp.BatchRenderBotwBfresModels();
         }
     }
 }

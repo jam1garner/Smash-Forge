@@ -50,7 +50,6 @@ namespace Smash_Forge.Rendering
                     EnableOpenTKDebugOutput();
 
                 RenderTools.LoadTextures();
-                ScreenDrawing.screenQuadVbo = ScreenDrawing.CreateScreenQuadBuffer();
                 GetOpenGLSystemInfo();
                 ShaderTools.SetupShaders();
 
@@ -68,7 +67,7 @@ namespace Smash_Forge.Rendering
 #if DEBUG
             // This isn't free, so skip this step when not debugging.
             // TODO: Only works with Intel integrated.
-            if (SFGraphics.Tools.OpenTKExtensionTools.IsAvailable("GL_KHR_debug"))
+            if (SFGraphics.Tools.OpenGLExtensions.IsAvailable("GL_KHR_debug"))
             {
                 GL.Enable(EnableCap.DebugOutput);
                 GL.Enable(EnableCap.DebugOutputSynchronous);

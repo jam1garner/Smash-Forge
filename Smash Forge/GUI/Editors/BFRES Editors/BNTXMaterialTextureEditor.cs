@@ -10,14 +10,17 @@ using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Smash_Forge.Rendering;
+using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {
     public partial class BNTXMaterialTextureEditor : Form
     {
+        //This editor will allow UV viewing while
+        //also being able to edit tiling, filtering and some other things.
 
-        public BRTI Texture = null;
-        public FTEX FTEXTexture = null;
+
+        public Texture Texture = null;
         public bool _loaded;
         public Matrix4 mvpMatrix = Matrix4.Identity;
         public BFRES.Mesh mesh = null;
@@ -44,40 +47,31 @@ namespace Smash_Forge
             comboBox2.Items.Add("Clamp");
             comboBox2.Items.Add("Repeat Mirror");
         }
-        public void LoadTexture(BFRES.Mesh m = null, BRTI tex = null, FTEX ftex = null)
+        public void LoadTexture(BFRES.Mesh m, Texture texture, string TexName)
         {
-            RenderTexture(m, tex, ftex);
+            //Todo go back and redo this editor
+          //  RenderTexture(m, texture, TexName);
         }
 
         float zoom = -1f;
 
-        private void RenderTexture(BFRES.Mesh m = null, BRTI tex = null, FTEX ftex = null)
+        private void RenderTexture(BFRES.Mesh m, Texture texture, string TexName)
         {
-            Texture = tex;
-            FTEXTexture = ftex;
+            Texture = texture;
             mesh = m;
             mat = mesh.material;
 
             foreach (BFRES.MatTexture te in mat.textures)
             {
-                if (tex != null)
+                if (Texture != null)
                 {
-                    if (te.Name == tex.Text)
+                    if (te.Name == TexName)
                     {
                         Mattex = te;
                         comboBox1.SelectedIndex = te.wrapModeS;
                         comboBox2.SelectedIndex = te.wrapModeT;
                     }
-                }
-                if (ftex != null)
-                {
-                    if (te.Name == ftex.Text)
-                    {
-                        Mattex = te;
-                        comboBox1.SelectedIndex = te.wrapModeS;
-                        comboBox2.SelectedIndex = te.wrapModeT;
-                    }
-                }          
+                }       
             }
         }
         public void Setup2DRendering()
@@ -217,7 +211,7 @@ namespace Smash_Forge
 
         public void DrawTex2()
         {
-            if (Texture == null && Mattex == null || FTEXTexture == null && Mattex == null)
+            if (Texture == null && Mattex == null)
             {
                 glControl1.SwapBuffers();
                 return;
@@ -227,18 +221,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.Texture2D);
 
             int texture = 0;
-            if (FTEXTexture != null)
-            {
-                width = FTEXTexture.width;
-                height = FTEXTexture.height;
-                texture = FTEXTexture.display;
-            }
-            else
-            {
-                width = Texture.Width;
-                height = Texture.Height;
-                texture = Texture.display;
-            }
+     
 
 
             // Single texture uniform.

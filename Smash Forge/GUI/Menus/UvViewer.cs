@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Smash_Forge.Rendering;
+using SFGraphics.GLObjects;
 using OpenTK.Graphics.OpenGL;
+using Smash_Forge.Rendering.Meshes;
+using SFGraphics.GLObjects.GLObjectManagement;
+using SFGraphics.GLObjects.Shaders;
+using OpenTK;
 
 namespace Smash_Forge.GUI.Menus
 {
@@ -16,6 +14,7 @@ namespace Smash_Forge.GUI.Menus
     {
         private NUD sourceNud;
         private NUD.Polygon polygonToRender;
+        private NudRenderMesh forgeMesh;
 
         public UvViewer(NUD sourceNud, NUD.Polygon polygonToRender)
         {
@@ -32,7 +31,10 @@ namespace Smash_Forge.GUI.Menus
             {
                 if (sourceNud != null)
                 {
-                    NudUvRendering.InitializeUVBufferData(sourceNud);
+                    glControl1.MakeCurrent();
+                    forgeMesh = sourceNud.CreateRenderMesh(polygonToRender);
+                    // Ignore the material values.
+                    forgeMesh.ResetRenderSettings();
                 }
             }
         }
@@ -42,12 +44,35 @@ namespace Smash_Forge.GUI.Menus
             if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
                 return;
 
+            RenderUvs();
+
+            GLObjectManager.DeleteUnusedGLObjects();
+        }
+
+        private void RenderUvs()
+        {
             glControl1.MakeCurrent();
+
+            Mesh3D screenTriangle = ScreenDrawing.CreateScreenTriangle();
+
+
             GL.Viewport(glControl1.ClientRectangle);
             // Draw darker to make the UVs visible.
-            ScreenDrawing.DrawTexturedQuad(RenderTools.uvTestPattern.Id, 0.5f);
-            NudUvRendering.DrawUv(polygonToRender, glControl1.Width, glControl1.Height);
+            ScreenDrawing.DrawTexturedQuad(RenderTools.uvTestPattern.Id, 0.5f, screenTriangle);
+
+            DrawPolygonUvs();
+
             glControl1.SwapBuffers();
+        }
+
+        private void DrawPolygonUvs()
+        {
+            Shader shader = OpenTKSharedResources.shaders["UV"];
+            shader.UseProgram();
+            Matrix4 matrix = Matrix4.CreateOrthographicOffCenter(0, 1, 1, 0, -1, 1);
+            shader.SetMatrix4x4("mvpMatrix", ref matrix);
+
+            forgeMesh.Draw(shader, null);
         }
 
         private void glControl1_Resize(object sender, EventArgs e)

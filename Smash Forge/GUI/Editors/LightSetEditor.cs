@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using OpenTK;
-using OpenTK.Graphics;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SALT.PARAMS;
-using System.Diagnostics;
-using Smash_Forge.Rendering.Lights;
+using SFGraphics.Utils;
 using Smash_Forge.Rendering;
-using SFGraphics.Tools;
-
+using Smash_Forge.Rendering.Lights;
+using Smash_Forge.Rendering.Meshes;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Smash_Forge.GUI.Editors
 {
@@ -25,6 +17,8 @@ namespace Smash_Forge.GUI.Editors
         private DirectionalLight selectedCharDiffuseLight = new DirectionalLight();
         private AreaLight selectedAreaLight = new AreaLight("");
         private LightColor selectedFogColor = new LightColor();
+
+        private Mesh3D screenTriangle;
 
         public LightSetEditor()
         {
@@ -282,14 +276,21 @@ namespace Smash_Forge.GUI.Editors
 
         private void RenderCharacterLightGradient(LightColor topColor, LightColor bottomColor)
         {
-            ScreenDrawing.DrawQuadGradient(new Vector3(topColor.R, topColor.G, topColor.B), new Vector3(bottomColor.R, bottomColor.G, bottomColor.B), ScreenDrawing.screenQuadVbo);
+            DrawGradient(new Vector3(topColor.R, topColor.G, topColor.B), new Vector3(bottomColor.R, bottomColor.G, bottomColor.B));
         }
 
         private void RenderAreaLightColor()
         {
             Vector3 topColor = new Vector3(selectedAreaLight.skyR, selectedAreaLight.skyG, selectedAreaLight.skyB);
             Vector3 bottomColor = new Vector3(selectedAreaLight.groundR, selectedAreaLight.groundG, selectedAreaLight.groundB);
-            ScreenDrawing.DrawQuadGradient(topColor, bottomColor, ScreenDrawing.screenQuadVbo);
+            DrawGradient(topColor, bottomColor);
+        }
+
+        private void DrawGradient(Vector3 topColor, Vector3 bottomColor)
+        {
+            if (screenTriangle == null)
+                screenTriangle = ScreenDrawing.CreateScreenTriangle();
+            ScreenDrawing.DrawQuadGradient(topColor, bottomColor, screenTriangle);
         }
 
         private void RenderLightMapColor()
@@ -299,7 +300,7 @@ namespace Smash_Forge.GUI.Editors
 
             Vector3 topColor = new Vector3(1);
             Vector3 bottomColor = new Vector3(1);
-            ScreenDrawing.DrawQuadGradient(topColor, bottomColor, ScreenDrawing.screenQuadVbo);
+            DrawGradient(topColor, bottomColor);
 
             lightMapGLControl.SwapBuffers();
         }

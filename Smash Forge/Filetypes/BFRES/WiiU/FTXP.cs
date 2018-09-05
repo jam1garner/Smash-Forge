@@ -24,8 +24,6 @@ namespace Smash_Forge
 
             public void Read(ResFile b, AnimationGroupNode ThisAnimation, ModelContainer modelContainer)
             {
-                Console.WriteLine("Reading Textue Pattern Animations ...");
-
                 TreeNode TexAnimation = new TreeNode() { Text = "Textue Pattern Animations" };
                 ThisAnimation.Nodes.Add(TexAnimation);
 
@@ -69,7 +67,7 @@ namespace Smash_Forge
                         foreach (var tx in tex.TextureRefNames)
                         {
                             mta.Pat0.Add(tx.Name);
-                            Console.WriteLine(tx.Name);
+                            //Console.WriteLine(tx.Name);
                         }
                     }
 
@@ -80,8 +78,8 @@ namespace Smash_Forge
                     BFRES.MatAnimEntry mat = new BFRES.MatAnimEntry();
 
                     mat.Text = matanim.Name;
-                    Console.WriteLine($"MatAnim = {mat.Text}");
-                    Console.WriteLine($"Curve Count = {matanim.Curves.Count}");
+                    //Console.WriteLine($"MatAnim = {mat.Text}");
+                    //Console.WriteLine($"Curve Count = {matanim.Curves.Count}");
 
                     if (matanim.Curves.Count == 0)
                     {
@@ -137,7 +135,7 @@ namespace Smash_Forge
                                         int key = cr.Offset + test;
                                         md.Pat0Tex = (mta.Pat0[(int)key]);
                                         md.Frame = (int)cr.Frames[i];
-                                        Console.WriteLine($"{md.Frame} {md.Pat0Tex}");
+                                        //Console.WriteLine($"{md.Frame} {md.Pat0Tex}");
 
                                     }
                                 }
@@ -149,7 +147,7 @@ namespace Smash_Forge
 
                     foreach (BFRES.MatAnimData md in mat.matCurves)
                     {
-                        Console.WriteLine($"At frame {md.Frame} show {md.Pat0Tex} {md.SamplerName}");
+                        //Console.WriteLine($"At frame {md.Frame} show {md.Pat0Tex} {md.SamplerName}");
                     }
 
                     mta.matEntries.Add(mat);

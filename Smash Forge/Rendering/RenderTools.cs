@@ -2,27 +2,29 @@
 using System.Drawing;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using System.Diagnostics;
 using SALT.PARAMS;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.Cameras;
-
+using Smash_Forge.Filetypes.Models.Nuds;
 
 namespace Smash_Forge.Rendering
 {
-    class RenderTools
+    static class RenderTools
     {
-        public static Texture defaultTex;
-        public static Texture floorTexture;
-        public static Texture backgroundTexture;
+        public static Texture2D defaultTex;
+        public static Texture2D floorTexture;
+        public static Texture2D backgroundTexture;
 
-        public static Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
+        public static Dictionary<NudEnums.DummyTexture, Texture> dummyTextures = new Dictionary<NudEnums.DummyTexture, Texture>();
 
-        public static Texture uvTestPattern;
-        public static Texture boneWeightGradient;
-        public static Texture boneWeightGradient2;
+        public static Texture2D uvTestPattern;
+        public static Texture2D boneWeightGradient;
+        public static Texture2D boneWeightGradient2;
+
+        public static TextureCubeMap diffusePbr;
+        public static TextureCubeMap specularPbr;
 
         public static void LoadTextures()
         {
@@ -31,19 +33,37 @@ namespace Smash_Forge.Rendering
             NudMatSphereDrawing.LoadMaterialSphereTextures();
 
             // Helpful textures. 
-            uvTestPattern = new Texture2D(Properties.Resources.UVPattern);
+            uvTestPattern = new Texture2D();
+            uvTestPattern.LoadImageData(Properties.Resources.UVPattern);
             uvTestPattern.TextureWrapS = TextureWrapMode.Repeat;
             uvTestPattern.TextureWrapT = TextureWrapMode.Repeat;
 
-            boneWeightGradient = new Texture2D(Properties.Resources.boneWeightGradient);
-            boneWeightGradient2 = new Texture2D(Properties.Resources.boneWeightGradient2);
+            // TODO: Simplify this conversion.
+            DDS specularSdr = new DDS(new FileData(Properties.Resources.specularSDR));      
+            specularPbr = NUT.CreateTextureCubeMap(specularSdr.ToNutTexture());
 
-            defaultTex = new Texture2D(Resources.Resources.DefaultTexture);
+            DDS diffuseSdr = new DDS(new FileData(Properties.Resources.diffuseSDR));
+            diffusePbr = NUT.CreateTextureCubeMap(diffuseSdr.ToNutTexture());
+            // Don't use mipmaps.
+            diffusePbr.MinFilter = TextureMinFilter.Linear;
+            diffusePbr.MagFilter = TextureMagFilter.Linear;
+
+            boneWeightGradient = new Texture2D();
+            boneWeightGradient.LoadImageData(Properties.Resources.boneWeightGradient);
+
+            boneWeightGradient2 = new Texture2D();
+            boneWeightGradient2.LoadImageData(Properties.Resources.boneWeightGradient2);
+
+            defaultTex = new Texture2D();
+            defaultTex.LoadImageData(Resources.Resources.DefaultTexture);
 
             try
             {
-                floorTexture = new Texture2D(new Bitmap(Runtime.floorTexFilePath));
-                backgroundTexture = new Texture2D(new Bitmap(Runtime.backgroundTexFilePath));
+                floorTexture = new Texture2D();
+                floorTexture.LoadImageData(new Bitmap(Runtime.floorTexFilePath));
+
+                backgroundTexture = new Texture2D();
+                backgroundTexture.LoadImageData(new Bitmap(Runtime.backgroundTexFilePath));
             }
             catch (Exception)
             {
@@ -51,28 +71,34 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        public static Dictionary<NUD.DummyTextures, Texture> CreateNudDummyTextures()
+        public static Dictionary<NudEnums.DummyTexture, Texture> CreateNudDummyTextures()
         {
-            Dictionary<NUD.DummyTextures, Texture> dummyTextures = new Dictionary<NUD.DummyTextures, Texture>();
+            Dictionary<NudEnums.DummyTexture, Texture> dummyTextures = new Dictionary<NudEnums.DummyTexture, Texture>();
 
             // Dummy textures. 
-            Texture stageMapHigh = new TextureCubeMap(Properties.Resources._10102000, 128);
-            dummyTextures.Add(NUD.DummyTextures.StageMapHigh, stageMapHigh);
+            TextureCubeMap stageMapHigh = new TextureCubeMap();
+            stageMapHigh.LoadImageData(Properties.Resources._10102000, 128);
+            dummyTextures.Add(NudEnums.DummyTexture.StageMapHigh, stageMapHigh);
 
-            Texture stageMapLow = new TextureCubeMap(Properties.Resources._10101000, 128);
-            dummyTextures.Add(NUD.DummyTextures.StageMapLow, stageMapLow);
+            TextureCubeMap stageMapLow = new TextureCubeMap();
+            stageMapLow.LoadImageData(Properties.Resources._10101000, 128);
+            dummyTextures.Add(NudEnums.DummyTexture.StageMapLow, stageMapLow);
 
-            Texture dummyRamp = new Texture2D(Properties.Resources._10080000);
-            dummyTextures.Add(NUD.DummyTextures.DummyRamp, dummyRamp);
+            Texture2D dummyRamp = new Texture2D();
+            dummyRamp.LoadImageData(Properties.Resources._10080000);
+            dummyTextures.Add(NudEnums.DummyTexture.DummyRamp, dummyRamp);
 
-            Texture pokemonStadiumDummyTex = new Texture2D(Properties.Resources._10040001);
-            dummyTextures.Add(NUD.DummyTextures.PokemonStadium, pokemonStadiumDummyTex);
+            Texture2D pokemonStadiumDummyTex = new Texture2D();
+            pokemonStadiumDummyTex.LoadImageData(Properties.Resources._10040001);
+            dummyTextures.Add(NudEnums.DummyTexture.PokemonStadium, pokemonStadiumDummyTex);
 
-            Texture punchOutDummyTex = new Texture2D(Properties.Resources._10040000);
-            dummyTextures.Add(NUD.DummyTextures.PunchOut, punchOutDummyTex);
+            Texture2D punchOutDummyTex = new Texture2D();
+            punchOutDummyTex.LoadImageData(Properties.Resources._10040000);
+            dummyTextures.Add(NudEnums.DummyTexture.PunchOut, punchOutDummyTex);
 
-            Texture shadowMapDummyTex = new Texture2D(Properties.Resources._10100000);
-            dummyTextures.Add(NUD.DummyTextures.ShadowMap, shadowMapDummyTex);
+            Texture2D shadowMapDummyTex = new Texture2D();
+            shadowMapDummyTex.LoadImageData(Properties.Resources._10100000);
+            dummyTextures.Add(NudEnums.DummyTexture.ShadowMap, shadowMapDummyTex);
 
             return dummyTextures;
         }
@@ -852,6 +878,8 @@ namespace Smash_Forge.Rendering
 
         public static void DrawFloor(Matrix4 mvpMatrix)
         {
+            // TODO: This breaks bitangents.
+            // #justopenglthings
             float scale = Runtime.floorSize;
 
             GL.UseProgram(0);
@@ -864,7 +892,7 @@ namespace Smash_Forge.Rendering
 
             GL.Color3(Runtime.floorColor);
             GL.LineWidth(1f);
-
+        
             if (Runtime.floorStyle == Runtime.FloorStyle.UserTexture)
             {
                 GL.Enable(EnableCap.Texture2D);
@@ -954,7 +982,6 @@ namespace Smash_Forge.Rendering
 
                 GL.Begin(PrimitiveType.Lines);
                 GL.Vertex3(0, 0f, 0f);
-                GL.Color3(Color.Olive);
                 GL.Vertex3(0, 0f, 5f);
                 GL.End();
             }

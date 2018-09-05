@@ -80,6 +80,9 @@
             this.cameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.forgeWikiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.batchRenderExperimentalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.batchRenderNUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.batchRenderBOTWBfresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dockPanel1 = new WeifenLuo.WinFormsUI.Docking.DockPanel();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -102,7 +105,8 @@
             this.toolsToolStripMenuItem,
             this.masterpiecesToolStripMenuItem,
             this.cameraToolStripMenuItem,
-            this.helpToolStripMenuItem});
+            this.helpToolStripMenuItem,
+            this.batchRenderExperimentalToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1217, 24);
@@ -499,6 +503,29 @@
             this.forgeWikiToolStripMenuItem.Text = "Forge Wiki";
             this.forgeWikiToolStripMenuItem.Click += new System.EventHandler(this.forgeWikiToolStripMenuItem_Click);
             // 
+            // batchRenderExperimentalToolStripMenuItem
+            // 
+            this.batchRenderExperimentalToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.batchRenderNUDToolStripMenuItem,
+            this.batchRenderBOTWBfresToolStripMenuItem});
+            this.batchRenderExperimentalToolStripMenuItem.Name = "batchRenderExperimentalToolStripMenuItem";
+            this.batchRenderExperimentalToolStripMenuItem.Size = new System.Drawing.Size(87, 20);
+            this.batchRenderExperimentalToolStripMenuItem.Text = "Experimental";
+            // 
+            // batchRenderNUDToolStripMenuItem
+            // 
+            this.batchRenderNUDToolStripMenuItem.Name = "batchRenderNUDToolStripMenuItem";
+            this.batchRenderNUDToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.batchRenderNUDToolStripMenuItem.Text = "Batch Render Nud";
+            this.batchRenderNUDToolStripMenuItem.Click += new System.EventHandler(this.batchRenderNUDToolStripMenuItem_Click);
+            // 
+            // batchRenderBOTWBfresToolStripMenuItem
+            // 
+            this.batchRenderBOTWBfresToolStripMenuItem.Name = "batchRenderBOTWBfresToolStripMenuItem";
+            this.batchRenderBOTWBfresToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.batchRenderBOTWBfresToolStripMenuItem.Text = "Batch Render BOTW Bfres";
+            this.batchRenderBOTWBfresToolStripMenuItem.Click += new System.EventHandler(this.batchRenderBOTWBfresToolStripMenuItem_Click);
+            // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -640,6 +667,9 @@
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importWiiUNUTAsPS3NUTToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOdysseyCostumeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem batchRenderExperimentalToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem batchRenderNUDToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem batchRenderBOTWBfresToolStripMenuItem;
     }
 }
 

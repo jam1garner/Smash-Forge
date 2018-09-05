@@ -71,7 +71,7 @@ namespace Smash_Forge
             }
 
             NUD n = (NUD)mesh.Parent;
-            n.UpdateVertexBuffers();
+            n.UpdateRenderMeshes();
         }
 
         private void posXTB_ValueChanged(object sender, EventArgs e)

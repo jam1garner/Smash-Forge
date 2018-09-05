@@ -1,0 +1,3 @@
+[submodule "SFGraphics"]
+	path = SFGraphics
+	url = https://github.com/ScanMountGoat/SFGraphics

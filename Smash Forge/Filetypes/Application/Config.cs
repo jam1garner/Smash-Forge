@@ -67,7 +67,8 @@ namespace Smash_Forge
                     case "default_texture":
                         if (File.Exists(node.InnerText) && node.InnerText.ToLower().EndsWith(".png"))
                         {
-                            Rendering.RenderTools.defaultTex = new Texture2D(new Bitmap(node.InnerText));
+                            Rendering.RenderTools.defaultTex = new Texture2D();
+                            Rendering.RenderTools.defaultTex.LoadImageData(new Bitmap(node.InnerText));
                         }
                         break;
                     case "size":
@@ -210,7 +211,7 @@ namespace Smash_Forge
                         bool.TryParse(node.InnerText, out Runtime.renderSwagZ);
                         break;
                     case "reander_physicallyBasedRendering":
-                        bool.TryParse(node.InnerText, out Runtime.renderPhysicallyBasedRendering);
+                        bool.TryParse(node.InnerText, out Runtime.renderBfresPbr);
                         break;
                     case "fighter_dir":
                         Runtime.fighterDir = node.InnerText;
@@ -561,7 +562,7 @@ namespace Smash_Forge
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_otherLVDEntries", Runtime.renderOtherLVDEntries.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_swag", Runtime.renderSwagY.ToString()));
             lvdRenderSettingsNode.AppendChild(createNode(doc, "render_swagZ", Runtime.renderSwagZ.ToString()));
-            lvdRenderSettingsNode.AppendChild(createNode(doc, "reander_physicallyBasedRendering", Runtime.renderPhysicallyBasedRendering.ToString()));
+            lvdRenderSettingsNode.AppendChild(createNode(doc, "reander_physicallyBasedRendering", Runtime.renderBfresPbr.ToString()));
         }
 
         private static void AppendDiscordSettings(XmlDocument doc, XmlNode parentNode)

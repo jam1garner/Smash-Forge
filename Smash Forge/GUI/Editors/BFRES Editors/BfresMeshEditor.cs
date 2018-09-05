@@ -67,7 +67,7 @@ namespace Smash_Forge
             BFRES.Mesh.LOD_Mesh msh = (BFRES.Mesh.LOD_Mesh)LODcomboBox3.SelectedItem;
             Mesh.DisplayLODIndex = LODcomboBox3.SelectedIndex;
 
-            bfres.UpdateVertexData();
+            bfres.UpdateRenderMeshes();
 
             PolyCountlabel3.Text = "Poly Count " + Mesh.lodMeshes[Mesh.DisplayLODIndex].displayFaceSize.ToString();
         }

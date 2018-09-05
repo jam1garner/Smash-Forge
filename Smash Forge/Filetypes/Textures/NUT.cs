@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Diagnostics;
 using System.IO;
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects.Textures.TextureFormats;
 
 namespace Smash_Forge
 {
@@ -295,6 +291,9 @@ namespace Smash_Forge
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
+                    // TODO: Put these methods somewhere that makes sense.
+                    NUTEditor.PromptUserToConfirmMipRegenIfGtx(this);
+
                     File.WriteAllBytes(sfd.FileName, Rebuild());
                 }
             }
@@ -316,8 +315,7 @@ namespace Smash_Forge
             uint headerLength = 0;
 
             foreach (NutTexture texture in Nodes)
-            {
-                
+            {         
                 byte surfaceCount = (byte)texture.surfaces.Count;
                 bool isCubemap = surfaceCount == 6;
                 if (surfaceCount < 1 || surfaceCount > 6)
@@ -770,6 +768,34 @@ namespace Smash_Forge
             }
         }
 
+        public static void RegenerateMipmapsFromTexture2D(NutTexture tex)
+        {
+            if (!TextureFormatTools.IsCompressed(tex.pixelInternalFormat))
+                return;
+
+            Rendering.OpenTKSharedResources.dummyResourceWindow.MakeCurrent();
+
+            // Create an OpenGL texture with generated mipmaps.
+            Texture2D texture2D = new Texture2D();
+            texture2D.LoadImageData(tex.Width, tex.Height, tex.surfaces[0].mipmaps[0], (InternalFormat)tex.pixelInternalFormat);
+
+            texture2D.Bind();
+
+            for (int i = 0; i < tex.surfaces[0].mipmaps.Count; i++)
+            {
+                // Get the image size for the current mip level of the bound texture.
+                int imageSize;
+                GL.GetTexLevelParameter(TextureTarget.Texture2D, i,
+                    GetTextureParameter.TextureCompressedImageSize, out imageSize);
+
+                byte[] mipLevelData = new byte[imageSize];
+
+                // Replace the Nut texture with the OpenGL texture's data.
+                GL.GetCompressedTexImage(TextureTarget.Texture2D, i, mipLevelData);
+                tex.surfaces[0].mipmaps[i] = mipLevelData;
+            }
+        }
+
         public static bool texIdUsed(int texId)
         {
             foreach (var nut in Runtime.TextureContainers)
@@ -833,33 +859,64 @@ namespace Smash_Forge
 
             if (compressedFormatWithMipMaps)
             {
-                if (nutTexture.surfaces[0].mipmaps.Count > 1 && nutTexture.isDds)
+                // HACK: Skip loading mipmaps for non square textures for now.
+                // The existing mipmaps don't display properly for some reason.
+                if (nutTexture.surfaces[0].mipmaps.Count > 1 && nutTexture.isDds && (nutTexture.Width == nutTexture.Height))
                 {
                     // Reading mipmaps past the first level is only supported for DDS currently.
-                    return new Texture2D(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps,
+                    Texture2D texture = new Texture2D();
+                    texture.LoadImageData(nutTexture.Width, nutTexture.Height, nutTexture.surfaces[surfaceIndex].mipmaps,
                         (InternalFormat)nutTexture.pixelInternalFormat);
+                    return texture;
                 }
                 else
                 {
                     // Only load the first level and generate the rest.
-                    return new Texture2D(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count, 
-                        (InternalFormat)nutTexture.pixelInternalFormat);
+                    Texture2D texture = new Texture2D();
+                    texture.LoadImageData(nutTexture.Width, nutTexture.Height, mipmaps[0], (InternalFormat)nutTexture.pixelInternalFormat);
+                    return texture;
                 }
             }
             else
             {
                 // Uncompressed.
-                return new Texture2D(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count,
-                    nutTexture.pixelInternalFormat, nutTexture.pixelFormat, nutTexture.pixelType);
+                Texture2D texture = new Texture2D();
+                texture.LoadImageData(nutTexture.Width, nutTexture.Height, mipmaps[0],
+                    new TextureFormatUncompressed(nutTexture.pixelInternalFormat, nutTexture.pixelFormat, nutTexture.pixelType));
+                return texture;
             }
+        }
+
+        public bool ContainsGtxTextures()
+        {
+            foreach (NutTexture texture in Nodes)
+            {
+                if (!texture.isDds)
+                    return true;
+            }
+            return false;
         }
 
         public static TextureCubeMap CreateTextureCubeMap(NutTexture t)
         {
-            // TODO: Uncompressed cube maps.
-            TextureCubeMap texture = new TextureCubeMap(t.Width, t.Height, (InternalFormat)t.pixelInternalFormat,
-                t.surfaces[0].mipmaps, t.surfaces[1].mipmaps, t.surfaces[2].mipmaps, t.surfaces[3].mipmaps, t.surfaces[4].mipmaps, t.surfaces[5].mipmaps);
-             return texture;
+            if (TextureFormatTools.IsCompressed(t.pixelInternalFormat))
+            {
+                // Compressed cubemap with mipmaps.
+                TextureCubeMap texture = new TextureCubeMap();
+                texture.LoadImageData(t.Width, (InternalFormat)t.pixelInternalFormat,
+                    t.surfaces[0].mipmaps, t.surfaces[1].mipmaps, t.surfaces[2].mipmaps,
+                    t.surfaces[3].mipmaps, t.surfaces[4].mipmaps, t.surfaces[5].mipmaps);
+                return texture;
+            }
+            else
+            {
+                // Uncompressed cube map with no mipmaps.
+                TextureCubeMap texture = new TextureCubeMap();
+                texture.LoadImageData(t.Width, new TextureFormatUncompressed(t.pixelInternalFormat, t.pixelFormat, t.pixelType),
+                    t.surfaces[0].mipmaps[0], t.surfaces[1].mipmaps[0], t.surfaces[2].mipmaps[0],
+                    t.surfaces[3].mipmaps[0], t.surfaces[4].mipmaps[0], t.surfaces[5].mipmaps[0]);
+                return texture;
+            }
         }
     }
 }

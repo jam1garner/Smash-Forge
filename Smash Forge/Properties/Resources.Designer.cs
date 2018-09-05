@@ -161,6 +161,16 @@ namespace Smash_Forge.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] diffuseSDR {
+            get {
+                object obj = ResourceManager.GetObject("diffuseSDR", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap ForgeBack {
@@ -347,6 +357,16 @@ namespace Smash_Forge.Properties {
             get {
                 object obj = ResourceManager.GetObject("sexy_green_down_arrow", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] specularSDR {
+            get {
+                object obj = ResourceManager.GetObject("specularSDR", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

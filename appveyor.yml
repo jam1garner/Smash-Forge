@@ -1,19 +1,36 @@
 configuration: Release
 
+image:
+  - Visual Studio 2017
+
 branches:
   only:
     - master
 
+before_build:
+- cmd: cd SFGraphics
+- ps: nuget restore
+# Update SFGraphics to the latest build from master.
+- git checkout master
+- git pull
+- cmd: cd ..
+
 build:
   verbosity: minimal
+
+build_script:
+  - msbuild "SFGraphics/SFGraphics.sln"
+  - copy /Y "%APPVEYOR_BUILD_FOLDER%\SFGraphics\Projects\SFGraphics\bin\Release\SFGraphics.dll" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\lib\"
+  - copy /Y "%APPVEYOR_BUILD_FOLDER%\SFGraphics\Projects\SFGraphics\bin\Release\SFGraphics.xml" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\lib\"
+  - msbuild "Smash Forge.sln"
 
 deploy:
   tag: LatestCommit
   release: Smash Forge [Latest Commit]
-  description: 'This build is updated every time a commit is pushed.\n\n$(APPVEYOR_REPO_COMMIT_MESSAGE)\n\n Timestamp: $(APPVEYOR_REPO_COMMIT_TIMESTAMP)'
+  description: 'This build is updated every time a commit is pushed to the master branch.\n\nMessage: $(APPVEYOR_REPO_COMMIT_MESSAGE)\n\n Timestamp: $(APPVEYOR_REPO_COMMIT_TIMESTAMP)'
   provider: GitHub
   auth_token:
-    secure: 4ebqOCir67guBkJ24KTokNSNVkW0E36XGG+xLwDcNQ16W3+0Uon0zB21H6OPS020
+    secure: z5SnUfSHHue45QInOucUxNY+is9OvW7f/mStLyZ9WfH1IEtoHPfwGHiiYNjwVGwO
   artifact: Smash-Forge-Latest_Commit.zip
   draft: false
   prerelease: true
@@ -21,6 +38,13 @@ deploy:
   on:
     branch: master
 
+install:
+  - git submodule update --init --recursive
+
+test:
+  assemblies:
+    except:
+    - 'SFGraphics\Test Projects\SFGraphics.Test.RenderTests\bin\Release\SFGraphics.Test.RenderTests.dll'
 
 after_build:
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\Smash Forge.exe"
@@ -29,6 +53,7 @@ after_build:
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\*.csv"
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\materials"
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\param_labels"
+  - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\Shader"
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\Preview Images"
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Forge Updater\bin\Release\updater"
   - appveyor PushArtifact "Smash-Forge-Latest_Commit.zip"

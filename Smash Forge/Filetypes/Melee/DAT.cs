@@ -397,7 +397,7 @@ namespace Smash_Forge
 
             if (bones != null)
             {
-                Matrix4[] f = bones.getShaderMatrix();
+                Matrix4[] f = bones.GetShaderMatrices();
 
                 if (f.Length > 0)
                 {
@@ -741,7 +741,7 @@ namespace Smash_Forge
                 mesh.Nodes.Add(polygon);
             }
 
-            nud.UpdateVertexBuffers();
+            nud.UpdateRenderMeshes();
 
 
             return con;
@@ -1346,7 +1346,8 @@ namespace Smash_Forge
                         dat.tobjLinker.Add(imageDataOffset, new object[] { testOffset, image, imageOffset, imageDataOffset });
                     }
 
-                    Texture texture = new Texture2D(image);
+                    Texture2D texture = new Texture2D();
+                    texture.LoadImageData(image);
                     texid = texture.Id;
                 }
             }

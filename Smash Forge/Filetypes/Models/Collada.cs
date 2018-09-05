@@ -751,7 +751,7 @@ namespace Smash_Forge
                                             }*/
 
                 // AddMaterialsForEachUvChannel(npoly);
-                b.UpdateVertexData();
+                b.UpdateRenderMeshes();
             }
         }
 
@@ -980,18 +980,20 @@ namespace Smash_Forge
             // images
             Dictionary<Bitmap, string> texbank = new Dictionary<Bitmap, string>();
             int tid = 0;
-
-            foreach (BRTI tex in BNTX.textures)
+            foreach (BNTX bntx in Runtime.BNTXList)
             {
-                ColladaImages image = new ColladaImages();
-                dae.library_images.Add(image);
-                image.id = "Tex" + tid;
-                image.name = tex.Text;
-                image.initref = tex.Text + ".png";
+                foreach (BRTI tex in bntx.textures)
+                {
+                    ColladaImages image = new ColladaImages();
+                    dae.library_images.Add(image);
+                    image.id = "Tex" + tid;
+                    image.name = tex.Text;
+                    image.initref = tex.Text + ".png";
 
-                tex.ExportAsImage(tex.texture, tex.display, fname.Substring(0, fname.LastIndexOf("\\") + 1) + tex.Text + ".png");
-                tid++;
-            }
+                    tex.ExportAsImage(tex.texture, tex.display, fname.Substring(0, fname.LastIndexOf("\\") + 1) + tex.Text + ".png");
+                    tid++;
+                }
+            }   
 
             // geometry
             int g = 0;
@@ -1276,7 +1278,7 @@ namespace Smash_Forge
             node.pos = new Vector3(b.position[0], b.position[1], b.position[2]);
             node.scale = new Vector3(b.scale[0], b.scale[1], b.scale[2]);
             node.rot = new Vector3(b.rotation[0], b.rotation[1], b.rotation[2]);
-            node.mat = Matrix4.CreateScale(node.scale) * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(node.rot.X, node.rot.Y, node.rot.Z)) * Matrix4.CreateTranslation(node.pos);
+            node.mat = Matrix4.CreateScale(node.scale) * Matrix4.CreateFromQuaternion(VBN.FromEulerAngles(node.rot.Z, node.rot.Y, node.rot.X)) * Matrix4.CreateTranslation(node.pos);
             foreach (var bone in b.GetChildren())
                 SaveBoneNodes(dae, bone, vbn, node);
         }

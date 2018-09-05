@@ -1,27 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Cryptography;
 using System.Windows.Forms;
+using Gif.Components;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
-using System.Security.Cryptography;
 using SALT.Moveset.AnimCMD;
-using System.IO;
-using Gif.Components;
-using System.Diagnostics;
-using System.Globalization;
-using System.Threading;
-using Smash_Forge.Rendering.Lights;
-using Smash_Forge.Rendering;
-using Smash_Forge.Params;
-using SFGraphics.GLObjects.Textures;
-using SFGraphics.GLObjects;
-using SFGraphics.Tools;
 using SFGraphics.Cameras;
-
+using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.Textures;
+using SFGraphics.Utils;
+using Smash_Forge.Params;
+using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Lights;
+using Smash_Forge.Rendering.Meshes;
+using System.Collections.Generic;
+using SFGraphics.GLObjects.GLObjectManagement;
 
 namespace Smash_Forge
 {
@@ -40,6 +39,8 @@ namespace Smash_Forge
         // Used for screen renders and color picking.
         private Framebuffer offscreenRenderFbo;
 
+        private Mesh3D screenVao;
+
         // Shadow Mapping
         private Framebuffer depthMapFbo;
         private DepthTexture depthMap;
@@ -51,7 +52,7 @@ namespace Smash_Forge
         // Larger dimensions can be used for higher quality outputs for FBOs.
         private int fboRenderWidth;
         private int fboRenderHeight;
-
+  
         // Functions of Viewer
         public enum Mode
         {
@@ -384,14 +385,12 @@ namespace Smash_Forge
         {
             // Set up the depth map fbo.
             depthMapFbo = new Framebuffer(FramebufferTarget.Framebuffer);
-            depthMapFbo.Bind();
+            depthMapFbo.SetDrawBuffers(DrawBuffersEnum.None);
+            depthMapFbo.SetReadBuffer(ReadBufferMode.None);
 
-            // Set up the depth map texture.
+            // Attach the depth map texture.
             depthMap = new DepthTexture(shadowWidth, shadowHeight, PixelInternalFormat.DepthComponent24);
-            depthMapFbo.Bind();
-            GL.FramebufferTexture2D(depthMapFbo.FramebufferTarget, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, depthMap.Id, 0);
-            GL.DrawBuffer(DrawBufferMode.None);
-            GL.ReadBuffer(ReadBufferMode.None);
+            depthMapFbo.AttachDepthTexture(FramebufferAttachment.DepthAttachment, depthMap);
         }
 
         public Camera GetCamera()
@@ -948,12 +947,16 @@ namespace Smash_Forge
 
         private void FrameAllModelContainers(float maxBoundingRadius = 400)
         {
+            bool hasModelContainers = false;
+
             // Find the max NUD bounding box for all models. 
             float[] boundingSphere = new float[] { 0, 0, 0, 0 };
+
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
                 if (node is ModelContainer)
                 {
+                    hasModelContainers = true;
                     ModelContainer modelContainer = (ModelContainer)node;
 
                     // Use the main bounding box for the NUD.
@@ -1003,7 +1006,11 @@ namespace Smash_Forge
                 }
             }
 
-            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 0);
+            if (hasModelContainers)
+                camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 0);
+            else
+                camera.ResetToDefaultPosition();
+
             camera.UpdateMatrices();
         }
 
@@ -1171,7 +1178,7 @@ namespace Smash_Forge
             }
         }
 
-        private void BatchRenderModels()
+        public void BatchRenderNudModels()
         {
             // Ignore warnings.
             Runtime.checkNudTexIdOnOpen = false;
@@ -1182,35 +1189,25 @@ namespace Smash_Forge
                 folderSelect.Title = "Models Directory";
                 if (folderSelect.ShowDialog() == DialogResult.OK)
                 {
-                    string[] files = Directory.GetFiles(folderSelect.SelectedPath, "*.sbfres", SearchOption.AllDirectories);
-
                     using (var outputFolderSelect = new FolderSelectDialog())
                     {
                         outputFolderSelect.Title = "Output Renders Directory";
                         if (outputFolderSelect.ShowDialog() == DialogResult.OK)
                         {
-                            for (int i = 0; i < files.Length; i++)
+                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, "*model.nud", SearchOption.AllDirectories))
                             {
-                                if (files[i].ToLower().Contains("tex") || files[i].ToLower().Contains("animation"))
-                                    continue;
-
                                 try
                                 {
-                                    MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(files[i]), files[i], "", this);
-
-                                    string nameNoExtension = Path.GetFileNameWithoutExtension(files[i]);
-                                    string textureFileName = Path.GetDirectoryName(files[i]) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
-
-                                    if (File.Exists(textureFileName))
-                                        MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
-                                    //MainForm.Instance.OpenNud(files[i], "", this);
+                                    MainForm.Instance.OpenNud(file, "", this);
                                 }
                                 catch (Exception e)
                                 {
+                                    // Suppress all exceptions and just keep rendering.
                                     Debug.WriteLine(e.Message);
                                     Debug.WriteLine(e.StackTrace);
                                 }
-                                BatchRenderViewportToFile(files[i], folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+
+                                BatchRenderViewportToFile(file, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
 
                                 // Cleanup the models and nodes but keep the same viewport.
                                 ClearModelContainers();
@@ -1223,6 +1220,52 @@ namespace Smash_Forge
             }
 
             Runtime.checkNudTexIdOnOpen = true;
+        }
+
+        public void BatchRenderBotwBfresModels()
+        {
+            // Get the source model folder and then the output folder. 
+            using (var folderSelect = new FolderSelectDialog())
+            {
+                folderSelect.Title = "Models Directory";
+                if (folderSelect.ShowDialog() == DialogResult.OK)
+                {
+                    using (var outputFolderSelect = new FolderSelectDialog())
+                    {
+                        outputFolderSelect.Title = "Output Renders Directory";
+                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
+                        {
+                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, "*.sbfres", SearchOption.AllDirectories))
+                            {
+                                if (file.ToLower().Contains("tex") || file.ToLower().Contains("animation"))
+                                    continue;
+
+                                try
+                                {
+                                    MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(file), file, "", this);
+
+                                    string nameNoExtension = Path.GetFileNameWithoutExtension(file);
+                                    string textureFileName = Path.GetDirectoryName(file) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
+
+                                    if (File.Exists(textureFileName))
+                                        MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.WriteLine(e.Message);
+                                    Debug.WriteLine(e.StackTrace);
+                                }
+                                BatchRenderViewportToFile(file, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+
+                                // Cleanup the models and nodes but keep the same viewport.
+                                ClearModelContainers();
+                                // Make sure the reference counts get updated for all the GLObjects so we can clean up next frame.
+                                GC.WaitForPendingFinalizers();
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void BatchRenderStages()
@@ -1348,7 +1391,6 @@ namespace Smash_Forge
         private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
         {
             ClearModelContainers();
-            GC.Collect();
         }
 
         public void ClearModelContainers()
@@ -1357,10 +1399,23 @@ namespace Smash_Forge
             {
                 if (node is ModelContainer)
                 {
-                    Runtime.TextureContainers.Remove(((ModelContainer)node).NUT);
+                    ModelContainer m = (ModelContainer)node;
+                    Runtime.TextureContainers.Remove(m.NUT);
+
+                    if (m.BNTX != null)
+                    {
+                        m.BNTX.textures.Clear();
+                        m.BNTX.glTexByName.Clear();
+                        Runtime.BNTXList.Remove(m.BNTX);
+                    }
+                    if (m.Bfres != null && m.Bfres.FTEXContainer != null)
+                    {
+                        m.Bfres.FTEXContainer.FTEXtextures.Clear();
+                        m.Bfres.FTEXContainer.glTexByName.Clear();
+                        Runtime.FTEXContainerList.Remove(m.Bfres.FTEXContainer);
+                    }
                 }
             }
-
             draw.Clear();
         }
 
@@ -1649,53 +1704,19 @@ namespace Smash_Forge
                 // Draw the texture to the screen into a smaller FBO.
                 imageBrightHdrFbo.Bind();
                 GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
-                ScreenDrawing.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1].Id, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
+                ScreenDrawing.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1].Id, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, width, height);
 
-                ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id);
+                ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id, screenVao);
             }
-
-            //BenchmarkShapeDrawing();
 
             FixedFunctionRendering();
 
             GL.PopAttrib();
             glViewport.SwapBuffers();
-        }
-
-        private void BenchmarkShapeDrawing()
-        {
-            int count = 1;
-            ShapeDrawing.SetUp();
-
-            // Depth testing has a huge performance impact.
-            GL.Disable(EnableCap.DepthTest);
-
-            List<Vector3> vertices = ShapeDrawing.GetRectangularPrismPositions().ToList();
-
-            Mesh3d cubeMesh = new Mesh3d(vertices, ColorTools.Vector4FromColor(Color.Aquamarine));
-            cubeMesh.scale = new Vector3(5, 2, 3);
-
-            // Test shader rendering.
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            for (int i = 0; i < count; i++)
-            {
-                // Identical speeds to fixed function pipeline for small scale values.
-                cubeMesh.Draw(OpenTKSharedResources.shaders["SolidColor3D"], camera.MvpMatrix);
-                //GL.Begin(PrimitiveType.TriangleStrip);
-                //foreach (Vector3 vert in vertices)
-                //{
-                //    GL.Vertex3(vert * 15);
-                //}
-                //GL.End();
-
-            }
-            stopwatch.Stop();
-
-            Debug.WriteLine(String.Format("{0}", stopwatch.ElapsedMilliseconds));
         }
 
         private void DrawModelsNormally(int width, int height, int defaultFbo)
@@ -1743,16 +1764,16 @@ namespace Smash_Forge
             DrawOverlays();
         }
 
-        private static void DrawViewportBackground()
+        private void DrawViewportBackground()
         {
             Vector3 topColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
             Vector3 bottomColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
 
             // Only use the top color for solid color rendering.
             if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
-                ScreenDrawing.DrawQuadGradient(topColor, topColor, ScreenDrawing.screenQuadVbo);
+                ScreenDrawing.DrawQuadGradient(topColor, topColor, screenVao);
             else
-                ScreenDrawing.DrawQuadGradient(topColor, bottomColor, ScreenDrawing.screenQuadVbo);
+                ScreenDrawing.DrawQuadGradient(topColor, bottomColor, screenVao);
         }
 
         private void SetupViewport(int width, int height)
@@ -1915,7 +1936,7 @@ namespace Smash_Forge
 
             if (e.KeyChar == 'i')
             {
-                ShaderTools.SetupShaders();
+                ShaderTools.SetupShaders(true);
                 ShaderTools.SaveErrorLogs();
             }
         }
@@ -1923,9 +1944,6 @@ namespace Smash_Forge
         private void ModelViewport_KeyDown(object sender, KeyEventArgs e)
         {
             // Super secret commands. I'm probably going to be the only one that uses them anyway...
-            if (Keyboard.GetState().IsKeyDown(Key.C) && Keyboard.GetState().IsKeyDown(Key.H) && Keyboard.GetState().IsKeyDown(Key.M))
-                BatchRenderModels();
-
             if (Keyboard.GetState().IsKeyDown(Key.X) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.L))
                 MaterialXmlBatchExport.ExportAllMaterialsFromFolder();
 
@@ -2026,10 +2044,10 @@ namespace Smash_Forge
             switch (tex.format >> 8)
             {
                 case (uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC4:
-                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height, true, false, false);
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height, screenVao, true, false, false);
                     break;
                 default:
-                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height, screenVao);
                     break;
             }
 
@@ -2043,14 +2061,14 @@ namespace Smash_Forge
         {
             GL.PopAttrib();
             NutTexture tex = ((NutTexture)meshList.filesTreeView.SelectedNode);
-            ScreenDrawing.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HashId].Id, tex.Width, tex.Height);
+            ScreenDrawing.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HashId].Id, tex.Width, tex.Height, screenVao);
         }
 
         private void DrawBchTex()
         {
             GL.PopAttrib();
             BCH_Texture tex = ((BCH_Texture)meshList.filesTreeView.SelectedNode);
-            ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height);
+            ScreenDrawing.DrawTexturedQuad(tex.display, tex.Width, tex.Height, screenVao);
         }
 
         private void DrawFTEXTexAndUvs()
@@ -2061,13 +2079,13 @@ namespace Smash_Forge
             switch (tex.format)
             {
                 case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_UNORM:
-                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, screenVao, true, false, false);
                     break;
                 case (int)GTX.GX2SurfaceFormat.GX2_SURFACE_FORMAT_T_BC4_SNORM:
-                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, true, false, false);
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, screenVao, true, false, false);
                     break;
                 default:
-                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height);
+                    ScreenDrawing.DrawTexturedQuad(tex.display, tex.width, tex.height, screenVao);
                     break;
             }
 
@@ -2168,20 +2186,28 @@ namespace Smash_Forge
         private void glViewport_Load(object sender, EventArgs e)
         {
             glViewport.MakeCurrent();
-            if (OpenTK.Graphics.GraphicsContext.CurrentContext != null)
-            {
-                OpenTKSharedResources.InitializeSharedResources();
-                if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
-                {
-                    SetUpBuffersAndTextures();
 
-                    if (Runtime.enableOpenTKDebugOutput)
-                    {
-                        glViewport.MakeCurrent();
-                        OpenTKSharedResources.EnableOpenTKDebugOutput();
-                    }
+            OpenTKSharedResources.InitializeSharedResources();
+
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            {
+                screenVao = ScreenDrawing.CreateScreenTriangle();
+
+                SetUpBuffersAndTextures();
+
+                if (Runtime.enableOpenTKDebugOutput)
+                {
+                    glViewport.MakeCurrent();
+                    OpenTKSharedResources.EnableOpenTKDebugOutput();
                 }
             }
+        }
+
+        private void viewportPanel_Resize(object sender, EventArgs e)
+        {
+            int spacing = 8;
+            glViewport.Width = viewportPanel.Width - spacing;
+            glViewport.Height = viewportPanel.Height - spacing;
         }
 
         private void RefreshGlTextures()
@@ -2196,23 +2222,13 @@ namespace Smash_Forge
 
                 if (m.NUT != null)
                     m.NUT.RefreshGlTexturesByHashId();
-                if (m.Bfres != null)
+                if (m.BNTX != null)
                 {
-                    foreach (TreeNode subNode in m.Bfres.Nodes)
-                    {
-                        if (subNode.Text == "Embedded Files")
-                        {
-                            foreach (TreeNode emb in subNode.Nodes)
-                            {
-                                if (emb is BNTX)
-                                {
-                                    BNTX B = (BNTX)emb;
-
-                                    B.RefreshGlTexturesByName();
-                                }
-                            }
-                        }
-                    }
+                    m.BNTX.RefreshGlTexturesByName();
+                }
+                if (m.Bfres != null && m.Bfres.FTEXContainer != null)
+                {
+                    m.Bfres.FTEXContainer.RefreshGlTexturesByName();
                 }
             }
         }

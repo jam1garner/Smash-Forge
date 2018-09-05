@@ -13,7 +13,9 @@ using ResNSW = Syroot.NintenTools.NSW.Bfres;
 using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects;
+using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Textures;
+using SFGraphics.Utils;
 
 namespace Smash_Forge
 {
@@ -26,8 +28,6 @@ namespace Smash_Forge
         public List<Vector3> BoneFixScale = new List<Vector3>();
 
         public FSKA SkeletonAnimation;
-
-        public static Shader shader = null;
 
         public Matrix4[] sb;
 
@@ -47,6 +47,8 @@ namespace Smash_Forge
 
         public ResNSW.ResFile TargetSwitchBFRES;
         public static bool IsSwitchBFRES;
+
+        public FTEXContainer FTEXContainer;
 
         //Switch TreeNodes
         public TreeNode TModels = new TreeNode() { Text = "Models", Checked = true };
@@ -76,13 +78,12 @@ namespace Smash_Forge
             "Common_Scroll01._13827715"
         });
 
-        BufferObject positionVbo;
-        BufferObject elementsIbo;
-
         public string path = "";
         public static Vector3 position = new Vector3(0, 0, 0);
         public static Vector3 rotation = new Vector3(0, 0, 0);
         public static Vector3 scale = new Vector3(1, 1, 1);
+
+        private bool hasCreatedRenderMeshes = false;
 
         public BNTX Bntx = null;
 
@@ -114,7 +115,6 @@ namespace Smash_Forge
                 TargetSwitchBFRES = new ResNSW.ResFile(new MemoryStream(file_data));
                 path = Text;
                 Read(TargetSwitchBFRES, f); //Temp add FileData for now till I parse BNTX with lib
-                UpdateVertexData();
                 ModelTransform();
             }
             else
@@ -124,8 +124,6 @@ namespace Smash_Forge
                 TargetWiiUBFRES = new ResFile(new MemoryStream(file_data));
                 path = Text;
                 Read(TargetWiiUBFRES);
-                UpdateVertexData();
-
             }
         }
 
@@ -232,20 +230,38 @@ namespace Smash_Forge
             }
         }
 
+        public BNTX getBntx()
+        {
+            BNTX NewBntx = null;
+            if (TargetSwitchBFRES != null)
+            {
+                foreach (ResNSW.ExternalFile ext in TargetSwitchBFRES.ExternalFiles)
+                {
+                    FileData f = new FileData(ext.Data);
+                    if (ext.Data.Length > 4) //BOTW has some external files that are smaller than 4 which i need to read for magic
+                    {
+                        int EmMagic = f.readInt();
+                        if (EmMagic == 0x424E5458) //Textures
+                        {
+                            f.Endian = Endianness.Little;
+                            f.skip(-4);
+                            int temp = f.pos();
+                            NewBntx = new BNTX();
+                            NewBntx.Read(f);
+                            TEmbedded.Nodes.Add(NewBntx);
+                        }
+
+                    }
+                }
+            }
+            return NewBntx;
+        }
+
         public Matrix4 BonePosExtra;
         public Matrix4 BonePosFix;
 
-        //Transform function for single binded meshes
-        //Thanks GDKchan for the function
-        public static Vector3 transform_position(Vector3 input, Matrix4 matrix)
-        {
-            Vector3 output = new Vector3();
-            output.X = input.X * matrix.M11 + input.Y * matrix.M21 + input.Z * matrix.M31 + matrix.M41;
-            output.Y = input.X * matrix.M12 + input.Y * matrix.M22 + input.Z * matrix.M32 + matrix.M42;
-            output.Z = input.X * matrix.M13 + input.Y * matrix.M23 + input.Z * matrix.M33 + matrix.M43;
-            return output;
-        }
-
+        //Note this attempts to move bone transforms (to shift animations) but they will be reset if an animation plays
+        //Todo fix this so they keep transform
         public void ModelTransform()
         {
 
@@ -256,8 +272,6 @@ namespace Smash_Forge
             Matrix4 rotZMat = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(rotation.Z));
             Matrix4 scaleMat = Matrix4.CreateScale(scale);
             BonePosExtra = scaleMat * (rotXMat * rotYMat * rotZMat) * positionMat;
-
-
 
             foreach (FMDL_Model fmdl in models)
             {
@@ -327,23 +341,10 @@ namespace Smash_Forge
             }
         }
 
-        public void Render(Matrix4 mvpMatrix)
+        public void Render(Camera camera, bool drawPolyIds)
         {
-            if (Runtime.renderPhysicallyBasedRendering == true)
-                shader = OpenTKSharedResources.shaders["BFRES_PBR"];
-            else
-                shader = OpenTKSharedResources.shaders["BFRES"];
-
-            shader.UseProgram();
-
-            shader.EnableVertexAttributes();
-
             if (Runtime.renderBoundingSphere)
                 DrawBoundingBoxes();
-
-            SetRenderSettings(shader);
-
-            shader.SetMatrix4x4("mvpMatrix", ref mvpMatrix);
 
             foreach (FMDL_Model fmdl in models)
             {
@@ -351,18 +352,10 @@ namespace Smash_Forge
                 List<Mesh> opaque = new List<Mesh>();
                 List<Mesh> transparent = new List<Mesh>();
 
-                //Render Skeleton
-                Matrix4[] f = fmdl.skeleton.getShaderMatrix();
-                int[] bind = fmdl.Node_Array; //Now bind each bone
-
-                for (int i = 0; i < f.Length; i++)
+                if (!hasCreatedRenderMeshes)
                 {
-                    GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, String.Format("bones[{0}]", i)), false, ref f[i]);
-                }
-
-                for (int i = 0; i < bind.Length; i++)
-                {
-                    GL.Uniform1(GL.GetUniformLocation(shader.Id, String.Format("boneList[{0}]", i)), bind[i]);
+                    UpdateRenderMeshes();
+                    hasCreatedRenderMeshes = true;
                 }
 
                 foreach (Mesh m in fmdl.depthSortedMeshes)
@@ -377,23 +370,25 @@ namespace Smash_Forge
 
                 foreach (Mesh m in opaque)
                 {
-                    ApplyTransformFix(fmdl, m);
-
                     if (m.Parent != null && (m.Parent).Checked)
-                        DrawMesh(m, shader, m.material);
+                        DrawMesh(m, fmdl, camera, drawPolyIds);
                 }
 
                 foreach (Mesh m in transparent)
                 {
-                    ApplyTransformFix(fmdl, m);
-
                     if (((FMDL_Model)m.Parent).Checked)
-                        DrawMesh(m, shader, m.material);
+                        DrawMesh(m, fmdl, camera, drawPolyIds);
                 }
             }
+        }
 
-
-            shader.DisableVertexAttributes();
+        private static void SetBoneUniforms(Shader shader, FMDL_Model fmdl)
+        {
+            for (int i = 0; i < fmdl.Node_Array.Length; i++)
+            {
+                Matrix4 transform = fmdl.skeleton.bones[fmdl.Node_Array[i]].invert * fmdl.skeleton.bones[fmdl.Node_Array[i]].transform;
+                GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, String.Format("bones[{0}]", i)), false, ref transform);
+            }
         }
 
         private void CheckChildren(TreeNode rootNode, bool isChecked)
@@ -411,67 +406,126 @@ namespace Smash_Forge
             shader.SetInt("renderType", (int)Runtime.renderType);
             shader.SetInt("uvChannel", (int)Runtime.uvChannel);
             shader.SetBoolToInt("useNormalMap", Runtime.renderNormalMap);
+
             shader.SetBoolToInt("renderR", Runtime.renderR);
             shader.SetBoolToInt("renderG", Runtime.renderG);
             shader.SetBoolToInt("renderB", Runtime.renderB);
             shader.SetBoolToInt("renderAlpha", Runtime.renderAlpha);
+
             shader.SetBoolToInt("renderFog", Runtime.renderFog);
-            shader.SetBoolToInt("useImageBasedLighting", false);
+            shader.SetBoolToInt("useImageBasedLighting", true);
+
+            shader.SetBoolToInt("renderDiffuse", Runtime.renderDiffuse);
+            shader.SetBoolToInt("renderSpecular", Runtime.renderSpecular);
+            shader.SetBoolToInt("renderFresnel", Runtime.renderFresnel);
         }
-        private void DrawMesh(Mesh m, Shader shader, MaterialData mat, bool drawSelection = false)
+
+        private static void SetMiscUniforms(Camera camera, Shader shader)
         {
-            if (m.lodMeshes[m.DisplayLODIndex].faces.Count <= 3)
+            Rendering.Lights.LightColor diffuseColor = Runtime.lightSetParam.characterDiffuse.diffuseColor;
+            Rendering.Lights.LightColor ambientColor = Runtime.lightSetParam.characterDiffuse.ambientColor;
+            shader.SetVector3("difLightColor", diffuseColor.R, diffuseColor.G, diffuseColor.B);
+            shader.SetVector3("ambLightColor", ambientColor.R, ambientColor.G, ambientColor.B);
+
+            Matrix4 invertedCamera = camera.MvpMatrix.Inverted();
+            Vector3 lightDirection = new Vector3(0f, 0f, -1f);
+
+            //Todo. Maybe change direction via AAMP file (configs shader data)
+            shader.SetVector3("specLightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+            shader.SetVector3("difLightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
+
+            // PBR IBL
+            shader.SetTexture("irradianceMap", RenderTools.diffusePbr.Id, TextureTarget.TextureCubeMap, 18);
+            shader.SetTexture("specularIbl", RenderTools.specularPbr.Id, TextureTarget.TextureCubeMap, 19);
+        }
+
+        private void DrawMesh(Mesh mesh, FMDL_Model fmdl, Camera camera, bool drawPolyIds = false, bool drawSelection = false)
+        {
+            if (mesh.lodMeshes[mesh.DisplayLODIndex].faces.Count <= 3)
                 return;
 
-            SetVertexAttributes(m, shader);
-            SetUniforms(mat, shader, m);
-            SetTextureUniforms(mat, m);
-            SetAlphaBlending(mat);
-            SetAlphaTesting(mat);
+            Shader shader;
+            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+                shader = OpenTKSharedResources.shaders["BFRES_Debug"];
+            else if (mesh.material.shaderassign.ShaderModel == "uking_mat")
+                shader = OpenTKSharedResources.shaders["BFRES_Botw"];
+            else if (Runtime.renderBfresPbr)
+                shader = OpenTKSharedResources.shaders["BFRES_PBR"];
+            else
+                shader = OpenTKSharedResources.shaders["BFRES"];
 
-            foreach (RenderInfoData r in mat.renderinfo)
+            shader.UseProgram();
+
+            // Shader Uniforms
+            ApplyTransformFix(fmdl, mesh, shader);
+
+            SetMiscUniforms(camera, shader);
+            SetRenderSettings(shader);
+
+            Matrix4 mvpMatrix = camera.MvpMatrix;
+            shader.SetMatrix4x4("mvpMatrix", ref mvpMatrix);
+
+            Matrix4 sphereMatrix = camera.ModelViewMatrix;
+            sphereMatrix.Invert();
+            sphereMatrix.Transpose();
+            shader.SetMatrix4x4("sphereMatrix", ref sphereMatrix);
+
+            SetUniforms(mesh.material, shader, mesh, mesh.DisplayId, drawPolyIds);
+            SetTextureUniforms(mesh.material, mesh, shader);
+            SetBoneUniforms(shader, fmdl);
+
+            SetAlphaBlending(mesh.material);
+            SetAlphaTesting(mesh.material);
+
+            foreach (RenderInfoData renderInfo in mesh.material.renderinfo)
             {
-                SetFaceCulling(mat, r);
+                SetFaceCulling(mesh.material, renderInfo);
             }
 
-            if (m.Checked)
+            DrawGeometry(mesh, shader, camera);
+        }
+
+        private static void DrawGeometry(Mesh mesh, Shader shader, Camera camera)
+        {
+            if (mesh.Checked)
             {
-                if ((m.IsSelected || m.Parent.IsSelected))
+                if ((mesh.IsSelected || mesh.Parent.IsSelected))
                 {
-                    DrawModelSelection(m, shader);
+                    DrawModelSelection(mesh, shader, camera);
                 }
                 else
                 {
                     if (Runtime.renderModelWireframe)
                     {
-                        DrawModelWireframe(m, shader);
+                        DrawModelWireframe(mesh, shader, camera);
                     }
 
                     if (Runtime.renderModel)
                     {
-                        GL.DrawElements(PrimitiveType.Triangles, m.lodMeshes[m.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, m.Offset);
+                        mesh.renderMesh.Draw(shader, camera);
                     }
                 }
-
             }
         }
 
-        private static void DrawModelWireframe(Mesh p, Shader shader)
+        private static void DrawModelWireframe(Mesh mesh, Shader shader, Camera camera)
         {
             // use vertex color for wireframe color
             shader.SetInt("colorOverride", 1);
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
-            GL.DrawElements(PrimitiveType.Triangles, p.lodMeshes[p.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+
+            mesh.renderMesh.Draw(shader, camera);
+
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             shader.SetInt("colorOverride", 0);
         }
-        private static void DrawModelSelection(Mesh p, Shader shader)
+        private static void DrawModelSelection(Mesh mesh, Shader shader, Camera camera)
         {
             //This part needs to be reworked for proper outline. Currently would make model disappear
 
-            GL.DrawElements(PrimitiveType.Triangles, p.lodMeshes[p.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+            mesh.renderMesh.Draw(shader, camera);
 
             GL.Enable(EnableCap.StencilTest);
             // use vertex color for wireframe color
@@ -479,40 +533,19 @@ namespace Smash_Forge
             GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
-            GL.DrawElements(PrimitiveType.Triangles, p.lodMeshes[p.DisplayLODIndex].displayFaceSize, DrawElementsType.UnsignedInt, p.Offset);
+
+            mesh.renderMesh.Draw(shader, camera);
+
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             shader.SetInt("colorOverride", 0);
 
             GL.Enable(EnableCap.DepthTest);
         }
-        private void SetVertexAttributes(Mesh m, Shader shader)
-        {
-            //Note on these buffers
-            // - vBone and vWeight have 2 attributes since bfres has 4 weights/bones per vertice. Additional one can allow up to a max of 8
-            positionVbo.Bind();
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vNormal"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 12);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vTangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 24);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBitangent"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 36);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV0"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 48);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vColor"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 56);
-            GL.VertexAttribIPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribIntegerType.Int, DisplayVertex.Size, new IntPtr(72));
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV1"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 104);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vUV2"), 2, VertexAttribPointerType.Float, false, DisplayVertex.Size, 112);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition2"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 124);
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition3"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 136);
 
-            elementsIbo.Bind();
-
-            // Disabled these untill I fix transform stuff manually without shaders
-            //     GL.VertexAttribPointer(shader.getAttribute("vBone1"),     4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 84);
-            //     GL.VertexAttribPointer(shader.getAttribute("vWeight1"),   4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 116);
-
-        }
-
-        //Here I'll use the same enums as NUDs does. BFRES for switch is inconsistent with the strings and data though multiple games and wii u uses flags so it's best to have them all in one
-        Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
+        // Here I'll use the same enums as NUDs does. 
+        // BFRES for switch is inconsistent with the strings and data.
+        // multiple games and wii u uses flags, so it's best to have them all in one.
+        public Dictionary<int, BlendingFactorDest> dstFactor = new Dictionary<int, BlendingFactorDest>(){
                     { 0x01, BlendingFactorDest.OneMinusSrcAlpha},
                     { 0x02, BlendingFactorDest.One},
                     { 0x03, BlendingFactorDest.OneMinusSrcAlpha},
@@ -521,12 +554,12 @@ namespace Smash_Forge
                     { 0x06, BlendingFactorDest.Zero},
         };
 
-        static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
+        public static Dictionary<int, BlendingFactorSrc> srcFactor = new Dictionary<int, BlendingFactorSrc>(){
                     { 0x01, BlendingFactorSrc.SrcAlpha},
                     { 0x02, BlendingFactorSrc.Zero}
         };
 
-        private static readonly Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
+        public static readonly Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
         {
             { 0x00, TextureMinFilter.LinearMipmapLinear},
             { 0x01, TextureMinFilter.Nearest},
@@ -534,71 +567,32 @@ namespace Smash_Forge
             { 0x03, TextureMinFilter.NearestMipmapLinear},
         };
 
-        static readonly Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
+        public static readonly Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
         {
             { 0x00, TextureMagFilter.Linear},
             { 0x01, TextureMagFilter.Nearest},
             { 0x02, TextureMagFilter.Linear}
         };
 
-        static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
+        public static Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>(){
                     { 0x00, TextureWrapMode.Repeat},
                     { 0x01, TextureWrapMode.MirroredRepeat},
                     { 0x02, TextureWrapMode.ClampToEdge},
                     { 0x03, TextureWrapMode.MirroredRepeat},
         };
 
-        private void GenerateBuffers()
+        public void UpdateRenderMeshes()
         {
-            positionVbo = new BufferObject(BufferTarget.ArrayBuffer);
-            elementsIbo = new BufferObject(BufferTarget.ElementArrayBuffer);
-        }
-
-        public void UpdateVertexData()
-        {
-            // Binding 0 to a buffer target will crash. 
-            // This also means the buffers weren't generated yet.
-            bool buffersWereInitialized = elementsIbo != null && positionVbo != null;
-            if (!buffersWereInitialized)
-                GenerateBuffers();
-
-            DisplayVertex[] Vertices;
-            int[] Faces;
-
-            int poffset = 0;
-            int voffset = 0;
-            List<DisplayVertex> Vs = new List<DisplayVertex>();
-            List<int> Ds = new List<int>();
             foreach (FMDL_Model fmdl in models)
             {
                 foreach (Mesh m in fmdl.poly)
                 {
-                    m.Offset = poffset * 4;
-                    List<DisplayVertex> pv = m.CreateDisplayVertices();
-                    Vs.AddRange(pv);
-
-                    for (int i = 0; i < m.lodMeshes[m.DisplayLODIndex].displayFaceSize; i++)
-                    {
-                        Ds.Add(m.display[i] + voffset);
-                    }
-                    poffset += m.lodMeshes[m.DisplayLODIndex].displayFaceSize;
-                    voffset += pv.Count;
+                    m.renderMesh = m.CreateRenderMesh();
                 }
             }
-
-            // Binds
-            Vertices = Vs.ToArray();
-            Faces = Ds.ToArray();
-
-            // Bind only once!
-            positionVbo.Bind();
-            GL.BufferData<DisplayVertex>(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * DisplayVertex.Size), Vertices, BufferUsageHint.StaticDraw);
-
-            elementsIbo.Bind();
-            GL.BufferData<int>(BufferTarget.ElementArrayBuffer, (IntPtr)(Faces.Length * sizeof(int)), Faces, BufferUsageHint.StaticDraw);
         }
 
-        private static void ApplyTransformFix(FMDL_Model fmdl, Mesh m)
+        private static void ApplyTransformFix(FMDL_Model fmdl, Mesh m, Shader shader)
         {
             shader.SetInt("NoSkinning", 0);
             shader.SetInt("RigidSkinning", 0);
@@ -611,18 +605,21 @@ namespace Smash_Forge
             }
             if (m.VertexSkinCount == 0)
             {
-                shader.SetInt("NoSkinning", 1);
+                Matrix4 transform = fmdl.skeleton.bones[m.boneIndx].invert * fmdl.skeleton.bones[m.boneIndx].transform;
+                shader.SetMatrix4x4("singleBoneBindTransform", ref transform);
 
+                shader.SetInt("NoSkinning", 1);
             }
         }
 
-        private static void SetUniforms(MaterialData mat, Shader shader, Mesh m)
+        private static void SetUniforms(MaterialData mat, Shader shader, Mesh m, int id, bool drawId)
         {
-            shader.SetVector4("SamplerUV1", new Vector4(1, 1, 0, 0));
             shader.SetVector4("gsys_bake_st0", new Vector4(1, 1, 0, 0));
             shader.SetVector4("gsys_bake_st1", new Vector4(1, 1, 0, 0));
             shader.SetInt("enableCellShading", 0);
 
+            shader.SetVector3("colorId", ColorTools.Vector4FromColor(Color.FromArgb(id)).Xyz);
+            shader.SetBoolToInt("drawId", drawId);
 
             //BOTW uses this shader so lets add in cell shading
             if (mat.shaderassign.ShaderModel == "uking_mat")
@@ -643,7 +640,7 @@ namespace Smash_Forge
             SetUniformData(mat, shader, "ao_density");
             SetUniformData(mat, shader, "base_color_mul_color");
             SetUniformData(mat, shader, "emission_color");
-
+            SetUniformData(mat, shader, "specular_color");
 
             //   Shader option data
             // These enable certain effects
@@ -791,27 +788,27 @@ namespace Smash_Forge
             }
         }
 
-        private static void SetDefaultTextureAttributes(MaterialData mat)
+        private static void SetDefaultTextureAttributes(MaterialData materialData, Shader shader)
         {
-            shader.SetBoolToInt("HasDiffuse", mat.HasDiffuseMap);
-            shader.SetBoolToInt("HasDiffuseLayer", mat.HasDiffuseLayer);
-            shader.SetBoolToInt("HasNormalMap", mat.HasNormalMap);
-            shader.SetBoolToInt("HasEmissionMap", mat.HasEmissionMap);
-            shader.SetBoolToInt("HasLightMap", mat.HasLightMap);
-            shader.SetBoolToInt("HasShadowMap", mat.HasShadowMap);
-            shader.SetBoolToInt("HasAmbientOcclusionMap", mat.HasAmbientOcclusionMap);
-            shader.SetBoolToInt("HasSpecularMap", mat.HasSpecularMap);
-            shader.SetBoolToInt("HasTeamColorMap", mat.HasTeamColorMap);
-            shader.SetBoolToInt("hasDummyRamp", mat.HasTransparencyMap);
+            shader.SetBoolToInt("HasDiffuse", materialData.HasDiffuseMap);
+            shader.SetBoolToInt("HasDiffuseLayer", materialData.HasDiffuseLayer);
+            shader.SetBoolToInt("HasNormalMap", materialData.HasNormalMap);
+            shader.SetBoolToInt("HasEmissionMap", materialData.HasEmissionMap);
+            shader.SetBoolToInt("HasLightMap", materialData.HasLightMap);
+            shader.SetBoolToInt("HasShadowMap", materialData.HasShadowMap);
+            shader.SetBoolToInt("HasSpecularMap", materialData.HasSpecularMap);
+            shader.SetBoolToInt("HasTeamColorMap", materialData.HasTeamColorMap);
+            shader.SetBoolToInt("HasSphereMap", materialData.HasSphereMap);
 
             //Unused atm untill I do PBR shader
-            shader.SetBoolToInt("HasMetalnessMap", mat.HasMetalnessMap);
-            shader.SetBoolToInt("HasRoughnessMap", mat.HasRoughnessMap);
+            shader.SetBoolToInt("HasMetalnessMap", materialData.HasMetalnessMap);
+            shader.SetBoolToInt("HasRoughnessMap", materialData.HasRoughnessMap);
+            shader.SetBoolToInt("HasMRA", materialData.HasMRA);
         }
 
-        private static void SetTextureUniforms(MaterialData mat, Mesh m)
+        private static void SetTextureUniforms(MaterialData materialData, Mesh mesh, Shader shader)
         {
-            SetDefaultTextureAttributes(mat);
+            SetDefaultTextureAttributes(materialData, shader);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex.Id);
@@ -819,44 +816,47 @@ namespace Smash_Forge
             shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 10);
             shader.SetTexture("weightRamp1", RenderTools.boneWeightGradient.Id, TextureTarget.Texture2D, 11);
             shader.SetTexture("weightRamp2", RenderTools.boneWeightGradient2.Id, TextureTarget.Texture2D, 12);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("nrm"), 0);
+            GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), 0);
             GL.Uniform1(shader.GetVertexAttributeUniformLocation("BakeShadowMap"), 0);
 
-            //So this loops through each type and maps by tex hash. This is done because there is no particular order in the list
-
-            foreach (MatTexture matex in mat.textures)
+            // There is no particular order in the list.
+            foreach (MatTexture matex in materialData.textures)
             {
                 if (matex.Type == MatTexture.TextureType.Diffuse)
-                    TextureUniform(shader, mat, mat.HasDiffuseMap, "tex0", matex);
+                    TextureUniform(shader, materialData, materialData.HasDiffuseMap, "tex0", matex);
                 else if (matex.Type == MatTexture.TextureType.Normal)
-                    TextureUniform(shader, mat, mat.HasNormalMap, "nrm", matex);
+                    TextureUniform(shader, materialData, materialData.HasNormalMap, "normalMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Emission)
-                    TextureUniform(shader, mat, mat.HasEmissionMap, "EmissionMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasEmissionMap, "EmissionMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Specular)
-                    TextureUniform(shader, mat, mat.HasSpecularMap, "SpecularMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasSpecularMap, "SpecularMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Shadow)
-                    TextureUniform(shader, mat, mat.HasShadowMap, "BakeShadowMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasShadowMap, "BakeShadowMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Light)
-                    TextureUniform(shader, mat, mat.HasLightMap, "BakeLightMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasLightMap, "BakeLightMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Metalness)
-                    TextureUniform(shader, mat, mat.HasMetalnessMap, "MetalnessMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasMetalnessMap, "MetalnessMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Roughness)
-                    TextureUniform(shader, mat, mat.HasRoughnessMap, "RoughnessMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasRoughnessMap, "RoughnessMap", matex);
                 else if (matex.Type == MatTexture.TextureType.TeamColor)
-                    TextureUniform(shader, mat, mat.HasTeamColorMap, "TeamColorMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasTeamColorMap, "TeamColorMap", matex);
                 else if (matex.Type == MatTexture.TextureType.Transparency)
-                    TextureUniform(shader, mat, mat.HasTransparencyMap, "TransparencyMap", matex);
+                    TextureUniform(shader, materialData, materialData.HasTransparencyMap, "TransparencyMap", matex);
                 else if (matex.Type == MatTexture.TextureType.DiffuseLayer2)
-                    TextureUniform(shader, mat, mat.HasDiffuseLayer, "DiffuseLayer", matex);
+                    TextureUniform(shader, materialData, materialData.HasDiffuseLayer, "DiffuseLayer", matex);
+                else if (matex.Type == MatTexture.TextureType.SphereMap)
+                    TextureUniform(shader, materialData, materialData.HasSphereMap, "SphereMap", matex);
+                else if (matex.Type == MatTexture.TextureType.MRA)
+                    TextureUniform(shader, materialData, materialData.HasMRA, "MRA", matex);
             }
         }
 
-        private static void TextureUniform(Shader shader, MaterialData mat, bool hasTex, string name, MatTexture mattex)
+        private static void TextureUniform(Shader shader, MaterialData mat, bool hasTex, string name, MatTexture matTexture)
         {
             // Bind the texture and create the uniform if the material has the right textures. 
             if (hasTex)
             {
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation(name), BindTexture(mattex));
+                GL.Uniform1(shader.GetVertexAttributeUniformLocation(name), BindTexture(matTexture));
             }
         }
 
@@ -873,22 +873,25 @@ namespace Smash_Forge
                 {
                     if (bntx.glTexByName.TryGetValue(tex.Name, out texture))
                     {
-                        BindBRTTexture(tex, texture);
+                        BindGLTexture(tex, texture);
                     }
                 }
             }
             else
             {
-                if (FTEXtextures.ContainsKey(tex.Name))
+                foreach (FTEXContainer ftexC in Runtime.FTEXContainerList)
                 {
-                    //  BindBRTTexture(tex, FTEXtextures[tex.Name].texture.display);
+                    if (ftexC.glTexByName.TryGetValue(tex.Name, out texture))
+                    {
+                        BindGLTexture(tex, texture);
+                    }
                 }
             }
 
             return tex.hash + 1;
         }
 
-        private static void BindBRTTexture(MatTexture matTexture, SFGraphics.GLObjects.Textures.Texture texture)
+        private static void BindGLTexture(MatTexture matTexture, SFGraphics.GLObjects.Textures.Texture texture)
         {
             // Set the texture's parameters based on the material settings.
             texture.Bind();
@@ -1116,27 +1119,6 @@ namespace Smash_Forge
             public Vector3 pos2 = new Vector3();
         }
 
-        public struct DisplayVertex
-        {
-            // Used for rendering.
-            public Vector3 pos;
-            public Vector3 nrm;
-            public Vector3 tan;
-            public Vector3 bit;
-            public Vector2 uv;
-            public Vector4 col;
-            public Vector4 node;
-            public Vector4 weight;
-            public Vector2 uv2;
-            public Vector2 uv3;
-            public Vector3 pos1;
-            public Vector3 pos2;
-
-
-
-            public static int Size = 4 * (3 + 3 + 3 + 3 + 2 + 4 + 4 + 4 + 2 + 2 + 3 + 3);
-        }
-
         public class Mesh : TreeNode
         {
             public List<Vertex> vertices = new List<Vertex>();
@@ -1158,6 +1140,13 @@ namespace Smash_Forge
             public List<float> radius = new List<float>();
             public List<BoundingBox> boundingBoxes = new List<BoundingBox>();
             public Dictionary<string, int> BoneIndexList = new Dictionary<string, int>();
+
+            public BfresRenderMesh renderMesh;
+
+            // Used to generate a unique color for viewport selection.
+            private static List<int> previousDisplayIds = new List<int>();
+            public int DisplayId { get { return displayId; } }
+            private int displayId = 0;
 
             public int DisplayLODIndex = 0;
             public List<LOD_Mesh> lodMeshes = new List<LOD_Mesh>();
@@ -1241,18 +1230,30 @@ namespace Smash_Forge
 
             public float sortingDistance = 0;
 
-
-
             public Mesh()
             {
                 Checked = true;
                 ImageKey = "mesh";
                 SelectedImageKey = "mesh";
+                GenerateDisplayId();
             }
             // for drawing
             public int[] display;
             public int[] selectedVerts;
             public int Offset; // For Rendering
+
+            private void GenerateDisplayId()
+            {
+                // Find last used ID. Next ID will be last ID + 1.
+                // A color is generated from the integer as hexadecimal, but alpha is ignored.
+                // Incrementing will affect RGB before it affects Alpha (ARGB color).
+                int index = 0;
+                if (previousDisplayIds.Count > 0)
+                    index = previousDisplayIds.Last();
+                index++;
+                previousDisplayIds.Add(index);
+                displayId = index;
+            }
 
             //Store list of all existing vertex attribute. This is for saving
             public List<VertexAttribute> vertexAttributes = new List<VertexAttribute>();
@@ -1265,6 +1266,23 @@ namespace Smash_Forge
                 {
                     return Name;
                 }
+            }
+
+            public BfresRenderMesh CreateRenderMesh()
+            {
+                List<DisplayVertex> displayVertices = new List<DisplayVertex>();
+                List<int> displayVertexIndices = new List<int>();
+
+                List<DisplayVertex> pv = CreateDisplayVertices();
+                displayVertices.AddRange(pv);
+
+                for (int i = 0; i < lodMeshes[DisplayLODIndex].displayFaceSize; i++)
+                {
+                    displayVertexIndices.Add(display[i]);
+                }
+
+                BfresRenderMesh bfresRenderMesh = new BfresRenderMesh(displayVertices, displayVertexIndices);
+                return bfresRenderMesh;
             }
 
             public float CalculateSortingDistance(Vector3 cameraPosition)
@@ -1343,7 +1361,7 @@ namespace Smash_Forge
             public void ExportMaterials2XML()
             {
                 Console.WriteLine("Wring XML");
-                WriteFMATXML(material, this);
+                BfresXML.WriteMaterialXML(material, this);
             }
             public void CopyUVChannel2()
             {
@@ -1492,7 +1510,7 @@ namespace Smash_Forge
                     vertexPositions.Add(vertex.pos);
                 }
 
-                Vector4 boundingSphere = SFGraphics.Tools.BoundingSphereGenerator.GenerateBoundingSphere(vertexPositions);
+                Vector4 boundingSphere = SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(vertexPositions);
 
                 for (int i = 0; i < BoundingCount; i++)
                 {
@@ -1639,12 +1657,13 @@ namespace Smash_Forge
             public bool HasTeamColorMap = false; //Splatoon uses this (TLC)
             public bool HasTransparencyMap = false;
             public bool HasShadowMap = false;
-            public bool HasAmbientOcclusionMap = false;
             public bool HasLightMap = false;
+            public bool HasSphereMap = false;
 
             //PBR (Switch) data
             public bool HasMetalnessMap = false;
             public bool HasRoughnessMap = false;
+            public bool HasMRA = false;
 
             public MaterialFlags IsVisable = MaterialFlags.Visible;
 
@@ -1716,6 +1735,7 @@ namespace Smash_Forge
                 Roughness = 11,
                 Metalness = 12,
                 MRA = 13, //Combined pbr texture HAL uses for KSA
+                SphereMap = 14,
             }
 
             public MatTexture()

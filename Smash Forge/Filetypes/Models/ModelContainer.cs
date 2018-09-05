@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using SALT.Graphics;
-using System.Windows.Forms;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using OpenTK;
-using System.Drawing;
-using System.Diagnostics;
-using Smash_Forge.Rendering.Lights;
-using Smash_Forge.Rendering;
-using SFGraphics.GLObjects.Shaders;
-using SFGraphics.Tools;
+using SALT.Graphics;
 using SFGraphics.Cameras;
-
+using SFGraphics.GLObjects.Shaders;
+using SFGraphics.Utils;
+using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Lights;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -49,6 +46,21 @@ namespace Smash_Forge
             }
         }
         private NUT nut;
+
+        public BNTX BNTX
+        {
+            get
+            {
+                return bntx;
+            }
+            set
+            {
+                bntx = value;
+                Refresh();
+
+            }
+        }
+        private BNTX bntx;
 
         public VBN VBN
         {
@@ -326,33 +338,7 @@ namespace Smash_Forge
 
             if (Bfres != null)
             {
-                if (Runtime.renderPhysicallyBasedRendering == true)
-                    shader = OpenTKSharedResources.shaders["BFRES_PBR"];
-                else
-                    shader = OpenTKSharedResources.shaders["BFRES"];
-
-                if (!shader.ProgramCreatedSuccessfully)
-                    return;
-
-                shader.UseProgram();
-
-                shader.SetVector3("difLightColor", diffuseColor.R, diffuseColor.G, diffuseColor.B);
-                shader.SetVector3("ambLightColor", ambientColor.R, ambientColor.G, ambientColor.B);
-
-                Matrix4 invertedCamera = camera.MvpMatrix.Inverted();
-                Vector3 lightDirection = new Vector3(0f, 0f, -1f);
-
-                //Todo. Maybe change direction via AAMP file (configs shader data)
-                shader.SetVector3("lightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
-                shader.SetVector3("specLightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
-                shader.SetVector3("difLightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
-
-                shader.SetInt("debugOption", (int)Runtime.uvChannel);
-
-                // This cube map is for a quick test.
-                shader.SetTexture("cmap", RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh].Id, TextureTarget.TextureCubeMap, 2);
-
-                Bfres.Render(camera.MvpMatrix);
+                Bfres.Render(camera, Runtime.drawNudColorIdPass);
             }
 
             if (NUD != null && OpenTKSharedResources.shaders["Nud"].ProgramCreatedSuccessfully && OpenTKSharedResources.shaders["NudDebug"].ProgramCreatedSuccessfully)

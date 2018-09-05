@@ -1,30 +1,22 @@
-﻿using System;
+﻿using OpenTK.Graphics.OpenGL;
+using SFGraphics.GLObjects.GLObjectManagement;
+using SFGraphics.Utils;
+using Smash_Forge.Filetypes.Models.Nuds;
+using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Meshes;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Timers;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
-using System.IO;
-using OpenTK.Graphics.OpenGL;
-using System.Timers;
-using System.Diagnostics;
-using Smash_Forge.Rendering;
-using SFGraphics.Tools;
-
 
 namespace Smash_Forge
 {
     public partial class NUDMaterialEditor : DockContent
     {
-        public NUD.Polygon currentPolygon;
-        public List<NUD.Material> currentMaterialList;
-        public static Dictionary<string, Params.MatParam> materialParamList = new Dictionary<string, Params.MatParam>();
-
         public static Dictionary<int, string> cullModeByMatValue = new Dictionary<int, string>()
         {
             { 0x000, "Cull None"},
@@ -87,6 +79,11 @@ namespace Smash_Forge
             { 0x06, "4 mip levels, trilinear, anisotropic"}
         };
 
+        public static Dictionary<string, Params.MatParam> materialParamList = new Dictionary<string, Params.MatParam>();
+
+        public NUD.Polygon currentPolygon;
+        public List<NUD.Material> currentMaterialList;
+
         private int currentMatIndex = 0;
         private string currentPropertyName = "";
         private ImageList textureThumbnails = new ImageList()
@@ -121,9 +118,11 @@ namespace Smash_Forge
 
             // The dummy textures will be used later. 
             OpenTKSharedResources.InitializeSharedResources();
-
-            // Only happens once.
-            UpdateMaterialThumbnails();
+            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
+            {
+                // Only happens once.
+                UpdateMaterialThumbnails();
+            }
         }
 
         private void RefreshTexturesImageList()
@@ -850,8 +849,8 @@ namespace Smash_Forge
                 int hash = currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash;
 
                 // Display dummy textures from resources. 
-                if (Enum.IsDefined(typeof(NUD.DummyTextures), hash))
-                    displayTexture = RenderTools.dummyTextures[(NUD.DummyTextures)hash].Id;
+                if (Enum.IsDefined(typeof(NudEnums.DummyTexture), hash))
+                    displayTexture = RenderTools.dummyTextures[(NudEnums.DummyTexture)hash].Id;
                 else
                 {
                     foreach (NUT n in Runtime.TextureContainers)
@@ -866,18 +865,25 @@ namespace Smash_Forge
                 }
             }
 
+            // We can't share these vaos across both contexts.
             if (justRenderAlpha)
             {
                 texAlphaGlControl.MakeCurrent();
+
+                Mesh3D screenTriangle = ScreenDrawing.CreateScreenTriangle();
+
                 GL.Viewport(texAlphaGlControl.ClientRectangle);
-                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, false, false, false, true);
+                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenTriangle, false, false, false, true);
                 texAlphaGlControl.SwapBuffers();
             }
             else
             {
                 texRgbGlControl.MakeCurrent();
+
+                Mesh3D screenTriangle = ScreenDrawing.CreateScreenTriangle();
+
                 GL.Viewport(texRgbGlControl.ClientRectangle);
-                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1);
+                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenTriangle);
                 texRgbGlControl.SwapBuffers();
             }
         }
@@ -957,11 +963,13 @@ namespace Smash_Forge
         private void texRgbGlControl_Paint(object sender, PaintEventArgs e)
         {
             RenderTexture();
+            GLObjectManager.DeleteUnusedGLObjects();
         }
 
         private void texAlphaGlControl_Paint(object sender, PaintEventArgs e)
         {
             RenderTexture(true);
+            GLObjectManager.DeleteUnusedGLObjects();
         }
 
         private void param1TrackBar_Scroll(object sender, EventArgs e)

@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Diagnostics;
 using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects.Textures.TextureFormats;
 
 namespace Smash_Forge
 {
@@ -113,16 +114,17 @@ namespace Smash_Forge
     public class BNTX : TreeNode
     {
         //Todo: Have these 2 combined into one list
-        public static List<BRTI> textures = new List<BRTI>(); //For loading a list of texture instances
+        public List<BRTI> textures = new List<BRTI>(); //For loading a list of texture instances
         public Dictionary<string, Texture> glTexByName = new Dictionary<string, Texture>();
         int BRTIOffset;
 
         public static int temp; //This variable is so we can get offsets from start of BNTX file
         public static byte[] BNTXFile = new byte[0];
+        public string target;
 
         BNTXEditor Editor;
 
-        public BNTX()
+        public BNTX() //Binary Texture Container
         {
             ImageKey = "nut";
             SelectedImageKey = "nut";
@@ -176,7 +178,7 @@ namespace Smash_Forge
 
 
                 bn.Nodes.Clear();
-                bn.ReadBNTX(f);
+                bn.Read(f);
             }
         }
 
@@ -186,13 +188,19 @@ namespace Smash_Forge
             Editor.Text = Parent.Text + "\\" + Text;
             MainForm.Instance.AddDockedControl(Editor);
         }
+        public void ReadBNTXFile(string data) //For single BNTX files
+        {
+            FileData f = new FileData(data);
+            f.Endian = Endianness.Little;
 
+            Read(f);
+        }
         public void ReadBNTXFile(byte[] data) //For single BNTX files
         {
             FileData f = new FileData(data);
             f.Endian = Endianness.Little;
 
-            ReadBNTX(f);
+            Read(f);
         }
 
         public void RefreshGlTexturesByName()
@@ -201,12 +209,16 @@ namespace Smash_Forge
 
             foreach (BRTI tex in Nodes)
             {
-                glTexByName.Add(tex.Text, BRTI.CreateTexture2D(tex.texture));
+                Texture2D tex2d = BRTI.CreateTexture2D(tex.texture);
+                tex.texture.display = tex2d.Id;
                 tex.display = tex.texture.display;
+
+                glTexByName.Add(tex.Text, tex2d);
+
             }
         }
 
-        public void ReadBNTX(FileData f)
+        public void Read(FileData f)
         {
             textures.Clear();
 
@@ -223,7 +235,8 @@ namespace Smash_Forge
             int strOffset = f.readShort();
             int relocOffset = f.readInt();
             int FileSize = f.readInt();
-            f.skip(4); //NX Magic
+            target = f.readString(f.pos(), 4); //NX
+            f.skip(4);
             int TexturesCount = f.readInt();
             int InfoPtrsOffset = f.readInt();
             int DataBlockOffset = f.readInt();
@@ -243,21 +256,56 @@ namespace Smash_Forge
                 f.seek(BRTIOffset + temp);
 
                 //  textures.Add(new BRTI(f));
-                BRTI texture = new BRTI(f);
+                BRTI texture = new BRTI();
+                texture.Read(f, this);
 
                 textures.Add(texture);
 
             }
             Nodes.AddRange(textures.ToArray());
+        }
+        public void Save()
+        {
 
-            Runtime.BNTXList.Add(this);
+
+
+            foreach (BRTI info in textures)
+            {
+                TegraX1Swizzle.Surface surf = info.surf;
+
+                int alignment = 0;
+
+
+                if (surf.tileMode == 1)
+                    alignment = 1;
+                else
+                    alignment = 512;
+
+                uint blk_dim = Formats.blk_dims(surf.format >> 8);
+                uint blkWidth = blk_dim >> 4;
+                uint blkHeight = blk_dim & 0xF;
+
+                uint bpp = Formats.bpps(surf.format >> 8);
+
+
+                for (int y = 0; y < info.texture.mipmaps.Count; ++y)
+                {
+
+                }
+
+
+                for (int y = 0; y < info.texture.mipmaps.Count; ++y)
+                {
+
+                }
+            }
         }
     }
 
 
-    public class BRTI : TreeNode
+    public class BRTI : TreeNode //Binary Texture Info
     {
-        public Swizzle.Surface surf;
+        public TegraX1Swizzle.Surface surf;
 
         public BRTI_Texture texture = new BRTI_Texture();
         public byte DataType;
@@ -265,7 +313,6 @@ namespace Smash_Forge
 
         public int Width, Height, display;
         public uint format;
-        public static List<BRTI_Texture> RenderableTex = new List<BRTI_Texture>();
         public uint blkWidth, blkHeight, bpp;
 
         public override string ToString()
@@ -273,7 +320,7 @@ namespace Smash_Forge
             return Text;
         }
 
-        public BRTI(FileData f) //Docs thanks to gdkchan!!
+        public void Read(FileData f, BNTX bntx) //Docs thanks to AboodXD!!
         {
             ImageKey = "texture";
             SelectedImageKey = "texture";
@@ -281,18 +328,17 @@ namespace Smash_Forge
             f.skip(4);
 
             int BRTISize1 = f.readInt();
-            long BRTISize2 = (f.readInt() | f.readInt() << 32);
-            surf = new Swizzle.Surface();
-
-            surf.tileMode = (sbyte)f.readByte();
-            surf.dim = (sbyte)f.readByte();
+            long BRTISize2 = f.readInt64();
+            surf = new TegraX1Swizzle.Surface();
             ushort Flags = (ushort)f.readShort();
+            surf.dim = (sbyte)f.readByte();
+            surf.tileMode = (sbyte)f.readByte();
             surf.swizzle = (ushort)f.readShort();
             surf.numMips = (ushort)f.readShort();
-            uint unk18 = (uint)f.readInt();
+            uint numSamples = (uint)f.readInt();
             surf.format = (uint)f.readInt();
             DataType = (byte)(surf.format & 0xFF);
-            uint unk20 = (uint)f.readInt();
+            uint accessFlags = (uint)f.readInt();
             surf.width = f.readInt();
             surf.height = f.readInt();
             surf.depth = f.readInt();
@@ -308,69 +354,74 @@ namespace Smash_Forge
             surf.alignment = f.readInt();
             int ChannelType = f.readInt();
             int TextureType = f.readInt();
-            Text = f.readString((f.readInt() | f.readInt() << 32) + BNTX.temp + 2, -1);
-            long ParentOffset = f.readInt() | f.readInt() << 32;
-            long PtrsOffset = f.readInt() | f.readInt() << 32;
+            Text = f.readString((int)f.readInt64() + BNTX.temp + 2, -1);
+            long ParentOffset = f.readInt64();
+            long PtrsOffset = f.readInt64();
 
             format = surf.format;
 
-            f.seek((int)PtrsOffset + BNTX.temp);
-            long dataOff = f.readInt() | f.readInt() << 32;
-            surf.data = f.getSection((int)dataOff + BNTX.temp, surf.imageSize);
-            //Console.WriteLine(surf.data.Length + " " + dataOff.ToString("x") + " " + surf.imageSize);
+            surf.data = new List<byte[]>();
 
             uint blk_dim = Formats.blk_dims(surf.format >> 8);
             blkWidth = blk_dim >> 4;
             blkHeight = blk_dim & 0xF;
 
+            f.seek((int)PtrsOffset + BNTX.temp);
+            long firstMipOffset = f.readInt64();
+            surf.data.Add(f.getSection((int)firstMipOffset + BNTX.temp, surf.imageSize));
+            for (int mipLevel = 1; mipLevel < surf.numMips; mipLevel++)
+            {
+                long dataOff = f.readInt64();
+                surf.data.Add(f.getSection((int)dataOff + BNTX.temp, (int)firstMipOffset + surf.imageSize - (int)dataOff));
+                //    Debug.WriteLine($"{Name} Height {surf.height}wdith = {surf.width}allignment = {surf.alignment}blkwidth = {blkWidth}blkheight = {blkHeight}blkdims = {blk_dim} format = {surf.format} datatype = {DataType} dataoffset = {dataOff}");
+            }
             bpp = Formats.bpps(surf.format >> 8);
 
-            //     Console.WriteLine($"{Name} Height {surf.height}wdith = {surf.width}allignment = {surf.alignment}blkwidth = {blkWidth}blkheight = {blkHeight}blkdims = {blk_dim} format = {surf.format} datatype = {DataType} dataoffset = {dataOff}");
+            int target = 0;
+            if (bntx.target == "NX  ")
+                target = 1;
 
+            int blockHeightLog2 = surf.sizeRange & 7;
 
-            // byte[] result = surf.data;
+            int linesPerBlockHeight = (1 << blockHeightLog2) * 8;
+            int blockHeightShift = 0;
 
+            for (int mipLevel = 0; mipLevel < surf.numMips; mipLevel++)
+            {
+                uint width = (uint)Math.Max(1, surf.width >> mipLevel);
+                uint height = (uint)Math.Max(1, surf.height >> mipLevel);
 
+                uint size = TegraX1Swizzle.DIV_ROUND_UP(width, blkWidth) * TegraX1Swizzle.DIV_ROUND_UP(height, blkHeight) * bpp;
 
-            byte[] result = Swizzle.deswizzle((uint)surf.width, (uint)surf.height, blkWidth, blkHeight, bpp, (uint)surf.tileMode, (uint)surf.alignment, surf.sizeRange, surf.data, 0);
+                if (TegraX1Swizzle.pow2_round_up(TegraX1Swizzle.DIV_ROUND_UP(height, blkWidth)) < linesPerBlockHeight)
+                    blockHeightShift += 1;
 
+                byte[] result = TegraX1Swizzle.deswizzle(width, height, blkWidth, blkHeight, target, bpp, (uint)surf.tileMode, (uint)surf.alignment, Math.Max(0, blockHeightLog2 - blockHeightShift), surf.data[mipLevel], 0);
+                //Create a copy and use that to remove uneeded data
+                result_ = new byte[size];
+                Array.Copy(result, 0, result_, 0, size);
+                texture.mipmaps.Add(result_);
+            }
 
-            uint width = Swizzle.DIV_ROUND_UP((uint)surf.width, blkWidth);
-            uint height = Swizzle.DIV_ROUND_UP((uint)surf.height, blkHeight);
+            LoadFormats(texture, surf.format, 0, surf.width, surf.height);
 
-            result_ = new byte[width * height * bpp];
-
-            Array.Copy(result, 0, result_, 0, width * height * bpp);
-
-            byte[] Swizzled = Swizzle.swizzle((uint)surf.width, (uint)surf.height, blkWidth, blkHeight, bpp, (uint)surf.tileMode, (uint)surf.alignment, surf.sizeRange, surf.data, 1);
-
-
-            texture.data = result_;
             texture.width = surf.width;
             texture.height = surf.height;
 
             Width = surf.width;
             Height = surf.height;
+        }
 
-            texture.mipmaps.Add(result_);
-            texture.mipMapCount = surf.numMips;
 
-            switch (surf.format >> 8)
+
+
+
+        private void LoadFormats(BRTI_Texture texture, uint format, int mipLevel, int width, int height)
+        {
+            switch (format >> 8)
             {
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC1):
-                    if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
-                    {
-                        texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
-                    }
-                    else if (DataType == (byte)Formats.BNTXImageTypes.SRGB)
-                    {
-                        byte[] fixBC1 = DDS_Decompress.DecompressBC1(texture.data, texture.width, texture.height, true);
-                        texture.data = fixBC1;
-                        texture.pixelInternalFormat = PixelInternalFormat.Rgba;
-                        texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
-                    }
-                    else
-                        throw new Exception("Unsupported data type for BC1");
+                    texture.pixelInternalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
                     break;
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC2):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
@@ -396,20 +447,10 @@ namespace Smash_Forge
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
                     {
                         texture.pixelInternalFormat = PixelInternalFormat.CompressedRedRgtc1;
-
-                        //        byte[] fixBC4 = DecompressBC4(texture.data, texture.width, texture.height, false);
-                        //       texture.data = fixBC4;
-                        //      texture.type = PixelInternalFormat.Rgba;
-                        //     texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
                     {
                         texture.pixelInternalFormat = PixelInternalFormat.CompressedSignedRedRgtc1;
-
-                        //       byte[] fixBC4 = DecompressBC4(texture.data, texture.width, texture.height, true);
-                        //       texture.data = fixBC4;
-                        //          texture.type = PixelInternalFormat.Rgba;
-                        //         texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else
                         throw new Exception("Unsupported data type for BC4");
@@ -417,17 +458,17 @@ namespace Smash_Forge
                 case ((uint)Formats.BNTXImageFormat.IMAGE_FORMAT_BC5):
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM)
                     {
-                        //      byte[] fixBC5 = DecompressBC5(texture.data, texture.width, texture.height, false);
-                        //    texture.data = fixBC5;
                         texture.pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
-                        //    texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else if (DataType == (byte)Formats.BNTXImageTypes.SNORM)
                     {
-                        byte[] fixBC5 = DDS_Decompress.DecompressBC5(texture.data, texture.width, texture.height, true);
-                        texture.data = fixBC5;
+                        //    texture.pixelInternalFormat = PixelInternalFormat.CompressedRgRgtc2;
+
+
+                        byte[] fixBC5 = DDS_Decompress.DecompressBC5(texture.mipmaps[mipLevel], width, height, true);
+                        texture.mipmaps[mipLevel] = fixBC5;
                         texture.pixelInternalFormat = PixelInternalFormat.Rgba;
-                        texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                        texture.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else
                         Console.WriteLine("Unsupported data type for BC5");
@@ -442,111 +483,54 @@ namespace Smash_Forge
                     if (DataType == (byte)Formats.BNTXImageTypes.UNORM || DataType == (byte)Formats.BNTXImageTypes.SRGB)
                     {
                         texture.pixelInternalFormat = PixelInternalFormat.Rgba;
-                        texture.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                        texture.pixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     }
                     else
                         throw new Exception("Unsupported data type for R8_G8_B8_A8");
                     break;
             }
-
-            RenderableTex.Add(texture);
-
         }
-
         public class BRTI_Texture
         {
             public List<byte[]> mipmaps = new List<byte[]>();
-            public byte[] data;
             public int width, height;
             public int display = 0;
             public PixelInternalFormat pixelInternalFormat;
-            public OpenTK.Graphics.OpenGL.PixelFormat utype;
+            public OpenTK.Graphics.OpenGL.PixelFormat pixelFormat;
             public int mipMapCount; //temp till i add mip maps.
-        }
-        public static int getImageSize(BRTI_Texture t)
-        {
-            switch (t.pixelInternalFormat)
-            {
-                case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
-                case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext:
-                case PixelInternalFormat.CompressedRedRgtc1:
-                case PixelInternalFormat.CompressedSignedRedRgtc1:
-                    return (t.width * t.height / 2);
-                case PixelInternalFormat.CompressedRgbaS3tcDxt3Ext:
-                case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext:
-                case PixelInternalFormat.CompressedRgbaS3tcDxt5Ext:
-                case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext:
-                case PixelInternalFormat.CompressedSignedRgRgtc2:
-                case PixelInternalFormat.CompressedRgRgtc2:
-                    return (t.width * t.height);
-                case PixelInternalFormat.Rgba:
-                    return t.data.Length;
-                default:
-                    return t.data.Length;
-            }
-        }
+            public PixelType pixelType = PixelType.UnsignedByte;
 
-        public static int loadImage(BRTI_Texture t)
-        {
-            int texID = GL.GenTexture();
-
-            GL.BindTexture(TextureTarget.Texture2D, texID);
-
-            if (t.pixelInternalFormat != PixelInternalFormat.Rgba)
-            {
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, (InternalFormat)t.pixelInternalFormat,
-                    t.width, t.height, 0, getImageSize(t), t.data);
-                //Debug.WriteLine(GL.GetError());
-            }
-            else
-            {
-                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.width, t.height, 0,
-                    t.utype, PixelType.UnsignedByte, t.data);
-            }
-
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-            return texID;
         }
 
         public static Texture2D CreateTexture2D(BRTI_Texture tex, int surfaceIndex = 0)
         {
-            bool compressedFormatWithMipMaps = TextureFormatTools.IsCompressed(tex.pixelInternalFormat);
+            bool compressedFormatWithMipMaps = SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatTools.IsCompressed(tex.pixelInternalFormat);
 
             if (compressedFormatWithMipMaps)
             {
-                //Todo. Use mip maps from BNTX
+                if (tex.mipMapCount > 1)
+                {
+                    Texture2D texture = new Texture2D();
+                    texture.LoadImageData(tex.width, tex.height, tex.mipmaps,
+                        (InternalFormat)tex.pixelInternalFormat);
+                    return texture;
+                }
+                else
+                {
+                    // Only load the first level and generate the rest.
+                    Texture2D texture = new Texture2D();
+                    texture.LoadImageData(tex.width, tex.height, tex.mipmaps[0], (InternalFormat)tex.pixelInternalFormat);
+                    return texture;
+                }
             }
             else
             {
-
+                // Uncompressed.
+                Texture2D texture = new Texture2D();
+                texture.LoadImageData(tex.width, tex.height, tex.mipmaps[0],
+                    new TextureFormatUncompressed(tex.pixelInternalFormat, tex.pixelFormat, tex.pixelType));
+                return texture;
             }
-
-            Texture2D texture = new Texture2D(tex.width, tex.height, tex.pixelInternalFormat);
-            texture.Bind();
-            AutoGenerateMipMaps(tex);
-            tex.display = texture.Id;
-            return texture;
-        }
-
-        private static void AutoGenerateMipMaps(BRTI_Texture t)
-        {
-            // Only load the first level and generate the other mip maps.
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, t.mipMapCount);
-
-            if (t.pixelInternalFormat != PixelInternalFormat.Rgba)
-            {
-                GL.CompressedTexImage2D<byte>(TextureTarget.Texture2D, 0, (InternalFormat)t.pixelInternalFormat,
-                    t.width, t.height, 0, getImageSize(t), t.data);
-            }
-            else
-            {
-                GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.width, t.height, 0,
-                    t.utype, PixelType.UnsignedByte, t.data);
-            }
-
-            GL.TexImage2D<byte>(TextureTarget.Texture2D, 0, t.pixelInternalFormat, t.width, t.height, 0, t.utype, PixelType.UnsignedByte, t.data);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
         public static int LoadBitmap(Bitmap image)
