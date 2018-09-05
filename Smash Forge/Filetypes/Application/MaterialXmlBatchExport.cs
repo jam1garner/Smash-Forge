@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
+using Smash_Forge.Filetypes.Melee;
 
 namespace Smash_Forge
 {
@@ -61,7 +62,7 @@ namespace Smash_Forge
                 return;
 
             var rootNode = new MeleeRootNode(meleeDataNode.DatFile.Roots[0]);
-            var doc = rootNode.CreateMaterialXml();
+            var doc = DatMaterialXml.CreateMaterialXml(rootNode);
 
             string xmlName = Path.GetFileNameWithoutExtension(file);
             string outputFileName = $"{ outputDir }\\{ xmlName }.xml";
