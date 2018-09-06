@@ -90,7 +90,7 @@ namespace Smash_Forge.Rendering
 
         private static void SetVertexAttributes(Shader shader)
         {
-            GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
+            GL.VertexAttribPointer(shader.GetAttribLocation("position"), 3, VertexAttribPointerType.Float, false, sizeof(float) * 3, 0);
         }
 
         private static void SetShaderUniforms(Matrix4 mvpMatrix, float scaleX, float scaleY, float scaleZ, float centerX, float centerY, float centerZ, Shader shader)
