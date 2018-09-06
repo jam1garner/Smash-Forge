@@ -816,8 +816,8 @@ namespace Smash_Forge
             shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 10);
             shader.SetTexture("weightRamp1", RenderTools.boneWeightGradient.Id, TextureTarget.Texture2D, 11);
             shader.SetTexture("weightRamp2", RenderTools.boneWeightGradient2.Id, TextureTarget.Texture2D, 12);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("normalMap"), 0);
-            GL.Uniform1(shader.GetVertexAttributeUniformLocation("BakeShadowMap"), 0);
+            GL.Uniform1(shader.GetUniformLocation("normalMap"), 0);
+            GL.Uniform1(shader.GetUniformLocation("BakeShadowMap"), 0);
 
             // There is no particular order in the list.
             foreach (MatTexture matex in materialData.textures)
@@ -856,7 +856,7 @@ namespace Smash_Forge
             // Bind the texture and create the uniform if the material has the right textures. 
             if (hasTex)
             {
-                GL.Uniform1(shader.GetVertexAttributeUniformLocation(name), BindTexture(matTexture));
+                GL.Uniform1(shader.GetUniformLocation(name), BindTexture(matTexture));
             }
         }
 

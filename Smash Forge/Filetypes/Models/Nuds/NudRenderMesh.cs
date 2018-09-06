@@ -97,17 +97,17 @@ namespace Smash_Forge
         protected override List<VertexAttributeInfo> GetVertexAttributes()
         {
             return new List<VertexAttributeInfo>()
-            {
-                new VertexAttributeInfo("vPosition",   3, VertexAttribPointerType.Float, Vector3.SizeInBytes),
-                new VertexAttributeInfo("vNormal",     3, VertexAttribPointerType.Float, Vector3.SizeInBytes),
-                new VertexAttributeInfo("vTangent",    3, VertexAttribPointerType.Float, Vector3.SizeInBytes),
-                new VertexAttributeInfo("vBiTangent",  3, VertexAttribPointerType.Float, Vector3.SizeInBytes),
-                new VertexAttributeInfo("vUV",         2, VertexAttribPointerType.Float, Vector2.SizeInBytes),
-                new VertexAttributeInfo("vColor",      4, VertexAttribPointerType.Float, Vector4.SizeInBytes),
-                new VertexAttributeInfo("vBone",       4, VertexAttribPointerType.Float, Vector4.SizeInBytes),
-                new VertexAttributeInfo("vWeight",     4, VertexAttribPointerType.Float, Vector4.SizeInBytes),
-                new VertexAttributeInfo("vUV2",        2, VertexAttribPointerType.Float, Vector2.SizeInBytes),
-                new VertexAttributeInfo("vUV3",        2, VertexAttribPointerType.Float, Vector2.SizeInBytes),
+            {                                                 
+                new VertexAttributeInfo("vPosition",  ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexAttributeInfo("vNormal",    ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexAttributeInfo("vTangent",   ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexAttributeInfo("vBiTangent", ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexAttributeInfo("vUV",        ValueCount.Two,   VertexAttribPointerType.Float),
+                new VertexAttributeInfo("vColor",     ValueCount.Four,  VertexAttribPointerType.Float),
+                new VertexAttributeInfo("vBone",      ValueCount.Four,  VertexAttribPointerType.Float),
+                new VertexAttributeInfo("vWeight",    ValueCount.Four,  VertexAttribPointerType.Float),
+                new VertexAttributeInfo("vUV2",       ValueCount.Two,   VertexAttribPointerType.Float),
+                new VertexAttributeInfo("vUV3",       ValueCount.Two,   VertexAttribPointerType.Float),
             };
         }
     }
