@@ -646,6 +646,13 @@
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetFloat(System.String,System.Single[])">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetInt(System.String,System.Int32)">
             <summary>
             Names not present in the shader are ignored and saved to the error log.
@@ -653,7 +660,21 @@
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetInt(System.String,System.Int32[])">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetUint(System.String,System.UInt32)">
+            <summary>
+            Names not present in the shader are ignored and saved to the error log.
+            </summary>
+            <param name="uniformName">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetUint(System.String,System.UInt32[])">
             <summary>
             Names not present in the shader are ignored and saved to the error log.
             </summary>
@@ -764,13 +785,6 @@
             Use <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> as the current program.
             </summary>
         </member>
-        <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetVertexAttributeUniformLocation(System.String)">
-            <summary>
-            Gets the index of the vertex attribute or uniform variable. Returns -1 if not found.
-            </summary>
-            <param name="name">The name of the vertex attribute or uniform</param>
-            <returns>The index of the attribute/uniform or -1 if not found </returns>
-        </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.EnableVertexAttributes">
             <summary>
             Enables the vertex attribute arrays for all active attributes
@@ -837,6 +851,20 @@
             <param name="binaryFormat">The format of the compiled binary</param>
             <param name="programBinary">The compiled program binary</param>
         </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetUniformLocation(System.String)">
+            <summary>
+            Gets the location of a uniform variable.
+            </summary>
+            <param name="uniformName">The name of the uniform variable</param>
+            <returns>The location of <paramref name="uniformName"/></returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetAttribLocation(System.String)">
+            <summary>
+            Gets the location of an attribute variable.
+            </summary>
+            <param name="attributeName">The name of the vertex attribute variable</param>
+            <returns>The location of <paramref name="attributeName"/></returns>
+        </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetErrorLog">
             <summary>
             Gets the error log containing hardware info, version number, compilation/linker errors, 
@@ -851,32 +879,41 @@
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.MipmapLoading">
             <summary>
-            Provides methods for loading mipmaps for OpenGL textures. Bind the texture first.
+            Provides methods for loading mipmaps for OpenGL textures. 
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadCompressedMipMaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             Loads compressed 2D image data of the compressed format <paramref name="format"/> 
             for all the mip levels in <paramref name="mipmaps"/>.
-            The texture must first be bound to the proper target before calling this method.
+            The texture must first be bound to the proper target.
             </summary>
             <typeparam name="T"></typeparam>
-            <param name="target">The target of the texture or cube face for loading mip maps. 
-            Ex: Texture2D or TextureCubeMapPositiveX.</param>
+            <param name="target">The target of the texture or cube face for loading mip maps</param>
             <param name="width">The width of the texture or cube map face in pixels</param>
             <param name="height">The height of the texture or cube map face in pixels</param>
             <param name="mipmaps">The list of mipmaps to load for <paramref name="target"/></param>
-            <param name="format">The format for all mipmaps</param>
+            <param name="format">The input format and internal format information</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadCompressedMipMaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObject},OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadCompressedMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObject},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             
             </summary>
-            <param name="target"></param>
-            <param name="width"></param>
-            <param name="height"></param>
+            <param name="target">The target of the texture or cube face for loading mip maps</param>
+            <param name="width">The width of the texture or cube map face in pixels</param>
+            <param name="height">The height of the texture or cube map face in pixels</param>
             <param name="mipmaps"></param>
-            <param name="format"></param>
+            <param name="format">The input format and internal format information</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadUncompressedMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObject},SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
+            <summary>
+            
+            </summary>
+            <param name="target">The target of the texture or cube face for loading mip maps</param>
+            <param name="width">The width of the texture or cube map face in pixels</param>
+            <param name="height">The height of the texture or cube map face in pixels</param>
+            <param name="mipmaps"></param>
+            <param name="format">The input format and internal format information</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Drawing.Bitmap)">
             <summary>
@@ -892,20 +929,19 @@
             
             </summary>
             <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
-            <param name="target">The target of the texture or cube face for loading mip maps. 
-            Ex: Texture2D or TextureCubeMapPositiveX.</param>
+            <param name="target">The target of the texture or cube face for loading mip maps</param>
             <param name="width">The width of the texture or cube map face in pixels</param>
             <param name="height">The height of the texture or cube map face in pixels</param>
             <param name="baseMipLevel"></param>
-            <param name="format">The format for all mipmaps</param>
+            <param name="format">The input format and internal format information</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,SFGraphics.GLObjects.BufferObject,OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             
             </summary>
-            <param name="target"></param>
-            <param name="width"></param>
-            <param name="height"></param>
+            <param name="target">The target of the texture or cube face for loading mip maps</param>
+            <param name="width">The width of the texture or cube map face in pixels</param>
+            <param name="height">The height of the texture or cube map face in pixels</param>
             <param name="baseMipLevel"></param>
             <param name="internalFormat"></param>
         </member>
@@ -914,22 +950,21 @@
             
             </summary>
             <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
-            <param name="target">The target of the texture or cube face for loading mip maps. 
-            Ex: Texture2D or TextureCubeMapPositiveX.</param>
+            <param name="target">The target of the texture or cube face for loading mip maps</param>
             <param name="width">The width of the texture or cube map face in pixels</param>
             <param name="height">The height of the texture or cube map face in pixels</param>
             <param name="baseMipLevel"></param>
-            <param name="format">The uncompressed format information</param>
+            <param name="format">The input format and internal format information</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,SFGraphics.GLObjects.BufferObject,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
             
             </summary>
-            <param name="target"></param>
-            <param name="width"></param>
-            <param name="height"></param>
+            <param name="target">The target of the texture or cube face for loading mip maps</param>
+            <param name="width">The width of the texture or cube map face in pixels</param>
+            <param name="height">The height of the texture or cube map face in pixels</param>
             <param name="baseMipLevel"></param>
-            <param name="format"></param>
+            <param name="format">The input format and internal format information</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadFacesBaseLevel``1(System.Int32,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed,``0[],``0[],``0[],``0[],``0[],``0[])">
             <summary>
@@ -968,7 +1003,7 @@
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed">
             <summary>
-            An immutable container for uncompressed texture format information.
+            Stores uncompressed texture format information.
             </summary>
         </member>
         <member name="F:SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed.pixelInternalFormat">
@@ -1024,8 +1059,24 @@
             Determines whether a format is compressed.
             Compressed formats should use GL.CompressedTexImage instead of GL.TexImage.
             </summary>
-            <param name="format">The image format for the texture data</param>
+            <param name="format">The image format for the Image data</param>
             <returns>True if the format is compressed</returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatTools.IsGenericCompressed(OpenTK.Graphics.OpenGL.PixelInternalFormat)">
+            <summary>
+            Determines whether a format is a generic compressed format.
+            Image data can not be uploaded in these formats.
+            </summary>
+            <param name="format">The image format for the image data</param>
+            <returns><c>true</c> if the format is a generic compressed format</returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatTools.IsGenericCompressed(OpenTK.Graphics.OpenGL.InternalFormat)">
+            <summary>
+            Determines whether a format is a generic compressed format.
+            Image data can not be uploaded in these formats.
+            </summary>
+            <param name="format">The image format for the image data</param>
+            <returns><c>true</c> if the format is a generic compressed format</returns>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatTools.IsDepthFormat(OpenTK.Graphics.OpenGL.PixelInternalFormat)">
             <summary>
@@ -1172,17 +1223,16 @@
             <param name="height">The height of <paramref name="baseMipLevel"/> in pixels</param>
             <param name="baseMipLevel">The image data to load for the first mip level. The other levels are generated.</param>
             <param name="internalFormat">The image format of <paramref name="baseMipLevel"/></param>
-            
             <exception cref="T:System.ArgumentException"><paramref name="internalFormat"/> is not a compressed format.</exception>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,SFGraphics.GLObjects.BufferObject,OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             
             </summary>
-            <param name="width"></param>
-            <param name="height"></param>
-            <param name="baseMipLevel"></param>
-            <param name="internalFormat"></param>
+            <param name="width">The width of <paramref name="baseMipLevel"/> in pixels</param>
+            <param name="height">The height of <paramref name="baseMipLevel"/> in pixels</param>
+            <param name="baseMipLevel">The image data of the first mip level</param>
+            <param name="internalFormat">The image format for all mipmaps</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData``1(System.Int32,System.Int32,``0[],SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
@@ -1192,17 +1242,17 @@
             <typeparam name="T"></typeparam>
             <param name="width">The width of <paramref name="baseMipLevel"/> in pixels</param>
             <param name="height">The height of <paramref name="baseMipLevel"/> in pixels</param>
-            <param name="baseMipLevel">The image data to load for the first mip level. The other levels are generated.</param>
-            <param name="textureFormat">The format information for the uncompressed format</param>
+            <param name="baseMipLevel">The image data of the first mip level</param>
+            <param name="format">The image format for all mipmaps</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,SFGraphics.GLObjects.BufferObject,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
             
             </summary>
-            <param name="width"></param>
-            <param name="height"></param>
-            <param name="baseMipLevel"></param>
-            <param name="format"></param>
+            <param name="width">The width of the base mip level in pixels</param>
+            <param name="height">The height of the base mip level in pixels</param>
+            <param name="baseMipLevel">The image data of the first mip level</param>
+            <param name="format">The image format for all mipmaps</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData``1(System.Int32,System.Int32,System.Collections.Generic.List{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
@@ -1210,20 +1260,29 @@
             for each array in <paramref name="mipmaps"/>.
             </summary>
             <typeparam name="T"></typeparam>
-            <param name="width">The width of the base mip level</param>
-            <param name="height">The height of the base mip level</param>
-            <param name="mipmaps">A list of byte arrays for each mip level</param>
+            <param name="width">The width of the base mip level in pixels</param>
+            <param name="height">The height of the base mip level in pixels</param>
+            <param name="mipmaps">The image data for each mip level</param>
             <param name="internalFormat">The image format of <paramref name="mipmaps"/></param>
             <exception cref="T:System.ArgumentException"><paramref name="internalFormat"/> is not a compressed format.</exception>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObject},SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
+            <summary>
+            
+            </summary>
+            <param name="width">The width of the base mip level in pixels</param>
+            <param name="height">The height of the base mip level in pixels</param>
+            <param name="mipmaps">The image data for each mip level</param>
+            <param name="format">The image format of <paramref name="mipmaps"/></param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObject},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             
             </summary>
-            <param name="width"></param>
-            <param name="height"></param>
-            <param name="mipmaps"></param>
-            <param name="internalFormat"></param>
+            <param name="width">The width of the base mip level in pixels</param>
+            <param name="height">The height of the base mip level in pixels</param>
+            <param name="mipmaps">The image data for each mip level</param>
+            <param name="internalFormat">The image format of <paramref name="mipmaps"/></param>
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.TextureCubeMap">
             <summary>
@@ -1276,7 +1335,8 @@
         </member>
         <member name="T:SFGraphics.GLObjects.VertexArrayObject">
             <summary>
-            Encapsulates an OpenGL vertex array object. Vertex array objects cannot be shared between contexts.
+            Encapsulates an OpenGL vertex array object. 
+            Vertex array objects cannot be shared between contexts.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.VertexArrayObject.ObjectType">
@@ -1297,7 +1357,7 @@
         </member>
         <member name="M:SFGraphics.GLObjects.VertexArrayObject.Unbind">
             <summary>
-            Binds the default vertex array value of 0.
+            Binds the default vertex array value of <c>0</c>.
             </summary>
         </member>
         <member name="T:SFGraphics.Tools.OpenGLExtensions">

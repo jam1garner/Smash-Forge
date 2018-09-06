@@ -687,15 +687,15 @@ namespace Smash_Forge
                 foreach (Polygon p in m.Nodes)
                 {
                     //vertexDataVbo.Bind();
-                    GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
-                    GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 72);
-                    GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
+                    GL.VertexAttribPointer(shader.GetAttribLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
+                    GL.VertexAttribPointer(shader.GetAttribLocation("vBone"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 72);
+                    GL.VertexAttribPointer(shader.GetAttribLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
 
                     selectVbo.Bind();
                     if (p.selectedVerts == null)
                         return;
                     selectVbo.SetData(p.selectedVerts, BufferUsageHint.StaticDraw);
-                    GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
+                    GL.VertexAttribPointer(shader.GetAttribLocation("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
                     //vertexIndexEbo.Bind();
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);

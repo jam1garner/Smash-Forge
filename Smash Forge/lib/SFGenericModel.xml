@@ -4,6 +4,16 @@
         <name>SFGenericModel</name>
     </assembly>
     <members>
+        <member name="T:SFGenericModel.AttribPointerUtils">
+            <summary>
+            Type information for converting from OpenGL vertex attributes to C#.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.AttribPointerUtils.sizeInBytesByType">
+            <summary>
+            The size in bytes of the C# equivalent for a specified OpenGL attribute pointer type.
+            </summary>
+        </member>
         <member name="T:SFGenericModel.RenderState.RenderSettings">
             <summary>
             Stores the rendering state set before <see cref="T:SFGenericModel.GenericMesh`1"/> is drawn.
@@ -62,43 +72,43 @@
             <summary>
             
             </summary>
-            <param name="uniformName"></param>
-            <param name="value"></param>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddInt(System.String,System.Int32)">
             <summary>
             
             </summary>
-            <param name="uniformName"></param>
-            <param name="value"></param>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddVector2(System.String,OpenTK.Vector2)">
             <summary>
             
             </summary>
-            <param name="uniformName"></param>
-            <param name="value"></param>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddVector3(System.String,OpenTK.Vector3)">
             <summary>
             
             </summary>
-            <param name="uniformName"></param>
-            <param name="value"></param>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddVector4(System.String,OpenTK.Vector4)">
             <summary>
             
             </summary>
-            <param name="uniformName"></param>
-            <param name="value"></param>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddMatrix4(System.String,OpenTK.Matrix4)">
             <summary>
             
             </summary>
-            <param name="uniformName"></param>
-            <param name="value"></param>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.SetShaderUniforms(SFGraphics.GLObjects.Shaders.Shader)">
             <summary>
@@ -179,6 +189,31 @@
             <param name="shader">The shader used for drawing</param>
             <param name="camera">The camera used for drawing"/></param>
         </member>
+        <member name="T:SFGenericModel.ValueCount">
+            <summary>
+            The number of components for a vertex attribute.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ValueCount.One">
+            <summary>
+            A scalar value
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ValueCount.Two">
+            <summary>
+            A two component vector value
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ValueCount.Three">
+            <summary>
+            A three component vector value
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ValueCount.Four">
+            <summary>
+            A four component vector value
+            </summary>
+        </member>
         <member name="T:SFGenericModel.VertexAttributeInfo">
             <summary>
             Stores the information used to configure vertex attributes for <see cref="T:SFGenericModel.GenericMesh`1"/>.
@@ -202,18 +237,18 @@
         </member>
         <member name="F:SFGenericModel.VertexAttributeInfo.sizeInBytes">
             <summary>
-            The total size of the attribute in bytes.
-            This is usually <c>sizeof(float) * valueCount</c>.
+            The total size of the attribute's data in bytes.
             </summary>
         </member>
-        <member name="M:SFGenericModel.VertexAttributeInfo.#ctor(System.String,System.Int32,OpenTK.Graphics.OpenGL.VertexAttribPointerType,System.Int32)">
+        <member name="M:SFGenericModel.VertexAttributeInfo.#ctor(System.String,SFGenericModel.ValueCount,OpenTK.Graphics.OpenGL.VertexAttribPointerType)">
             <summary>
             Creates a new vertex attribute.
             </summary>
             <param name="name">The name of the attribute in the shader</param>
             <param name="valueCount">The number of components for the value</param>
             <param name="vertexAttribPointerType">The data type of the value</param>
-            <param name="sizeInBytes">The total size in bytes of the value</param>
+            <exception cref="T:System.NotSupportedException"><paramref name="vertexAttribPointerType"/> is not 
+            a supported attribute type.</exception>
         </member>
     </members>
 </doc>
