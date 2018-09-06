@@ -211,31 +211,13 @@ namespace Smash_Forge
                 {
                     MeleeMesh m = RenderMeshes[i];
 
-                    PrimitiveType Type = PrimitiveType.Triangles;
-                    int off = 0;
-                    for (int j = 0; j < DOBJ.Polygons[i].DisplayLists.Count; j++)
+                    m.PrimitiveType = PrimitiveType.Triangles;
+
+                    if (IsSelected)
+                        DrawModelSelection(m, shader, c);
+                    else
                     {
-                        GXDisplayList dl = DOBJ.Polygons[i].DisplayLists[j];
-                        switch (dl.PrimitiveType)
-                        {
-                            case GXPrimitiveType.Points: Type = PrimitiveType.Points; break;
-                            case GXPrimitiveType.Lines: Type = PrimitiveType.Lines; break;
-                            case GXPrimitiveType.LineStrip: Type = PrimitiveType.LineStrip; break;
-                            case GXPrimitiveType.TriangleFan: Type = PrimitiveType.TriangleFan; break;
-                            case GXPrimitiveType.TriangleStrip: Type = PrimitiveType.TriangleStrip; break;
-                            case GXPrimitiveType.Triangles: Type = PrimitiveType.Triangles; break;
-                            case GXPrimitiveType.Quads: Type = PrimitiveType.Quads; break;
-                        }
-
-                        m.PrimitiveType = Type;
-
-                        if (IsSelected)
-                            DrawModelSelection(m, shader, c, dl.Indices.Length, off * 4);
-                        else
-                        {
-                            m.Draw(shader, c, dl.Indices.Length, off * 4);
-                        }
-                        off += dl.Indices.Length;
+                        m.Draw(shader, c);
                     }
                 }
         }
@@ -350,7 +332,7 @@ namespace Smash_Forge
             return renderTex.Flag & 0xFF;
         }
 
-        private static void DrawModelSelection(MeleeMesh mesh, Shader shader, Camera camera, int count, int offset)
+        private static void DrawModelSelection(MeleeMesh mesh, Shader shader, Camera camera)
         {
             //This part needs to be reworked for proper outline. Currently would make model disappear
 
@@ -363,7 +345,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
 
-            mesh.Draw(shader, camera, count, offset);
+            mesh.Draw(shader, camera);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             shader.SetInt("colorOverride", 0);
@@ -393,24 +375,33 @@ namespace Smash_Forge
                 int off = 0;
                 foreach (GXDisplayList dl in p.DisplayLists)
                 {
+                    List<int> DisplayListIDX = new List<int>();
                     int size = 1;
                     for (int i = 0; i < dl.Indices.Length; i += size)
                     {
                         for (int j = size - 1; j >= 0; j--)
                         {
-                            indices.Add(off + i + j);
+                            DisplayListIDX.Add(off + i + j);
                         }
                     }
+                    switch (dl.PrimitiveType)
+                    {
+                        case GXPrimitiveType.TriangleStrip: DisplayListIDX = TriangleTools.fromTriangleStrip(DisplayListIDX); break;
+                        case GXPrimitiveType.Quads: DisplayListIDX = TriangleTools.fromQuad(DisplayListIDX); break;
+                        default: //TOBE
+                            break;
+                    }
                     off += dl.Indices.Length;
+                    indices.AddRange(DisplayListIDX);
                     Vertices.AddRange(ConvertVerts(decom.GetFormattedVertices(dl, p)));
                 }
-
+                
                 MeleeMesh m = new MeleeMesh(Vertices, indices);
                 RenderMeshes.Add(m);
             }
         }
 
-        private void RefreshRenderTextures()
+        public void RefreshRenderTextures()
         {
             RenderTextures.Clear();
 

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MeleeLib.GCX;
 using MeleeLib.DAT;
 
 namespace Smash_Forge.GUI.Melee
@@ -26,7 +27,7 @@ namespace Smash_Forge.GUI.Melee
                 Text = Texture.UnkFlags.ToString("X") + "_" + Texture.ImageData.Format.ToString();
             }
         }
-
+        
         private DatDOBJ DOBJ;
         private Bitmap TempBitmap;
 
@@ -36,10 +37,18 @@ namespace Smash_Forge.GUI.Melee
             this.DOBJ = DOBJ;
             this.meleeDataObjectNode = meleeDataObjectNode;
             Reload();
+
+            CBWrapS.Items.Add(GXWrapMode.CLAMP);
+            CBWrapS.Items.Add(GXWrapMode.MIRROR);
+            CBWrapS.Items.Add(GXWrapMode.REPEAT);
+            CBWrapT.Items.Add(GXWrapMode.CLAMP);
+            CBWrapT.Items.Add(GXWrapMode.MIRROR);
+            CBWrapT.Items.Add(GXWrapMode.REPEAT);
         }
 
         public void Reload()
         {
+            selectedTexture = null;
             buttonDIF.BackColor = DOBJ.Material.MaterialColor.DIF;
             buttonSPC.BackColor = DOBJ.Material.MaterialColor.SPC;
             buttonAMB.BackColor = DOBJ.Material.MaterialColor.AMB;
@@ -70,6 +79,9 @@ namespace Smash_Forge.GUI.Melee
                     TempBitmap = selectedTexture.Texture.GetBitmap();
 
                 textureFlagsTB.Text = selectedTexture.Texture.UnkFlags.ToString("X");
+                
+                CBWrapS.SelectedItem = (selectedTexture.Texture.WrapS);
+                CBWrapT.SelectedItem = (selectedTexture.Texture.WrapT);
             }
             pictureBox1.Image = TempBitmap;
         }
@@ -145,8 +157,21 @@ namespace Smash_Forge.GUI.Melee
                             return;
                         }
                         selectedTexture.Texture.SetFromDXT1(new FileData(d.bdata).getSection(0, (int)(d.header.width*d.header.height/2)), (int)d.header.width, (int)d.header.height);
+                        meleeDataObjectNode.RefreshRenderTextures();
                     }
                 }
+        }
+
+        private void CBWrapT_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (selectedTexture == null || CBWrapT.SelectedItem == null) return;
+            selectedTexture.Texture.WrapT = (GXWrapMode)CBWrapT.SelectedItem;
+        }
+
+        private void CBWrapS_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (selectedTexture == null || CBWrapS.SelectedItem == null) return;
+            selectedTexture.Texture.WrapS = (GXWrapMode)CBWrapS.SelectedItem;
         }
     }
 }

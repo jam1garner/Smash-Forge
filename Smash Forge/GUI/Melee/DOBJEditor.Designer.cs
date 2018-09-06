@@ -49,6 +49,10 @@
             this.label7 = new System.Windows.Forms.Label();
             this.textureFlagsTB = new System.Windows.Forms.TextBox();
             this.buttonImportTexture = new System.Windows.Forms.Button();
+            this.CBWrapS = new System.Windows.Forms.ComboBox();
+            this.CBWrapT = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericTransparency)).BeginInit();
@@ -250,13 +254,19 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 54F));
             this.tableLayoutPanel2.Controls.Add(this.label7, 0, 0);
             this.tableLayoutPanel2.Controls.Add(this.textureFlagsTB, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.buttonImportTexture, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.CBWrapS, 1, 2);
+            this.tableLayoutPanel2.Controls.Add(this.buttonImportTexture, 1, 3);
+            this.tableLayoutPanel2.Controls.Add(this.CBWrapT, 1, 1);
+            this.tableLayoutPanel2.Controls.Add(this.label8, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.label9, 0, 2);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 16.43836F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 83.56165F));
+            this.tableLayoutPanel2.RowCount = 4;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(265, 219);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
@@ -264,7 +274,7 @@
             // 
             this.label7.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(47, 11);
+            this.label7.Location = new System.Drawing.Point(47, 13);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(71, 13);
             this.label7.TabIndex = 0;
@@ -273,7 +283,7 @@
             // textureFlagsTB
             // 
             this.textureFlagsTB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.textureFlagsTB.Location = new System.Drawing.Point(124, 8);
+            this.textureFlagsTB.Location = new System.Drawing.Point(124, 10);
             this.textureFlagsTB.Name = "textureFlagsTB";
             this.textureFlagsTB.Size = new System.Drawing.Size(138, 20);
             this.textureFlagsTB.TabIndex = 1;
@@ -281,13 +291,51 @@
             // 
             // buttonImportTexture
             // 
-            this.buttonImportTexture.Location = new System.Drawing.Point(124, 39);
+            this.buttonImportTexture.Location = new System.Drawing.Point(124, 123);
             this.buttonImportTexture.Name = "buttonImportTexture";
             this.buttonImportTexture.Size = new System.Drawing.Size(138, 23);
             this.buttonImportTexture.TabIndex = 2;
             this.buttonImportTexture.Text = "Import From File";
             this.buttonImportTexture.UseVisualStyleBackColor = true;
             this.buttonImportTexture.Click += new System.EventHandler(this.buttonImportTexture_Click);
+            // 
+            // CBWrapS
+            // 
+            this.CBWrapS.FormattingEnabled = true;
+            this.CBWrapS.Location = new System.Drawing.Point(124, 83);
+            this.CBWrapS.Name = "CBWrapS";
+            this.CBWrapS.Size = new System.Drawing.Size(138, 21);
+            this.CBWrapS.TabIndex = 1;
+            this.CBWrapS.SelectedIndexChanged += new System.EventHandler(this.CBWrapS_SelectedIndexChanged);
+            // 
+            // CBWrapT
+            // 
+            this.CBWrapT.FormattingEnabled = true;
+            this.CBWrapT.Location = new System.Drawing.Point(124, 43);
+            this.CBWrapT.Name = "CBWrapT";
+            this.CBWrapT.Size = new System.Drawing.Size(138, 21);
+            this.CBWrapT.TabIndex = 3;
+            this.CBWrapT.SelectedIndexChanged += new System.EventHandler(this.CBWrapT_SelectedIndexChanged);
+            // 
+            // label8
+            // 
+            this.label8.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(45, 53);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(73, 13);
+            this.label8.TabIndex = 4;
+            this.label8.Text = "Wrap Mode S";
+            // 
+            // label9
+            // 
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(45, 93);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(73, 13);
+            this.label9.TabIndex = 4;
+            this.label9.Text = "Wrap Mode T";
             // 
             // DOBJEditor
             // 
@@ -336,5 +384,9 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textureFlagsTB;
         private System.Windows.Forms.Button buttonImportTexture;
+        private System.Windows.Forms.ComboBox CBWrapS;
+        private System.Windows.Forms.ComboBox CBWrapT;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
     }
 }
