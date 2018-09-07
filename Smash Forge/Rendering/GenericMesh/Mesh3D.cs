@@ -22,7 +22,7 @@ namespace Smash_Forge.Rendering.Meshes
         {
             return new List<VertexAttributeInfo>()
             {
-                new VertexAttributeInfo("position", ValueCount.Four, VertexAttribPointerType.Float)
+                new VertexAttributeInfo("position", ValueCount.Three, VertexAttribPointerType.Float)
             };
         }
     }
