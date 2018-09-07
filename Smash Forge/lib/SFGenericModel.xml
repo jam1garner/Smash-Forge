@@ -24,20 +24,137 @@
             The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
             </summary>
         </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.enableAlphaBlending">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.sourceFactor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.destinationFactor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.blendingEquationRgb">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.blendingEquationAlpha">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings">
             <summary>
             The alpha testing state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
             </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings.enableAlphaTesting">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings.alphaFunction">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings.referenceAlpha">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:SFGenericModel.RenderState.RenderSettings.DepthTestSettings">
             <summary>
             The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
             </summary>
         </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.DepthTestSettings.enableDepthTest">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.DepthTestSettings.depthMask">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.DepthTestSettings.depthFunction">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.RenderSettings.DepthTestSettings.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.RenderSettings.DepthTestSettings.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:SFGenericModel.RenderState.RenderSettings.FaceCullingSettings">
             <summary>
             The face culling state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
             </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.FaceCullingSettings.enableFaceCulling">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.FaceCullingSettings.cullFaceMode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.RenderSettings.FaceCullingSettings.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.RenderSettings.FaceCullingSettings.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
         </member>
         <member name="F:SFGenericModel.RenderState.RenderSettings.alphaBlendSettings">
             <summary>
@@ -58,6 +175,13 @@
             <summary>
             
             </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.RenderSettings.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
         </member>
         <member name="T:SFGenericModel.Materials.GenericMaterial">
             <summary>
@@ -188,6 +312,49 @@
             </summary>
             <param name="shader">The shader used for drawing</param>
             <param name="camera">The camera used for drawing"/></param>
+        </member>
+        <member name="T:SFGenericModel.Utils.MeshBatchUtils">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.Utils.MeshBatchUtils.GroupContainersByPrimitiveType``1(System.Collections.Generic.List{SFGenericModel.Utils.VertexContainer{``0}})">
+            <summary>
+            Creates a single <see cref="T:SFGenericModel.Utils.VertexContainer`1"/> for each PrimitiveType to 
+            reduce draw calls and improve performance.
+            </summary>
+            <typeparam name="T">The struct used to store a single vertex</typeparam>
+            <param name="containers">The unoptimized vertex containers</param>
+            <returns></returns>
+        </member>
+        <member name="T:SFGenericModel.Utils.VertexContainer`1">
+            <summary>
+            
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="F:SFGenericModel.Utils.VertexContainer`1.vertices">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.Utils.VertexContainer`1.vertexIndices">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.Utils.VertexContainer`1.primitiveType">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.Utils.VertexContainer`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
+            <summary>
+            
+            </summary>
+            <param name="vertices"></param>
+            <param name="vertexIndices"></param>
+            <param name="primitiveType"></param>
         </member>
         <member name="T:SFGenericModel.ValueCount">
             <summary>
