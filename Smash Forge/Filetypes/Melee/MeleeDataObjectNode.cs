@@ -388,25 +388,23 @@ namespace Smash_Forge
             GXVertexDecompressor decom = new GXVertexDecompressor(GetDatFile().DatFile);
             foreach (DatPolygon p in DOBJ.Polygons)
             {
-                List<MeleeVertex> Vertices = new List<MeleeVertex>();
-                List<int> indices = new List<int>();
-                int off = 0;
+                List<MeleeVertex> polygonVertices = new List<MeleeVertex>();
+                List<int> polygonVertexIndices = new List<int>();
+
+                int displayListOffset = 0;
+
                 foreach (GXDisplayList dl in p.DisplayLists)
                 {
-                    int size = 1;
-                    for (int i = 0; i < dl.Indices.Length; i += size)
+                    for (int i = 0; i < dl.Indices.Length; i++)
                     {
-                        for (int j = size - 1; j >= 0; j--)
-                        {
-                            indices.Add(off + i + j);
-                        }
+                        polygonVertexIndices.Add(displayListOffset + i);
                     }
-                    off += dl.Indices.Length;
-                    Vertices.AddRange(ConvertVerts(decom.GetFormattedVertices(dl, p)));
+                    displayListOffset += dl.Indices.Length;
+                    polygonVertices.AddRange(ConvertVerts(decom.GetFormattedVertices(dl, p)));
                 }
 
-                MeleeMesh m = new MeleeMesh(Vertices, indices);
-                RenderMeshes.Add(m);
+                MeleeMesh renderMesh = new MeleeMesh(polygonVertices, polygonVertexIndices);
+                RenderMeshes.Add(renderMesh);
             }
         }
 
