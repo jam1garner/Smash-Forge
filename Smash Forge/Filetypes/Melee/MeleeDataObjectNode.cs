@@ -29,8 +29,9 @@ namespace Smash_Forge
         public DatDOBJ DOBJ;
 
         // For Rendering Only
-        public List<MeleeMesh> RenderMeshes = new List<MeleeMesh>();
-        public List<MeleeRenderTexture> RenderTextures = new List<MeleeRenderTexture>();
+        private List<MeleeMesh> renderMeshes = new List<MeleeMesh>();
+        private List<MeleeRenderTexture> renderTextures = new List<MeleeRenderTexture>();
+
         public Vector3 BonePosition;
 
         // for importing
@@ -207,12 +208,14 @@ namespace Smash_Forge
             shader.SetFloat("transparency", DOBJ.Material.MaterialColor.Transparency);
 
             if (Checked)
+            {
+                // TODO: Account for some polygons not having the same primitive type.
+                int offset = 0;
                 for (int i = 0; i < DOBJ.Polygons.Count; i++)
                 {
-                    MeleeMesh m = RenderMeshes[i];
+                    MeleeMesh m = renderMeshes[0]; 
 
                     PrimitiveType Type = PrimitiveType.Triangles;
-                    int off = 0;
                     for (int j = 0; j < DOBJ.Polygons[i].DisplayLists.Count; j++)
                     {
                         GXDisplayList dl = DOBJ.Polygons[i].DisplayLists[j];
@@ -230,14 +233,15 @@ namespace Smash_Forge
                         m.PrimitiveType = Type;
 
                         if (IsSelected)
-                            DrawModelSelection(m, shader, c, dl.Indices.Length, off * 4);
+                            DrawModelSelection(m, shader, c, dl.Indices.Length, offset * 4);
                         else
                         {
-                            m.Draw(shader, c, dl.Indices.Length, off * 4);
+                            m.Draw(shader, c, dl.Indices.Length, offset * 4);
                         }
-                        off += dl.Indices.Length;
+                        offset += dl.Indices.Length;
                     }
                 }
+            }
         }
 
         private bool IsDiffuseLightingBitSet()
@@ -266,7 +270,7 @@ namespace Smash_Forge
             bool hasSphere = false;
             bool hasSpecular = false;
 
-            foreach (var renderTex in RenderTextures)
+            foreach (var renderTex in renderTextures)
             {
                 uint type = GetTextureType(renderTex);
                 if (Enum.IsDefined(typeof(TextureFlag), type))
@@ -384,39 +388,51 @@ namespace Smash_Forge
 
         private void RefreshRenderMeshes()
         {
-            RenderMeshes.Clear();
+            renderMeshes.Clear();
             GXVertexDecompressor decom = new GXVertexDecompressor(GetDatFile().DatFile);
-            foreach (DatPolygon p in DOBJ.Polygons)
+
+            List<MeleeVertex> renderMeshVertices = new List<MeleeVertex>();
+            List<int> renderMeshVertexIndices = new List<int>();
+
+            int polygonOffset = 0;
+
+            // TODO: Account for some polygons not having the same primitive type.
+            foreach (DatPolygon polygon in DOBJ.Polygons)
             {
                 List<MeleeVertex> polygonVertices = new List<MeleeVertex>();
                 List<int> polygonVertexIndices = new List<int>();
 
                 int displayListOffset = 0;
 
-                foreach (GXDisplayList dl in p.DisplayLists)
+                foreach (GXDisplayList displayList in polygon.DisplayLists)
                 {
-                    for (int i = 0; i < dl.Indices.Length; i++)
+                    for (int i = 0; i < displayList.Indices.Length; i++)
                     {
-                        polygonVertexIndices.Add(displayListOffset + i);
+                        polygonVertexIndices.Add(displayListOffset + polygonOffset + i);
                     }
-                    displayListOffset += dl.Indices.Length;
-                    polygonVertices.AddRange(ConvertVerts(decom.GetFormattedVertices(dl, p)));
+                    displayListOffset += displayList.Indices.Length;
+                    polygonVertices.AddRange(ConvertVerts(decom.GetFormattedVertices(displayList, polygon)));
                 }
 
-                MeleeMesh renderMesh = new MeleeMesh(polygonVertices, polygonVertexIndices);
-                RenderMeshes.Add(renderMesh);
+                renderMeshVertices.AddRange(polygonVertices);
+                renderMeshVertexIndices.AddRange(polygonVertexIndices);
+
+                polygonOffset += polygonVertexIndices.Count;
             }
+
+            MeleeMesh renderMesh = new MeleeMesh(renderMeshVertices, renderMeshVertexIndices);
+            renderMeshes.Add(renderMesh);
         }
 
         public void RefreshRenderTextures()
         {
-            RenderTextures.Clear();
+            renderTextures.Clear();
 
             foreach (DatTexture t in DOBJ.Material.Textures)
             {
                 MeleeRenderTexture tex = new MeleeRenderTexture(t);
                 tex.Flag = t.UnkFlags;
-                RenderTextures.Add(tex);
+                renderTextures.Add(tex);
             }
         }
 
