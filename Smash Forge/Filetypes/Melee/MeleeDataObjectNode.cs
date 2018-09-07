@@ -445,6 +445,9 @@ namespace Smash_Forge
                 {
                     Pos = new Vector3(v.Pos.X, v.Pos.Y, v.Pos.Z),
                     Nrm = new Vector3(v.Nrm.X, v.Nrm.Y, v.Nrm.Z),
+                    Bit = new Vector3(v.Bit.X, v.Bit.Y, v.Bit.Z),
+                    Tan = new Vector3(v.Tan.X, v.Tan.Y, v.Tan.Z),
+                    Clr = new Vector4(v.CLR0.X, v.CLR0.Y, v.CLR0.Z, v.CLR0.W),
                     UV0 = new Vector2(v.TX0.X, v.TX0.Y),
                 };
 
@@ -464,6 +467,11 @@ namespace Smash_Forge
                     {
                         vert.Bone.Z = v.N[2];
                         vert.Weight.Z = v.W[2];
+                    }
+                    if (v.N.Length > 3)
+                    {
+                        vert.Bone.W = v.N[3];
+                        vert.Weight.W = v.W[3];
                     }
                 }
                 o.Add(vert);

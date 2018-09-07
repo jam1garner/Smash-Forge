@@ -153,7 +153,7 @@ namespace Smash_Forge.GUI.Melee
                         DDS d = new DDS(new FileData(ofd.FileName));
                         if (d.header.ddspf.fourCC != 0x31545844)
                         {
-                            MessageBox.Show("Error Importing Texture:\nOnly DXT1 Files are supported");
+                            MessageBox.Show("Error Importing Texture:\nOnly DXT1 Files are supported currently");
                             return;
                         }
                         selectedTexture.Texture.SetFromDXT1(new FileData(d.bdata).getSection(0, (int)(d.header.width*d.header.height/2)), (int)d.header.width, (int)d.header.height);
@@ -166,12 +166,14 @@ namespace Smash_Forge.GUI.Melee
         {
             if (selectedTexture == null || CBWrapT.SelectedItem == null) return;
             selectedTexture.Texture.WrapT = (GXWrapMode)CBWrapT.SelectedItem;
+            meleeDataObjectNode.RefreshRenderTextures();
         }
 
         private void CBWrapS_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (selectedTexture == null || CBWrapS.SelectedItem == null) return;
             selectedTexture.Texture.WrapS = (GXWrapMode)CBWrapS.SelectedItem;
+            meleeDataObjectNode.RefreshRenderTextures();
         }
     }
 }

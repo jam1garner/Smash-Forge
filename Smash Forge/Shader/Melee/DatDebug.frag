@@ -2,6 +2,9 @@
 
 in vec3 objectPosition;
 in vec3 normal;
+in vec3 bitan;
+in vec3 tan;
+in vec4 color;
 in vec2 UV0;
 
 uniform sampler2D diffuseTex;
@@ -66,6 +69,7 @@ void main()
     else if (renderType == 5)
     {
         // vertex color
+        //resultingColor.rgba = color.rgba;
     }
     else if (renderType == 6)
     {
@@ -84,10 +88,12 @@ void main()
     else if (renderType == 9)
     {
          // tangents
+		 resultingColor.rgb = tan;
     }
     else if (renderType == 10)
     {
         // bitangents
+		 resultingColor.rgb = bitan;
     }
     else if (renderType == 11)
     {
