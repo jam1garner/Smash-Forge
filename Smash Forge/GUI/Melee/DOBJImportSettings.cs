@@ -76,11 +76,13 @@ namespace Smash_Forge.GUI.Melee
                 return;
             }
             int Flags = 0x8001;
+            if (comboBoxBoneType.SelectedIndex == 1 || comboBoxBoneType.SelectedIndex == 0) 
+            {
+                MessageBox.Show("Warning: single binds are not supported at this time");
+            }
             if (comboBoxBoneType.SelectedIndex == 2) // Rigged - needs to create bonelist
             {
                 Flags = 0xA001;
-
-                MessageBox.Show("Warning: Rigged not supported yet");
             }
 
             DatPolygon p = new DatPolygon();

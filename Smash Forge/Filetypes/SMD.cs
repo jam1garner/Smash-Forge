@@ -126,14 +126,19 @@ namespace Smash_Forge
                         vert.P = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
                         vert.N = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
                         vert.UV = new Vector2(float.Parse(args[7]), float.Parse(args[8]));
-                        int wCount = int.Parse(args[9]);
-                        int w = 10;
-                        vert.Bones = new int[wCount];
-                        vert.Weights = new float[wCount];
-                        for (int i = 0; i < wCount; i++)
+                        vert.Bones = new int[0];
+                        vert.Weights = new float[0];
+                        if (args.Length > 9)
                         {
-                            vert.Bones[i] = (int.Parse(args[w++]));
-                            vert.Weights[i] = (float.Parse(args[w++]));
+                            int wCount = int.Parse(args[9]);
+                            int w = 10;
+                            vert.Bones = new int[wCount];
+                            vert.Weights = new float[wCount];
+                            for (int i = 0; i < wCount; i++)
+                            {
+                                vert.Bones[i] = (int.Parse(args[w++]));
+                                vert.Weights[i] = (float.Parse(args[w++]));
+                            }
                         }
                         switch (j)
                         {
