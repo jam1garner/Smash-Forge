@@ -31,12 +31,13 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.listBox2 = new System.Windows.Forms.ListBox();
+            this.listBox1 = new System.Windows.Forms.ListBox();
             this.buttonBoneParent = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.comboBoxBoneType = new System.Windows.Forms.ComboBox();
             this.buttonImport = new System.Windows.Forms.Button();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.listBox2 = new System.Windows.Forms.ListBox();
+            this.CBBone = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -65,6 +66,7 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.CBBone);
             this.groupBox1.Controls.Add(this.listBox2);
             this.groupBox1.Controls.Add(this.listBox1);
             this.groupBox1.Controls.Add(this.buttonBoneParent);
@@ -79,12 +81,29 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "FileImport";
             // 
+            // listBox2
+            // 
+            this.listBox2.FormattingEnabled = true;
+            this.listBox2.Location = new System.Drawing.Point(134, 104);
+            this.listBox2.Name = "listBox2";
+            this.listBox2.Size = new System.Drawing.Size(120, 95);
+            this.listBox2.TabIndex = 7;
+            // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(0, 104);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(120, 121);
+            this.listBox1.TabIndex = 6;
+            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            // 
             // buttonBoneParent
             // 
             this.buttonBoneParent.Enabled = false;
             this.buttonBoneParent.Location = new System.Drawing.Point(6, 75);
             this.buttonBoneParent.Name = "buttonBoneParent";
-            this.buttonBoneParent.Size = new System.Drawing.Size(75, 23);
+            this.buttonBoneParent.Size = new System.Drawing.Size(59, 23);
             this.buttonBoneParent.TabIndex = 5;
             this.buttonBoneParent.Text = "BoneParent";
             this.buttonBoneParent.UseVisualStyleBackColor = true;
@@ -111,6 +130,7 @@
             this.comboBoxBoneType.Name = "comboBoxBoneType";
             this.comboBoxBoneType.Size = new System.Drawing.Size(184, 21);
             this.comboBoxBoneType.TabIndex = 2;
+            this.comboBoxBoneType.SelectedIndexChanged += new System.EventHandler(this.comboBoxBoneType_SelectedIndexChanged);
             // 
             // buttonImport
             // 
@@ -122,22 +142,14 @@
             this.buttonImport.UseVisualStyleBackColor = true;
             this.buttonImport.Click += new System.EventHandler(this.buttonImport_Click);
             // 
-            // listBox1
+            // CBBone
             // 
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(0, 104);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(120, 121);
-            this.listBox1.TabIndex = 6;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
-            // 
-            // listBox2
-            // 
-            this.listBox2.FormattingEnabled = true;
-            this.listBox2.Location = new System.Drawing.Point(134, 104);
-            this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(120, 95);
-            this.listBox2.TabIndex = 7;
+            this.CBBone.Enabled = false;
+            this.CBBone.FormattingEnabled = true;
+            this.CBBone.Location = new System.Drawing.Point(71, 75);
+            this.CBBone.Name = "CBBone";
+            this.CBBone.Size = new System.Drawing.Size(184, 21);
+            this.CBBone.TabIndex = 8;
             // 
             // DOBJImportSettings
             // 
@@ -167,5 +179,6 @@
         private System.Windows.Forms.ComboBox comboBoxBoneType;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.ListBox listBox2;
+        private System.Windows.Forms.ComboBox CBBone;
     }
 }

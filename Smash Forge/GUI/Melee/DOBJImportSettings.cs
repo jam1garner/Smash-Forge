@@ -25,6 +25,15 @@ namespace Smash_Forge.GUI.Melee
             Cancelled = 2
         }
 
+        private class BoneNode : TreeNode
+        {
+            public DatJOBJ JOBJ;
+            public BoneNode(DatJOBJ j)
+            {
+                JOBJ = j;
+            }
+        }
+
         public ExitStatus exitStatus = ExitStatus.Running;
 
         public DOBJImportSettings(MeleeDataObjectNode DOBJ)
@@ -36,6 +45,13 @@ namespace Smash_Forge.GUI.Melee
             {
                 listBox1.Items.Add(group.Attributes.Count + "_Group");
             }
+
+            int i = 0;
+            foreach(DatJOBJ b in DOBJ.GetRoot().Root.GetJOBJinOrder())
+            {
+                CBBone.Items.Add(new BoneNode(b) { Text = "Bone_" + i++ });
+            }
+            CBBone.SelectedIndex = 0;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -76,9 +92,13 @@ namespace Smash_Forge.GUI.Melee
                 return;
             }
             int Flags = 0x8001;
-            if (comboBoxBoneType.SelectedIndex == 1 || comboBoxBoneType.SelectedIndex == 0) 
+            if (comboBoxBoneType.SelectedIndex == 0)
             {
-                MessageBox.Show("Warning: single binds are not supported at this time");
+                MessageBox.Show("Warning: no binds");
+            }
+            if (comboBoxBoneType.SelectedIndex == 1)
+            {
+                Flags = 0xA001;
             }
             if (comboBoxBoneType.SelectedIndex == 2) // Rigged - needs to create bonelist
             {
@@ -92,11 +112,19 @@ namespace Smash_Forge.GUI.Melee
 
             DOBJ.VertsToImport = new List<GXVertex[]>();
             List<GXVertex> vert = new List<GXVertex>();
+            DatJOBJ parent = DOBJ.DOBJ.Parent;
             foreach (SMDTriangle t in smd.Triangles)
             {
-                if (t.v1.Bones.Length == 0 || t.v2.Bones.Length == 0 || t.v3.Bones.Length == 0)
-                    continue;
-
+                if(comboBoxBoneType.SelectedIndex == 1)
+                {
+                    // single bind
+                    t.v1.Bones = new int[] { CBBone.SelectedIndex };
+                    t.v1.Weights = new float[] { 1 };
+                    t.v2.Bones = new int[] { CBBone.SelectedIndex };
+                    t.v2.Weights = new float[] { 1 };
+                    t.v3.Bones = new int[] { CBBone.SelectedIndex };
+                    t.v3.Weights = new float[] { 1 };
+                }
                 List<DatBoneWeight> bwl1 = CreateWeightList(t.v1.Bones, t.v1.Weights, Bones, ImportedBones);
                 List<DatBoneWeight> bwl2 = CreateWeightList(t.v2.Bones, t.v2.Weights, Bones, ImportedBones);
                 List<DatBoneWeight> bwl3 = CreateWeightList(t.v3.Bones, t.v3.Weights, Bones, ImportedBones);
@@ -130,15 +158,15 @@ namespace Smash_Forge.GUI.Melee
 
                 GXVertex v = SMDVertexToGXVertex(t.v1);
                 v.PMXID = GetWeightListIndex(p.BoneWeightList, bwl1);
-                v.Pos = RigVertex(t.v1.P, RenderBones, p.BoneWeightList[v.PMXID/3], Bones);
+                v.Pos = RigVertex(t.v1.P, RenderBones, p.BoneWeightList[v.PMXID/3], Bones, parent);
                
                 GXVertex v2 = SMDVertexToGXVertex(t.v2);
                 v2.PMXID = GetWeightListIndex(p.BoneWeightList, CreateWeightList(t.v2.Bones, t.v2.Weights, Bones, ImportedBones));
-                v2.Pos = RigVertex(t.v2.P, RenderBones, p.BoneWeightList[v2.PMXID / 3], Bones);
+                v2.Pos = RigVertex(t.v2.P, RenderBones, p.BoneWeightList[v2.PMXID / 3], Bones, parent);
                 
                 GXVertex v3 = SMDVertexToGXVertex(t.v3);
                 v3.PMXID = GetWeightListIndex(p.BoneWeightList, CreateWeightList(t.v3.Bones, t.v3.Weights, Bones, ImportedBones));
-                v3.Pos = RigVertex(t.v3.P, RenderBones, p.BoneWeightList[v3.PMXID / 3], Bones);
+                v3.Pos = RigVertex(t.v3.P, RenderBones, p.BoneWeightList[v3.PMXID / 3], Bones, parent);
                
                 vert.Add(v);
                 vert.Add(v2);
@@ -146,13 +174,12 @@ namespace Smash_Forge.GUI.Melee
             }
 
             DOBJ.VertsToImport.Add(vert.ToArray());
-            Console.WriteLine(DOBJ.DOBJ.Polygons.Count);
             
             exitStatus = ExitStatus.Opened;
             Close();
         }
 
-        private GXVector3 RigVertex(Vector3 P, VBN RenderBones, List<DatBoneWeight> Weight, DatJOBJ[] jobjs)
+        private GXVector3 RigVertex(Vector3 P, VBN RenderBones, List<DatBoneWeight> Weight, DatJOBJ[] jobjs, DatJOBJ Parent = null)
         {
             if(Weight.Count == 1)
             {
@@ -160,6 +187,15 @@ namespace Smash_Forge.GUI.Melee
                 for (i = 0; i < jobjs.Length; i++)
                     if (jobjs[i] == Weight[0].jobj)
                         break;
+                P = Vector3.TransformPosition(P, RenderBones.bones[i].transform.Inverted());
+            }
+            if (Weight.Count == 0 && Parent != null)
+            {
+                int i;
+                for (i = 0; i < jobjs.Length; i++)
+                    if (jobjs[i] == Parent)
+                        break;
+                Console.WriteLine("Binding " + i);
                 P = Vector3.TransformPosition(P, RenderBones.bones[i].transform.Inverted());
             }
             
@@ -246,6 +282,11 @@ namespace Smash_Forge.GUI.Melee
             {
                 listBox2.Items.Add(a.Name.ToString() + " " + a.AttributeType);
             }
+        }
+
+        private void comboBoxBoneType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CBBone.Enabled = comboBoxBoneType.SelectedIndex == 1;
         }
     }
 }
