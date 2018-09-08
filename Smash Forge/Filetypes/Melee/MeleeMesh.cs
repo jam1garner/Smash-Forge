@@ -33,10 +33,10 @@ namespace Smash_Forge
             {
                 new VertexAttributeInfo("vPosition", ValueCount.Three, VertexAttribPointerType.Float),
                 new VertexAttributeInfo("vNormal",   ValueCount.Three, VertexAttribPointerType.Float),
-                new VertexAttributeInfo("vBitan",   ValueCount.Three, VertexAttribPointerType.Float),
-                new VertexAttributeInfo("vTan",   ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexAttributeInfo("vBitan",    ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexAttributeInfo("vTan",      ValueCount.Three, VertexAttribPointerType.Float),
                 new VertexAttributeInfo("vUV0",      ValueCount.Two,   VertexAttribPointerType.Float),
-                new VertexAttributeInfo("vColor",      ValueCount.Four,   VertexAttribPointerType.Float),
+                new VertexAttributeInfo("vColor",    ValueCount.Four,  VertexAttribPointerType.Float),
                 new VertexAttributeInfo("vBone",     ValueCount.Four,  VertexAttribPointerType.Float),
                 new VertexAttributeInfo("vWeight",   ValueCount.Four,  VertexAttribPointerType.Float)
             };
