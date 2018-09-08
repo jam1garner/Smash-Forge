@@ -33,8 +33,8 @@ vec4 Skin(vec4 P, ivec4 B)
 void main() {
 
 	normal = vNormal;
-	bitan = vBitan;
-	tan = vTan;
+	bitan = normalize(vBitan);
+	tan = normalize(vTan);
 	UV0 = vUV0;
 
 	vec4 position = vec4(vPosition, 1.0);
