@@ -10,6 +10,7 @@ using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Shaders;
 using System;
 using Smash_Forge.GUI.Melee;
+using SFGenericModel.Utils;
 
 namespace Smash_Forge
 {
@@ -17,13 +18,13 @@ namespace Smash_Forge
     {
         enum TextureFlag : uint
         {
+            BumpMap = 0x00,
+            Sphere = 0x01,
             Diffuse = 0x10,
-            Sphere = 0x1,
             Specular = 0x20,
+            Unk3 = 0x30, // also diffuse?
             AlphaTest = 0x300000, // whispy woods
             Unk4 = 0x80, // diffuse with inverted colors?
-            Unk2 = 0x00, // giga bowser ao?
-            Unk3 = 0x30 // also diffuse?
         }
 
         public DatDOBJ DOBJ;
@@ -209,38 +210,36 @@ namespace Smash_Forge
 
             if (Checked)
             {
-                // TODO: Account for some polygons not having the same primitive type.
-                int offset = 0;
-                for (int i = 0; i < DOBJ.Polygons.Count; i++)
+                foreach (var m in renderMeshes)
                 {
-                    MeleeMesh m = renderMeshes[0]; 
-
-                    PrimitiveType Type = PrimitiveType.Triangles;
-                    for (int j = 0; j < DOBJ.Polygons[i].DisplayLists.Count; j++)
-                    {
-                        GXDisplayList dl = DOBJ.Polygons[i].DisplayLists[j];
-                        switch (dl.PrimitiveType)
-                        {
-                            case GXPrimitiveType.Points: Type = PrimitiveType.Points; break;
-                            case GXPrimitiveType.Lines: Type = PrimitiveType.Lines; break;
-                            case GXPrimitiveType.LineStrip: Type = PrimitiveType.LineStrip; break;
-                            case GXPrimitiveType.TriangleFan: Type = PrimitiveType.TriangleFan; break;
-                            case GXPrimitiveType.TriangleStrip: Type = PrimitiveType.TriangleStrip; break;
-                            case GXPrimitiveType.Triangles: Type = PrimitiveType.Triangles; break;
-                            case GXPrimitiveType.Quads: Type = PrimitiveType.Quads; break;
-                        }
-
-                        m.PrimitiveType = Type;
-
-                        if (IsSelected)
-                            DrawModelSelection(m, shader, c, dl.Indices.Length, offset * 4);
-                        else
-                        {
-                            m.Draw(shader, c, dl.Indices.Length, offset * 4);
-                        }
-                        offset += dl.Indices.Length;
-                    }
+                    if (IsSelected)
+                        DrawModelSelection(m, shader, c);
+                    else
+                        m.Draw(shader, c);
                 }
+            }
+        }
+
+        private static PrimitiveType GetGLPrimitiveType(GXPrimitiveType primitiveType)
+        {
+            switch (primitiveType)
+            {
+                case GXPrimitiveType.Points:
+                    return PrimitiveType.Points;
+                case GXPrimitiveType.Lines:
+                    return PrimitiveType.Lines;
+                case GXPrimitiveType.LineStrip:
+                    return PrimitiveType.LineStrip;
+                case GXPrimitiveType.TriangleFan:
+                    return PrimitiveType.TriangleFan; 
+                case GXPrimitiveType.TriangleStrip:
+                    return PrimitiveType.TriangleStrip;
+                case GXPrimitiveType.Triangles:
+                    return PrimitiveType.Triangles;
+                case GXPrimitiveType.Quads:
+                    return PrimitiveType.Quads;
+                default:
+                    return PrimitiveType.Triangles;
             }
         }
 
@@ -258,15 +257,15 @@ namespace Smash_Forge
         {
             // Set default values
             shader.SetVector2("diffuseScale", new Vector2(1, 1));
-            shader.SetVector2("unk2Scale", new Vector2(1, 1));
+            shader.SetVector2("bumpMapScale", new Vector2(1, 1));
             shader.SetVector2("specularScale", new Vector2(1, 1));
 
             shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 0);
-            shader.SetTexture("unk2Tex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 2);
+            shader.SetTexture("bumpMapTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 2);
             shader.SetTexture("specularTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 3);
 
             bool hasDiffuse = false;
-            bool hasUnk2 = false;
+            bool hasBumpMap = false;
             bool hasSphere = false;
             bool hasSpecular = false;
 
@@ -279,9 +278,9 @@ namespace Smash_Forge
                     {
                         default:
                             break;
-                        case TextureFlag.Unk2:
-                            hasUnk2 = true;
-                            SetUnk2TexUniforms(shader, renderTex);
+                        case TextureFlag.BumpMap:
+                            hasBumpMap = true;
+                            SetBumpMapTexUniforms(shader, renderTex);
                             break;
                     }
                 }
@@ -303,7 +302,7 @@ namespace Smash_Forge
             }
 
             shader.SetBoolToInt("hasDiffuse", hasDiffuse);
-            shader.SetBoolToInt("hasUnk2", hasUnk2);
+            shader.SetBoolToInt("hasBumpMap", hasBumpMap);
             shader.SetBoolToInt("hasSpecular", hasSpecular);
             shader.SetBoolToInt("hasSphere", hasSphere);
         }
@@ -331,10 +330,12 @@ namespace Smash_Forge
             shader.SetTexture("sphereTex", renderTex.texture.Id, TextureTarget.Texture2D, 1);
         }
 
-        private static void SetUnk2TexUniforms(Shader shader, MeleeRenderTexture renderTex)
+        private static void SetBumpMapTexUniforms(Shader shader, MeleeRenderTexture renderTex)
         {
-            shader.SetVector2("unk2Scale", new Vector2(renderTex.WScale, renderTex.HScale));
-            shader.SetTexture("unk2Tex", renderTex.texture.Id, TextureTarget.Texture2D, 2);
+            shader.SetVector2("bumpMapTexScale", new Vector2(renderTex.WScale, renderTex.HScale));
+            shader.SetInt("bumpMapWidth", renderTex.texture.Width);
+            shader.SetInt("bumpMapHeight", renderTex.texture.Height);
+            shader.SetTexture("bumpMapTex", renderTex.texture.Id, TextureTarget.Texture2D, 2);
         }
 
         private static void SetDiffuseTexUniforms(Shader shader, MeleeRenderTexture renderTex)
@@ -354,7 +355,7 @@ namespace Smash_Forge
             return renderTex.Flag & 0xFF;
         }
 
-        private static void DrawModelSelection(MeleeMesh mesh, Shader shader, Camera camera, int count, int offset)
+        private static void DrawModelSelection(MeleeMesh mesh, Shader shader, Camera camera)
         {
             //This part needs to be reworked for proper outline. Currently would make model disappear
 
@@ -367,7 +368,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
 
-            mesh.Draw(shader, camera, count, offset);
+            mesh.Draw(shader, camera);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             shader.SetInt("colorOverride", 0);
@@ -391,37 +392,48 @@ namespace Smash_Forge
             renderMeshes.Clear();
             GXVertexDecompressor decom = new GXVertexDecompressor(GetDatFile().DatFile);
 
-            List<MeleeVertex> renderMeshVertices = new List<MeleeVertex>();
-            List<int> renderMeshVertexIndices = new List<int>();
+            List<VertexContainer<MeleeVertex>> vertexContainers = new List<VertexContainer<MeleeVertex>>();
 
-            int polygonOffset = 0;
-
-            // TODO: Account for some polygons not having the same primitive type.
+            // Each display list can have a different primitive type, so we need to generate a lot of containers.
             foreach (DatPolygon polygon in DOBJ.Polygons)
             {
-                List<MeleeVertex> polygonVertices = new List<MeleeVertex>();
-                List<int> polygonVertexIndices = new List<int>();
-
-                int displayListOffset = 0;
-
                 foreach (GXDisplayList displayList in polygon.DisplayLists)
                 {
-                    for (int i = 0; i < displayList.Indices.Length; i++)
-                    {
-                        polygonVertexIndices.Add(displayListOffset + polygonOffset + i);
-                    }
-                    displayListOffset += displayList.Indices.Length;
-                    polygonVertices.AddRange(ConvertVerts(decom.GetFormattedVertices(displayList, polygon)));
+                    AddVertexContainer(decom, vertexContainers, polygon, displayList);
                 }
-
-                renderMeshVertices.AddRange(polygonVertices);
-                renderMeshVertexIndices.AddRange(polygonVertexIndices);
-
-                polygonOffset += polygonVertexIndices.Count;
             }
 
-            MeleeMesh renderMesh = new MeleeMesh(renderMeshVertices, renderMeshVertexIndices);
-            renderMeshes.Add(renderMesh);
+            // Combine vertex containers with the same primitive type.
+            // The optimization doesn't work properly for all primitive types yet.
+            GroupContainersCreateRenderMeshes(vertexContainers);
+        }
+
+        private static void AddVertexContainer(GXVertexDecompressor decom, List<VertexContainer<MeleeVertex>> vertexContainers, DatPolygon polygon, GXDisplayList displayList)
+        {
+            List<MeleeVertex> vertices = new List<MeleeVertex>();
+            List<int> vertexIndices = new List<int>();
+
+            for (int i = 0; i < displayList.Indices.Length; i++)
+            {
+                vertexIndices.Add(i);
+            }
+
+            vertices.AddRange(ConvertVerts(decom.GetFormattedVertices(displayList, polygon)));
+
+            PrimitiveType primitiveType = GetGLPrimitiveType(displayList.PrimitiveType);
+            VertexContainer<MeleeVertex> vertexContainer = new VertexContainer<MeleeVertex>(vertices, vertexIndices, primitiveType);
+            vertexContainers.Add(vertexContainer);
+        }
+
+        private void GroupContainersCreateRenderMeshes(List<VertexContainer<MeleeVertex>> vertexContainers)
+        {
+            List<VertexContainer<MeleeVertex>> optimizedContainers = MeshBatchUtils.GroupContainersByPrimitiveType(vertexContainers);
+            foreach (var container in optimizedContainers)
+            {
+                MeleeMesh meleeMesh = new MeleeMesh(container.vertices, container.vertexIndices);
+                meleeMesh.PrimitiveType = container.primitiveType;
+                renderMeshes.Add(meleeMesh);
+            }
         }
 
         public void RefreshRenderTextures()
