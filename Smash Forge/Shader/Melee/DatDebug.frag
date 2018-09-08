@@ -10,8 +10,10 @@ in vec2 UV0;
 uniform sampler2D diffuseTex;
 
 uniform int hasBumpMap;
+uniform int bumpMapWidth;
+uniform int bumpMapHeight;
 uniform sampler2D bumpMapTex;
-uniform vec2 bumpMapScale;
+uniform vec2 bumpMapTexScale;
 
 uniform sampler2D UVTestPattern;
 
@@ -40,7 +42,7 @@ out vec4 fragColor;
 
 // Defined in MeleeUtils.frag
 vec3 CalculateBumpMapNormal(vec3 normal, vec3 tangent, vec3 bitangent,
-    int hasBump, sampler2D bumpMap, vec2 texCoords);
+    int hasBump, sampler2D bumpMap, int width, int height, vec2 texCoords);
 
 void main()
 {
@@ -52,7 +54,8 @@ void main()
 
 	fragColor = vec4(0, 0, 0, 1);
 
-    vec3 N = CalculateBumpMapNormal(normal, tangent, bitangent, hasBumpMap, bumpMapTex, UV0  * bumpMapScale);
+    vec3 N = CalculateBumpMapNormal(normal, tangent, bitangent, hasBumpMap,
+        bumpMapTex, bumpMapWidth, bumpMapHeight, UV0  * bumpMapTexScale);
 
     vec3 displayNormal = normal * 0.5 + 0.5;
     if (renderNormalMap == 1)

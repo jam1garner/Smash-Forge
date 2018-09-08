@@ -17,6 +17,8 @@ uniform sampler2D specularTex;
 uniform vec2 specularScale;
 
 uniform int hasBumpMap;
+uniform int bumpMapWidth;
+uniform int bumpMapHeight;
 uniform sampler2D bumpMapTex;
 uniform vec2 bumpMapTexScale;
 
@@ -48,7 +50,7 @@ out vec4 fragColor;
 
 // Defined in MeleeUtils.frag
 vec3 CalculateBumpMapNormal(vec3 normal, vec3 tangent, vec3 bitangent,
-    int hasBump, sampler2D bumpMap, vec2 texCoords);
+    int hasBump, sampler2D bumpMap, int width, int height, vec2 texCoords);
 
 void main()
 {
@@ -65,9 +67,9 @@ void main()
     if (renderNormalMap == 1)
     {
         // This seems to only affect diffuse.
-        N = CalculateBumpMapNormal(normal, tangent, bitangent, hasBumpMap, bumpMapTex, UV0  * bumpMapTexScale);
+        N = CalculateBumpMapNormal(normal, tangent, bitangent, hasBumpMap,
+            bumpMapTex, bumpMapWidth, bumpMapHeight, UV0  * bumpMapTexScale);
     }
-
 
 	// Diffuse
 	float lambert = clamp(dot(N, V), 0, 1);

@@ -18,13 +18,13 @@ namespace Smash_Forge
     {
         enum TextureFlag : uint
         {
+            BumpMap = 0x00,
+            Sphere = 0x01,
             Diffuse = 0x10,
-            Sphere = 0x1,
             Specular = 0x20,
+            Unk3 = 0x30, // also diffuse?
             AlphaTest = 0x300000, // whispy woods
             Unk4 = 0x80, // diffuse with inverted colors?
-            BumpMap = 0x00,
-            Unk3 = 0x30 // also diffuse?
         }
 
         public DatDOBJ DOBJ;
@@ -333,6 +333,8 @@ namespace Smash_Forge
         private static void SetBumpMapTexUniforms(Shader shader, MeleeRenderTexture renderTex)
         {
             shader.SetVector2("bumpMapTexScale", new Vector2(renderTex.WScale, renderTex.HScale));
+            shader.SetInt("bumpMapWidth", renderTex.texture.Width);
+            shader.SetInt("bumpMapHeight", renderTex.texture.Height);
             shader.SetTexture("bumpMapTex", renderTex.texture.Id, TextureTarget.Texture2D, 2);
         }
 
