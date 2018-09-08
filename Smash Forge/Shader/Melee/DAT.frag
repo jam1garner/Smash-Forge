@@ -2,6 +2,9 @@
 
 in vec3 objectPosition;
 in vec3 normal;
+in vec3 bitangent;
+in vec3 tangent;
+in vec4 color;
 in vec2 UV0;
 
 uniform int hasDiffuse;
@@ -38,7 +41,14 @@ uniform int renderSpecular;
 
 uniform int renderAlpha;
 
+uniform int renderNormalMap;
+
 out vec4 fragColor;
+
+
+// Defined in MeleeUtils.frag
+vec3 CalculateBumpMapNormal(vec3 normal, vec3 tangent, vec3 bitangent,
+    int hasBump, sampler2D bumpMap, vec2 texCoords);
 
 void main()
 {
@@ -51,9 +61,16 @@ void main()
 	fragColor = vec4(0, 0, 0, 1);
 
 	vec3 V = vec3(0, 0, -1) * mat3(mvpMatrix);
+    vec3 N = normal;
+    if (renderNormalMap == 1)
+    {
+        // This seems to only affect diffuse.
+        N = CalculateBumpMapNormal(normal, tangent, bitangent, hasUnk2, unk2Tex, UV0  * unk2Scale);
+    }
+
 
 	// Diffuse
-	float lambert = clamp(dot(normal, V), 0, 1);
+	float lambert = clamp(dot(N, V), 0, 1);
 	vec4 diffuseMap = vec4(1);
     if (hasDiffuse == 1)
         diffuseMap = texture2D(diffuseTex, UV0 * diffuseScale).rgba;
@@ -65,10 +82,6 @@ void main()
 		vec2 sphereCoords = viewNormal.xy * 0.5 + 0.5;
 		diffuseMap = texture(diffuseTex, sphereCoords).rgba;
 	}
-
-	// TODO: This might also be a bump map.
-	if (hasUnk2 == 1)
-		diffuseMap.rgb *= texture(unk2Tex, UV0 * unk2Scale).rgb;
 
 	vec3 diffuseTerm = diffuseMap.rgb;
 	if (enableDiffuseLighting == 1)

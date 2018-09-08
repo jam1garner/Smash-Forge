@@ -255,6 +255,8 @@ namespace Smash_Forge
             bool alphaOverride = Runtime.renderAlpha && !Runtime.renderR && !Runtime.renderG && !Runtime.renderB;
             shader.SetBoolToInt("alphaOverride", alphaOverride);
 
+            shader.SetBoolToInt("renderNormalMap", Runtime.renderNormalMap);
+
             shader.SetBoolToInt("renderDiffuse", Runtime.renderDiffuse);
             shader.SetBoolToInt("renderSpecular", Runtime.renderSpecular);
         }

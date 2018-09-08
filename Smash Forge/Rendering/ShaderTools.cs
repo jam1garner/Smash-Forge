@@ -54,8 +54,8 @@ namespace Smash_Forge.Rendering
         
         private static void SetUpMeleeShaders()
         {
-            CreateAndAddShader("Dat", "Melee\\Dat.vert", "Melee\\Dat.frag");
-            CreateAndAddShader("DatDebug", "Melee\\Dat.vert", "Melee\\DatDebug.frag");
+            CreateAndAddShader("Dat", "Melee\\Dat.vert", "Melee\\Dat.frag", "Melee\\MeleeUtils.frag");
+            CreateAndAddShader("DatDebug", "Melee\\Dat.vert", "Melee\\DatDebug.frag", "Melee\\MeleeUtils.frag");
         }
 
         private static void SetUpBfresShaders()

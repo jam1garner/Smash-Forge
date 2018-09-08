@@ -2,12 +2,16 @@
 
 in vec3 objectPosition;
 in vec3 normal;
-in vec3 bitan;
-in vec3 tan;
+in vec3 bitangent;
+in vec3 tangent;
 in vec4 color;
 in vec2 UV0;
 
 uniform sampler2D diffuseTex;
+
+uniform int hasUnk2;
+uniform sampler2D unk2Tex;
+uniform vec2 unk2Scale;
 
 uniform sampler2D UVTestPattern;
 
@@ -30,7 +34,13 @@ uniform int renderB;
 uniform int renderAlpha;
 uniform int alphaOverride;
 
+uniform int renderNormalMap;
+
 out vec4 fragColor;
+
+// Defined in MeleeUtils.frag
+vec3 CalculateBumpMapNormal(vec3 normal, vec3 tangent, vec3 bitangent,
+    int hasBump, sampler2D bumpMap, vec2 texCoords);
 
 void main()
 {
@@ -42,19 +52,26 @@ void main()
 
 	fragColor = vec4(0, 0, 0, 1);
 
+    vec3 N = CalculateBumpMapNormal(normal, tangent, bitangent, hasUnk2, unk2Tex, UV0  * unk2Scale);
+
     vec3 displayNormal = normal * 0.5 + 0.5;
+    if (renderNormalMap == 1)
+        displayNormal = N * 0.5 + 0.5;
+
     vec2 displayTexCoord = UV0;
 
 	vec4 resultingColor = vec4(0, 0, 0, 1);
 
     // render modes
     if (renderType == 1) // normals color
+    {
         resultingColor.rgb = displayNormal;
+    }
     else if (renderType == 2)
     {
         // lighting
-        vec3 V = vec3(0,0,-1) * mat3(mvpMatrix);
-        float lambert = clamp(dot(normal, V), 0, 1);
+        vec3 V = vec3(0, 0, -1) * mat3(mvpMatrix);
+        float lambert = clamp(dot(N, V), 0, 1);
         resultingColor.rgb = mix(ambientColor.rgb, diffuseColor.rgb, lambert);
     }
     else if (renderType == 3)
@@ -88,12 +105,12 @@ void main()
     else if (renderType == 9)
     {
          // tangents
-		 resultingColor.rgb = tan;
+		 resultingColor.rgb = tangent;
     }
     else if (renderType == 10)
     {
         // bitangents
-		 resultingColor.rgb = bitan;
+		 resultingColor.rgb = bitangent;
     }
     else if (renderType == 11)
     {
@@ -116,7 +133,7 @@ void main()
 	if (renderAlpha == 1) {
 		fragColor.a = resultingColor.a;
 	}
-	
+
 	if (alphaOverride == 1)
 		fragColor = vec4(resultingColor.aaa, 1);
 }

@@ -10,8 +10,8 @@ in vec4 vWeight;
 
 out vec3 objectPosition;
 out vec3 normal;
-out vec3 bitan;
-out vec3 tan;
+out vec3 bitangent;
+out vec3 tangent;
 out vec4 color;
 out vec2 UV0;
 
@@ -33,8 +33,8 @@ vec4 Skin(vec4 P, ivec4 B)
 void main() {
 
 	normal = vNormal;
-	bitan = normalize(vBitan);
-	tan = normalize(vTan);
+	bitangent = normalize(vBitan);
+	tangent = normalize(vTan);
 	UV0 = vUV0;
 
 	vec4 position = vec4(vPosition, 1.0);
