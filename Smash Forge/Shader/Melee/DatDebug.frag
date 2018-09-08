@@ -9,9 +9,9 @@ in vec2 UV0;
 
 uniform sampler2D diffuseTex;
 
-uniform int hasUnk2;
-uniform sampler2D unk2Tex;
-uniform vec2 unk2Scale;
+uniform int hasBumpMap;
+uniform sampler2D bumpMapTex;
+uniform vec2 bumpMapScale;
 
 uniform sampler2D UVTestPattern;
 
@@ -52,7 +52,7 @@ void main()
 
 	fragColor = vec4(0, 0, 0, 1);
 
-    vec3 N = CalculateBumpMapNormal(normal, tangent, bitangent, hasUnk2, unk2Tex, UV0  * unk2Scale);
+    vec3 N = CalculateBumpMapNormal(normal, tangent, bitangent, hasBumpMap, bumpMapTex, UV0  * bumpMapScale);
 
     vec3 displayNormal = normal * 0.5 + 0.5;
     if (renderNormalMap == 1)

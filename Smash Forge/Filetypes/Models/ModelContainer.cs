@@ -321,11 +321,7 @@ namespace Smash_Forge
             shader.UseProgram();
             SetMbnUniforms(camera, shader);
 
-            // Melee DAT
-            //shader = OpenTKSharedResources.shaders["Dat"];
-            //shader.UseProgram();
-            //SetDatUniforms(shader);
-            if(MeleeData != null)
+            if (MeleeData != null)
             {
                 MeleeData.Render(camera);
             }

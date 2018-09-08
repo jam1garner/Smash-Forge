@@ -23,7 +23,7 @@ namespace Smash_Forge
             Specular = 0x20,
             AlphaTest = 0x300000, // whispy woods
             Unk4 = 0x80, // diffuse with inverted colors?
-            Unk2 = 0x00, // giga bowser ao?
+            BumpMap = 0x00,
             Unk3 = 0x30 // also diffuse?
         }
 
@@ -257,15 +257,15 @@ namespace Smash_Forge
         {
             // Set default values
             shader.SetVector2("diffuseScale", new Vector2(1, 1));
-            shader.SetVector2("unk2Scale", new Vector2(1, 1));
+            shader.SetVector2("bumpMapScale", new Vector2(1, 1));
             shader.SetVector2("specularScale", new Vector2(1, 1));
 
             shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 0);
-            shader.SetTexture("unk2Tex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 2);
+            shader.SetTexture("bumpMapTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 2);
             shader.SetTexture("specularTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 3);
 
             bool hasDiffuse = false;
-            bool hasUnk2 = false;
+            bool hasBumpMap = false;
             bool hasSphere = false;
             bool hasSpecular = false;
 
@@ -278,9 +278,9 @@ namespace Smash_Forge
                     {
                         default:
                             break;
-                        case TextureFlag.Unk2:
-                            hasUnk2 = true;
-                            SetUnk2TexUniforms(shader, renderTex);
+                        case TextureFlag.BumpMap:
+                            hasBumpMap = true;
+                            SetBumpMapTexUniforms(shader, renderTex);
                             break;
                     }
                 }
@@ -302,7 +302,7 @@ namespace Smash_Forge
             }
 
             shader.SetBoolToInt("hasDiffuse", hasDiffuse);
-            shader.SetBoolToInt("hasUnk2", hasUnk2);
+            shader.SetBoolToInt("hasBumpMap", hasBumpMap);
             shader.SetBoolToInt("hasSpecular", hasSpecular);
             shader.SetBoolToInt("hasSphere", hasSphere);
         }
@@ -330,10 +330,10 @@ namespace Smash_Forge
             shader.SetTexture("sphereTex", renderTex.texture.Id, TextureTarget.Texture2D, 1);
         }
 
-        private static void SetUnk2TexUniforms(Shader shader, MeleeRenderTexture renderTex)
+        private static void SetBumpMapTexUniforms(Shader shader, MeleeRenderTexture renderTex)
         {
-            shader.SetVector2("unk2Scale", new Vector2(renderTex.WScale, renderTex.HScale));
-            shader.SetTexture("unk2Tex", renderTex.texture.Id, TextureTarget.Texture2D, 2);
+            shader.SetVector2("bumpMapTexScale", new Vector2(renderTex.WScale, renderTex.HScale));
+            shader.SetTexture("bumpMapTex", renderTex.texture.Id, TextureTarget.Texture2D, 2);
         }
 
         private static void SetDiffuseTexUniforms(Shader shader, MeleeRenderTexture renderTex)

@@ -16,9 +16,9 @@ uniform int hasSpecular;
 uniform sampler2D specularTex;
 uniform vec2 specularScale;
 
-uniform int hasUnk2;
-uniform sampler2D unk2Tex;
-uniform vec2 unk2Scale;
+uniform int hasBumpMap;
+uniform sampler2D bumpMapTex;
+uniform vec2 bumpMapTexScale;
 
 uniform vec4 diffuseColor;
 uniform vec4 ambientColor;
@@ -65,7 +65,7 @@ void main()
     if (renderNormalMap == 1)
     {
         // This seems to only affect diffuse.
-        N = CalculateBumpMapNormal(normal, tangent, bitangent, hasUnk2, unk2Tex, UV0  * unk2Scale);
+        N = CalculateBumpMapNormal(normal, tangent, bitangent, hasBumpMap, bumpMapTex, UV0  * bumpMapTexScale);
     }
 
 
