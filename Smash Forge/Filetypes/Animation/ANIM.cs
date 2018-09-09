@@ -322,6 +322,7 @@ namespace Smash_Forge
             {
                 float v = 0;
 
+                float scale = 1;
                 switch (type)
                 {
                     case "translateX":
@@ -341,6 +342,7 @@ namespace Smash_Forge
                             Quaternion q = new Quaternion(rt.XROT.GetValue(key.Frame), rt.YROT.GetValue(key.Frame), rt.ZROT.GetValue(key.Frame), rt.WROT.GetValue(key.Frame));
                             v = quattoeul(q).X * (float)(180f / Math.PI);
                         }
+                        scale = (float)(180f / Math.PI);
                             break;
                     case "rotateY":
                         if (rt.RotType == Animation.RotationType.EULER)
@@ -350,6 +352,7 @@ namespace Smash_Forge
                             Quaternion q = new Quaternion(rt.XROT.GetValue(key.Frame), rt.YROT.GetValue(key.Frame), rt.ZROT.GetValue(key.Frame), rt.WROT.GetValue(key.Frame));
                             v = quattoeul(q).Y * (float)(180f / Math.PI);
                         }
+                        scale = (float)(180f / Math.PI);
                         break;
                     case "rotateZ":
                         if (rt.RotType == Animation.RotationType.EULER)
@@ -359,6 +362,7 @@ namespace Smash_Forge
                             Quaternion q = new Quaternion(rt.XROT.GetValue(key.Frame), rt.YROT.GetValue(key.Frame), rt.ZROT.GetValue(key.Frame), rt.WROT.GetValue(key.Frame));
                             v = quattoeul(q).Z * (float)(180f / Math.PI);
                         }
+                        scale = (float)(180f / Math.PI);
                         break;
                     case "scaleX":
                         v = key.Value;
@@ -371,7 +375,7 @@ namespace Smash_Forge
                         break;
                 }
 
-                file.WriteLine(" " + (key.Frame + 1) + " {0:N6} fixed fixed 1 1 0 " + key.In + " 1 " + (key.Out != -1 ? key.Out : key.In) + " 1;", v);
+                file.WriteLine(" " + (key.Frame + 1) + " {0:N6} fixed fixed 1 1 0 " + key.In*scale + " 1 " + (key.Out != -1 ? key.Out : key.In)*scale + " 1;", v);
             }
 
             file.WriteLine(" }");
