@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
-using SFGenericModel;
+﻿using MeleeLib.DAT;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using SFGenericModel;
+using System.Collections.Generic;
+using Smash_Forge.Filetypes.Melee;
 
 namespace Smash_Forge
 {
@@ -25,6 +27,22 @@ namespace Smash_Forge
             // TODO: Why is this flipped?
             renderSettings.faceCullingSettings.enableFaceCulling = true;
             renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Front;
+        }
+
+        public void SetRenderSettings(DatDOBJ datDOBJ)
+        {
+            if (datDOBJ.Material == null)
+                return;
+
+            if (datDOBJ.Material.PixelProcessing != null)
+                SetAlphaTesting(datDOBJ);
+        }
+
+        private void SetAlphaTesting(DatDOBJ datDOBJ)
+        {
+            renderSettings.alphaTestSettings.enableAlphaTesting = true;
+            renderSettings.alphaTestSettings.referenceAlpha = datDOBJ.Material.PixelProcessing.AlphaRef0;
+            renderSettings.alphaTestSettings.alphaFunction = MeleeDatToOpenGL.GetAlphaFunctionFromCompareType(datDOBJ.Material.PixelProcessing.AlphaComp0);
         }
 
         protected override List<VertexAttributeInfo> GetVertexAttributes()

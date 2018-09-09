@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Windows.Forms;
-using System.Drawing;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using MeleeLib.DAT;
+﻿using MeleeLib.DAT;
 using MeleeLib.DAT.Helpers;
 using MeleeLib.GCX;
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using SFGenericModel.Utils;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Shaders;
-using System;
+using Smash_Forge.Filetypes.Melee;
 using Smash_Forge.GUI.Melee;
-using SFGenericModel.Utils;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -212,34 +213,13 @@ namespace Smash_Forge
             {
                 foreach (var m in renderMeshes)
                 {
+                    m.SetRenderSettings(DOBJ);
+
                     if (IsSelected)
                         DrawModelSelection(m, shader, c);
                     else
                         m.Draw(shader, c);
                 }
-            }
-        }
-
-        private static PrimitiveType GetGLPrimitiveType(GXPrimitiveType primitiveType)
-        {
-            switch (primitiveType)
-            {
-                case GXPrimitiveType.Points:
-                    return PrimitiveType.Points;
-                case GXPrimitiveType.Lines:
-                    return PrimitiveType.Lines;
-                case GXPrimitiveType.LineStrip:
-                    return PrimitiveType.LineStrip;
-                case GXPrimitiveType.TriangleFan:
-                    return PrimitiveType.TriangleFan; 
-                case GXPrimitiveType.TriangleStrip:
-                    return PrimitiveType.TriangleStrip;
-                case GXPrimitiveType.Triangles:
-                    return PrimitiveType.Triangles;
-                case GXPrimitiveType.Quads:
-                    return PrimitiveType.Quads;
-                default:
-                    return PrimitiveType.Triangles;
             }
         }
 
@@ -420,7 +400,7 @@ namespace Smash_Forge
 
             vertices.AddRange(ConvertVerts(decom.GetFormattedVertices(displayList, polygon)));
 
-            PrimitiveType primitiveType = GetGLPrimitiveType(displayList.PrimitiveType);
+            PrimitiveType primitiveType = MeleeDatToOpenGL.GetGLPrimitiveType(displayList.PrimitiveType);
             VertexContainer<MeleeVertex> vertexContainer = new VertexContainer<MeleeVertex>(vertices, vertexIndices, primitiveType);
             vertexContainers.Add(vertexContainer);
         }

@@ -181,6 +181,7 @@
     <Compile Include="Filetypes\Melee\DatMaterialXml.cs" />
     <Compile Include="Filetypes\Melee\MeleeData.cs" />
     <Compile Include="Filetypes\Melee\MeleeDataObjectNode.cs" />
+    <Compile Include="Filetypes\Melee\MeleeDatToOpenGL.cs" />
     <Compile Include="Filetypes\Melee\MeleeFighterDataNode.cs" />
     <Compile Include="Filetypes\Melee\MeleeJointAnimationNode.cs" />
     <Compile Include="Filetypes\Melee\MeleeJointNode.cs" />
