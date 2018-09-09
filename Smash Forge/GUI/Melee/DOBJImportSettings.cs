@@ -113,6 +113,9 @@ namespace Smash_Forge.GUI.Melee
             DOBJ.VertsToImport = new List<GXVertex[]>();
             List<GXVertex> vert = new List<GXVertex>();
             DatJOBJ parent = DOBJ.DOBJ.Parent;
+
+            if (comboBoxBoneType.SelectedIndex == 1)
+                ImportedBones = RenderBones;
             foreach (SMDTriangle t in smd.Triangles)
             {
                 if(comboBoxBoneType.SelectedIndex == 1)
@@ -195,7 +198,6 @@ namespace Smash_Forge.GUI.Melee
                 for (i = 0; i < jobjs.Length; i++)
                     if (jobjs[i] == Parent)
                         break;
-                Console.WriteLine("Binding " + i);
                 P = Vector3.TransformPosition(P, RenderBones.bones[i].transform.Inverted());
             }
             

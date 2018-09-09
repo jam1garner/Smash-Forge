@@ -244,8 +244,7 @@ namespace Smash_Forge
                         // count the attributes
                         Animation.KeyNode n = a.GetBone(b.Text);
                         int ac = 0;
-
-
+                        
                         if (n.XPOS.HasAnimation())
                         {
                             file.WriteLine("anim translate.translateX translateX " + b.Text + " 0 0 " + (ac++) + ";");
@@ -282,7 +281,6 @@ namespace Smash_Forge
                             writeKey(file, n.ZROT, n, a.Size(), "rotateZ");
                             file.WriteLine("}");
                         }
-
                         if (n.XSCA.HasAnimation())
                         {
                             file.WriteLine("anim scale.scaleX scaleX " + b.Text + " 0 0 " + (ac++) + ";");
@@ -301,6 +299,9 @@ namespace Smash_Forge
                             writeKey(file, n.ZSCA, n, a.Size(), "scaleZ");
                             file.WriteLine("}");
                         }
+
+                        if(ac == 0)
+                            file.WriteLine("anim " + b.Text + " 0 0 0;");
                     }
                     else
                     {
@@ -312,13 +313,11 @@ namespace Smash_Forge
 
         private static void writeKey(StreamWriter file, Animation.KeyGroup keys, Animation.KeyNode rt, int size, string type)
         {
-
             file.WriteLine("animData {\n input time;\n output linear;\n weighted 1;\n preInfinity constant;\n postInfinity constant;\n keys {");
 
             if (((Animation.KeyFrame)keys.Keys[0]).InterType == Animation.InterpolationType.CONSTANT)
                 size = 1;
-
-            int f = 1;
+            
             foreach (Animation.KeyFrame key in keys.Keys)
             {
                 float v = 0;
@@ -372,7 +371,7 @@ namespace Smash_Forge
                         break;
                 }
 
-                file.WriteLine(" " + (key.Frame + 1) + " {0:N6} fixed fixed 1 1 0 " + key.In * (float)(180f/Math.PI) + " 1 " + key.In * (float)(180f / Math.PI) + " 1;", v);
+                file.WriteLine(" " + (key.Frame + 1) + " {0:N6} fixed fixed 1 1 0 " + key.In + " 1 " + (key.Out != -1 ? key.Out : key.In) + " 1;", v);
             }
 
             file.WriteLine(" }");
