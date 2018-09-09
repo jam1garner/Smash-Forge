@@ -56,32 +56,32 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.checkBoxPixelEnabled = new System.Windows.Forms.CheckBox();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.TBAlphaRef2 = new System.Windows.Forms.TextBox();
+            this.pixelProcessingCB = new System.Windows.Forms.CheckBox();
+            this.pixelProcessingTableLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.dstAlphaTB = new System.Windows.Forms.TextBox();
+            this.alphaRef2TB = new System.Windows.Forms.TextBox();
             this.label20 = new System.Windows.Forms.Label();
-            this.CBSrcFactor = new System.Windows.Forms.ComboBox();
-            this.CBAlphaComp2 = new System.Windows.Forms.ComboBox();
-            this.TBPixelFlags = new System.Windows.Forms.TextBox();
+            this.srcFactorComboBox = new System.Windows.Forms.ComboBox();
+            this.alphaComp2ComboBox = new System.Windows.Forms.ComboBox();
+            this.pixelFlagsTB = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.CBAlphaOp = new System.Windows.Forms.ComboBox();
+            this.alphaOpComboBox = new System.Windows.Forms.ComboBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
-            this.CBAlphaComp1 = new System.Windows.Forms.ComboBox();
+            this.alphaComp1ComboBox = new System.Windows.Forms.ComboBox();
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label17 = new System.Windows.Forms.Label();
             this.label21 = new System.Windows.Forms.Label();
-            this.CBDstFactor = new System.Windows.Forms.ComboBox();
-            this.CBBlendMode = new System.Windows.Forms.ComboBox();
-            this.CBBlendOp = new System.Windows.Forms.ComboBox();
-            this.CBDepthFunc = new System.Windows.Forms.ComboBox();
-            this.TBAlphaRef1 = new System.Windows.Forms.TextBox();
-            this.TBDstAlpha = new System.Windows.Forms.TextBox();
+            this.dstFactorComboBox = new System.Windows.Forms.ComboBox();
+            this.blendModeComboBox = new System.Windows.Forms.ComboBox();
+            this.blendOpComboBox = new System.Windows.Forms.ComboBox();
+            this.depthFuncComboBox = new System.Windows.Forms.ComboBox();
+            this.alphaRef1TB = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericTransparency)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericGlossiness)).BeginInit();
@@ -92,7 +92,7 @@
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
+            this.pixelProcessingTableLayout.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -313,6 +313,7 @@
             // 
             // CBWrapS
             // 
+            this.CBWrapS.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CBWrapS.FormattingEnabled = true;
             this.CBWrapS.Location = new System.Drawing.Point(124, 83);
             this.CBWrapS.Name = "CBWrapS";
@@ -322,6 +323,7 @@
             // 
             // CBWrapT
             // 
+            this.CBWrapT.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CBWrapT.FormattingEnabled = true;
             this.CBWrapT.Location = new System.Drawing.Point(124, 43);
             this.CBWrapT.Name = "CBWrapT";
@@ -398,8 +400,8 @@
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.checkBoxPixelEnabled);
-            this.tabPage3.Controls.Add(this.tableLayoutPanel3);
+            this.tabPage3.Controls.Add(this.pixelProcessingCB);
+            this.tabPage3.Controls.Add(this.pixelProcessingTableLayout);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
@@ -408,75 +410,82 @@
             this.tabPage3.Text = "Pixel Processing";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // checkBoxPixelEnabled
+            // pixelProcessingCB
             // 
-            this.checkBoxPixelEnabled.AutoSize = true;
-            this.checkBoxPixelEnabled.Location = new System.Drawing.Point(8, 6);
-            this.checkBoxPixelEnabled.Name = "checkBoxPixelEnabled";
-            this.checkBoxPixelEnabled.Size = new System.Drawing.Size(139, 17);
-            this.checkBoxPixelEnabled.TabIndex = 1;
-            this.checkBoxPixelEnabled.Text = "Enable Pixel Processing";
-            this.checkBoxPixelEnabled.UseVisualStyleBackColor = true;
-            this.checkBoxPixelEnabled.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.pixelProcessingCB.AutoSize = true;
+            this.pixelProcessingCB.Location = new System.Drawing.Point(8, 6);
+            this.pixelProcessingCB.Name = "pixelProcessingCB";
+            this.pixelProcessingCB.Size = new System.Drawing.Size(139, 17);
+            this.pixelProcessingCB.TabIndex = 1;
+            this.pixelProcessingCB.Text = "Enable Pixel Processing";
+            this.pixelProcessingCB.UseVisualStyleBackColor = true;
+            this.pixelProcessingCB.CheckedChanged += new System.EventHandler(this.pixelProcessingCB_CheckedChanged);
             // 
-            // tableLayoutPanel3
+            // pixelProcessingTableLayout
             // 
-            this.tableLayoutPanel3.ColumnCount = 2;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel3.Controls.Add(this.TBDstAlpha, 1, 6);
-            this.tableLayoutPanel3.Controls.Add(this.TBAlphaRef2, 1, 8);
-            this.tableLayoutPanel3.Controls.Add(this.label20, 0, 10);
-            this.tableLayoutPanel3.Controls.Add(this.CBSrcFactor, 1, 4);
-            this.tableLayoutPanel3.Controls.Add(this.CBAlphaComp2, 1, 3);
-            this.tableLayoutPanel3.Controls.Add(this.TBPixelFlags, 1, 0);
-            this.tableLayoutPanel3.Controls.Add(this.label10, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.label11, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.CBAlphaOp, 1, 1);
-            this.tableLayoutPanel3.Controls.Add(this.label12, 0, 2);
-            this.tableLayoutPanel3.Controls.Add(this.label13, 0, 3);
-            this.tableLayoutPanel3.Controls.Add(this.label14, 0, 4);
-            this.tableLayoutPanel3.Controls.Add(this.label15, 0, 5);
-            this.tableLayoutPanel3.Controls.Add(this.CBAlphaComp1, 1, 2);
-            this.tableLayoutPanel3.Controls.Add(this.label19, 0, 9);
-            this.tableLayoutPanel3.Controls.Add(this.label18, 0, 8);
-            this.tableLayoutPanel3.Controls.Add(this.label16, 0, 7);
-            this.tableLayoutPanel3.Controls.Add(this.label17, 0, 6);
-            this.tableLayoutPanel3.Controls.Add(this.label21, 0, 11);
-            this.tableLayoutPanel3.Controls.Add(this.CBDstFactor, 1, 5);
-            this.tableLayoutPanel3.Controls.Add(this.CBBlendMode, 1, 9);
-            this.tableLayoutPanel3.Controls.Add(this.CBBlendOp, 1, 10);
-            this.tableLayoutPanel3.Controls.Add(this.CBDepthFunc, 1, 11);
-            this.tableLayoutPanel3.Controls.Add(this.TBAlphaRef1, 1, 7);
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(8, 29);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 12;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(269, 291);
-            this.tableLayoutPanel3.TabIndex = 0;
-            this.tableLayoutPanel3.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel3_Paint);
+            this.pixelProcessingTableLayout.ColumnCount = 2;
+            this.pixelProcessingTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.pixelProcessingTableLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.pixelProcessingTableLayout.Controls.Add(this.dstAlphaTB, 1, 6);
+            this.pixelProcessingTableLayout.Controls.Add(this.alphaRef2TB, 1, 8);
+            this.pixelProcessingTableLayout.Controls.Add(this.label20, 0, 10);
+            this.pixelProcessingTableLayout.Controls.Add(this.srcFactorComboBox, 1, 4);
+            this.pixelProcessingTableLayout.Controls.Add(this.alphaComp2ComboBox, 1, 3);
+            this.pixelProcessingTableLayout.Controls.Add(this.pixelFlagsTB, 1, 0);
+            this.pixelProcessingTableLayout.Controls.Add(this.label10, 0, 0);
+            this.pixelProcessingTableLayout.Controls.Add(this.label11, 0, 1);
+            this.pixelProcessingTableLayout.Controls.Add(this.alphaOpComboBox, 1, 1);
+            this.pixelProcessingTableLayout.Controls.Add(this.label12, 0, 2);
+            this.pixelProcessingTableLayout.Controls.Add(this.label13, 0, 3);
+            this.pixelProcessingTableLayout.Controls.Add(this.label14, 0, 4);
+            this.pixelProcessingTableLayout.Controls.Add(this.label15, 0, 5);
+            this.pixelProcessingTableLayout.Controls.Add(this.alphaComp1ComboBox, 1, 2);
+            this.pixelProcessingTableLayout.Controls.Add(this.label19, 0, 9);
+            this.pixelProcessingTableLayout.Controls.Add(this.label18, 0, 8);
+            this.pixelProcessingTableLayout.Controls.Add(this.label16, 0, 7);
+            this.pixelProcessingTableLayout.Controls.Add(this.label17, 0, 6);
+            this.pixelProcessingTableLayout.Controls.Add(this.label21, 0, 11);
+            this.pixelProcessingTableLayout.Controls.Add(this.dstFactorComboBox, 1, 5);
+            this.pixelProcessingTableLayout.Controls.Add(this.blendModeComboBox, 1, 9);
+            this.pixelProcessingTableLayout.Controls.Add(this.blendOpComboBox, 1, 10);
+            this.pixelProcessingTableLayout.Controls.Add(this.depthFuncComboBox, 1, 11);
+            this.pixelProcessingTableLayout.Controls.Add(this.alphaRef1TB, 1, 7);
+            this.pixelProcessingTableLayout.Location = new System.Drawing.Point(8, 29);
+            this.pixelProcessingTableLayout.Name = "pixelProcessingTableLayout";
+            this.pixelProcessingTableLayout.RowCount = 12;
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.pixelProcessingTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.pixelProcessingTableLayout.Size = new System.Drawing.Size(269, 291);
+            this.pixelProcessingTableLayout.TabIndex = 0;
             // 
-            // TBAlphaRef2
+            // dstAlphaTB
             // 
-            this.TBAlphaRef2.Location = new System.Drawing.Point(137, 195);
-            this.TBAlphaRef2.Name = "TBAlphaRef2";
-            this.TBAlphaRef2.Size = new System.Drawing.Size(129, 20);
-            this.TBAlphaRef2.TabIndex = 26;
-            this.TBAlphaRef2.TextChanged += new System.EventHandler(this.TBAlphaRef2_TextChanged);
+            this.dstAlphaTB.Location = new System.Drawing.Point(137, 147);
+            this.dstAlphaTB.Name = "dstAlphaTB";
+            this.dstAlphaTB.Size = new System.Drawing.Size(128, 20);
+            this.dstAlphaTB.TabIndex = 28;
+            this.dstAlphaTB.TextChanged += new System.EventHandler(this.TBDstAlpha_TextChanged);
+            // 
+            // alphaRef2TB
+            // 
+            this.alphaRef2TB.Location = new System.Drawing.Point(137, 195);
+            this.alphaRef2TB.Name = "alphaRef2TB";
+            this.alphaRef2TB.Size = new System.Drawing.Size(129, 20);
+            this.alphaRef2TB.TabIndex = 26;
+            this.alphaRef2TB.TextChanged += new System.EventHandler(this.TBAlphaRef2_TextChanged);
             // 
             // label20
             // 
@@ -488,31 +497,33 @@
             this.label20.TabIndex = 16;
             this.label20.Text = "Blend Operation";
             // 
-            // CBSrcFactor
+            // srcFactorComboBox
             // 
-            this.CBSrcFactor.FormattingEnabled = true;
-            this.CBSrcFactor.Location = new System.Drawing.Point(137, 99);
-            this.CBSrcFactor.Name = "CBSrcFactor";
-            this.CBSrcFactor.Size = new System.Drawing.Size(129, 21);
-            this.CBSrcFactor.TabIndex = 10;
-            this.CBSrcFactor.SelectedIndexChanged += new System.EventHandler(this.CBSrcFactor_SelectedIndexChanged);
+            this.srcFactorComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.srcFactorComboBox.FormattingEnabled = true;
+            this.srcFactorComboBox.Location = new System.Drawing.Point(137, 99);
+            this.srcFactorComboBox.Name = "srcFactorComboBox";
+            this.srcFactorComboBox.Size = new System.Drawing.Size(129, 21);
+            this.srcFactorComboBox.TabIndex = 10;
+            this.srcFactorComboBox.SelectedIndexChanged += new System.EventHandler(this.CBSrcFactor_SelectedIndexChanged);
             // 
-            // CBAlphaComp2
+            // alphaComp2ComboBox
             // 
-            this.CBAlphaComp2.FormattingEnabled = true;
-            this.CBAlphaComp2.Location = new System.Drawing.Point(137, 75);
-            this.CBAlphaComp2.Name = "CBAlphaComp2";
-            this.CBAlphaComp2.Size = new System.Drawing.Size(129, 21);
-            this.CBAlphaComp2.TabIndex = 9;
-            this.CBAlphaComp2.SelectedIndexChanged += new System.EventHandler(this.CBAlphaComp2_SelectedIndexChanged);
+            this.alphaComp2ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.alphaComp2ComboBox.FormattingEnabled = true;
+            this.alphaComp2ComboBox.Location = new System.Drawing.Point(137, 75);
+            this.alphaComp2ComboBox.Name = "alphaComp2ComboBox";
+            this.alphaComp2ComboBox.Size = new System.Drawing.Size(129, 21);
+            this.alphaComp2ComboBox.TabIndex = 9;
+            this.alphaComp2ComboBox.SelectedIndexChanged += new System.EventHandler(this.CBAlphaComp2_SelectedIndexChanged);
             // 
-            // TBPixelFlags
+            // pixelFlagsTB
             // 
-            this.TBPixelFlags.Location = new System.Drawing.Point(137, 3);
-            this.TBPixelFlags.Name = "TBPixelFlags";
-            this.TBPixelFlags.Size = new System.Drawing.Size(129, 20);
-            this.TBPixelFlags.TabIndex = 0;
-            this.TBPixelFlags.TextChanged += new System.EventHandler(this.TBPixelFlags_TextChanged);
+            this.pixelFlagsTB.Location = new System.Drawing.Point(137, 3);
+            this.pixelFlagsTB.Name = "pixelFlagsTB";
+            this.pixelFlagsTB.Size = new System.Drawing.Size(129, 20);
+            this.pixelFlagsTB.TabIndex = 0;
+            this.pixelFlagsTB.TextChanged += new System.EventHandler(this.TBPixelFlags_TextChanged);
             // 
             // label10
             // 
@@ -534,14 +545,15 @@
             this.label11.TabIndex = 2;
             this.label11.Text = "Alpha Op";
             // 
-            // CBAlphaOp
+            // alphaOpComboBox
             // 
-            this.CBAlphaOp.FormattingEnabled = true;
-            this.CBAlphaOp.Location = new System.Drawing.Point(137, 27);
-            this.CBAlphaOp.Name = "CBAlphaOp";
-            this.CBAlphaOp.Size = new System.Drawing.Size(129, 21);
-            this.CBAlphaOp.TabIndex = 3;
-            this.CBAlphaOp.SelectedValueChanged += new System.EventHandler(this.CBAlphaOp_SelectedValueChanged);
+            this.alphaOpComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.alphaOpComboBox.FormattingEnabled = true;
+            this.alphaOpComboBox.Location = new System.Drawing.Point(137, 27);
+            this.alphaOpComboBox.Name = "alphaOpComboBox";
+            this.alphaOpComboBox.Size = new System.Drawing.Size(129, 21);
+            this.alphaOpComboBox.TabIndex = 3;
+            this.alphaOpComboBox.SelectedValueChanged += new System.EventHandler(this.CBAlphaOp_SelectedValueChanged);
             // 
             // label12
             // 
@@ -583,14 +595,15 @@
             this.label15.TabIndex = 7;
             this.label15.Text = "Dst Factor";
             // 
-            // CBAlphaComp1
+            // alphaComp1ComboBox
             // 
-            this.CBAlphaComp1.FormattingEnabled = true;
-            this.CBAlphaComp1.Location = new System.Drawing.Point(137, 51);
-            this.CBAlphaComp1.Name = "CBAlphaComp1";
-            this.CBAlphaComp1.Size = new System.Drawing.Size(129, 21);
-            this.CBAlphaComp1.TabIndex = 8;
-            this.CBAlphaComp1.SelectedIndexChanged += new System.EventHandler(this.CBAlphaComp1_SelectedIndexChanged);
+            this.alphaComp1ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.alphaComp1ComboBox.FormattingEnabled = true;
+            this.alphaComp1ComboBox.Location = new System.Drawing.Point(137, 51);
+            this.alphaComp1ComboBox.Name = "alphaComp1ComboBox";
+            this.alphaComp1ComboBox.Size = new System.Drawing.Size(129, 21);
+            this.alphaComp1ComboBox.TabIndex = 8;
+            this.alphaComp1ComboBox.SelectedIndexChanged += new System.EventHandler(this.CBAlphaComp1_SelectedIndexChanged);
             // 
             // label19
             // 
@@ -642,57 +655,53 @@
             this.label21.TabIndex = 17;
             this.label21.Text = "Depth Function";
             // 
-            // CBDstFactor
+            // dstFactorComboBox
             // 
-            this.CBDstFactor.FormattingEnabled = true;
-            this.CBDstFactor.Location = new System.Drawing.Point(137, 123);
-            this.CBDstFactor.Name = "CBDstFactor";
-            this.CBDstFactor.Size = new System.Drawing.Size(129, 21);
-            this.CBDstFactor.TabIndex = 18;
-            this.CBDstFactor.SelectedIndexChanged += new System.EventHandler(this.CBDstFactor_SelectedIndexChanged);
+            this.dstFactorComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.dstFactorComboBox.FormattingEnabled = true;
+            this.dstFactorComboBox.Location = new System.Drawing.Point(137, 123);
+            this.dstFactorComboBox.Name = "dstFactorComboBox";
+            this.dstFactorComboBox.Size = new System.Drawing.Size(129, 21);
+            this.dstFactorComboBox.TabIndex = 18;
+            this.dstFactorComboBox.SelectedIndexChanged += new System.EventHandler(this.CBDstFactor_SelectedIndexChanged);
             // 
-            // CBBlendMode
+            // blendModeComboBox
             // 
-            this.CBBlendMode.FormattingEnabled = true;
-            this.CBBlendMode.Location = new System.Drawing.Point(137, 219);
-            this.CBBlendMode.Name = "CBBlendMode";
-            this.CBBlendMode.Size = new System.Drawing.Size(129, 21);
-            this.CBBlendMode.TabIndex = 22;
-            this.CBBlendMode.SelectedIndexChanged += new System.EventHandler(this.CBBlendMode_SelectedIndexChanged);
+            this.blendModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.blendModeComboBox.FormattingEnabled = true;
+            this.blendModeComboBox.Location = new System.Drawing.Point(137, 219);
+            this.blendModeComboBox.Name = "blendModeComboBox";
+            this.blendModeComboBox.Size = new System.Drawing.Size(129, 21);
+            this.blendModeComboBox.TabIndex = 22;
+            this.blendModeComboBox.SelectedIndexChanged += new System.EventHandler(this.CBBlendMode_SelectedIndexChanged);
             // 
-            // CBBlendOp
+            // blendOpComboBox
             // 
-            this.CBBlendOp.FormattingEnabled = true;
-            this.CBBlendOp.Location = new System.Drawing.Point(137, 243);
-            this.CBBlendOp.Name = "CBBlendOp";
-            this.CBBlendOp.Size = new System.Drawing.Size(129, 21);
-            this.CBBlendOp.TabIndex = 23;
-            this.CBBlendOp.SelectedIndexChanged += new System.EventHandler(this.CBBlendOp_SelectedIndexChanged);
+            this.blendOpComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.blendOpComboBox.FormattingEnabled = true;
+            this.blendOpComboBox.Location = new System.Drawing.Point(137, 243);
+            this.blendOpComboBox.Name = "blendOpComboBox";
+            this.blendOpComboBox.Size = new System.Drawing.Size(129, 21);
+            this.blendOpComboBox.TabIndex = 23;
+            this.blendOpComboBox.SelectedIndexChanged += new System.EventHandler(this.CBBlendOp_SelectedIndexChanged);
             // 
-            // CBDepthFunc
+            // depthFuncComboBox
             // 
-            this.CBDepthFunc.FormattingEnabled = true;
-            this.CBDepthFunc.Location = new System.Drawing.Point(137, 267);
-            this.CBDepthFunc.Name = "CBDepthFunc";
-            this.CBDepthFunc.Size = new System.Drawing.Size(129, 21);
-            this.CBDepthFunc.TabIndex = 24;
-            this.CBDepthFunc.SelectedIndexChanged += new System.EventHandler(this.CBDepthFunc_SelectedIndexChanged);
+            this.depthFuncComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.depthFuncComboBox.FormattingEnabled = true;
+            this.depthFuncComboBox.Location = new System.Drawing.Point(137, 267);
+            this.depthFuncComboBox.Name = "depthFuncComboBox";
+            this.depthFuncComboBox.Size = new System.Drawing.Size(129, 21);
+            this.depthFuncComboBox.TabIndex = 24;
+            this.depthFuncComboBox.SelectedIndexChanged += new System.EventHandler(this.CBDepthFunc_SelectedIndexChanged);
             // 
-            // TBAlphaRef1
+            // alphaRef1TB
             // 
-            this.TBAlphaRef1.Location = new System.Drawing.Point(137, 171);
-            this.TBAlphaRef1.Name = "TBAlphaRef1";
-            this.TBAlphaRef1.Size = new System.Drawing.Size(129, 20);
-            this.TBAlphaRef1.TabIndex = 25;
-            this.TBAlphaRef1.TextChanged += new System.EventHandler(this.TBAlphaRef1_TextChanged);
-            // 
-            // TBDstAlpha
-            // 
-            this.TBDstAlpha.Location = new System.Drawing.Point(137, 147);
-            this.TBDstAlpha.Name = "TBDstAlpha";
-            this.TBDstAlpha.Size = new System.Drawing.Size(128, 20);
-            this.TBDstAlpha.TabIndex = 28;
-            this.TBDstAlpha.TextChanged += new System.EventHandler(this.TBDstAlpha_TextChanged);
+            this.alphaRef1TB.Location = new System.Drawing.Point(137, 171);
+            this.alphaRef1TB.Name = "alphaRef1TB";
+            this.alphaRef1TB.Size = new System.Drawing.Size(129, 20);
+            this.alphaRef1TB.TabIndex = 25;
+            this.alphaRef1TB.TextChanged += new System.EventHandler(this.TBAlphaRef1_TextChanged);
             // 
             // DOBJEditor
             // 
@@ -715,8 +724,8 @@
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.tableLayoutPanel3.PerformLayout();
+            this.pixelProcessingTableLayout.ResumeLayout(false);
+            this.pixelProcessingTableLayout.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -750,31 +759,31 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.CheckBox checkBoxPixelEnabled;
-        private System.Windows.Forms.TextBox TBPixelFlags;
+        private System.Windows.Forms.TableLayoutPanel pixelProcessingTableLayout;
+        private System.Windows.Forms.CheckBox pixelProcessingCB;
+        private System.Windows.Forms.TextBox pixelFlagsTB;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.ComboBox CBAlphaOp;
+        private System.Windows.Forms.ComboBox alphaOpComboBox;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.ComboBox CBSrcFactor;
-        private System.Windows.Forms.ComboBox CBAlphaComp2;
-        private System.Windows.Forms.ComboBox CBAlphaComp1;
+        private System.Windows.Forms.ComboBox srcFactorComboBox;
+        private System.Windows.Forms.ComboBox alphaComp2ComboBox;
+        private System.Windows.Forms.ComboBox alphaComp1ComboBox;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.ComboBox CBDstFactor;
-        private System.Windows.Forms.ComboBox CBBlendMode;
-        private System.Windows.Forms.ComboBox CBBlendOp;
-        private System.Windows.Forms.ComboBox CBDepthFunc;
-        private System.Windows.Forms.TextBox TBAlphaRef2;
-        private System.Windows.Forms.TextBox TBAlphaRef1;
-        private System.Windows.Forms.TextBox TBDstAlpha;
+        private System.Windows.Forms.ComboBox dstFactorComboBox;
+        private System.Windows.Forms.ComboBox blendModeComboBox;
+        private System.Windows.Forms.ComboBox blendOpComboBox;
+        private System.Windows.Forms.ComboBox depthFuncComboBox;
+        private System.Windows.Forms.TextBox alphaRef2TB;
+        private System.Windows.Forms.TextBox alphaRef1TB;
+        private System.Windows.Forms.TextBox dstAlphaTB;
     }
 }

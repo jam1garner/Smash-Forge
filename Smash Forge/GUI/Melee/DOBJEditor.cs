@@ -44,18 +44,18 @@ namespace Smash_Forge.GUI.Melee
             CBWrapT.Items.Add(GXWrapMode.MIRROR);
             CBWrapT.Items.Add(GXWrapMode.REPEAT);
 
-            foreach (var suit in Enum.GetValues(typeof(GXAlphaOp))) CBAlphaOp.Items.Add(suit);
+            foreach (var suit in Enum.GetValues(typeof(GXAlphaOp))) alphaOpComboBox.Items.Add(suit);
             foreach (var suit in Enum.GetValues(typeof(GXCompareType)))
             {
-                CBAlphaComp1.Items.Add(suit); CBAlphaComp2.Items.Add(suit); CBDepthFunc.Items.Add(suit);
+                alphaComp1ComboBox.Items.Add(suit); alphaComp2ComboBox.Items.Add(suit); depthFuncComboBox.Items.Add(suit);
             }
             foreach (var suit in Enum.GetValues(typeof(GXBlendFactor)))
             {
-                CBSrcFactor.Items.Add(suit);
-                CBDstFactor.Items.Add(suit);
+                srcFactorComboBox.Items.Add(suit);
+                dstFactorComboBox.Items.Add(suit);
             }
-            foreach (var suit in Enum.GetValues(typeof(GXLogicOp))) CBBlendOp.Items.Add(suit);
-            foreach (var suit in Enum.GetValues(typeof(GXBlendMode))) CBBlendMode.Items.Add(suit);
+            foreach (var suit in Enum.GetValues(typeof(GXLogicOp))) blendOpComboBox.Items.Add(suit);
+            foreach (var suit in Enum.GetValues(typeof(GXBlendMode))) blendModeComboBox.Items.Add(suit);
 
 
             Reload();
@@ -80,22 +80,29 @@ namespace Smash_Forge.GUI.Melee
 
             if (DOBJ.Material.PixelProcessing != null)
             {
-                tableLayoutPanel3.Visible = true;
-                TBPixelFlags.Text = DOBJ.Material.PixelProcessing.Flags.ToString("X");
-                CBAlphaOp.SelectedItem = DOBJ.Material.PixelProcessing.AlphaOp;
-                CBAlphaComp1.SelectedItem = DOBJ.Material.PixelProcessing.AlphaComp0;
-                CBAlphaComp2.SelectedItem = DOBJ.Material.PixelProcessing.AlphaComp1;
-                CBBlendMode.SelectedItem = DOBJ.Material.PixelProcessing.BlendMode;
-                CBBlendOp.SelectedItem = DOBJ.Material.PixelProcessing.BlendOp;
-                CBDepthFunc.SelectedItem = DOBJ.Material.PixelProcessing.DepthFunction;
-                TBAlphaRef1.Text = DOBJ.Material.PixelProcessing.AlphaRef0.ToString();
-                TBAlphaRef2.Text = DOBJ.Material.PixelProcessing.AlphaRef1.ToString();
-                TBDstAlpha.Text = DOBJ.Material.PixelProcessing.DestinationAlpha.ToString();
-                CBSrcFactor.SelectedItem = DOBJ.Material.PixelProcessing.SrcFactor;
-                CBDstFactor.SelectedItem = DOBJ.Material.PixelProcessing.DstFactor;
+                pixelProcessingCB.Checked = true;
+                RefreshPixelProcessingValues();
             }
             else
-                tableLayoutPanel3.Visible = false;
+            {
+                pixelProcessingCB.Checked = false;
+            }
+        }
+
+        private void RefreshPixelProcessingValues()
+        {
+            pixelFlagsTB.Text = DOBJ.Material.PixelProcessing.Flags.ToString("X");
+            alphaOpComboBox.SelectedItem = DOBJ.Material.PixelProcessing.AlphaOp;
+            alphaComp1ComboBox.SelectedItem = DOBJ.Material.PixelProcessing.AlphaComp0;
+            alphaComp2ComboBox.SelectedItem = DOBJ.Material.PixelProcessing.AlphaComp1;
+            blendModeComboBox.SelectedItem = DOBJ.Material.PixelProcessing.BlendMode;
+            blendOpComboBox.SelectedItem = DOBJ.Material.PixelProcessing.BlendOp;
+            depthFuncComboBox.SelectedItem = DOBJ.Material.PixelProcessing.DepthFunction;
+            alphaRef1TB.Text = DOBJ.Material.PixelProcessing.AlphaRef0.ToString();
+            alphaRef2TB.Text = DOBJ.Material.PixelProcessing.AlphaRef1.ToString();
+            dstAlphaTB.Text = DOBJ.Material.PixelProcessing.DestinationAlpha.ToString();
+            srcFactorComboBox.SelectedItem = DOBJ.Material.PixelProcessing.SrcFactor;
+            dstFactorComboBox.SelectedItem = DOBJ.Material.PixelProcessing.DstFactor;
         }
 
         private void textureListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -178,6 +185,7 @@ namespace Smash_Forge.GUI.Melee
         private void buttonImportTexture_Click(object sender, EventArgs e)
         {
             if (selectedTexture != null)
+            {
                 using (OpenFileDialog ofd = new OpenFileDialog())
                 {
                     ofd.Filter = "DDS|*.dds";
@@ -190,36 +198,38 @@ namespace Smash_Forge.GUI.Melee
                             MessageBox.Show("Error Importing Texture:\nOnly DXT1 Files are supported currently");
                             return;
                         }
-                        selectedTexture.Texture.SetFromDXT1(new FileData(d.bdata).getSection(0, (int)(d.header.width*d.header.height/2)), (int)d.header.width, (int)d.header.height);
+                        selectedTexture.Texture.SetFromDXT1(new FileData(d.bdata).getSection(0, (int)(d.header.width * d.header.height / 2)), (int)d.header.width, (int)d.header.height);
                         meleeDataObjectNode.RefreshRenderTextures();
                     }
                 }
+            }
         }
 
         private void CBWrapT_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (selectedTexture == null || CBWrapT.SelectedItem == null) return;
+            if (selectedTexture == null || CBWrapT.SelectedItem == null)
+                return;
             selectedTexture.Texture.WrapT = (GXWrapMode)CBWrapT.SelectedItem;
             meleeDataObjectNode.RefreshRenderTextures();
         }
 
         private void CBWrapS_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (selectedTexture == null || CBWrapS.SelectedItem == null) return;
+            if (selectedTexture == null || CBWrapS.SelectedItem == null)
+                return;
             selectedTexture.Texture.WrapS = (GXWrapMode)CBWrapS.SelectedItem;
             meleeDataObjectNode.RefreshRenderTextures();
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void pixelProcessingCB_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBoxPixelEnabled.Checked)
-            {
+            pixelProcessingTableLayout.Visible = pixelProcessingCB.Checked;
+
+            if (pixelProcessingCB.Checked)
                 DOBJ.Material.PixelProcessing = new DatPixelProcessing();
-            }
             else
-            {
                 DOBJ.Material.PixelProcessing = null;
-            }
+
             Reload();
         }
 
@@ -231,73 +241,73 @@ namespace Smash_Forge.GUI.Melee
         private void TBPixelFlags_TextChanged(object sender, EventArgs e)
         {
             if(DOBJ.Material.PixelProcessing != null)
-            DOBJ.Material.PixelProcessing.Flags = (byte)GuiTools.TryParseTBInt(TBPixelFlags, true);
+            DOBJ.Material.PixelProcessing.Flags = (byte)GuiTools.TryParseTBInt(pixelFlagsTB, true);
         }
 
         private void CBAlphaOp_SelectedValueChanged(object sender, EventArgs e)
         {
             if (DOBJ.Material.PixelProcessing != null)
-                DOBJ.Material.PixelProcessing.AlphaOp = (GXAlphaOp)CBAlphaOp.SelectedItem;
+                DOBJ.Material.PixelProcessing.AlphaOp = (GXAlphaOp)alphaOpComboBox.SelectedItem;
         }
 
         private void CBAlphaComp1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (DOBJ.Material.PixelProcessing != null)
-                DOBJ.Material.PixelProcessing.AlphaComp0 = (GXCompareType)CBAlphaComp1.SelectedItem;
+                DOBJ.Material.PixelProcessing.AlphaComp0 = (GXCompareType)alphaComp1ComboBox.SelectedItem;
         }
 
         private void CBAlphaComp2_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (DOBJ.Material.PixelProcessing != null)
-                DOBJ.Material.PixelProcessing.AlphaComp1 = (GXCompareType)CBAlphaComp2.SelectedItem;
+                DOBJ.Material.PixelProcessing.AlphaComp1 = (GXCompareType)alphaComp2ComboBox.SelectedItem;
         }
 
         private void CBSrcFactor_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (DOBJ.Material.PixelProcessing != null)
-                DOBJ.Material.PixelProcessing.SrcFactor = (GXBlendFactor)CBSrcFactor.SelectedItem;
+                DOBJ.Material.PixelProcessing.SrcFactor = (GXBlendFactor)srcFactorComboBox.SelectedItem;
         }
 
         private void CBDstFactor_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (DOBJ.Material.PixelProcessing != null)
-                DOBJ.Material.PixelProcessing.DstFactor = (GXBlendFactor)CBDstFactor.SelectedItem;
+                DOBJ.Material.PixelProcessing.DstFactor = (GXBlendFactor)dstFactorComboBox.SelectedItem;
         }
 
         private void CBBlendMode_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (DOBJ.Material.PixelProcessing != null)
-                DOBJ.Material.PixelProcessing.BlendMode = (GXBlendMode)CBBlendMode.SelectedItem;
+                DOBJ.Material.PixelProcessing.BlendMode = (GXBlendMode)blendModeComboBox.SelectedItem;
         }
 
         private void CBBlendOp_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (DOBJ.Material.PixelProcessing != null)
-                DOBJ.Material.PixelProcessing.BlendOp = (GXLogicOp)CBBlendOp.SelectedItem;
+                DOBJ.Material.PixelProcessing.BlendOp = (GXLogicOp)blendOpComboBox.SelectedItem;
         }
 
         private void CBDepthFunc_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (DOBJ.Material.PixelProcessing != null)
-                DOBJ.Material.PixelProcessing.DepthFunction = (GXCompareType)CBDepthFunc.SelectedItem;
+                DOBJ.Material.PixelProcessing.DepthFunction = (GXCompareType)depthFuncComboBox.SelectedItem;
         }
 
         private void TBDstAlpha_TextChanged(object sender, EventArgs e)
         {
             if (DOBJ.Material.PixelProcessing != null)
-                DOBJ.Material.PixelProcessing.DestinationAlpha = (byte)GuiTools.TryParseTBInt(TBDstAlpha, false);
+                DOBJ.Material.PixelProcessing.DestinationAlpha = (byte)GuiTools.TryParseTBInt(dstAlphaTB, false);
         }
 
         private void TBAlphaRef1_TextChanged(object sender, EventArgs e)
         {
             if (DOBJ.Material.PixelProcessing != null)
-                DOBJ.Material.PixelProcessing.AlphaRef0 = (byte)GuiTools.TryParseTBInt(TBAlphaRef1, false);
+                DOBJ.Material.PixelProcessing.AlphaRef0 = (byte)GuiTools.TryParseTBInt(alphaRef1TB, false);
         }
 
         private void TBAlphaRef2_TextChanged(object sender, EventArgs e)
         {
             if (DOBJ.Material.PixelProcessing != null)
-                DOBJ.Material.PixelProcessing.AlphaRef1 = (byte)GuiTools.TryParseTBInt(TBAlphaRef2, false);
+                DOBJ.Material.PixelProcessing.AlphaRef1 = (byte)GuiTools.TryParseTBInt(alphaRef2TB, false);
         }
     }
 }
