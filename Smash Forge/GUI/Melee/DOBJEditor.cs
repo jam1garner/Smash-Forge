@@ -81,7 +81,6 @@ namespace Smash_Forge.GUI.Melee
             if (DOBJ.Material.PixelProcessing != null)
             {
                 pixelProcessingCB.Checked = true;
-                RefreshPixelProcessingValues();
             }
             else
             {
@@ -226,11 +225,14 @@ namespace Smash_Forge.GUI.Melee
             pixelProcessingTableLayout.Visible = pixelProcessingCB.Checked;
 
             if (pixelProcessingCB.Checked)
-                DOBJ.Material.PixelProcessing = new DatPixelProcessing();
+            {
+                if(DOBJ.Material.PixelProcessing == null)
+                    DOBJ.Material.PixelProcessing = new DatPixelProcessing();
+                RefreshPixelProcessingValues();
+            }
             else
                 DOBJ.Material.PixelProcessing = null;
 
-            Reload();
         }
 
         private void tableLayoutPanel3_Paint(object sender, PaintEventArgs e)
