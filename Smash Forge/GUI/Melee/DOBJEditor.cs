@@ -57,8 +57,8 @@ namespace Smash_Forge.GUI.Melee
             foreach (var suit in Enum.GetValues(typeof(GXLogicOp))) blendOpComboBox.Items.Add(suit);
             foreach (var suit in Enum.GetValues(typeof(GXBlendMode))) blendModeComboBox.Items.Add(suit);
 
-
             Reload();
+            pixelProcessingTableLayout.Visible = pixelProcessingCB.Checked;
         }
 
         public void Reload()
@@ -78,14 +78,7 @@ namespace Smash_Forge.GUI.Melee
                 textureListBox.Items.Add(new TextureNode(t));
             }
 
-            if (DOBJ.Material.PixelProcessing != null)
-            {
-                pixelProcessingCB.Checked = true;
-            }
-            else
-            {
-                pixelProcessingCB.Checked = false;
-            }
+            pixelProcessingCB.Checked = DOBJ.Material.PixelProcessing != null;
         }
 
         private void RefreshPixelProcessingValues()
@@ -226,7 +219,7 @@ namespace Smash_Forge.GUI.Melee
 
             if (pixelProcessingCB.Checked)
             {
-                if(DOBJ.Material.PixelProcessing == null)
+                if (DOBJ.Material.PixelProcessing == null)
                     DOBJ.Material.PixelProcessing = new DatPixelProcessing();
                 RefreshPixelProcessingValues();
             }
