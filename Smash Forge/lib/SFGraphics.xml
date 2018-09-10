@@ -636,109 +636,110 @@
             Encapsulates a shader program and attached shaders. 
             Errors are stored to an internal log, which can be exported with <see cref="M:SFGraphics.GLObjects.Shaders.Shader.GetErrorLog"/>.
             <para></para> <para></para>
-            Ensure that <see cref="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully"/> returns <c>true</c> before rendering to avoid crashes.
+            Ensure that <see cref="P:SFGraphics.GLObjects.Shaders.Shader.LinkStatusIsOk"/> returns <c>true</c> before rendering to avoid crashes.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetFloat(System.String,System.Single)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets a float uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetFloat(System.String,System.Single[])">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets all values for a float[] uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetInt(System.String,System.Int32)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets an int uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetInt(System.String,System.Int32[])">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets all values for an int[] uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetUint(System.String,System.UInt32)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets a uint uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetUint(System.String,System.UInt32[])">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets all values for a uint[] uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetBoolToInt(System.String,System.Boolean)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Converts <paramref name="value"/> to an int and sets an int uniform. 
+            <c>true</c> = 1. <c>false</c> = 0. uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
-            <param name="value">The value to assign to the uniform. True = 1. False = 0.</param>
+            <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector2(System.String,OpenTK.Vector2)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets vec2 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector2(System.String,System.Single,System.Single)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets vec2 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
-            <param name="x"></param>        
-            <param name="y"></param>
+            <param name="x">The value for uniformName.x</param>
+            <param name="y">The value for uniformName.y</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector3(System.String,OpenTK.Vector3)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets vec3 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector3(System.String,System.Single,System.Single,System.Single)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets vec3 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
-            <param name="x"></param>        
-            <param name="y"></param>
-            <param name="z"></param>
+            <param name="x">The value for uniformName.x</param>
+            <param name="y">The value for uniformName.y</param>
+            <param name="z">The value for uniformName.z</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector4(System.String,OpenTK.Vector4)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets vec4 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector4(System.String,System.Single,System.Single,System.Single,System.Single)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets vec4 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="w"></param>
+            <param name="x">The value for uniformName.x</param>
+            <param name="y">The value for uniformName.y</param>
+            <param name="z">The value for uniformName.z</param>
+            <param name="w">The value for uniformName.w</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetMatrix4x4(System.String,OpenTK.Matrix4@)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets a mat4 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
@@ -758,21 +759,31 @@
             Returns the type of OpenGL object. Used for memory management.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully">
+        <member name="P:SFGraphics.GLObjects.Shaders.Shader.LinkStatusIsOk">
             <summary>
-            <c>true</c> when the link status is ok.
-            If <c>false</c>, rendering with this shader will most likely cause an <see cref="T:System.AccessViolationException"/>.
+            If <c>false</c>, rendering with this shader will most likely throw an <see cref="T:System.AccessViolationException"/>.
             <para></para><para></para>
-            The status is updated with each call to <see cref="M:SFGraphics.GLObjects.Shaders.Shader.LoadShader(System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String)"/>, 
+            Updated with each call to <see cref="M:SFGraphics.GLObjects.Shaders.Shader.LoadShader(System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String)"/>, 
             <see cref="M:SFGraphics.GLObjects.Shaders.Shader.AttachShader(System.Int32,OpenTK.Graphics.OpenGL.ShaderType,System.String)"/>, or <see cref="M:SFGraphics.GLObjects.Shaders.Shader.LoadProgramBinary(System.Byte[],OpenTK.Graphics.OpenGL.BinaryFormat)"/>.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Shaders.Shader.ProgramStatusIsValid">
+        <member name="P:SFGraphics.GLObjects.Shaders.Shader.ValidateStatusIsOk">
             <summary>
             <c>true</c> when only one sampler type is used for each texture unit
             and the number of active samplers does not exceed the allowed maximum.
             <para></para><para></para>
             This should be checked at runtime and only for debugging purposes.
+            </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Shaders.Shader.InvalidUniformMessageCallBack">
+            <summary>
+            </summary>
+            <param name="sender">The shader that generated the error</param>
+            <param name="e"></param>
+        </member>
+        <member name="E:SFGraphics.GLObjects.Shaders.Shader.OnInvalidUniformSet">
+            <summary>
+            Occurs when the arguments to a uniform set call are not consistent with the shader.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.#ctor">
@@ -802,7 +813,7 @@
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.AttachShader(System.Int32,OpenTK.Graphics.OpenGL.ShaderType,System.String)">
             <summary>
             Attaches <paramref name="shaderId"/> and links the program. 
-            The value for <see cref="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully"/> is updated.
+            The value for <see cref="P:SFGraphics.GLObjects.Shaders.Shader.LinkStatusIsOk"/> is updated.
             </summary>
             <param name="shaderId">The integer ID returned by <see cref="M:SFGraphics.GLObjects.Shaders.Shader.CreateGlShader(System.String,OpenTK.Graphics.OpenGL.ShaderType)"/></param>
             <param name="shaderType">The type of shader.
@@ -812,7 +823,7 @@
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.LoadShader(System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String)">
             <summary>
             Attempts to compile and attach the shader. 
-            The value returned by <see cref="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully"/> is updated.
+            The value returned by <see cref="P:SFGraphics.GLObjects.Shaders.Shader.LinkStatusIsOk"/> is updated.
             Supported shader types are fragment, vertex , and geometry.
             </summary>
             <param name="shaderSource">A string containing the shader source text</param>
@@ -843,7 +854,7 @@
             <summary>
             Loads the entire program from the compiled binary and format generated 
             by <see cref="M:SFGraphics.GLObjects.Shaders.Shader.GetProgramBinary(OpenTK.Graphics.OpenGL.BinaryFormat@)"/>.
-            The value returned by <see cref="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully"/> is updated.
+            The value returned by <see cref="P:SFGraphics.GLObjects.Shaders.Shader.LinkStatusIsOk"/> is updated.
             <para></para><para></para>
             Hardware or software changes may cause compatibility issues with the program binary.
             If program creation fails with precompiled binaries, resort to compiling the shaders from source. 
@@ -853,14 +864,16 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetUniformLocation(System.String)">
             <summary>
-            Gets the location of a uniform variable.
+            Gets the uniform's location. 
+            Potentially faster than GL.GetUniform due to prestored locations.
             </summary>
             <param name="uniformName">The name of the uniform variable</param>
             <returns>The location of <paramref name="uniformName"/></returns>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetAttribLocation(System.String)">
             <summary>
-            Gets the location of an attribute variable.
+            Gets the attribute's location. 
+            Potentially faster than GL.GetAttribLocation due to prestored locations.
             </summary>
             <param name="attributeName">The name of the vertex attribute variable</param>
             <returns>The location of <paramref name="attributeName"/></returns>
@@ -876,6 +889,40 @@
             <summary>
             Stores hardware info, OpenGL/GLSL version, invalid uniform/attribute names, shader compilation errors, and linker errors.
             </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Shaders.UniformSetEventArgs">
+            <summary>
+            Contains the data used to set a shader uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.UniformSetEventArgs.Name">
+            <summary>
+            The name of the uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.UniformSetEventArgs.Type">
+            <summary>
+            The data type of the uniform.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.UniformSetEventArgs.Value">
+            <summary>
+            The value used to initialize the uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.UniformSetEventArgs.Size">
+            <summary>
+            The number of components for <see cref="P:SFGraphics.GLObjects.Shaders.UniformSetEventArgs.Value"/>.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.UniformSetEventArgs.#ctor(System.String,OpenTK.Graphics.OpenGL.ActiveUniformType,System.Object,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="name"></param>
+            <param name="type"></param>
+            <param name="value"></param>
+            <param name="size"></param>
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.MipmapLoading">
             <summary>

@@ -25,7 +25,7 @@ namespace Smash_Forge.Rendering
 
         public static void DrawNudMaterialSphere(Shader shader, NUD.Material material, Mesh3D screenTriangle, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
-            if (!shader.ProgramCreatedSuccessfully)
+            if (!shader.LinkStatusIsOk)
                 return;
 
             shader.UseProgram();

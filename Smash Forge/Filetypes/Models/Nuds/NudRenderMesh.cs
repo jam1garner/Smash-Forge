@@ -10,7 +10,7 @@ namespace Smash_Forge
 {
     public class NudRenderMesh : GenericMesh<NUD.DisplayVertex>
     {
-        public NudRenderMesh(List<NUD.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices)
+        public NudRenderMesh(List<NUD.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices, PrimitiveType.Triangles)
         {
 
         }
@@ -36,12 +36,12 @@ namespace Smash_Forge
 
         private void SetFaceCulling(NUD.Material material)
         {
-            renderSettings.faceCullingSettings.enableFaceCulling = true;
+            renderSettings.faceCullingSettings.enabled = true;
             renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Back;
             switch (material.cullMode)
             {
                 case 0x0000:
-                    renderSettings.faceCullingSettings.enableFaceCulling = false;
+                    renderSettings.faceCullingSettings.enabled = false;
                     break;
                 case 0x0404:
                     renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Front;
@@ -50,14 +50,14 @@ namespace Smash_Forge
                     renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Back;
                     break;
                 default:
-                    renderSettings.faceCullingSettings.enableFaceCulling = false;
+                    renderSettings.faceCullingSettings.enabled = false;
                     break;
             }
         }
 
         private void SetAlphaTesting(NUD.Material material)
         {
-            renderSettings.alphaTestSettings.enableAlphaTesting = (material.alphaTest == (int)NUD.Material.AlphaTest.Enabled);
+            renderSettings.alphaTestSettings.enabled = (material.alphaTest == (int)NUD.Material.AlphaTest.Enabled);
 
             renderSettings.alphaTestSettings.alphaFunction = AlphaFunction.Always;
             if (NUD.Material.alphaFunctionByMatValue.ContainsKey(material.alphaFunction))
@@ -76,7 +76,7 @@ namespace Smash_Forge
 
         private void SetAlphaBlending(NUD.Material material)
         {
-            renderSettings.alphaBlendSettings.enableAlphaBlending = material.srcFactor != 0 || material.dstFactor != 0;
+            renderSettings.alphaBlendSettings.enabled = material.srcFactor != 0 || material.dstFactor != 0;
             if (NudEnums.srcFactorByMatValue.ContainsKey(material.srcFactor))
                 renderSettings.alphaBlendSettings.sourceFactor = NudEnums.srcFactorByMatValue[material.srcFactor];
 

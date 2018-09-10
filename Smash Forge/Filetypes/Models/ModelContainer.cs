@@ -314,7 +314,7 @@ namespace Smash_Forge
                 }
             }
 
-            if (DatMelee != null && OpenTKSharedResources.shaders["Dat"].ProgramCreatedSuccessfully)
+            if (DatMelee != null && OpenTKSharedResources.shaders["Dat"].LinkStatusIsOk)
             {
                 DatMelee.Render(camera.MvpMatrix);
             }
@@ -325,7 +325,7 @@ namespace Smash_Forge
             if (Kcl != null)
             {
                 shader = OpenTKSharedResources.shaders["KCL"];
-                if (!shader.ProgramCreatedSuccessfully)
+                if (!shader.LinkStatusIsOk)
                     return;
 
                 shader.UseProgram();
@@ -341,7 +341,7 @@ namespace Smash_Forge
                 Bfres.Render(camera, Runtime.drawNudColorIdPass);
             }
 
-            if (NUD != null && OpenTKSharedResources.shaders["Nud"].ProgramCreatedSuccessfully && OpenTKSharedResources.shaders["NudDebug"].ProgramCreatedSuccessfully)
+            if (NUD != null && OpenTKSharedResources.shaders["Nud"].LinkStatusIsOk && OpenTKSharedResources.shaders["NudDebug"].LinkStatusIsOk)
             {
                 // Choose the appropriate shader.
                 if (drawShadow)

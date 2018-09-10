@@ -69,7 +69,7 @@ namespace Smash_Forge.Rendering
             float centerX = 0, float centerY = 0, float centerZ = 0)
         {
             Shader shader = OpenTKSharedResources.shaders["SolidColor3D"];
-            if (!shader.ProgramCreatedSuccessfully)
+            if (!shader.LinkStatusIsOk)
                 return;
 
             // Set up.

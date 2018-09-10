@@ -310,7 +310,7 @@ namespace Smash_Forge
             if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || glControl1 == null)
                 return;
 
-            if (!OpenTKSharedResources.shaders["Texture"].ProgramCreatedSuccessfully)
+            if (!OpenTKSharedResources.shaders["Texture"].LinkStatusIsOk)
                 return;
 
             glControl1.MakeCurrent();
