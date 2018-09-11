@@ -246,7 +246,7 @@ namespace Smash_Forge
 
             shader.SetInt("renderType", (int)Runtime.renderType);
 
-            shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 10);
+            shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern, 10);
 
             shader.SetBoolToInt("renderR", Runtime.renderR);
             shader.SetBoolToInt("renderG", Runtime.renderG);

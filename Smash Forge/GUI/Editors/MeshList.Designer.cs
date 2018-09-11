@@ -51,9 +51,9 @@
             this.generateTanBitanToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.detachToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.vertexColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.vertexColorUtilstripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setToWhiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectColorUtilstripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setToTangentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tangentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bitangentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,9 +73,9 @@
             this.recalculateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.smoothToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generateTanBitanToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.vertexColorToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.vertexColorUtilstripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.setToWhiteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectColorToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectColorUtilstripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.setToAttributeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tangentsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.bitangentsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -97,9 +97,9 @@
             this.generateTanBitanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generateBoundingSpheresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openEditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.vertexColorToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.vertexColorUtilstripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.setToWhiteToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectColorToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectColorUtilstripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.setToAttributeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.tangentsToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.bitangentsToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -129,7 +129,7 @@
             this.bfresRecalculateToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.bfresSmoothToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.bfresVertexColors = new System.Windows.Forms.ToolStripMenuItem();
-            this.bfresSetColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bfresSetColorUtilstripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bfresSetWhiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportMaterialsXMLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uVChannelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -228,7 +228,7 @@
             this.generateTanBitanToolStripMenuItem1,
             this.toolStripSeparator3,
             this.detachToolStripMenuItem,
-            this.vertexColorToolStripMenuItem,
+            this.vertexColorUtilstripMenuItem,
             this.polyFormatToolStripMenuItem});
             this.polyContextMenu.Name = "polyContextMenu";
             this.polyContextMenu.Size = new System.Drawing.Size(183, 314);
@@ -349,15 +349,15 @@
             this.detachToolStripMenuItem.Text = "Detach";
             this.detachToolStripMenuItem.Click += new System.EventHandler(this.detachToolStripMenuItem_Click);
             //
-            // vertexColorToolStripMenuItem
+            // vertexColorUtilstripMenuItem
             //
-            this.vertexColorToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.vertexColorUtilstripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.setToWhiteToolStripMenuItem,
-            this.selectColorToolStripMenuItem,
+            this.selectColorUtilstripMenuItem,
             this.setToTangentsToolStripMenuItem});
-            this.vertexColorToolStripMenuItem.Name = "vertexColorToolStripMenuItem";
-            this.vertexColorToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
-            this.vertexColorToolStripMenuItem.Text = "Vertex Color";
+            this.vertexColorUtilstripMenuItem.Name = "vertexColorUtilstripMenuItem";
+            this.vertexColorUtilstripMenuItem.Size = new System.Drawing.Size(182, 22);
+            this.vertexColorUtilstripMenuItem.Text = "Vertex Color";
             //
             // setToWhiteToolStripMenuItem
             //
@@ -366,12 +366,12 @@
             this.setToWhiteToolStripMenuItem.Text = "Set to White";
             this.setToWhiteToolStripMenuItem.Click += new System.EventHandler(this.setToWhiteToolStripMenuItem_Click);
             //
-            // selectColorToolStripMenuItem
+            // selectColorUtilstripMenuItem
             //
-            this.selectColorToolStripMenuItem.Name = "selectColorToolStripMenuItem";
-            this.selectColorToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
-            this.selectColorToolStripMenuItem.Text = "Select Color";
-            this.selectColorToolStripMenuItem.Click += new System.EventHandler(this.selectColorToolStripMenuItem_Click);
+            this.selectColorUtilstripMenuItem.Name = "selectColorUtilstripMenuItem";
+            this.selectColorUtilstripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.selectColorUtilstripMenuItem.Text = "Select Color";
+            this.selectColorUtilstripMenuItem.Click += new System.EventHandler(this.selectColorUtilstripMenuItem_Click);
             //
             // setToTangentsToolStripMenuItem
             //
@@ -430,7 +430,7 @@
             this.toolStripSeparator6,
             this.calculateNormalsToolStripMenuItem1,
             this.generateTanBitanToolStripMenuItem2,
-            this.vertexColorToolStripMenuItem1});
+            this.vertexColorUtilstripMenuItem1});
             this.meshContextMenu.Name = "meshContextMenu";
             this.meshContextMenu.Size = new System.Drawing.Size(178, 170);
             //
@@ -518,15 +518,15 @@
             this.generateTanBitanToolStripMenuItem2.Text = "Generate Tan/Bitan";
             this.generateTanBitanToolStripMenuItem2.Click += new System.EventHandler(this.generateTanBitanToolStripMenuItem2_Click);
             //
-            // vertexColorToolStripMenuItem1
+            // vertexColorUtilstripMenuItem1
             //
-            this.vertexColorToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.vertexColorUtilstripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.setToWhiteToolStripMenuItem1,
-            this.selectColorToolStripMenuItem1,
+            this.selectColorUtilstripMenuItem1,
             this.setToAttributeToolStripMenuItem});
-            this.vertexColorToolStripMenuItem1.Name = "vertexColorToolStripMenuItem1";
-            this.vertexColorToolStripMenuItem1.Size = new System.Drawing.Size(177, 22);
-            this.vertexColorToolStripMenuItem1.Text = "Vertex Color";
+            this.vertexColorUtilstripMenuItem1.Name = "vertexColorUtilstripMenuItem1";
+            this.vertexColorUtilstripMenuItem1.Size = new System.Drawing.Size(177, 22);
+            this.vertexColorUtilstripMenuItem1.Text = "Vertex Color";
             //
             // setToWhiteToolStripMenuItem1
             //
@@ -535,12 +535,12 @@
             this.setToWhiteToolStripMenuItem1.Text = "Set to White";
             this.setToWhiteToolStripMenuItem1.Click += new System.EventHandler(this.setToWhiteToolStripMenuItem1_Click);
             //
-            // selectColorToolStripMenuItem1
+            // selectColorUtilstripMenuItem1
             //
-            this.selectColorToolStripMenuItem1.Name = "selectColorToolStripMenuItem1";
-            this.selectColorToolStripMenuItem1.Size = new System.Drawing.Size(154, 22);
-            this.selectColorToolStripMenuItem1.Text = "Select Color";
-            this.selectColorToolStripMenuItem1.Click += new System.EventHandler(this.selectColorToolStripMenuItem1_Click);
+            this.selectColorUtilstripMenuItem1.Name = "selectColorUtilstripMenuItem1";
+            this.selectColorUtilstripMenuItem1.Size = new System.Drawing.Size(154, 22);
+            this.selectColorUtilstripMenuItem1.Text = "Select Color";
+            this.selectColorUtilstripMenuItem1.Click += new System.EventHandler(this.selectColorUtilstripMenuItem1_Click);
             //
             // setToAttributeToolStripMenuItem
             //
@@ -593,7 +593,7 @@
             this.generateTanBitanToolStripMenuItem,
             this.generateBoundingSpheresToolStripMenuItem,
             this.openEditToolStripMenuItem,
-            this.vertexColorToolStripMenuItem2});
+            this.vertexColorUtilstripMenuItem2});
             this.nudContextMenu.Name = "nudContextMenu";
             this.nudContextMenu.Size = new System.Drawing.Size(210, 208);
             //
@@ -707,15 +707,15 @@
             this.openEditToolStripMenuItem.Text = "Open Edit";
             this.openEditToolStripMenuItem.Click += new System.EventHandler(this.openEditToolStripMenuItem_Click);
             //
-            // vertexColorToolStripMenuItem2
+            // vertexColorUtilstripMenuItem2
             //
-            this.vertexColorToolStripMenuItem2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.vertexColorUtilstripMenuItem2.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.setToWhiteToolStripMenuItem2,
-            this.selectColorToolStripMenuItem2,
+            this.selectColorUtilstripMenuItem2,
             this.setToAttributeToolStripMenuItem1});
-            this.vertexColorToolStripMenuItem2.Name = "vertexColorToolStripMenuItem2";
-            this.vertexColorToolStripMenuItem2.Size = new System.Drawing.Size(220, 22);
-            this.vertexColorToolStripMenuItem2.Text = "Vertex Color";
+            this.vertexColorUtilstripMenuItem2.Name = "vertexColorUtilstripMenuItem2";
+            this.vertexColorUtilstripMenuItem2.Size = new System.Drawing.Size(220, 22);
+            this.vertexColorUtilstripMenuItem2.Text = "Vertex Color";
             //
             // setToWhiteToolStripMenuItem2
             //
@@ -724,12 +724,12 @@
             this.setToWhiteToolStripMenuItem2.Text = "Set to White";
             this.setToWhiteToolStripMenuItem2.Click += new System.EventHandler(this.setToWhiteToolStripMenuItem2_Click);
             //
-            // selectColorToolStripMenuItem2
+            // selectColorUtilstripMenuItem2
             //
-            this.selectColorToolStripMenuItem2.Name = "selectColorToolStripMenuItem2";
-            this.selectColorToolStripMenuItem2.Size = new System.Drawing.Size(154, 22);
-            this.selectColorToolStripMenuItem2.Text = "Select Color";
-            this.selectColorToolStripMenuItem2.Click += new System.EventHandler(this.selectColorToolStripMenuItem2_Click);
+            this.selectColorUtilstripMenuItem2.Name = "selectColorUtilstripMenuItem2";
+            this.selectColorUtilstripMenuItem2.Size = new System.Drawing.Size(154, 22);
+            this.selectColorUtilstripMenuItem2.Text = "Select Color";
+            this.selectColorUtilstripMenuItem2.Click += new System.EventHandler(this.selectColorUtilstripMenuItem2_Click);
             //
             // setToAttributeToolStripMenuItem1
             //
@@ -959,19 +959,19 @@
             // bfresVertexColors
             //
             this.bfresVertexColors.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.bfresSetColorToolStripMenuItem,
+            this.bfresSetColorUtilstripMenuItem,
             this.bfresSetWhiteToolStripMenuItem});
             this.bfresVertexColors.Name = "bfresVertexColors";
             this.bfresVertexColors.Size = new System.Drawing.Size(193, 22);
             this.bfresVertexColors.Text = "Vertex Colors";
             this.bfresVertexColors.Click += new System.EventHandler(this.bfresSetVertexColors_Click);
             //
-            // bfresSetColorToolStripMenuItem
+            // bfresSetColorUtilstripMenuItem
             //
-            this.bfresSetColorToolStripMenuItem.Name = "bfresSetColorToolStripMenuItem";
-            this.bfresSetColorToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
-            this.bfresSetColorToolStripMenuItem.Text = "Set Color";
-            this.bfresSetColorToolStripMenuItem.Click += new System.EventHandler(this.setColorToolStripMenuItem_Click);
+            this.bfresSetColorUtilstripMenuItem.Name = "bfresSetColorUtilstripMenuItem";
+            this.bfresSetColorUtilstripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.bfresSetColorUtilstripMenuItem.Text = "Set Color";
+            this.bfresSetColorUtilstripMenuItem.Click += new System.EventHandler(this.setColorUtilstripMenuItem_Click);
             //
             // bfresSetWhiteToolStripMenuItem
             //
@@ -1171,26 +1171,26 @@
         private System.Windows.Forms.ToolStripMenuItem recalculateToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem smoothToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem generateTanBitanToolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem vertexColorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem vertexColorUtilstripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setToWhiteToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem selectColorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectColorUtilstripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setToTangentsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tangentsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bitangentsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem normalsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem uVsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem polyFormatToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem vertexColorToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem vertexColorUtilstripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem setToWhiteToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem selectColorToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem selectColorUtilstripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem setToAttributeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tangentsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem bitangentsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem normalsToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem uVsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem vertexColorToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem vertexColorUtilstripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem setToWhiteToolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem selectColorToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem selectColorUtilstripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem setToAttributeToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem tangentsToolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem bitangentsToolStripMenuItem2;
@@ -1211,7 +1211,7 @@
         private System.Windows.Forms.ToolStripMenuItem bfresRecalculateToolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem bfresSmoothToolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem bfresVertexColors;
-        private System.Windows.Forms.ToolStripMenuItem bfresSetColorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bfresSetColorUtilstripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bfresSetWhiteToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip bfresBntxContextMenuStrip2;
         private System.Windows.Forms.ToolStripMenuItem bntxExporttoolStripMenuItem2;

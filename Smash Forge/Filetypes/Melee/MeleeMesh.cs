@@ -21,11 +21,11 @@ namespace Smash_Forge
 
     public class MeleeMesh : GenericMesh<MeleeVertex>
     {
-        public MeleeMesh(List<MeleeVertex> vertices, List<int> vertexIndices)
-            : base(vertices, vertexIndices)
+        public MeleeMesh(List<MeleeVertex> vertices, List<int> vertexIndices, PrimitiveType primitiveType)
+            : base(vertices, vertexIndices, primitiveType)
         {
             // TODO: Why is this flipped?
-            renderSettings.faceCullingSettings.enableFaceCulling = true;
+            renderSettings.faceCullingSettings.enabled = true;
             renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Front;
         }
 
@@ -40,7 +40,7 @@ namespace Smash_Forge
 
         private void SetAlphaTesting(DatDOBJ datDOBJ)
         {
-            renderSettings.alphaTestSettings.enableAlphaTesting = true;
+            renderSettings.alphaTestSettings.enabled = true;
             renderSettings.alphaTestSettings.referenceAlpha = datDOBJ.Material.PixelProcessing.AlphaRef0;
             renderSettings.alphaTestSettings.alphaFunction = MeleeDatToOpenGL.GetAlphaFunctionFromCompareType(datDOBJ.Material.PixelProcessing.AlphaComp0);
         }

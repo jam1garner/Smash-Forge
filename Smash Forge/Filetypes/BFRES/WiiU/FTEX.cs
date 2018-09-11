@@ -28,7 +28,7 @@ namespace Smash_Forge
                 SFTex.Texture2D texture2d = FTEX.CreateTexture2D(tex.texture);
                 glTexByName.Add(tex.Text, texture2d);
 
-                tex.texture.display = texture2d.Id;
+                tex.texture.display = texture2d;
                 tex.display = tex.texture.display;
             }
         }
@@ -39,7 +39,7 @@ namespace Smash_Forge
         public int width;
         public int height;
         public int format;
-        public int display;
+        public SFTex.Texture display;
         public byte[] reserve;
 
 
@@ -128,7 +128,7 @@ namespace Smash_Forge
         {
             public byte[] data;
             public int width, height;
-            public int display = 0;
+            public SFTex.Texture display;
             public PixelInternalFormat pixelInternalFormat;
             public PixelFormat pixelFormat;
             public PixelType pixelType = PixelType.UnsignedByte;

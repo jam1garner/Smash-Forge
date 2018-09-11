@@ -240,9 +240,9 @@ namespace Smash_Forge
             shader.SetVector2("bumpMapScale", new Vector2(1, 1));
             shader.SetVector2("specularScale", new Vector2(1, 1));
 
-            shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 0);
-            shader.SetTexture("bumpMapTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 2);
-            shader.SetTexture("specularTex", Rendering.RenderTools.defaultTex.Id, TextureTarget.Texture2D, 3);
+            shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex, 0);
+            shader.SetTexture("bumpMapTex", Rendering.RenderTools.defaultTex, 2);
+            shader.SetTexture("specularTex", Rendering.RenderTools.defaultTex, 3);
 
             bool hasDiffuse = false;
             bool hasBumpMap = false;
@@ -307,7 +307,7 @@ namespace Smash_Forge
         private static void SetSphereTexUniforms(Shader shader, MeleeRenderTexture renderTex)
         {
             shader.SetVector2("sphereScale", new Vector2(renderTex.WScale, renderTex.HScale));
-            shader.SetTexture("sphereTex", renderTex.texture.Id, TextureTarget.Texture2D, 1);
+            shader.SetTexture("sphereTex", renderTex.texture, 1);
         }
 
         private static void SetBumpMapTexUniforms(Shader shader, MeleeRenderTexture renderTex)
@@ -315,19 +315,19 @@ namespace Smash_Forge
             shader.SetVector2("bumpMapTexScale", new Vector2(renderTex.WScale, renderTex.HScale));
             shader.SetInt("bumpMapWidth", renderTex.texture.Width);
             shader.SetInt("bumpMapHeight", renderTex.texture.Height);
-            shader.SetTexture("bumpMapTex", renderTex.texture.Id, TextureTarget.Texture2D, 2);
+            shader.SetTexture("bumpMapTex", renderTex.texture, 2);
         }
 
         private static void SetDiffuseTexUniforms(Shader shader, MeleeRenderTexture renderTex)
         {
             shader.SetVector2("diffuseScale", new Vector2(renderTex.WScale, renderTex.HScale));
-            shader.SetTexture("diffuseTex", renderTex.texture.Id, TextureTarget.Texture2D, 0);
+            shader.SetTexture("diffuseTex", renderTex.texture, 0);
         }
 
         private static void SetSpecularTexUniforms(Shader shader, MeleeRenderTexture renderTex)
         {
             shader.SetVector2("specularScale", new Vector2(renderTex.WScale, renderTex.HScale));
-            shader.SetTexture("specularTex", renderTex.texture.Id, TextureTarget.Texture2D, 3);
+            shader.SetTexture("specularTex", renderTex.texture, 3);
         }
 
         private static uint GetTextureType(MeleeRenderTexture renderTex)
@@ -358,7 +358,7 @@ namespace Smash_Forge
 
         public void SetRgbaColor(Shader shader, string name, Color color)
         {
-            shader.SetVector4(name, SFGraphics.Utils.ColorTools.Vector4FromColor(color));
+            shader.SetVector4(name, SFGraphics.Utils.ColorUtils.Vector4FromColor(color));
         }
 
         public void RefreshRendering()
@@ -410,8 +410,7 @@ namespace Smash_Forge
             List<VertexContainer<MeleeVertex>> optimizedContainers = MeshBatchUtils.GroupContainersByPrimitiveType(vertexContainers);
             foreach (var container in optimizedContainers)
             {
-                MeleeMesh meleeMesh = new MeleeMesh(container.vertices, container.vertexIndices);
-                meleeMesh.PrimitiveType = container.primitiveType;
+                MeleeMesh meleeMesh = new MeleeMesh(container.vertices, container.vertexIndices, container.primitiveType);
                 renderMeshes.Add(meleeMesh);
             }
         }

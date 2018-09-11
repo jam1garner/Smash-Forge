@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.Windows.Forms;
+using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {
@@ -14,7 +15,7 @@ namespace Smash_Forge
         public byte[] data;
         public Bitmap texture;
 
-        public int display = 0;
+        public Texture display;
 
         public BCH_Texture()
         {
