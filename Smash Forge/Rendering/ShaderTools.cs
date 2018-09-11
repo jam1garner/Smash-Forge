@@ -244,7 +244,7 @@ namespace Smash_Forge.Rendering
 
         public static void SystemColorVector3Uniform(Shader shader, System.Drawing.Color color, string name)
         {
-            shader.SetVector3(name, ColorTools.Vector4FromColor(color).Xyz);
+            shader.SetVector3(name, ColorUtils.Vector4FromColor(color).Xyz);
         }
 
         public static void SaveErrorLogs()

@@ -2,7 +2,7 @@
 using OpenTK.Graphics.OpenGL;
 using SALT.Graphics;
 using SFGraphics.Cameras;
-using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.BufferObjects;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.Utils;
@@ -534,7 +534,7 @@ namespace Smash_Forge
             shader.SetVector3("cameraPosition", camera.Position);
             shader.SetFloat("zBufferOffset", material.zBufferOffset);
             shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
-            shader.SetVector3("colorId", ColorTools.Vector4FromColor(Color.FromArgb(id)).Xyz);
+            shader.SetVector3("colorId", ColorUtils.Vector4FromColor(Color.FromArgb(id)).Xyz);
             shader.SetBoolToInt("drawId", drawId);
 
             // The fragment alpha is set to 1 when alpha blending/testing aren't used.
@@ -605,7 +605,7 @@ namespace Smash_Forge
             if (lightSetNumber >= 0 && lightSetNumber <= maxLightSet)
             {
                 Color color = lightSetColorByIndex[lightSetNumber];
-                shader.SetVector3("lightSetColor", ColorTools.Vector4FromColor(color).Xyz);
+                shader.SetVector3("lightSetColor", ColorUtils.Vector4FromColor(color).Xyz);
             }
         }
 

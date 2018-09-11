@@ -1089,7 +1089,7 @@ namespace Smash_Forge
             n.UpdateRenderMeshes();
         }
 
-        private void selectColorToolStripMenuItem_Click(object sender, EventArgs e)
+        private void selectColorUtilstripMenuItem_Click(object sender, EventArgs e)
         {
             if (!(filesTreeView.SelectedNode is NUD.Polygon))
                 return;
@@ -1202,7 +1202,7 @@ namespace Smash_Forge
             n.UpdateRenderMeshes();
         }
 
-        private void selectColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void selectColorUtilstripMenuItem1_Click(object sender, EventArgs e)
         {
             if (!(filesTreeView.SelectedNode is NUD.Mesh))
                 return;
@@ -1413,7 +1413,7 @@ namespace Smash_Forge
             n.UpdateRenderMeshes();
         }
 
-        private void selectColorToolStripMenuItem2_Click(object sender, EventArgs e)
+        private void selectColorUtilstripMenuItem2_Click(object sender, EventArgs e)
         {
             if (!(filesTreeView.SelectedNode is NUD))
                 return;
@@ -1642,7 +1642,7 @@ namespace Smash_Forge
 
         }
 
-        private void setColorToolStripMenuItem_Click(object sender, EventArgs e)
+        private void setColorUtilstripMenuItem_Click(object sender, EventArgs e)
         {
             if (!(filesTreeView.SelectedNode is BFRES.Mesh))
                 return;

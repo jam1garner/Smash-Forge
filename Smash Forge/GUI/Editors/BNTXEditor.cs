@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.IO;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
-using OpenTK.Graphics.OpenGL;
-using SFGraphics.GLObjects.Textures;
-using SFGraphics.GLObjects;
+﻿using OpenTK.Graphics.OpenGL;
+using SFGraphics.GLObjects.Framebuffers;
 using SFGraphics.GLObjects.GLObjectManagement;
+using SFGraphics.GLObjects.Textures;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Meshes;
+using System;
+using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -260,8 +255,6 @@ namespace Smash_Forge
                     t.texture.pixelFormat = newTexture.pixelFormat;
                     newTexture.mipmaps.Add(t.texture.mipmaps[0]);
 
-                    GL.DeleteTexture(t.texture.display);
-
                     BNTX.glTexByName.Add(ofd.FileName, BRTI.CreateTexture2D(t.texture));
 
                     if (newTexture == null)
@@ -347,12 +340,12 @@ namespace Smash_Forge
             int width = ((BRTI)textureListBox.SelectedItem).Width;
             int height = ((BRTI)textureListBox.SelectedItem).Height;
 
-            int texture = ((BRTI)textureListBox.SelectedItem).display;
+            Texture texture = ((BRTI)textureListBox.SelectedItem).display;
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             if (textureToRender != null)
             {
-                ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, screenTriangle, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
+                ScreenDrawing.DrawTexturedQuad(textureToRender, width, height, screenTriangle, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
                     currentMipLevel);
             }
 

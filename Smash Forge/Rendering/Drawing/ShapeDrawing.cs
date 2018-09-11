@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.Shaders;
-using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.BufferObjects;
 
 namespace Smash_Forge.Rendering
 {

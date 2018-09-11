@@ -467,7 +467,10 @@ namespace Smash_Forge
                 GL.ActiveTexture(TextureUnit.Texture0);
                 BCH_Material material = (BCH_Material)((BCH)Parent.Parent).Materials.Nodes[m.MaterialIndex];
                 BCH_Texture tex = ((BCH)Parent.Parent).GetTexture(material.Text);
-                GL.BindTexture(TextureTarget.Texture2D, tex == null ? RenderTools.defaultTex.Id : tex.display);
+                if (tex == null)
+                    RenderTools.defaultTex.Bind();
+                else
+                    tex.display.Bind();
                 GL.Uniform1(shader.GetUniformLocation("tex"), 0);
                 if (!m.Checked) continue;
 

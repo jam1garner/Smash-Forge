@@ -435,8 +435,8 @@ namespace Smash_Forge
             shader.SetVector3("difLightDirection", Vector3.TransformNormal(lightDirection, invertedCamera).Normalized());
 
             // PBR IBL
-            shader.SetTexture("irradianceMap", RenderTools.diffusePbr.Id, TextureTarget.TextureCubeMap, 18);
-            shader.SetTexture("specularIbl", RenderTools.specularPbr.Id, TextureTarget.TextureCubeMap, 19);
+            shader.SetTexture("irradianceMap", RenderTools.diffusePbr, 18);
+            shader.SetTexture("specularIbl", RenderTools.specularPbr, 19);
         }
 
         private void DrawMesh(Mesh mesh, FMDL_Model fmdl, Camera camera, bool drawPolyIds = false, bool drawSelection = false)
@@ -618,7 +618,7 @@ namespace Smash_Forge
             shader.SetVector4("gsys_bake_st1", new Vector4(1, 1, 0, 0));
             shader.SetInt("enableCellShading", 0);
 
-            shader.SetVector3("colorId", ColorTools.Vector4FromColor(Color.FromArgb(id)).Xyz);
+            shader.SetVector3("colorId", ColorUtils.Vector4FromColor(Color.FromArgb(id)).Xyz);
             shader.SetBoolToInt("drawId", drawId);
 
             //BOTW uses this shader so lets add in cell shading
@@ -813,9 +813,9 @@ namespace Smash_Forge
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex.Id);
 
-            shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 10);
-            shader.SetTexture("weightRamp1", RenderTools.boneWeightGradient.Id, TextureTarget.Texture2D, 11);
-            shader.SetTexture("weightRamp2", RenderTools.boneWeightGradient2.Id, TextureTarget.Texture2D, 12);
+            shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern, 10);
+            shader.SetTexture("weightRamp1", RenderTools.boneWeightGradient, 11);
+            shader.SetTexture("weightRamp2", RenderTools.boneWeightGradient2, 12);
             GL.Uniform1(shader.GetUniformLocation("normalMap"), 0);
             GL.Uniform1(shader.GetUniformLocation("BakeShadowMap"), 0);
 

@@ -12,7 +12,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using SALT.Moveset.AnimCMD;
 using SFGraphics.Cameras;
-using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.Framebuffers;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.Utils;
 using Smash_Forge.Params;
@@ -579,8 +579,8 @@ namespace Smash_Forge
                     {
                         // The color is the polygon index (not the render order).
                         // Convert to Vector3 to ignore the alpha.
-                        Vector3 polyColor = ColorTools.Vector4FromColor(Color.FromArgb(p.DisplayId)).Xyz;
-                        Vector3 pickedColor = ColorTools.Vector4FromColor(pixelColor).Xyz;
+                        Vector3 polyColor = ColorUtils.Vector4FromColor(Color.FromArgb(p.DisplayId)).Xyz;
+                        Vector3 pickedColor = ColorUtils.Vector4FromColor(pixelColor).Xyz;
 
                         if (polyColor == pickedColor)
                             return p;
@@ -1704,13 +1704,13 @@ namespace Smash_Forge
                 // Draw the texture to the screen into a smaller FBO.
                 imageBrightHdrFbo.Bind();
                 GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
-                ScreenDrawing.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1].Id, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
+                ScreenDrawing.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1], imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, width, height);
 
-                ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id, screenVao);
+                ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0], imageBrightHdrFbo.ColorAttachments[0], screenVao);
             }
 
             FixedFunctionRendering();
@@ -1766,8 +1766,8 @@ namespace Smash_Forge
 
         private void DrawViewportBackground()
         {
-            Vector3 topColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
-            Vector3 bottomColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
+            Vector3 topColor = ColorUtils.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
+            Vector3 bottomColor = ColorUtils.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
 
             // Only use the top color for solid color rendering.
             if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
@@ -1788,7 +1788,7 @@ namespace Smash_Forge
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
                     if (m is ModelContainer)
-                        ((ModelContainer)m).Render(camera, depthMap.Id, lightMatrix, new Vector2(glViewport.Width, glViewport.Height), drawShadow);
+                        ((ModelContainer)m).Render(camera, depthMap, lightMatrix, new Vector2(glViewport.Width, glViewport.Height), drawShadow);
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)
@@ -2061,7 +2061,7 @@ namespace Smash_Forge
         {
             GL.PopAttrib();
             NutTexture tex = ((NutTexture)meshList.filesTreeView.SelectedNode);
-            ScreenDrawing.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HashId].Id, tex.Width, tex.Height, screenVao);
+            ScreenDrawing.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HashId], tex.Width, tex.Height, screenVao);
         }
 
         private void DrawBchTex()
