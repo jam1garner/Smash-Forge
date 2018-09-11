@@ -63,7 +63,7 @@ namespace Smash_Forge
             if (NUD.Material.alphaFunctionByMatValue.ContainsKey(material.alphaFunction))
                 renderSettings.alphaTestSettings.alphaFunction = NUD.Material.alphaFunctionByMatValue[material.alphaFunction];
 
-            renderSettings.alphaTestSettings.referenceAlpha = material.RefAlpha;
+            renderSettings.alphaTestSettings.referenceAlpha = material.RefAlpha / 255.0f;
         }
 
         private void SetDepthTesting(NUD.Material material)
