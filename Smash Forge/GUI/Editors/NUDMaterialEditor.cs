@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.GLObjectManagement;
+using SFGraphics.GLObjects.Textures;
 using SFGraphics.Utils;
 using Smash_Forge.Filetypes.Models.Nuds;
 using Smash_Forge.Rendering;
@@ -838,19 +839,19 @@ namespace Smash_Forge
             if (!tabControl1.SelectedTab.Text.Equals("Textures"))
                 return;
 
-            if (!OpenTKSharedResources.shaders["Texture"].ProgramCreatedSuccessfully)
+            if (!OpenTKSharedResources.shaders["Texture"].LinkStatusIsOk)
                 return;
 
             // Get the selected NUT texture.
             NutTexture nutTexture = null;
-            int displayTexture = 0;
+            Texture displayTexture = null;
             if (currentMaterialList[currentMatIndex].entries.ContainsKey("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
             {
                 int hash = currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash;
 
                 // Display dummy textures from resources. 
                 if (Enum.IsDefined(typeof(NudEnums.DummyTexture), hash))
-                    displayTexture = RenderTools.dummyTextures[(NudEnums.DummyTexture)hash].Id;
+                    displayTexture = RenderTools.dummyTextures[(NudEnums.DummyTexture)hash];
                 else
                 {
                     foreach (NUT n in Runtime.TextureContainers)
@@ -858,7 +859,7 @@ namespace Smash_Forge
                         if (n.glTexByHashId.ContainsKey(hash))
                         {
                             n.getTextureByID(hash, out nutTexture);
-                            displayTexture = n.glTexByHashId[hash].Id;
+                            displayTexture = n.glTexByHashId[hash];
                             break;
                         }
                     }
@@ -873,7 +874,8 @@ namespace Smash_Forge
                 Mesh3D screenTriangle = ScreenDrawing.CreateScreenTriangle();
 
                 GL.Viewport(texAlphaGlControl.ClientRectangle);
-                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenTriangle, false, false, false, true);
+                if (displayTexture != null)
+                    ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenTriangle, false, false, false, true);
                 texAlphaGlControl.SwapBuffers();
             }
             else
@@ -883,7 +885,8 @@ namespace Smash_Forge
                 Mesh3D screenTriangle = ScreenDrawing.CreateScreenTriangle();
 
                 GL.Viewport(texRgbGlControl.ClientRectangle);
-                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenTriangle);
+                if (displayTexture != null)
+                    ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenTriangle);
                 texRgbGlControl.SwapBuffers();
             }
         }
@@ -911,9 +914,9 @@ namespace Smash_Forge
             {
                 string selectedMatPropKey = propertiesListView.SelectedItems[0].Text;
                 colorSelect.BackColor = Color.FromArgb(255,
-                    ColorTools.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][0]),
-                    ColorTools.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][1]),
-                    ColorTools.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][2]));
+                    ColorUtils.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][0]),
+                    ColorUtils.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][1]),
+                    ColorUtils.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][2]));
             }
             catch (ArgumentOutOfRangeException)
             {

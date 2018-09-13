@@ -8,12 +8,12 @@ namespace Smash_Forge.Rendering.Meshes
 {
     class Mesh3D : GenericMesh<Vector3>
     {
-        public Mesh3D(List<Vector3> vertices) : base(vertices)
+        public Mesh3D(List<Vector3> vertices) : base(vertices, PrimitiveType.Triangles)
         {
 
         }
 
-        public Mesh3D(List<Vector3> vertices, List<int> indices) : base(vertices, indices)
+        public Mesh3D(List<Vector3> vertices, List<int> indices) : base(vertices, indices, PrimitiveType.Triangles)
         {
 
         }
@@ -22,7 +22,7 @@ namespace Smash_Forge.Rendering.Meshes
         {
             return new List<VertexAttributeInfo>()
             {
-                new VertexAttributeInfo("position", ValueCount.Four, VertexAttribPointerType.Float)
+                new VertexAttributeInfo("position", ValueCount.Three, VertexAttribPointerType.Float)
             };
         }
     }

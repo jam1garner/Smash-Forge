@@ -171,7 +171,7 @@ namespace Smash_Forge.Rendering
             {
                 LoadFromPrecompiledBinary(shader, compiledBinaryPath, compiledFormatPath);
 
-                if (!shader.ProgramCreatedSuccessfully)
+                if (!shader.LinkStatusIsOk)
                 {
                     // Load from source and generate binary.
                     LoadShaderFiles(shader, shaderRelativePaths);
@@ -183,7 +183,7 @@ namespace Smash_Forge.Rendering
                 // Don't generate binaries for programs that did not link.
                 // Attempting to load them will crash.
                 LoadShaderFiles(shader, shaderRelativePaths);
-                if (canLoadBinaries && shader.ProgramCreatedSuccessfully)
+                if (canLoadBinaries && shader.LinkStatusIsOk)
                     SavePrecompiledBinaryAndFormat(shader, compiledBinaryPath, compiledFormatPath);
             }
 
@@ -250,7 +250,7 @@ namespace Smash_Forge.Rendering
 
         public static void SystemColorVector3Uniform(Shader shader, System.Drawing.Color color, string name)
         {
-            shader.SetVector3(name, ColorTools.Vector4FromColor(color).Xyz);
+            shader.SetVector3(name, ColorUtils.Vector4FromColor(color).Xyz);
         }
 
         public static void SaveErrorLogs()
@@ -260,7 +260,7 @@ namespace Smash_Forge.Rendering
             int successfulCompilations = OpenTKSharedResources.shaders.Count;
             foreach (string shaderName in OpenTKSharedResources.shaders.Keys)
             {
-                if (!OpenTKSharedResources.shaders[shaderName].ProgramCreatedSuccessfully)
+                if (!OpenTKSharedResources.shaders[shaderName].LinkStatusIsOk)
                 {
                     compileErrorList.Add(shaderName);
                     successfulCompilations -= 1;
