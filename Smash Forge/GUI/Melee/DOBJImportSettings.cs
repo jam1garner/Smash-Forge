@@ -79,6 +79,7 @@ namespace Smash_Forge.GUI.Melee
 
             DatJOBJ[] Bones = DOBJ.GetRoot().Root.GetJOBJinOrder();
             VBN RenderBones = DOBJ.GetRoot().RenderBones;
+            RenderBones.reset();
             VBN ImportedBones = smd.Bones;
 
             DOBJ.ClearPolygons(null, null);
@@ -161,15 +162,15 @@ namespace Smash_Forge.GUI.Melee
 
                 GXVertex v = SMDVertexToGXVertex(t.v1);
                 v.PMXID = GetWeightListIndex(p.BoneWeightList, bwl1);
-                v.Pos = RigVertex(t.v1.P, RenderBones, p.BoneWeightList[v.PMXID/3], Bones, parent);
+                RigVertex(ref v, RenderBones, p.BoneWeightList[v.PMXID/3], Bones, parent);
                
                 GXVertex v2 = SMDVertexToGXVertex(t.v2);
                 v2.PMXID = GetWeightListIndex(p.BoneWeightList, CreateWeightList(t.v2.Bones, t.v2.Weights, Bones, ImportedBones));
-                v2.Pos = RigVertex(t.v2.P, RenderBones, p.BoneWeightList[v2.PMXID / 3], Bones, parent);
+                RigVertex(ref v2, RenderBones, p.BoneWeightList[v2.PMXID / 3], Bones, parent);
                 
                 GXVertex v3 = SMDVertexToGXVertex(t.v3);
                 v3.PMXID = GetWeightListIndex(p.BoneWeightList, CreateWeightList(t.v3.Bones, t.v3.Weights, Bones, ImportedBones));
-                v3.Pos = RigVertex(t.v3.P, RenderBones, p.BoneWeightList[v3.PMXID / 3], Bones, parent);
+                RigVertex(ref v3, RenderBones, p.BoneWeightList[v3.PMXID / 3], Bones, parent);
                
                 vert.Add(v);
                 vert.Add(v2);
@@ -182,7 +183,7 @@ namespace Smash_Forge.GUI.Melee
             Close();
         }
 
-        private GXVector3 RigVertex(Vector3 P, VBN RenderBones, List<DatBoneWeight> Weight, DatJOBJ[] jobjs, DatJOBJ Parent = null)
+        private void RigVertex(ref GXVertex P, VBN RenderBones, List<DatBoneWeight> Weight, DatJOBJ[] jobjs, DatJOBJ Parent = null)
         {
             if(Weight.Count == 1)
             {
@@ -190,7 +191,10 @@ namespace Smash_Forge.GUI.Melee
                 for (i = 0; i < jobjs.Length; i++)
                     if (jobjs[i] == Weight[0].jobj)
                         break;
-                P = Vector3.TransformPosition(P, RenderBones.bones[i].transform.Inverted());
+                Vector3 NewP = Vector3.TransformPosition(new Vector3(P.Pos.X, P.Pos.Y, P.Pos.Z), RenderBones.bones[i].transform.Inverted());
+                P.Pos.X = NewP.X; P.Pos.Y = NewP.Y; P.Pos.Z = NewP.Z;
+                NewP = Vector3.TransformNormal(new Vector3(P.Nrm.X, P.Nrm.Y, P.Nrm.Z), RenderBones.bones[i].transform.Inverted());
+                P.Nrm.X = NewP.X; P.Nrm.Y = NewP.Y; P.Nrm.Z = NewP.Z;
             }
             if (Weight.Count == 0 && Parent != null)
             {
@@ -198,10 +202,11 @@ namespace Smash_Forge.GUI.Melee
                 for (i = 0; i < jobjs.Length; i++)
                     if (jobjs[i] == Parent)
                         break;
-                P = Vector3.TransformPosition(P, RenderBones.bones[i].transform.Inverted());
+                Vector3 NewP = Vector3.TransformPosition(new Vector3(P.Pos.X, P.Pos.Y, P.Pos.Z), RenderBones.bones[i].transform.Inverted());
+                P.Pos.X = NewP.X; P.Pos.Y = NewP.Y; P.Pos.Z = NewP.Z;
+                NewP = Vector3.TransformNormal(new Vector3(P.Nrm.X, P.Nrm.Y, P.Nrm.Z), RenderBones.bones[i].transform.Inverted());
+                P.Nrm.X = NewP.X; P.Nrm.Y = NewP.Y; P.Nrm.Z = NewP.Z;
             }
-            
-            return new GXVector3(P.X, P.Y, P.Z);
         }
 
         private int GetWeightListIndex(List<List<DatBoneWeight>> WeightList, List<DatBoneWeight> Weights)
