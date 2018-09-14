@@ -68,7 +68,10 @@ namespace Smash_Forge
                     int id = int.Parse(args[0]);
                     Bone b = new Bone(Bones);
                     b.Text = args[1].Replace('"', ' ').Trim();
-                    b.parentIndex = int.Parse(args[2]);
+                    int s = 2;
+                    while (args[s].Contains("\""))
+                        b.Text += args[s++];
+                    b.parentIndex = int.Parse(args[s]);
                     BoneList.Add(id, b);
                 }
 

@@ -44,6 +44,25 @@ namespace Smash_Forge
             MenuItem exportMaterialXml = new MenuItem("Export Material XML");
             exportMaterialXml.Click += ExportMaterialXml_Click;
             ContextMenu.MenuItems.Add(exportMaterialXml);
+
+            DataObjects.ContextMenu = new ContextMenu();
+
+            MenuItem removeTex = new MenuItem("Remove All Textures");
+            removeTex.Click += RemoveAllTextures;
+            DataObjects.ContextMenu.MenuItems.Add(removeTex);
+        }
+
+        public void RemoveAllTextures(object sender, EventArgs args)
+        {
+            foreach(MeleeDataObjectNode n in DataObjects.Nodes)
+            {
+                DatDOBJ o = n.DOBJ;
+                foreach (DatTexture t in o.Material.Textures)
+                {
+                    o.Material.RemoveTexture(t);
+                }
+                o.Material.Flags = (int)(o.Material.Flags & 0xFFFFF00F);
+            }
         }
 
         private void ExportMaterialXml_Click(object sender, EventArgs e)
