@@ -40,8 +40,8 @@ namespace Smash_Forge.GUI.Melee
         {
             InitializeComponent();
             this.DOBJ = DOBJ;
-
-            foreach(GXAttribGroup group in DOBJ.GetRoot().Root.Attributes)
+            
+            foreach (GXAttribGroup group in DOBJ.GetRoot().Root.Attributes)
             {
                 listBox1.Items.Add(group.Attributes.Count + "_Group");
             }
@@ -80,9 +80,8 @@ namespace Smash_Forge.GUI.Melee
             DatJOBJ[] Bones = DOBJ.GetRoot().Root.GetJOBJinOrder();
             VBN RenderBones = DOBJ.GetRoot().RenderBones;
             RenderBones.reset();
+            RenderBones.update();
             VBN ImportedBones = smd.Bones;
-
-            DOBJ.ClearPolygons(null, null);
 
             GXAttribGroup AttrGroup = null;
             if (listBox1.SelectedIndex != -1)
@@ -92,6 +91,9 @@ namespace Smash_Forge.GUI.Melee
                 MessageBox.Show("Please select an attribute group");
                 return;
             }
+
+            DOBJ.ClearPolygons(null, null);
+
             int Flags = 0x8001;
             if (comboBoxBoneType.SelectedIndex == 0)
             {

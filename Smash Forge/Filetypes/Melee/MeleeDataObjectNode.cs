@@ -177,15 +177,12 @@ namespace Smash_Forge
                 foreach (DatPolygon p in DOBJ.Polygons)
                 {
                     List<GXDisplayList> newDL = new List<GXDisplayList>();
-                    if (VertsToImport == null)
+                    foreach (GXDisplayList dl in p.DisplayLists)
                     {
-                        foreach (GXDisplayList dl in p.DisplayLists)
-                        {
-                            newDL.Add(compressor.CompressDisplayList(
-                                decompressor.GetFormattedVertices(dl, p),
-                                dl.PrimitiveType,
-                                p.AttributeGroup));
-                        }
+                        newDL.Add(compressor.CompressDisplayList(
+                            decompressor.GetFormattedVertices(dl, p),
+                            dl.PrimitiveType,
+                            p.AttributeGroup));
                     }
                     p.DisplayLists = newDL;
                 }
