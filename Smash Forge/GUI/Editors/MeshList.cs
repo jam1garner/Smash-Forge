@@ -160,6 +160,11 @@ namespace Smash_Forge
             {
                 ((ModelViewport)Parent).CurrentAnimation = ((MeleeJointAnimationNode)filesTreeView.SelectedNode).GetAnimation();
             }
+
+            if (filesTreeView.SelectedNode is MeleeJointNode)
+            {
+                ((MeleeJointNode)e.Node).RenderBone.Selected = true;
+            }
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)

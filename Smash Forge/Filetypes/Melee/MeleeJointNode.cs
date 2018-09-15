@@ -11,6 +11,7 @@ namespace Smash_Forge
     public class MeleeJointNode : MeleeNode
     {
         private DatJOBJ JOBJ;
+        public Bone RenderBone;
 
         public MeleeJointNode(DatJOBJ jobj)
         {

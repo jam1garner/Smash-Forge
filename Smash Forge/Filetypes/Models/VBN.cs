@@ -15,6 +15,27 @@ namespace Smash_Forge
         public UInt32 boneType;
         public UInt32 boneRotationType;
         public bool IsInverted = true;
+        public bool Selected
+        {
+            get
+            {
+                return _selected;
+            }
+            set
+            {
+                if (value)
+                {
+                    foreach (Bone b in vbnParent.bones)
+                    {
+                        b.Selected = false;
+                    }
+                    _selected = true;
+                }
+                else
+                    _selected = value;
+            }
+        }
+        private bool _selected = false;
 
         public enum BoneType
         {
@@ -99,7 +120,7 @@ namespace Smash_Forge
         {
             Vector3 pos_c = Vector3.TransformPosition(Vector3.Zero, transform);
             // first calcuate the point and draw a point
-            if (IsSelected)
+            if (IsSelected || Selected)
             {
                 /*GL.Color3(Color.Red);
                 RenderTools.drawCircleOutline(pos_c, 2f, 30, Matrix4.CreateRotationX(0));
@@ -291,7 +312,7 @@ namespace Smash_Forge
 
         #region Events
 
-        BoneTreePanel Editor;
+        public BoneTreePanel Editor;
 
         private void OpenEditor(object sender, EventArgs args)
         {

@@ -159,9 +159,8 @@ namespace Smash_Forge
             List<DatJOBJ> JOBJS = new List<DatJOBJ>();
             foreach (DatJOBJ j in Root.GetJOBJinOrder())
             {
-                Skeleton.Nodes.Add(new MeleeJointNode(j) { Text = "Bone_" + i++ });
                 Bone b = new Bone(RenderBones);
-                b.Text = "Bone_" + (i-1);
+                b.Text = "Bone_" + (i);
                 b.position = new float[] { j.TX, j.TY, j.TZ };
                 b.rotation = new float[] { j.RX, j.RY, j.RZ };
                 b.scale = new float[] { j.SX, j.SY, j.SZ };
@@ -171,6 +170,7 @@ namespace Smash_Forge
                 }
                 JOBJS.Add(j);
                 RenderBones.bones.Add(b);
+                Skeleton.Nodes.Add(new MeleeJointNode(j) { Text = "Bone_" + i++, RenderBone = b});
             }
             RenderBones.reset();
             BoneTransforms = new Matrix4[RenderBones.bones.Count];
