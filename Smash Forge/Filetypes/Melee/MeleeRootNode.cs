@@ -201,7 +201,7 @@ namespace Smash_Forge
                 n.Checked = true;
 
                 MeleeDataNode parentNode = (MeleeDataNode)Parent;
-                if ((parentNode.LodModels.Count > 0) && !parentNode.LodModels.Contains((byte)(i - 1)))
+                if ((parentNode.LodModels.Count > 0) && !parentNode.LodModels.Contains((byte)(i)))
                 {
                     n.Checked = false;
                     n.Text += "Low";
