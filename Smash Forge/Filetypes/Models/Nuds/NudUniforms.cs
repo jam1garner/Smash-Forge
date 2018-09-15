@@ -354,8 +354,8 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             shader.SetTexture("dif", texture, 0);
             shader.SetTexture("dif2", texture, 0);
             shader.SetTexture("normalMap", texture, 0);
-            shader.SetTexture("cube", texture, 2);
-            shader.SetTexture("stagecube", texture, 2);
+            shader.SetTexture("cube", RenderTools.dummyTextures[NudEnums.DummyTexture.StageMapHigh], 2);
+            shader.SetTexture("stagecube", RenderTools.dummyTextures[NudEnums.DummyTexture.StageMapHigh], 2);
             shader.SetTexture("spheremap", texture, 0);
             shader.SetTexture("ao", texture, 0);
             shader.SetTexture("ramp", texture, 0);

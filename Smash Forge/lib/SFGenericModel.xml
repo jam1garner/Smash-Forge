@@ -14,6 +14,30 @@
             The size in bytes of the C# equivalent for a specified OpenGL attribute pointer type.
             </summary>
         </member>
+        <member name="T:SFGenericModel.MeshEventArgs.AttribSetEventArgs">
+            <summary>
+            Contains the data used to set a shader uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.MeshEventArgs.AttribSetEventArgs.Name">
+            <summary>
+            The name of the attribute variable.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.MeshEventArgs.AttribSetEventArgs.ValueCount">
+            <summary>
+            The number of components. Ex: 1 for <see cref="T:System.Single"/> or
+            4 for Vector4.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.MeshEventArgs.AttribSetEventArgs.#ctor(System.String,OpenTK.Graphics.OpenGL.VertexAttribPointerType,SFGenericModel.ValueCount)">
+            <summary>
+            
+            </summary>
+            <param name="name"></param>
+            <param name="type"></param>
+            <param name="valueCount"></param>
+        </member>
         <member name="T:SFGenericModel.RenderState.RenderSettings">
             <summary>
             Stores the rendering state set before <see cref="T:SFGenericModel.GenericMesh`1"/> is drawn.
@@ -266,6 +290,13 @@
             Determines how primitives will be constructed from the vertex data.
             </summary>
         </member>
+        <member name="T:SFGenericModel.GenericMesh`1.InvalidAttribSetEventHandler">
+            <summary>
+            
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
         <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
             Creates a new mesh and initializes the vertex buffer data.
@@ -281,6 +312,12 @@
             <param name="vertices"></param>
             <param name="vertexIndices"></param>
             <param name="primitiveType">Determines how primitives will be constructed from the vertex data</param>
+        </member>
+        <member name="M:SFGenericModel.GenericMesh`1.#ctor(SFGenericModel.Utils.VertexContainer{`0})">
+            <summary>
+            Creates a new mesh and initializes the vertex buffer data.
+            </summary>
+            <param name="vertexData">The vertex indices, data, and primitive type</param>
         </member>
         <member name="M:SFGenericModel.GenericMesh`1.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera,System.Int32,System.Int32)">
             <summary>
@@ -312,6 +349,12 @@
             </summary>
             <param name="shader">The shader used for drawing</param>
             <param name="camera">The camera used for drawing"/></param>
+        </member>
+        <member name="M:SFGenericModel.GenericMesh`1.ConfigureVertexAttributes(SFGraphics.GLObjects.Shaders.Shader)">
+            <summary>
+            
+            </summary>
+            <param name="shader"></param>
         </member>
         <member name="T:SFGenericModel.Utils.MeshBatchUtils">
             <summary>
@@ -399,7 +442,7 @@
             4 for Vector4.
             </summary>
         </member>
-        <member name="F:SFGenericModel.VertexAttributeInfo.vertexAttribPointerType">
+        <member name="F:SFGenericModel.VertexAttributeInfo.type">
             <summary>
             The data type of the attribute value.
             </summary>
