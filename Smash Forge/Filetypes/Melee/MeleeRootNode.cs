@@ -196,7 +196,7 @@ namespace Smash_Forge
                 n.RefreshRendering();
                 n.BoneIndex = JOBJS.IndexOf(n.DOBJ.Parent);
                 n.Checked = false;
-                if (((MeleeDataNode)Parent).LodModels.Contains((byte)(i - 1)))
+                if (((MeleeDataNode)Parent).LodModels.Contains((byte)(i - 1)) || ((MeleeDataNode)Parent).LodModels.Count == 0)
                 {
                     n.Checked = true;
                 }
