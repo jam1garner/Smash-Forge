@@ -34,7 +34,7 @@ namespace Smash_Forge
         private List<MeleeMesh> renderMeshes = new List<MeleeMesh>();
         private List<MeleeRenderTexture> renderTextures = new List<MeleeRenderTexture>();
 
-        public Vector3 BonePosition;
+        public int BoneIndex;
 
         // for importing
         public List<GXVertex[]> VertsToImport;
@@ -103,14 +103,14 @@ namespace Smash_Forge
                     {
                         if (verts[i].N != null && verts[i].N.Length == 1)
                         {
-                            Vector3 ToTransform = Vector3.TransformPosition(new Vector3(verts[i].Pos.X, verts[i].Pos.Y, verts[i].Pos.Z), Bones.bones[verts[i].N[0]].transform);
+                            /*Vector3 ToTransform = Vector3.TransformPosition(new Vector3(verts[i].Pos.X, verts[i].Pos.Y, verts[i].Pos.Z), Bones.bones[verts[i].N[0]].transform);
                             verts[i].Pos.X = ToTransform.X;
                             verts[i].Pos.Y = ToTransform.Y;
                             verts[i].Pos.Z = ToTransform.Z;
                             Vector3 ToTransformN = Vector3.TransformNormal(new Vector3(verts[i].Nrm.X, verts[i].Nrm.Y, verts[i].Nrm.Z), Bones.bones[verts[i].N[0]].transform);
                             verts[i].Nrm.X = ToTransformN.X;
                             verts[i].Nrm.Y = ToTransformN.Y;
-                            verts[i].Nrm.Z = ToTransformN.Z;
+                            verts[i].Nrm.Z = ToTransformN.Z;*/
                         }
                         // TODO: Transform by attached jobj
                     }
@@ -191,7 +191,7 @@ namespace Smash_Forge
 
         public void Render(Camera c, Shader shader)
         {
-            shader.SetVector3("BonePosition", BonePosition);
+            shader.SetInt("BoneIndex", BoneIndex);
 
             SetTextureUniforms(shader);
 

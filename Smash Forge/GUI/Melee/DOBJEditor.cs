@@ -101,7 +101,7 @@ namespace Smash_Forge.GUI.Melee
         {
             if (TempBitmap != null)
             {
-                TempBitmap.Dispose();
+                //TempBitmap.Dispose();
                 TempBitmap = null;
             }
 
@@ -109,7 +109,7 @@ namespace Smash_Forge.GUI.Melee
             {
                 selectedTexture = (TextureNode)textureListBox.SelectedItem;
                 if (selectedTexture != null && selectedTexture.Texture != null)
-                    TempBitmap = selectedTexture.Texture.GetBitmap();
+                    TempBitmap = selectedTexture.Texture.GetStaticBitmap();
 
                 textureFlagsTB.Text = selectedTexture.Texture.UnkFlags.ToString("X");
                 

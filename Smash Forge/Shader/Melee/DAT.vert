@@ -15,7 +15,7 @@ out vec3 tangent;
 out vec4 color;
 out vec2 UV0;
 
-uniform vec3 BonePosition;
+uniform int BoneIndex;
 uniform mat4 mvpMatrix;
 uniform mat4 bones[100];
 uniform mat4 binds[100];
@@ -44,7 +44,7 @@ void main() {
 		position = bones[int(vBone.x)] * position;
 		normal = (inverse(transpose(bones[int(vBone.x)])) * vec4(vNormal, 0)).xyz;
 	}
-	position.xyz += BonePosition;
+	position.xyz = (bones[int(BoneIndex)] * vec4(position.xyz, 1.0)).xyz;
 
 	position = Skin(position, ivec4(vBone));
 
