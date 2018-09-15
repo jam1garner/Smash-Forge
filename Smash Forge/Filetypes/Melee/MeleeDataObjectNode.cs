@@ -19,11 +19,11 @@ namespace Smash_Forge
     {
         enum TextureFlag : uint
         {
-            BumpMap = 0x00,
             Sphere = 0x01,
             Diffuse = 0x10,
             Specular = 0x20,
             Unk3 = 0x30, // also diffuse?
+            BumpMap = 0x1000000,
             AlphaTest = 0x300000, // whispy woods
             Unk4 = 0x80, // diffuse with inverted colors?
         }
@@ -248,22 +248,14 @@ namespace Smash_Forge
 
             foreach (var renderTex in renderTextures)
             {
-                uint type = GetTextureType(renderTex);
-                if (Enum.IsDefined(typeof(TextureFlag), type))
-                {
-                    switch ((TextureFlag)type)
-                    {
-                        default:
-                            break;
-                        case TextureFlag.BumpMap:
-                            hasBumpMap = true;
-                            SetBumpMapTexUniforms(shader, renderTex);
-                            break;
-                    }
-                }
-
-                if (IsSphereBitSet(renderTex))
+                if (IsFlagSet(renderTex.Flag, (uint)TextureFlag.Sphere))
                     hasSphere = true;
+
+                if (IsFlagSet(renderTex.Flag, (uint)TextureFlag.BumpMap))
+                {
+                    hasBumpMap = true;
+                    SetBumpMapTexUniforms(shader, renderTex);
+                }
 
                 if (IsDiffuseBitSet(renderTex))
                 {
@@ -271,7 +263,7 @@ namespace Smash_Forge
                     SetDiffuseTexUniforms(shader, renderTex);
                 }
 
-                if (IsSpecularBitSet(renderTex))
+                if (IsFlagSet(renderTex.Flag, (uint)TextureFlag.Specular))
                 {
                     hasSpecular = true;
                     SetSpecularTexUniforms(shader, renderTex);
@@ -284,21 +276,14 @@ namespace Smash_Forge
             shader.SetBoolToInt("hasSphere", hasSphere);
         }
 
+        private static bool IsFlagSet(uint value, uint flag)
+        {
+            return (value & flag) > 0;
+        }
+
         private static bool IsDiffuseBitSet(MeleeRenderTexture renderTex)
         {
-            bool diffuseBit = (renderTex.Flag & (uint)TextureFlag.Diffuse) > 0;
-            bool unk4Bit = (renderTex.Flag & (uint)TextureFlag.Unk4) > 0;
-            return diffuseBit || unk4Bit;
-        }
-
-        private static bool IsSpecularBitSet(MeleeRenderTexture renderTex)
-        {
-            return (renderTex.Flag & (uint)TextureFlag.Specular) > 0;
-        }
-
-        private static bool IsSphereBitSet(MeleeRenderTexture renderTex)
-        {
-            return (renderTex.Flag & (uint)TextureFlag.Sphere) > 0;
+            return IsFlagSet(renderTex.Flag, (uint)TextureFlag.Diffuse) || IsFlagSet(renderTex.Flag, (uint)TextureFlag.Unk4);
         }
 
         private static void SetSphereTexUniforms(Shader shader, MeleeRenderTexture renderTex)
