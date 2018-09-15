@@ -195,6 +195,13 @@ namespace Smash_Forge
                 DataObjects.Nodes.Add(n);
                 n.RefreshRendering();
                 n.BoneIndex = JOBJS.IndexOf(n.DOBJ.Parent);
+                n.Checked = false;
+                if (((MeleeDataNode)Parent).LodModels.Contains((byte)(i - 1)))
+                {
+                    n.Checked = true;
+                }
+                else
+                    n.Text += "Low";
                 //n.BonePosition = Vector3.TransformPosition(Vector3.Zero, BoneTransforms[JOBJS.IndexOf(n.DOBJ.Parent)]);
             }
 

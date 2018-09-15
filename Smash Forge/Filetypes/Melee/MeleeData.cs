@@ -21,10 +21,45 @@ namespace Smash_Forge
         private bool hasCreatedRenderMeshes = false;
         private string fileName; // temp for injecting script
 
+
+        // For display only
+        public List<byte> LodModels = new List<byte>();
+
         public MeleeDataNode(string fname)
         {
             fileName = fname;
             DatFile = Decompiler.Decompile(File.ReadAllBytes(fname));
+            if(File.Exists(fname.Substring(0, fname.Length - 6) + ".dat"))
+            {
+                DialogResult dialogResult = MessageBox.Show("Mark LOD Models?\nUseful for easier importing", "Import LOD Information", MessageBoxButtons.YesNo);
+                if (dialogResult != DialogResult.Yes)
+                {
+                    return;
+                }
+                // Read it
+                FileData d = new FileData(fname.Substring(0, fname.Length - 6) + ".dat");
+                d.Endian = Endianness.Big;
+                d.seek(0x24);
+                d.seek(d.readInt() + 0x20);
+                int off;
+                while((off = d.readInt()) != 0)
+                {
+                    int temp = d.pos();
+                    d.seek(off + 0x20);
+                    int Count = d.readInt();
+                    int Offset = d.readInt() + 0x20;
+
+                    for(int i =0; i < Count; i++)
+                    {
+                        d.seek(Offset + i * 8);
+                        int c = d.readInt();
+                        int o = d.readInt() + 0x20;
+                        LodModels.AddRange(d.getSection(o, c));
+                    }
+                    d.seek(temp);
+                    break;
+                }
+            }
 
             ImageKey = "dat";
             SelectedImageKey = "dat";
@@ -39,6 +74,13 @@ namespace Smash_Forge
             MenuItem Recompile = new MenuItem("Update Vertices");
             Recompile.Click += RecompileVertices;
             ContextMenu.MenuItems.Add(Recompile);
+
+            /*if(LodModels.Count > 0)
+            {
+                MenuItem Import = new MenuItem("Import High Poly From File");
+                Import.Click += SaveAs;
+                ContextMenu.MenuItems.Add(Import);
+            }*/
         }
 
         public void SaveAs(object sender, EventArgs args)
