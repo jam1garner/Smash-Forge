@@ -154,13 +154,13 @@ namespace Smash_Forge
             if (Root.GetJOBJinOrder().Length > 0)
                 Nodes.Add(Skeleton);
 
-            int i = 0;
+            int boneIndex = 0;
             RenderBones = new VBN();
             List<DatJOBJ> JOBJS = new List<DatJOBJ>();
             foreach (DatJOBJ j in Root.GetJOBJinOrder())
             {
                 Bone b = new Bone(RenderBones);
-                b.Text = "Bone_" + (i);
+                b.Text = "Bone_" + (boneIndex);
                 b.position = new float[] { j.TX, j.TY, j.TZ };
                 b.rotation = new float[] { j.RX, j.RY, j.RZ };
                 b.scale = new float[] { j.SX, j.SY, j.SZ };
@@ -170,14 +170,14 @@ namespace Smash_Forge
                 }
                 JOBJS.Add(j);
                 RenderBones.bones.Add(b);
-                Skeleton.Nodes.Add(new MeleeJointNode(j) { Text = "Bone_" + i++, RenderBone = b});
+                Skeleton.Nodes.Add(new MeleeJointNode(j) { Text = "Bone_" + boneIndex++, RenderBone = b});
             }
             RenderBones.reset();
             BoneTransforms = new Matrix4[RenderBones.bones.Count];
-            i = 0;
+            boneIndex = 0;
             foreach (Bone b in RenderBones.bones)
             {
-                BoneTransforms[i++] = b.transform;
+                BoneTransforms[boneIndex++] = b.transform;
             }
 
             if (Root.GetDataObjects().Length > 0)
@@ -188,21 +188,24 @@ namespace Smash_Forge
             }
 
             // Data Objects--------------------------------------
-            i = 0;
-            foreach (DatDOBJ d in Root.GetDataObjects())
+            DatDOBJ[] dataObjects = Root.GetDataObjects();
+            for (int i = 0; i < dataObjects.Length; i++)
             {
-                MeleeDataObjectNode n = new MeleeDataObjectNode(d) { Text = "DataObject" + i++ };
+                DatDOBJ d = dataObjects[i];
+
+                MeleeDataObjectNode n = new MeleeDataObjectNode(d) { Text = $"DataObject {i}" };
                 DataObjects.Nodes.Add(n);
                 n.RefreshRendering();
                 n.BoneIndex = JOBJS.IndexOf(n.DOBJ.Parent);
-                n.Checked = false;
-                if (((MeleeDataNode)Parent).LodModels.Contains((byte)(i - 1)) || ((MeleeDataNode)Parent).LodModels.Count == 0)
+
+                n.Checked = true;
+
+                MeleeDataNode parentNode = (MeleeDataNode)Parent;
+                if ((parentNode.LodModels.Count > 0) && !parentNode.LodModels.Contains((byte)(i - 1)))
                 {
-                    n.Checked = true;
-                }
-                else
+                    n.Checked = false;
                     n.Text += "Low";
-                //n.BonePosition = Vector3.TransformPosition(Vector3.Zero, BoneTransforms[JOBJS.IndexOf(n.DOBJ.Parent)]);
+                }
             }
 
             // MaterialAnimation--------------------------------------
