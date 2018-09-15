@@ -19,13 +19,18 @@ namespace Smash_Forge
     {
         enum TextureFlag : uint
         {
-            Sphere = 0x01,
             Diffuse = 0x10,
             Specular = 0x20,
             Unk3 = 0x30, // also diffuse?
             BumpMap = 0x1000000,
             AlphaTest = 0x300000, // whispy woods
             Unk4 = 0x80, // diffuse with inverted colors?
+        }
+
+        enum TexCoordsFlag : uint
+        {
+            TexCoord = 0x0,
+            SphereMap = 0x1
         }
 
         public DatDOBJ DOBJ;
@@ -248,7 +253,7 @@ namespace Smash_Forge
 
             foreach (var renderTex in renderTextures)
             {
-                if (IsFlagSet(renderTex.Flag, (uint)TextureFlag.Sphere))
+                if (IsFlagSet(renderTex.Flag, (uint)TexCoordsFlag.SphereMap))
                     hasSphere = true;
 
                 if (IsFlagSet(renderTex.Flag, (uint)TextureFlag.BumpMap))
