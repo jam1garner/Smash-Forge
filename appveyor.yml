@@ -46,6 +46,7 @@ test:
   assemblies:
     except:
     - 'SFGraphics\Test Projects\SFGraphics.Test.RenderTests\bin\Release\SFGraphics.Test.RenderTests.dll'
+    - 'SFGraphics\Test Projects\SFGenericModel.Test\bin\Release\SFGenericModel.Test.dll'
 
 after_build:
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\Smash Forge.exe"
