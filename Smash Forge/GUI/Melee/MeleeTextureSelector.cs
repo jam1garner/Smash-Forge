@@ -1,0 +1,129 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MeleeLib.DAT;
+
+namespace Smash_Forge.GUI.Melee
+{
+    public partial class MeleeTextureSelector : Form
+    {
+        public TextureNode SelectedTexture;
+        public MeleeDataObjectNode meleeDataObjectNode;
+
+        public DatTexture Selected;
+
+        public MeleeTextureSelector(MeleeDataObjectNode mdon, TextureNode Texture)
+        {
+            InitializeComponent();
+
+            this.SelectedTexture = Texture;
+            this.meleeDataObjectNode = mdon;
+            DialogResult = DialogResult.None;
+
+            DatDOBJ[] DOBJS = mdon.GetRoot().Root.GetDataObjects();
+
+            ImageList imageList1 = new ImageList();
+            imageList1.ColorDepth = ColorDepth.Depth24Bit;
+            listView1.Scrollable = true;
+            listView1.View = View.LargeIcon;
+            imageList1.ImageSize = new Size(115, 115);
+            listView1.LargeImageList = imageList1;
+
+            // Grab all unique textures
+            List<byte[]> Used = new List<byte[]>();
+            List<DatTexture> Textures = new List<DatTexture>();
+            for(int i = 0; i < DOBJS.Length; i++)
+            {
+                foreach(DatTexture t in DOBJS[i].Material.Textures)
+                {
+                    if (t.ImageData == null || Used.Contains(t.ImageData.Data))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        Used.Add(t.ImageData.Data);
+                        
+                        ListViewItem lstItem = new ListViewItem();
+                        lstItem.ImageIndex = Textures.Count;
+                        lstItem.Text = "Texture_" + lstItem.ImageIndex;
+                        lstItem.Tag = t;
+                        listView1.Items.Add(lstItem);
+                        imageList1.Images.Add(t.GetStaticBitmap());
+                        Textures.Add(t);
+                    }
+                }
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (SelectedTexture != null)
+            {
+                using (OpenFileDialog ofd = new OpenFileDialog())
+                {
+                    ofd.Filter = "DDS|*.dds";
+
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    {
+                        DDS d = new DDS(new FileData(ofd.FileName));
+                        if (d.header.ddspf.fourCC != 0x31545844)
+                        {
+                            MessageBox.Show("Error Importing Texture:\nOnly DXT1 Files are supported currently");
+                            return;
+                        }
+                        Selected = SelectedTexture.Texture;
+                        Selected.SetFromDXT1(new FileData(d.bdata).getSection(0, (int)(d.header.width * d.header.height / 2)), (int)d.header.width, (int)d.header.height);
+
+                        DialogResult = DialogResult.OK;
+                        CloseForm();
+                        Close();
+                    }
+                }
+            }
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count > 0)
+            {
+                Selected = (DatTexture)listView1.SelectedItems[0].Tag;
+            }
+            else
+                Selected = null;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if(Selected != null)
+            {
+                DialogResult = DialogResult.OK;
+                SelectedTexture.Texture.ImageData = Selected.ImageData;
+                SelectedTexture.Texture.Palette = Selected.Palette;
+                SelectedTexture.Texture.ResetStaticTexture();
+                CloseForm();
+                Close();
+            }
+        }
+
+        private void MeleeTextureSelector_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            CloseForm();
+        }
+
+        private void CloseForm()
+        {
+            foreach (Image i in listView1.LargeImageList.Images)
+            {
+                i.Dispose();
+            }
+            listView1.LargeImageList.Images.Clear();
+        }
+    }
+}

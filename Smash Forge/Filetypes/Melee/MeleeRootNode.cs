@@ -47,7 +47,7 @@ namespace Smash_Forge
 
             DataObjects.ContextMenu = new ContextMenu();
 
-            MenuItem removeTex = new MenuItem("Remove All Textures");
+            MenuItem removeTex = new MenuItem("Remove Unused Textures");
             removeTex.Click += RemoveAllTextures;
             DataObjects.ContextMenu.MenuItems.Add(removeTex);
         }
@@ -57,11 +57,14 @@ namespace Smash_Forge
             foreach(MeleeDataObjectNode n in DataObjects.Nodes)
             {
                 DatDOBJ o = n.DOBJ;
-                foreach (DatTexture t in o.Material.Textures)
+                if(n.DOBJ.Polygons.Count == 0)
                 {
-                    o.Material.RemoveTexture(t);
+                    foreach (DatTexture t in o.Material.Textures)
+                    {
+                        o.Material.RemoveTexture(t);
+                    }
+                    o.Material.Flags = (int)(o.Material.Flags & 0xFFFFF00F);
                 }
-                o.Material.Flags = (int)(o.Material.Flags & 0xFFFFF00F);
             }
         }
 
@@ -148,7 +151,6 @@ namespace Smash_Forge
             DataObjects.Nodes.Clear();
             MatAnims.Nodes.Clear();
             JointAnims.Nodes.Clear();
-
 
             // Bones--------------------------------------
             if (Root.GetJOBJinOrder().Length > 0)

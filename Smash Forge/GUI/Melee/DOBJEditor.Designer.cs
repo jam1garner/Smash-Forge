@@ -51,10 +51,10 @@
             this.CBWrapT = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.buttonImportTexture = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.pixelProcessingCB = new System.Windows.Forms.CheckBox();
             this.pixelProcessingTableLayout = new System.Windows.Forms.TableLayoutPanel();
@@ -256,7 +256,7 @@
             this.textureListBox.FormattingEnabled = true;
             this.textureListBox.Location = new System.Drawing.Point(6, 3);
             this.textureListBox.Name = "textureListBox";
-            this.textureListBox.Size = new System.Drawing.Size(152, 147);
+            this.textureListBox.Size = new System.Drawing.Size(152, 121);
             this.textureListBox.TabIndex = 3;
             this.textureListBox.SelectedIndexChanged += new System.EventHandler(this.textureListBox_SelectedIndexChanged);
             // 
@@ -351,16 +351,6 @@
             this.label9.TabIndex = 4;
             this.label9.Text = "Wrap Mode T";
             // 
-            // buttonImportTexture
-            // 
-            this.buttonImportTexture.Location = new System.Drawing.Point(164, 127);
-            this.buttonImportTexture.Name = "buttonImportTexture";
-            this.buttonImportTexture.Size = new System.Drawing.Size(115, 23);
-            this.buttonImportTexture.TabIndex = 2;
-            this.buttonImportTexture.Text = "Import From File";
-            this.buttonImportTexture.UseVisualStyleBackColor = true;
-            this.buttonImportTexture.Click += new System.EventHandler(this.buttonImportTexture_Click);
-            // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
@@ -386,10 +376,10 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.button1);
             this.tabPage2.Controls.Add(this.textureListBox);
             this.tabPage2.Controls.Add(this.textureGroupBox);
             this.tabPage2.Controls.Add(this.pictureBox1);
-            this.tabPage2.Controls.Add(this.buttonImportTexture);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -397,6 +387,16 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Textures";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(164, 127);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(115, 23);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "Choose";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // tabPage3
             // 
@@ -750,7 +750,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox textureFlagsTB;
-        private System.Windows.Forms.Button buttonImportTexture;
         private System.Windows.Forms.ComboBox CBWrapS;
         private System.Windows.Forms.ComboBox CBWrapT;
         private System.Windows.Forms.Label label8;
@@ -785,5 +784,6 @@
         private System.Windows.Forms.TextBox alphaRef2TB;
         private System.Windows.Forms.TextBox alphaRef1TB;
         private System.Windows.Forms.TextBox dstAlphaTB;
+        private System.Windows.Forms.Button button1;
     }
 }

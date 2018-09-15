@@ -12,21 +12,12 @@ using MeleeLib.DAT;
 
 namespace Smash_Forge.GUI.Melee
 {
+
     public partial class DOBJEditor : Form
     {
         private TextureNode selectedTexture = null;
         private MeleeDataObjectNode meleeDataObjectNode = null;
 
-        private class TextureNode : ListViewItem
-        {
-            public DatTexture Texture;
-
-            public TextureNode(DatTexture Texture)
-            {
-                this.Texture = Texture;
-                Text = Texture.UnkFlags.ToString("X") + "_" + Texture.ImageData.Format.ToString();
-            }
-        }
         
         private DatDOBJ DOBJ;
         private Bitmap TempBitmap;
@@ -176,25 +167,7 @@ namespace Smash_Forge.GUI.Melee
 
         private void buttonImportTexture_Click(object sender, EventArgs e)
         {
-            if (selectedTexture != null)
-            {
-                using (OpenFileDialog ofd = new OpenFileDialog())
-                {
-                    ofd.Filter = "DDS|*.dds";
-
-                    if (ofd.ShowDialog() == DialogResult.OK)
-                    {
-                        DDS d = new DDS(new FileData(ofd.FileName));
-                        if (d.header.ddspf.fourCC != 0x31545844)
-                        {
-                            MessageBox.Show("Error Importing Texture:\nOnly DXT1 Files are supported currently");
-                            return;
-                        }
-                        selectedTexture.Texture.SetFromDXT1(new FileData(d.bdata).getSection(0, (int)(d.header.width * d.header.height / 2)), (int)d.header.width, (int)d.header.height);
-                        meleeDataObjectNode.RefreshRenderTextures();
-                    }
-                }
-            }
+            
         }
 
         private void CBWrapT_SelectedIndexChanged(object sender, EventArgs e)
@@ -303,6 +276,30 @@ namespace Smash_Forge.GUI.Melee
         {
             if (DOBJ.Material.PixelProcessing != null)
                 DOBJ.Material.PixelProcessing.AlphaRef1 = (byte)GuiTools.TryParseTBInt(alphaRef2TB, false);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if(selectedTexture != null)
+            using (MeleeTextureSelector ts = new MeleeTextureSelector(meleeDataObjectNode, selectedTexture))
+            {
+                if(ts.ShowDialog() == DialogResult.OK)
+                {
+                    meleeDataObjectNode.RefreshRenderTextures();
+                    pictureBox1.Image = selectedTexture.Texture.GetStaticBitmap();
+                }
+            }
+        }
+    }
+
+    public class TextureNode : ListViewItem
+    {
+        public DatTexture Texture;
+
+        public TextureNode(DatTexture Texture)
+        {
+            this.Texture = Texture;
+            Text = Texture.UnkFlags.ToString("X") + "_" + Texture.ImageData.Format.ToString();
         }
     }
 }
