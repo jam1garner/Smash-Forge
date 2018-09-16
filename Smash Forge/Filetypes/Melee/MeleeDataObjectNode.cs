@@ -247,19 +247,15 @@ namespace Smash_Forge
             shader.SetTexture("bumpMapTex", Rendering.RenderTools.defaultTex, 2);
             shader.SetTexture("specularTex", Rendering.RenderTools.defaultTex, 3);
 
-            bool hasDiffuse0 = false;
-            bool hasDiffuse1 = false;
-
             bool hasBumpMap = false;
-            bool hasSphere = false;
             bool hasSpecular = false;
+            shader.SetBoolToInt("hasSphere0", false);
+            shader.SetBoolToInt("hasSphere1", false);
 
+            // TODO: Use a more general solution, so any texture can have sphere coords.
             int diffuseCount = 0;
             foreach (var renderTex in renderTextures)
             {
-                if (IsFlagSet(renderTex.Flag, (uint)TexCoordsFlag.SphereMap))
-                    hasSphere = true;
-
                 if (IsFlagSet(renderTex.Flag, (uint)TextureFlag.BumpMap))
                 {
                     hasBumpMap = true;
@@ -268,10 +264,6 @@ namespace Smash_Forge
 
                 if (IsDiffuseBitSet(renderTex))
                 {
-                    if (diffuseCount == 0)
-                        hasDiffuse0 = true;
-                    else
-                        hasDiffuse1 = true;
                     SetDiffuseTexUniforms(shader, renderTex, diffuseCount);
                     diffuseCount++;
                 }
@@ -283,11 +275,10 @@ namespace Smash_Forge
                 }
             }
 
-            shader.SetBoolToInt("hasDiffuse0", hasDiffuse0);
-            shader.SetBoolToInt("hasDiffuse1", hasDiffuse1);
+            shader.SetBoolToInt("hasDiffuse0", diffuseCount > 0);
+            shader.SetBoolToInt("hasDiffuse1", diffuseCount > 1);
             shader.SetBoolToInt("hasBumpMap", hasBumpMap);
             shader.SetBoolToInt("hasSpecular", hasSpecular);
-            shader.SetBoolToInt("hasSphere", hasSphere);
         }
 
         private static bool IsFlagSet(uint value, uint flag)
@@ -316,6 +307,7 @@ namespace Smash_Forge
 
         private static void SetDiffuseTexUniforms(Shader shader, MeleeRenderTexture renderTex, int index)
         {
+            shader.SetBoolToInt($"hasSphere{index}", IsFlagSet(renderTex.Flag, (uint)TexCoordsFlag.SphereMap));
             shader.SetVector2($"diffuseScale{index}", new Vector2(renderTex.WScale, renderTex.HScale));
             shader.SetTexture($"diffuseTex{index}", renderTex.texture, index);
         }
