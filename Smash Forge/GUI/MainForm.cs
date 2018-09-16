@@ -15,6 +15,8 @@ using System.ComponentModel;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Lights;
 using System.Text.RegularExpressions;
+using Smash_Forge.Filetypes.Melee;
+using Smash_Forge.Filetypes.Melee.Utils;
 
 namespace Smash_Forge
 {
@@ -2361,13 +2363,13 @@ namespace Smash_Forge
 
         private void nudToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MaterialXmlBatchExport.BatchExportNudMaterialXml();
+            Filetypes.MaterialXmlBatchExport.BatchExportNudMaterialXml();
 
         }
 
         private void meleeDatToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MaterialXmlBatchExport.BatchExportMeleeDatMaterialXml();
+            Filetypes.MaterialXmlBatchExport.BatchExportMeleeDatMaterialXml();
         }
 
         private void nudToolStripMenuItem1_Click(object sender, EventArgs e)

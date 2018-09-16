@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MeleeLib.DAT;
 
-namespace Smash_Forge
+namespace Smash_Forge.Filetypes.Melee
 {
     public class MeleeNode : TreeNode
     {

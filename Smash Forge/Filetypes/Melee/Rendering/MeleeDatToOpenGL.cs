@@ -1,7 +1,7 @@
 ﻿using MeleeLib.GCX;
 using OpenTK.Graphics.OpenGL;
 
-namespace Smash_Forge.Filetypes.Melee
+namespace Smash_Forge.Filetypes.Melee.Rendering
 {
     public static class MeleeDatToOpenGL
     {

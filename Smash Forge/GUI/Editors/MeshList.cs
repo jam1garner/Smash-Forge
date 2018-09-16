@@ -1,19 +1,12 @@
+using Smash_Forge.Filetypes.Melee;
+using Smash_Forge.GUI.Menus;
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
-using System.Xml;
-using System.Globalization;
-using System.Diagnostics;
-using Smash_Forge.GUI.Menus;
-
 
 namespace Smash_Forge
 {

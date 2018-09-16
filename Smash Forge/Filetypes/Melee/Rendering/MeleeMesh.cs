@@ -3,9 +3,8 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SFGenericModel;
 using System.Collections.Generic;
-using Smash_Forge.Filetypes.Melee;
 
-namespace Smash_Forge
+namespace Smash_Forge.Filetypes.Melee.Rendering
 {
     public struct MeleeVertex
     {

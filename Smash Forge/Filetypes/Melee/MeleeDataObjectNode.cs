@@ -6,33 +6,18 @@ using OpenTK.Graphics.OpenGL;
 using SFGenericModel.Utils;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Shaders;
-using Smash_Forge.Filetypes.Melee;
+using Smash_Forge.Filetypes.Melee.Rendering;
 using Smash_Forge.GUI.Melee;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using Smash_Forge.Filetypes.Melee.Utils;
 
-namespace Smash_Forge
+namespace Smash_Forge.Filetypes.Melee
 {
     public class MeleeDataObjectNode : MeleeNode
     {
-        enum TextureFlag : uint
-        {
-            Diffuse = 0x10,
-            Specular = 0x20,
-            Unk3 = 0x30, // also diffuse?
-            BumpMap = 0x1000000,
-            AlphaTest = 0x300000, // whispy woods
-            Unk4 = 0x80, // diffuse with inverted colors?
-        }
-
-        enum TexCoordsFlag : uint
-        {
-            TexCoord = 0x0,
-            SphereMap = 0x1
-        }
-
         public DatDOBJ DOBJ;
 
         // For Rendering Only
@@ -242,10 +227,10 @@ namespace Smash_Forge
             shader.SetVector2("bumpMapScale", new Vector2(1, 1));
             shader.SetVector2("specularScale", new Vector2(1, 1));
 
-            shader.SetTexture("diffuseTex0", Rendering.RenderTools.defaultTex, 0);
-            shader.SetTexture("diffuseTex1", Rendering.RenderTools.defaultTex, 1);
-            shader.SetTexture("bumpMapTex", Rendering.RenderTools.defaultTex, 2);
-            shader.SetTexture("specularTex", Rendering.RenderTools.defaultTex, 3);
+            shader.SetTexture("diffuseTex0", Smash_Forge.Rendering.RenderTools.defaultTex, 0);
+            shader.SetTexture("diffuseTex1", Smash_Forge.Rendering.RenderTools.defaultTex, 1);
+            shader.SetTexture("bumpMapTex", Smash_Forge.Rendering.RenderTools.defaultTex, 2);
+            shader.SetTexture("specularTex", Smash_Forge.Rendering.RenderTools.defaultTex, 3);
 
             bool hasBumpMap = false;
             bool hasSpecular = false;
@@ -256,7 +241,7 @@ namespace Smash_Forge
             int diffuseCount = 0;
             foreach (var renderTex in renderTextures)
             {
-                if (IsFlagSet(renderTex.Flag, (uint)TextureFlag.BumpMap))
+                if (IsFlagSet(renderTex.Flag, (uint)MeleeDatEnums.TextureFlag.BumpMap))
                 {
                     hasBumpMap = true;
                     SetBumpMapTexUniforms(shader, renderTex);
@@ -268,7 +253,7 @@ namespace Smash_Forge
                     diffuseCount++;
                 }
 
-                if (IsFlagSet(renderTex.Flag, (uint)TextureFlag.Specular))
+                if (IsFlagSet(renderTex.Flag, (uint)MeleeDatEnums.TextureFlag.Specular))
                 {
                     hasSpecular = true;
                     SetSpecularTexUniforms(shader, renderTex);
@@ -288,7 +273,7 @@ namespace Smash_Forge
 
         private static bool IsDiffuseBitSet(MeleeRenderTexture renderTex)
         {
-            return IsFlagSet(renderTex.Flag, (uint)TextureFlag.Diffuse) || IsFlagSet(renderTex.Flag, (uint)TextureFlag.Unk4);
+            return IsFlagSet(renderTex.Flag, (uint)MeleeDatEnums.TextureFlag.Diffuse) || IsFlagSet(renderTex.Flag, (uint)MeleeDatEnums.TextureFlag.Unk4);
         }
 
         private static void SetSphereTexUniforms(Shader shader, MeleeRenderTexture renderTex)
@@ -307,7 +292,7 @@ namespace Smash_Forge
 
         private static void SetDiffuseTexUniforms(Shader shader, MeleeRenderTexture renderTex, int index)
         {
-            shader.SetBoolToInt($"hasSphere{index}", IsFlagSet(renderTex.Flag, (uint)TexCoordsFlag.SphereMap));
+            shader.SetBoolToInt($"hasSphere{index}", IsFlagSet(renderTex.Flag, (uint)MeleeDatEnums.TexCoordsFlag.SphereMap));
             shader.SetVector2($"diffuseScale{index}", new Vector2(renderTex.WScale, renderTex.HScale));
             shader.SetTexture($"diffuseTex{index}", renderTex.texture, index);
         }

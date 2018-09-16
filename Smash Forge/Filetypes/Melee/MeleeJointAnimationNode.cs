@@ -9,7 +9,7 @@ using MeleeLib.IO;
 using MeleeLib.DAT.Animation;
 using MeleeLib.DAT.Helpers;
 
-namespace Smash_Forge
+namespace Smash_Forge.Filetypes.Melee
 {
     public class MeleeJointAnimationNode : MeleeNode
     {

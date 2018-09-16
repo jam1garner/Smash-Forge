@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using MeleeLib.DAT;
+﻿using MeleeLib.DAT;
 
-namespace Smash_Forge
+namespace Smash_Forge.Filetypes.Melee
 {
     public class MeleeJointNode : MeleeNode
     {

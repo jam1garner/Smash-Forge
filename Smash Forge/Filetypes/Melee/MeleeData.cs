@@ -12,7 +12,7 @@ using MeleeLib.DAT.Helpers;
 using MeleeLib.DAT.Animation;
 using SFGraphics.Cameras;
 
-namespace Smash_Forge
+namespace Smash_Forge.Filetypes.Melee
 {
     public class MeleeDataNode : MeleeNode
     {

@@ -7,13 +7,13 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Shaders;
-using Smash_Forge.Filetypes.Melee;
 using Smash_Forge.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using Smash_Forge.Filetypes.Melee.Utils;
 
-namespace Smash_Forge
+namespace Smash_Forge.Filetypes.Melee
 {
     public class MeleeRootNode : MeleeNode
     {

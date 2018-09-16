@@ -21,6 +21,7 @@ using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering.Meshes;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.GLObjectManagement;
+using Smash_Forge.Filetypes.Melee;
 
 namespace Smash_Forge
 {

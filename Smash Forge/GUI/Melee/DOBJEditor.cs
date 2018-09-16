@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MeleeLib.GCX;
 using MeleeLib.DAT;
+using Smash_Forge.Filetypes.Melee;
 
 namespace Smash_Forge.GUI.Melee
 {

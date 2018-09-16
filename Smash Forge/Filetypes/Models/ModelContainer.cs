@@ -3,13 +3,14 @@ using OpenTK.Graphics.OpenGL;
 using SALT.Graphics;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Shaders;
+using SFGraphics.GLObjects.Textures;
 using SFGraphics.Utils;
+using Smash_Forge.Filetypes.Melee;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Lights;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge
 {

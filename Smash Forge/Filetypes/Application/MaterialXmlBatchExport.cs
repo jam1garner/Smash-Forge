@@ -2,8 +2,9 @@
 using System.IO;
 using System.Windows.Forms;
 using Smash_Forge.Filetypes.Melee;
+using Smash_Forge.Filetypes.Melee.Utils;
 
-namespace Smash_Forge
+namespace Smash_Forge.Filetypes
 {
     class MaterialXmlBatchExport
     {
