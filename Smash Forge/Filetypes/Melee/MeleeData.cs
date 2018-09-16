@@ -29,7 +29,7 @@ namespace Smash_Forge.Filetypes.Melee
         {
             fileName = fname;
             DatFile = Decompiler.Decompile(File.ReadAllBytes(fname));
-            if(File.Exists(fname.Substring(0, fname.Length - 6) + ".dat"))
+            if(Path.GetFileNameWithoutExtension(fname).StartsWith("Pl") && File.Exists(fname.Substring(0, fname.Length - 6) + ".dat"))
             {
                 DialogResult dialogResult = MessageBox.Show("Mark LOD Models?\nUseful for easier importing", "Import LOD Information", MessageBoxButtons.YesNo);
                 if (dialogResult != DialogResult.Yes)
