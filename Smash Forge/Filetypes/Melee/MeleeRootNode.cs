@@ -54,6 +54,28 @@ namespace Smash_Forge
 
         public void RemoveAllTextures(object sender, EventArgs args)
         {
+            // grab textures used by material animations
+            List<byte[]> MaterialAnims = new List<byte[]>();
+            foreach(DATRoot r in Root.ParentDAT.Roots)
+            {
+                foreach (DatMatAnim anim in r.MatAnims)
+                {
+                    foreach (DatMatAnimGroup g in anim.Groups)
+                    {
+                        foreach (DatMatAnimData d in g.Data)
+                        {
+                            foreach (DatMatAnimTextureData t in d.Textures)
+                            {
+                                MaterialAnims.Add(t.Data);
+                            }
+                        }
+                    }
+                }
+            }
+            if (MaterialAnims.Count > 0)
+                MessageBox.Show("Warning: Models with Material Animations may freeze in-game");
+
+            // clear textures that aren't part of material animation and don't have polygons
             foreach(MeleeDataObjectNode n in DataObjects.Nodes)
             {
                 DatDOBJ o = n.DOBJ;
@@ -61,9 +83,15 @@ namespace Smash_Forge
                 {
                     foreach (DatTexture t in o.Material.Textures)
                     {
-                        o.Material.RemoveTexture(t);
+                        if(t.ImageData == null || !MaterialAnims.Contains(t.ImageData.Data))
+                        {
+                            o.Material.RemoveTexture(t);
+                        }
+                        else
+                            break;
                     }
-                    o.Material.Flags = (int)(o.Material.Flags & 0xFFFFF00F);
+                    if(o.Material.Textures.Length == 0)
+                        o.Material.Flags = (int)(o.Material.Flags & 0xFFFFF00F);
                 }
             }
         }

@@ -299,7 +299,7 @@ namespace Smash_Forge.GUI.Melee
         public TextureNode(DatTexture Texture)
         {
             this.Texture = Texture;
-            Text = Texture.UnkFlags.ToString("X") + "_" + Texture.ImageData.Format.ToString();
+            Text = Texture.UnkFlags.ToString("X") + (Texture.ImageData == null ? "" : "_" + Texture.ImageData.Format.ToString());
         }
     }
 }

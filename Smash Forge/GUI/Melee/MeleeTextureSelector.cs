@@ -53,7 +53,7 @@ namespace Smash_Forge.GUI.Melee
                         
                         ListViewItem lstItem = new ListViewItem();
                         lstItem.ImageIndex = Textures.Count;
-                        lstItem.Text = "Texture_" + lstItem.ImageIndex;
+                        lstItem.Text = "Texture_" + lstItem.ImageIndex + "_" + (t.ImageData != null ? t.ImageData.Format.ToString() + "\n" + t.ImageData.Width + "x" + t.ImageData.Height : "");
                         lstItem.Tag = t;
                         listView1.Items.Add(lstItem);
                         imageList1.Images.Add(t.GetStaticBitmap());
@@ -145,6 +145,17 @@ namespace Smash_Forge.GUI.Melee
                 i.Dispose();
             }
             listView1.LargeImageList.Images.Clear();
+        }
+
+        private void CBFormat_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CBPalette.Enabled = false;
+            if ((TPL_TextureFormat)CBFormat.SelectedItem == TPL_TextureFormat.CI8 ||
+                (TPL_TextureFormat)CBFormat.SelectedItem == TPL_TextureFormat.CI4 ||
+                (TPL_TextureFormat)CBFormat.SelectedItem == TPL_TextureFormat.CI14X2)
+            {
+                CBPalette.Enabled = true;
+            }
         }
     }
 }

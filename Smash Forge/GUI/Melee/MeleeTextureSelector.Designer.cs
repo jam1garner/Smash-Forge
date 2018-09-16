@@ -32,10 +32,10 @@
             this.button2 = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.CBFormat = new System.Windows.Forms.ComboBox();
-            this.CBPalette = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.CBPalette = new System.Windows.Forms.ComboBox();
+            this.CBFormat = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -92,23 +92,14 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Import From File Settings";
             // 
-            // CBFormat
+            // label2
             // 
-            this.CBFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.CBFormat.FormattingEnabled = true;
-            this.CBFormat.Location = new System.Drawing.Point(6, 38);
-            this.CBFormat.Name = "CBFormat";
-            this.CBFormat.Size = new System.Drawing.Size(121, 21);
-            this.CBFormat.TabIndex = 2;
-            // 
-            // CBPalette
-            // 
-            this.CBPalette.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.CBPalette.FormattingEnabled = true;
-            this.CBPalette.Location = new System.Drawing.Point(145, 38);
-            this.CBPalette.Name = "CBPalette";
-            this.CBPalette.Size = new System.Drawing.Size(121, 21);
-            this.CBPalette.TabIndex = 3;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(142, 22);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(75, 13);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "Palette Format";
             // 
             // label1
             // 
@@ -119,14 +110,24 @@
             this.label1.TabIndex = 4;
             this.label1.Text = "Texture Format";
             // 
-            // label2
+            // CBPalette
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(142, 22);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(75, 13);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Palette Format";
+            this.CBPalette.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.CBPalette.FormattingEnabled = true;
+            this.CBPalette.Location = new System.Drawing.Point(145, 38);
+            this.CBPalette.Name = "CBPalette";
+            this.CBPalette.Size = new System.Drawing.Size(121, 21);
+            this.CBPalette.TabIndex = 3;
+            // 
+            // CBFormat
+            // 
+            this.CBFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.CBFormat.FormattingEnabled = true;
+            this.CBFormat.Location = new System.Drawing.Point(6, 38);
+            this.CBFormat.Name = "CBFormat";
+            this.CBFormat.Size = new System.Drawing.Size(121, 21);
+            this.CBFormat.TabIndex = 2;
+            this.CBFormat.SelectedIndexChanged += new System.EventHandler(this.CBFormat_SelectedIndexChanged);
             // 
             // MeleeTextureSelector
             // 
