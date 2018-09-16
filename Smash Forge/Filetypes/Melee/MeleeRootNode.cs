@@ -124,7 +124,7 @@ namespace Smash_Forge
                 sfd.DefaultExt = "smd";
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    GXVertexDecompressor decom = new GXVertexDecompressor(((MeleeDataNode)Parent).DatFile);
+                    GXVertexDecompressor decom = new GXVertexDecompressor(Root);
                     SMD smd = new SMD();
                     smd.Bones = RenderBones;
 
@@ -164,9 +164,10 @@ namespace Smash_Forge
             return smdv;
         }
 
-        public void RecompileVertices(GXVertexDecompressor decompressor, GXVertexCompressor compressor)
+        public void RecompileVertices(GXVertexCompressor compressor)
         {
-            foreach(MeleeDataObjectNode n in DataObjects.Nodes)
+            GXVertexDecompressor decompressor = new GXVertexDecompressor(Root);
+            foreach (MeleeDataObjectNode n in DataObjects.Nodes)
             {
                 n.RecompileVertices(decompressor, compressor);
             }

@@ -96,7 +96,7 @@ namespace Smash_Forge
             List<int> ind = new List<int>();
 
             VBN Bones = GetRoot().RenderBones;
-            GXVertexDecompressor decompressor = new GXVertexDecompressor(GetDatFile().DatFile);
+            GXVertexDecompressor decompressor = new GXVertexDecompressor(GetRoot().Root);
 
             int index = 0;
             foreach (DatPolygon p in DOBJ.Polygons)
@@ -357,7 +357,7 @@ namespace Smash_Forge
         private void RefreshRenderMeshes()
         {
             renderMeshes.Clear();
-            GXVertexDecompressor decom = new GXVertexDecompressor(GetDatFile().DatFile);
+            GXVertexDecompressor decom = new GXVertexDecompressor(GetRoot().Root);
 
             List<VertexContainer<MeleeVertex>> vertexContainers = new List<VertexContainer<MeleeVertex>>();
 

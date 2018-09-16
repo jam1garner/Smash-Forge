@@ -203,15 +203,15 @@ namespace Smash_Forge
 
         public void RecompileVertices()
         {
-            GXVertexCompressor compressor = new GXVertexCompressor(DatFile);
-            GXVertexDecompressor decompressor = new GXVertexDecompressor(DatFile);
+            GXVertexCompressor compressor = new GXVertexCompressor();
 
             foreach (MeleeRootNode root in Nodes)
             {
-                root.RecompileVertices(decompressor, compressor);
+                root.RecompileVertices(compressor);
             }
 
-            DatFile.DataBuffer = compressor.GetBuffer();
+            compressor.CompileChanges();
+            
             RefreshDisplay();
         }
 
