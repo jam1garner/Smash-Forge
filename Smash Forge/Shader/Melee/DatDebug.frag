@@ -7,7 +7,15 @@ in vec3 tangent;
 in vec4 color;
 in vec2 UV0;
 
-uniform sampler2D diffuseTex;
+uniform int hasSphere0;
+uniform int hasDiffuse0;
+uniform sampler2D diffuseTex0;
+uniform vec2 diffuseScale0;
+
+uniform int hasSphere1;
+uniform int hasDiffuse1;
+uniform sampler2D diffuseTex1;
+uniform vec2 diffuseScale1;
 
 uniform int hasBumpMap;
 uniform int bumpMapWidth;
@@ -38,11 +46,19 @@ uniform int alphaOverride;
 
 uniform int renderNormalMap;
 
+uniform mat4 sphereMatrix;
+
 out vec4 fragColor;
 
 // Defined in MeleeUtils.frag
 vec3 CalculateBumpMapNormal(vec3 normal, vec3 tangent, vec3 bitangent,
     int hasBump, sampler2D bumpMap, int width, int height, vec2 texCoords);
+
+vec2 GetSphereCoords(vec3 N)
+{
+    vec3 viewNormal = mat3(sphereMatrix) * normal.xyz;
+    return viewNormal.xy * 0.5 + 0.5;
+}
 
 void main()
 {
@@ -80,7 +96,22 @@ void main()
     else if (renderType == 3)
     {
         // diffuse map
-        resultingColor.rgba = texture(diffuseTex, UV0).rgba;
+        vec4 diffuseMap = vec4(1);
+
+        vec2 diffuseCoords0 = UV0;
+        if (hasSphere0 == 1)
+            diffuseCoords0 = GetSphereCoords(N);
+
+        vec2 diffuseCoords1 = UV0;
+        if (hasSphere1 == 1)
+            diffuseCoords1 = GetSphereCoords(N);
+
+        if (hasDiffuse0 == 1)
+            diffuseMap = texture(diffuseTex0, diffuseCoords0 * diffuseScale0).rgba;
+        if (hasDiffuse1 == 1)
+            diffuseMap = mix(diffuseMap, texture(diffuseTex1, diffuseCoords1 * diffuseScale1), 0.1);
+
+        resultingColor.rgb = diffuseMap.rgb;
     }
     else if (renderType == 4)
     {

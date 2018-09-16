@@ -7,10 +7,15 @@ in vec3 tangent;
 in vec4 color;
 in vec2 UV0;
 
-uniform int hasDiffuse;
-uniform int hasSphere;
-uniform sampler2D diffuseTex;
-uniform vec2 diffuseScale;
+uniform int hasSphere0;
+uniform int hasDiffuse0;
+uniform sampler2D diffuseTex0;
+uniform vec2 diffuseScale0;
+
+uniform int hasSphere1;
+uniform int hasDiffuse1;
+uniform sampler2D diffuseTex1;
+uniform vec2 diffuseScale1;
 
 uniform int hasSpecular;
 uniform sampler2D specularTex;
@@ -47,6 +52,52 @@ uniform int renderNormalMap;
 
 out vec4 fragColor;
 
+vec2 GetSphereCoords(vec3 N)
+{
+    vec3 viewNormal = mat3(sphereMatrix) * normal.xyz;
+    return viewNormal.xy * 0.5 + 0.5;
+}
+
+vec3 DiffusePass(vec3 N, vec3 V)
+{
+    // Diffuse
+    float blend = 0.1; // TODO: Use texture's blend.
+    float lambert = clamp(dot(N, V), 0, 1);
+
+    vec4 diffuseMap = vec4(1);
+
+    vec2 diffuseCoords0 = UV0;
+    if (hasSphere0 == 1)
+        diffuseCoords0 = GetSphereCoords(N);
+
+    vec2 diffuseCoords1 = UV0;
+    if (hasSphere1 == 1)
+        diffuseCoords1 = GetSphereCoords(N);
+
+    if (hasDiffuse0 == 1)
+        diffuseMap = texture(diffuseTex0, diffuseCoords0 * diffuseScale0).rgba;
+    if (hasDiffuse1 == 1)
+        diffuseMap = mix(diffuseMap, texture(diffuseTex1, diffuseCoords1 * diffuseScale1), 0.1);
+
+    vec3 diffuseTerm = diffuseMap.rgb;
+    if (enableDiffuseLighting == 1)
+        diffuseTerm *= mix(ambientColor.rgb, diffuseColor.rgb, lambert);
+
+    return diffuseTerm;
+}
+
+vec3 SpecularPass(vec3 N, vec3 V)
+{
+    // Specular
+    float phong = clamp(dot(normal, V), 0, 1);
+    phong = pow(phong, glossiness);
+    vec3 specularTerm = vec3(phong) * specularColor.rgb;
+    if (hasSpecular == 1)
+        specularTerm *= texture(specularTex, UV0 * specularScale).rgb;
+    specularTerm *= enableSpecular;
+
+    return specularTerm;
+}
 
 // Defined in MeleeUtils.frag
 vec3 CalculateBumpMapNormal(vec3 normal, vec3 tangent, vec3 bitangent,
@@ -71,37 +122,11 @@ void main()
             bumpMapTex, bumpMapWidth, bumpMapHeight, UV0  * bumpMapTexScale);
     }
 
-	// Diffuse
-	float lambert = clamp(dot(N, V), 0, 1);
-	vec4 diffuseMap = vec4(1);
-    if (hasDiffuse == 1)
-        diffuseMap = texture2D(diffuseTex, UV0 * diffuseScale).rgba;
-
-	// Sphere maps
-	if (hasSphere == 1)
-	{
-		vec3 viewNormal = mat3(sphereMatrix) * normal.xyz;
-		vec2 sphereCoords = viewNormal.xy * 0.5 + 0.5;
-		diffuseMap = texture(diffuseTex, sphereCoords).rgba;
-	}
-
-	vec3 diffuseTerm = diffuseMap.rgb;
-	if (enableDiffuseLighting == 1)
-	 	diffuseTerm *= mix(ambientColor.rgb, diffuseColor.rgb, lambert);
-
-	// Specular
-	float phong = clamp(dot(normal, V), 0, 1);
-	phong = pow(phong, glossiness);
-	vec3 specularTerm = vec3(phong) * specularColor.rgb;
-    if (hasSpecular == 1)
-        specularTerm *= texture(specularTex, UV0 * specularScale).rgb;
-	specularTerm *= enableSpecular;
-
 	// Render passes
-	fragColor.rgb += diffuseTerm * renderDiffuse;
-	fragColor.rgb += specularTerm * renderSpecular;
+	fragColor.rgb += DiffusePass(N, V) * renderDiffuse;
+	fragColor.rgb += SpecularPass(N, V) * renderSpecular;
 
 	// Set alpha
     if (renderAlpha == 1)
-        fragColor.a = diffuseMap.a * transparency;
+        fragColor.a = texture(diffuseTex0, UV0 * diffuseScale0).a * transparency;
 }

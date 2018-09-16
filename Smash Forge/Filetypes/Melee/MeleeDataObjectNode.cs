@@ -242,20 +242,20 @@ namespace Smash_Forge
             shader.SetVector2("bumpMapScale", new Vector2(1, 1));
             shader.SetVector2("specularScale", new Vector2(1, 1));
 
-            shader.SetTexture("diffuseTex", Rendering.RenderTools.defaultTex, 0);
+            shader.SetTexture("diffuseTex0", Rendering.RenderTools.defaultTex, 0);
+            shader.SetTexture("diffuseTex1", Rendering.RenderTools.defaultTex, 1);
             shader.SetTexture("bumpMapTex", Rendering.RenderTools.defaultTex, 2);
             shader.SetTexture("specularTex", Rendering.RenderTools.defaultTex, 3);
 
-            bool hasDiffuse = false;
             bool hasBumpMap = false;
-            bool hasSphere = false;
             bool hasSpecular = false;
+            shader.SetBoolToInt("hasSphere0", false);
+            shader.SetBoolToInt("hasSphere1", false);
 
+            // TODO: Use a more general solution, so any texture can have sphere coords.
+            int diffuseCount = 0;
             foreach (var renderTex in renderTextures)
             {
-                if (IsFlagSet(renderTex.Flag, (uint)TexCoordsFlag.SphereMap))
-                    hasSphere = true;
-
                 if (IsFlagSet(renderTex.Flag, (uint)TextureFlag.BumpMap))
                 {
                     hasBumpMap = true;
@@ -264,8 +264,8 @@ namespace Smash_Forge
 
                 if (IsDiffuseBitSet(renderTex))
                 {
-                    hasDiffuse = true;
-                    SetDiffuseTexUniforms(shader, renderTex);
+                    SetDiffuseTexUniforms(shader, renderTex, diffuseCount);
+                    diffuseCount++;
                 }
 
                 if (IsFlagSet(renderTex.Flag, (uint)TextureFlag.Specular))
@@ -275,10 +275,10 @@ namespace Smash_Forge
                 }
             }
 
-            shader.SetBoolToInt("hasDiffuse", hasDiffuse);
+            shader.SetBoolToInt("hasDiffuse0", diffuseCount > 0);
+            shader.SetBoolToInt("hasDiffuse1", diffuseCount > 1);
             shader.SetBoolToInt("hasBumpMap", hasBumpMap);
             shader.SetBoolToInt("hasSpecular", hasSpecular);
-            shader.SetBoolToInt("hasSphere", hasSphere);
         }
 
         private static bool IsFlagSet(uint value, uint flag)
@@ -305,10 +305,11 @@ namespace Smash_Forge
             shader.SetTexture("bumpMapTex", renderTex.texture, 2);
         }
 
-        private static void SetDiffuseTexUniforms(Shader shader, MeleeRenderTexture renderTex)
+        private static void SetDiffuseTexUniforms(Shader shader, MeleeRenderTexture renderTex, int index)
         {
-            shader.SetVector2("diffuseScale", new Vector2(renderTex.WScale, renderTex.HScale));
-            shader.SetTexture("diffuseTex", renderTex.texture, 0);
+            shader.SetBoolToInt($"hasSphere{index}", IsFlagSet(renderTex.Flag, (uint)TexCoordsFlag.SphereMap));
+            shader.SetVector2($"diffuseScale{index}", new Vector2(renderTex.WScale, renderTex.HScale));
+            shader.SetTexture($"diffuseTex{index}", renderTex.texture, index);
         }
 
         private static void SetSpecularTexUniforms(Shader shader, MeleeRenderTexture renderTex)
