@@ -1,58 +1,54 @@
 #version 330
 
 in vec3 vPosition;
-in vec4 vColor;
 in vec3 vNormal;
-in vec2 vUV;
+in vec3 vBitan;
+in vec3 vTan;
+in vec2 vUV0;
 in vec4 vBone;
 in vec4 vWeight;
 
-out vec2 texcoord;
-out vec4 vertexColor;
+out vec3 objectPosition;
 out vec3 normal;
-out vec3 boneWeightsColored;
+out vec3 bitangent;
+out vec3 tangent;
+out vec4 color;
+out vec2 UV0;
 
-uniform mat4 modelview;
-uniform int selectedBoneIndex;
+uniform int BoneIndex;
+uniform mat4 mvpMatrix;
+uniform mat4 bones[100];
+uniform mat4 binds[100];
 
-uniform bones {
-    mat4 transforms[200];
-} bones_;
-
-float BoneWeightDisplay() {
-    float weight = 0;
-    if (selectedBoneIndex == vBone.x)
-        weight += vWeight.x;
-    if (selectedBoneIndex == vBone.y)
-        weight += vWeight.y;
-    if (selectedBoneIndex == vBone.z)
-        weight += vWeight.z;
-    if (selectedBoneIndex == vBone.w)
-        weight += vWeight.w;
-
-    return weight;
+vec4 Skin(vec4 P, ivec4 B)
+{
+	vec4 o = vec4(0, 0, 0, 1);
+	if(B.x != 0) o += binds[B.x] * vec4(P.xyz, 1) * vWeight.x; else o = P;
+	if(B.y != 0) o += binds[B.y] * vec4(P.xyz, 1) * vWeight.y;
+	if(B.z != 0) o += binds[B.z] * vec4(P.xyz, 1) * vWeight.z;
+	if(B.w != 0) o += binds[B.w] * vec4(P.xyz, 1) * vWeight.w;
+	return o;
 }
 
-void
-main() {
-    /*
-    // if (debug1 == 1)
-    //     boneWeightsColored = BoneWeightRamp(vec3(boneWeightsColored)).rgb;
-	*/
+void main() {
 
-    vec4 objPos = vec4(vPosition.xyz, 1.0);
-	ivec4 index = ivec4(vBone);
-	if (vBone.x != -1) {
-        objPos = bones_.transforms[index.x] * vec4(vPosition, 1.0) * vWeight.x;
-        objPos += bones_.transforms[index.y] * vec4(vPosition, 1.0) * vWeight.y;
-        objPos += bones_.transforms[index.z] * vec4(vPosition, 1.0) * vWeight.z;
-        objPos += bones_.transforms[index.w] * vec4(vPosition, 1.0) * vWeight.w;
-    }
+	normal = vNormal;
+	bitangent = normalize(vBitan);
+	tangent = normalize(vTan);
+	UV0 = vUV0;
 
-    gl_Position = modelview * vec4(objPos.xyz, 1.0);
-    texcoord = vUV;
-    vertexColor = vColor;
-    normal = vNormal;
-    float totalWeight = BoneWeightDisplay();
-    boneWeightsColored = vec3(totalWeight);
+	vec4 position = vec4(vPosition, 1.0);
+
+	if(vBone.y == 0 && vBone.x != 0)
+	{
+		position = bones[int(vBone.x)] * position;
+		normal = (inverse(transpose(bones[int(vBone.x)])) * vec4(vNormal, 0)).xyz;
+	}
+	position.xyz = (bones[int(BoneIndex)] * vec4(position.xyz, 1.0)).xyz;
+
+	position = Skin(position, ivec4(vBone));
+
+	objectPosition = position.xyz;
+
+    gl_Position = mvpMatrix * vec4(position.xyz, 1);
 }

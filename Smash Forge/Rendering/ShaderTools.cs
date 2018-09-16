@@ -49,6 +49,13 @@ namespace Smash_Forge.Rendering
             SetUpNudShaders();
             SetUpMiscShaders();
             SetUpBfresShaders();
+            SetUpMeleeShaders();
+        }
+        
+        private static void SetUpMeleeShaders()
+        {
+            CreateAndAddShader("Dat", "Melee\\Dat.vert", "Melee\\Dat.frag", "Melee\\MeleeUtils.frag");
+            CreateAndAddShader("DatDebug", "Melee\\Dat.vert", "Melee\\DatDebug.frag", "Melee\\MeleeUtils.frag");
         }
 
         private static void SetUpBfresShaders()
@@ -83,7 +90,6 @@ namespace Smash_Forge.Rendering
         private static void SetUpMiscShaders()
         {
             CreateAndAddShader("Mbn", "3ds\\Mbn.frag", "3ds\\Mbn.vert");
-            CreateAndAddShader("Dat", "Melee\\Dat.frag", "Melee\\Dat.vert");
             CreateAndAddShader("Point", "Point.frag", "Point.vert");
             CreateAndAddShader("Shadow", "Shadow.frag", "Shadow.vert");
             CreateAndAddShader("ForgeMesh", "ForgeMesh.frag", "ForgeMesh.vert");

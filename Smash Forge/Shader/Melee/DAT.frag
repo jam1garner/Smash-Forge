@@ -1,69 +1,107 @@
 #version 330
 
-in vec2 texcoord;
-in vec4 vertexColor;
+in vec3 objectPosition;
 in vec3 normal;
-in vec3 boneWeightsColored;
+in vec3 bitangent;
+in vec3 tangent;
+in vec4 color;
+in vec2 UV0;
+
+uniform int hasDiffuse;
+uniform int hasSphere;
+uniform sampler2D diffuseTex;
+uniform vec2 diffuseScale;
+
+uniform int hasSpecular;
+uniform sampler2D specularTex;
+uniform vec2 specularScale;
+
+uniform int hasBumpMap;
+uniform int bumpMapWidth;
+uniform int bumpMapHeight;
+uniform sampler2D bumpMapTex;
+uniform vec2 bumpMapTexScale;
+
+uniform vec4 diffuseColor;
+uniform vec4 ambientColor;
+uniform vec4 specularColor;
+
+uniform int flags;
+uniform int enableSpecular;
+uniform int enableDiffuseLighting;
+
+uniform float glossiness;
+uniform float transparency;
+
+uniform int colorOverride;
+
+uniform mat4 mvpMatrix;
+uniform mat4 sphereMatrix;
+
+uniform int renderDiffuse;
+uniform int renderSpecular;
+
+uniform int renderAlpha;
+
+uniform int renderNormalMap;
 
 out vec4 fragColor;
 
-uniform vec3 difLightDirection;
-uniform vec3 difLightColor;
-uniform vec3 ambLightColor;
 
-uniform int renderType;
-uniform int renderVertColor;
+// Defined in MeleeUtils.frag
+vec3 CalculateBumpMapNormal(vec3 normal, vec3 tangent, vec3 bitangent,
+    int hasBump, sampler2D bumpMap, int width, int height, vec2 texCoords);
 
-uniform sampler2D tex;
-uniform sampler2D UVTestPattern;
-uniform vec2 uvscale;
-uniform mat4 modelview;
+void main()
+{
+	if (colorOverride == 1)
+	{
+		fragColor = vec4(1);
+		return;
+	}
 
-void main() {
-    vec3 displayNormal = normal * 0.5 + 0.5;
+	fragColor = vec4(0, 0, 0, 1);
 
-    vec4 alpha = texture(tex, texcoord * uvscale).aaaa;
-    fragColor = vec4 ((vertexColor * alpha * texture(tex, texcoord*uvscale)).xyz, alpha.a * vertexColor.w);
-
-    vec4 diffuseColor = texture(tex, texcoord * uvscale).rgba;
-
-    float halfLambert = dot(difLightDirection, normal.xyz);
-    halfLambert = (halfLambert + 1) / 2;
-    vec3 lighting = mix(ambLightColor, difLightColor, halfLambert); // gradient based lighting
-
-    fragColor = vec4(1);
-    vec3 resultingColor = diffuseColor.rgb * lighting.rgb;
-    if (renderVertColor == 1)
-        resultingColor *= vertexColor.rgb;
-
-    if (renderType == 1) // normals vertexColor
-        fragColor = vec4(displayNormal,1);
-    else if (renderType == 2)
+	vec3 V = vec3(0, 0, -1) * mat3(mvpMatrix);
+    vec3 N = normal;
+    if (renderNormalMap == 1)
     {
-        // normals black & white
-        float normalBnW = dot(vec4(normal * mat3(modelview), 1.0), vec4(0.15,0.15,0.15,1.0));
-        fragColor.rgb = vec3(normalBnW);
+        // This seems to only affect diffuse.
+        N = CalculateBumpMapNormal(normal, tangent, bitangent, hasBumpMap,
+            bumpMapTex, bumpMapWidth, bumpMapHeight, UV0  * bumpMapTexScale);
     }
-    else if (renderType == 3)
-        fragColor = vec4(diffuseColor.rgb, 1);
-    else if (renderType == 4) // normal maps
-        fragColor = vec4(vec3(0), 1);
-    else if (renderType == 5) // vertexColor
-        fragColor = vertexColor;
-    else if (renderType == 6) // ao
-        fragColor = vec4(vec3(1), 1);
-    else if (renderType == 7) // uv coords
-        fragColor = vec4(texcoord.x, texcoord.y, 1, 1);
-    else if (renderType == 8) // uv test pattern
-        fragColor = vec4(texture(UVTestPattern, texcoord).rgb, 1);
-    else if (renderType == 9)
-        fragColor = vec4(vec3(0), 1);
-    else if (renderType == 10)
-        fragColor = vec4(vec3(0), 1);
-    else if (renderType == 11)
-        fragColor = vec4(vec3(0), 1);
-    else if (renderType == 12)
-        fragColor = vec4(boneWeightsColored, 1);
-    else
-        fragColor = vec4(resultingColor, 1);
+
+	// Diffuse
+	float lambert = clamp(dot(N, V), 0, 1);
+	vec4 diffuseMap = vec4(1);
+    if (hasDiffuse == 1)
+        diffuseMap = texture2D(diffuseTex, UV0 * diffuseScale).rgba;
+
+	// Sphere maps
+	if (hasSphere == 1)
+	{
+		vec3 viewNormal = mat3(sphereMatrix) * normal.xyz;
+		vec2 sphereCoords = viewNormal.xy * 0.5 + 0.5;
+		diffuseMap = texture(diffuseTex, sphereCoords).rgba;
+	}
+
+	vec3 diffuseTerm = diffuseMap.rgb;
+	if (enableDiffuseLighting == 1)
+	 	diffuseTerm *= mix(ambientColor.rgb, diffuseColor.rgb, lambert);
+
+	// Specular
+	float phong = clamp(dot(normal, V), 0, 1);
+	phong = pow(phong, glossiness);
+	vec3 specularTerm = vec3(phong) * specularColor.rgb;
+    if (hasSpecular == 1)
+        specularTerm *= texture(specularTex, UV0 * specularScale).rgb;
+	specularTerm *= enableSpecular;
+
+	// Render passes
+	fragColor.rgb += diffuseTerm * renderDiffuse;
+	fragColor.rgb += specularTerm * renderSpecular;
+
+	// Set alpha
+    if (renderAlpha == 1)
+        fragColor.a = diffuseMap.a * transparency;
 }

@@ -212,6 +212,21 @@ namespace Smash_Forge
             }
         }
         private DAT datMelee;
+        
+        public MeleeDataNode MeleeData
+        {
+            get
+            {
+                return _meleeData;
+            }
+            set
+            {
+                _meleeData = value;
+                //VBN = datMelee.bones;
+                Refresh();
+            }
+        }
+        private MeleeDataNode _meleeData;
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
         public static MovesetManager Moveset { get; set; }
@@ -234,7 +249,12 @@ namespace Smash_Forge
         {
             Nodes.Clear();
 
-            if (DatMelee != null)
+            if (MeleeData != null)
+            {
+                Text = "Melee Data";
+                Nodes.Add(MeleeData);
+            }
+            else if(DatMelee != null)
             {
                 Text = "Melee DAT";
                 Nodes.AddRange(DatMelee.tree.ToArray());
@@ -302,10 +322,10 @@ namespace Smash_Forge
             shader.UseProgram();
             SetMbnUniforms(camera, shader);
 
-            // Melee DAT
-            shader = OpenTKSharedResources.shaders["Dat"];
-            shader.UseProgram();
-            SetDatUniforms(shader);
+            if (MeleeData != null)
+            {
+                MeleeData.Render(camera);
+            }
 
             if (Bch != null)
             {
