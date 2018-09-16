@@ -17,8 +17,8 @@ out vec2 UV0;
 
 uniform int BoneIndex;
 uniform mat4 mvpMatrix;
-uniform mat4 bones[100];
-uniform mat4 binds[100];
+uniform mat4 bones[200];
+uniform mat4 binds[200];
 
 vec4 Skin(vec4 P, ivec4 B)
 {
