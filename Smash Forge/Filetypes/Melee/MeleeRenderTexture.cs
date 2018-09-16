@@ -23,6 +23,7 @@ namespace Smash_Forge
             WScale = datTexture.WScale;
             HScale = datTexture.HScale;
 
+            if(datTexture.ImageData != null)
             using (Bitmap b = datTexture.GetBitmap())
             {
                 texture.LoadImageData(b);

@@ -18,6 +18,7 @@ namespace Smash_Forge.GUI.Melee
         private TextureNode selectedTexture = null;
         private MeleeDataObjectNode meleeDataObjectNode = null;
 
+
         
         private DatDOBJ DOBJ;
         private Bitmap TempBitmap;
@@ -48,7 +49,20 @@ namespace Smash_Forge.GUI.Melee
             foreach (var suit in Enum.GetValues(typeof(GXLogicOp))) blendOpComboBox.Items.Add(suit);
             foreach (var suit in Enum.GetValues(typeof(GXBlendMode))) blendModeComboBox.Items.Add(suit);
 
+            foreach (var cbv in Enum.GetValues(typeof(GXTexMapID))) CBTexID.Items.Add(cbv);
+            foreach (var cbv in Enum.GetValues(typeof(GXTexGenSrc))) CBTexGenSrc.Items.Add(cbv);
+            foreach (var cbv in Enum.GetValues(typeof(GXTexFilter)))
+            {
+                CBTexMag.Items.Add(cbv);
+                CBMinFilter.Items.Add(cbv);
+            }
+            foreach (var cbv in Enum.GetValues(typeof(GXAnisotropy))) CBAnisotrophy.Items.Add(cbv);
+
             Reload();
+
+            if (DOBJ.Material.Textures.Length > 0)
+                textureListBox.SelectedIndex = 0;
+
             pixelProcessingTableLayout.Visible = pixelProcessingCB.Checked;
         }
 
@@ -64,7 +78,7 @@ namespace Smash_Forge.GUI.Melee
 
             textureListBox.Items.Clear();
 
-            foreach(DatTexture t in DOBJ.Material.Textures)
+            foreach (DatTexture t in DOBJ.Material.Textures)
             {
                 textureListBox.Items.Add(new TextureNode(t));
             }
@@ -95,17 +109,38 @@ namespace Smash_Forge.GUI.Melee
                 //TempBitmap.Dispose();
                 TempBitmap = null;
             }
+                EnabledPanelContents(tabControl2, false);
+            ButtonChooseTexture.Enabled = false;
 
-            if(textureListBox.SelectedItem != null)
+            if (textureListBox.SelectedItem != null)
             {
+                EnabledPanelContents(tabControl2, true);
+                ButtonChooseTexture.Enabled = true;
                 selectedTexture = (TextureNode)textureListBox.SelectedItem;
-                if (selectedTexture != null && selectedTexture.Texture != null)
+                if (selectedTexture != null && selectedTexture.Texture != null && selectedTexture.Texture.ImageData != null)
                     TempBitmap = selectedTexture.Texture.GetStaticBitmap();
 
                 textureFlagsTB.Text = selectedTexture.Texture.UnkFlags.ToString("X");
                 
                 CBWrapS.SelectedItem = (selectedTexture.Texture.WrapS);
                 CBWrapT.SelectedItem = (selectedTexture.Texture.WrapT);
+
+                CBTexGenSrc.SelectedIndex = selectedTexture.Texture.GXTexGenSrc;
+                CBTexID.SelectedItem = selectedTexture.Texture.TexMapID;
+                CBTexMag.SelectedItem = selectedTexture.Texture.MagFilter;
+                TBBlending.Text = selectedTexture.Texture.Blending.ToString();
+
+                TBTX.Text = selectedTexture.Texture.TX.ToString();
+                TBTY.Text = selectedTexture.Texture.TY.ToString();
+                TBTZ.Text = selectedTexture.Texture.TZ.ToString();
+                TBRX.Text = selectedTexture.Texture.RX.ToString();
+                TBRY.Text = selectedTexture.Texture.RY.ToString();
+                TBRZ.Text = selectedTexture.Texture.RZ.ToString();
+                TBSX.Text = selectedTexture.Texture.SX.ToString();
+                TBSY.Text = selectedTexture.Texture.SY.ToString();
+                TBSZ.Text = selectedTexture.Texture.SZ.ToString();
+
+                CBEnableLOD.Checked = (selectedTexture.Texture.LOD != null);
             }
             pictureBox1.Image = TempBitmap;
         }
@@ -172,7 +207,7 @@ namespace Smash_Forge.GUI.Melee
 
         private void CBWrapT_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (selectedTexture == null || CBWrapT.SelectedItem == null)
+            if (CBWrapT.SelectedItem == null)
                 return;
             selectedTexture.Texture.WrapT = (GXWrapMode)CBWrapT.SelectedItem;
             meleeDataObjectNode.RefreshRenderTextures();
@@ -180,7 +215,7 @@ namespace Smash_Forge.GUI.Melee
 
         private void CBWrapS_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (selectedTexture == null || CBWrapS.SelectedItem == null)
+            if (CBWrapS.SelectedItem == null)
                 return;
             selectedTexture.Texture.WrapS = (GXWrapMode)CBWrapS.SelectedItem;
             meleeDataObjectNode.RefreshRenderTextures();
@@ -290,6 +325,143 @@ namespace Smash_Forge.GUI.Melee
                 }
             }
         }
+
+        private void TBBlending_TextChanged(object sender, EventArgs e)
+        {
+            float v;
+            if(float.TryParse(TBBlending.Text, out v))
+                selectedTexture.Texture.Blending = v;
+        }
+
+        private void CBTexGenSrc_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (CBTexGenSrc.SelectedItem == null)
+                return;
+            selectedTexture.Texture.GXTexGenSrc = (int)CBTexGenSrc.SelectedItem;
+        }
+
+        private void CBTexID_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (CBTexID.SelectedItem == null)
+                return;
+            selectedTexture.Texture.TexMapID = (GXTexMapID)CBTexID.SelectedItem;
+        }
+
+        private void CBTexMag_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (CBTexMag.SelectedItem == null)
+                return;
+            selectedTexture.Texture.MagFilter = (GXTexFilter)CBTexMag.SelectedItem;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (selectedTexture == null) return;
+            DOBJ.Material.RemoveTexture(selectedTexture.Texture);
+            Reload();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            DOBJ.Material.AddTexture(new DatTexture());
+            Reload();
+        }
+
+        private void TBTX_TextChanged(object sender, EventArgs e)
+        {
+            if (selectedTexture == null) return;
+            if (sender == TBTX) selectedTexture.Texture.TX = GuiTools.TryParseTBFloat(TBTX);
+            if (sender == TBTY) selectedTexture.Texture.TY = GuiTools.TryParseTBFloat(TBTY);
+            if (sender == TBTZ) selectedTexture.Texture.TZ = GuiTools.TryParseTBFloat(TBTZ);
+            if (sender == TBRX) selectedTexture.Texture.RX = GuiTools.TryParseTBFloat(TBRX);
+            if (sender == TBRY) selectedTexture.Texture.RY = GuiTools.TryParseTBFloat(TBRY);
+            if (sender == TBRZ) selectedTexture.Texture.RZ = GuiTools.TryParseTBFloat(TBRZ);
+            if (sender == TBSX) selectedTexture.Texture.SX = GuiTools.TryParseTBFloat(TBSX);
+            if (sender == TBSY) selectedTexture.Texture.SY = GuiTools.TryParseTBFloat(TBSY);
+            if (sender == TBSZ) selectedTexture.Texture.SZ = GuiTools.TryParseTBFloat(TBSZ);
+        }
+
+        private void EnabledPanelContents(Control panel, bool enabled)
+        {
+            Queue<Control> cons = new Queue<Control>();
+            cons.Enqueue(panel);
+            while (cons.Count > 0)
+            {
+                Control ctrl = cons.Dequeue();
+                ctrl.Enabled = enabled;
+                foreach(Control c in ctrl.Controls)
+                    cons.Enqueue(c);
+            }
+        }
+
+        private void CBEnableLOD_CheckedChanged(object sender, EventArgs e)
+        {
+            if (CBEnableLOD.Checked)
+            {
+                EnabledPanelContents(tableLayoutPanel4, true);
+                if(selectedTexture.Texture.LOD == null)
+                        selectedTexture.Texture.LOD = new DatTextureLOD();
+                CBAnisotrophy.SelectedItem = selectedTexture.Texture.LOD.Anisotropy;
+                CBMinFilter.SelectedItem = selectedTexture.Texture.LOD.MinFilter;
+                TBBias.Text = selectedTexture.Texture.LOD.Bias.ToString();
+                CBBiasClamp.Checked = selectedTexture.Texture.LOD.BiasClamp;
+                CBEnableEdgeLOD.Checked = selectedTexture.Texture.LOD.EnableEdgeLOD;
+            }
+            else
+            {
+                EnabledPanelContents(tableLayoutPanel4, false);
+                selectedTexture.Texture.LOD = null;
+            }
+        }
+
+        private void CBEnableEdgeLOD_CheckedChanged(object sender, EventArgs e)
+        {
+            selectedTexture.Texture.LOD.EnableEdgeLOD = CBEnableEdgeLOD.Checked;
+        }
+
+        private void CBBiasClamp_CheckedChanged(object sender, EventArgs e)
+        {
+            selectedTexture.Texture.LOD.BiasClamp = CBBiasClamp.Checked;
+        }
+
+        private void TBBias_TextChanged(object sender, EventArgs e)
+        {
+            selectedTexture.Texture.LOD.Bias = GuiTools.TryParseTBFloat(TBBias);
+        }
+
+        private void CBMinFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selectedTexture.Texture.LOD.MinFilter = (GXTexFilter)CBMinFilter.SelectedItem;
+        }
+
+        private void CBAnisotrophy_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            selectedTexture.Texture.LOD.Anisotropy = (GXAnisotropy)CBAnisotrophy.SelectedItem;
+        }
+    }
+    public enum GXTexGenSrc
+    {
+        Position = 0,
+        Normal = 1,
+        Binormal = 2,
+        Tangent = 3,
+        Tex0 = 4,
+        Tex1 = 5,
+        Tex2 = 6,
+        Tex3 = 7,
+        Tex4 = 8,
+        Tex5 = 9,
+        Tex6 = 10,
+        Tex7 = 11,
+        TexCoord0 = 12,
+        TexCoord1 = 13,
+        TexCoord2 = 14,
+        TexCoord3 = 15,
+        TexCoord4 = 16,
+        TexCoord5 = 17,
+        TexCoord6 = 18,
+        Color0 = 19,
+        Color1 = 20,
     }
 
     public class TextureNode : ListViewItem
