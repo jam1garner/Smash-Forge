@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MeleeLib.DAT;
+using MeleeLib.GCX;
 
 namespace Smash_Forge.GUI.Melee
 {
@@ -60,27 +61,47 @@ namespace Smash_Forge.GUI.Melee
                     }
                 }
             }
+
+            // Setup Combo Boxes
+
+            foreach (var enu in Enum.GetValues(typeof(TPL_TextureFormat))) CBFormat.Items.Add(enu);
+            foreach (var enu in Enum.GetValues(typeof(TPL_PaletteFormat))) CBPalette.Items.Add(enu);
+            CBFormat.SelectedItem = TPL_TextureFormat.CMP;
+            CBPalette.SelectedItem = TPL_PaletteFormat.RGB565;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (CBFormat.SelectedItem == null)
+                CBFormat.SelectedItem = TPL_TextureFormat.CMP;
             if (SelectedTexture != null)
             {
                 using (OpenFileDialog ofd = new OpenFileDialog())
                 {
-                    ofd.Filter = "DDS|*.dds";
+                    if((TPL_TextureFormat)CBFormat.SelectedItem == TPL_TextureFormat.CMP)
+                        ofd.Filter = "DDS|*.dds";
+                    else
+                        ofd.Filter = "PNG|*.png";
 
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
-                        DDS d = new DDS(new FileData(ofd.FileName));
-                        if (d.header.ddspf.fourCC != 0x31545844)
-                        {
-                            MessageBox.Show("Error Importing Texture:\nOnly DXT1 Files are supported currently");
-                            return;
-                        }
                         Selected = SelectedTexture.Texture;
-                        Selected.SetFromDXT1(new FileData(d.bdata).getSection(0, (int)(d.header.width * d.header.height / 2)), (int)d.header.width, (int)d.header.height);
-
+                        if ((TPL_TextureFormat)CBFormat.SelectedItem == TPL_TextureFormat.CMP)
+                        {
+                            DDS d = new DDS(new FileData(ofd.FileName));
+                            if (d.header.ddspf.fourCC != 0x31545844)
+                            {
+                                MessageBox.Show("Error Importing Texture:\nOnly DXT1 Files are supported currently");
+                                return;
+                            }
+                            Selected.SetFromDXT1(new FileData(d.bdata).getSection(0, (int)(d.header.width * d.header.height / 2)), (int)d.header.width, (int)d.header.height);
+                        }
+                        else
+                        {
+                            Bitmap b = new Bitmap(ofd.FileName);
+                            Selected.SetFromBitmap(b, (MeleeLib.TPL_TextureFormat)CBFormat.SelectedItem, (MeleeLib.TPL_PaletteFormat)CBPalette.SelectedItem);
+                            b.Dispose();
+                        }
                         DialogResult = DialogResult.OK;
                         CloseForm();
                         Close();

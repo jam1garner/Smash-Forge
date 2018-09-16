@@ -94,7 +94,7 @@ namespace Smash_Forge.GUI.Melee
 
             DOBJ.ClearPolygons(null, null);
 
-            int Flags = 0x8001;
+            int Flags = 0x8000;
             if (comboBoxBoneType.SelectedIndex == 0)
             {
                 MessageBox.Show("Warning: no binds");
