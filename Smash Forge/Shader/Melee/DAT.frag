@@ -7,10 +7,15 @@ in vec3 tangent;
 in vec4 color;
 in vec2 UV0;
 
-uniform int hasDiffuse;
 uniform int hasSphere;
-uniform sampler2D diffuseTex;
-uniform vec2 diffuseScale;
+
+uniform int hasDiffuse0;
+uniform sampler2D diffuseTex0;
+uniform vec2 diffuseScale0;
+
+uniform int hasDiffuse1;
+uniform sampler2D diffuseTex1;
+uniform vec2 diffuseScale1;
 
 uniform int hasSpecular;
 uniform sampler2D specularTex;
@@ -72,18 +77,21 @@ void main()
     }
 
 	// Diffuse
+    float blend = 0.1; // TODO: Use texture's blend.
 	float lambert = clamp(dot(N, V), 0, 1);
 	vec4 diffuseMap = vec4(1);
-    if (hasDiffuse == 1)
-        diffuseMap = texture2D(diffuseTex, UV0 * diffuseScale).rgba;
-
-	// Sphere maps
+    vec2 diffuseCoords = UV0;
 	if (hasSphere == 1)
 	{
 		vec3 viewNormal = mat3(sphereMatrix) * normal.xyz;
-		vec2 sphereCoords = viewNormal.xy * 0.5 + 0.5;
-		diffuseMap = texture(diffuseTex, sphereCoords).rgba;
+		diffuseCoords = viewNormal.xy * 0.5 + 0.5;
 	}
+
+    // TODO: Either texture can be a sphere map.
+    if (hasDiffuse0 == 1)
+        diffuseMap = texture(diffuseTex0, UV0 * diffuseScale0).rgba;
+    if (hasDiffuse1 == 1)
+        diffuseMap = mix(diffuseMap, texture(diffuseTex1, diffuseCoords * diffuseScale1), blend);
 
 	vec3 diffuseTerm = diffuseMap.rgb;
 	if (enableDiffuseLighting == 1)

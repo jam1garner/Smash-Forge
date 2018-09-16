@@ -7,7 +7,10 @@ in vec3 tangent;
 in vec4 color;
 in vec2 UV0;
 
-uniform sampler2D diffuseTex;
+uniform int hasDiffuse;
+uniform int hasSphere;
+uniform sampler2D diffuseTex0;
+uniform vec2 diffuseScale0;
 
 uniform int hasBumpMap;
 uniform int bumpMapWidth;
@@ -80,7 +83,7 @@ void main()
     else if (renderType == 3)
     {
         // diffuse map
-        resultingColor.rgba = texture(diffuseTex, UV0).rgba;
+        resultingColor.rgba = texture(diffuseTex0, UV0 * diffuseScale0).rgba;
     }
     else if (renderType == 4)
     {
