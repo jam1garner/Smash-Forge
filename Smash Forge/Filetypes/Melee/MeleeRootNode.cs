@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using Smash_Forge.Filetypes.Melee.Utils;
+using SFGraphics.GLObjects.BufferObjects;
 
 namespace Smash_Forge.Filetypes.Melee
 {
@@ -26,6 +27,7 @@ namespace Smash_Forge.Filetypes.Melee
 
         public VBN RenderBones;
         public Matrix4[] BoneTransforms;
+        private BufferObject bonesUbo;
 
         public MeleeRootNode(DATRoot Root)
         {
@@ -274,12 +276,17 @@ namespace Smash_Forge.Filetypes.Melee
 
             SetSharedUniforms(c, shader);
 
-            if (BoneTransforms.Length > 0)
-                GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "bones"), BoneTransforms.Length, false, ref BoneTransforms[0].Row0.X);
+            if (bonesUbo == null)
+                bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
+
+            int blockIndex = GL.GetUniformBlockIndex(shader.Id, "Bones");
+            bonesUbo.BindBase(BufferRangeTarget.UniformBuffer, blockIndex);
+
+            bonesUbo.SetData(BoneTransforms, BufferUsageHint.DynamicDraw);
 
             Matrix4[] binds = RenderBones.GetShaderMatrices();
-            if(binds.Length > 0)
-            GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "binds"), binds.Length, false, ref binds[0].Row0.X);
+            if (binds.Length > 0)
+                GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "binds"), binds.Length, false, ref binds[0].Row0.X);
 
             foreach (MeleeDataObjectNode n in DataObjects.Nodes)
             {
