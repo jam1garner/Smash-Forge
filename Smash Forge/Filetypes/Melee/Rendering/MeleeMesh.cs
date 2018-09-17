@@ -25,7 +25,7 @@ namespace Smash_Forge.Filetypes.Melee.Rendering
             : base(vertices, vertexIndices, primitiveType)
         {
             // TODO: Why is this flipped?
-            renderSettings.faceCullingSettings.enabled = true;
+            renderSettings.faceCullingSettings.enabled = false;
             renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Front;
         }
 
