@@ -24,7 +24,7 @@ namespace Smash_Forge
             // Do nothing for now.
         }
 
-        protected override List<VertexAttributeInfo> GetVertexAttributes()
+        public override List<VertexAttributeInfo> GetVertexAttributes()
         {
             return new List<VertexAttributeInfo>()
             {

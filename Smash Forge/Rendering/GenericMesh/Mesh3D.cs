@@ -18,7 +18,7 @@ namespace Smash_Forge.Rendering.Meshes
 
         }
 
-        protected override List<VertexAttributeInfo> GetVertexAttributes()
+        public override List<VertexAttributeInfo> GetVertexAttributes()
         {
             return new List<VertexAttributeInfo>()
             {

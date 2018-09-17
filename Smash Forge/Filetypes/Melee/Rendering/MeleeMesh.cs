@@ -44,7 +44,7 @@ namespace Smash_Forge.Filetypes.Melee.Rendering
             renderSettings.alphaTestSettings.alphaFunction = MeleeDatToOpenGL.GetAlphaFunctionFromCompareType(datDOBJ.Material.PixelProcessing.AlphaComp0);
         }
 
-        protected override List<VertexAttributeInfo> GetVertexAttributes()
+        public override List<VertexAttributeInfo> GetVertexAttributes()
         {
             return new List<VertexAttributeInfo>()
             {

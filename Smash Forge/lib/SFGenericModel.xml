@@ -294,8 +294,14 @@
             <summary>
             
             </summary>
-            <param name="sender"></param>
+            <param name="sender">The <see cref="T:SFGenericModel.GenericMesh`1"/> 
+            instance that generated the error</param>
             <param name="e"></param>
+        </member>
+        <member name="E:SFGenericModel.GenericMesh`1.OnInvalidAttribSet">
+            <summary>
+            Occurs when specified vertex attribute information does not match the shader.
+            </summary>
         </member>
         <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
@@ -461,6 +467,45 @@
             <param name="vertexAttribPointerType">The data type of the value</param>
             <exception cref="T:System.NotSupportedException"><paramref name="vertexAttribPointerType"/> is not 
             a supported attribute type.</exception>
+        </member>
+        <member name="T:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo">
+            <summary>
+            Stores information on how a vertex attribute will be displayed.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo.normalize">
+            <summary>
+            Normalize the vector before rendering.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo.remapToVisibleRange">
+            <summary>
+            Remap values in range [-1, 1] to range [0, 1]
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo.attributeInfo">
+            <summary>
+            Information about the attribute name and type
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo.#ctor(System.Boolean,System.Boolean,SFGenericModel.VertexAttributeInfo)">
+            <summary>
+            
+            </summary>
+            <param name="normalize"></param>
+            <param name="remapToVisibleRange"></param>
+            <param name="attributeInfo"></param>
+        </member>
+        <member name="T:SFGenericModel.VertexAttributeShader.VertexAttributeShaderGenerator">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributeShader.VertexAttributeShaderGenerator.CreateShader(System.Collections.Generic.List{SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo})">
+            <summary>
+            
+            </summary>
+            <returns></returns>
         </member>
     </members>
 </doc>
