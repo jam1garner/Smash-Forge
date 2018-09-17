@@ -8,6 +8,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Shaders;
+using SFGenericModel.VertexAttributes;
 
 namespace Smash_Forge
 {

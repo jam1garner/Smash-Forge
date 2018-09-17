@@ -3,6 +3,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SFGenericModel;
 using System.Collections.Generic;
+using SFGenericModel.VertexAttributes;
 
 namespace Smash_Forge.Filetypes.Melee.Rendering
 {

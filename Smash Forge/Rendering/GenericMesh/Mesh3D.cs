@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SFGenericModel;
+using SFGenericModel.VertexAttributes;
 
 namespace Smash_Forge.Rendering.Meshes
 {

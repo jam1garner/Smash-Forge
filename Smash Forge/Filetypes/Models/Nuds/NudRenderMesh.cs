@@ -5,6 +5,7 @@ using OpenTK.Graphics.OpenGL;
 using Smash_Forge.Filetypes.Models.Nuds;
 using SFGenericModel;
 using SFGenericModel.Materials;
+using SFGenericModel.VertexAttributes;
 
 namespace Smash_Forge
 {
