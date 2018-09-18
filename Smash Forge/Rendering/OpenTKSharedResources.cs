@@ -51,7 +51,7 @@ namespace Smash_Forge.Rendering
 
                 RenderTools.LoadTextures();
                 GetOpenGLSystemInfo();
-                ShaderTools.SetupShaders();
+                ShaderTools.SetUpShaders();
 
                 setupStatus = SharedResourceStatus.Initialized;
             }
