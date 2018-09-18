@@ -21,10 +21,10 @@ uniform mat4 mvpMatrix;
 
 uniform Bones
 {
-    mat4 transforms[300];
+    mat4 transforms[200];
 } bones;
 
-uniform mat4 binds[300];
+uniform mat4 binds[200];
 
 vec4 Skin(vec4 P, ivec4 B)
 {
