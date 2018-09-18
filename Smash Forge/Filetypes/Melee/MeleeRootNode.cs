@@ -286,8 +286,7 @@ namespace Smash_Forge.Filetypes.Melee
             if (bonesUbo == null)
                 bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
 
-            int blockIndex = GL.GetUniformBlockIndex(shader.Id, "Bones");
-            bonesUbo.BindBase(BufferRangeTarget.UniformBuffer, blockIndex);
+            bonesUbo.BindBase(BufferRangeTarget.UniformBuffer, shader.GetUniformBlockIndex("Bones"));
 
             bonesUbo.SetData(RenderBones.GetShaderMatricesNoInverse(), BufferUsageHint.DynamicDraw);
 

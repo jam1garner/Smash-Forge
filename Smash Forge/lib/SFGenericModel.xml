@@ -457,20 +457,18 @@
         </member>
         <member name="M:SFGenericModel.Utils.MeshBatchUtils.GroupContainersByPrimitiveType``1(System.Collections.Generic.List{SFGenericModel.Utils.VertexContainer{``0}})">
             <summary>
-            Creates a single <see cref="T:SFGenericModel.Utils.VertexContainer`1"/> for each PrimitiveType to 
-            reduce draw calls and improve performance. 
-            <para></para><para></para>
-            Unsupported primite types will remain ungrouped.
+            Creates a new collection of <see cref="T:SFGenericModel.Utils.VertexContainer`1"/> objects with 
+            only a single container for types that support merging.
             </summary>
-            <typeparam name="T">The struct used to store a single vertex</typeparam>
+            <typeparam name="T">The vertex data struct</typeparam>
             <param name="containers">The unoptimized vertex containers</param>
             <returns></returns>
         </member>
         <member name="T:SFGenericModel.Utils.VertexContainer`1">
             <summary>
-            
+            Stores indexed vertex data and the primitive to be used for rendering.
             </summary>
-            <typeparam name="T"></typeparam>
+            <typeparam name="T">The struct used for each vertex</typeparam>
         </member>
         <member name="F:SFGenericModel.Utils.VertexContainer`1.vertices">
             <summary>
@@ -493,6 +491,12 @@
             </summary>
             <param name="vertices"></param>
             <param name="vertexIndices"></param>
+            <param name="primitiveType"></param>
+        </member>
+        <member name="M:SFGenericModel.Utils.VertexContainer`1.#ctor(OpenTK.Graphics.OpenGL.PrimitiveType)">
+            <summary>
+            Creates an empty vertex container.
+            </summary>
             <param name="primitiveType"></param>
         </member>
         <member name="T:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo">
