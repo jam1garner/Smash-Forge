@@ -5,7 +5,7 @@ namespace Smash_Forge.Filetypes.Melee.Rendering
 {
     public static class MeleeDatToOpenGL
     {
-        public static AlphaFunction GetAlphaFunctionFromCompareType(GXCompareType compareType)
+        public static AlphaFunction GetAlphaFunction(GXCompareType compareType)
         {
             switch (compareType)
             {

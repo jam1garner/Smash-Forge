@@ -17,5 +17,10 @@
             TexCoord = 0x0,
             SphereMap = 0x1
         }
+
+        public enum MiscFlags : uint
+        {
+            AlphaTest = 0x40000000 // alpha test?
+        }
     }
 }

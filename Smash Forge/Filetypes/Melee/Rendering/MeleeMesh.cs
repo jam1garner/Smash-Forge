@@ -4,6 +4,7 @@ using OpenTK.Graphics.OpenGL;
 using SFGenericModel;
 using System.Collections.Generic;
 using SFGenericModel.VertexAttributes;
+using Smash_Forge.Filetypes.Melee.Utils;
 
 namespace Smash_Forge.Filetypes.Melee.Rendering
 {
@@ -34,15 +35,26 @@ namespace Smash_Forge.Filetypes.Melee.Rendering
             if (datDOBJ.Material == null)
                 return;
 
-            if (datDOBJ.Material.PixelProcessing != null)
-                SetAlphaTesting(datDOBJ);
+            SetAlphaTesting(datDOBJ);
+            SetAlphaBlending(datDOBJ);
+        }
+
+        private void SetAlphaBlending(DatDOBJ datDOBJ)
+        {
+            if (datDOBJ?.Material.PixelProcessing != null)
+            {
+                renderSettings.alphaBlendSettings.enabled = datDOBJ?.Material?.PixelProcessing.BlendMode == MeleeLib.GCX.GXBlendMode.Blend;
+            }
         }
 
         private void SetAlphaTesting(DatDOBJ datDOBJ)
         {
-            renderSettings.alphaTestSettings.enabled = true;
-            renderSettings.alphaTestSettings.referenceAlpha = datDOBJ.Material.PixelProcessing.AlphaRef0;
-            renderSettings.alphaTestSettings.alphaFunction = MeleeDatToOpenGL.GetAlphaFunctionFromCompareType(datDOBJ.Material.PixelProcessing.AlphaComp0);
+            renderSettings.alphaTestSettings.enabled = (datDOBJ.Material.Flags & (uint)MeleeDatEnums.MiscFlags.AlphaTest) > 0;
+            if (datDOBJ?.Material.PixelProcessing != null)
+            {
+                renderSettings.alphaTestSettings.referenceAlpha = datDOBJ.Material.PixelProcessing.AlphaRef0 / 255.0f;
+                renderSettings.alphaTestSettings.alphaFunction = MeleeDatToOpenGL.GetAlphaFunction(datDOBJ.Material.PixelProcessing.AlphaComp0);
+            }
         }
 
         public override List<VertexAttributeInfo> GetVertexAttributes()
