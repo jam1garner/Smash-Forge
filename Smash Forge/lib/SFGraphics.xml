@@ -862,19 +862,24 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetUniformLocation(System.String)">
             <summary>
-            Gets the uniform's location. 
-            Potentially faster than GL.GetUniform due to prestored locations.
+            Gets the uniform's location from locations stored after linking.
             </summary>
-            <param name="uniformName">The name of the uniform variable</param>
-            <returns>The location of <paramref name="uniformName"/></returns>
+            <param name="name">The name of the uniform variable</param>
+            <returns>The location of <paramref name="name"/></returns>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetAttribLocation(System.String)">
             <summary>
-            Gets the attribute's location. 
-            Potentially faster than GL.GetAttribLocation due to prestored locations.
+            Gets the attribute's location from locations stored after linking.
             </summary>
-            <param name="attributeName">The name of the vertex attribute variable</param>
-            <returns>The location of <paramref name="attributeName"/></returns>
+            <param name="name">The name of the vertex attribute variable</param>
+            <returns>The location of <paramref name="name"/></returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetUniformBlockIndex(System.String)">
+            <summary>
+            Gets the block index of a uniform block.
+            </summary>
+            <param name="name">The name of the uniform block</param>
+            <returns>The index of <paramref name="name"/></returns>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetErrorLog">
             <summary>

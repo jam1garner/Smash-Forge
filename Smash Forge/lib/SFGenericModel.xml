@@ -4,15 +4,92 @@
         <name>SFGenericModel</name>
     </assembly>
     <members>
-        <member name="T:SFGenericModel.AttribPointerUtils">
+        <member name="T:SFGenericModel.VertexAttributes.AttribPointerUtils">
             <summary>
             Type information for converting from OpenGL vertex attributes to C#.
             </summary>
         </member>
-        <member name="F:SFGenericModel.AttribPointerUtils.sizeInBytesByType">
+        <member name="F:SFGenericModel.VertexAttributes.AttribPointerUtils.sizeInBytesByType">
             <summary>
             The size in bytes of the C# equivalent for a specified OpenGL attribute pointer type.
             </summary>
+        </member>
+        <member name="T:SFGenericModel.VertexAttributes.VertexAttributeUtils">
+            <summary>
+            Methods for configuring vertex attributes for a <see cref="T:SFGraphics.GLObjects.Shaders.Shader"/>.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributes.VertexAttributeUtils.SetVertexAttribute(SFGraphics.GLObjects.Shaders.Shader,SFGenericModel.VertexAttributes.VertexAttributeInfo,System.Int32,System.Int32)">
+            <summary>
+            Configures a vertex attribute for the currently bound element array buffer.
+            Returns false on error.
+            </summary>
+            <param name="shader">The current shader used for rendering</param>
+            <param name="attribute">The vertex attribute information</param>
+            <param name="offsetInBytes">The offset into the vertex data</param>
+            <param name="strideInBytes">The size in bytes of each vertex</param>
+            <returns><c>true</c> if the set was successful</returns>
+        </member>
+        <member name="T:SFGenericModel.VertexAttributes.ValueCount">
+            <summary>
+            The number of components for a vertex attribute.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributes.ValueCount.One">
+            <summary>
+            A scalar value
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributes.ValueCount.Two">
+            <summary>
+            A two component vector value
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributes.ValueCount.Three">
+            <summary>
+            A three component vector value
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributes.ValueCount.Four">
+            <summary>
+            A four component vector value
+            </summary>
+        </member>
+        <member name="T:SFGenericModel.VertexAttributes.VertexAttributeInfo">
+            <summary>
+            Stores the information used to configure vertex attributes for <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributes.VertexAttributeInfo.name">
+            <summary>
+            The name of the attribute in the shader.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributes.VertexAttributeInfo.valueCount">
+            <summary>
+            The number of components. Ex: 1 for <see cref="T:System.Single"/> or
+            4 for Vector4.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributes.VertexAttributeInfo.type">
+            <summary>
+            The data type of the attribute value.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributes.VertexAttributeInfo.sizeInBytes">
+            <summary>
+            The total size of the attribute's data in bytes.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributes.VertexAttributeInfo.#ctor(System.String,SFGenericModel.VertexAttributes.ValueCount,OpenTK.Graphics.OpenGL.VertexAttribPointerType)">
+            <summary>
+            Creates a new vertex attribute.
+            </summary>
+            <param name="name">The name of the attribute in the shader</param>
+            <param name="valueCount">The number of components for the value</param>
+            <param name="vertexAttribPointerType">The data type of the value</param>
+            <exception cref="T:System.NotSupportedException"><paramref name="vertexAttribPointerType"/> is not 
+            a supported attribute type.</exception>
         </member>
         <member name="T:SFGenericModel.MeshEventArgs.AttribSetEventArgs">
             <summary>
@@ -30,7 +107,7 @@
             4 for Vector4.
             </summary>
         </member>
-        <member name="M:SFGenericModel.MeshEventArgs.AttribSetEventArgs.#ctor(System.String,OpenTK.Graphics.OpenGL.VertexAttribPointerType,SFGenericModel.ValueCount)">
+        <member name="M:SFGenericModel.MeshEventArgs.AttribSetEventArgs.#ctor(System.String,OpenTK.Graphics.OpenGL.VertexAttribPointerType,SFGenericModel.VertexAttributes.ValueCount)">
             <summary>
             
             </summary>
@@ -292,11 +369,11 @@
         </member>
         <member name="T:SFGenericModel.GenericMesh`1.InvalidAttribSetEventHandler">
             <summary>
-            
+            Contains information about the arguments used to set a vertex attribute.
             </summary>
             <param name="sender">The <see cref="T:SFGenericModel.GenericMesh`1"/> 
             instance that generated the error</param>
-            <param name="e"></param>
+            <param name="e">The vertex attribute information</param>
         </member>
         <member name="E:SFGenericModel.GenericMesh`1.OnInvalidAttribSet">
             <summary>
@@ -329,10 +406,10 @@
             <summary>
             Sets the uniforms, sets render state, and draws the mesh.
             </summary>
-            <param name="shader"></param>
+            <param name="shader">The shader used for drawing</param>
             <param name="camera">The camera used to set matrix uniforms if not <c>null</c></param>
-            <param name="count"></param>
-            <param name="offset"></param>
+            <param name="count">The number of vertices to draw</param>
+            <param name="offset">The offset into the index buffer</param>
         </member>
         <member name="M:SFGenericModel.GenericMesh`1.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
             <summary>
@@ -362,9 +439,20 @@
             </summary>
             <param name="shader"></param>
         </member>
+        <member name="T:SFGenericModel.Utils.GLRenderSettings">
+            <summary>
+            Contains methods for updating OpenGL rendering state.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.Utils.GLRenderSettings.SetRenderSettings(SFGenericModel.RenderState.RenderSettings)">
+            <summary>
+            Updates the current OpenGL rendering state based on render settings
+            </summary>
+            <param name="renderSettings">The settings used to perform the update</param>
+        </member>
         <member name="T:SFGenericModel.Utils.MeshBatchUtils">
             <summary>
-            
+            Contains methods for grouping vertex data to reduce draw calls and improve performance.
             </summary>
         </member>
         <member name="M:SFGenericModel.Utils.MeshBatchUtils.GroupContainersByPrimitiveType``1(System.Collections.Generic.List{SFGenericModel.Utils.VertexContainer{``0}})">
@@ -407,67 +495,6 @@
             <param name="vertexIndices"></param>
             <param name="primitiveType"></param>
         </member>
-        <member name="T:SFGenericModel.ValueCount">
-            <summary>
-            The number of components for a vertex attribute.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.ValueCount.One">
-            <summary>
-            A scalar value
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.ValueCount.Two">
-            <summary>
-            A two component vector value
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.ValueCount.Three">
-            <summary>
-            A three component vector value
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.ValueCount.Four">
-            <summary>
-            A four component vector value
-            </summary>
-        </member>
-        <member name="T:SFGenericModel.VertexAttributeInfo">
-            <summary>
-            Stores the information used to configure vertex attributes for <see cref="T:SFGenericModel.GenericMesh`1"/>.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.VertexAttributeInfo.name">
-            <summary>
-            The name of the attribute in the shader.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.VertexAttributeInfo.valueCount">
-            <summary>
-            The number of components. Ex: 1 for <see cref="T:System.Single"/> or
-            4 for Vector4.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.VertexAttributeInfo.type">
-            <summary>
-            The data type of the attribute value.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.VertexAttributeInfo.sizeInBytes">
-            <summary>
-            The total size of the attribute's data in bytes.
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.VertexAttributeInfo.#ctor(System.String,SFGenericModel.ValueCount,OpenTK.Graphics.OpenGL.VertexAttribPointerType)">
-            <summary>
-            Creates a new vertex attribute.
-            </summary>
-            <param name="name">The name of the attribute in the shader</param>
-            <param name="valueCount">The number of components for the value</param>
-            <param name="vertexAttribPointerType">The data type of the value</param>
-            <exception cref="T:System.NotSupportedException"><paramref name="vertexAttribPointerType"/> is not 
-            a supported attribute type.</exception>
-        </member>
         <member name="T:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo">
             <summary>
             Stores information on how a vertex attribute will be displayed.
@@ -488,7 +515,7 @@
             Information about the attribute name and type
             </summary>
         </member>
-        <member name="M:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo.#ctor(System.Boolean,System.Boolean,SFGenericModel.VertexAttributeInfo)">
+        <member name="M:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo.#ctor(System.Boolean,System.Boolean,SFGenericModel.VertexAttributes.VertexAttributeInfo)">
             <summary>
             
             </summary>
@@ -498,14 +525,15 @@
         </member>
         <member name="T:SFGenericModel.VertexAttributeShader.VertexAttributeShaderGenerator">
             <summary>
-            
+            Contains methods for automatically generating a debug shader for
+            viewing vertex attributes. 
             </summary>
         </member>
         <member name="M:SFGenericModel.VertexAttributeShader.VertexAttributeShaderGenerator.CreateShader(System.Collections.Generic.List{SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo})">
             <summary>
-            
-            </summary>
-            <returns></returns>
+            Generates a debug shader for rendering each of 
+            the vertex attributes individually for a <see cref="T:SFGenericModel.GenericMesh`1"/>.        /// </summary>
+            <returns>A new shader that can be used for rendering</returns>
         </member>
     </members>
 </doc>
