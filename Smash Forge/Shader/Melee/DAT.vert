@@ -4,6 +4,7 @@ in vec3 vPosition;
 in vec3 vNormal;
 in vec3 vBitan;
 in vec3 vTan;
+in vec4 vColor;
 in vec2 vUV0;
 in vec4 vBone;
 in vec4 vWeight;
@@ -20,10 +21,10 @@ uniform mat4 mvpMatrix;
 
 uniform Bones
 {
-    mat4 transforms[200];
+    mat4 transforms[300];
 } bones;
 
-uniform mat4 binds[200];
+uniform mat4 binds[300];
 
 vec4 Skin(vec4 P, ivec4 B)
 {
@@ -41,6 +42,7 @@ void main() {
 	bitangent = normalize(vBitan);
 	tangent = normalize(vTan);
 	UV0 = vUV0;
+	color = vColor;
 
 	vec4 position = vec4(vPosition, 1.0);
 

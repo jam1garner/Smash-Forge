@@ -120,7 +120,7 @@ void main()
     else if (renderType == 5)
     {
         // vertex color
-        //resultingColor.rgba = color.rgba;
+        resultingColor.rgba = color.rgba;
     }
     else if (renderType == 6)
     {

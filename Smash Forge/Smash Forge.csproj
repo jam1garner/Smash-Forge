@@ -178,6 +178,7 @@
     <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\KCL\KCL.cs" />
     <Compile Include="Filetypes\Application\MaterialXML.cs" />
+    <Compile Include="Filetypes\Melee\MeleeMapHeadNode.cs" />
     <Compile Include="Filetypes\Melee\Utils\DatMaterialXml.cs" />
     <Compile Include="Filetypes\Melee\MeleeData.cs" />
     <Compile Include="Filetypes\Melee\MeleeDataObjectNode.cs" />

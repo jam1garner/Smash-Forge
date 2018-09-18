@@ -896,6 +896,7 @@ namespace Smash_Forge
         public float[] f = null;
         public Matrix4[] bonemat = { };
         public Matrix4[] bonematIT = { };
+        public Matrix4[] bonematNoInv = { };
 
         public Matrix4[] GetShaderMatrices()
         {
@@ -903,15 +904,24 @@ namespace Smash_Forge
             {
                 Updated = false;
                 if (bonemat.Length != bones.Count)
+                {
                     bonemat = new Matrix4[bones.Count];
+                    bonematNoInv = new Matrix4[bones.Count];
+                }
 
                 for (int i = 0; i < bones.Count; i++)
                 {
                      bonemat[i] = bones[i].invert * bones[i].transform;
+                    bonematNoInv[i] = bones[i].transform;
                 }
             }
 
             return bonemat;
+        }
+
+        public Matrix4[] GetShaderMatricesNoInverse()
+        {
+            return bonematNoInv;
         }
 
         private static string charsToString(char[] c)

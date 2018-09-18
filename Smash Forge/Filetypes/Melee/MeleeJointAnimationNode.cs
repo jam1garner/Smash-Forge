@@ -15,6 +15,11 @@ namespace Smash_Forge.Filetypes.Melee
     {
         public DatAnimation DatAnimation;
 
+        public MeleeJointAnimationNode()
+        {
+
+        }
+
         public MeleeJointAnimationNode(DatAnimation Animation)
         {
             ImageKey = "anim";

@@ -126,6 +126,8 @@ void main()
 	fragColor.rgb += DiffusePass(N, V) * renderDiffuse;
 	fragColor.rgb += SpecularPass(N, V) * renderSpecular;
 
+	fragColor.rgb *= color.rgb;
+
 	// Set alpha
     if (renderAlpha == 1)
         fragColor.a = texture(diffuseTex0, UV0 * diffuseScale0).a * transparency;

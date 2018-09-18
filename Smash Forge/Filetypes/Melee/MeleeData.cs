@@ -223,6 +223,8 @@ namespace Smash_Forge.Filetypes.Melee
                 hasCreatedRenderMeshes = true;
             }
 
+            //Gather All Melee Roots... they can be deeper into the structure
+            List<MeleeRootNode> Nodes = GetAllRoots();
             foreach (MeleeRootNode n in Nodes)
             {
                 n.Render(c);

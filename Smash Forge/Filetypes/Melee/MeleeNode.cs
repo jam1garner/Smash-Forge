@@ -33,5 +33,25 @@ namespace Smash_Forge.Filetypes.Melee
             }
             return null;
         }
+
+
+        public List<MeleeRootNode> GetAllRoots()
+        {
+            List<MeleeRootNode> Nodes = new List<MeleeRootNode>(5);
+            GetAllRoots(Nodes);
+            return Nodes;
+        }
+
+        private void GetAllRoots(List<MeleeRootNode> Nodes)
+        {
+            if (this is MeleeRootNode)
+                Nodes.Add((MeleeRootNode)this);
+
+            foreach (TreeNode n in this.Nodes)
+            {
+                if(n is MeleeNode)
+                    ((MeleeNode)n).GetAllRoots(Nodes);
+            }
+        }
     }
 }

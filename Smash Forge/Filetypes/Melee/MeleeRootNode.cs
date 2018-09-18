@@ -2,6 +2,7 @@
 using MeleeLib.DAT.Animation;
 using MeleeLib.DAT.Helpers;
 using MeleeLib.DAT.MatAnim;
+using MeleeLib.DAT.Melee;
 using MeleeLib.GCX;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -26,7 +27,6 @@ namespace Smash_Forge.Filetypes.Melee
         TreeNode JointAnims = new TreeNode("Joint Animations") { SelectedImageKey = "dat", ImageKey = "dat" };
 
         public VBN RenderBones;
-        public Matrix4[] BoneTransforms;
         private BufferObject bonesUbo;
 
         public MeleeRootNode(DATRoot Root)
@@ -36,6 +36,8 @@ namespace Smash_Forge.Filetypes.Melee
 
             SelectedImageKey = "folder";
             ImageKey = "folder";
+
+            Checked = true;
 
             ContextMenu = new ContextMenu();
 
@@ -183,6 +185,13 @@ namespace Smash_Forge.Filetypes.Melee
             MatAnims.Nodes.Clear();
             JointAnims.Nodes.Clear();
 
+            // Stage Stuff
+            if(Root.Map_Head != null)
+            {
+                foreach (Map_Model_Group g in Root.Map_Head.ModelObjects)
+                    Nodes.Add(new MeleeMapModelNode(g));
+            }
+
             // Bones--------------------------------------
             if (Root.GetJOBJinOrder().Length > 0)
                 Nodes.Add(Skeleton);
@@ -206,12 +215,6 @@ namespace Smash_Forge.Filetypes.Melee
                 Skeleton.Nodes.Add(new MeleeJointNode(j) { Text = "Bone_" + boneIndex++, RenderBone = b});
             }
             RenderBones.reset();
-            BoneTransforms = new Matrix4[RenderBones.bones.Count];
-            boneIndex = 0;
-            foreach (Bone b in RenderBones.bones)
-            {
-                BoneTransforms[boneIndex++] = b.transform;
-            }
 
             if (Root.GetDataObjects().Length > 0)
             {
@@ -233,11 +236,14 @@ namespace Smash_Forge.Filetypes.Melee
 
                 n.Checked = true;
 
-                MeleeDataNode parentNode = (MeleeDataNode)Parent;
-                if ((parentNode.LodModels.Count > 0) && !parentNode.LodModels.Contains((byte)(i)))
+                if(Parent is MeleeDataNode)
                 {
-                    n.Checked = false;
-                    n.Text += "Low";
+                    MeleeDataNode parentNode = (MeleeDataNode)Parent;
+                    if ((parentNode.LodModels.Count > 0) && !parentNode.LodModels.Contains((byte)(i)))
+                    {
+                        n.Checked = false;
+                        n.Text += "Low";
+                    }
                 }
             }
 
@@ -269,6 +275,7 @@ namespace Smash_Forge.Filetypes.Melee
 
         public void Render(Camera c)
         {
+            if (!Checked) return;
             Shader shader = OpenTKSharedResources.shaders["Dat"];
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
                 shader = OpenTKSharedResources.shaders["DatDebug"];
@@ -282,7 +289,7 @@ namespace Smash_Forge.Filetypes.Melee
             int blockIndex = GL.GetUniformBlockIndex(shader.Id, "Bones");
             bonesUbo.BindBase(BufferRangeTarget.UniformBuffer, blockIndex);
 
-            bonesUbo.SetData(BoneTransforms, BufferUsageHint.DynamicDraw);
+            bonesUbo.SetData(RenderBones.GetShaderMatricesNoInverse(), BufferUsageHint.DynamicDraw);
 
             Matrix4[] binds = RenderBones.GetShaderMatrices();
             if (binds.Length > 0)
