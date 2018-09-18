@@ -224,8 +224,8 @@
             <summary>
             Binds <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> to an indexed buffer target.
             </summary>
-            <param name="target"></param>
-            <param name="index"></param>
+            <param name="target">The target for the bind</param>
+            <param name="index">The index of the binding point</param>
         </member>
         <member name="M:SFGraphics.GLObjects.BufferObjects.BufferObject.SetData``1(``0[],OpenTK.Graphics.OpenGL.BufferUsageHint)">
             <summary>
