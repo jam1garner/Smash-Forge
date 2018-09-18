@@ -718,7 +718,6 @@ namespace Smash_Forge
                 {
                     foreach (MeleeRootNode n in ((MeleeDataNode)node).GetAllRoots())
                     {
-                        Console.WriteLine(n.Text);
                         currentAnimation.SetFrame(animFrameNum);
                         currentAnimation.NextFrame(((MeleeRootNode)n).RenderBones);
                     }

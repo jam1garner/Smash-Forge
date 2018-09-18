@@ -147,7 +147,7 @@ namespace Smash_Forge.Filetypes.Melee
             return d;
         }
 
-        public Animation GetAnimation()
+        public virtual Animation GetAnimation()
         {
             Animation a = new Smash_Forge.Animation(Text);
 
