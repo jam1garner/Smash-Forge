@@ -90,8 +90,7 @@ namespace Smash_Forge.Rendering
         {
             GraphicsMode mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
 
-            // TODO: Versions higher than 300 do not work for some reason.
-            GameWindow gameWindow = new GameWindow(width, height, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
+            GameWindow gameWindow = new GameWindow(width, height, mode, "", GameWindowFlags.Default);
 
             gameWindow.Visible = false;
             gameWindow.MakeCurrent();
