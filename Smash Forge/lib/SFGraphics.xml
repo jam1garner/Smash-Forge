@@ -822,12 +822,18 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.LoadShader(System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String)">
             <summary>
-            Compiles and attaches a shader from <paramref name="shaderSource"/>.
-            <see cref="F:SFGraphics.GLObjects.Shaders.Shader.linkStatusIsOk"/> is updated.
+            Compiles and attaches a single shader from <paramref name="shaderSource"/>.
+            Performs linking and shader setup.
             </summary>
             <param name="shaderSource">The shader code source</param>
             <param name="shaderType">The type of shader to load</param>
             <param name="shaderName">The title used for the compilation errors section of the error log</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.LoadShaders(System.Collections.Generic.List{System.Tuple{System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String}})">
+            <summary>
+            Compiles and attaches multiple shaders. Linking and setup is performed only once.
+            </summary>
+            <param name="shaders">(shader source, shader type, shader name)</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.CreateGlShader(System.String,OpenTK.Graphics.OpenGL.ShaderType)">
             <summary>

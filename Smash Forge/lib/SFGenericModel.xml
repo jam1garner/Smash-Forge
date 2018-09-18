@@ -4,6 +4,49 @@
         <name>SFGenericModel</name>
     </assembly>
     <members>
+        <member name="T:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo">
+            <summary>
+            Stores information on how a vertex attribute will be displayed.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.normalize">
+            <summary>
+            Normalize the vector before rendering.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.remapToVisibleRange">
+            <summary>
+            Remap values in range [-1, 1] to range [0, 1]
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.attributeInfo">
+            <summary>
+            Information about the attribute name and type
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.#ctor(System.Boolean,System.Boolean,SFGenericModel.VertexAttributes.VertexAttributeInfo)">
+            <summary>
+            
+            </summary>
+            <param name="normalize"></param>
+            <param name="remapToVisibleRange"></param>
+            <param name="attributeInfo"></param>
+        </member>
+        <member name="T:SFGenericModel.ShaderGenerators.VertexAttributeShaderGenerator">
+            <summary>
+            Contains methods for automatically generating a debug shader for
+            viewing vertex attributes. 
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.ShaderGenerators.VertexAttributeShaderGenerator.CreateShader(System.Collections.Generic.List{SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo})">
+            <summary>
+            Generates a shader for rendering each of 
+            the vertex attributes individually.      
+            </summary>
+            <param name="attributes">Attributes used to generate render modes. 
+            The first attribute is also used as the position.</param>
+            <returns>A new shader that can be used for rendering</returns>
+        </member>
         <member name="T:SFGenericModel.VertexAttributes.AttribPointerUtils">
             <summary>
             Type information for converting from OpenGL vertex attributes to C#.
@@ -498,46 +541,6 @@
             Creates an empty vertex container.
             </summary>
             <param name="primitiveType"></param>
-        </member>
-        <member name="T:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo">
-            <summary>
-            Stores information on how a vertex attribute will be displayed.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo.normalize">
-            <summary>
-            Normalize the vector before rendering.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo.remapToVisibleRange">
-            <summary>
-            Remap values in range [-1, 1] to range [0, 1]
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo.attributeInfo">
-            <summary>
-            Information about the attribute name and type
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo.#ctor(System.Boolean,System.Boolean,SFGenericModel.VertexAttributes.VertexAttributeInfo)">
-            <summary>
-            
-            </summary>
-            <param name="normalize"></param>
-            <param name="remapToVisibleRange"></param>
-            <param name="attributeInfo"></param>
-        </member>
-        <member name="T:SFGenericModel.VertexAttributeShader.VertexAttributeShaderGenerator">
-            <summary>
-            Contains methods for automatically generating a debug shader for
-            viewing vertex attributes. 
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.VertexAttributeShader.VertexAttributeShaderGenerator.CreateShader(System.Collections.Generic.List{SFGenericModel.VertexAttributeShader.VertexAttributeRenderInfo})">
-            <summary>
-            Generates a debug shader for rendering each of 
-            the vertex attributes individually for a <see cref="T:SFGenericModel.GenericMesh`1"/>.        /// </summary>
-            <returns>A new shader that can be used for rendering</returns>
         </member>
     </members>
 </doc>

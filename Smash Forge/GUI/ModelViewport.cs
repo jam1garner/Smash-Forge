@@ -1980,7 +1980,7 @@ namespace Smash_Forge
 
             if (e.KeyChar == 'i')
             {
-                ShaderTools.SetupShaders(true);
+                ShaderTools.SetUpShaders(true);
                 ShaderTools.SaveErrorLogs();
             }
         }
