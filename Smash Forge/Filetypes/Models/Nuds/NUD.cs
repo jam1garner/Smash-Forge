@@ -276,7 +276,7 @@ namespace Smash_Forge
 
             // Draw NUD bounding box. 
             GL.Color4(Color.GhostWhite);
-            RenderTools.DrawCube(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], true);
+            ShapeDrawing.DrawCube(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], true);
 
             // Draw all the mesh bounding boxes. Selected: White. Deselected: Orange.
             foreach (Mesh mesh in Nodes)
@@ -292,11 +292,11 @@ namespace Smash_Forge
                     {
                         // Use the center of the bone as the bounding box center for NSC meshes. 
                         Vector3 center = ((ModelContainer)Parent).VBN.bones[mesh.singlebind].pos;
-                        RenderTools.DrawCube(center, mesh.boundingSphere[3], true);
+                        ShapeDrawing.DrawCube(center, mesh.boundingSphere[3], true);
                     }
                     else
                     {
-                        RenderTools.DrawCube(new Vector3(mesh.boundingSphere[0], mesh.boundingSphere[1], mesh.boundingSphere[2]), mesh.boundingSphere[3], true);
+                        ShapeDrawing.DrawCube(new Vector3(mesh.boundingSphere[0], mesh.boundingSphere[1], mesh.boundingSphere[2]), mesh.boundingSphere[3], true);
                     }
                 }
             }

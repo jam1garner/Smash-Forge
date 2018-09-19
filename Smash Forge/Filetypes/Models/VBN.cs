@@ -133,7 +133,7 @@ namespace Smash_Forge
             else
                 GL.Color3(Color.GreenYellow);
 
-            Rendering.RenderTools.DrawCube(pos_c, Runtime.renderBoneNodeSize);
+            Rendering.ShapeDrawing.DrawCube(pos_c, Runtime.renderBoneNodeSize);
 
             // now draw line between parent
             GL.Color3(Color.LightBlue);

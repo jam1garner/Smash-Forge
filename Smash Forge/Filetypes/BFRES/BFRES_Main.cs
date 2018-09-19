@@ -334,7 +334,7 @@ namespace Smash_Forge
                     {
                         if (m.Checked)
                         {
-                            RenderTools.DrawRectangularPrism(box.Center, box.Extent.X, box.Extent.Y, box.Extent.Z, true);
+                            ShapeDrawing.DrawRectangularPrism(box.Center, box.Extent.X, box.Extent.Y, box.Extent.Z, true);
                         }
                     }
                 }

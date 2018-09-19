@@ -1319,7 +1319,7 @@ namespace Smash_Forge
             Vector3 pos = p.useStartPos ? p.startPos : new Vector3(p.x,p.y,p.z);
 
             GL.Color3(Color.Red);
-            Rendering.RenderTools.DrawCube(pos, 3, true);
+            Rendering.ShapeDrawing.DrawCube(pos, 3, true);
         }
 
         public static void DrawShape(object obj)
@@ -1352,16 +1352,16 @@ namespace Smash_Forge
             if (s.type == (int)LVDShapeType.Point)
             {
                 if (useStartPos)
-                    Rendering.RenderTools.DrawCube(sPos, 3, true);
+                    Rendering.ShapeDrawing.DrawCube(sPos, 3, true);
                 else
-                    Rendering.RenderTools.DrawCube(new Vector3(s.x1, s.y1, 0), 3, true);
+                    Rendering.ShapeDrawing.DrawCube(new Vector3(s.x1, s.y1, 0), 3, true);
             }
             else if (s.type == (int)LVDShapeType.Circle)
             {
                 if (useStartPos)
-                    Rendering.RenderTools.drawCircleOutline(sPos, s.x2, 24);
+                    Rendering.ShapeDrawing.drawCircleOutline(sPos, s.x2, 24);
                 else
-                    Rendering.RenderTools.drawCircleOutline(new Vector3(s.x1, s.y1, 0), s.x2, 24);
+                    Rendering.ShapeDrawing.drawCircleOutline(new Vector3(s.x1, s.y1, 0), s.x2, 24);
             }
             else if (s.type == (int)LVDShapeType.Rectangle)
             {
@@ -1391,9 +1391,9 @@ namespace Smash_Forge
             Vector3 posd = new Vector3(s.dx, s.dy, s.dz);
 
             if (s.type == (int)DamageShapeType.Sphere)
-                Rendering.RenderTools.drawSphere(sPos+pos, s.radius, 24);
+                Rendering.ShapeDrawing.drawSphere(sPos+pos, s.radius, 24);
             else if (s.type == (int)DamageShapeType.Capsule)
-                Rendering.RenderTools.DrawCylinder(sPos+pos, sPos+pos+posd, s.radius);
+                Rendering.ShapeDrawing.DrawCylinder(sPos+pos, sPos+pos+posd, s.radius);
         }
 
         public static void DrawEnemyGenerator(EnemyGenerator e)

@@ -1717,7 +1717,7 @@ namespace Smash_Forge
                 cameraPosForm.ApplyCameraAnimation(camera, animationTrackBar.Value);
 
             if (Runtime.renderFloor)
-                RenderTools.DrawFloor(camera.MvpMatrix);
+                ShapeDrawing.DrawFloor(camera.MvpMatrix);
 
             // Depth testing isn't set by materials.
             SetDepthTesting();
@@ -2138,7 +2138,7 @@ namespace Smash_Forge
             {
                 Color color = Color.White;
 
-                RenderTools.DrawRectangularPrism(new Vector3(light.positionX, light.positionY, light.positionZ),
+                ShapeDrawing.DrawRectangularPrism(new Vector3(light.positionX, light.positionY, light.positionZ),
                     light.scaleX, light.scaleY, light.scaleZ, true);
             }
         }
