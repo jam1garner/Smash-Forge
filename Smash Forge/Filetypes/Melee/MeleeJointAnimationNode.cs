@@ -178,14 +178,6 @@ namespace Smash_Forge.Filetypes.Melee
                     float prevTan = 0;
                     Animation.KeyFrame prevkey = null;
                     Animation.KeyGroup Group = new Animation.KeyGroup();
-                    /*for(int i =0; i < DatAnimation.FrameCount; i++)
-                    {
-                        Animation.KeyFrame f = new Animation.KeyFrame();
-                        f.Frame = i;
-                        f.Value = track.GetValueAt(i);
-                        f.InterType = Animation.InterpolationType.LINEAR;
-                        Group.Keys.Add(f);
-                    }*/
                     
                     foreach(AnimationHelperKeyFrame key in track.KeyFrames)
                     {

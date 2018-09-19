@@ -48,7 +48,7 @@ namespace Smash_Forge.Filetypes.Melee
             float FrameCount = 0;
             foreach(Map_Animation_Quake q in RootBone.GetNodesInOrder())
             {
-                if(q.NodeData != null)
+                if (q.NodeData != null)
                 {
                     FrameCount = Math.Max(FrameCount, q.NodeData.FrameCount);
                     DatAnimation.Nodes.Add(q.NodeData);
@@ -70,10 +70,28 @@ namespace Smash_Forge.Filetypes.Melee
             MenuItem SaveAsM = new MenuItem("Save As");
             SaveAsM.Click += SaveAs;
             ContextMenu.MenuItems.Add(SaveAsM);
-
         }
-        
-        
+
+        public override Animation GetAnimation()
+        {
+            Animation normal = base.GetAnimation();
+
+            int boneIndex = 0;
+            foreach (Map_Animation_Quake q in RootBone.GetNodesInOrder())
+            {
+                if (q.NodeData != null)
+                {
+                    if (q.NodeData.JOBJ != null)
+                    {
+                        MeleeJointPath path = new MeleeJointPath(q.NodeData.JOBJ.Path, "Bone_" + boneIndex);
+                        normal.Bones.AddRange(path.GetAnimation(q.NodeData.JOBJ).Bones);
+                    }
+                }
+                boneIndex++;
+            }
+            
+            return normal;
+        }
     }
     
 }
