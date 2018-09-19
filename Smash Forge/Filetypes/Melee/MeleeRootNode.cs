@@ -66,7 +66,7 @@ namespace Smash_Forge.Filetypes.Melee
                 {
                     foreach (DatMatAnimGroup g in anim.Groups)
                     {
-                        foreach (DatMatAnimData d in g.Data)
+                        foreach (DatMatAnimData d in g.TextureData)
                         {
                             foreach (DatMatAnimTextureData t in d.Textures)
                             {
