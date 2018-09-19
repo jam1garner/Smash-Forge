@@ -315,7 +315,7 @@ namespace Smash_Forge
 
             foreach(NutTexture tex in nut.Nodes)
             {
-                ScreenDrawing.DrawTexturedQuad(nut.glTexByHashId[tex.HashId].Id, tex.Width, tex.Height, screenTriangle, true, true, true, true, true);
+                ScreenDrawing.DrawTexturedQuad(nut.glTexByHashId[tex.HashId], tex.Width, tex.Height, screenTriangle, true, true, true, true, true);
             }
 
             glControl1.SwapBuffers();

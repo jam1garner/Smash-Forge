@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using OpenTK;
-using OpenTK.Graphics;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using System.Drawing;
-using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.Framebuffers;
 using SFGraphics.GLObjects.Textures;
 using Smash_Forge.Rendering.Meshes;
+using System.Drawing;
 
 namespace Smash_Forge.Rendering
 {
@@ -64,7 +61,7 @@ namespace Smash_Forge.Rendering
 
             // Draw the specified color channels.
             GL.Viewport(0, 0, width, height);
-            ScreenDrawing.DrawTexturedQuad(texture.Id, 1, 1, screenTriangle, r, g, b, a);
+            ScreenDrawing.DrawTexturedQuad(texture, 1, 1, screenTriangle, r, g, b, a);
             return framebuffer;
         }
     }

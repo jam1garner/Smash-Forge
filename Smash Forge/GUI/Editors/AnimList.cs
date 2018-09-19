@@ -420,10 +420,10 @@ namespace Smash_Forge
                         animGroup.Nodes.Add(anim);
                         string AnimName = Regex.Match(pair.Key, @"([A-Z][0-9][0-9])(.*)").Groups[0].ToString();
 
-                        if(groupname == null)
-                            groupname = pair.Key.Replace(AnimName, "");
                         if (!string.IsNullOrEmpty(AnimName))
                         {
+                            if (groupname == null)
+                                groupname = pair.Key.Replace(AnimName, "");
                             anim.Text = AnimName;
                         }
                         //Runtime.acmdEditor.updateCrcList();

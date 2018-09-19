@@ -191,48 +191,43 @@
             <param name="radius">The radius of the bounding sphere.</param>
             <param name="offset"></param>
         </member>
-        <member name="T:SFGraphics.GLObjects.BufferObject">
+        <member name="T:SFGraphics.GLObjects.BufferObjects.BufferObject">
             <summary>
             Data can be read from and written to the buffer using any value type.
             <para></para><para></para>
             This class does not permanently store the data used for initialization. 
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.BufferObject.ObjectType">
-            <summary>
-            Returns the type of OpenGL object. Used for memory management.
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.BufferObject.Target">
+        <member name="P:SFGraphics.GLObjects.BufferObjects.BufferObject.Target">
             <summary>
             The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound when calling Bind().
             </summary>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.#ctor(OpenTK.Graphics.OpenGL.BufferTarget)">
+        <member name="M:SFGraphics.GLObjects.BufferObjects.BufferObject.#ctor(OpenTK.Graphics.OpenGL.BufferTarget)">
             <summary>
             Creates a buffer of the specified target with unitialized data.
             </summary>
             <param name="target">The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.Bind">
+        <member name="M:SFGraphics.GLObjects.BufferObjects.BufferObject.Bind">
             <summary>
             Binds <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> to the buffer target specified at creation.
             </summary>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.Bind(OpenTK.Graphics.OpenGL.BufferTarget)">
+        <member name="M:SFGraphics.GLObjects.BufferObjects.BufferObject.Bind(OpenTK.Graphics.OpenGL.BufferTarget)">
             <summary>
             Binds <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> to <paramref name="target"/>.
             </summary>
             <param name="target"></param>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.BindBase(OpenTK.Graphics.OpenGL.BufferRangeTarget,System.Int32)">
+        <member name="M:SFGraphics.GLObjects.BufferObjects.BufferObject.BindBase(OpenTK.Graphics.OpenGL.BufferRangeTarget,System.Int32)">
             <summary>
             Binds <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> to an indexed buffer target.
             </summary>
-            <param name="target"></param>
-            <param name="index"></param>
+            <param name="target">The target for the bind</param>
+            <param name="index">The index of the binding point</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.SetData``1(``0[],OpenTK.Graphics.OpenGL.BufferUsageHint)">
+        <member name="M:SFGraphics.GLObjects.BufferObjects.BufferObject.SetData``1(``0[],OpenTK.Graphics.OpenGL.BufferUsageHint)">
             <summary>
             Initializes the buffer's data with the specified array.
             <paramref name="data"/> should be contiguous in memory, so only 
@@ -241,7 +236,7 @@
             <param name="data">The data used to initialize the buffer's data</param>
             <param name="usageHint">A hint on how the data will be used, which allows performance optimizations</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.SetSubData``1(``0[],System.Int32)">
+        <member name="M:SFGraphics.GLObjects.BufferObjects.BufferObject.SetSubData``1(``0[],System.Int32)">
             <summary>
             Initializes a portion of the buffer's data with the specified array.
             <paramref name="data"/> should be contiguous in memory, so only 
@@ -254,16 +249,16 @@
             <exception cref="T:System.ArgumentOutOfRangeException">The specified range includes data 
             outside the buffer's current capacity.</exception>        
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.GetData``1">
+        <member name="M:SFGraphics.GLObjects.BufferObjects.BufferObject.GetData``1">
             <summary>
             Reads the buffer's data into structs of type <typeparamref name="T"/>.
             <para></para><para></para>
-            The data returned may not be valid if the buffer's data is modified using <see cref="M:SFGraphics.GLObjects.BufferObject.MapBuffer(OpenTK.Graphics.OpenGL.BufferAccess)"/>.
+            The data returned may not be valid if the buffer's data is modified using <see cref="M:SFGraphics.GLObjects.BufferObjects.BufferObject.MapBuffer(OpenTK.Graphics.OpenGL.BufferAccess)"/>.
             </summary>
             <typeparam name="T">The type specified for each item when initializing the buffer's data.</typeparam>
             <returns>An array of all the buffer's initialized data</returns>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.GetSubData``1(System.Int32,System.Int32)">
+        <member name="M:SFGraphics.GLObjects.BufferObjects.BufferObject.GetSubData``1(System.Int32,System.Int32)">
             <summary>
             Binds the buffer and reads <paramref name="itemCount"/> elements of type <typeparamref name="T"/> 
             starting at <paramref name="offsetInBytes"/>.
@@ -275,7 +270,7 @@
             <exception cref="T:System.ArgumentOutOfRangeException">The specified range includes data 
             outside the buffer's current capacity.</exception>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.MapBuffer(OpenTK.Graphics.OpenGL.BufferAccess)">
+        <member name="M:SFGraphics.GLObjects.BufferObjects.BufferObject.MapBuffer(OpenTK.Graphics.OpenGL.BufferAccess)">
             <summary>
             Maps and gets a pointer to the buffer's data store.
             Using the pointer in a manner inconsistent with <paramref name="access"/>
@@ -284,7 +279,7 @@
             <param name="access">Specifies read and/or write access for the mapped data</param>
             <returns>An IntPtr for the buffer's data</returns>
         </member>
-        <member name="M:SFGraphics.GLObjects.BufferObject.Unmap">
+        <member name="M:SFGraphics.GLObjects.BufferObjects.BufferObject.Unmap">
             <summary>
             Releases the mapping of the buffer's data store.
             If false, the buffer's data was corrupted while mapped
@@ -292,49 +287,44 @@
             </summary>
             <returns><c>true</c> if the data was not corrupted while mapped</returns>
         </member>
-        <member name="T:SFGraphics.GLObjects.Framebuffer">
+        <member name="T:SFGraphics.GLObjects.Framebuffers.Framebuffer">
             <summary>
             Encapsulates an OpenGL framebuffer, including any attached color or depth attachments.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Framebuffer.ObjectType">
+        <member name="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.Target">
             <summary>
-            Returns the type of OpenGL object. Used for memory management.
+            The target which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound when calling <see cref="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.Bind"/>.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Framebuffer.Target">
-            <summary>
-            The target which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound when calling <see cref="M:SFGraphics.GLObjects.Framebuffer.Bind"/>.
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.Framebuffer.PixelInternalFormat">
+        <member name="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.PixelInternalFormat">
             <summary>
             The internal format used for all color attachments.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Framebuffer.Width">
+        <member name="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.Width">
             <summary>
             All attached textures, renderbuffers, etc are resized when set. The framebuffer's contents will not be preserved when resizing.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Framebuffer.Height">
+        <member name="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.Height">
             <summary>
             All attached textures, renderbuffers, etc are resized when set. The framebuffer's contents will not be preserved when resizing.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Framebuffer.ColorAttachments">
+        <member name="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.ColorAttachments">
             <summary>
             All color attachment textures. 
             </summary>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget)">
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget)">
             <summary>
             Generates an empty framebuffer with no attachments bound to the specified target. 
             Binds the framebuffer.
             </summary>
             <param name="framebufferTarget">The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget,System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat,System.Int32)">
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget,System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat,System.Int32)">
             <summary>
             Generates a framebuffer with a color attachment of the specified pixel format and dimensions. 
             A render buffer of the same dimensions as the color attachment is generated for the depth component.
@@ -348,13 +338,13 @@
             Ex: <c>1</c> would only create ColorAttachment0.</param>
             <exception cref="T:System.ArgumentOutOfRangeException">The number of color attachments is negative.</exception>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffer.GetStatus">
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.GetStatus">
             <summary>
             Gets the framebuffer status for this framebuffer.
             </summary>
             <returns></returns>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffer.AttachTexture(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Textures.Texture2D)">
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.AttachTexture(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Textures.Texture2D)">
             <summary>
             Attaches <paramref name="texture"/> to <paramref name="attachment"/>.
             Draw and read buffers must be configured separately.
@@ -362,14 +352,14 @@
             <param name="attachment">The attachment target for the texture</param>
             <param name="texture">The texture to attach</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffer.AttachDepthTexture(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Textures.DepthTexture)">
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.AttachDepthTexture(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Textures.DepthTexture)">
             <summary>
             Attaches <paramref name="depthTexture"/> to <paramref name="attachment"/>.
             </summary>
             <param name="attachment">The attachment target for the texture. This should be a depth attachment.</param>
             <param name="depthTexture">The depth texture to attach</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffer.AttachRenderbuffer(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Renderbuffer)">
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.AttachRenderbuffer(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.RenderBuffers.Renderbuffer)">
             <summary>
             Attaches <paramref name="renderbuffer"/> to <paramref name="attachment"/>.
             Draw and read buffers must be configured separately.
@@ -377,37 +367,37 @@
             <param name="attachment">The attachment target for the renderbuffer</param>
             <param name="renderbuffer">The renderbuffer to attach</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffer.Bind">
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.Bind">
             <summary>
             Binds the framebuffer to the target specified at creation.
             </summary>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffer.SetDrawBuffers(OpenTK.Graphics.OpenGL.DrawBuffersEnum[])">
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.SetDrawBuffers(OpenTK.Graphics.OpenGL.DrawBuffersEnum[])">
             <summary>
             Sets which buffers or attachments receive fragment shader outputs.
             Binds the framebuffer.
             </summary>
             <param name="drawBuffers">The buffers used for fragment shader output</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffer.SetReadBuffer(OpenTK.Graphics.OpenGL.ReadBufferMode)">
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.SetReadBuffer(OpenTK.Graphics.OpenGL.ReadBufferMode)">
             <summary>
             Sets the color buffer used for GL.ReadPixels and GL.CopyTexImage methods.
             Binds the framebuffer.
             </summary>
             <param name="readBufferMode">The buffer used for read operations</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffer.ReadImagePixels(System.Boolean)">
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.ReadImagePixels(System.Boolean)">
             <summary>
             Reads the framebuffer's contents into a Bitmap.
             </summary>
             <param name="saveAlpha">The alpha channel is preserved when true or set to 255 (white when false</param>
             <returns>A bitmap of the framebuffer's contents</returns>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffer.SamplePixelColor(System.Int32,System.Int32)">
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.SamplePixelColor(System.Int32,System.Int32)">
             <summary>
             The origin (0,0) corresponds to the top left of the screen.
             The coordinates are based on the framebuffer's
-            <see cref="P:SFGraphics.GLObjects.Framebuffer.Width"/> and <see cref="P:SFGraphics.GLObjects.Framebuffer.Height"/>.
+            <see cref="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.Width"/> and <see cref="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.Height"/>.
             </summary>
             <param name="x">The horizontal pixel coordinate</param>
             <param name="y">The vertical pixel coordinate</param>
@@ -478,12 +468,12 @@
         </member>
         <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.FramebufferObject">
             <summary>
-            <see cref="T:SFGraphics.GLObjects.Framebuffer"/>
+            <see cref="T:SFGraphics.GLObjects.Framebuffers.Framebuffer"/>
             </summary>
         </member>
         <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.RenderbufferObject">
             <summary>
-            <see cref="T:SFGraphics.GLObjects.Renderbuffer"/>
+            <see cref="T:SFGraphics.GLObjects.RenderBuffers.Renderbuffer"/>
             </summary>
         </member>
         <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.Texture">
@@ -498,12 +488,12 @@
         </member>
         <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.BufferObject">
             <summary>
-            <see cref="T:SFGraphics.GLObjects.BufferObject"/>
+            <see cref="T:SFGraphics.GLObjects.BufferObjects.BufferObject"/>
             </summary>
         </member>
         <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.VertexArrayObject">
             <summary>
-            <see cref="T:SFGraphics.GLObjects.VertexArrayObject"/>
+            <see cref="T:SFGraphics.GLObjects.VertexArrays.VertexArrayObject"/>
             </summary>
         </member>
         <member name="F:SFGraphics.GLObjects.GLObject.GLObjectType.SamplerObject">
@@ -514,12 +504,14 @@
         <member name="F:SFGraphics.GLObjects.GLObject.Id">
             <summary>
             The value generated by GL.GenTexture(), GL.GenProgram(), etc. 
+            <para></para><para></para>
             Do not use <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> after the container object is unreachable.
+            Changes made using this value may not be reflected in the wrapper classes.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.GLObject.ObjectType">
             <summary>
-            
+            The type of object.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.GLObject.#ctor(System.Int32)">
@@ -540,28 +532,23 @@
             </summary>
             <returns>The object's type and ID</returns>
         </member>
-        <member name="T:SFGraphics.GLObjects.Renderbuffer">
+        <member name="T:SFGraphics.GLObjects.RenderBuffers.Renderbuffer">
             <summary>
             Encapsulates a renderbuffer object, which are used exclusively as attachments 
-            for <see cref="T:SFGraphics.GLObjects.Framebuffer"/> objects. Renderbuffers support multisampling.
+            for <see cref="T:SFGraphics.GLObjects.Framebuffers.Framebuffer"/> objects. Renderbuffers support multisampling.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Renderbuffer.ObjectType">
-            <summary>
-            Returns the type of OpenGL object. Used for memory management.
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.Renderbuffer.Width">
+        <member name="P:SFGraphics.GLObjects.RenderBuffers.Renderbuffer.Width">
             <summary>
             The width of the renderbuffer in pixels.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Renderbuffer.Height">
+        <member name="P:SFGraphics.GLObjects.RenderBuffers.Renderbuffer.Height">
             <summary>
             The height of the renderbuffer in pixels.
             </summary>
         </member>
-        <member name="M:SFGraphics.GLObjects.Renderbuffer.#ctor(System.Int32,System.Int32,OpenTK.Graphics.OpenGL.RenderbufferStorage)">
+        <member name="M:SFGraphics.GLObjects.RenderBuffers.Renderbuffer.#ctor(System.Int32,System.Int32,OpenTK.Graphics.OpenGL.RenderbufferStorage)">
             <summary>
             Creates an allocates storage for an empty renderbuffer. 
             </summary>
@@ -569,7 +556,7 @@
             <param name="height">The height of the renderbuffer in pixels</param>
             <param name="internalFormat">The format of the image data</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Renderbuffer.#ctor(System.Int32,System.Int32,System.Int32,OpenTK.Graphics.OpenGL.RenderbufferStorage)">
+        <member name="M:SFGraphics.GLObjects.RenderBuffers.Renderbuffer.#ctor(System.Int32,System.Int32,System.Int32,OpenTK.Graphics.OpenGL.RenderbufferStorage)">
             <summary>
             Creates and allocates storage for an empty multisampled renderbuffer.
             </summary>
@@ -578,7 +565,7 @@
             <param name="samples">The number of samples to use for multisampling</param>
             <param name="internalFormat">The format of the image data</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Renderbuffer.Bind">
+        <member name="M:SFGraphics.GLObjects.RenderBuffers.Renderbuffer.Bind">
             <summary>
             Binds <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> to the RenderbufferTarget.Renderbuffer target.
             </summary>
@@ -587,11 +574,6 @@
             <summary>
             Allows for setting texture state per texture unit rather than per texture.
             The texture parameters of the bound sampler object are used instead of the texture's parameters.
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.Samplers.SamplerObject.ObjectType">
-            <summary>
-            Returns the type of OpenGL object. Used for memory management.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Samplers.SamplerObject.MinFilter">
@@ -631,148 +613,177 @@
             </summary>
             <param name="textureUnit"></param>
         </member>
+        <member name="T:SFGraphics.GLObjects.Shaders.Utils.ShaderLog">
+            <summary>
+            Stores hardware info, OpenGL/GLSL version, invalid uniform/attribute names, shader compilation errors, and linker errors.
+            </summary>
+        </member>
         <member name="T:SFGraphics.GLObjects.Shaders.Shader">
             <summary>
             Encapsulates a shader program and attached shaders. 
             Errors are stored to an internal log, which can be exported with <see cref="M:SFGraphics.GLObjects.Shaders.Shader.GetErrorLog"/>.
             <para></para> <para></para>
-            Ensure that <see cref="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully"/> returns <c>true</c> before rendering to avoid crashes.
+            Ensure that <see cref="P:SFGraphics.GLObjects.Shaders.Shader.LinkStatusIsOk"/> returns <c>true</c> before rendering to avoid crashes.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetFloat(System.String,System.Single)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets a float uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetFloat(System.String,System.Single[])">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets all values for a float[] uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetInt(System.String,System.Int32)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets an int uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetInt(System.String,System.Int32[])">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets all values for an int[] uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetUint(System.String,System.UInt32)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets a uint uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetUint(System.String,System.UInt32[])">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets all values for a uint[] uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetBoolToInt(System.String,System.Boolean)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Converts <paramref name="value"/> to an int and sets an int uniform. 
+            <c>true</c> = 1. <c>false</c> = 0. uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
-            <param name="value">The value to assign to the uniform. True = 1. False = 0.</param>
+            <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector2(System.String,OpenTK.Vector2)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets vec2 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector2(System.String,System.Single,System.Single)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets vec2 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
-            <param name="x"></param>        
-            <param name="y"></param>
+            <param name="x">The value for uniformName.x</param>
+            <param name="y">The value for uniformName.y</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector3(System.String,OpenTK.Vector3)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets vec3 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector3(System.String,System.Single,System.Single,System.Single)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets vec3 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
-            <param name="x"></param>        
-            <param name="y"></param>
-            <param name="z"></param>
+            <param name="x">The value for uniformName.x</param>
+            <param name="y">The value for uniformName.y</param>
+            <param name="z">The value for uniformName.z</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector4(System.String,OpenTK.Vector4)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets vec4 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector4(System.String,System.Single,System.Single,System.Single,System.Single)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets vec4 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
-            <param name="x"></param>
-            <param name="y"></param>
-            <param name="z"></param>
-            <param name="w"></param>
+            <param name="x">The value for uniformName.x</param>
+            <param name="y">The value for uniformName.y</param>
+            <param name="z">The value for uniformName.z</param>
+            <param name="w">The value for uniformName.w</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetMatrix4x4(System.String,OpenTK.Matrix4@)">
             <summary>
-            Names not present in the shader are ignored and saved to the error log.
+            Sets a mat4 uniform variable. Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetTexture(System.String,System.Int32,OpenTK.Graphics.OpenGL.TextureTarget,System.Int32)">
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetTexture(System.String,SFGraphics.GLObjects.Textures.Texture,System.Int32)">
             <summary>
-            <paramref name="textureId"/> is bound to <paramref name="textureUnit"/> before 
-            setting the uniform. Names not present in the shader are ignored and saved to the error log.
+            <paramref name="texture"/> is bound to <paramref name="textureUnit"/> before 
+            setting the uniform. 
+            Logs invalid names.
             </summary>
             <param name="uniformName">The uniform variable name</param>
-            <param name="textureId">The integer ID generated by GL.GenTexture()</param>
-            <param name="textureTarget">The target to which <paramref name="textureId"/> is bound</param>
-            <param name="textureUnit">The texture unit to which <paramref name="textureId"/> is bound</param>
+            <param name="texture">The integer ID generated by GL.GenTexture()</param>
+            <param name="textureUnit">The texture unit to which <paramref name="texture"/> will be bound</param>
         </member>
-        <member name="P:SFGraphics.GLObjects.Shaders.Shader.ObjectType">
+        <member name="P:SFGraphics.GLObjects.Shaders.Shader.LinkStatusIsOk">
             <summary>
-            Returns the type of OpenGL object. Used for memory management.
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully">
-            <summary>
-            <c>true</c> when the link status is ok.
-            If <c>false</c>, rendering with this shader will most likely cause an <see cref="T:System.AccessViolationException"/>.
+            If <c>false</c>, rendering with this shader will most likely throw an <see cref="T:System.AccessViolationException"/>.
             <para></para><para></para>
-            The status is updated with each call to <see cref="M:SFGraphics.GLObjects.Shaders.Shader.LoadShader(System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String)"/>, 
-            <see cref="M:SFGraphics.GLObjects.Shaders.Shader.AttachShader(System.Int32,OpenTK.Graphics.OpenGL.ShaderType,System.String)"/>, or <see cref="M:SFGraphics.GLObjects.Shaders.Shader.LoadProgramBinary(System.Byte[],OpenTK.Graphics.OpenGL.BinaryFormat)"/>.
+            Does not reflect changes made using <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> directly.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Shaders.Shader.ProgramStatusIsValid">
+        <member name="P:SFGraphics.GLObjects.Shaders.Shader.ValidateStatusIsOk">
             <summary>
             <c>true</c> when only one sampler type is used for each texture unit
             and the number of active samplers does not exceed the allowed maximum.
             <para></para><para></para>
             This should be checked at runtime and only for debugging purposes.
+            </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Shaders.Shader.InvalidUniformSetEventHandler">
+            <summary>
+            </summary>
+            <param name="sender">The shader that generated the error</param>
+            <param name="e">The arguments used to set the uniform</param>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Shaders.Shader.LinkStatusChangedEventHandler">
+            <summary>
+            
+            </summary>
+            <param name="sender">The shader that generated the event</param>
+            <param name="linkStatusIsOk">The new link status. 
+            <c>true</c> when linking was successful</param>
+        </member>
+        <member name="E:SFGraphics.GLObjects.Shaders.Shader.OnInvalidUniformSet">
+            <summary>
+            Occurs when arguments for setting a uniform don't match the shader.
+            </summary>
+        </member>
+        <member name="E:SFGraphics.GLObjects.Shaders.Shader.OnTextureUnitTypeMismatch">
+            <summary>
+            Occurs when a call to <see cref="M:SFGraphics.GLObjects.Shaders.Shader.SetTexture(System.String,SFGraphics.GLObjects.Textures.Texture,System.Int32)"/>
+            is made to a previously used texture unit but with a different sampler type.
+            </summary>
+        </member>
+        <member name="E:SFGraphics.GLObjects.Shaders.Shader.OnLinkStatusChanged">
+            <summary>
+            Occurs when the value of <see cref="P:SFGraphics.GLObjects.Shaders.Shader.LinkStatusIsOk"/> changes.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.#ctor">
@@ -802,7 +813,7 @@
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.AttachShader(System.Int32,OpenTK.Graphics.OpenGL.ShaderType,System.String)">
             <summary>
             Attaches <paramref name="shaderId"/> and links the program. 
-            The value for <see cref="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully"/> is updated.
+            The value for <see cref="P:SFGraphics.GLObjects.Shaders.Shader.LinkStatusIsOk"/> is updated.
             </summary>
             <param name="shaderId">The integer ID returned by <see cref="M:SFGraphics.GLObjects.Shaders.Shader.CreateGlShader(System.String,OpenTK.Graphics.OpenGL.ShaderType)"/></param>
             <param name="shaderType">The type of shader.
@@ -811,23 +822,27 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.LoadShader(System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String)">
             <summary>
-            Attempts to compile and attach the shader. 
-            The value returned by <see cref="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully"/> is updated.
-            Supported shader types are fragment, vertex , and geometry.
+            Compiles and attaches a single shader from <paramref name="shaderSource"/>.
+            Performs linking and shader setup.
             </summary>
-            <param name="shaderSource">A string containing the shader source text</param>
-            <param name="shaderType">The type of shader to load. Ex: ShaderType.FragmentShader</param>
+            <param name="shaderSource">The shader code source</param>
+            <param name="shaderType">The type of shader to load</param>
             <param name="shaderName">The title used for the compilation errors section of the error log</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.LoadShaders(System.Collections.Generic.List{System.Tuple{System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String}})">
+            <summary>
+            Compiles and attaches multiple shaders. Linking and setup is performed only once.
+            </summary>
+            <param name="shaders">(shader source, shader type, shader name)</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.CreateGlShader(System.String,OpenTK.Graphics.OpenGL.ShaderType)">
             <summary>
-            Returns the integer ID created by GL.CreateShader(). Compiles the shader.
-            This method can reduce load times by avoiding redundant shader compilations when used
-            in conjunction with <see cref="M:SFGraphics.GLObjects.Shaders.Shader.AttachShader(System.Int32,OpenTK.Graphics.OpenGL.ShaderType,System.String)"/>
+            Creates and compiles a new shader from <paramref name="shaderSource"/>.
+            Returns the ID created by GL.CreateShader(). 
+            Shaders can be attached with <see cref="M:SFGraphics.GLObjects.Shaders.Shader.AttachShader(System.Int32,OpenTK.Graphics.OpenGL.ShaderType,System.String)"/>
             </summary>
             <param name="shaderSource">A string containing the shader source text</param>
-            <param name="shaderType">The type of shader.
-            Ex: ShaderType.FragmentShader</param>
+            <param name="shaderType">The type of shader to create</param>
             <returns>The integer ID created by GL.CreateShader()</returns>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetProgramBinary(OpenTK.Graphics.OpenGL.BinaryFormat@)">
@@ -843,7 +858,7 @@
             <summary>
             Loads the entire program from the compiled binary and format generated 
             by <see cref="M:SFGraphics.GLObjects.Shaders.Shader.GetProgramBinary(OpenTK.Graphics.OpenGL.BinaryFormat@)"/>.
-            The value returned by <see cref="P:SFGraphics.GLObjects.Shaders.Shader.ProgramCreatedSuccessfully"/> is updated.
+            The value returned by <see cref="P:SFGraphics.GLObjects.Shaders.Shader.LinkStatusIsOk"/> is updated.
             <para></para><para></para>
             Hardware or software changes may cause compatibility issues with the program binary.
             If program creation fails with precompiled binaries, resort to compiling the shaders from source. 
@@ -853,17 +868,24 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetUniformLocation(System.String)">
             <summary>
-            Gets the location of a uniform variable.
+            Gets the uniform's location from locations stored after linking.
             </summary>
-            <param name="uniformName">The name of the uniform variable</param>
-            <returns>The location of <paramref name="uniformName"/></returns>
+            <param name="name">The name of the uniform variable</param>
+            <returns>The location of <paramref name="name"/></returns>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetAttribLocation(System.String)">
             <summary>
-            Gets the location of an attribute variable.
+            Gets the attribute's location from locations stored after linking.
             </summary>
-            <param name="attributeName">The name of the vertex attribute variable</param>
-            <returns>The location of <paramref name="attributeName"/></returns>
+            <param name="name">The name of the vertex attribute variable</param>
+            <returns>The location of <paramref name="name"/></returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetUniformBlockIndex(System.String)">
+            <summary>
+            Gets the block index of a uniform block.
+            </summary>
+            <param name="name">The name of the uniform block</param>
+            <returns>The index of <paramref name="name"/></returns>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetErrorLog">
             <summary>
@@ -872,17 +894,46 @@
             </summary>
             <returns>A String of all detected errors</returns>
         </member>
-        <member name="T:SFGraphics.GLObjects.Shaders.ShaderLog">
+        <member name="T:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs">
             <summary>
-            Stores hardware info, OpenGL/GLSL version, invalid uniform/attribute names, shader compilation errors, and linker errors.
+            Contains the data used to set a shader uniform variable.
             </summary>
         </member>
-        <member name="T:SFGraphics.GLObjects.Textures.MipmapLoading">
+        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Name">
+            <summary>
+            The name of the uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Type">
+            <summary>
+            The data type of the uniform.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Value">
+            <summary>
+            The value used to initialize the uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Size">
+            <summary>
+            The number of components for <see cref="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Value"/>.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.#ctor(System.String,OpenTK.Graphics.OpenGL.ActiveUniformType,System.Object,System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="name"></param>
+            <param name="type"></param>
+            <param name="value"></param>
+            <param name="size"></param>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Textures.Utils.MipmapLoading">
             <summary>
             Provides methods for loading mipmaps for OpenGL textures. 
             </summary>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadCompressedMipMaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadCompressedMipMaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             Loads compressed 2D image data of the compressed format <paramref name="format"/> 
             for all the mip levels in <paramref name="mipmaps"/>.
@@ -895,7 +946,7 @@
             <param name="mipmaps">The list of mipmaps to load for <paramref name="target"/></param>
             <param name="format">The input format and internal format information</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadCompressedMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObject},OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadCompressedMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObjects.BufferObject},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             
             </summary>
@@ -905,7 +956,7 @@
             <param name="mipmaps"></param>
             <param name="format">The input format and internal format information</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadUncompressedMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObject},SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadUncompressedMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObjects.BufferObject},SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
             
             </summary>
@@ -915,7 +966,7 @@
             <param name="mipmaps"></param>
             <param name="format">The input format and internal format information</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Drawing.Bitmap)">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Drawing.Bitmap)">
             <summary>
             Loads the base mip level from <paramref name="image"/> and generates mipmaps.
             Mipmaps are not generated for cube map targets.
@@ -924,7 +975,7 @@
             Ex: Texture2D or TextureCubeMapPositiveX.</param>
             <param name="image"></param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,``0[],OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadBaseLevelGenerateMipmaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,``0[],OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             
             </summary>
@@ -935,7 +986,7 @@
             <param name="baseMipLevel"></param>
             <param name="format">The input format and internal format information</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,SFGraphics.GLObjects.BufferObject,OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,SFGraphics.GLObjects.BufferObjects.BufferObject,OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             
             </summary>
@@ -945,7 +996,7 @@
             <param name="baseMipLevel"></param>
             <param name="internalFormat"></param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,``0[],SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadBaseLevelGenerateMipmaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,``0[],SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
             
             </summary>
@@ -956,7 +1007,7 @@
             <param name="baseMipLevel"></param>
             <param name="format">The input format and internal format information</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,SFGraphics.GLObjects.BufferObject,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadBaseLevelGenerateMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,SFGraphics.GLObjects.BufferObjects.BufferObject,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
             
             </summary>
@@ -966,7 +1017,7 @@
             <param name="baseMipLevel"></param>
             <param name="format">The input format and internal format information</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadFacesBaseLevel``1(System.Int32,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed,``0[],``0[],``0[],``0[],``0[],``0[])">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadFacesBaseLevel``1(System.Int32,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed,``0[],``0[],``0[],``0[],``0[],``0[])">
             <summary>
             Loads image data for all six faces of a cubemap. No mipmaps are generated, so use a min filter
             that does not use mipmaps.
@@ -981,7 +1032,7 @@
             <param name="posZ"></param>
             <param name="negZ"></param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.MipmapLoading.LoadFacesMipmaps``1(System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]})">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadFacesMipmaps``1(System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]})">
             <summary>
             Loads image data and mipmaps for all six faces of a cube map.
             </summary>
@@ -994,6 +1045,11 @@
             <param name="mipsNegY"></param>
             <param name="mipsPosZ"></param>
             <param name="mipsNegZ"></param>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Textures.Utils.TextureExceptionMessages">
+            <summary>
+            Error messages thrown by constructors for classes inheriting from <see cref="T:SFGraphics.GLObjects.Textures.Texture"/>.
+            </summary>
         </member>
         <member name="F:SFGraphics.GLObjects.Textures.TextureFormats.CompressedBlockSize.blockSizeByFormat">
             <summary>
@@ -1101,15 +1157,10 @@
             <param name="target">The texture target</param>
             <returns>True if the target is a cube map target</returns>
         </member>
-        <member name="T:SFGraphics.GLObjects.Textures.TextureExceptionMessages">
-            <summary>
-            Error messages thrown by constructors for classes inheriting from <see cref="T:SFGraphics.GLObjects.Textures.Texture"/>.
-            </summary>
-        </member>
         <member name="T:SFGraphics.GLObjects.Textures.DepthTexture">
             <summary>
             A simple texture for storing depth information. 
-            The texture can be attached to a <see cref="T:SFGraphics.GLObjects.Framebuffer"/> object for shadow mapping and other effects.
+            The texture can be attached to a <see cref="!:Framebuffer"/> object for shadow mapping and other effects.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Textures.DepthTexture.Width">
@@ -1137,11 +1188,6 @@
             Encapsulates the state for an OpenGL texture object. To support texture types other than 
             <see cref="T:SFGraphics.GLObjects.Textures.Texture2D"/> and <see cref="T:SFGraphics.GLObjects.Textures.TextureCubeMap"/>, inherit from this class
             and add the necessary additional methods. 
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.Textures.Texture.ObjectType">
-            <summary>
-            Returns the type of OpenGL object. Used for memory management.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Textures.Texture.TextureTarget">
@@ -1225,7 +1271,7 @@
             <param name="internalFormat">The image format of <paramref name="baseMipLevel"/></param>
             <exception cref="T:System.ArgumentException"><paramref name="internalFormat"/> is not a compressed format.</exception>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,SFGraphics.GLObjects.BufferObject,OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,SFGraphics.GLObjects.BufferObjects.BufferObject,OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             
             </summary>
@@ -1245,7 +1291,7 @@
             <param name="baseMipLevel">The image data of the first mip level</param>
             <param name="format">The image format for all mipmaps</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,SFGraphics.GLObjects.BufferObject,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,SFGraphics.GLObjects.BufferObjects.BufferObject,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
             
             </summary>
@@ -1266,7 +1312,7 @@
             <param name="internalFormat">The image format of <paramref name="mipmaps"/></param>
             <exception cref="T:System.ArgumentException"><paramref name="internalFormat"/> is not a compressed format.</exception>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObject},SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObjects.BufferObject},SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
             
             </summary>
@@ -1275,7 +1321,7 @@
             <param name="mipmaps">The image data for each mip level</param>
             <param name="format">The image format of <paramref name="mipmaps"/></param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObject},OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObjects.BufferObject},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             
             </summary>
@@ -1333,29 +1379,24 @@
             <param name="facePosZ">The base mip level for the positive z target</param>
             <param name="faceNegZ">The base mip level for the negative z target</param>
         </member>
-        <member name="T:SFGraphics.GLObjects.VertexArrayObject">
+        <member name="T:SFGraphics.GLObjects.VertexArrays.VertexArrayObject">
             <summary>
             Encapsulates an OpenGL vertex array object. 
             Vertex array objects cannot be shared between contexts.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.VertexArrayObject.ObjectType">
-            <summary>
-            Returns the type of OpenGL object. Used for memory management.
-            </summary>
-        </member>
-        <member name="M:SFGraphics.GLObjects.VertexArrayObject.#ctor">
+        <member name="M:SFGraphics.GLObjects.VertexArrays.VertexArrayObject.#ctor">
             <summary>
             Creates an empty vertex array object.
-            The vertex array object must first be bound with <see cref="M:SFGraphics.GLObjects.VertexArrayObject.Bind"/>.
+            The vertex array object must first be bound with <see cref="M:SFGraphics.GLObjects.VertexArrays.VertexArrayObject.Bind"/>.
             </summary>
         </member>
-        <member name="M:SFGraphics.GLObjects.VertexArrayObject.Bind">
+        <member name="M:SFGraphics.GLObjects.VertexArrays.VertexArrayObject.Bind">
             <summary>
             Binds the vertex array <see cref="F:SFGraphics.GLObjects.GLObject.Id"/>
             </summary>
         </member>
-        <member name="M:SFGraphics.GLObjects.VertexArrayObject.Unbind">
+        <member name="M:SFGraphics.GLObjects.VertexArrays.VertexArrayObject.Unbind">
             <summary>
             Binds the default vertex array value of <c>0</c>.
             </summary>

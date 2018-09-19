@@ -8,13 +8,14 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Shaders;
+using SFGenericModel.VertexAttributes;
 
 namespace Smash_Forge
 {
     public class BfresRenderMesh : GenericMesh<BFRES.DisplayVertex>
     {
         public BfresRenderMesh(List<BFRES.DisplayVertex> vertices, List<int> vertexIndices) 
-            : base(vertices, vertexIndices)
+            : base(vertices, vertexIndices, PrimitiveType.Triangles)
         {
 
         }
@@ -24,7 +25,7 @@ namespace Smash_Forge
             // Do nothing for now.
         }
 
-        protected override List<VertexAttributeInfo> GetVertexAttributes()
+        public override List<VertexAttributeInfo> GetVertexAttributes()
         {
             return new List<VertexAttributeInfo>()
             {

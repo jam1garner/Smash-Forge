@@ -14,7 +14,9 @@ using SALT.Graphics;
 using System.ComponentModel;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Lights;
-
+using System.Text.RegularExpressions;
+using Smash_Forge.Filetypes.Melee;
+using Smash_Forge.Filetypes.Melee.Utils;
 
 namespace Smash_Forge
 {
@@ -405,6 +407,45 @@ namespace Smash_Forge
             mvp.Text = fileName;
 
             modelContainer.Kcl = new KCL(fileData);
+
+            return mvp;
+        }
+
+        public ModelViewport OpenMeleeDat(byte[] fileData, string fileName, string viewportTitle = "", ModelViewport mvp = null)
+        {
+            //OldStage Stuff
+            {
+                /*DAT dat = new DAT();
+                dat.filename = fileName;
+                dat.Read(new FileData(fileName));
+
+                if (dat.collisions != null)//if the dat is a stage
+                {
+                    DatStageList stageList = new DatStageList(dat) { ShowHint = DockState.DockLeft };
+                    AddDockedControl(stageList);
+                }*/
+            }
+
+            if (mvp == null)
+            {
+                mvp = new ModelViewport();
+                AddDockedControl(mvp);
+            }
+
+            //ModelContainer modelContainer = new ModelContainer();
+
+            //modelContainer.MeleeData = new MeleeDataNode(fileName);
+
+            MeleeDataNode n = new MeleeDataNode(fileName) { Text = Path.GetFileName(fileName) };
+            if (Regex.Match(Path.GetFileName(fileName), "Pl[A-Z][a-z]\\.dat").Success)
+            {
+                string animationfileName = fileName.Replace(".dat", "AJ.dat");
+                n.LoadPlayerAJ(animationfileName);
+            }
+
+            mvp.draw.Add(n);
+            //modelContainer.Text = fileName;
+            mvp.Text = fileName;
 
             return mvp;
         }
@@ -1412,7 +1453,7 @@ namespace Smash_Forge
 
             if (fileName.EndsWith(".dat"))
             {
-                if (fileName.EndsWith("AJ.dat"))
+                /*if (fileName.EndsWith("AJ.dat"))
                 {
                     MessageBox.Show("This is animation; load with Animation -> Import");
 
@@ -1435,26 +1476,22 @@ namespace Smash_Forge
                     }
 
                     return;
-                }
-
-                DAT dat = new DAT();
-                dat.filename = fileName;
-                dat.Read(new FileData(fileName));
-
-                dat.PreRender();
-
-                HashMatch();
-
-                if (dat.collisions != null)//if the dat is a stage
+                }*/
+                byte[] data = File.ReadAllBytes(fileName);
+                if (dockPanel1.ActiveContent is ModelViewport)
                 {
-                    DatStageList stageList = new DatStageList(dat) { ShowHint = DockState.DockLeft };
-                    AddDockedControl(stageList);
-                }
+                    DialogResult dialogResult = MessageBox.Show("Import into active viewport?", "", MessageBoxButtons.YesNo);
 
-                mvp = new ModelViewport();
-                mvp.draw.Add(new ModelContainer() { DatMelee = dat });
-                mvp.Text = fileName;
-                AddDockedControl(mvp);
+                    if (dialogResult == DialogResult.Yes)
+                        OpenMeleeDat(data, fileName, fileName, (ModelViewport)dockPanel1.ActiveContent);
+
+                    if (dialogResult == DialogResult.No)
+                        OpenMeleeDat(data, fileName);
+                }
+                else
+                {
+                    OpenMeleeDat(data, fileName);
+                }
             }
 
             if (fileName.EndsWith(".lvd"))
@@ -1749,7 +1786,7 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0;*.bntx;*.szs;*.sbfres;*.sarc;*.pack;*.byaml;*.byml;*.kcl|" +
+                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0;*.bntx;*.szs;*.sbfres;*.sarc;*.pack;*.byaml;*.byml;*.kcl;*.dat|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +
@@ -2010,7 +2047,7 @@ namespace Smash_Forge
         private void reloadShadersToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Force the binaries to be regenerated.
-            ShaderTools.SetupShaders(true);
+            ShaderTools.SetUpShaders(true);
         }
 
         private void open3DSCharacterToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2314,9 +2351,7 @@ namespace Smash_Forge
 
         private void batchRenderNUDToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
-            if (mvp != null)
-                mvp.BatchRenderNudModels();
+
         }
 
         private void batchRenderBOTWBfresToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2324,6 +2359,31 @@ namespace Smash_Forge
             ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
             if (mvp != null)
                 mvp.BatchRenderBotwBfresModels();
+        }
+
+        private void nudToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filetypes.MaterialXmlBatchExport.BatchExportNudMaterialXml();
+
+        }
+
+        private void meleeDatToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Filetypes.MaterialXmlBatchExport.BatchExportMeleeDatMaterialXml();
+        }
+
+        private void nudToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
+            if (mvp != null)
+                mvp.BatchRenderNudModels();
+        }
+
+        private void meleeDatToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
+            if (mvp != null)
+                mvp.BatchRenderMeleeDatModels();
         }
     }
 }

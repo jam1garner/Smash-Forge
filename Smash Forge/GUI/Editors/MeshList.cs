@@ -1,19 +1,12 @@
+using Smash_Forge.Filetypes.Melee;
+using Smash_Forge.GUI.Menus;
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
-using System.Xml;
-using System.Globalization;
-using System.Diagnostics;
-using Smash_Forge.GUI.Menus;
-
 
 namespace Smash_Forge
 {
@@ -44,6 +37,8 @@ namespace Smash_Forge
             iconList.Images.Add("number", Properties.Resources.icon_number);
             iconList.Images.Add("nut", Properties.Resources.UVPattern);
             iconList.Images.Add("bfres", Properties.Resources.icon_bfres);
+            iconList.Images.Add("dat", Properties.Resources.icon_dat);
+            iconList.Images.Add("script", Properties.Resources.node_file);
             filesTreeView.ImageList = iconList;
 
             MainContextMenu = new ContextMenu();
@@ -122,7 +117,7 @@ namespace Smash_Forge
             numericUpDown1.Visible = false;
             label1.Visible = false;
             matchToNudButton.Visible = false;
-            Runtime.TargetVBN = null;
+            //Runtime.TargetVBN = null;
             if (e.Node is NUD.Mesh)
             {
                 //Since we are changing value but we don't want the entire model order to swap,
@@ -149,6 +144,19 @@ namespace Smash_Forge
             if (filesTreeView.SelectedNode is BCH_Model)
             {
                 Runtime.TargetVBN = ((BCH_Model)e.Node).skeleton;
+            }
+            if (filesTreeView.SelectedNode is MeleeRootNode)
+            {
+                Runtime.TargetVBN = ((MeleeRootNode)e.Node).RenderBones;
+            }
+            if (filesTreeView.SelectedNode is MeleeJointAnimationNode)
+            {
+                ((ModelViewport)Parent).CurrentAnimation = ((MeleeJointAnimationNode)filesTreeView.SelectedNode).GetAnimation();
+            }
+
+            if (filesTreeView.SelectedNode is MeleeJointNode)
+            {
+                ((MeleeJointNode)e.Node).RenderBone.Selected = true;
             }
         }
 
@@ -1089,7 +1097,7 @@ namespace Smash_Forge
             n.UpdateRenderMeshes();
         }
 
-        private void selectColorToolStripMenuItem_Click(object sender, EventArgs e)
+        private void selectColorUtilstripMenuItem_Click(object sender, EventArgs e)
         {
             if (!(filesTreeView.SelectedNode is NUD.Polygon))
                 return;
@@ -1202,7 +1210,7 @@ namespace Smash_Forge
             n.UpdateRenderMeshes();
         }
 
-        private void selectColorToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void selectColorUtilstripMenuItem1_Click(object sender, EventArgs e)
         {
             if (!(filesTreeView.SelectedNode is NUD.Mesh))
                 return;
@@ -1413,7 +1421,7 @@ namespace Smash_Forge
             n.UpdateRenderMeshes();
         }
 
-        private void selectColorToolStripMenuItem2_Click(object sender, EventArgs e)
+        private void selectColorUtilstripMenuItem2_Click(object sender, EventArgs e)
         {
             if (!(filesTreeView.SelectedNode is NUD))
                 return;
@@ -1642,7 +1650,7 @@ namespace Smash_Forge
 
         }
 
-        private void setColorToolStripMenuItem_Click(object sender, EventArgs e)
+        private void setColorUtilstripMenuItem_Click(object sender, EventArgs e)
         {
             if (!(filesTreeView.SelectedNode is BFRES.Mesh))
                 return;

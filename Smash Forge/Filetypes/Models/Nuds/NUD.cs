@@ -2,7 +2,7 @@
 using OpenTK.Graphics.OpenGL;
 using SALT.Graphics;
 using SFGraphics.Cameras;
-using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.BufferObjects;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.Utils;
@@ -276,7 +276,7 @@ namespace Smash_Forge
 
             // Draw NUD bounding box. 
             GL.Color4(Color.GhostWhite);
-            RenderTools.DrawCube(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], true);
+            ShapeDrawing.DrawCube(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], true);
 
             // Draw all the mesh bounding boxes. Selected: White. Deselected: Orange.
             foreach (Mesh mesh in Nodes)
@@ -292,11 +292,11 @@ namespace Smash_Forge
                     {
                         // Use the center of the bone as the bounding box center for NSC meshes. 
                         Vector3 center = ((ModelContainer)Parent).VBN.bones[mesh.singlebind].pos;
-                        RenderTools.DrawCube(center, mesh.boundingSphere[3], true);
+                        ShapeDrawing.DrawCube(center, mesh.boundingSphere[3], true);
                     }
                     else
                     {
-                        RenderTools.DrawCube(new Vector3(mesh.boundingSphere[0], mesh.boundingSphere[1], mesh.boundingSphere[2]), mesh.boundingSphere[3], true);
+                        ShapeDrawing.DrawCube(new Vector3(mesh.boundingSphere[0], mesh.boundingSphere[1], mesh.boundingSphere[2]), mesh.boundingSphere[3], true);
                     }
                 }
             }
@@ -534,7 +534,7 @@ namespace Smash_Forge
             shader.SetVector3("cameraPosition", camera.Position);
             shader.SetFloat("zBufferOffset", material.zBufferOffset);
             shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
-            shader.SetVector3("colorId", ColorTools.Vector4FromColor(Color.FromArgb(id)).Xyz);
+            shader.SetVector3("colorId", ColorUtils.Vector4FromColor(Color.FromArgb(id)).Xyz);
             shader.SetBoolToInt("drawId", drawId);
 
             // The fragment alpha is set to 1 when alpha blending/testing aren't used.
@@ -605,7 +605,7 @@ namespace Smash_Forge
             if (lightSetNumber >= 0 && lightSetNumber <= maxLightSet)
             {
                 Color color = lightSetColorByIndex[lightSetNumber];
-                shader.SetVector3("lightSetColor", ColorTools.Vector4FromColor(color).Xyz);
+                shader.SetVector3("lightSetColor", ColorUtils.Vector4FromColor(color).Xyz);
             }
         }
 

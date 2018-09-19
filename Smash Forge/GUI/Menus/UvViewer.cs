@@ -58,7 +58,7 @@ namespace Smash_Forge.GUI.Menus
 
             GL.Viewport(glControl1.ClientRectangle);
             // Draw darker to make the UVs visible.
-            ScreenDrawing.DrawTexturedQuad(RenderTools.uvTestPattern.Id, 0.5f, screenTriangle);
+            ScreenDrawing.DrawTexturedQuad(RenderTools.uvTestPattern, 0.5f, screenTriangle);
 
             DrawPolygonUvs();
 

@@ -15,6 +15,27 @@ namespace Smash_Forge
         public UInt32 boneType;
         public UInt32 boneRotationType;
         public bool IsInverted = true;
+        public bool Selected
+        {
+            get
+            {
+                return _selected;
+            }
+            set
+            {
+                if (value)
+                {
+                    foreach (Bone b in vbnParent.bones)
+                    {
+                        b.Selected = false;
+                    }
+                    _selected = true;
+                }
+                else
+                    _selected = value;
+            }
+        }
+        private bool _selected = false;
 
         public enum BoneType
         {
@@ -99,7 +120,7 @@ namespace Smash_Forge
         {
             Vector3 pos_c = Vector3.TransformPosition(Vector3.Zero, transform);
             // first calcuate the point and draw a point
-            if (IsSelected)
+            if (IsSelected || Selected)
             {
                 /*GL.Color3(Color.Red);
                 RenderTools.drawCircleOutline(pos_c, 2f, 30, Matrix4.CreateRotationX(0));
@@ -112,7 +133,7 @@ namespace Smash_Forge
             else
                 GL.Color3(Color.GreenYellow);
 
-            Rendering.RenderTools.DrawCube(pos_c, Runtime.renderBoneNodeSize);
+            Rendering.ShapeDrawing.DrawCube(pos_c, Runtime.renderBoneNodeSize);
 
             // now draw line between parent
             GL.Color3(Color.LightBlue);
@@ -291,7 +312,7 @@ namespace Smash_Forge
 
         #region Events
 
-        BoneTreePanel Editor;
+        public BoneTreePanel Editor;
 
         private void OpenEditor(object sender, EventArgs args)
         {
@@ -875,6 +896,7 @@ namespace Smash_Forge
         public float[] f = null;
         public Matrix4[] bonemat = { };
         public Matrix4[] bonematIT = { };
+        public Matrix4[] bonematNoInv = { };
 
         public Matrix4[] GetShaderMatrices()
         {
@@ -882,15 +904,24 @@ namespace Smash_Forge
             {
                 Updated = false;
                 if (bonemat.Length != bones.Count)
+                {
                     bonemat = new Matrix4[bones.Count];
+                    bonematNoInv = new Matrix4[bones.Count];
+                }
 
                 for (int i = 0; i < bones.Count; i++)
                 {
                      bonemat[i] = bones[i].invert * bones[i].transform;
+                    bonematNoInv[i] = bones[i].transform;
                 }
             }
 
             return bonemat;
+        }
+
+        public Matrix4[] GetShaderMatricesNoInverse()
+        {
+            return bonematNoInv;
         }
 
         private static string charsToString(char[] c)

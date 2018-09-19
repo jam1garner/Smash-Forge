@@ -183,7 +183,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             SetRenderModeTextureUniforms(shader);
 
             // This is necessary to prevent some models from disappearing. 
-            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex.Id);
+            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex);
 
             // The order of the textures in the following section is critical. 
             int textureUnitIndexOffset = 0;
@@ -234,7 +234,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             SetRenderModeTextureUniforms(shader);
 
             // This is necessary to prevent some models from disappearing. 
-            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex.Id);
+            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex);
 
             // The material shader just uses predefined textures from the Resources folder.
             NUD.MatTexture diffuse = new NUD.MatTexture((int)NudEnums.DummyTexture.DummyRamp);
@@ -349,23 +349,23 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             }
         }
 
-        public static void SetTextureUniformsToDefaultTexture(Shader shader, int texture)
+        public static void SetTextureUniformsToDefaultTexture(Shader shader, Texture texture)
         {
-            shader.SetTexture("dif", texture, TextureTarget.Texture2D, 0);
-            shader.SetTexture("dif2", texture, TextureTarget.Texture2D, 0);
-            shader.SetTexture("normalMap", texture, TextureTarget.Texture2D, 0);
-            shader.SetTexture("cube", texture, TextureTarget.Texture2D, 2);
-            shader.SetTexture("stagecube", texture, TextureTarget.Texture2D, 2);
-            shader.SetTexture("spheremap", texture, TextureTarget.Texture2D, 0);
-            shader.SetTexture("ao", texture, TextureTarget.Texture2D, 0);
-            shader.SetTexture("ramp", texture, TextureTarget.Texture2D, 0);
+            shader.SetTexture("dif", texture, 0);
+            shader.SetTexture("dif2", texture, 0);
+            shader.SetTexture("normalMap", texture, 0);
+            shader.SetTexture("cube", RenderTools.dummyTextures[NudEnums.DummyTexture.StageMapHigh], 2);
+            shader.SetTexture("stagecube", RenderTools.dummyTextures[NudEnums.DummyTexture.StageMapHigh], 2);
+            shader.SetTexture("spheremap", texture, 0);
+            shader.SetTexture("ao", texture, 0);
+            shader.SetTexture("ramp", texture, 0);
         }
 
         public static void SetRenderModeTextureUniforms(Shader shader)
         {
-            shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern.Id, TextureTarget.Texture2D, 10);
-            shader.SetTexture("weightRamp1", RenderTools.boneWeightGradient.Id, TextureTarget.Texture2D, 11);
-            shader.SetTexture("weightRamp2", RenderTools.boneWeightGradient2.Id, TextureTarget.Texture2D, 12);
+            shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern, 10);
+            shader.SetTexture("weightRamp1", RenderTools.boneWeightGradient, 11);
+            shader.SetTexture("weightRamp2", RenderTools.boneWeightGradient2, 12);
         }
 
         public static void SetHasTextureUniforms(Shader shader, NUD.Material mat)
