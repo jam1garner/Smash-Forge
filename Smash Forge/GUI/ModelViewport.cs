@@ -247,7 +247,6 @@ namespace Smash_Forge
         public ModelViewport()
         {
             InitializeComponent();
-            camera = new ForgePerspCamera();
             FilePath = "";
             Text = "Model Viewport";
 
@@ -273,7 +272,7 @@ namespace Smash_Forge
             byamlEditor.MaximumSize = new Size(300, 2000);
             AddControl(byamlEditor);
 
-            // This selection mode is the last annoying mode for now.
+            // This selection mode is the least annoying mode for now.
             // It doesn't really do anything.
             modeBone.Checked = true;
             modeMesh.Checked = false;

@@ -57,7 +57,7 @@ namespace Smash_Forge.Rendering
             UpdateMatrices();
         }
 
-        protected void UpdateLastMousePosition()
+        private void UpdateLastMousePosition()
         {
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;
