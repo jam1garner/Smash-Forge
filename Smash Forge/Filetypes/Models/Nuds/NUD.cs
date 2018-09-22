@@ -499,7 +499,7 @@ namespace Smash_Forge
 
         private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, bool drawId = false)
         {
-            if (p.vertexIndices.Count <= 3)
+            if (p.vertexIndices.Count < 3)
                 return;
 
             Material material = p.materials[0];
