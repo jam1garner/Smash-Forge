@@ -700,9 +700,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Cameras\ForgePerspCamera.cs" />
     <Compile Include="Rendering\Drawing\MaterialPreviewRendering.cs" />
     <Compile Include="Rendering\Drawing\NudMatSphereDrawing.cs" />
-    <Compile Include="Rendering\ForgeCamera.cs" />
+    <Compile Include="Rendering\Cameras\ForgeCamera.cs" />
+    <Compile Include="Rendering\Cameras\ForgeOrthoCamera.cs" />
     <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
     <Compile Include="Rendering\Lights\DirectionalLight.cs" />

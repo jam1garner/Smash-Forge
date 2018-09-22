@@ -4,6 +4,341 @@
         <name>SFGenericModel</name>
     </assembly>
     <members>
+        <member name="T:SFGenericModel.GenericModels.GenericModel">
+            <summary>
+            Allows for drawing a collection of renderable meshes.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.GenericModels.GenericModel.Meshes">
+            <summary>
+            The collection of meshes that 
+            will be rendered during <see cref="M:SFGenericModel.GenericModels.GenericModel.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)"/>.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.GenericModels.GenericModel.#ctor(System.Collections.Generic.List{SFGenericModel.GenericModels.HideableMesh})">
+            <summary>
+            Creates a model from <paramref name="meshes"/>.
+            </summary>
+            <param name="meshes">The meshes used for drawing</param>
+        </member>
+        <member name="M:SFGenericModel.GenericModels.GenericModel.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
+            <summary>
+            Draws all meshes.
+            </summary>
+            <param name="shader">The shader used for drawing</param>
+            <param name="camera">The camera used for drawing all objects in <see cref="P:SFGenericModel.GenericModels.GenericModel.Meshes"/></param>
+        </member>
+        <member name="M:SFGenericModel.GenericModels.GenericModel.DisplayAll">
+            <summary>
+            Enables rendering for all meshes.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.GenericModels.GenericModel.HideAll">
+            <summary>
+            Disables rendering for all meshes.
+            </summary>
+        </member>
+        <member name="T:SFGenericModel.GenericModels.HideableMesh">
+            <summary>
+            A container for a drawable mesh that supports toggling visibility.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.GenericModels.HideableMesh.Mesh">
+            <summary>
+            The mesh to render.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.GenericModels.HideableMesh.Visible">
+            <summary>
+            Indicates if the mesh should be rendered.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.GenericModels.HideableMesh.#ctor(SFGenericModel.IDrawableMesh,System.Boolean)">
+            <summary>
+            Creates a new instance with the specified mesh and visibility.
+            </summary>
+            <param name="mesh"></param>
+            <param name="visible"></param>
+        </member>
+        <member name="T:SFGenericModel.IDrawableMesh">
+            <summary>
+            Defines methods for drawing a mesh using programable shaders.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.IDrawableMesh.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
+            <summary>
+            Draws the geometry using the specified shader and camera.
+            </summary>
+            <param name="shader">The shader used for drawing</param>
+            <param name="camera">The camera used to transform vertex positions</param>
+        </member>
+        <member name="T:SFGenericModel.IndexedVertexData`1">
+            <summary>
+            Creates buffers for indexed vertex data using an interleaved buffer of 
+            vertex attributes.
+            </summary>
+            <typeparam name="T">The struct used for each vertex</typeparam>
+        </member>
+        <member name="P:SFGenericModel.IndexedVertexData`1.VertexSizeInBytes">
+            <summary>
+            The size of <typeparamref name="T"/> in bytes.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.IndexedVertexData`1.VertexCount">
+            <summary>
+            The number of vertices, which is equal to the number of vertex indices.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.IndexedVertexData`1.VertexBuffer">
+            <summary>
+            An interleaved buffer of vertex attributes.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.IndexedVertexData`1.VertexIndexBuffer">
+            <summary>
+            The buffer of vertex indices.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.IndexedVertexData`1.PrimitiveType">
+            <summary>
+            Determines how primitives will be constructed from the vertex data.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.IndexedVertexData`1.#ctor(System.Collections.Generic.List{`0},OpenTK.Graphics.OpenGL.PrimitiveType)">
+            <summary>
+            
+            </summary>
+            <param name="vertices"></param>
+            <param name="primitiveType"></param>
+        </member>
+        <member name="M:SFGenericModel.IndexedVertexData`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
+            <summary>
+            
+            </summary>
+            <param name="vertices"></param>
+            <param name="vertexIndices"></param>
+            <param name="primitiveType"></param>
+        </member>
+        <member name="T:SFGenericModel.RenderState.PolygonModeSettings">
+            <summary>
+            The polygon mode settings set before drawing.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.PolygonModeSettings.Default">
+            <summary>
+            The default polygon mode settings.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.PolygonModeSettings.materialFace">
+            <summary>
+            Determines what faces are effected.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.PolygonModeSettings.polygonMode">
+            <summary>
+            Determines how primitives are drawn.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.PolygonModeSettings.#ctor(OpenTK.Graphics.OpenGL.MaterialFace,OpenTK.Graphics.OpenGL.PolygonMode)">
+            <summary>
+            
+            </summary>
+            <param name="materialFace"></param>
+            <param name="polygonMode"></param>
+        </member>
+        <member name="T:SFGenericModel.RenderState.AlphaBlendSettings">
+            <summary>
+            The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaBlendSettings.Default">
+            <summary>
+            The default alpha blend settings.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaBlendSettings.enabled">
+            <summary>
+            Enables or disables alpha blending.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaBlendSettings.sourceFactor">
+            <summary>
+            The source color is multiplied by <see cref="F:SFGenericModel.RenderState.AlphaBlendSettings.sourceFactor"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaBlendSettings.destinationFactor">
+            <summary>
+            The destination color is multiplied by <see cref="F:SFGenericModel.RenderState.AlphaBlendSettings.destinationFactor"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaBlendSettings.blendingEquationRgb">
+            <summary>
+            The blending operation used for the RGB components.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaBlendSettings.blendingEquationAlpha">
+            <summary>
+            The blending operation used for only the alpha component.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.AlphaBlendSettings.#ctor(System.Boolean,OpenTK.Graphics.OpenGL.BlendingFactor,OpenTK.Graphics.OpenGL.BlendingFactor,OpenTK.Graphics.OpenGL.BlendEquationMode,OpenTK.Graphics.OpenGL.BlendEquationMode)">
+            <summary>
+            
+            </summary>
+            <param name="enabled"></param>
+            <param name="sourceFactor"></param>
+            <param name="destinationFactor"></param>
+            <param name="blendingEquationRgb"></param>
+            <param name="blendingEquationAlpha"></param>
+        </member>
+        <member name="T:SFGenericModel.RenderState.AlphaTestSettings">
+            <summary>
+            The alpha testing state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaTestSettings.Default">
+            <summary>
+            The default alpha test settings.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaTestSettings.enabled">
+            <summary>
+            Enables or disables alpha testing.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaTestSettings.alphaFunction">
+            <summary>
+            The function used to determine if a fragment passes the alpha test.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaTestSettings.referenceAlpha">
+            <summary>
+            The comparision value used for <see cref="F:SFGenericModel.RenderState.AlphaTestSettings.alphaFunction"/>.
+            <c>1.0</c> is opaque. <c>0.0</c> is transparent.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.AlphaTestSettings.#ctor(System.Boolean,OpenTK.Graphics.OpenGL.AlphaFunction,System.Single)">
+            <summary>
+            
+            </summary>
+            <param name="enabled"></param>
+            <param name="alphaFunction"></param>
+            <param name="referenceAlpha"></param>
+        </member>
+        <member name="T:SFGenericModel.RenderState.DepthTestSettings">
+            <summary>
+            The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.DepthTestSettings.Default">
+            <summary>
+            The default depth test settings.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.DepthTestSettings.enabled">
+            <summary>
+            Enables or disables depth testing.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.DepthTestSettings.depthMask">
+            <summary>
+            Enables writes to the depth buffer when true.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.DepthTestSettings.depthFunction">
+            <summary>
+            The function used to determine if a fragment passes the depth test.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.DepthTestSettings.#ctor(System.Boolean,System.Boolean,OpenTK.Graphics.OpenGL.DepthFunction)">
+            <summary>
+            
+            </summary>
+            <param name="enabled"></param>
+            <param name="depthMask"></param>
+            <param name="depthFunction"></param>
+        </member>
+        <member name="T:SFGenericModel.RenderState.FaceCullingSettings">
+            <summary>
+            The face culling state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.FaceCullingSettings.Default">
+            <summary>
+            The default face culling settings.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.FaceCullingSettings.enabled">
+            <summary>
+            Enables or disables face culling.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.FaceCullingSettings.cullFaceMode">
+            <summary>
+            Determines whether back and/or front faces will be culled.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.FaceCullingSettings.#ctor(System.Boolean,OpenTK.Graphics.OpenGL.CullFaceMode)">
+            <summary>
+            
+            </summary>
+            <param name="enabled"></param>
+            <param name="cullFaceMode"></param>
+        </member>
+        <member name="T:SFGenericModel.RenderState.RenderSettings">
+            <summary>
+            Stores the rendering state set before <see cref="T:SFGenericModel.GenericMesh`1"/> is drawn.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.polygonModeSettings">
+            <summary>
+            Controls the appearance of primitives.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.alphaBlendSettings">
+            <summary>
+            Controls blending effects and alpha transparency.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.alphaTestSettings">
+            <summary>
+            Controls discarding of fragments based on alpha.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.depthTestSettings">
+            <summary>
+            Controls discarding of fragments based on depth.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.RenderSettings.faceCullingSettings">
+            <summary>
+            Controls which faces are culled.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.RenderSettings.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.RenderSettings.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:SFGenericModel.RenderState.GLRenderSettings">
+            <summary>
+            Contains methods for updating OpenGL rendering state.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.GLRenderSettings.SetRenderSettings(SFGenericModel.RenderState.RenderSettings)">
+            <summary>
+            Updates the current OpenGL rendering state based on render settings
+            </summary>
+            <param name="renderSettings">The settings used to perform the update</param>
+        </member>
         <member name="T:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo">
             <summary>
             Stores information on how a vertex attribute will be displayed.
@@ -158,176 +493,6 @@
             <param name="type"></param>
             <param name="valueCount"></param>
         </member>
-        <member name="T:SFGenericModel.RenderState.RenderSettings">
-            <summary>
-            Stores the rendering state set before <see cref="T:SFGenericModel.GenericMesh`1"/> is drawn.
-            </summary>
-        </member>
-        <member name="T:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings">
-            <summary>
-            The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.enabled">
-            <summary>
-            Enables or disables alpha blending.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.sourceFactor">
-            <summary>
-            The source color is multiplied by <see cref="F:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.sourceFactor"/>.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.destinationFactor">
-            <summary>
-            The destination color is multiplied by <see cref="F:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.destinationFactor"/>.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.blendingEquationRgb">
-            <summary>
-            The blending operation used for the RGB components.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.blendingEquationAlpha">
-            <summary>
-            The blending operation used for only the alpha component.
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.Equals(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings.GetHashCode">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings">
-            <summary>
-            The alpha testing state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings.enabled">
-            <summary>
-            Enables or disables alpha testing.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings.alphaFunction">
-            <summary>
-            The function used to determine if a fragment passes the alpha test.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings.referenceAlpha">
-            <summary>
-            The comparision value used for <see cref="F:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings.alphaFunction"/>.
-            <c>1.0</c> is opaque. <c>0.0</c> is transparent.
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings.Equals(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings.GetHashCode">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:SFGenericModel.RenderState.RenderSettings.DepthTestSettings">
-            <summary>
-            The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.DepthTestSettings.enabled">
-            <summary>
-            Enables or disables depth testing.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.DepthTestSettings.depthMask">
-            <summary>
-            Enables writes to the depth buffer when true.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.DepthTestSettings.depthFunction">
-            <summary>
-            The function used to determine if a fragment passes the depth test.
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.RenderState.RenderSettings.DepthTestSettings.Equals(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:SFGenericModel.RenderState.RenderSettings.DepthTestSettings.GetHashCode">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="T:SFGenericModel.RenderState.RenderSettings.FaceCullingSettings">
-            <summary>
-            The face culling state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.FaceCullingSettings.enabled">
-            <summary>
-            Enables or disables face culling.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.FaceCullingSettings.cullFaceMode">
-            <summary>
-            Determines whether back and/or front faces will be culled.
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.RenderState.RenderSettings.FaceCullingSettings.Equals(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
-        <member name="M:SFGenericModel.RenderState.RenderSettings.FaceCullingSettings.GetHashCode">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.alphaBlendSettings">
-            <summary>
-            Controls blending effects and alpha transparency.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.alphaTestSettings">
-            <summary>
-            Controls discarding of fragments based on alpha.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.depthTestSettings">
-            <summary>
-            Controls discarding of fragments based on depth.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.RenderState.RenderSettings.faceCullingSettings">
-            <summary>
-            Controls which faces are culled.
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.RenderState.RenderSettings.Equals(System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="obj"></param>
-            <returns></returns>
-        </member>
         <member name="T:SFGenericModel.Materials.GenericMaterial">
             <summary>
             Used to store uniform data for <see cref="T:SFGenericModel.GenericMesh`1"/>. 
@@ -337,9 +502,26 @@
             Avoid updating shader uniforms directly.
             </summary>
         </member>
+        <member name="P:SFGenericModel.Materials.GenericMaterial.InitialTextureUnit">
+            <summary>
+            Each texture uniform will be assigned to a unique index, starting with this value.
+            Defaults to <c>0</c>.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.#ctor">
+            <summary>
+            Creates an empty generic material.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.#ctor(System.Int32)">
+            <summary>
+            Creates an empty generic material.
+            </summary>
+            <param name="initialTextureUnit">The starting texture unit for texture uniforms</param>
+        </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddFloat(System.String,System.Single)">
             <summary>
-            
+            Adds a float uniform to the material.
             </summary>
             <param name="uniformName">The name of the uniform variable</param>
             <param name="value">The value to set for the uniform</param>
@@ -353,28 +535,35 @@
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddVector2(System.String,OpenTK.Vector2)">
             <summary>
-            
+            Adds a vec2 uniform to the material.
             </summary>
             <param name="uniformName">The name of the uniform variable</param>
             <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddVector3(System.String,OpenTK.Vector3)">
             <summary>
-            
+            Adds a vec3 uniform to the material.
             </summary>
             <param name="uniformName">The name of the uniform variable</param>
             <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddVector4(System.String,OpenTK.Vector4)">
             <summary>
-            
+            Adds a vec4 uniform to the material.
             </summary>
             <param name="uniformName">The name of the uniform variable</param>
             <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddMatrix4(System.String,OpenTK.Matrix4)">
             <summary>
-            
+            Adds a mat4 uniform to the material.
+            </summary>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.AddTexture(System.String,SFGraphics.GLObjects.Textures.Texture)">
+            <summary>
+            Adds a sampler uniform to the material.
             </summary>
             <param name="uniformName">The name of the uniform variable</param>
             <param name="value">The value to set for the uniform</param>
@@ -403,11 +592,6 @@
         <member name="F:SFGenericModel.GenericMesh`1.material">
             <summary>
             The collection of shader uniforms updated during drawing.
-            </summary>
-        </member>
-        <member name="P:SFGenericModel.GenericMesh`1.PrimitiveType">
-            <summary>
-            Determines how primitives will be constructed from the vertex data.
             </summary>
         </member>
         <member name="T:SFGenericModel.GenericMesh`1.InvalidAttribSetEventHandler">
@@ -481,17 +665,6 @@
             
             </summary>
             <param name="shader"></param>
-        </member>
-        <member name="T:SFGenericModel.Utils.GLRenderSettings">
-            <summary>
-            Contains methods for updating OpenGL rendering state.
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.Utils.GLRenderSettings.SetRenderSettings(SFGenericModel.RenderState.RenderSettings)">
-            <summary>
-            Updates the current OpenGL rendering state based on render settings
-            </summary>
-            <param name="renderSettings">The settings used to perform the update</param>
         </member>
         <member name="T:SFGenericModel.Utils.MeshBatchUtils">
             <summary>

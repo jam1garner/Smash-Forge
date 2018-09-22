@@ -7,39 +7,9 @@ using OpenTK;
 
 namespace Smash_Forge.Rendering
 {
-    public class ForgeCamera : SFGraphics.Cameras.Camera
+    class ForgePerspCamera : ForgeCamera
     {
-        // Previous mouse state.
-        private float mouseSLast = 0;
-        private float mouseYLast = 0;
-        private float mouseXLast = 0;
-
-        // Apply Forge's camera settings.
-        private float zoomSpeed = Runtime.zoomspeed;
-        private float zoomDistanceScale = 0.01f;
-        private float rotateYSpeed = 0.0125f;
-        private float rotateXSpeed = 0.005f;
-        private float zoomMultiplier = Runtime.zoomModifierScale;
-        private float scrollWheelZoomSpeed = 1.75f;
-        private float shiftZoomMultiplier = 2.5f;
-
-        public ForgeCamera()
-        {
-            NearClipPlane = 0.1f;
-        }
-
-        public void SetFromBone(Bone b)
-        {
-            Matrix4 Mat = b.transform.Inverted();
-            translationMatrix = Matrix4.CreateTranslation(Mat.ExtractTranslation());
-            rotationMatrix = Matrix4.CreateFromQuaternion(Mat.ExtractRotation());
-            perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(FovRadians, renderWidth / (float)renderHeight, 1.0f, FarClipPlane);
-
-            modelViewMatrix = Mat;
-            mvpMatrix = modelViewMatrix * perspectiveMatrix;
-        }
-
-        public void UpdateFromMouse()
+        public override void UpdateFromMouse()
         {
             try
             {
@@ -59,7 +29,8 @@ namespace Smash_Forge.Rendering
                     // Dragging up/down rotates around the x-axis.
                     float xAmount = (OpenTK.Input.Mouse.GetState().Y - mouseYLast);
                     float yAmount = OpenTK.Input.Mouse.GetState().X - mouseXLast;
-                    Rotate(xAmount * rotateXSpeed, yAmount * rotateYSpeed);
+                    RotationXRadians += xAmount * rotateXSpeed;
+                    RotationYRadians += yAmount * rotateYSpeed;
                 }
 
                 // Holding shift changes zoom speed.
@@ -76,18 +47,17 @@ namespace Smash_Forge.Rendering
                 // Scroll wheel zooms in or out.
                 float scrollZoomAmount = (mouseState.WheelPrecise - mouseSLast) * scrollWheelZoomSpeed;
                 Zoom(scrollZoomAmount * zoomAmount, true);
-
-                UpdateLastMousePosition();
             }
             catch (Exception)
             {
                 // RIP OpenTK...
             }
 
+            UpdateLastMousePosition();
             UpdateMatrices();
         }
 
-        private void UpdateLastMousePosition()
+        protected void UpdateLastMousePosition()
         {
             mouseXLast = OpenTK.Input.Mouse.GetState().X;
             mouseYLast = OpenTK.Input.Mouse.GetState().Y;

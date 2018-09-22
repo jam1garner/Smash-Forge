@@ -6,9 +6,12 @@
     <members>
         <member name="T:SFGraphics.Cameras.Camera">
             <summary>
-            A container for 4x4 camera matrices. The matrices can not be set directly.
-            To edit the translation matrix, the camera position should be changed, for example.
-            <para>Keyboard/mouse controls can be added by inheriting from this class and using the Pan(), Rotate(), Zoom() methods.</para>
+            A container for 4x4 matrices. The matrices can not be set directly.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.Cameras.Camera.DefaultPosition">
+            <summary>
+            The camera's initial position or position after <see cref="M:SFGraphics.Cameras.Camera.ResetToDefaultPosition"/>.
             </summary>
         </member>
         <member name="P:SFGraphics.Cameras.Camera.Position">
@@ -133,7 +136,7 @@
         </member>
         <member name="M:SFGraphics.Cameras.Camera.#ctor">
             <summary>
-            
+            Creates a new <see cref="T:SFGraphics.Cameras.Camera"/> located at <see cref="P:SFGraphics.Cameras.Camera.DefaultPosition"/>.
             </summary>
         </member>
         <member name="M:SFGraphics.Cameras.Camera.#ctor(OpenTK.Vector3,System.Single,System.Single,System.Int32,System.Int32)">
@@ -145,13 +148,6 @@
             <param name="rotY">The rotation around the y-axis in radians</param>
             <param name="renderWidth">The width of the viewport in pixels</param>
             <param name="renderHeight">The height of the viewport in pixels</param>
-        </member>
-        <member name="M:SFGraphics.Cameras.Camera.Rotate(System.Single,System.Single)">
-            <summary>
-            Rotates the camera around the x and y axes by the specified amounts.
-            </summary>
-            <param name="xAmount">Amount to rotate around the x-axis in radians</param>
-            <param name="yAmount">Amount to rotate around the y-axis in radians</param>
         </member>
         <member name="M:SFGraphics.Cameras.Camera.Pan(System.Single,System.Single,System.Boolean)">
             <summary>
@@ -176,6 +172,31 @@
             Updates the <see cref="P:SFGraphics.Cameras.Camera.TranslationMatrix"/>, <see cref="P:SFGraphics.Cameras.Camera.RotationMatrix"/>, 
             <see cref="P:SFGraphics.Cameras.Camera.PerspectiveMatrix"/>, <see cref="P:SFGraphics.Cameras.Camera.ModelViewMatrix"/>, 
             and <see cref="P:SFGraphics.Cameras.Camera.MvpMatrix"/>.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.UpdateTranslationMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.UpdateRotationMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.UpdatePerspectiveMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.UpdateModelViewMatrix">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Cameras.Camera.UpdateMvpMatrix">
+            <summary>
+            
             </summary>
         </member>
         <member name="M:SFGraphics.Cameras.Camera.ResetToDefaultPosition">
@@ -866,6 +887,12 @@
             <param name="binaryFormat">The format of the compiled binary</param>
             <param name="programBinary">The compiled program binary</param>
         </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetShaderSources">
+            <summary>
+            Gets the shader source for all attached shaders.
+            </summary>
+            <returns>An array of shader sources for all attached shaders</returns>
+        </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetUniformLocation(System.String)">
             <summary>
             Gets the uniform's location from locations stored after linking.
@@ -1160,17 +1187,7 @@
         <member name="T:SFGraphics.GLObjects.Textures.DepthTexture">
             <summary>
             A simple texture for storing depth information. 
-            The texture can be attached to a <see cref="!:Framebuffer"/> object for shadow mapping and other effects.
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.Textures.DepthTexture.Width">
-            <summary>
-            The width of the texture in pixels.
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.Textures.DepthTexture.Height">
-            <summary>
-            The height of the texture in pixels.
+            The texture can be attached to a <see cref="T:SFGraphics.GLObjects.Framebuffers.Framebuffer"/> object for shadow mapping and other effects.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.DepthTexture.#ctor(System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat)">
@@ -1185,9 +1202,17 @@
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.Texture">
             <summary>
-            Encapsulates the state for an OpenGL texture object. To support texture types other than 
-            <see cref="T:SFGraphics.GLObjects.Textures.Texture2D"/> and <see cref="T:SFGraphics.GLObjects.Textures.TextureCubeMap"/>, inherit from this class
-            and add the necessary additional methods. 
+            Encapsulates an OpenGL texture object. 
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.Texture.Width">
+            <summary>
+            The width of the base mip level in pixels.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.Texture.Height">
+            <summary>
+            The height of the base mip level in pixels.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Textures.Texture.TextureTarget">
@@ -1197,32 +1222,37 @@
         </member>
         <member name="P:SFGraphics.GLObjects.Textures.Texture.MinFilter">
             <summary>
-            Binds and updates the TextureParameter when set.
+            The algorithm used when scaling the texture below its actual size.
+            Defaults to LinearMipMapLinear.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Textures.Texture.MagFilter">
             <summary>
-            Binds and updates the TextureParameter when set.
+            The algorithm used when scaling the texture above its actual size.
+            Defaults to linear.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Textures.Texture.TextureWrapS">
             <summary>
-            Binds and updates the TextureParameter when set.
+            The wrap mode for the first component of texture coordinates.
+            Defaults to ClampToEdge.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Textures.Texture.TextureWrapT">
             <summary>
-            Binds and updates the TextureParameter when set.
+            The wrap mode for the second component of texture coordinates.
+            Defaults to ClampToEdge.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Textures.Texture.TextureWrapR">
             <summary>
-            Binds and updates the TextureParameter when set.
+            The wrap mode for the third component of texture coordinates.
+            Defaults to ClampToEdge.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture.#ctor(OpenTK.Graphics.OpenGL.TextureTarget)">
             <summary>
-            Creates an empty texture of the specified target and internal format.
+            Creates an empty texture of the specified target.
             </summary>
             <param name="textureTarget">The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound.</param>
         </member>
@@ -1234,16 +1264,6 @@
         <member name="T:SFGraphics.GLObjects.Textures.Texture2D">
             <summary>
             A TextureTarget.Texture2D texture that supports mipmaps.
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.Textures.Texture2D.Width">
-            <summary>
-            The width of the base mip level in pixels.
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.Textures.Texture2D.Height">
-            <summary>
-            The height of the base mip level in pixels.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.#ctor">

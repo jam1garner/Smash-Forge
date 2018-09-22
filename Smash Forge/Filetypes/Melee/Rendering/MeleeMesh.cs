@@ -5,6 +5,7 @@ using SFGenericModel;
 using System.Collections.Generic;
 using SFGenericModel.VertexAttributes;
 using Smash_Forge.Filetypes.Melee.Utils;
+using SFGenericModel.RenderState;
 
 namespace Smash_Forge.Filetypes.Melee.Rendering
 {
@@ -26,8 +27,7 @@ namespace Smash_Forge.Filetypes.Melee.Rendering
             : base(vertices, vertexIndices, primitiveType)
         {
             // TODO: Why is this flipped?
-            renderSettings.faceCullingSettings.enabled = false;
-            renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Front;
+            renderSettings.faceCullingSettings = new FaceCullingSettings(false, CullFaceMode.Front);
         }
 
         public void SetRenderSettings(DatDOBJ datDOBJ)
@@ -49,12 +49,16 @@ namespace Smash_Forge.Filetypes.Melee.Rendering
 
         private void SetAlphaTesting(DatDOBJ datDOBJ)
         {
-            renderSettings.alphaTestSettings.enabled = (datDOBJ.Material.Flags & (uint)MeleeDatEnums.MiscFlags.AlphaTest) > 0;
+            bool enabled = (datDOBJ.Material.Flags & (uint)MeleeDatEnums.MiscFlags.AlphaTest) > 0;
+            float refAlpha = AlphaTestSettings.Default.referenceAlpha;
+            AlphaFunction alphaFunction = AlphaTestSettings.Default.alphaFunction;
             if (datDOBJ?.Material.PixelProcessing != null)
             {
-                renderSettings.alphaTestSettings.referenceAlpha = datDOBJ.Material.PixelProcessing.AlphaRef0 / 255.0f;
-                renderSettings.alphaTestSettings.alphaFunction = MeleeDatToOpenGL.GetAlphaFunction(datDOBJ.Material.PixelProcessing.AlphaComp0);
+                refAlpha = datDOBJ.Material.PixelProcessing.AlphaRef0 / 255.0f;
+                alphaFunction = MeleeDatToOpenGL.GetAlphaFunction(datDOBJ.Material.PixelProcessing.AlphaComp0);
             }
+
+            renderSettings.alphaTestSettings = new AlphaTestSettings(enabled, alphaFunction, refAlpha);
         }
 
         public override List<VertexAttributeInfo> GetVertexAttributes()

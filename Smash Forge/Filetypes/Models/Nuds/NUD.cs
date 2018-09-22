@@ -635,10 +635,10 @@ namespace Smash_Forge
             // Override the model color with white in the shader.
             shader.SetInt("drawSelection", 1);
 
-            GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.LineWidth(2.0f);
+            p.renderMesh.SetWireFrame(true);
             p.renderMesh.Draw(shader, camera);
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            p.renderMesh.SetWireFrame(false);
 
             shader.SetInt("drawSelection", 0);
 

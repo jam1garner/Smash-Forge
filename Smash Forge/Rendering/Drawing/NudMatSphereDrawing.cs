@@ -21,7 +21,7 @@ namespace Smash_Forge.Rendering
         private static Texture2D sphereTanTex;
         private static Texture2D sphereBitanTex;
 
-        private static ForgeCamera nudSphereCamera = new ForgeCamera();
+        private static ForgeCamera nudSphereCamera = new ForgePerspCamera();
 
         public static void DrawNudMaterialSphere(Shader shader, NUD.Material material, Mesh3D screenTriangle, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {

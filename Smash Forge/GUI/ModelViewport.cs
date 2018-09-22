@@ -28,7 +28,7 @@ namespace Smash_Forge
     public partial class ModelViewport : EditorBase
     {
         // View controls
-        public ForgeCamera camera = new ForgeCamera();
+        public ForgeCamera camera = new ForgePerspCamera();
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
         // Rendering Stuff
@@ -247,7 +247,7 @@ namespace Smash_Forge
         public ModelViewport()
         {
             InitializeComponent();
-            camera = new ForgeCamera();
+            camera = new ForgePerspCamera();
             FilePath = "";
             Text = "Model Viewport";
 
