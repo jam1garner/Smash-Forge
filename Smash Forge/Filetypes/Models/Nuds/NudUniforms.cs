@@ -13,16 +13,13 @@ namespace Smash_Forge.Filetypes.Models.Nuds
 {
     public static class NudUniforms
     {
-        // Default bind location for dummy textures.
-        private static readonly TextureUnit dummyTextureUnit = TextureUnit.Texture20;
-        private static readonly int dummyTextureUnitOffset = 20;
-
         // Default bind location for NUT textures.
-        private static readonly int nutTextureUnitOffset = 3;
-        private static readonly TextureUnit nutTextureUnit = TextureUnit.Texture3;
+        private static readonly int nutTextureUnitOffset = 0;
 
         public static void SetMaterialPropertyUniforms(GenericMaterial genericMaterial, NUD.Material mat)
         {
+            // TODO: Use a dictionary for this.
+
             // UV samplers
             MatPropertyShaderUniform(genericMaterial, mat, "NU_colorSamplerUV", 1, 1, 0, 0);
             MatPropertyShaderUniform(genericMaterial, mat, "NU_colorSampler2UV", 1, 1, 0, 0);
@@ -124,16 +121,11 @@ namespace Smash_Forge.Filetypes.Models.Nuds
                 Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
         }
 
-        public static int BindTexture(NUD.MatTexture matTexture, int hash, int loc, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
+        public static Texture GetTexture(int hash, NUD.MatTexture matTexture, int loc, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             if (Enum.IsDefined(typeof(NudEnums.DummyTexture), hash))
             {
-                return BindDummyTexture(loc, dummyTextures[(NudEnums.DummyTexture)hash]);
-            }
-            else
-            {
-                GL.ActiveTexture(nutTextureUnit + loc);
-                GL.BindTexture(TextureTarget.Texture2D, RenderTools.defaultTex.Id);
+                return dummyTextures[(NudEnums.DummyTexture)hash];
             }
 
             // Look through all loaded textures and not just the current modelcontainer.
@@ -142,32 +134,26 @@ namespace Smash_Forge.Filetypes.Models.Nuds
                 Texture texture;
                 if (nut.glTexByHashId.TryGetValue(hash, out texture))
                 {
-                    BindNutTexture(matTexture, texture);
-                    break;
+                    SetTextureParameters(texture, matTexture);
+                    return texture;
                 }
             }
 
-            return nutTextureUnitOffset + loc;
+            return RenderTools.defaultTex;
         }
 
-        public static int BindDummyTexture(int loc, Texture texture)
+        private static void SetTextureParameters(Texture target, NUD.MatTexture matTexture)
         {
-            GL.ActiveTexture(dummyTextureUnit + loc);
-            texture.Bind();
-            return dummyTextureUnitOffset + loc;
-        }
-
-        private static void BindNutTexture(NUD.MatTexture matTexture, Texture texture)
-        {
+            // TODO: Use a sampler object.
             // Set the texture's parameters based on the material settings.
-            texture.Bind();
-            texture.TextureWrapS = NudEnums.wrapModeByMatValue[matTexture.wrapModeS];
-            texture.TextureWrapT = NudEnums.wrapModeByMatValue[matTexture.wrapModeT];
-            texture.MinFilter = NudEnums.minFilterByMatValue[matTexture.minFilter];
-            texture.MagFilter = NudEnums.magFilterByMatValue[matTexture.magFilter];
+            target.TextureWrapS = NudEnums.wrapModeByMatValue[matTexture.wrapModeS];
+            target.TextureWrapT = NudEnums.wrapModeByMatValue[matTexture.wrapModeT];
+            target.MinFilter = NudEnums.minFilterByMatValue[matTexture.minFilter];
+            target.MagFilter = NudEnums.magFilterByMatValue[matTexture.magFilter];
 
-            if (OpenGLExtensions.IsAvailable("GL_EXT_texture_filter_anisotropic") && (texture is Texture2D))
+            if (OpenGLExtensions.IsAvailable("GL_EXT_texture_filter_anisotropic") && (target is Texture2D))
             {
+                target.Bind();
                 TextureParameterName anisotropy = (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt;
                 GL.TexParameter(TextureTarget.Texture2D, anisotropy, 0.0f);
                 if (matTexture.mipDetail == 0x4 || matTexture.mipDetail == 0x6)
@@ -175,57 +161,45 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             }
         }
 
-
-
         public static void SetTextureUniforms(Shader shader, NUD.Material mat, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             SetHasTextureUniforms(shader, mat);
             SetRenderModeTextureUniforms(shader);
 
-            // This is necessary to prevent some models from disappearing. 
-            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex);
+            int textureIndex = 0;
 
-            // The order of the textures in the following section is critical. 
-            int textureUnitIndexOffset = 0;
-            if (mat.hasDiffuse && textureUnitIndexOffset < mat.textures.Count)
-            {
-                int hash = mat.textures[textureUnitIndexOffset].hash;
-                if (mat.displayTexId != -1) hash = mat.displayTexId;
-                GL.Uniform1(shader.GetUniformLocation("dif"), BindTexture(mat.textures[textureUnitIndexOffset], hash, textureUnitIndexOffset, RenderTools.dummyTextures));
-                mat.diffuse1ID = mat.textures[textureUnitIndexOffset].hash;
-                textureUnitIndexOffset++;
-            }
+            // The type of texture can be partially determined by texture order.
+            GenericMaterial textures = new GenericMaterial(nutTextureUnitOffset);
+            textures.AddTexture("dif", GetTextureAndSetTexId(mat, mat.hasDiffuse, "dif", ref textureIndex, ref mat.diffuse1ID, dummyTextures));
+            textures.AddTexture("spheremap", GetTextureAndSetTexId(mat, mat.hasSphereMap, "spheremap", ref textureIndex, ref mat.sphereMapID, dummyTextures));
+            textures.AddTexture("dif2", GetTextureAndSetTexId(mat, mat.hasDiffuse2, "dif2", ref textureIndex, ref mat.diffuse2ID, dummyTextures));
+            textures.AddTexture("dif3", GetTextureAndSetTexId(mat, mat.hasDiffuse3, "dif3", ref textureIndex, ref mat.diffuse3ID, dummyTextures));
+            textures.AddTexture("stagecube", GetTextureAndSetTexId(mat, mat.hasStageMap, "stagecube", ref textureIndex, ref mat.stageMapID, dummyTextures));
+            textures.AddTexture("cube", GetTextureAndSetTexId(mat, mat.hasCubeMap, "cube", ref textureIndex, ref mat.cubeMapID, dummyTextures));
+            textures.AddTexture("ao", GetTextureAndSetTexId(mat, mat.hasAoMap, "ao", ref textureIndex, ref mat.aoMapID, dummyTextures));
+            textures.AddTexture("normalMap", GetTextureAndSetTexId(mat, mat.hasNormalMap, "normalMap", ref textureIndex, ref mat.normalID, dummyTextures));
+            textures.AddTexture("ramp", GetTextureAndSetTexId(mat, mat.hasRamp, "ramp", ref textureIndex, ref mat.rampID, dummyTextures));
+            textures.AddTexture("dummyRamp", GetTextureAndSetTexId(mat, mat.hasDummyRamp, "dummyRamp", ref textureIndex, ref mat.dummyRampID, dummyTextures));
 
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasSphereMap, "spheremap", ref textureUnitIndexOffset, ref mat.sphereMapID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse2, "dif2", ref textureUnitIndexOffset, ref mat.diffuse2ID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasDiffuse3, "dif3", ref textureUnitIndexOffset, ref mat.diffuse3ID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasStageMap, "stagecube", ref textureUnitIndexOffset, ref mat.stageMapID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasCubeMap, "cube", ref textureUnitIndexOffset, ref mat.cubeMapID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasAoMap, "ao", ref textureUnitIndexOffset, ref mat.aoMapID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasNormalMap, "normalMap", ref textureUnitIndexOffset, ref mat.normalID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasRamp, "ramp", ref textureUnitIndexOffset, ref mat.rampID, dummyTextures);
-            SetTextureUniformAndSetTexId(shader, mat, mat.hasDummyRamp, "dummyRamp", ref textureUnitIndexOffset, ref mat.dummyRampID, dummyTextures);
+            textures.SetShaderUniforms(shader);
         }
 
-
-        public static void SetTextureUniformAndSetTexId(Shader shader, NUD.Material mat, bool hasTex, string name, ref int textureIndex, ref int texIdForCurrentTextureType, 
-            Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
+        public static Texture GetTextureAndSetTexId(NUD.Material mat, bool hasTex, string name, ref int textureIndex, ref int texIdForCurrentTextureType, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
-            // Bind the texture and create the uniform if the material has the right textures and flags. 
+            Texture texture;
             if (hasTex && textureIndex < mat.textures.Count)
             {
-                // Find the index for the shader uniform.
-                // Bind the texture to a texture unit and then find where it was bound.
-                int uniformLocation = shader.GetUniformLocation(name);
-                int textureUnit = BindTexture(mat.textures[textureIndex], mat.textures[textureIndex].hash, textureIndex, dummyTextures);
-                GL.Uniform1(uniformLocation, textureUnit);
-
                 // We won't know what type a texture is used for until we iterate through the textures.
                 texIdForCurrentTextureType = mat.textures[textureIndex].hash;
-
-                // Move on to the next texture.
+                texture = GetTexture(mat.textures[textureIndex].hash, mat.textures[textureIndex], textureIndex, dummyTextures);
                 textureIndex++;
             }
+            else
+            {
+                texture = RenderTools.defaultTex;
+            }
+
+            return texture;
         }
 
         public static void SetTextureUniformsNudMatSphere(Shader shader, NUD.Material mat, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
@@ -233,132 +207,39 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             SetHasTextureUniforms(shader, mat);
             SetRenderModeTextureUniforms(shader);
 
-            // This is necessary to prevent some models from disappearing. 
-            SetTextureUniformsToDefaultTexture(shader, RenderTools.defaultTex);
-
             // The material shader just uses predefined textures from the Resources folder.
             NUD.MatTexture diffuse = new NUD.MatTexture((int)NudEnums.DummyTexture.DummyRamp);
             NUD.MatTexture cubeMapHigh = new NUD.MatTexture((int)NudEnums.DummyTexture.StageMapHigh);
 
-            // The order of the textures in the following section is critical. 
-            int textureUnitIndexOffset = 0;
-            if (mat.hasDiffuse && textureUnitIndexOffset < mat.textures.Count)
-            {
-                GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
-                GL.BindTexture(TextureTarget.Texture2D, NudMatSphereDrawing.sphereDifTex.Id);
-                GL.Uniform1(shader.GetUniformLocation("dif"), nutTextureUnitOffset + textureUnitIndexOffset);
-                textureUnitIndexOffset++;
-            }
+            SetHasTextureUniforms(shader, mat);
+            SetRenderModeTextureUniforms(shader);
 
-            // Jigglypuff has weird eyes.
-            if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
-            {
-                if (mat.hasDiffuse2)
-                {
-                    GL.Uniform1(shader.GetUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
+            // The type of texture can be partially determined by texture order.
+            GenericMaterial textures = new GenericMaterial(nutTextureUnitOffset);
+            textures.AddTexture("dif", GetSphereTexture("dif", dummyTextures));
+            textures.AddTexture("spheremap", GetSphereTexture("spheremap", dummyTextures));
+            textures.AddTexture("dif2", GetSphereTexture("dif2", dummyTextures));
+            textures.AddTexture("dif3", GetSphereTexture("dif3", dummyTextures));
+            textures.AddTexture("stagecube", GetSphereTexture("stagecube", dummyTextures));
+            textures.AddTexture("cube", GetSphereTexture("cube", dummyTextures));
+            textures.AddTexture("ao", GetSphereTexture("ao", dummyTextures));
+            textures.AddTexture("normalMap", GetSphereTexture("normalMap", dummyTextures));
+            textures.AddTexture("ramp", GetSphereTexture("ramp", dummyTextures));
+            textures.AddTexture("dummyRamp", GetSphereTexture("dummyRamp", dummyTextures));
 
-                if (mat.hasNormalMap)
-                {
-                    GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
-                    GL.BindTexture(TextureTarget.Texture2D, NudMatSphereDrawing.sphereNrmMapTex.Id);
-                    GL.Uniform1(shader.GetUniformLocation("normalMap"), nutTextureUnitOffset + textureUnitIndexOffset);
-                    textureUnitIndexOffset++;
-                }
-            }
-            else if ((mat.Flags & 0xFFFFFFFF) == 0x92F01101)
-            {
-                // Final smash mats and Mega Man's eyes.
-                if (mat.hasDiffuse2)
-                {
-                    GL.Uniform1(shader.GetUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasRamp)
-                {
-                    GL.Uniform1(shader.GetUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasDummyRamp)
-                {
-                    GL.Uniform1(shader.GetUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-            }
-            else
-            {
-                if (mat.hasSphereMap)
-                {
-                    GL.Uniform1(shader.GetUniformLocation("spheremap"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasDiffuse2)
-                {
-                    GL.Uniform1(shader.GetUniformLocation("dif2"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasDiffuse3)
-                {
-                    GL.Uniform1(shader.GetUniformLocation("dif3"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                // The stage cube maps already use the appropriate dummy texture.
-                if (mat.hasStageMap)
-                {
-                    GL.Uniform1(shader.GetUniformLocation("stagecube"), BindTexture(mat.textures[textureUnitIndexOffset], mat.stageMapID, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasCubeMap)
-                {
-                    GL.Uniform1(shader.GetUniformLocation("cube"), BindTexture(cubeMapHigh, cubeMapHigh.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasAoMap)
-                {
-                    GL.Uniform1(shader.GetUniformLocation("ao"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasNormalMap)
-                {
-                    GL.ActiveTexture(nutTextureUnit + textureUnitIndexOffset);
-                    GL.BindTexture(TextureTarget.Texture2D, NudMatSphereDrawing.sphereNrmMapTex.Id);
-                    GL.Uniform1(shader.GetUniformLocation("normalMap"), nutTextureUnitOffset + textureUnitIndexOffset);
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasRamp)
-                {
-                    GL.Uniform1(shader.GetUniformLocation("ramp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, RenderTools.dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-
-                if (mat.hasDummyRamp)
-                {
-                    GL.Uniform1(shader.GetUniformLocation("dummyRamp"), BindTexture(diffuse, diffuse.hash, textureUnitIndexOffset, RenderTools.dummyTextures));
-                    textureUnitIndexOffset++;
-                }
-            }
+            textures.SetShaderUniforms(shader);
         }
 
-        public static void SetTextureUniformsToDefaultTexture(Shader shader, Texture texture)
+        private static Texture GetSphereTexture(string name, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
-            shader.SetTexture("dif", texture, 0);
-            shader.SetTexture("dif2", texture, 0);
-            shader.SetTexture("normalMap", texture, 0);
-            shader.SetTexture("cube", RenderTools.dummyTextures[NudEnums.DummyTexture.StageMapHigh], 2);
-            shader.SetTexture("stagecube", RenderTools.dummyTextures[NudEnums.DummyTexture.StageMapHigh], 2);
-            shader.SetTexture("spheremap", texture, 0);
-            shader.SetTexture("ao", texture, 0);
-            shader.SetTexture("ramp", texture, 0);
+            if (name.Contains("dif"))
+                return NudMatSphereDrawing.sphereDifTex;
+            else if (name.Contains("normal"))
+                return NudMatSphereDrawing.sphereNrmMapTex;
+            else if (name.Contains("cube"))
+                return dummyTextures[NudEnums.DummyTexture.StageMapHigh];
+            else
+                return NudMatSphereDrawing.sphereDifTex;
         }
 
         public static void SetRenderModeTextureUniforms(Shader shader)
