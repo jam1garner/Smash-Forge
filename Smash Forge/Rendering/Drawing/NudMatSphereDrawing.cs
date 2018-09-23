@@ -38,7 +38,6 @@ namespace Smash_Forge.Rendering
             NUD.SetStageLightingUniforms(shader, 0);
             ModelContainer.SetRenderSettingsUniforms(shader);
 
-            nudSphereCamera.UpdateMatrices();
             ModelContainer.SetLightingUniforms(shader, nudSphereCamera);
             ModelContainer.SetCameraMatrixUniforms(nudSphereCamera, shader);
 

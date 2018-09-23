@@ -17,7 +17,6 @@
         <member name="P:SFGraphics.Cameras.Camera.Position">
             <summary>
             The position of the camera in scene units. 
-            Updates all matrices when set.
             </summary>
         </member>
         <member name="P:SFGraphics.Cameras.Camera.FovRadians">
@@ -37,37 +36,31 @@
         <member name="P:SFGraphics.Cameras.Camera.RotationXRadians">
             <summary>
             The rotation around the x-axis in radians.
-            Updates <see cref="P:SFGraphics.Cameras.Camera.RotationXDegrees"/> and all matrices when set.
             </summary>
         </member>
         <member name="P:SFGraphics.Cameras.Camera.RotationXDegrees">
             <summary>
             The rotation around the x-axis in degrees.
-            Updates <see cref="F:SFGraphics.Cameras.Camera.rotationXRadians"/> and all matrices when set.
             </summary>
         </member>
         <member name="P:SFGraphics.Cameras.Camera.RotationYRadians">
             <summary>
             The rotation around the y-axis in radians.
-            Updates all matrices when set.
             </summary>
         </member>
         <member name="P:SFGraphics.Cameras.Camera.RotationYDegrees">
             <summary>
             The rotation around the y-axis in degrees.
-            Updates all matrices when set.
             </summary>
         </member>
         <member name="P:SFGraphics.Cameras.Camera.FarClipPlane">
             <summary>
             The far clip plane of the perspective matrix.
-            Updates all matrices when set.
             </summary>
         </member>
         <member name="P:SFGraphics.Cameras.Camera.NearClipPlane">
             <summary>
             The near clip plane of the perspective matrix.
-            Updates all matrices when set.
             </summary>
         </member>
         <member name="F:SFGraphics.Cameras.Camera.renderWidth">
@@ -139,16 +132,6 @@
             Creates a new <see cref="T:SFGraphics.Cameras.Camera"/> located at <see cref="P:SFGraphics.Cameras.Camera.DefaultPosition"/>.
             </summary>
         </member>
-        <member name="M:SFGraphics.Cameras.Camera.#ctor(OpenTK.Vector3,System.Single,System.Single,System.Int32,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="position">The initial position of the camera.</param>
-            <param name="rotX">The rotation around the x-axis in radians</param>
-            <param name="rotY">The rotation around the y-axis in radians</param>
-            <param name="renderWidth">The width of the viewport in pixels</param>
-            <param name="renderHeight">The height of the viewport in pixels</param>
-        </member>
         <member name="M:SFGraphics.Cameras.Camera.Pan(System.Single,System.Single,System.Boolean)">
             <summary>
             Translates the camera along the x and y axes by a specified amount.
@@ -169,9 +152,7 @@
         </member>
         <member name="M:SFGraphics.Cameras.Camera.UpdateMatrices">
             <summary>
-            Updates the <see cref="P:SFGraphics.Cameras.Camera.TranslationMatrix"/>, <see cref="P:SFGraphics.Cameras.Camera.RotationMatrix"/>, 
-            <see cref="P:SFGraphics.Cameras.Camera.PerspectiveMatrix"/>, <see cref="P:SFGraphics.Cameras.Camera.ModelViewMatrix"/>, 
-            and <see cref="P:SFGraphics.Cameras.Camera.MvpMatrix"/>.
+            Updates all matrix properties using the respective update methods.
             </summary>
         </member>
         <member name="M:SFGraphics.Cameras.Camera.UpdateTranslationMatrix">

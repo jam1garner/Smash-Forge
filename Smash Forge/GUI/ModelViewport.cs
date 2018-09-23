@@ -941,7 +941,6 @@ namespace Smash_Forge
             Radius.Sort();
 
             camera.FrameBoundingSphere(new Vector3(X[X.Count - 1], Y[Y.Count - 1], Z[Z.Count - 1]), Radius[Radius.Count - 1]);
-            camera.UpdateMatrices();
         }
 
         private void FrameSelectedPolygon()
@@ -1018,8 +1017,6 @@ namespace Smash_Forge
                 camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 0);
             else
                 camera.ResetToDefaultPosition();
-
-            camera.UpdateMatrices();
         }
 
         #region Moveset
