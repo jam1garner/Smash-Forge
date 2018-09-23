@@ -1,78 +1,66 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using OpenTK;
-using Smash_Forge.Rendering;
-using SFGraphics.GLObjects.Textures;
-using SFGraphics.GLObjects.Shaders;
-using SFGraphics.Tools;
 using SFGenericModel.Materials;
+using SFGraphics.GLObjects.Shaders;
+using SFGraphics.GLObjects.Textures;
+using SFGraphics.Tools;
+using Smash_Forge.Rendering;
+using System;
+using System.Collections.Generic;
 
 namespace Smash_Forge.Filetypes.Models.Nuds
 {
     public static class NudUniforms
     {
+        private static readonly Dictionary<string, Vector4> defaultValueByProperty = new Dictionary<string, Vector4>()
+        {
+            { "NU_colorSamplerUV",         new Vector4(1, 1, 0, 0) },
+            { "NU_colorSampler2UV",        new Vector4(1, 1, 0, 0) },
+            { "NU_colorSampler3UV",        new Vector4(1, 1, 0, 0) },
+            { "NU_normalSamplerAUV",       new Vector4(1, 1, 0, 0) },
+            { "NU_normalSamplerBUV",       new Vector4(1, 1, 0, 0) },
+            { "NU_aoMinGain",              new Vector4(0, 0, 0, 0) },
+            { "NU_colorGain",              new Vector4(1, 1, 1, 1) },
+            { "NU_finalColorGain",         new Vector4(1, 1, 1, 1) },
+            { "NU_finalColorGain2",        new Vector4(1, 1, 1, 1) },
+            { "NU_finalColorGain3",        new Vector4(1, 1, 1, 1) },
+            { "NU_colorOffset",            new Vector4(0, 0, 0, 0) },
+            { "NU_diffuseColor",           new Vector4(1, 1, 1, 0.5f) },
+            { "NU_characterColor",         new Vector4(1, 1, 1, 1) },
+            { "NU_specularColor",          new Vector4(0, 0, 0, 0) },
+            { "NU_specularColorGain",      new Vector4(1, 1, 1, 1) },
+            { "NU_specularParams",         new Vector4(0, 0, 0, 0) },
+            { "NU_fresnelColor",           new Vector4(0, 0, 0, 0) },
+            { "NU_fresnelParams",          new Vector4(0, 0, 0, 0) },
+            { "NU_reflectionColor",        new Vector4(0, 0, 0, 0) },
+            { "NU_reflectionParams",       new Vector4(0, 0, 0, 0) },
+            { "NU_fogColor",               new Vector4(0, 0, 0, 0) },
+            { "NU_fogParams",              new Vector4(0, 1, 0, 0) },
+            { "NU_softLightingParams",     new Vector4(0, 0, 0, 0) },
+            { "NU_customSoftLightParams",  new Vector4(0, 0, 0, 0) },
+            { "NU_normalParams",           new Vector4(1, 0, 0, 0) },
+            { "NU_zOffset",                new Vector4(0, 0, 0, 0) },
+            { "NU_angleFadeParams",        new Vector4(0, 0, 0, 0) },
+            { "NU_dualNormalScrollParams", new Vector4(0, 0, 0, 0) },
+            { "NU_alphaBlendParams",       new Vector4(0, 0, 0, 0) },
+            { "NU_effCombinerColor0",      new Vector4(1, 1, 1, 1) },
+            { "NU_effCombinerColor1",      new Vector4(1, 1, 1, 1) },
+            { "NU_effColorGain",           new Vector4(1, 1, 1, 1) },
+            { "NU_effScaleUV",             new Vector4(1, 1, 0, 0) },
+            { "NU_effTransUV",             new Vector4(1, 1, 0, 0) },
+            { "NU_effMaxUV",               new Vector4(1, 1, 0, 0) },
+            { "NU_effUniverseParam",       new Vector4(1, 0, 0, 0) },
+        };
+
         // Default bind location for NUT textures.
         private static readonly int nutTextureUnitOffset = 0;
 
         public static void SetMaterialPropertyUniforms(GenericMaterial genericMaterial, NUD.Material mat)
         {
-            // TODO: Use a dictionary for this.
-
-            // UV samplers
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_colorSamplerUV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_colorSampler2UV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_colorSampler3UV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_normalSamplerAUV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_normalSamplerBUV", 1, 1, 0, 0);
-
-            // Diffuse Color
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_aoMinGain", 0, 0, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_colorGain", 1, 1, 1, 1);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_finalColorGain", 1, 1, 1, 1);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_finalColorGain2", 1, 1, 1, 1);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_finalColorGain3", 1, 1, 1, 1);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_colorOffset", 0, 0, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_diffuseColor", 1, 1, 1, 0.5f);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_characterColor", 1, 1, 1, 1);
-
-            // Specular
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_specularColor", 0, 0, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_specularColorGain", 1, 1, 1, 1);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_specularParams", 0, 0, 0, 0);
-
-            // Fresnel
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_fresnelColor", 0, 0, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_fresnelParams", 0, 0, 0, 0);
-
-            // Reflections
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_reflectionColor", 0, 0, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_reflectionParams", 0, 0, 0, 0);
-
-            // Fog
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_fogColor", 0, 0, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_fogParams", 0, 1, 0, 0);
-
-            // Soft Lighting
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_softLightingParams", 0, 0, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_customSoftLightParams", 0, 0, 0, 0);
-
-            // Misc Properties
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_normalParams", 1, 0, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_zOffset", 0, 0, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_angleFadeParams", 0, 0, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_dualNormalScrollParams", 0, 0, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_alphaBlendParams", 0, 0, 0, 0);
-
-            // Effect Materials
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_effCombinerColor0", 1, 1, 1, 1);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_effCombinerColor1", 1, 1, 1, 1);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_effColorGain", 1, 1, 1, 1);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_effScaleUV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_effTransUV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_effMaxUV", 1, 1, 0, 0);
-            MatPropertyShaderUniform(genericMaterial, mat, "NU_effUniverseParam", 1, 0, 0, 0);
+            foreach (var property in defaultValueByProperty)
+            {
+                MatPropertyShaderUniform(genericMaterial, mat, property.Key, property.Value);
+            }
 
             // Create some conditionals rather than using different shaders.
             HasMatPropertyShaderUniform(genericMaterial, mat, "NU_softLightingParams", "hasSoftLight");
@@ -87,38 +75,26 @@ namespace Smash_Forge.Filetypes.Models.Nuds
 
         private static void HasMatPropertyShaderUniform(GenericMaterial genericMaterial, NUD.Material mat, string propertyName, string uniformName)
         {
-            float[] values;
-            mat.entries.TryGetValue(propertyName, out values);
-            if (mat.anims.ContainsKey(propertyName))
-                values = mat.anims[propertyName];
-
-            int hasParam = 1;
-            if (values == null)
-                hasParam = 0;
-
-            genericMaterial.AddInt(uniformName, hasParam);
+            bool hasValue = mat.entries.ContainsKey(propertyName) || mat.anims.ContainsKey(propertyName);
+            if (hasValue)
+                genericMaterial.AddInt(uniformName, 1);
+            else
+                genericMaterial.AddInt(uniformName, 0);
         }
 
-        private static void MatPropertyShaderUniform(GenericMaterial genericMaterial, NUD.Material mat, string propertyName, float default1,
-            float default2, float default3, float default4)
+        private static void MatPropertyShaderUniform(GenericMaterial genericMaterial, NUD.Material mat, string propertyName, Vector4 defaultValue)
         {
-            // Attempt to get the values from the material's properties. 
-            // Otherwise, use the specified default values.
-            float[] values;
+            // Attempt to get the values from the material. 
+            float[] values = null;
             mat.entries.TryGetValue(propertyName, out values);
             if (mat.anims.ContainsKey(propertyName))
-            {
                 values = mat.anims[propertyName];
-            }
-            if (values == null)
-                values = new float[] { default1, default2, default3, default4 };
 
-            string uniformName = propertyName.Substring(3); // remove the NU_ from name
+            if (values == null || values.Length != 4)
+                values = new float[] { defaultValue.X, defaultValue.Y, defaultValue.Z, defaultValue.W };
 
-            if (values.Length == 4)
-                genericMaterial.AddVector4(uniformName, new Vector4(values[0], values[1], values[2], values[3]));
-            else
-                Debug.WriteLine(uniformName + " invalid parameter count: " + values.Length);
+            string uniformName = propertyName.Replace("NU_", "");
+            genericMaterial.AddVector4(uniformName, new Vector4(values[0], values[1], values[2], values[3]));
         }
 
         public static Texture GetTexture(int hash, NUD.MatTexture matTexture, int loc, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
