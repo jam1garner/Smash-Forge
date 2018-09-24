@@ -172,7 +172,10 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             }
             else
             {
-                texture = RenderTools.defaultTex;
+                if (name.ToLower().Contains("cube"))
+                    texture = dummyTextures[NudEnums.DummyTexture.StageMapHigh];
+                else
+                    texture = RenderTools.defaultTex;
             }
 
             return texture;
