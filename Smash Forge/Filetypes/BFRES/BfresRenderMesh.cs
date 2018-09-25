@@ -25,9 +25,9 @@ namespace Smash_Forge
             // Do nothing for now.
         }
 
-        public override List<VertexAttributeInfo> GetVertexAttributes()
+        public override List<VertexAttribute> GetVertexAttributes()
         {
-            return new List<VertexAttributeInfo>()
+            return new List<VertexAttribute>()
             {
                 new VertexAttributeInfo("vPosition",  ValueCount.Three, VertexAttribPointerType.Float),
                 new VertexAttributeInfo("vNormal",    ValueCount.Three, VertexAttribPointerType.Float),

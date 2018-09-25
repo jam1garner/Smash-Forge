@@ -105,9 +105,9 @@ namespace Smash_Forge
             renderSettings.alphaBlendSettings.blendingEquationAlpha = BlendEquationMode.FuncAdd;
         }
 
-        public override List<VertexAttributeInfo> GetVertexAttributes()
+        public override List<VertexAttribute> GetVertexAttributes()
         {
-            return new List<VertexAttributeInfo>()
+            return new List<VertexAttribute>()
             {                                                 
                 new VertexAttributeInfo("vPosition",  ValueCount.Three, VertexAttribPointerType.Float),
                 new VertexAttributeInfo("vNormal",    ValueCount.Three, VertexAttribPointerType.Float),

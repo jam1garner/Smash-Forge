@@ -19,6 +19,11 @@
             The position of the camera in scene units. 
             </summary>
         </member>
+        <member name="P:SFGraphics.Cameras.Camera.Scale">
+            <summary>
+            The scale for all objects. Defaults to 1.
+            </summary>
+        </member>
         <member name="P:SFGraphics.Cameras.Camera.FovRadians">
             <summary>
             The vertical field of view in radians. 
@@ -207,7 +212,7 @@
         </member>
         <member name="M:SFGraphics.GLObjects.BufferObjects.BufferObject.#ctor(OpenTK.Graphics.OpenGL.BufferTarget)">
             <summary>
-            Creates a buffer of the specified target with unitialized data.
+            Creates a buffer of the specified target with uninitialized data.
             </summary>
             <param name="target">The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound</param>
         </member>
@@ -536,8 +541,8 @@
         </member>
         <member name="T:SFGraphics.GLObjects.RenderBuffers.Renderbuffer">
             <summary>
-            Encapsulates a renderbuffer object, which are used exclusively as attachments 
-            for <see cref="T:SFGraphics.GLObjects.Framebuffers.Framebuffer"/> objects. Renderbuffers support multisampling.
+            Encapsulates a renderbuffer object, 
+            a framebuffer attachment that supports multisampling.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.RenderBuffers.Renderbuffer.Width">
@@ -552,11 +557,11 @@
         </member>
         <member name="M:SFGraphics.GLObjects.RenderBuffers.Renderbuffer.#ctor(System.Int32,System.Int32,OpenTK.Graphics.OpenGL.RenderbufferStorage)">
             <summary>
-            Creates an allocates storage for an empty renderbuffer. 
+            Creates and allocates storage for an empty renderbuffer. 
             </summary>
             <param name="width">The width of the renderbuffer in pixels</param>
             <param name="height">The height of the renderbuffer in pixels</param>
-            <param name="internalFormat">The format of the image data</param>
+            <param name="internalFormat">The format for storing the image data</param>
         </member>
         <member name="M:SFGraphics.GLObjects.RenderBuffers.Renderbuffer.#ctor(System.Int32,System.Int32,System.Int32,OpenTK.Graphics.OpenGL.RenderbufferStorage)">
             <summary>
@@ -565,7 +570,7 @@
             <param name="width">The width of the renderbuffer in pixels</param>
             <param name="height">The height of the renderbuffer in pixels</param>
             <param name="samples">The number of samples to use for multisampling</param>
-            <param name="internalFormat">The format of the image data</param>
+            <param name="internalFormat">The format for storing the image data</param>
         </member>
         <member name="M:SFGraphics.GLObjects.RenderBuffers.Renderbuffer.Bind">
             <summary>
@@ -632,42 +637,42 @@
             <summary>
             Sets a float uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
+            <param name="name">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetFloat(System.String,System.Single[])">
             <summary>
             Sets all values for a float[] uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
+            <param name="name">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetInt(System.String,System.Int32)">
             <summary>
             Sets an int uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
+            <param name="name">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetInt(System.String,System.Int32[])">
             <summary>
             Sets all values for an int[] uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
+            <param name="name">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetUint(System.String,System.UInt32)">
             <summary>
             Sets a uint uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
+            <param name="name">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetUint(System.String,System.UInt32[])">
             <summary>
             Sets all values for a uint[] uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
+            <param name="name">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetBoolToInt(System.String,System.Boolean)">
@@ -675,62 +680,90 @@
             Converts <paramref name="value"/> to an int and sets an int uniform. 
             <c>true</c> = 1. <c>false</c> = 0. uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
+            <param name="name">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector2(System.String,OpenTK.Vector2)">
             <summary>
             Sets vec2 uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
+            <param name="name">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector2(System.String,OpenTK.Vector2[])">
+            <summary>
+            Sets all values for a vec2[] uniform variable. Logs invalid names.
+            </summary>
+            <param name="name">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector2(System.String,System.Single,System.Single)">
             <summary>
             Sets vec2 uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
-            <param name="x">The value for uniformName.x</param>
-            <param name="y">The value for uniformName.y</param>
+            <param name="name">The uniform variable name</param>
+            <param name="x">The value for name.x</param>
+            <param name="y">The value for name.y</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector3(System.String,OpenTK.Vector3)">
             <summary>
             Sets vec3 uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
+            <param name="name">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector3(System.String,OpenTK.Vector3[])">
+            <summary>
+            Sets all values for a vec3 uniform variable. Logs invalid names.
+            </summary>
+            <param name="name">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector3(System.String,System.Single,System.Single,System.Single)">
             <summary>
             Sets vec3 uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
-            <param name="x">The value for uniformName.x</param>
-            <param name="y">The value for uniformName.y</param>
-            <param name="z">The value for uniformName.z</param>
+            <param name="name">The uniform variable name</param>
+            <param name="x">The value for name.x</param>
+            <param name="y">The value for name.y</param>
+            <param name="z">The value for name.z</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector4(System.String,OpenTK.Vector4)">
             <summary>
             Sets vec4 uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
+            <param name="name">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector4(System.String,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Sets vec4 uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
-            <param name="x">The value for uniformName.x</param>
-            <param name="y">The value for uniformName.y</param>
-            <param name="z">The value for uniformName.z</param>
-            <param name="w">The value for uniformName.w</param>
+            <param name="name">The uniform variable name</param>
+            <param name="x">The value for name.x</param>
+            <param name="y">The value for name.y</param>
+            <param name="z">The value for name.z</param>
+            <param name="w">The value for name.w</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetVector4(System.String,OpenTK.Vector4[])">
+            <summary>
+            Sets all values for a vec4 uniform variable. Logs invalid names.
+            </summary>
+            <param name="name">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetMatrix4x4(System.String,OpenTK.Matrix4@)">
             <summary>
             Sets a mat4 uniform variable. Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
+            <param name="name">The uniform variable name</param>
+            <param name="value">The value to assign to the uniform</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetMatrix4x4(System.String,OpenTK.Matrix4[])">
+            <summary>
+            Sets all values for a mat4[] uniform variable. Logs invalid names.
+            </summary>
+            <param name="name">The uniform variable name</param>
             <param name="value">The value to assign to the uniform</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.SetTexture(System.String,SFGraphics.GLObjects.Textures.Texture,System.Int32)">
@@ -739,7 +772,7 @@
             setting the uniform. 
             Logs invalid names.
             </summary>
-            <param name="uniformName">The uniform variable name</param>
+            <param name="name">The uniform variable name</param>
             <param name="texture">The integer ID generated by GL.GenTexture()</param>
             <param name="textureUnit">The texture unit to which <paramref name="texture"/> will be bound</param>
         </member>
@@ -790,7 +823,7 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.#ctor">
             <summary>
-            Creates an unitialized shader program. Load shaders before using the shader program.
+            Creates an uninitialized shader program. Load shaders before using the shader program.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.UseProgram">
@@ -1008,8 +1041,8 @@
             <summary>
             
             </summary>
-            <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
-            <param name="target">The target of the texture or cube face for loading mip maps</param>
+            <typeparam name="T">The value type used for the image data. This includes arithmetic types.</typeparam>
+            <param name="target">The target of the texture or cube face for loading mipmaps</param>
             <param name="width">The width of the texture or cube map face in pixels</param>
             <param name="height">The height of the texture or cube map face in pixels</param>
             <param name="baseMipLevel"></param>
@@ -1030,8 +1063,8 @@
             Loads image data for all six faces of a cubemap. No mipmaps are generated, so use a min filter
             that does not use mipmaps.
             </summary>
-            <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
-            <param name="length">The width and heigh of each cube map face in pixels</param>
+            <typeparam name="T">The value type used for the image data. This includes arithmetic types.</typeparam>
+            <param name="length">The width and height of each cube map face in pixels</param>
             <param name="format"></param>
             <param name="posX"></param>
             <param name="negX"></param>
@@ -1044,8 +1077,8 @@
             <summary>
             Loads image data and mipmaps for all six faces of a cube map.
             </summary>
-            <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
-            <param name="length">The width and heigh of each cube map face in pixels</param>
+            <typeparam name="T">The value type used for the image data. This includes arithmetic types.</typeparam>
+            <param name="length">The width and height of each cube map face in pixels</param>
             <param name="format"></param>
             <param name="mipsPosX"></param>
             <param name="mipsNegX"></param>
