@@ -139,9 +139,9 @@ namespace Smash_Forge
                 | (exp | mant) << 13), 0);         // value << ( 23 - 10 )
         }
 
-        public static int fromFloat(float fval, bool littleEndian)
+        public static int fromFloat(float fval)
         {
-            int fbits = FileOutput.SingleToInt32Bits(fval, littleEndian);
+            int fbits = FileOutput.SingleToInt32Bits(fval);
             int sign = fbits >> 16 & 0x8000;          // sign only
             int val = (fbits & 0x7fffffff) + 0x1000; // rounded value
 
