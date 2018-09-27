@@ -19,9 +19,9 @@ namespace Smash_Forge.Rendering.Meshes
 
         }
 
-        public override List<VertexAttributeInfo> GetVertexAttributes()
+        public override List<VertexAttribute> GetVertexAttributes()
         {
-            return new List<VertexAttributeInfo>()
+            return new List<VertexAttribute>()
             {
                 new VertexAttributeInfo("position", ValueCount.Three, VertexAttribPointerType.Float)
             };

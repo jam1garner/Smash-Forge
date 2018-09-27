@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using Smash_Forge.Filetypes.Models.Nuds;
+﻿using OpenTK.Graphics.OpenGL;
 using SFGenericModel;
 using SFGenericModel.Materials;
+using SFGenericModel.RenderState;
 using SFGenericModel.VertexAttributes;
+using Smash_Forge.Filetypes.Models.Nuds;
+using System.Collections.Generic;
 
 namespace Smash_Forge
 {
@@ -18,8 +17,16 @@ namespace Smash_Forge
 
         public void SetMaterialValues(NUD.Material nudMaterial)
         {
-            this.material = new GenericMaterial();
+            material = new GenericMaterial();
             NudUniforms.SetMaterialPropertyUniforms(material, nudMaterial);
+        }
+
+        public void SetWireFrame(bool enabled)
+        {
+            if (enabled)
+                renderSettings.polygonModeSettings = new PolygonModeSettings(MaterialFace.Front, PolygonMode.Line);
+            else
+                renderSettings.polygonModeSettings = PolygonModeSettings.Default;
         }
 
         public void SetRenderSettings(NUD.Material material)
@@ -32,47 +39,50 @@ namespace Smash_Forge
 
         public void ResetRenderSettings()
         {
-            renderSettings = new SFGenericModel.RenderState.RenderSettings();
+            renderSettings = new RenderSettings();
         }
 
         private void SetFaceCulling(NUD.Material material)
         {
-            renderSettings.faceCullingSettings.enabled = true;
-            renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Back;
+            bool enabled = true;
+            CullFaceMode cullFaceMode = CullFaceMode.Back;
             switch (material.cullMode)
             {
                 case 0x0000:
-                    renderSettings.faceCullingSettings.enabled = false;
+                    enabled = false;
                     break;
                 case 0x0404:
-                    renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Front;
+                    cullFaceMode = CullFaceMode.Front;
                     break;
                 case 0x0405:
-                    renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Back;
+                    cullFaceMode = CullFaceMode.Back;
                     break;
                 default:
-                    renderSettings.faceCullingSettings.enabled = false;
+                    enabled = false;
                     break;
             }
+
+            renderSettings.faceCullingSettings = new FaceCullingSettings(enabled, cullFaceMode);
         }
 
         private void SetAlphaTesting(NUD.Material material)
         {
-            renderSettings.alphaTestSettings.enabled = (material.alphaTest == (int)NUD.Material.AlphaTest.Enabled);
 
-            renderSettings.alphaTestSettings.alphaFunction = AlphaFunction.Always;
+            bool enabled = (material.alphaTest == (int)NUD.Material.AlphaTest.Enabled);
+
+            AlphaFunction alphaFunc = AlphaFunction.Always;
             if (NUD.Material.alphaFunctionByMatValue.ContainsKey(material.alphaFunction))
-                renderSettings.alphaTestSettings.alphaFunction = NUD.Material.alphaFunctionByMatValue[material.alphaFunction];
+                alphaFunc = NUD.Material.alphaFunctionByMatValue[material.alphaFunction];
 
-            renderSettings.alphaTestSettings.referenceAlpha = material.RefAlpha / 255.0f;
+            float refAlpha = material.RefAlpha / 255.0f;
+
+            renderSettings.alphaTestSettings = new AlphaTestSettings(enabled, alphaFunc, refAlpha);
         }
 
         private void SetDepthTesting(NUD.Material material)
         {
-            if ((material.srcFactor == 4) || (material.srcFactor == 51) || (material.srcFactor == 50))
-                renderSettings.depthTestSettings.depthMask = false;
-            else
-                renderSettings.depthTestSettings.depthMask = true;
+            bool depthMask = (material.srcFactor != 4) && (material.srcFactor != 51) && (material.srcFactor != 50);
+            renderSettings.depthTestSettings = new DepthTestSettings(true, depthMask, DepthFunction.Lequal);
         }
 
         private void SetAlphaBlending(NUD.Material material)
@@ -95,9 +105,9 @@ namespace Smash_Forge
             renderSettings.alphaBlendSettings.blendingEquationAlpha = BlendEquationMode.FuncAdd;
         }
 
-        public override List<VertexAttributeInfo> GetVertexAttributes()
+        public override List<VertexAttribute> GetVertexAttributes()
         {
-            return new List<VertexAttributeInfo>()
+            return new List<VertexAttribute>()
             {                                                 
                 new VertexAttributeInfo("vPosition",  ValueCount.Three, VertexAttribPointerType.Float),
                 new VertexAttributeInfo("vNormal",    ValueCount.Three, VertexAttribPointerType.Float),

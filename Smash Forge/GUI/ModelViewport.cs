@@ -28,7 +28,7 @@ namespace Smash_Forge
     public partial class ModelViewport : EditorBase
     {
         // View controls
-        public ForgeCamera camera = new ForgeCamera();
+        public ForgeCamera camera = new ForgePerspCamera();
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
         // Rendering Stuff
@@ -247,7 +247,6 @@ namespace Smash_Forge
         public ModelViewport()
         {
             InitializeComponent();
-            camera = new ForgeCamera();
             FilePath = "";
             Text = "Model Viewport";
 
@@ -273,7 +272,7 @@ namespace Smash_Forge
             byamlEditor.MaximumSize = new Size(300, 2000);
             AddControl(byamlEditor);
 
-            // This selection mode is the last annoying mode for now.
+            // This selection mode is the least annoying mode for now.
             // It doesn't really do anything.
             modeBone.Checked = true;
             modeMesh.Checked = false;
@@ -942,7 +941,6 @@ namespace Smash_Forge
             Radius.Sort();
 
             camera.FrameBoundingSphere(new Vector3(X[X.Count - 1], Y[Y.Count - 1], Z[Z.Count - 1]), Radius[Radius.Count - 1]);
-            camera.UpdateMatrices();
         }
 
         private void FrameSelectedPolygon()
@@ -1019,8 +1017,6 @@ namespace Smash_Forge
                 camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 0);
             else
                 camera.ResetToDefaultPosition();
-
-            camera.UpdateMatrices();
         }
 
         #region Moveset

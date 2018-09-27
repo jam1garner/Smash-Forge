@@ -107,7 +107,7 @@ namespace Smash_Forge
 
                 List<DisplayVertex> displayVertList = new List<DisplayVertex>();
 
-                if (vertexIndices.Count <= 3)
+                if (vertexIndices.Count < 3)
                     return displayVertList;
                 foreach (Vertex v in vertices)
                 {
