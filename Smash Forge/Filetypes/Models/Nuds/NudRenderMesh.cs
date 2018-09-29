@@ -115,7 +115,7 @@ namespace Smash_Forge
                 new VertexAttributeInfo("vBiTangent", ValueCount.Three, VertexAttribPointerType.Float),
                 new VertexAttributeInfo("vUV",        ValueCount.Two,   VertexAttribPointerType.Float),
                 new VertexAttributeInfo("vColor",     ValueCount.Four,  VertexAttribPointerType.Float),
-                new VertexAttributeInfo("vBone",      ValueCount.Four,  VertexAttribPointerType.Float),
+                new VertexAttributeIntInfo("vBone",   ValueCount.Four,  VertexAttribIntegerType.Int),
                 new VertexAttributeInfo("vWeight",    ValueCount.Four,  VertexAttribPointerType.Float),
                 new VertexAttributeInfo("vUV2",       ValueCount.Two,   VertexAttribPointerType.Float),
                 new VertexAttributeInfo("vUV3",       ValueCount.Two,   VertexAttribPointerType.Float),

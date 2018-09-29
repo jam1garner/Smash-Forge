@@ -121,11 +121,13 @@ namespace Smash_Forge
                         uv = v.uv.Count > 0 ? v.uv[0] : new Vector2(0, 0),
                         uv2 = v.uv.Count > 1 ? v.uv[1] : new Vector2(0, 0),
                         uv3 = v.uv.Count > 2 ? v.uv[2] : new Vector2(0, 0),
-                        boneIds = new Vector4(
+                        boneIds = new Vector4I 
+                        (
                             v.boneIds.Count > 0 ? v.boneIds[0] : -1,
                             v.boneIds.Count > 1 ? v.boneIds[1] : -1,
                             v.boneIds.Count > 2 ? v.boneIds[2] : -1,
-                            v.boneIds.Count > 3 ? v.boneIds[3] : -1),
+                            v.boneIds.Count > 3 ? v.boneIds[3] : -1
+                        ),
                         weight = new Vector4(
                             v.boneWeights.Count > 0 ? v.boneWeights[0] : 0,
                             v.boneWeights.Count > 1 ? v.boneWeights[1] : 0,
