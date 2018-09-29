@@ -142,40 +142,23 @@ namespace Smash_Forge
 
         public void writeFloat(float f)
         {
-            int i = SingleToInt32Bits(f, Endian == Endianness.Big);
-            data.Add((byte)((i) & 0xFF));
-            data.Add((byte)((i >> 8) & 0xFF));
-            data.Add((byte)((i >> 16) & 0xFF));
-            data.Add((byte)((i >> 24) & 0xFF));
+            writeInt(SingleToInt32Bits(f));
         }
 
         public void writeFloatAt(float f, int p)
         {
-            int i = SingleToInt32Bits(f, Endian == Endianness.Big);
-            data[p++] = (byte)((i) & 0xFF);
-            data[p++] = (byte)((i >> 8) & 0xFF);
-            data[p++] = (byte)((i >> 16) & 0xFF);
-            data[p++] = (byte)((i >> 24) & 0xFF);
+            writeIntAt(SingleToInt32Bits(f), p);
         }
 
-        public static int SingleToInt32Bits(float value, bool littleEndian)
+        //The return value is big endian representation
+        public static int SingleToInt32Bits(float value)
         {
-            byte[] b = BitConverter.GetBytes(value);
-            int p = 0;
-
-            if (!littleEndian)
-            {
-                return (b[p++] & 0xFF) | ((b[p++] & 0xFF) << 8) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 24);
-            }
-            else
-                return ((b[p++] & 0xFF) << 24) | ((b[p++] & 0xFF) << 16) | ((b[p++] & 0xFF) << 8) | (b[p++] & 0xFF);
+            return BitConverter.ToInt32(BitConverter.GetBytes(value), 0);
         }
 
         public void writeHalfFloat(float f)
         {
-            int i = FileData.fromFloat(f, Endian == Endianness.Little);
-            data.Add((byte)((i >> 8) & 0xFF));
-            data.Add((byte)((i) & 0xFF));
+            writeShort(FileData.fromFloat(f));
         }
 
         public void writeShort(int i)
