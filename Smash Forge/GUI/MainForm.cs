@@ -346,24 +346,25 @@ namespace Smash_Forge
             string pathXMB = "";
             List<string> pacs = new List<string>();
 
-            foreach (string file in files)
+            foreach (string fPath in files)
             {
-                if (file.EndsWith(".nut"))
-                    pathNUT = file;
-                if (file.EndsWith(".vbn"))
-                    pathVBN = file;
-                if (file.EndsWith(".jtb"))
-                    pathJTB = file;
-                if (file.EndsWith(".mta"))
-                    pathMTA = file;
-                if (file.EndsWith(".sb"))
-                    pathSB = file;
-                if (file.EndsWith(".moi"))
-                    pathMOI = file;
-                if (file.EndsWith(".pac"))
-                    pacs.Add(file);
-                if (file.EndsWith("xmb"))
-                    pathXMB = file;
+                string fName = Path.GetFileName(fPath);
+                if (fName.EndsWith(".nut"))
+                    pathNUT = fPath;
+                if (fName.EndsWith(".vbn") || fName.StartsWith("bindpose"))
+                    pathVBN = fPath;
+                if (fName.EndsWith(".jtb"))
+                    pathJTB = fPath;
+                if (fName.EndsWith(".mta"))
+                    pathMTA = fPath;
+                if (fName.EndsWith(".sb") /*|| fName.StartsWith("swingbone")*/)
+                    pathSB = fPath;
+                if (fName.EndsWith(".moi"))
+                    pathMOI = fPath;
+                if (fName.EndsWith(".pac"))
+                    pacs.Add(fPath);
+                if (fName.EndsWith("xmb"))
+                    pathXMB = fPath;
             }
 
             if (mvp == null)
