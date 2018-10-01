@@ -476,7 +476,7 @@ namespace Smash_Forge
             Stopwatch animationStopwatch = Stopwatch.StartNew();
 
             // Wait for UI to load before triggering paint events.
-            int waitTimeMs = 200;
+            int waitTimeMs = 500;
             Thread.Sleep(waitTimeMs);
 
             glViewport.Invalidate();
