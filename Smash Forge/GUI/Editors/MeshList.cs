@@ -157,9 +157,21 @@ namespace Smash_Forge
             {
                 MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
             }
-            if (filesTreeView.SelectedNode is FTEX)
+            else if (filesTreeView.SelectedNode is FTEX)
             {
                 MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
+            }
+            else if (filesTreeView.SelectedNode is MeleeRootNode)
+            {
+                Runtime.TargetVBN = ((MeleeRootNode)e.Node).RenderBones;
+            }
+            else if (filesTreeView.SelectedNode is MeleeJointAnimationNode)
+            {
+                ((ModelViewport)Parent).CurrentAnimation = ((MeleeJointAnimationNode)filesTreeView.SelectedNode).GetAnimation();
+            }
+            else if (filesTreeView.SelectedNode is MeleeJointNode)
+            {
+                ((MeleeJointNode)e.Node).RenderBone.Selected = true;
             }
         }
 
