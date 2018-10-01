@@ -108,8 +108,8 @@ namespace Smash_Forge
                 currentAnimation = value;
                 totalFrame.Value = value.FrameCount;
                 animationTrackBar.TickFrequency = 1;
-                currentFrame.Value = 1;
-                currentFrame.Value = 0;
+                currentFrameUpDown.Value = 1;
+                currentFrameUpDown.Value = 0;
             }
         }
 
@@ -128,8 +128,8 @@ namespace Smash_Forge
                 totalFrame.Value = value.frameCount;
                 animationTrackBar.TickFrequency = 1;
                 animationTrackBar.SetRange(0, (int)value.frameCount);
-                currentFrame.Value = 1;
-                currentFrame.Value = 0;
+                currentFrameUpDown.Value = 1;
+                currentFrameUpDown.Value = 0;
             }
         }
 
@@ -148,8 +148,8 @@ namespace Smash_Forge
                 totalFrame.Value = value.FrameCount;
                 animationTrackBar.TickFrequency = 1;
                 animationTrackBar.SetRange(0, (int)value.FrameCount);
-                currentFrame.Value = 1;
-                currentFrame.Value = 0;
+                currentFrameUpDown.Value = 1;
+                currentFrameUpDown.Value = 0;
             }
         }
 
@@ -733,10 +733,19 @@ namespace Smash_Forge
                 animationTrackBar.Value = 0;
             if (animationTrackBar.Value < 0)
                 animationTrackBar.Value = (int)totalFrame.Value;
-            currentFrame.Value = animationTrackBar.Value;
+            currentFrameUpDown.Value = animationTrackBar.Value;
 
-            int frameNum = animationTrackBar.Value;
+            int currentFrame = animationTrackBar.Value;
 
+            SetAnimationsToFrame(currentFrame);
+
+            // If the render thread isn't triggering updates, update the viewport manually.
+            if (!renderThreadIsUpdating || !isPlaying)
+                glViewport.Invalidate();
+        }
+
+        private void SetAnimationsToFrame(int frameNum)
+        {
             if (currentMaterialAnimation != null)
             {
                 foreach (TreeNode node in meshList.filesTreeView.Nodes)
@@ -757,7 +766,8 @@ namespace Smash_Forge
                 }
             }
 
-            if (currentAnimation == null) return;
+            if (currentAnimation == null)
+                return;
 
             // Process script first in case we have to speed up the animation
             if (acmdScript != null)
@@ -769,15 +779,16 @@ namespace Smash_Forge
 
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
-                if(node is MeleeDataNode)
+                if (node is MeleeDataNode)
                 {
                     foreach (MeleeRootNode n in ((MeleeDataNode)node).GetAllRoots())
                     {
                         currentAnimation.SetFrame(animFrameNum);
-                        currentAnimation.NextFrame(((MeleeRootNode)n).RenderBones);
+                        currentAnimation.NextFrame(n.RenderBones);
                     }
                 }
-                if (!(node is ModelContainer)) continue;
+                if (!(node is ModelContainer))
+                    continue;
                 ModelContainer m = (ModelContainer)node;
                 currentAnimation.SetFrame(animFrameNum);
                 if (m.VBN != null)
@@ -812,10 +823,6 @@ namespace Smash_Forge
                     }
                 }
             }
-
-            // If the render thread isn't triggering updates, update the viewport manually.
-            if (!renderThreadIsUpdating || !isPlaying)
-                glViewport.Invalidate();
         }
 
         public void ResetModels()
@@ -860,17 +867,16 @@ namespace Smash_Forge
 
         private void currentFrame_ValueChanged(object sender, EventArgs e)
         {
-            if (currentFrame.Value > totalFrame.Value)
-                currentFrame.Value = totalFrame.Value;
-            animationTrackBar.Value = (int)currentFrame.Value;
+            if (currentFrameUpDown.Value > totalFrame.Value)
+                currentFrameUpDown.Value = totalFrame.Value;
+
+            animationTrackBar.Value = (int)currentFrameUpDown.Value;
         }
 
         private void playButton_Click(object sender, EventArgs e)
         {
             isPlaying = !isPlaying;
             playButton.Text = isPlaying ? "Pause" : "Play";
-
-
 
             if (isPlaying)
                 directUvTimeStopWatch.Start();
@@ -1444,14 +1450,14 @@ namespace Smash_Forge
 
             ScaleFactor = settings.ScaleFactor;
 
-            int cFrame = (int)currentFrame.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
+            int cFrame = (int)currentFrameUpDown.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
                                                   //Disable controls
             this.Enabled = false;
 
             for (int i = settings.StartFrame; i <= settings.EndFrame + 1; i++)
             {
-                currentFrame.Value = i;
-                currentFrame.Refresh(); //Refresh the frame counter control
+                currentFrameUpDown.Value = i;
+                currentFrameUpDown.Refresh(); //Refresh the frame counter control
                 Render(null, null, glViewport.Width, glViewport.Height);
 
                 if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
@@ -1483,7 +1489,7 @@ namespace Smash_Forge
             //Enable controls
             this.Enabled = true;
 
-            currentFrame.Value = cFrame;
+            currentFrameUpDown.Value = cFrame;
         }
 
         private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
@@ -1521,27 +1527,27 @@ namespace Smash_Forge
 
         private void beginButton_Click(object sender, EventArgs e)
         {
-            currentFrame.Value = 0;
+            currentFrameUpDown.Value = 0;
         }
 
         private void endButton_Click(object sender, EventArgs e)
         {
-            currentFrame.Value = totalFrame.Value;
+            currentFrameUpDown.Value = totalFrame.Value;
         }
 
         private void nextButton_Click(object sender, EventArgs e)
         {
             // Loop the animation.
-            if (currentFrame.Value == totalFrame.Value)
-                currentFrame.Value = 0;
+            if (currentFrameUpDown.Value == totalFrame.Value)
+                currentFrameUpDown.Value = 0;
             else
-                currentFrame.Value++;
+                currentFrameUpDown.Value++;
         }
 
         private void prevButton_Click(object sender, EventArgs e)
         {
-            if (currentFrame.Value != 0)
-                currentFrame.Value--;
+            if (currentFrameUpDown.Value != 0)
+                currentFrameUpDown.Value--;
         }
 
         private void viewStripButtonsBone(object sender, EventArgs e)
@@ -2030,7 +2036,7 @@ namespace Smash_Forge
                     }
 
                     // update or add the key frame
-                    ThisNode.SetKeyFromBone((float)currentFrame.Value, transformTool.b);
+                    ThisNode.SetKeyFromBone((float)currentFrameUpDown.Value, transformTool.b);
                 }
             }
         }
