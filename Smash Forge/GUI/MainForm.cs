@@ -217,13 +217,13 @@ namespace Smash_Forge
                 content.Show(dockPanel1);
         }
 
-        public Control GetActiveModelViewport()
+        public ModelViewport GetActiveModelViewport()
         {
             // Find the selected modelviewport (there may be many).
-            foreach (Control c in dockPanel1.Contents)
+            foreach (var c in dockPanel1.Contents)
             {
                 if (c is ModelViewport && c == dockPanel1.ActiveDocument)
-                    return c;
+                    return (ModelViewport)c;
             }
             return null;
         }
