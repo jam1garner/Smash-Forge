@@ -107,7 +107,7 @@ namespace Smash_Forge
 
                 List<DisplayVertex> displayVertList = new List<DisplayVertex>();
 
-                if (vertexIndices.Count <= 3)
+                if (vertexIndices.Count < 3)
                     return displayVertList;
                 foreach (Vertex v in vertices)
                 {
@@ -121,11 +121,13 @@ namespace Smash_Forge
                         uv = v.uv.Count > 0 ? v.uv[0] : new Vector2(0, 0),
                         uv2 = v.uv.Count > 1 ? v.uv[1] : new Vector2(0, 0),
                         uv3 = v.uv.Count > 2 ? v.uv[2] : new Vector2(0, 0),
-                        boneIds = new Vector4(
+                        boneIds = new Vector4I 
+                        (
                             v.boneIds.Count > 0 ? v.boneIds[0] : -1,
                             v.boneIds.Count > 1 ? v.boneIds[1] : -1,
                             v.boneIds.Count > 2 ? v.boneIds[2] : -1,
-                            v.boneIds.Count > 3 ? v.boneIds[3] : -1),
+                            v.boneIds.Count > 3 ? v.boneIds[3] : -1
+                        ),
                         weight = new Vector4(
                             v.boneWeights.Count > 0 ? v.boneWeights[0] : 0,
                             v.boneWeights.Count > 1 ? v.boneWeights[1] : 0,
@@ -174,8 +176,8 @@ namespace Smash_Forge
 
                     // The tangent and bitangent should be orthogonal to the normal but not each other. 
                     // Bitangents are not calculated with a cross product to prevent flipped shading with mirrored normal maps.
-                    v.tan = new Vector4(VectorTools.Orthogonalize(newTan, v.nrm), 1);
-                    v.bitan = new Vector4(VectorTools.Orthogonalize(newBitan, v.nrm), 1);
+                    v.tan = new Vector4(VectorUtils.Orthogonalize(newTan, v.nrm), 1);
+                    v.bitan = new Vector4(VectorUtils.Orthogonalize(newBitan, v.nrm), 1);
                     v.bitan *= -1;
                 }
             }
@@ -195,7 +197,7 @@ namespace Smash_Forge
 
                     Vector3 s = new Vector3();
                     Vector3 t = new Vector3();
-                    VectorTools.GenerateTangentBitangent(v1.pos, v2.pos, v3.pos, v1.uv[0], v2.uv[0], v3.uv[0], out s, out t);
+                    VectorUtils.GenerateTangentBitangent(v1.pos, v2.pos, v3.pos, v1.uv[0], v2.uv[0], v3.uv[0], out s, out t);
 
                     // Average tangents and bitangents.
                     tanArray[faces[i]] += s;
@@ -219,7 +221,7 @@ namespace Smash_Forge
                     Vertex v1 = vertices[f[i]];
                     Vertex v2 = vertices[f[i+1]];
                     Vertex v3 = vertices[f[i+2]];
-                    Vector3 nrm = VectorTools.CalculateNormal(v1.pos, v2.pos, v3.pos);
+                    Vector3 nrm = VectorUtils.CalculateNormal(v1.pos, v2.pos, v3.pos);
 
                     normals[f[i + 0]] += nrm;
                     normals[f[i + 1]] += nrm;
@@ -265,7 +267,7 @@ namespace Smash_Forge
                     Vertex v1 = vertices[f[i]];
                     Vertex v2 = vertices[f[i + 1]];
                     Vertex v3 = vertices[f[i + 2]];
-                    Vector3 nrm = VectorTools.CalculateNormal(v1.pos, v2.pos, v3.pos);
+                    Vector3 nrm = VectorUtils.CalculateNormal(v1.pos, v2.pos, v3.pos);
 
                     normals[f[i + 0]] += nrm * (nrm.Length / 2);
                     normals[f[i + 1]] += nrm * (nrm.Length / 2);

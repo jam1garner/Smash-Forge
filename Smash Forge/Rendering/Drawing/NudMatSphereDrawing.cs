@@ -21,11 +21,11 @@ namespace Smash_Forge.Rendering
         private static Texture2D sphereTanTex;
         private static Texture2D sphereBitanTex;
 
-        private static ForgeCamera nudSphereCamera = new ForgeCamera();
+        private static ForgeCamera nudSphereCamera = new ForgePerspCamera();
 
         public static void DrawNudMaterialSphere(Shader shader, NUD.Material material, Mesh3D screenTriangle, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
-            if (!shader.ProgramCreatedSuccessfully)
+            if (!shader.LinkStatusIsOk)
                 return;
 
             shader.UseProgram();
@@ -38,7 +38,6 @@ namespace Smash_Forge.Rendering
             NUD.SetStageLightingUniforms(shader, 0);
             ModelContainer.SetRenderSettingsUniforms(shader);
 
-            nudSphereCamera.UpdateMatrices();
             ModelContainer.SetLightingUniforms(shader, nudSphereCamera);
             ModelContainer.SetCameraMatrixUniforms(nudSphereCamera, shader);
 
@@ -54,10 +53,10 @@ namespace Smash_Forge.Rendering
             shader.SetBoolToInt("isTransparent", isTransparent);
 
             // Set texture uniforms for the mesh attributes. 
-            shader.SetTexture("normalTex", sphereNrmTex.Id, TextureTarget.Texture2D, 15);
-            shader.SetTexture("uvTex", sphereUvTex.Id, TextureTarget.Texture2D, 16);
-            shader.SetTexture("tanTex", sphereTanTex.Id, TextureTarget.Texture2D, 17);
-            shader.SetTexture("bitanTex", sphereBitanTex.Id, TextureTarget.Texture2D, 18);
+            shader.SetTexture("normalTex", sphereNrmTex, 15);
+            shader.SetTexture("uvTex", sphereUvTex, 16);
+            shader.SetTexture("tanTex", sphereTanTex, 17);
+            shader.SetTexture("bitanTex", sphereBitanTex, 18);
 
             // Draw full screen "quad" (big triangle)
             ScreenDrawing.DrawScreenTriangle(shader, screenTriangle);

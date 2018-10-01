@@ -210,7 +210,7 @@ namespace Smash_Forge
             foreach (BRTI tex in Nodes)
             {
                 Texture2D tex2d = BRTI.CreateTexture2D(tex.texture);
-                tex.texture.display = tex2d.Id;
+                tex.texture.display = tex2d;
                 tex.display = tex.texture.display;
 
                 glTexByName.Add(tex.Text, tex2d);
@@ -311,7 +311,8 @@ namespace Smash_Forge
         public byte DataType;
         public byte[] result_;
 
-        public int Width, Height, display;
+        public int Width, Height;
+        public Texture display;
         public uint format;
         public uint blkWidth, blkHeight, bpp;
 
@@ -494,7 +495,7 @@ namespace Smash_Forge
         {
             public List<byte[]> mipmaps = new List<byte[]>();
             public int width, height;
-            public int display = 0;
+            public Texture display;
             public PixelInternalFormat pixelInternalFormat;
             public OpenTK.Graphics.OpenGL.PixelFormat pixelFormat;
             public int mipMapCount; //temp till i add mip maps.
@@ -553,11 +554,11 @@ namespace Smash_Forge
             return texID;
         }
 
-        public unsafe void ExportAsImage(BRTI_Texture t, int id, string path)
+        public unsafe void ExportAsImage(BRTI_Texture t, Texture tex, string path)
         {
             Bitmap bitmap = new Bitmap(t.width, t.height);
             System.Drawing.Imaging.BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, t.width, t.height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            GL.BindTexture(TextureTarget.Texture2D, id);
+            tex.Bind();
             GL.GetTexImage(TextureTarget.Texture2D, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
 
             bitmap.UnlockBits(bitmapData);

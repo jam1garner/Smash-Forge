@@ -16,7 +16,7 @@ namespace Smash_Forge.Rendering
         private static string shaderSourceDirectory;
         private static string shaderCacheDirectory;
 
-        public static void SetupShaders(bool forceBinaryUpdate = false)
+        public static void SetUpShaders(bool forceBinaryUpdate = false)
         {
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
             shaderSourceDirectory = Path.Combine(MainForm.executableDir, "Shader");
@@ -27,7 +27,7 @@ namespace Smash_Forge.Rendering
 
             // Reset the shaders first so that shaders can be replaced.
             OpenTKSharedResources.shaders.Clear();
-            SetupAllShaders();
+            SetUpAllShaders();
 
             System.Diagnostics.Debug.WriteLine("Shader Setup: {0} ms", stopwatch.ElapsedMilliseconds);
         }
@@ -43,12 +43,19 @@ namespace Smash_Forge.Rendering
             }
         }
 
-        private static void SetupAllShaders()
+        private static void SetUpAllShaders()
         {
             SetUpScreenShaders();
             SetUpNudShaders();
             SetUpMiscShaders();
             SetUpBfresShaders();
+            SetUpMeleeShaders();
+        }
+        
+        private static void SetUpMeleeShaders()
+        {
+            CreateAndAddShader("Dat", "Melee\\Dat.vert", "Melee\\Dat.frag", "Melee\\MeleeUtils.frag");
+            CreateAndAddShader("DatDebug", "Melee\\Dat.vert", "Melee\\DatDebug.frag", "Melee\\MeleeUtils.frag");
         }
 
         private static void SetUpBfresShaders()
@@ -83,7 +90,6 @@ namespace Smash_Forge.Rendering
         private static void SetUpMiscShaders()
         {
             CreateAndAddShader("Mbn", "3ds\\Mbn.frag", "3ds\\Mbn.vert");
-            CreateAndAddShader("Dat", "Melee\\Dat.frag", "Melee\\Dat.vert");
             CreateAndAddShader("Point", "Point.frag", "Point.vert");
             CreateAndAddShader("Shadow", "Shadow.frag", "Shadow.vert");
             CreateAndAddShader("ForgeMesh", "ForgeMesh.frag", "ForgeMesh.vert");
@@ -165,7 +171,7 @@ namespace Smash_Forge.Rendering
             {
                 LoadFromPrecompiledBinary(shader, compiledBinaryPath, compiledFormatPath);
 
-                if (!shader.ProgramCreatedSuccessfully)
+                if (!shader.LinkStatusIsOk)
                 {
                     // Load from source and generate binary.
                     LoadShaderFiles(shader, shaderRelativePaths);
@@ -177,7 +183,7 @@ namespace Smash_Forge.Rendering
                 // Don't generate binaries for programs that did not link.
                 // Attempting to load them will crash.
                 LoadShaderFiles(shader, shaderRelativePaths);
-                if (canLoadBinaries && shader.ProgramCreatedSuccessfully)
+                if (canLoadBinaries && shader.LinkStatusIsOk)
                     SavePrecompiledBinaryAndFormat(shader, compiledBinaryPath, compiledFormatPath);
             }
 
@@ -215,6 +221,7 @@ namespace Smash_Forge.Rendering
 
         private static void LoadShaderFiles(Shader shader, string[] shaderRelativePaths)
         {
+            var shaders = new List<Tuple<string, ShaderType, string>>();
             foreach (string file in shaderRelativePaths)
             {
                 // The input paths are relative to the main shader directory.
@@ -227,13 +234,17 @@ namespace Smash_Forge.Rendering
                 string shaderSource = File.ReadAllText(shaderPath);
 
                 // Determine the shader type based on the file extension.
+                ShaderType shaderType = ShaderType.FragmentShader;
                 if (file.EndsWith(".vert"))
-                    shader.LoadShader(shaderSource, ShaderType.VertexShader, shaderName);
+                    shaderType = ShaderType.VertexShader;
                 else if (file.EndsWith(".frag"))
-                    shader.LoadShader(shaderSource, ShaderType.FragmentShader, shaderName);
+                    shaderType = ShaderType.FragmentShader;
                 else if (file.EndsWith(".geom"))
-                    shader.LoadShader(shaderSource, ShaderType.GeometryShader, shaderName);
+                    shaderType = ShaderType.GeometryShader;
+
+                shaders.Add(new Tuple<string, ShaderType, string>(shaderSource, shaderType, shaderName));
             }
+            shader.LoadShaders(shaders);
         }
 
         public static void LightColorVector3Uniform(Shader shader, LightColor color, string name)
@@ -244,7 +255,7 @@ namespace Smash_Forge.Rendering
 
         public static void SystemColorVector3Uniform(Shader shader, System.Drawing.Color color, string name)
         {
-            shader.SetVector3(name, ColorTools.Vector4FromColor(color).Xyz);
+            shader.SetVector3(name, ColorUtils.Vector4FromColor(color).Xyz);
         }
 
         public static void SaveErrorLogs()
@@ -254,7 +265,7 @@ namespace Smash_Forge.Rendering
             int successfulCompilations = OpenTKSharedResources.shaders.Count;
             foreach (string shaderName in OpenTKSharedResources.shaders.Keys)
             {
-                if (!OpenTKSharedResources.shaders[shaderName].ProgramCreatedSuccessfully)
+                if (!OpenTKSharedResources.shaders[shaderName].LinkStatusIsOk)
                 {
                     compileErrorList.Add(shaderName);
                     successfulCompilations -= 1;

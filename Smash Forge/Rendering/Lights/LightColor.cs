@@ -23,7 +23,7 @@ namespace Smash_Forge.Rendering.Lights
             set
             {
                 h = value;
-                ColorTools.HsvToRgb(h, s, v, out r, out g, out b);
+                ColorUtils.HsvToRgb(h, s, v, out r, out g, out b);
             }
         }
 
@@ -34,7 +34,7 @@ namespace Smash_Forge.Rendering.Lights
             set
             {
                 s = value;
-                ColorTools.HsvToRgb(h, s, v, out r, out g, out b);
+                ColorUtils.HsvToRgb(h, s, v, out r, out g, out b);
             }
         }
 
@@ -45,7 +45,7 @@ namespace Smash_Forge.Rendering.Lights
             set
             {
                 v = value;
-                ColorTools.HsvToRgb(h, s, v, out r, out g, out b);
+                ColorUtils.HsvToRgb(h, s, v, out r, out g, out b);
             }
         }
 
@@ -56,7 +56,7 @@ namespace Smash_Forge.Rendering.Lights
             set
             {
                 r = value;
-                ColorTools.RgbToHsv(r, g, b, out h, out s, out v);
+                ColorUtils.RgbToHsv(r, g, b, out h, out s, out v);
             }
         }
 
@@ -67,7 +67,7 @@ namespace Smash_Forge.Rendering.Lights
             set
             {
                 g = value;
-                ColorTools.RgbToHsv(r, g, b, out h, out s, out v);
+                ColorUtils.RgbToHsv(r, g, b, out h, out s, out v);
             }
         }
 
@@ -78,7 +78,7 @@ namespace Smash_Forge.Rendering.Lights
             set
             {
                 b = value;
-                ColorTools.RgbToHsv(r, g, b, out h, out s, out v);
+                ColorUtils.RgbToHsv(r, g, b, out h, out s, out v);
             }
         }
     }

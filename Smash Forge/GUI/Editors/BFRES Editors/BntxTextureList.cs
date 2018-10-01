@@ -89,9 +89,7 @@ namespace Smash_Forge
             int width = tex.Width;
             int height = tex.Height;
 
-            int texture = tex.display;
-
-            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, screenTriangle, true, true, true, false);
+            Rendering.ScreenDrawing.DrawTexturedQuad(tex.display, width, height, screenTriangle, true, true, true, false);
 
             glControl1.SwapBuffers();
         }
@@ -115,9 +113,7 @@ namespace Smash_Forge
             int width = tex.Width;
             int height = tex.Height;
 
-            int texture = tex.display;
-
-            Rendering.ScreenDrawing.DrawTexturedQuad(texture, width, height, screenTriangle, false, false, false, true);
+            Rendering.ScreenDrawing.DrawTexturedQuad(tex.display, width, height, screenTriangle, false, false, false, true);
 
             glControl2.SwapBuffers();
         }

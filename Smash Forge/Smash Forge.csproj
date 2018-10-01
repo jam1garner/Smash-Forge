@@ -38,7 +38,15 @@
   <PropertyGroup>
     <ApplicationIcon>Resources\forge.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MeleeLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\MeleeLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -173,6 +181,20 @@
     <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\KCL\KCL.cs" />
     <Compile Include="Filetypes\Application\MaterialXML.cs" />
+    <Compile Include="Filetypes\Melee\MeleeMapHeadNode.cs" />
+    <Compile Include="Filetypes\Melee\Utils\DatMaterialXml.cs" />
+    <Compile Include="Filetypes\Melee\MeleeData.cs" />
+    <Compile Include="Filetypes\Melee\MeleeDataObjectNode.cs" />
+    <Compile Include="Filetypes\Melee\Utils\MeleeDatEnums.cs" />
+    <Compile Include="Filetypes\Melee\Rendering\MeleeDatToOpenGL.cs" />
+    <Compile Include="Filetypes\Melee\MeleeFighterDataNode.cs" />
+    <Compile Include="Filetypes\Melee\MeleeJointAnimationNode.cs" />
+    <Compile Include="Filetypes\Melee\MeleeJointNode.cs" />
+    <Compile Include="Filetypes\Melee\MeleeMaterialAnimationNode.cs" />
+    <Compile Include="Filetypes\Melee\Rendering\MeleeMesh.cs" />
+    <Compile Include="Filetypes\Melee\MeleeNode.cs" />
+    <Compile Include="Filetypes\Melee\Rendering\MeleeRenderTexture.cs" />
+    <Compile Include="Filetypes\Melee\MeleeRootNode.cs" />
     <Compile Include="Filetypes\Models\Nuds\DisplayVertex.cs" />
     <Compile Include="Filetypes\Models\Nuds\Material.cs" />
     <Compile Include="Filetypes\Models\Nuds\MatTexture.cs" />
@@ -290,6 +312,30 @@
     </Compile>
     <Compile Include="GUI\Editors\BYAML Editor\BYAMLList.Designer.cs">
       <DependentUpon>BYAMLList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Melee\DOBJEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Melee\DOBJEditor.Designer.cs">
+      <DependentUpon>DOBJEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Melee\DOBJImportSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Melee\DOBJImportSettings.Designer.cs">
+      <DependentUpon>DOBJImportSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Melee\MeleeCMDEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Melee\MeleeCMDEditor.Designer.cs">
+      <DependentUpon>MeleeCMDEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Melee\MeleeTextureSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Melee\MeleeTextureSelector.Designer.cs">
+      <DependentUpon>MeleeTextureSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Menus\OdysseyCostumeSelector.cs">
       <SubType>Form</SubType>
@@ -657,9 +703,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Cameras\ForgePerspCamera.cs" />
     <Compile Include="Rendering\Drawing\MaterialPreviewRendering.cs" />
     <Compile Include="Rendering\Drawing\NudMatSphereDrawing.cs" />
-    <Compile Include="Rendering\ForgeCamera.cs" />
+    <Compile Include="Rendering\Cameras\ForgeCamera.cs" />
+    <Compile Include="Rendering\Cameras\ForgeOrthoCamera.cs" />
     <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
     <Compile Include="Rendering\Lights\DirectionalLight.cs" />
@@ -668,14 +716,13 @@
     <Compile Include="Rendering\Lights\LightMap.cs" />
     <Compile Include="Rendering\Lights\LightTools.cs" />
     <Compile Include="Filetypes\Models\Nuds\NudRenderMesh.cs" />
-    <Compile Include="Rendering\GenericMesh\MeshColored3D.cs" />
     <Compile Include="Rendering\GenericMesh\Mesh3D.cs" />
     <Compile Include="Rendering\OpenTKSharedResources.cs" />
     <Compile Include="Rendering\Ray.cs" />
     <Compile Include="Rendering\Drawing\ScreenDrawing.cs" />
     <Compile Include="Rendering\ShaderTools.cs" />
-    <Compile Include="Rendering\Drawing\ShapeDrawing.cs" />
     <Compile Include="Rendering\Drawing\TextureToBitmap.cs" />
+    <Compile Include="Rendering\ShapeDrawing.cs" />
     <Compile Include="Updates.cs" />
     <Compile Include="WorkspaceManager.cs" />
     <EmbeddedResource Include="GUI\Editors\BFRES Editors\BfresMeshEditor.resx">
@@ -829,6 +876,18 @@
       <DependentUpon>About.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Melee\DOBJEditor.resx">
+      <DependentUpon>DOBJEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Melee\DOBJImportSettings.resx">
+      <DependentUpon>DOBJImportSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Melee\MeleeCMDEditor.resx">
+      <DependentUpon>MeleeCMDEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Melee\MeleeTextureSelector.resx">
+      <DependentUpon>MeleeTextureSelector.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Menus\AddBone.resx">
       <DependentUpon>AddBone.cs</DependentUpon>
     </EmbeddedResource>
@@ -894,6 +953,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.manifest" />
     <None Include="characterSpecialBubbles.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -931,6 +991,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Shader\Melee\Dat.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Shader\Melee\DatDebug.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Shader\Melee\MeleeUtils.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Shader\Nud\Bayo.frag">
@@ -1339,6 +1405,9 @@
     <Content Include="lib\libvorbis.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="lib\MeleeLib.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\Newtonsoft.Json.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1445,6 +1514,7 @@
     <None Include="Resources\icon_model1.png" />
     <None Include="Resources\icon_model2.png" />
     <None Include="Resources\icon_bfres.bmp" />
+    <None Include="Resources\icon_dat.png" />
     <Content Include="Resources\sexy_green_down_arrow.png" />
     <Content Include="Resources\forge2.ico" />
     <None Include="Resources\DefaultTexture.png" />
