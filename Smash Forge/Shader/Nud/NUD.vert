@@ -8,7 +8,7 @@ in vec3 vBiTangent;
 in vec2 vUV;
 in vec2 vUV2;
 in vec2 vUV3;
-in vec4 vBone;
+in ivec4 vBone;
 in vec4 vWeight;
 
 // Outputs for geometry shader.
@@ -123,7 +123,7 @@ void main()
     // Vertex Skinning
     vec4 objPos = vec4(vPosition.xyz, 1.0);
     if (useBones == 1 && vBone.x != -1)
-       objPos = skin(vPosition, ivec4(vBone));
+       objPos = skin(vPosition, vBone);
 
     objPos.z *= zScale;
     objPos = nscMatrix * objPos;
