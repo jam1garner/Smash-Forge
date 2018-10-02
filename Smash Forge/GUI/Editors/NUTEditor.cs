@@ -143,12 +143,13 @@ namespace Smash_Forge
 
         public override void Save()
         {
+            ShowGtxMipmapWarning(currentNut);
+
             if (FilePath.Equals(""))
             {
                 SaveAs();
                 return;
             }
-            PromptUserToConfirmMipRegenIfGtx(currentNut);
 
             FileOutput fileOutput = new FileOutput();
             byte[] n = currentNut.Rebuild();
@@ -363,10 +364,7 @@ namespace Smash_Forge
 
         private void RegenerateAllMipMaps_Click(object sender, EventArgs e)
         {
-            foreach (NutTexture texture in currentNut.Nodes)
-            {
-                NUT.RegenerateMipmapsFromTexture2D(texture);
-            }
+            currentNut.ConvertToDdsNut();
 
             // Refresh the textures.
             currentNut.RefreshGlTexturesByHashId();
@@ -814,7 +812,7 @@ namespace Smash_Forge
                     if (!Directory.Exists(f.SelectedPath))
                         Directory.CreateDirectory(f.SelectedPath);
 
-                    PromptUserToConfirmMipRegenIfGtx(currentNut);
+                    ShowGtxMipmapWarning(currentNut);
 
                     foreach (NutTexture tex in currentNut.Nodes)
                     {
@@ -837,23 +835,11 @@ namespace Smash_Forge
             }
         }
 
-        public static void PromptUserToConfirmMipRegenIfGtx(NUT nut)
+        public static void ShowGtxMipmapWarning(NUT nut)
         {
             if (nut.ContainsGtxTextures())
             {
                 MessageBox.Show("Mipmaps will not be exported correctly for some textures.", "GTX textures detected");
-
-                // TODO: Doesn't work properly in game.
-                //DialogResult result = MessageBox.Show("Mipmaps will not be exported correctly for some textures. " +
-                //    "Would you like to regenerate all mipmaps? Note: this will modify the existing textures.",
-                //    "GTX textures detected", MessageBoxButtons.YesNo);
-                //if (result == DialogResult.Yes)
-                //{
-                //    foreach (NutTexture texture in nut.Nodes)
-                //    {
-                //        NUT.RegenerateMipmapsFromTexture2D(texture);
-                //    }
-                //}
             }
         }
 

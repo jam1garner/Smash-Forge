@@ -267,6 +267,25 @@ namespace Smash_Forge
         #region Functions
         NUTEditor Editor;
 
+        public void ConvertToDdsNut(bool regenerateMipMaps = true)
+        {
+            for (int i = 0; i < Nodes.Count; i++)
+            {
+                NutTexture originalTexture = (NutTexture)Nodes[i];
+
+                // Reading/writing mipmaps is only supported for DDS textures,
+                // so we will need to convert all the textures.
+                DDS dds = new DDS(originalTexture);
+                NutTexture ddsTexture = dds.ToNutTexture();
+                ddsTexture.HashId = originalTexture.HashId;
+
+                if (regenerateMipMaps)
+                    RegenerateMipmapsFromTexture2D(ddsTexture);
+
+                Nodes[i] = ddsTexture;
+            }
+        }
+
         private void OpenEditor(object sender, EventArgs args)
         {
             if (Editor == null || Editor.IsDisposed)
@@ -291,9 +310,7 @@ namespace Smash_Forge
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    // TODO: Put these methods somewhere that makes sense.
-                    NUTEditor.PromptUserToConfirmMipRegenIfGtx(this);
-
+                    NUTEditor.ShowGtxMipmapWarning(this);
                     File.WriteAllBytes(sfd.FileName, Rebuild());
                 }
             }
