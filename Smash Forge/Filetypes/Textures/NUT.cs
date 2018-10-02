@@ -318,6 +318,9 @@ namespace Smash_Forge
                 o.writeUInt(0x4E545744); //NTWD
             }
 
+            //Most NTWU NUTs are 0x020E, which isn't valid for NTP3/NTWD
+            if (Version > 0x0200)
+                Version = 0x0200;
             o.writeUShort(Version);
 
             //After that, endian is used appropriately
