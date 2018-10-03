@@ -25,7 +25,7 @@ namespace Smash_Forge.Rendering
             Matrix4 Mat = b.transform.Inverted();
             translationMatrix = Matrix4.CreateTranslation(Mat.ExtractTranslation());
             rotationMatrix = Matrix4.CreateFromQuaternion(Mat.ExtractRotation());
-            perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(FovRadians, renderWidth / (float)renderHeight, 1.0f, FarClipPlane);
+            perspectiveMatrix = Matrix4.CreatePerspectiveFieldOfView(FovRadians, RenderWidth / (float)RenderHeight, 1.0f, FarClipPlane);
 
             modelViewMatrix = Mat;
             mvpMatrix = modelViewMatrix * perspectiveMatrix;

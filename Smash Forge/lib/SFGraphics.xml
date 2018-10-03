@@ -68,16 +68,14 @@
             The near clip plane of the perspective matrix.
             </summary>
         </member>
-        <member name="F:SFGraphics.Cameras.Camera.renderWidth">
+        <member name="P:SFGraphics.Cameras.Camera.RenderWidth">
             <summary>
             The width of the viewport or rendered region in pixels.
-            Only the ratio between <see cref="F:SFGraphics.Cameras.Camera.renderWidth"/> and <see cref="F:SFGraphics.Cameras.Camera.renderHeight"/> is important.
             </summary>
         </member>
-        <member name="F:SFGraphics.Cameras.Camera.renderHeight">
+        <member name="P:SFGraphics.Cameras.Camera.RenderHeight">
             <summary>
             The height of the viewport or rendered region in pixels.
-            Only the ratio between <see cref="F:SFGraphics.Cameras.Camera.renderWidth"/> and <see cref="F:SFGraphics.Cameras.Camera.renderHeight"/> is important.
             </summary>
         </member>
         <member name="F:SFGraphics.Cameras.Camera.modelViewMatrix">
@@ -128,7 +126,7 @@
         <member name="P:SFGraphics.Cameras.Camera.PerspectiveMatrix">
             <summary>
             The result of <see cref="M:OpenTK.Matrix4.CreatePerspectiveFieldOfView(System.Single,System.Single,System.Single,System.Single)"/> for 
-            <see cref="P:SFGraphics.Cameras.Camera.FovRadians"/>, <see cref="F:SFGraphics.Cameras.Camera.renderWidth"/> / <see cref="F:SFGraphics.Cameras.Camera.renderHeight"/>, <see cref="P:SFGraphics.Cameras.Camera.NearClipPlane"/>,
+            <see cref="P:SFGraphics.Cameras.Camera.FovRadians"/>, <see cref="P:SFGraphics.Cameras.Camera.RenderWidth"/> / <see cref="P:SFGraphics.Cameras.Camera.RenderHeight"/>, <see cref="P:SFGraphics.Cameras.Camera.NearClipPlane"/>,
             <see cref="P:SFGraphics.Cameras.Camera.FarClipPlane"/>
             </summary>
         </member>
@@ -869,6 +867,13 @@
             Compiles and attaches multiple shaders. Linking and setup is performed only once.
             </summary>
             <param name="shaders">(shader source, shader type, shader name)</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.LoadShaders(System.String,System.String)">
+            <summary>
+            Compiles and attaches shaders from <paramref name="fragmentSource"/> and <paramref name="vertexSource"/>.
+            </summary>
+            <param name="vertexSource">The vertex shader source</param>
+            <param name="fragmentSource">The fragment shader source</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.CreateGlShader(System.String,OpenTK.Graphics.OpenGL.ShaderType)">
             <summary>

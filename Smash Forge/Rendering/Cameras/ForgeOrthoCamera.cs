@@ -59,7 +59,7 @@ namespace Smash_Forge.Rendering
 
         protected override void UpdatePerspectiveMatrix()
         {
-            float aspectRatio = (float)renderWidth / renderHeight;
+            float aspectRatio = (float)RenderWidth / RenderHeight;
 
             float left = (leftInitial * aspectRatio) * scale;
 
