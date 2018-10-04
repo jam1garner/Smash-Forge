@@ -391,7 +391,7 @@
         </member>
         <member name="T:SFGenericModel.ShaderGenerators.TextureRenderInfo">
             <summary>
-            Contains information on how a texture should be rendered.
+            Determines how a <see cref="T:SFGraphics.GLObjects.Textures.Texture"/> should be rendered for generated shaders.
             </summary>
         </member>
         <member name="P:SFGenericModel.ShaderGenerators.TextureRenderInfo.Name">
@@ -437,7 +437,7 @@
         </member>
         <member name="T:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo">
             <summary>
-            Stores information on how a vertex attribute will be displayed.
+            Determines how a <see cref="T:SFGenericModel.VertexAttributes.VertexAttribute"/> should be rendered for generated shaders.
             </summary>
         </member>
         <member name="P:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.Name">
@@ -531,7 +531,7 @@
         </member>
         <member name="T:SFGenericModel.VertexAttributes.VertexAttribute">
             <summary>
-            
+            Stores information for a vertex attribute variable.
             </summary>
         </member>
         <member name="P:SFGenericModel.VertexAttributes.VertexAttribute.Name">
@@ -557,11 +557,11 @@
         </member>
         <member name="M:SFGenericModel.VertexAttributes.VertexAttribute.SetVertexAttribute(System.Int32,System.Int32,System.Int32)">
             <summary>
-            
+            Configures the vertex attribute for the currently bound array buffer.
             </summary>
             <param name="index">The index of the attribute variable in the shader</param>
             <param name="strideInBytes">The vertex size in bytes</param>
-            <param name="offsetInBytes">The offset of the attribute in the vertex</param>
+            <param name="offsetInBytes">The offset in bytes of the attribute in the vertex</param>
         </member>
         <member name="M:SFGenericModel.VertexAttributes.VertexAttribute.#ctor(System.String,SFGenericModel.VertexAttributes.ValueCount,OpenTK.Graphics.OpenGL.VertexAttribPointerType)">
             <summary>
@@ -571,12 +571,12 @@
             <param name="valueCount"></param>
             <param name="type"></param>
         </member>
-        <member name="T:SFGenericModel.VertexAttributes.VertexAttributeIntInfo">
+        <member name="T:SFGenericModel.VertexAttributes.VertexIntAttribute">
             <summary>
-            Stores the information used to configure vertex attributes for <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            A vertex attribute that preserves integer values. Only integer types are supported.
             </summary>
         </member>
-        <member name="M:SFGenericModel.VertexAttributes.VertexAttributeIntInfo.#ctor(System.String,SFGenericModel.VertexAttributes.ValueCount,OpenTK.Graphics.OpenGL.VertexAttribIntegerType)">
+        <member name="M:SFGenericModel.VertexAttributes.VertexIntAttribute.#ctor(System.String,SFGenericModel.VertexAttributes.ValueCount,OpenTK.Graphics.OpenGL.VertexAttribIntegerType)">
             <summary>
             Creates a new vertex attribute.
             </summary>
@@ -586,13 +586,13 @@
             <exception cref="T:System.NotSupportedException"><paramref name="type"/> is not 
             a supported attribute type.</exception>
         </member>
-        <member name="M:SFGenericModel.VertexAttributes.VertexAttributeIntInfo.SetVertexAttribute(System.Int32,System.Int32,System.Int32)">
+        <member name="M:SFGenericModel.VertexAttributes.VertexIntAttribute.SetVertexAttribute(System.Int32,System.Int32,System.Int32)">
             <summary>
-            
+            Configures the vertex attribute for the currently bound array buffer.
             </summary>
             <param name="index">The index of the attribute variable in the shader</param>
             <param name="strideInBytes">The vertex size in bytes</param>
-            <param name="offsetInBytes">The offset of the attribute in the vertex</param>
+            <param name="offsetInBytes">The offset in bytes of the attribute in the vertex</param>
         </member>
         <member name="T:SFGenericModel.VertexAttributes.VertexAttributeUtils">
             <summary>
@@ -611,12 +611,12 @@
             <param name="strideInBytes">The size in bytes of each vertex</param>
             <returns><c>true</c> if the set was successful</returns>
         </member>
-        <member name="T:SFGenericModel.VertexAttributes.VertexAttributeInfo">
+        <member name="T:SFGenericModel.VertexAttributes.VertexFloatAttribute">
             <summary>
-            Stores the information used to configure vertex attributes for <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            A floating point vertex attribute. Integer types are converted directly to floats.
             </summary>
         </member>
-        <member name="M:SFGenericModel.VertexAttributes.VertexAttributeInfo.#ctor(System.String,SFGenericModel.VertexAttributes.ValueCount,OpenTK.Graphics.OpenGL.VertexAttribPointerType)">
+        <member name="M:SFGenericModel.VertexAttributes.VertexFloatAttribute.#ctor(System.String,SFGenericModel.VertexAttributes.ValueCount,OpenTK.Graphics.OpenGL.VertexAttribPointerType)">
             <summary>
             Creates a new vertex attribute.
             </summary>
@@ -626,13 +626,13 @@
             <exception cref="T:System.NotSupportedException"><paramref name="type"/> is not 
             a supported attribute type.</exception>
         </member>
-        <member name="M:SFGenericModel.VertexAttributes.VertexAttributeInfo.SetVertexAttribute(System.Int32,System.Int32,System.Int32)">
+        <member name="M:SFGenericModel.VertexAttributes.VertexFloatAttribute.SetVertexAttribute(System.Int32,System.Int32,System.Int32)">
             <summary>
-            
+            Configures the vertex attribute for the currently bound array buffer.
             </summary>
             <param name="index">The index of the attribute variable in the shader</param>
             <param name="strideInBytes">The vertex size in bytes</param>
-            <param name="offsetInBytes">The offset of the attribute in the vertex</param>
+            <param name="offsetInBytes">The offset in bytes of the attribute in the vertex</param>
         </member>
         <member name="T:SFGenericModel.MeshEventArgs.AttribSetEventArgs">
             <summary>

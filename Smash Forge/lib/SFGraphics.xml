@@ -71,11 +71,13 @@
         <member name="P:SFGraphics.Cameras.Camera.RenderWidth">
             <summary>
             The width of the viewport or rendered region in pixels.
+            Values less than 1 are set to 1.
             </summary>
         </member>
         <member name="P:SFGraphics.Cameras.Camera.RenderHeight">
             <summary>
             The height of the viewport or rendered region in pixels.
+            Values less than 1 are set to 1.
             </summary>
         </member>
         <member name="F:SFGraphics.Cameras.Camera.modelViewMatrix">
@@ -193,8 +195,8 @@
             
             </summary>
             <param name="center">The position of the center of the bounding sphere.</param>
-            <param name="radius">The radius of the bounding sphere.</param>
-            <param name="offset"></param>
+            <param name="radius">The radius of the bounding sphere in scene units</param>
+            <param name="offset">The offset in scene units</param>
         </member>
         <member name="T:SFGraphics.GLObjects.BufferObjects.BufferObject">
             <summary>

@@ -121,6 +121,16 @@
             Utility methods for normals, tangents, bitangents, and angle conversions
             </summary>
         </member>
+        <member name="F:SFGraphics.Utils.VectorUtils.defaultTangent">
+            <summary>
+            The default value when the generated tangent would be a zero vector.
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Utils.VectorUtils.defaultBitangent">
+            <summary>
+            The default value when the generated bitangent would be a zero vector.
+            </summary>
+        </member>
         <member name="M:SFGraphics.Utils.VectorUtils.GetDegrees(System.Double)">
             <summary>
             Converts <paramref name="radians"/> to degrees.
@@ -137,12 +147,8 @@
         </member>
         <member name="M:SFGraphics.Utils.VectorUtils.Orthogonalize(OpenTK.Vector3,OpenTK.Vector3)">
             <summary>
-            Uses the Gran-Schmidt method for orthogonalizing a vector to another vector.
-            The resulting vector is normalized.    
-            <para></para>
-            <para>
-            Ex: <c>Vector3 tanOrthoToNrm = Orthogonalize(tan, nrm);</c>
-            </para>
+            Uses the Gran-Schmidt method for returning a normalized copy 
+            of <paramref name="target"/> that is orthogonal to <paramref name="source"/>.
             </summary>
             <param name="target">The vector to normalize</param>
             <param name="source">The vector to normalize against</param>
@@ -150,14 +156,10 @@
         </member>
         <member name="M:SFGraphics.Utils.VectorUtils.GenerateTangentBitangent(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector3@,OpenTK.Vector3@)">
             <summary>
-            Generates a tangent vector <paramref name="tangent"/> and a bitangent vector
-            <paramref name="bitangent"/> for a triangle face. 
-            If the three vertices have the same UVs or position, <paramref name="tangent"/> is set to (1, 0, 0)
-            and <paramref name="bitangent"/> is set to (0, 1, 0). This prevents black shading artifacts.
+            Calculates <paramref name="tangent"/> and <paramref name="bitangent"/> 
+            for a triangle face. 
             <para></para><para></para>
-            <paramref name="tangent"/> and <paramref name="bitangent"/> should be added to the existing tangent
-            and bitangent value for each vertex in the triangle. Normalizing the final sum 
-            averages the tangents and bitangents for smoother results.
+            Zero vectors are set to <see cref="F:SFGraphics.Utils.VectorUtils.defaultTangent"/> and <see cref="F:SFGraphics.Utils.VectorUtils.defaultBitangent"/>.
             </summary>
             <param name="v1">The position of the first vertex</param>
             <param name="v2">The position of the second vertex</param>
@@ -172,7 +174,7 @@
             <summary>
             Calculates the face normal of a triangle. The result is not normalized.
             A triangle facing the camera will have a positive normal when 
-            the verts are ordered counter-clockwise.
+            the vertices are ordered counter-clockwise.
             </summary>
             <param name="v1">The position of the first vertex</param>
             <param name="v2">The position of the second vertex</param>
