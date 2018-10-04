@@ -1519,6 +1519,8 @@ namespace Smash_Forge
             {
                 mvp.ViewComboBox.SelectedItem = "LM Editor";
                 mvp.Lumen = new Lumen(fileName);
+                LMList LM = new LMList { ShowHint = DockState.DockLeft };
+                AddDockedControl(LM);
             }
 
             if (fileName.EndsWith(".mdl0"))
