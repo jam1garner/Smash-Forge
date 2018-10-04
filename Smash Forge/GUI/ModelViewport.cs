@@ -199,6 +199,25 @@ namespace Smash_Forge
         LVDList lvdList = new LVDList();
         LVDEditor lvdEditor = new LVDEditor();
 
+        //LM
+        private Lumen lumen;
+
+        public Lumen Lumen
+        {
+            get
+            {
+                return lumen;
+            }
+            set
+            {
+                lumen = value;
+                lmList.Lumen = lumen;
+                lmList.fillList();
+            }
+        }
+
+        LMList lmList = new LMList();
+
         public BfresMaterialEditor bfresMatEditor = new BfresMaterialEditor();
 
         //Binary YAML. Used in many Wii U/Switch games
@@ -626,8 +645,8 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(0, 0, glViewport.Width, glViewport.Height);
 
-                camera.RenderWidth = glViewport.Width;
-                camera.RenderHeight = glViewport.Height;
+                camera.renderWidth = glViewport.Width;
+                camera.renderHeight = glViewport.Height;
                 fboRenderWidth = glViewport.Width;
                 fboRenderHeight = glViewport.Height;
                 camera.UpdateFromMouse();
