@@ -645,8 +645,8 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(0, 0, glViewport.Width, glViewport.Height);
 
-                camera.renderWidth = glViewport.Width;
-                camera.renderHeight = glViewport.Height;
+                camera.RenderWidth = glViewport.Width;
+                camera.RenderHeight = glViewport.Height;
                 fboRenderWidth = glViewport.Width;
                 fboRenderHeight = glViewport.Height;
                 camera.UpdateFromMouse();
