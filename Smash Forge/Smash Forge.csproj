@@ -196,7 +196,6 @@
     <Compile Include="Filetypes\DRP.cs" />
     <Compile Include="Filetypes\KCL\KCL.cs" />
     <Compile Include="Filetypes\Application\MaterialXML.cs" />
-    <Compile Include="Filetypes\LM.cs" />
     <Compile Include="Filetypes\Melee\MeleeMapHeadNode.cs" />
     <Compile Include="Filetypes\Melee\Utils\DatMaterialXml.cs" />
     <Compile Include="Filetypes\Melee\MeleeData.cs" />
@@ -241,9 +240,10 @@
     <Compile Include="Filetypes\Sounds\NUS3BANK.cs" />
     <Compile Include="Filetypes\Sounds\VGMStreamNative.cs" />
     <Compile Include="Filetypes\Sounds\WAVE.cs" />
-    <Compile Include="Filetypes\Texlist.cs" />
     <Compile Include="Filetypes\Textures\3DSTex.cs" />
     <Compile Include="Filetypes\Textures\RG_ETC1.cs" />
+    <Compile Include="Filetypes\UI\LM.cs" />
+    <Compile Include="Filetypes\UI\Texlist.cs" />
     <Compile Include="Filetypes\Yaz0.cs" />
     <Compile Include="GUI\Editors\BFRES Editors\BNTXMaterialTextureEditor.cs">
       <SubType>Form</SubType>
@@ -330,7 +330,7 @@
     <Compile Include="GUI\Editors\BYAML Editor\BYAMLList.Designer.cs">
       <DependentUpon>BYAMLList.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Editors\LMList.cs">
+    <Compile Include="GUI\Editors\LM Editor\LMList.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\Melee\DOBJEditor.cs">
@@ -826,7 +826,7 @@
     <EmbeddedResource Include="GUI\Editors\HurtboxList.resx">
       <DependentUpon>HurtboxList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\Editors\LMList.resx">
+    <EmbeddedResource Include="GUI\Editors\LM Editor\LMList.resx">
       <DependentUpon>LMList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\LVD Editor\LVDEditor.resx">
