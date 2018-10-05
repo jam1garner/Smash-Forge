@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using Smash_Forge.Filetypes.Models.Nuds;
+﻿using OpenTK.Graphics.OpenGL;
 using SFGenericModel;
 using SFGenericModel.Materials;
+using SFGenericModel.RenderState;
+using SFGenericModel.VertexAttributes;
+using Smash_Forge.Filetypes.Models.Nuds;
+using System.Collections.Generic;
 
 namespace Smash_Forge
 {
     public class NudRenderMesh : GenericMesh<NUD.DisplayVertex>
     {
-        public NudRenderMesh(List<NUD.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices)
+        public NudRenderMesh(List<NUD.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices, PrimitiveType.Triangles)
         {
 
         }
@@ -19,6 +19,14 @@ namespace Smash_Forge
         {
             material = new GenericMaterial();
             NudUniforms.SetMaterialPropertyUniforms(material, nudMaterial);
+        }
+
+        public void SetWireFrame(bool enabled)
+        {
+            if (enabled)
+                renderSettings.polygonModeSettings = new PolygonModeSettings(MaterialFace.Front, PolygonMode.Line);
+            else
+                renderSettings.polygonModeSettings = PolygonModeSettings.Default;
         }
 
         public void SetRenderSettings(NUD.Material material)
@@ -31,57 +39,64 @@ namespace Smash_Forge
 
         public void ResetRenderSettings()
         {
-            renderSettings = new SFGenericModel.RenderState.RenderSettings();
+            renderSettings = new RenderSettings();
         }
 
         private void SetFaceCulling(NUD.Material material)
         {
-            renderSettings.faceCullingSettings.enableFaceCulling = true;
-            renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Back;
+            bool enabled = true;
+            CullFaceMode cullFaceMode = CullFaceMode.Back;
             switch (material.cullMode)
             {
                 case 0x0000:
-                    renderSettings.faceCullingSettings.enableFaceCulling = false;
+                    enabled = false;
                     break;
                 case 0x0404:
-                    renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Front;
+                    cullFaceMode = CullFaceMode.Front;
                     break;
                 case 0x0405:
-                    renderSettings.faceCullingSettings.cullFaceMode = CullFaceMode.Back;
+                    cullFaceMode = CullFaceMode.Back;
                     break;
                 default:
-                    renderSettings.faceCullingSettings.enableFaceCulling = false;
+                    enabled = false;
                     break;
             }
+
+            renderSettings.faceCullingSettings = new FaceCullingSettings(enabled, cullFaceMode);
         }
 
         private void SetAlphaTesting(NUD.Material material)
         {
-            renderSettings.alphaTestSettings.enableAlphaTesting = (material.alphaTest == (int)NUD.Material.AlphaTest.Enabled);
 
-            renderSettings.alphaTestSettings.alphaFunction = AlphaFunction.Always;
+            bool enabled = (material.alphaTest == (int)NUD.Material.AlphaTest.Enabled);
+
+            AlphaFunction alphaFunc = AlphaFunction.Always;
             if (NUD.Material.alphaFunctionByMatValue.ContainsKey(material.alphaFunction))
-                renderSettings.alphaTestSettings.alphaFunction = NUD.Material.alphaFunctionByMatValue[material.alphaFunction];
+                alphaFunc = NUD.Material.alphaFunctionByMatValue[material.alphaFunction];
 
-            renderSettings.alphaTestSettings.referenceAlpha = material.RefAlpha;
+            float refAlpha = material.RefAlpha / 255.0f;
+
+            renderSettings.alphaTestSettings = new AlphaTestSettings(enabled, alphaFunc, refAlpha);
         }
 
         private void SetDepthTesting(NUD.Material material)
         {
-            if ((material.srcFactor == 4) || (material.srcFactor == 51) || (material.srcFactor == 50))
-                renderSettings.depthTestSettings.depthMask = false;
-            else
-                renderSettings.depthTestSettings.depthMask = true;
+            bool depthMask = (material.srcFactor != 4) && (material.srcFactor != 51) && (material.srcFactor != 50);
+            renderSettings.depthTestSettings = new DepthTestSettings(true, depthMask, DepthFunction.Lequal);
         }
 
         private void SetAlphaBlending(NUD.Material material)
         {
-            renderSettings.alphaBlendSettings.enableAlphaBlending = material.srcFactor != 0 || material.dstFactor != 0;
-            if (NUD.srcFactorsByMatValue.ContainsKey(material.srcFactor))
-                renderSettings.alphaBlendSettings.sourceFactor = NUD.srcFactorsByMatValue[material.srcFactor];
+            renderSettings.alphaBlendSettings.enabled = material.srcFactor != 0 || material.dstFactor != 0;
+            if (NudEnums.srcFactorByMatValue.ContainsKey(material.srcFactor))
+                renderSettings.alphaBlendSettings.sourceFactor = NudEnums.srcFactorByMatValue[material.srcFactor];
 
-            if (NUD.dstFactorsByMatValue.ContainsKey(material.dstFactor))
-                renderSettings.alphaBlendSettings.destinationFactor = NUD.dstFactorsByMatValue[material.dstFactor];
+            if (NudEnums.dstFactorByMatValue.ContainsKey(material.dstFactor))
+                renderSettings.alphaBlendSettings.destinationFactor = NudEnums.dstFactorByMatValue[material.dstFactor];
+
+            // A weird multiplicative blend mode with premultiplied alpha.
+            if (material.dstFactor == 5)
+                renderSettings.alphaBlendSettings.sourceFactor = BlendingFactor.Zero;
 
             renderSettings.alphaBlendSettings.blendingEquationRgb = BlendEquationMode.FuncAdd;
             if (material.dstFactor == 3)
@@ -90,20 +105,20 @@ namespace Smash_Forge
             renderSettings.alphaBlendSettings.blendingEquationAlpha = BlendEquationMode.FuncAdd;
         }
 
-        protected override List<VertexAttributeInfo> GetVertexAttributes()
+        public override List<VertexAttribute> GetVertexAttributes()
         {
-            return new List<VertexAttributeInfo>()
-            {
-                new VertexAttributeInfo("vPosition",   3, VertexAttribPointerType.Float, Vector3.SizeInBytes),
-                new VertexAttributeInfo("vNormal",     3, VertexAttribPointerType.Float, Vector3.SizeInBytes),
-                new VertexAttributeInfo("vTangent",    3, VertexAttribPointerType.Float, Vector3.SizeInBytes),
-                new VertexAttributeInfo("vBiTangent",  3, VertexAttribPointerType.Float, Vector3.SizeInBytes),
-                new VertexAttributeInfo("vUV",         2, VertexAttribPointerType.Float, Vector2.SizeInBytes),
-                new VertexAttributeInfo("vColor",      4, VertexAttribPointerType.Float, Vector4.SizeInBytes),
-                new VertexAttributeInfo("vBone",       4, VertexAttribPointerType.Float, Vector4.SizeInBytes),
-                new VertexAttributeInfo("vWeight",     4, VertexAttribPointerType.Float, Vector4.SizeInBytes),
-                new VertexAttributeInfo("vUV2",        2, VertexAttribPointerType.Float, Vector2.SizeInBytes),
-                new VertexAttributeInfo("vUV3",        2, VertexAttribPointerType.Float, Vector2.SizeInBytes),
+            return new List<VertexAttribute>()
+            {                                                 
+                new VertexFloatAttribute("vPosition",  ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vNormal",    ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vTangent",   ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vBiTangent", ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vUV",        ValueCount.Two,   VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vColor",     ValueCount.Four,  VertexAttribPointerType.Float),
+                new VertexIntAttribute("vBone",   ValueCount.Four,  VertexAttribIntegerType.Int),
+                new VertexFloatAttribute("vWeight",    ValueCount.Four,  VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vUV2",       ValueCount.Two,   VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vUV3",       ValueCount.Two,   VertexAttribPointerType.Float),
             };
         }
     }

@@ -139,9 +139,9 @@ namespace Smash_Forge
                 | (exp | mant) << 13), 0);         // value << ( 23 - 10 )
         }
 
-        public static int fromFloat(float fval, bool littleEndian)
+        public static int fromFloat(float fval)
         {
-            int fbits = FileOutput.SingleToInt32Bits(fval, littleEndian);
+            int fbits = FileOutput.SingleToInt32Bits(fval);
             int sign = fbits >> 16 & 0x8000;          // sign only
             int val = (fbits & 0x7fffffff) + 0x1000; // rounded value
 
@@ -266,6 +266,20 @@ namespace Smash_Forge
             else
             {
                 b[p++] = v[3]; b[p++] = v[2]; b[p++] = v[1]; b[p++] = v[0];
+            }
+        }
+
+        public void writeBytesAt(int p, byte[] bytes)
+        {
+            if(p + bytes.Length > b.Length)
+            {
+                byte[] newb = new byte[b.Length + ((p + bytes.Length + b.Length) - bytes.Length)];
+                Array.Copy(b, newb, b.Length);
+                b = newb;
+            }
+            for(int i =0; i < bytes.Length; i ++)
+            {
+                b[p++] = bytes[i];
             }
         }
 

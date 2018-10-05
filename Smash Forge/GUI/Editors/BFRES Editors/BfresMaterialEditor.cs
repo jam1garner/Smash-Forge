@@ -549,11 +549,11 @@ namespace Smash_Forge
 
             return bitmap;
         }
-        public static Bitmap textureRGBA(BRTI.BRTI_Texture t, int id)
+        public static Bitmap textureRGBA(BRTI.BRTI_Texture t, SFGraphics.GLObjects.Textures.Texture renderTex)
         {
             Bitmap bitmap = new Bitmap(t.width, t.height);
             System.Drawing.Imaging.BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, t.width, t.height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            GL.BindTexture(TextureTarget.Texture2D, id);
+            renderTex.Bind();
             GL.GetTexImage(TextureTarget.Texture2D, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bitmapData.Scan0);
 
             bitmap.UnlockBits(bitmapData);

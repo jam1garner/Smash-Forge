@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using OpenTK;
+using SFGraphics.Utils;
+using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using OpenTK.Graphics.OpenGL;
-using OpenTK;
-using SFGraphics.Tools;
 
 
 namespace Smash_Forge.GUI.Menus
@@ -40,7 +33,7 @@ namespace Smash_Forge.GUI.Menus
             R = color.X;
             G = color.Y;
             B = color.Z;
-            ColorTools.RgbToHsv(R, G, B, out hue, out saturation, out value);
+            ColorUtils.RgbToHsv(R, G, B, out hue, out saturation, out value);
             modeComboBox.SelectedIndex = 0;
             colorXTB.Text = R.ToString(numFormat);
             colorYTB.Text = G.ToString(numFormat);
@@ -139,21 +132,21 @@ namespace Smash_Forge.GUI.Menus
 
         private void UpdateValuesFromRgb()
         {
-            ColorTools.RgbToHsv(R, G, B, out hue, out saturation, out value);
+            ColorUtils.RgbToHsv(R, G, B, out hue, out saturation, out value);
             UpdateColorTrackBars();
             UpdateButtonColor();
         }
 
         private void UpdateValuesFromHsv()
         {
-            ColorTools.HsvToRgb(hue, saturation, value, out R, out G, out B);
+            ColorUtils.HsvToRgb(hue, saturation, value, out R, out G, out B);
             UpdateColorTrackBars();
             UpdateButtonColor();
         }
 
         private void UpdateValuesFromTemp()
         {
-            ColorTools.ColorTemp2RGB(colorTemp, out R, out G, out B);
+            ColorUtils.ColorTemp2RGB(colorTemp, out R, out G, out B);
             UpdateValuesFromRgb();
             UpdateColorTrackBars();
             UpdateButtonColor();
@@ -161,7 +154,7 @@ namespace Smash_Forge.GUI.Menus
 
         private void UpdateButtonColor()
         {
-            colorButton.BackColor = Color.FromArgb(255, ColorTools.FloatToIntClamp(R), ColorTools.FloatToIntClamp(G), ColorTools.FloatToIntClamp(B));
+            colorButton.BackColor = Color.FromArgb(255, ColorUtils.FloatToIntClamp(R), ColorUtils.FloatToIntClamp(G), ColorUtils.FloatToIntClamp(B));
         }
 
         private void UpdateColorTrackBars()

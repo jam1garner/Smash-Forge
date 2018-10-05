@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Globalization;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using OpenTK.Graphics.OpenGL;
-using System.IO;
-using System.Threading;
-using WeifenLuo.WinFormsUI.Docking;
+﻿using OpenTK.Graphics.OpenGL;
+using SFGraphics.GLObjects.Framebuffers;
+using SFGraphics.GLObjects.GLObjectManagement;
+using SFGraphics.GLObjects.Textures;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Meshes;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Imaging;
+using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
-using SFGraphics.GLObjects.Textures;
-using SFGraphics.GLObjects;
-using SFGraphics.GLObjects.GLObjectManagement;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -150,12 +143,13 @@ namespace Smash_Forge
 
         public override void Save()
         {
+            ShowGtxMipmapWarning(currentNut);
+
             if (FilePath.Equals(""))
             {
                 SaveAs();
                 return;
             }
-            PromptUserToConfirmMipRegenIfGtx(currentNut);
 
             FileOutput fileOutput = new FileOutput();
             byte[] n = currentNut.Rebuild();
@@ -222,7 +216,7 @@ namespace Smash_Forge
                 {
                     SetCubeMapText(tex);
                     if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
-                        RenderTools.dummyTextures[NUD.DummyTextures.StageMapHigh] = NUT.CreateTextureCubeMap(tex);
+                        RenderTools.dummyTextures[Filetypes.Models.Nuds.NudEnums.DummyTexture.StageMapHigh] = NUT.CreateTextureCubeMap(tex);
                 }
                 else
                 {
@@ -310,7 +304,7 @@ namespace Smash_Forge
             if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized || glControl1 == null)
                 return;
 
-            if (!OpenTKSharedResources.shaders["Texture"].ProgramCreatedSuccessfully)
+            if (!OpenTKSharedResources.shaders["Texture"].LinkStatusIsOk)
                 return;
 
             glControl1.MakeCurrent();
@@ -329,7 +323,7 @@ namespace Smash_Forge
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             if (textureToRender != null)
             {
-                ScreenDrawing.DrawTexturedQuad(textureToRender.Id, width, height, screenTriangle, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
+                ScreenDrawing.DrawTexturedQuad(textureToRender, width, height, screenTriangle, renderR, renderG, renderB, renderAlpha, keepAspectRatio, 1,
                     currentMipLevel);
             }
 
@@ -370,10 +364,7 @@ namespace Smash_Forge
 
         private void RegenerateAllMipMaps_Click(object sender, EventArgs e)
         {
-            foreach (NutTexture texture in currentNut.Nodes)
-            {
-                NUT.RegenerateMipmapsFromTexture2D(texture);
-            }
+            currentNut.ConvertToDdsNut();
 
             // Refresh the textures.
             currentNut.RefreshGlTexturesByHashId();
@@ -821,7 +812,7 @@ namespace Smash_Forge
                     if (!Directory.Exists(f.SelectedPath))
                         Directory.CreateDirectory(f.SelectedPath);
 
-                    PromptUserToConfirmMipRegenIfGtx(currentNut);
+                    ShowGtxMipmapWarning(currentNut);
 
                     foreach (NutTexture tex in currentNut.Nodes)
                     {
@@ -844,23 +835,11 @@ namespace Smash_Forge
             }
         }
 
-        public static void PromptUserToConfirmMipRegenIfGtx(NUT nut)
+        public static void ShowGtxMipmapWarning(NUT nut)
         {
             if (nut.ContainsGtxTextures())
             {
                 MessageBox.Show("Mipmaps will not be exported correctly for some textures.", "GTX textures detected");
-
-                // TODO: Doesn't work properly in game.
-                //DialogResult result = MessageBox.Show("Mipmaps will not be exported correctly for some textures. " +
-                //    "Would you like to regenerate all mipmaps? Note: this will modify the existing textures.",
-                //    "GTX textures detected", MessageBoxButtons.YesNo);
-                //if (result == DialogResult.Yes)
-                //{
-                //    foreach (NutTexture texture in nut.Nodes)
-                //    {
-                //        NUT.RegenerateMipmapsFromTexture2D(texture);
-                //    }
-                //}
             }
         }
 

@@ -222,7 +222,7 @@ namespace Smash_Forge
         // Dictionary<hash ID, Texture>
         public Dictionary<int, Texture> glTexByHashId = new Dictionary<int, Texture>();
 
-        public ushort Version = 0x200;
+        public ushort Version = 0x0200;
 
         public override Endianness Endian { get; set; }
 
@@ -267,6 +267,25 @@ namespace Smash_Forge
         #region Functions
         NUTEditor Editor;
 
+        public void ConvertToDdsNut(bool regenerateMipMaps = true)
+        {
+            for (int i = 0; i < Nodes.Count; i++)
+            {
+                NutTexture originalTexture = (NutTexture)Nodes[i];
+
+                // Reading/writing mipmaps is only supported for DDS textures,
+                // so we will need to convert all the textures.
+                DDS dds = new DDS(originalTexture);
+                NutTexture ddsTexture = dds.ToNutTexture();
+                ddsTexture.HashId = originalTexture.HashId;
+
+                if (regenerateMipMaps)
+                    RegenerateMipmapsFromTexture2D(ddsTexture);
+
+                Nodes[i] = ddsTexture;
+            }
+        }
+
         private void OpenEditor(object sender, EventArgs args)
         {
             if (Editor == null || Editor.IsDisposed)
@@ -291,9 +310,7 @@ namespace Smash_Forge
 
                 if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    // TODO: Put these methods somewhere that makes sense.
-                    NUTEditor.PromptUserToConfirmMipRegenIfGtx(this);
-
+                    NUTEditor.ShowGtxMipmapWarning(this);
                     File.WriteAllBytes(sfd.FileName, Rebuild());
                 }
             }
@@ -305,8 +322,28 @@ namespace Smash_Forge
             FileOutput o = new FileOutput();
             FileOutput data = new FileOutput();
 
-            o.writeUInt(0x4E545033); // "NTP3"
+            //We always want BE for the first six bytes
+            o.Endian = Endianness.Big;
+            data.Endian = Endianness.Big;
+
+            if (Endian == Endianness.Big)
+            {
+                o.writeUInt(0x4E545033); //NTP3
+            }
+            else if (Endian == Endianness.Little)
+            {
+                o.writeUInt(0x4E545744); //NTWD
+            }
+
+            //Most NTWU NUTs are 0x020E, which isn't valid for NTP3/NTWD
+            if (Version > 0x0200)
+                Version = 0x0200;
             o.writeUShort(Version);
+
+            //After that, endian is used appropriately
+            o.Endian = Endian;
+            data.Endian = Endian;
+
             o.writeUShort((ushort)Nodes.Count);
             o.writeInt(0);
             o.writeInt(0);
@@ -382,7 +419,14 @@ namespace Smash_Forge
                 o.writeInt(0);
                 o.writeUInt(texture.DdsCaps2);
 
-                o.writeUInt((uint)(headerLength + data.size()));
+                if (Version < 0x0200)
+                {
+                    o.writeUInt(0);
+                }
+                else if (Version >= 0x0200)
+                {
+                    o.writeUInt((uint)(headerLength + data.size()));
+                }
                 headerLength -= headerSize;
                 o.writeInt(0);
                 o.writeInt(0);
@@ -419,17 +463,25 @@ namespace Smash_Forge
                     texture.SwapChannelOrderUp();
                 }
 
-                o.writeUInt(0x65587400); // "eXt\0"
+                o.writeBytes(new byte[] {0x65,0x58,0x74,0x00}); // "eXt\0"
                 o.writeInt(0x20);
                 o.writeInt(0x10);
                 o.writeInt(0x00);
 
-                o.writeUInt(0x47494458); // "GIDX"
+                o.writeBytes(new byte[] {0x47,0x49,0x44,0x58}); // "GIDX"
                 o.writeInt(0x10);
                 o.writeInt(texture.HashId);
                 o.writeInt(0);
+
+                if (Version < 0x0200)
+                {
+                    o.writeOutput(data);
+                    data = new FileOutput();
+                }
             }
-            o.writeOutput(data);
+
+            if (Version >= 0x0200)
+                o.writeOutput(data);
 
             return o.getBytes();
         }
@@ -443,31 +495,31 @@ namespace Smash_Forge
         {
             Endian = Endianness.Big;
             d.Endian = Endian;
-            uint magic = d.readUInt();
 
-            if (magic == 0x4E545033)
+            uint magic = d.readUInt();
+            Version = d.readUShort();
+
+            if (magic == 0x4E545033) //NTP3
             {
                 ReadNTP3(d);
             }
-            else if (magic == 0x4E545755)
+            else if (magic == 0x4E545755) //NTWU
             {
                 ReadNTWU(d);
             }
-            else if (magic == 0x4E545744)
+            else if (magic == 0x4E545744) //NTWD
             {
-                d.Endian = Endianness.Little;
+                Endian = Endianness.Little;
+                d.Endian = Endian;
                 ReadNTP3(d);
             }
         }
 
         public void ReadNTP3(FileData d)
         {
-            d.seek(0x4);
+            d.seek(0x6);
 
-            Version = d.readUShort();
             ushort count = d.readUShort();
-            if (Version == 0x100)
-                count -= 1;
 
             d.skip(0x8);
             int headerPtr = 0x10;
@@ -493,7 +545,7 @@ namespace Smash_Forge
                 tex.setPixelFormatFromNutFormat(d.readByte());
                 tex.Width = d.readUShort();
                 tex.Height = d.readUShort();
-                d.skip(4);
+                d.skip(4); //0 in dds nuts (like NTP3) and 1 in gtx nuts; texture type?
                 uint caps2 = d.readUInt();
 
                 bool isCubemap = false;
@@ -512,7 +564,16 @@ namespace Smash_Forge
                     }
                 }
 
-                int dataOffset = d.readInt() + headerPtr;
+                int dataOffset = 0;
+                if (Version < 0x0200)
+                {
+                    dataOffset = headerPtr + headerSize;
+                    d.readInt();
+                }
+                else if (Version >= 0x0200)
+                {
+                    dataOffset = d.readInt() + headerPtr;
+                }
                 d.readInt();
                 d.readInt();
                 d.readInt();
@@ -551,9 +612,6 @@ namespace Smash_Forge
                 tex.HashId = d.readInt();
                 d.skip(4); // padding align 8
 
-                if (Version == 0x100)
-                    dataOffset = d.pos();
-
                 for (byte surfaceLevel = 0; surfaceLevel < surfaceCount; ++surfaceLevel)
                 {
                     TextureSurface surface = new TextureSurface();
@@ -571,7 +629,10 @@ namespace Smash_Forge
                     tex.SwapChannelOrderUp();
                 }
 
-                headerPtr += headerSize;
+                if (Version < 0x0200)
+                    headerPtr += totalSize;
+                else if (Version >= 0x0200)
+                    headerPtr += headerSize;
 
                 Nodes.Add(tex);
             }
@@ -579,9 +640,8 @@ namespace Smash_Forge
 
         public void ReadNTWU(FileData d)
         {
-            d.seek(0x4);
+            d.seek(0x6);
 
-            Version = d.readUShort();
             ushort count = d.readUShort();
 
             d.skip(0x8);
@@ -777,8 +837,7 @@ namespace Smash_Forge
 
             // Create an OpenGL texture with generated mipmaps.
             Texture2D texture2D = new Texture2D();
-            texture2D.LoadImageData(tex.Width, tex.Height, tex.surfaces[0].mipmaps[0],
-                tex.surfaces[0].mipmaps.Count, (InternalFormat)tex.pixelInternalFormat);
+            texture2D.LoadImageData(tex.Width, tex.Height, tex.surfaces[0].mipmaps[0], (InternalFormat)tex.pixelInternalFormat);
 
             texture2D.Bind();
 
@@ -874,8 +933,7 @@ namespace Smash_Forge
                 {
                     // Only load the first level and generate the rest.
                     Texture2D texture = new Texture2D();
-                    texture.LoadImageData(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count, 
-                        (InternalFormat)nutTexture.pixelInternalFormat);
+                    texture.LoadImageData(nutTexture.Width, nutTexture.Height, mipmaps[0], (InternalFormat)nutTexture.pixelInternalFormat);
                     return texture;
                 }
             }
@@ -883,7 +941,7 @@ namespace Smash_Forge
             {
                 // Uncompressed.
                 Texture2D texture = new Texture2D();
-                texture.LoadImageData(nutTexture.Width, nutTexture.Height, mipmaps[0], mipmaps.Count,
+                texture.LoadImageData(nutTexture.Width, nutTexture.Height, mipmaps[0],
                     new TextureFormatUncompressed(nutTexture.pixelInternalFormat, nutTexture.pixelFormat, nutTexture.pixelType));
                 return texture;
             }

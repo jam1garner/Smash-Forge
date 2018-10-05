@@ -4,50 +4,659 @@
         <name>SFGenericModel</name>
     </assembly>
     <members>
+        <member name="T:SFGenericModel.GenericModels.GenericModel">
+            <summary>
+            Allows for drawing a collection of renderable meshes.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.GenericModels.GenericModel.Meshes">
+            <summary>
+            The collection of meshes that 
+            will be rendered during <see cref="M:SFGenericModel.GenericModels.GenericModel.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)"/>.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.GenericModels.GenericModel.#ctor(System.Collections.Generic.List{SFGenericModel.GenericModels.HideableMesh})">
+            <summary>
+            Creates a model from <paramref name="meshes"/>.
+            </summary>
+            <param name="meshes">The meshes used for drawing</param>
+        </member>
+        <member name="M:SFGenericModel.GenericModels.GenericModel.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
+            <summary>
+            Draws all meshes.
+            </summary>
+            <param name="shader">The shader used for drawing</param>
+            <param name="camera">The camera used for drawing all objects in <see cref="P:SFGenericModel.GenericModels.GenericModel.Meshes"/></param>
+        </member>
+        <member name="M:SFGenericModel.GenericModels.GenericModel.DisplayAll">
+            <summary>
+            Enables rendering for all meshes.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.GenericModels.GenericModel.HideAll">
+            <summary>
+            Disables rendering for all meshes.
+            </summary>
+        </member>
+        <member name="T:SFGenericModel.GenericModels.HideableMesh">
+            <summary>
+            A container for a drawable mesh that supports toggling visibility.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.GenericModels.HideableMesh.Mesh">
+            <summary>
+            The mesh to render.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.GenericModels.HideableMesh.Visible">
+            <summary>
+            Indicates if the mesh should be rendered.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.GenericModels.HideableMesh.#ctor(SFGenericModel.IDrawableMesh,System.Boolean)">
+            <summary>
+            Creates a new instance with the specified mesh and visibility.
+            </summary>
+            <param name="mesh"></param>
+            <param name="visible"></param>
+        </member>
+        <member name="T:SFGenericModel.IDrawableMesh">
+            <summary>
+            Defines methods for drawing a mesh using programable shaders.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.IDrawableMesh.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
+            <summary>
+            Draws the geometry using the specified shader and camera.
+            </summary>
+            <param name="shader">The shader used for drawing</param>
+            <param name="camera">The camera used to transform vertex positions</param>
+        </member>
+        <member name="T:SFGenericModel.IndexedVertexData`1">
+            <summary>
+            Creates buffers for indexed vertex data using an interleaved buffer of 
+            vertex attributes.
+            </summary>
+            <typeparam name="T">The struct used for each vertex</typeparam>
+        </member>
+        <member name="P:SFGenericModel.IndexedVertexData`1.VertexSizeInBytes">
+            <summary>
+            The size of <typeparamref name="T"/> in bytes.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.IndexedVertexData`1.VertexCount">
+            <summary>
+            The number of vertices, which is equal to the number of vertex indices.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.IndexedVertexData`1.VertexBuffer">
+            <summary>
+            An interleaved buffer of vertex attributes.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.IndexedVertexData`1.VertexIndexBuffer">
+            <summary>
+            The buffer of vertex indices.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.IndexedVertexData`1.PrimitiveType">
+            <summary>
+            Determines how primitives will be constructed from the vertex data.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.IndexedVertexData`1.#ctor(System.Collections.Generic.List{`0},OpenTK.Graphics.OpenGL.PrimitiveType)">
+            <summary>
+            
+            </summary>
+            <param name="vertices"></param>
+            <param name="primitiveType"></param>
+        </member>
+        <member name="M:SFGenericModel.IndexedVertexData`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
+            <summary>
+            
+            </summary>
+            <param name="vertices"></param>
+            <param name="vertexIndices"></param>
+            <param name="primitiveType"></param>
+        </member>
+        <member name="T:SFGenericModel.RenderState.PolygonModeSettings">
+            <summary>
+            The polygon mode settings set before drawing.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.PolygonModeSettings.Default">
+            <summary>
+            The default polygon mode settings.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.PolygonModeSettings.materialFace">
+            <summary>
+            Determines what faces are effected.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.PolygonModeSettings.polygonMode">
+            <summary>
+            Determines how primitives are drawn.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.PolygonModeSettings.#ctor(OpenTK.Graphics.OpenGL.MaterialFace,OpenTK.Graphics.OpenGL.PolygonMode)">
+            <summary>
+            
+            </summary>
+            <param name="materialFace"></param>
+            <param name="polygonMode"></param>
+        </member>
+        <member name="T:SFGenericModel.RenderState.AlphaBlendSettings">
+            <summary>
+            The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaBlendSettings.Default">
+            <summary>
+            The default alpha blend settings.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaBlendSettings.enabled">
+            <summary>
+            Enables or disables alpha blending.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaBlendSettings.sourceFactor">
+            <summary>
+            The source color is multiplied by <see cref="F:SFGenericModel.RenderState.AlphaBlendSettings.sourceFactor"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaBlendSettings.destinationFactor">
+            <summary>
+            The destination color is multiplied by <see cref="F:SFGenericModel.RenderState.AlphaBlendSettings.destinationFactor"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaBlendSettings.blendingEquationRgb">
+            <summary>
+            The blending operation used for the RGB components.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaBlendSettings.blendingEquationAlpha">
+            <summary>
+            The blending operation used for only the alpha component.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.AlphaBlendSettings.#ctor(System.Boolean,OpenTK.Graphics.OpenGL.BlendingFactor,OpenTK.Graphics.OpenGL.BlendingFactor,OpenTK.Graphics.OpenGL.BlendEquationMode,OpenTK.Graphics.OpenGL.BlendEquationMode)">
+            <summary>
+            
+            </summary>
+            <param name="enabled"></param>
+            <param name="sourceFactor"></param>
+            <param name="destinationFactor"></param>
+            <param name="blendingEquationRgb"></param>
+            <param name="blendingEquationAlpha"></param>
+        </member>
+        <member name="T:SFGenericModel.RenderState.AlphaTestSettings">
+            <summary>
+            The alpha testing state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaTestSettings.Default">
+            <summary>
+            The default alpha test settings.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaTestSettings.enabled">
+            <summary>
+            Enables or disables alpha testing.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaTestSettings.alphaFunction">
+            <summary>
+            The function used to determine if a fragment passes the alpha test.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.AlphaTestSettings.referenceAlpha">
+            <summary>
+            The comparison value used for <see cref="F:SFGenericModel.RenderState.AlphaTestSettings.alphaFunction"/>.
+            <c>1.0</c> is opaque. <c>0.0</c> is transparent.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.AlphaTestSettings.#ctor(System.Boolean,OpenTK.Graphics.OpenGL.AlphaFunction,System.Single)">
+            <summary>
+            
+            </summary>
+            <param name="enabled"></param>
+            <param name="alphaFunction"></param>
+            <param name="referenceAlpha"></param>
+        </member>
+        <member name="T:SFGenericModel.RenderState.DepthTestSettings">
+            <summary>
+            The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.DepthTestSettings.Default">
+            <summary>
+            The default depth test settings.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.DepthTestSettings.enabled">
+            <summary>
+            Enables or disables depth testing.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.DepthTestSettings.depthMask">
+            <summary>
+            Enables writes to the depth buffer when true.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.DepthTestSettings.depthFunction">
+            <summary>
+            The function used to determine if a fragment passes the depth test.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.DepthTestSettings.#ctor(System.Boolean,System.Boolean,OpenTK.Graphics.OpenGL.DepthFunction)">
+            <summary>
+            
+            </summary>
+            <param name="enabled"></param>
+            <param name="depthMask"></param>
+            <param name="depthFunction"></param>
+        </member>
+        <member name="T:SFGenericModel.RenderState.FaceCullingSettings">
+            <summary>
+            The face culling state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.FaceCullingSettings.Default">
+            <summary>
+            The default face culling settings.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.FaceCullingSettings.enabled">
+            <summary>
+            Enables or disables face culling.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.RenderState.FaceCullingSettings.cullFaceMode">
+            <summary>
+            Determines whether back and/or front faces will be culled.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.FaceCullingSettings.#ctor(System.Boolean,OpenTK.Graphics.OpenGL.CullFaceMode)">
+            <summary>
+            
+            </summary>
+            <param name="enabled"></param>
+            <param name="cullFaceMode"></param>
+        </member>
         <member name="T:SFGenericModel.RenderState.RenderSettings">
             <summary>
             Stores the rendering state set before <see cref="T:SFGenericModel.GenericMesh`1"/> is drawn.
             </summary>
         </member>
-        <member name="T:SFGenericModel.RenderState.RenderSettings.AlphaBlendSettings">
+        <member name="F:SFGenericModel.RenderState.RenderSettings.polygonModeSettings">
             <summary>
-            The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
-            </summary>
-        </member>
-        <member name="T:SFGenericModel.RenderState.RenderSettings.AlphaTestSettings">
-            <summary>
-            The alpha testing state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
-            </summary>
-        </member>
-        <member name="T:SFGenericModel.RenderState.RenderSettings.DepthTestSettings">
-            <summary>
-            The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
-            </summary>
-        </member>
-        <member name="T:SFGenericModel.RenderState.RenderSettings.FaceCullingSettings">
-            <summary>
-            The face culling state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            Controls the appearance of primitives.
             </summary>
         </member>
         <member name="F:SFGenericModel.RenderState.RenderSettings.alphaBlendSettings">
             <summary>
-            
+            Controls blending effects and alpha transparency.
             </summary>
         </member>
         <member name="F:SFGenericModel.RenderState.RenderSettings.alphaTestSettings">
             <summary>
-            
+            Controls discarding of fragments based on alpha.
             </summary>
         </member>
         <member name="F:SFGenericModel.RenderState.RenderSettings.depthTestSettings">
             <summary>
-            
+            Controls discarding of fragments based on depth.
             </summary>
         </member>
         <member name="F:SFGenericModel.RenderState.RenderSettings.faceCullingSettings">
             <summary>
+            Controls which faces are culled.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.RenderSettings.Equals(System.Object)">
+            <summary>
             
             </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.RenderSettings.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:SFGenericModel.RenderState.GLRenderSettings">
+            <summary>
+            Contains methods for updating OpenGL rendering state.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.RenderState.GLRenderSettings.SetRenderSettings(SFGenericModel.RenderState.RenderSettings)">
+            <summary>
+            Updates the current OpenGL rendering state based on render settings
+            </summary>
+            <param name="renderSettings">The settings used to perform the update</param>
+        </member>
+        <member name="T:SFGenericModel.ShaderGenerators.UvCoord">
+            <summary>
+            The texture coordinate values used for rendering.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ShaderGenerators.UvCoord.TexCoord0">
+            <summary>
+            The first UV channel.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ShaderGenerators.UvCoord.CamEnvSphere">
+            <summary>
+            View normals remapped to the 0 to 1 range.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ShaderGenerators.UvCoord.CubeMap">
+            <summary>
+            A three component reflection vector used for cube maps.
+            </summary>
+        </member>
+        <member name="T:SFGenericModel.ShaderGenerators.TextureSwizzle">
+            <summary>
+            The channels of the texture assigned to the output color.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ShaderGenerators.TextureSwizzle.Rgb">
+            <summary>
+            Use the red, green, and blue channels. Alpha is set to 1.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ShaderGenerators.TextureSwizzle.R">
+            <summary>
+            Use the red channel for the output RGB channels. Alpha is set to 1.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ShaderGenerators.TextureSwizzle.G">
+            <summary>
+            Use the green channel for the output RGB channels. Alpha is set to 1.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ShaderGenerators.TextureSwizzle.B">
+            <summary>
+            Use the blue channel for the output RGB channels. Alpha is set to 1.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.ShaderGenerators.TextureSwizzle.A">
+            <summary>
+            Use the alpha channel for the output RGB channels. Alpha is set to 1.
+            </summary>
+        </member>
+        <member name="T:SFGenericModel.ShaderGenerators.TextureRenderInfo">
+            <summary>
+            Determines how a <see cref="T:SFGraphics.GLObjects.Textures.Texture"/> should be rendered for generated shaders.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.ShaderGenerators.TextureRenderInfo.Name">
+            <summary>
+            The name of the texture uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.ShaderGenerators.TextureRenderInfo.UvCoord">
+            <summary>
+            Determines what UV coordinates will be used
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.ShaderGenerators.TextureRenderInfo.TextureSwizzle">
+            <summary>
+            The channels of the texture that will be assigned to the output
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.ShaderGenerators.TextureRenderInfo.#ctor(System.String,SFGenericModel.ShaderGenerators.UvCoord,SFGenericModel.ShaderGenerators.TextureSwizzle)">
+            <summary>
+            
+            </summary>
+            <param name="name">The value for <see cref="P:SFGenericModel.ShaderGenerators.TextureRenderInfo.Name"/></param>
+            <param name="uvCoord">The value for <see cref="P:SFGenericModel.ShaderGenerators.TextureRenderInfo.UvCoord"/></param>
+            <param name="textureSwizzle">The value for <see cref="P:SFGenericModel.ShaderGenerators.TextureRenderInfo.TextureSwizzle"/></param>
+        </member>
+        <member name="T:SFGenericModel.ShaderGenerators.TextureShaderGenerator">
+            <summary>
+            Contains methods for generating a texture debug shader. 
+            The swizzling and texture coordinate display is controlled per texture.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.ShaderGenerators.TextureShaderGenerator.CreateShader(System.Collections.Generic.List{SFGenericModel.ShaderGenerators.TextureRenderInfo},SFGenericModel.VertexAttributes.VertexAttribute,SFGenericModel.VertexAttributes.VertexAttribute,SFGenericModel.VertexAttributes.VertexAttribute,System.String@,System.String@)">
+            <summary>
+            Generates a shader for rendering each of the specified textures individually.
+            </summary>
+            <param name="textures">Textures used to generate render modes</param>
+            <param name="position">The vertex position attribute</param>
+            <param name="normal">The normals used for sphere map rendering</param>
+            <param name="uv0">The texture coordinate attribute</param>
+            <param name="vertexSource">The generated GLSL vertex shader source</param>
+            <param name="fragmentSource">The generated GLSL fragment shader source</param>
+            <returns>A new shader that can be used for rendering</returns>
+        </member>
+        <member name="T:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo">
+            <summary>
+            Determines how a <see cref="T:SFGenericModel.VertexAttributes.VertexAttribute"/> should be rendered for generated shaders.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.Name">
+            <summary>
+            The name value of <see cref="P:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.AttributeInfo"/>
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.Normalize">
+            <summary>
+            Normalize the vector before rendering.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.RemapToVisibleRange">
+            <summary>
+            Remap values in range [-1, 1] to range [0, 1]
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.AttributeInfo">
+            <summary>
+            Information about the attribute name and type
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.#ctor(SFGenericModel.VertexAttributes.VertexAttribute,System.Boolean,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="attributeInfo">The value of <see cref="P:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.AttributeInfo"/></param>
+            <param name="normalize">The value of <see cref="P:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.Normalize"/></param>
+            <param name="remapToVisibleRange">The value of <see cref="P:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.RemapToVisibleRange"/></param>
+        </member>
+        <member name="T:SFGenericModel.ShaderGenerators.VertexAttributeShaderGenerator">
+            <summary>
+            Contains methods for automatically generating a debug shader for
+            viewing vertex attributes. 
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.ShaderGenerators.VertexAttributeShaderGenerator.CreateShader(System.Collections.Generic.List{SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo},System.String@,System.String@)">
+            <summary>
+            Generates a shader for rendering each of 
+            the vertex attributes individually.      
+            </summary>
+            <param name="attributes">Attributes used to generate render modes. 
+            The first attribute is also used as the position.</param>
+            <param name="vertexSource">The generated GLSL vertex shader source</param>
+            <param name="fragmentSource">The generated GLSL fragment shader source</param>
+            <returns>A new shader that can be used for rendering</returns>
+        </member>
+        <member name="T:SFGenericModel.VertexAttributes.AttribPointerUtils">
+            <summary>
+            Type information for converting from OpenGL vertex attributes to C#.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributes.AttribPointerUtils.GetSizeInBytes(OpenTK.Graphics.OpenGL.VertexAttribPointerType)">
+            <summary>
+            Returns the size in bytes of the C# equivalent for a specified OpenGL attribute pointer type.
+            </summary>
+            <returns>The size of <paramref name="type"/> in bytes</returns>
+            <exception cref="T:System.NotImplementedException">The size of <paramref name="type"/> is not implemented</exception>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributes.AttribPointerUtils.GetSizeInBytes(OpenTK.Graphics.OpenGL.VertexAttribIntegerType)">
+            <summary>
+            Returns the size in bytes of the C# equivalent for a specified OpenGL attribute pointer type.
+            </summary>
+            <returns>The size of <paramref name="type"/> in bytes</returns>
+            <exception cref="T:System.NotImplementedException">The size of <paramref name="type"/> is not implemented</exception>
+        </member>
+        <member name="T:SFGenericModel.VertexAttributes.ValueCount">
+            <summary>
+            The number of components for a vertex attribute.
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributes.ValueCount.One">
+            <summary>
+            A scalar value
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributes.ValueCount.Two">
+            <summary>
+            A two component vector value
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributes.ValueCount.Three">
+            <summary>
+            A three component vector value
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.VertexAttributes.ValueCount.Four">
+            <summary>
+            A four component vector value
+            </summary>
+        </member>
+        <member name="T:SFGenericModel.VertexAttributes.VertexAttribute">
+            <summary>
+            Stores information for a vertex attribute variable.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.VertexAttributes.VertexAttribute.Name">
+            <summary>
+            The name of the attribute in the shader.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.VertexAttributes.VertexAttribute.ValueCount">
+            <summary>
+            The number of components. Ex: 1 for <see cref="T:System.Single"/> or
+            4 for Vector4.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.VertexAttributes.VertexAttribute.SizeInBytes">
+            <summary>
+            The total size of the attribute's data in bytes.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.VertexAttributes.VertexAttribute.Type">
+            <summary>
+            The data type of the attribute value.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributes.VertexAttribute.SetVertexAttribute(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Configures the vertex attribute for the currently bound array buffer.
+            </summary>
+            <param name="index">The index of the attribute variable in the shader</param>
+            <param name="strideInBytes">The vertex size in bytes</param>
+            <param name="offsetInBytes">The offset in bytes of the attribute in the vertex</param>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributes.VertexAttribute.#ctor(System.String,SFGenericModel.VertexAttributes.ValueCount,OpenTK.Graphics.OpenGL.VertexAttribPointerType)">
+            <summary>
+            
+            </summary>
+            <param name="name"></param>
+            <param name="valueCount"></param>
+            <param name="type"></param>
+        </member>
+        <member name="T:SFGenericModel.VertexAttributes.VertexIntAttribute">
+            <summary>
+            A vertex attribute that preserves integer values. Only integer types are supported.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributes.VertexIntAttribute.#ctor(System.String,SFGenericModel.VertexAttributes.ValueCount,OpenTK.Graphics.OpenGL.VertexAttribIntegerType)">
+            <summary>
+            Creates a new vertex attribute.
+            </summary>
+            <param name="name">The name of the attribute in the shader</param>
+            <param name="valueCount">The number of components for the value</param>
+            <param name="type">The data type of the value</param>
+            <exception cref="T:System.NotSupportedException"><paramref name="type"/> is not 
+            a supported attribute type.</exception>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributes.VertexIntAttribute.SetVertexAttribute(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Configures the vertex attribute for the currently bound array buffer.
+            </summary>
+            <param name="index">The index of the attribute variable in the shader</param>
+            <param name="strideInBytes">The vertex size in bytes</param>
+            <param name="offsetInBytes">The offset in bytes of the attribute in the vertex</param>
+        </member>
+        <member name="T:SFGenericModel.VertexAttributes.VertexAttributeUtils">
+            <summary>
+            Methods for configuring vertex attributes for a <see cref="T:SFGraphics.GLObjects.Shaders.Shader"/>.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributes.VertexAttributeUtils.SetVertexAttribute(SFGraphics.GLObjects.Shaders.Shader,System.String,SFGenericModel.VertexAttributes.VertexAttribute,System.Int32,System.Int32)">
+            <summary>
+            Configures a vertex attribute for the currently bound element array buffer.
+            Returns false on error.
+            </summary>
+            <param name="shader">The current shader used for rendering</param>
+            <param name="name">The name of the attribute variable</param>
+            <param name="attribute">The vertex attribute information</param>
+            <param name="offsetInBytes">The offset into the vertex data</param>
+            <param name="strideInBytes">The size in bytes of each vertex</param>
+            <returns><c>true</c> if the set was successful</returns>
+        </member>
+        <member name="T:SFGenericModel.VertexAttributes.VertexFloatAttribute">
+            <summary>
+            A floating point vertex attribute. Integer types are converted directly to floats.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributes.VertexFloatAttribute.#ctor(System.String,SFGenericModel.VertexAttributes.ValueCount,OpenTK.Graphics.OpenGL.VertexAttribPointerType)">
+            <summary>
+            Creates a new vertex attribute.
+            </summary>
+            <param name="name">The name of the attribute in the shader</param>
+            <param name="valueCount">The number of components for the value</param>
+            <param name="type">The data type of the value</param>
+            <exception cref="T:System.NotSupportedException"><paramref name="type"/> is not 
+            a supported attribute type.</exception>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributes.VertexFloatAttribute.SetVertexAttribute(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Configures the vertex attribute for the currently bound array buffer.
+            </summary>
+            <param name="index">The index of the attribute variable in the shader</param>
+            <param name="strideInBytes">The vertex size in bytes</param>
+            <param name="offsetInBytes">The offset in bytes of the attribute in the vertex</param>
+        </member>
+        <member name="T:SFGenericModel.MeshEventArgs.AttribSetEventArgs">
+            <summary>
+            Contains the data used to set a shader uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.MeshEventArgs.AttribSetEventArgs.Name">
+            <summary>
+            The name of the attribute variable.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.MeshEventArgs.AttribSetEventArgs.ValueCount">
+            <summary>
+            The number of components. Ex: 1 for <see cref="T:System.Single"/> or
+            4 for Vector4.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.MeshEventArgs.AttribSetEventArgs.#ctor(System.String,OpenTK.Graphics.OpenGL.VertexAttribPointerType,SFGenericModel.VertexAttributes.ValueCount)">
+            <summary>
+            
+            </summary>
+            <param name="name"></param>
+            <param name="type"></param>
+            <param name="valueCount"></param>
         </member>
         <member name="T:SFGenericModel.Materials.GenericMaterial">
             <summary>
@@ -58,47 +667,79 @@
             Avoid updating shader uniforms directly.
             </summary>
         </member>
+        <member name="P:SFGenericModel.Materials.GenericMaterial.InitialTextureUnit">
+            <summary>
+            Each texture uniform will be assigned to a unique index, starting with this value.
+            Defaults to <c>0</c>.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.#ctor">
+            <summary>
+            Creates an empty generic material.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.#ctor(System.Int32)">
+            <summary>
+            Creates an empty generic material.
+            </summary>
+            <param name="initialTextureUnit">The starting texture unit for texture uniforms</param>
+        </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddFloat(System.String,System.Single)">
             <summary>
-            
+            Adds a float uniform to the material.
             </summary>
-            <param name="uniformName"></param>
-            <param name="value"></param>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddInt(System.String,System.Int32)">
             <summary>
-            
+            Adds an int uniform to the material.
             </summary>
-            <param name="uniformName"></param>
-            <param name="value"></param>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.AddBoolToInt(System.String,System.Boolean)">
+            <summary>
+            Converts <paramref name="value"/> to an int. <c>1</c> is true. <c>0</c> is <c>false</c>.
+            Adds the resulting int uniform to the material.
+            </summary>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddVector2(System.String,OpenTK.Vector2)">
             <summary>
-            
+            Adds a vec2 uniform to the material.
             </summary>
-            <param name="uniformName"></param>
-            <param name="value"></param>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddVector3(System.String,OpenTK.Vector3)">
             <summary>
-            
+            Adds a vec3 uniform to the material.
             </summary>
-            <param name="uniformName"></param>
-            <param name="value"></param>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddVector4(System.String,OpenTK.Vector4)">
             <summary>
-            
+            Adds a vec4 uniform to the material.
             </summary>
-            <param name="uniformName"></param>
-            <param name="value"></param>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.AddMatrix4(System.String,OpenTK.Matrix4)">
             <summary>
-            
+            Adds a mat4 uniform to the material.
             </summary>
-            <param name="uniformName"></param>
-            <param name="value"></param>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
+        </member>
+        <member name="M:SFGenericModel.Materials.GenericMaterial.AddTexture(System.String,SFGraphics.GLObjects.Textures.Texture)">
+            <summary>
+            Adds a sampler uniform to the material.
+            </summary>
+            <param name="uniformName">The name of the uniform variable</param>
+            <param name="value">The value to set for the uniform</param>
         </member>
         <member name="M:SFGenericModel.Materials.GenericMaterial.SetShaderUniforms(SFGraphics.GLObjects.Shaders.Shader)">
             <summary>
@@ -126,36 +767,49 @@
             The collection of shader uniforms updated during drawing.
             </summary>
         </member>
-        <member name="P:SFGenericModel.GenericMesh`1.PrimitiveType">
+        <member name="T:SFGenericModel.GenericMesh`1.InvalidAttribSetEventHandler">
             <summary>
-            The type of primitive used for drawing.
+            Contains information about the arguments used to set a vertex attribute.
+            </summary>
+            <param name="sender">The <see cref="T:SFGenericModel.GenericMesh`1"/> 
+            instance that generated the error</param>
+            <param name="e">The vertex attribute information</param>
+        </member>
+        <member name="E:SFGenericModel.GenericMesh`1.OnInvalidAttribSet">
+            <summary>
+            Occurs when specified vertex attribute information does not match the shader.
             </summary>
         </member>
-        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0})">
+        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
             Creates a new mesh and initializes the vertex buffer data.
             An index is generated for each vertex in <paramref name="vertices"/>.
-            Vertex data is initialized only once.
             </summary>
             <param name="vertices"></param>
+            <param name="primitiveType"></param>
         </member>
-        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32})">
+        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
             Creates a new mesh and initializes the vertex buffer data.
-            Vertex data is initialized only once.
             </summary>
             <param name="vertices"></param>
             <param name="vertexIndices"></param>
-            
+            <param name="primitiveType">Determines how primitives will be constructed from the vertex data</param>
+        </member>
+        <member name="M:SFGenericModel.GenericMesh`1.#ctor(SFGenericModel.Utils.VertexContainer{`0})">
+            <summary>
+            Creates a new mesh and initializes the vertex buffer data.
+            </summary>
+            <param name="vertexData">The vertex indices, data, and primitive type</param>
         </member>
         <member name="M:SFGenericModel.GenericMesh`1.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera,System.Int32,System.Int32)">
             <summary>
             Sets the uniforms, sets render state, and draws the mesh.
             </summary>
-            <param name="shader"></param>
+            <param name="shader">The shader used for drawing</param>
             <param name="camera">The camera used to set matrix uniforms if not <c>null</c></param>
-            <param name="count"></param>
-            <param name="offset"></param>
+            <param name="count">The number of vertices to draw</param>
+            <param name="offset">The offset into the index buffer</param>
         </member>
         <member name="M:SFGenericModel.GenericMesh`1.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
             <summary>
@@ -179,41 +833,60 @@
             <param name="shader">The shader used for drawing</param>
             <param name="camera">The camera used for drawing"/></param>
         </member>
-        <member name="T:SFGenericModel.VertexAttributeInfo">
+        <member name="M:SFGenericModel.GenericMesh`1.ConfigureVertexAttributes(SFGraphics.GLObjects.Shaders.Shader)">
             <summary>
-            Stores the information used to configure vertex attributes for <see cref="T:SFGenericModel.GenericMesh`1"/>.
+            
+            </summary>
+            <param name="shader"></param>
+        </member>
+        <member name="T:SFGenericModel.Utils.MeshBatchUtils">
+            <summary>
+            Contains methods for grouping vertex data to reduce draw calls and improve performance.
             </summary>
         </member>
-        <member name="F:SFGenericModel.VertexAttributeInfo.name">
+        <member name="M:SFGenericModel.Utils.MeshBatchUtils.GroupContainersByPrimitiveType``1(System.Collections.Generic.List{SFGenericModel.Utils.VertexContainer{``0}})">
             <summary>
-            The name of the attribute in the shader.
+            Creates a new collection of <see cref="T:SFGenericModel.Utils.VertexContainer`1"/> objects with 
+            only a single container for types that support merging.
+            </summary>
+            <typeparam name="T">The vertex data struct</typeparam>
+            <param name="containers">The unoptimized vertex containers</param>
+            <returns></returns>
+        </member>
+        <member name="T:SFGenericModel.Utils.VertexContainer`1">
+            <summary>
+            Stores indexed vertex data and the primitive to be used for rendering.
+            </summary>
+            <typeparam name="T">The struct used for each vertex</typeparam>
+        </member>
+        <member name="F:SFGenericModel.Utils.VertexContainer`1.vertices">
+            <summary>
+            
             </summary>
         </member>
-        <member name="F:SFGenericModel.VertexAttributeInfo.valueCount">
+        <member name="F:SFGenericModel.Utils.VertexContainer`1.vertexIndices">
             <summary>
-            The number of components. Ex: 1 for <see cref="T:System.Single"/> or
-            4 for Vector4.
+            
             </summary>
         </member>
-        <member name="F:SFGenericModel.VertexAttributeInfo.vertexAttribPointerType">
+        <member name="F:SFGenericModel.Utils.VertexContainer`1.primitiveType">
             <summary>
-            The data type of the attribute value.
+            
             </summary>
         </member>
-        <member name="F:SFGenericModel.VertexAttributeInfo.sizeInBytes">
+        <member name="M:SFGenericModel.Utils.VertexContainer`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
-            The total size of the attribute in bytes.
-            This is usually <c>sizeof(float) * valueCount</c>.
+            
             </summary>
+            <param name="vertices"></param>
+            <param name="vertexIndices"></param>
+            <param name="primitiveType"></param>
         </member>
-        <member name="M:SFGenericModel.VertexAttributeInfo.#ctor(System.String,System.Int32,OpenTK.Graphics.OpenGL.VertexAttribPointerType,System.Int32)">
+        <member name="M:SFGenericModel.Utils.VertexContainer`1.#ctor(OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
-            Creates a new vertex attribute.
+            Creates an empty vertex container.
             </summary>
-            <param name="name">The name of the attribute in the shader</param>
-            <param name="valueCount">The number of components for the value</param>
-            <param name="vertexAttribPointerType">The data type of the value</param>
-            <param name="sizeInBytes">The total size in bytes of the value</param>
+            <param name="primitiveType"></param>
         </member>
     </members>
 </doc>

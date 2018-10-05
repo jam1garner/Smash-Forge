@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using OpenTK;
-using OpenTK.Graphics;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.Shaders;
-using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.Textures;
 using Smash_Forge.Rendering.Meshes;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Smash_Forge.Rendering
 {
@@ -27,7 +25,7 @@ namespace Smash_Forge.Rendering
             return screenTriangle;
         }
 
-        public static void DrawTexturedQuad(int texture, int width, int height, Mesh3D screenTriangle,
+        public static void DrawTexturedQuad(Texture texture, int width, int height, Mesh3D screenTriangle,
             bool renderR = true, bool renderG = true, bool renderB = true, bool renderA = false, 
             bool keepAspectRatio = false, float intensity = 1, int currentMipLevel = 0)
         {
@@ -38,7 +36,7 @@ namespace Smash_Forge.Rendering
             EnableAlphaBlendingWhiteBackground();
 
             // Single texture uniform.
-            shader.SetTexture("image", texture, TextureTarget.Texture2D, 0);
+            shader.SetTexture("image", texture, 0);
 
             // Channel toggle uniforms. 
             shader.SetBoolToInt("renderR", renderR);
@@ -64,19 +62,19 @@ namespace Smash_Forge.Rendering
             DrawScreenTriangle(shader, screenTriangle);
         }
 
-        public static void DrawTexturedQuad(int texture, float intensity, Mesh3D screenTriangle)
+        public static void DrawTexturedQuad(Texture texture, float intensity, Mesh3D screenTriangle)
         {
             DrawTexturedQuad(texture, 1, 1, screenTriangle, true, true, true, true, false, intensity, 0);
         }
 
-        public static void DrawScreenQuadPostProcessing(int texture0, int texture1, Mesh3D screenTriangle)
+        public static void DrawScreenQuadPostProcessing(Texture texture0, Texture texture1, Mesh3D screenTriangle)
         {
             // Draws RGB and alpha channels of texture to screen quad.
             Shader shader = OpenTKSharedResources.shaders["ScreenQuad"];
             shader.UseProgram();
 
-            shader.SetTexture("image0", texture0, TextureTarget.Texture2D, 0);
-            shader.SetTexture("image1", texture1, TextureTarget.Texture2D, 1);
+            shader.SetTexture("image0", texture0, 0);
+            shader.SetTexture("image1", texture1, 1);
 
             shader.SetBoolToInt("renderBloom", Runtime.renderBloom);
             shader.SetFloat("bloomIntensity", Runtime.bloomIntensity);

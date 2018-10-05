@@ -3,11 +3,219 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using OpenTK;
+using System.Text;
 
 namespace Smash_Forge
 {
+    public struct SMDVertex
+    {
+        public int Parent;
+        public Vector3 P;
+        public Vector3 N;
+        public Vector2 UV;
+        public int[] Bones;
+        public float[] Weights;
+    }
+
+    public class SMDTriangle
+    {
+        public string Material;
+        public SMDVertex v1, v2, v3;
+    }
+
     public class SMD
     {
+        public VBN Bones;
+        public Animation Animation; // todo
+        public List<SMDTriangle> Triangles;
+
+        public SMD()
+        {
+            Bones = new VBN();
+            Triangles = new List<SMDTriangle>();
+        }
+
+        public SMD(string fname)
+        {
+            Read(fname);
+        }
+
+        public void Read(string fname)
+        {
+            StreamReader reader = File.OpenText(fname);
+            string line;
+
+            string current = "";
+
+            Bones = new VBN();
+            Triangles = new List<SMDTriangle>();
+            Dictionary<int, Bone> BoneList = new Dictionary<int, Bone>();
+
+            int time = 0;
+            while ((line = reader.ReadLine()) != null)
+            {
+                line = Regex.Replace(line, @"\s+", " ");
+                string[] args = line.Replace(";", "").TrimStart().Split(' ');
+
+                if (args[0].Equals("triangles") || args[0].Equals("end") || args[0].Equals("skeleton") || args[0].Equals("nodes"))
+                {
+                    current = args[0];
+                    continue;
+                }
+
+                if (current.Equals("nodes"))
+                {
+                    int id = int.Parse(args[0]);
+                    Bone b = new Bone(Bones);
+                    b.Text = args[1].Replace('"', ' ').Trim();
+                    int s = 2;
+                    while (args[s].Contains("\""))
+                        b.Text += args[s++];
+                    b.parentIndex = int.Parse(args[s]);
+                    BoneList.Add(id, b);
+                }
+
+                if (current.Equals("skeleton"))
+                {
+                    if (args[0].Contains("time"))
+                        time = int.Parse(args[1]);
+                    else
+                    {
+                        if(time == 0)
+                        {
+                            Bone b = BoneList[int.Parse(args[0])];
+                            b.position = new float[3];
+                            b.rotation = new float[3];
+                            b.scale = new float[3];
+                            b.position[0] = float.Parse(args[1]);
+                            b.position[1] = float.Parse(args[2]);
+                            b.position[2] = float.Parse(args[3]);
+                            b.rotation[0] = float.Parse(args[4]);
+                            b.rotation[1] = float.Parse(args[5]);
+                            b.rotation[2] = float.Parse(args[6]);
+                            b.scale[0] = 1f;
+                            b.scale[1] = 1f;
+                            b.scale[2] = 1f;
+
+                            b.pos = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
+                            b.rot = VBN.FromEulerAngles(float.Parse(args[6]), float.Parse(args[5]), float.Parse(args[4]));
+
+                            Bones.bones.Add(b);
+
+                            if(b.parentIndex != -1)
+                                b.parentIndex = Bones.bones.IndexOf(BoneList[b.parentIndex]);
+                        }
+                    }
+                }
+
+                if (current.Equals("triangles"))
+                {
+                    string meshName = args[0];
+                    if (args[0].Equals(""))
+                        continue;
+
+                    SMDTriangle t = new SMDTriangle();
+                    Triangles.Add(t);
+                    t.Material = meshName;
+
+                    for (int j = 0; j < 3; j++)
+                    {
+                        line = reader.ReadLine();
+                        line = Regex.Replace(line, @"\s+", " ");
+                        args = line.Replace(";", "").TrimStart().Split(' ');
+
+                        int parent = int.Parse(args[0]);
+                        SMDVertex vert = new SMDVertex();
+                        vert.P = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
+                        vert.N = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
+                        vert.UV = new Vector2(float.Parse(args[7]), float.Parse(args[8]));
+                        vert.Bones = new int[0];
+                        vert.Weights = new float[0];
+                        if (args.Length > 9)
+                        {
+                            int wCount = int.Parse(args[9]);
+                            int w = 10;
+                            vert.Bones = new int[wCount];
+                            vert.Weights = new float[wCount];
+                            for (int i = 0; i < wCount; i++)
+                            {
+                                vert.Bones[i] = (int.Parse(args[w++]));
+                                vert.Weights[i] = (float.Parse(args[w++]));
+                            }
+                        }
+                        switch (j)
+                        {
+                            case 0: t.v1 = vert; break;
+                            case 1: t.v2 = vert; break;
+                            case 2: t.v3 = vert; break;
+                        }
+                    }
+                }
+            }
+            Bones.reset();
+        }
+
+        public void Save(string FileName)
+        {
+            StringBuilder o = new StringBuilder();
+
+            o.AppendLine("version 1");
+
+            if(Bones != null)
+            {
+                o.AppendLine("nodes");
+                for(int i = 0; i < Bones.bones.Count; i++)
+                    o.AppendLine("  " + i + " \"" + Bones.bones[i].Text + "\" " + Bones.bones[i].parentIndex);
+                o.AppendLine("end");
+
+                o.AppendLine("skeleton");
+                o.AppendLine("time 0");
+                for (int i = 0; i < Bones.bones.Count; i++)
+                {
+                    Bone b = Bones.bones[i];
+                    o.AppendFormat("{0} {1} {2} {3} {4} {5} {6}\n", i, b.position[0], b.position[1], b.position[2], b.rotation[0], b.rotation[1], b.rotation[2]);
+                }
+                o.AppendLine("end");
+            }
+
+            if(Triangles != null)
+            {
+                o.AppendLine("triangles");
+                foreach(SMDTriangle tri in Triangles)
+                {
+                    o.AppendLine(tri.Material);
+                    WriteVertex(o, tri.v1);
+                    WriteVertex(o, tri.v2);
+                    WriteVertex(o, tri.v3);
+                }
+                o.AppendLine("end");
+            }
+
+            File.WriteAllText(FileName, o.ToString());
+        }
+
+        private void WriteVertex(StringBuilder o, SMDVertex v)
+        {
+            o.AppendFormat("{0} {1} {2} {3} {4} {5} {6} {7} {8} ",
+                        v.Parent,
+                        v.P.X, v.P.Y, v.P.Z,
+                        v.N.X, v.N.Y, v.N.Z,
+                        v.UV.X, v.UV.Y);
+            if(v.Weights == null)
+            {
+                o.AppendLine("0");
+            }
+            else
+            {
+                string weights = v.Weights.Length + "";
+                for (int i = 0; i < v.Weights.Length; i++)
+                {
+                    weights += " " + v.Bones[i] + " " + v.Weights[i];
+                }
+                o.AppendLine(weights);
+            }
+        }
+
         public static void toBFRES(string fname)
         {
             StreamReader reader = File.OpenText(fname);

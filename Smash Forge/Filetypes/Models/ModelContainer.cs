@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using SALT.Graphics;
-using System.Windows.Forms;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using OpenTK;
-using System.Drawing;
-using System.Diagnostics;
-using Smash_Forge.Rendering.Lights;
-using Smash_Forge.Rendering;
-using SFGraphics.GLObjects.Shaders;
-using SFGraphics.Tools;
+using SALT.Graphics;
 using SFGraphics.Cameras;
-
+using SFGraphics.GLObjects.Shaders;
+using SFGraphics.GLObjects.Textures;
+using SFGraphics.Utils;
+using Smash_Forge.Filetypes.Melee;
+using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Lights;
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -214,6 +213,21 @@ namespace Smash_Forge
             }
         }
         private DAT datMelee;
+        
+        public MeleeDataNode MeleeData
+        {
+            get
+            {
+                return _meleeData;
+            }
+            set
+            {
+                _meleeData = value;
+                //VBN = datMelee.bones;
+                Refresh();
+            }
+        }
+        private MeleeDataNode _meleeData;
 
         public static Dictionary<string, SkelAnimation> Animations { get; set; }
         public static MovesetManager Moveset { get; set; }
@@ -236,7 +250,12 @@ namespace Smash_Forge
         {
             Nodes.Clear();
 
-            if (DatMelee != null)
+            if (MeleeData != null)
+            {
+                Text = "Melee Data";
+                Nodes.Add(MeleeData);
+            }
+            else if(DatMelee != null)
             {
                 Text = "Melee DAT";
                 Nodes.AddRange(DatMelee.tree.ToArray());
@@ -292,7 +311,7 @@ namespace Smash_Forge
             return null;
         }
 
-        public void Render(Camera camera, int depthMap, Matrix4 lightMatrix, Vector2 screenDimensions, bool drawShadow = false)
+        public void Render(Camera camera, DepthTexture depthMap, Matrix4 lightMatrix, Vector2 screenDimensions, bool drawShadow = false)
         {
             if (!Checked)
                 return;
@@ -304,10 +323,10 @@ namespace Smash_Forge
             shader.UseProgram();
             SetMbnUniforms(camera, shader);
 
-            // Melee DAT
-            shader = OpenTKSharedResources.shaders["Dat"];
-            shader.UseProgram();
-            SetDatUniforms(shader);
+            if (MeleeData != null)
+            {
+                MeleeData.Render(camera);
+            }
 
             if (Bch != null)
             {
@@ -317,7 +336,7 @@ namespace Smash_Forge
                 }
             }
 
-            if (DatMelee != null && OpenTKSharedResources.shaders["Dat"].ProgramCreatedSuccessfully)
+            if (DatMelee != null && OpenTKSharedResources.shaders["Dat"].LinkStatusIsOk)
             {
                 DatMelee.Render(camera.MvpMatrix);
             }
@@ -328,7 +347,7 @@ namespace Smash_Forge
             if (Kcl != null)
             {
                 shader = OpenTKSharedResources.shaders["KCL"];
-                if (!shader.ProgramCreatedSuccessfully)
+                if (!shader.LinkStatusIsOk)
                     return;
 
                 shader.UseProgram();
@@ -344,7 +363,7 @@ namespace Smash_Forge
                 Bfres.Render(camera, Runtime.drawNudColorIdPass);
             }
 
-            if (NUD != null && OpenTKSharedResources.shaders["Nud"].ProgramCreatedSuccessfully && OpenTKSharedResources.shaders["NudDebug"].ProgramCreatedSuccessfully)
+            if (NUD != null && OpenTKSharedResources.shaders["Nud"].LinkStatusIsOk && OpenTKSharedResources.shaders["NudDebug"].LinkStatusIsOk)
             {
                 // Choose the appropriate shader.
                 if (drawShadow)
@@ -368,7 +387,7 @@ namespace Smash_Forge
                 shader.SetInt("debugOption", (int)Runtime.uvChannel);
                 shader.SetBoolToInt("drawShadow", Runtime.drawModelShadow);
 
-                shader.SetTexture("depthMap", depthMap, TextureTarget.Texture2D, 14);
+                shader.SetTexture("depthMap", depthMap, 14);
 
                 SetElapsedDirectUvTime(shader);
 
@@ -513,7 +532,7 @@ namespace Smash_Forge
 
             // reflection color for characters & stages
             float refR, refG, refB = 1.0f;
-            ColorTools.HsvToRgb(Runtime.reflectionHue, Runtime.reflectionSaturation, Runtime.reflectionIntensity, out refR, out refG, out refB);
+            ColorUtils.HsvToRgb(Runtime.reflectionHue, Runtime.reflectionSaturation, Runtime.reflectionIntensity, out refR, out refG, out refB);
             shader.SetVector3("refLightColor", refR, refG, refB);
 
             // character diffuse lights

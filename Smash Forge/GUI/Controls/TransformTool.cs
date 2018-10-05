@@ -237,11 +237,11 @@ namespace Smash_Forge
 
 
             GL.Color3(_hiX ? Color.Yellow : Color.Red);
-            RenderTools.DrawCube(new Vector3(2, 0, 0), 0.25f);
+            ShapeDrawing.DrawCube(new Vector3(2, 0, 0), 0.25f);
             GL.Color3(_hiY ? Color.Yellow : Color.Green);
-            RenderTools.DrawCube(new Vector3(0, 2, 0), 0.25f);
+            ShapeDrawing.DrawCube(new Vector3(0, 2, 0), 0.25f);
             GL.Color3(_hiZ ? Color.Yellow : Color.Blue);
-            RenderTools.DrawCube(new Vector3(0, 0, 2), 0.25f);
+            ShapeDrawing.DrawCube(new Vector3(0, 0, 2), 0.25f);
             GL.PopMatrix();
         }
 
@@ -363,21 +363,21 @@ namespace Smash_Forge
             GL.MultMatrix(ref mat);
 
             GL.Color4(0.25f, 0.25f, 0.25f, 0.2f);
-            RenderTools.drawSphere(Vector3.Zero, Size, 25);
+            ShapeDrawing.drawSphere(Vector3.Zero, Size, 25);
 
             GL.Color3(_hiZ ? Color.Yellow : Color.Green);
             GL.LineWidth(3);
-            RenderTools.drawCircleOutline(Vector3.Zero, Size, 25);
+            ShapeDrawing.drawCircleOutline(Vector3.Zero, Size, 25);
 
             GL.Rotate(90.0f, 0.0f, 1.0f, 0.0f);
 
             GL.Color3(_hiX ? Color.Yellow : Color.Red);
-            RenderTools.drawCircleOutline(Vector3.Zero, Size, 25);
+            ShapeDrawing.drawCircleOutline(Vector3.Zero, Size, 25);
 
             GL.Rotate(90.0f, 1.0f, 0.0f, 0.0f);
 
             GL.Color3(_hiY ? Color.Yellow : Color.Blue);
-            RenderTools.drawCircleOutline(Vector3.Zero, Size, 25);
+            ShapeDrawing.drawCircleOutline(Vector3.Zero, Size, 25);
 
             GL.PopMatrix();
         }

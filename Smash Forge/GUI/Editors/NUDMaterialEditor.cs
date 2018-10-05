@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
-using System.IO;
-using OpenTK.Graphics.OpenGL;
-using System.Timers;
-using System.Diagnostics;
+﻿using OpenTK.Graphics.OpenGL;
+using SFGraphics.GLObjects.GLObjectManagement;
+using SFGraphics.GLObjects.Textures;
+using SFGraphics.Utils;
+using Smash_Forge.Filetypes.Models.Nuds;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Meshes;
-using SFGraphics.Tools;
-using SFGraphics.GLObjects;
-using SFGraphics.GLObjects.GLObjectManagement;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
+using System.IO;
+using System.Timers;
+using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Smash_Forge
 {
@@ -26,6 +21,7 @@ namespace Smash_Forge
         public static Dictionary<int, string> cullModeByMatValue = new Dictionary<int, string>()
         {
             { 0x000, "Cull None"},
+            { 0x002, "Cull Inside (Pokkén)"}, //In Smash, works like any other "invalid" value, but in Pokkén it's probably this.
             { 0x404, "Cull Outside"},
             { 0x405, "Cull Inside"}
         };
@@ -33,6 +29,7 @@ namespace Smash_Forge
         public static Dictionary<string, int> matValueByCullModeName = new Dictionary<string, int>()
         {
             { "Cull None", 0x000 },
+            { "Cull Inside (Pokkén)", 0x002 },
             { "Cull Outside", 0x404 },
             { "Cull Inside", 0x405 }
         };
@@ -844,19 +841,19 @@ namespace Smash_Forge
             if (!tabControl1.SelectedTab.Text.Equals("Textures"))
                 return;
 
-            if (!OpenTKSharedResources.shaders["Texture"].ProgramCreatedSuccessfully)
+            if (!OpenTKSharedResources.shaders["Texture"].LinkStatusIsOk)
                 return;
 
             // Get the selected NUT texture.
             NutTexture nutTexture = null;
-            int displayTexture = 0;
+            Texture displayTexture = null;
             if (currentMaterialList[currentMatIndex].entries.ContainsKey("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
             {
                 int hash = currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash;
 
                 // Display dummy textures from resources. 
-                if (Enum.IsDefined(typeof(NUD.DummyTextures), hash))
-                    displayTexture = RenderTools.dummyTextures[(NUD.DummyTextures)hash].Id;
+                if (Enum.IsDefined(typeof(NudEnums.DummyTexture), hash))
+                    displayTexture = RenderTools.dummyTextures[(NudEnums.DummyTexture)hash];
                 else
                 {
                     foreach (NUT n in Runtime.TextureContainers)
@@ -864,7 +861,7 @@ namespace Smash_Forge
                         if (n.glTexByHashId.ContainsKey(hash))
                         {
                             n.getTextureByID(hash, out nutTexture);
-                            displayTexture = n.glTexByHashId[hash].Id;
+                            displayTexture = n.glTexByHashId[hash];
                             break;
                         }
                     }
@@ -879,7 +876,8 @@ namespace Smash_Forge
                 Mesh3D screenTriangle = ScreenDrawing.CreateScreenTriangle();
 
                 GL.Viewport(texAlphaGlControl.ClientRectangle);
-                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenTriangle, false, false, false, true);
+                if (displayTexture != null)
+                    ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenTriangle, false, false, false, true);
                 texAlphaGlControl.SwapBuffers();
             }
             else
@@ -889,7 +887,8 @@ namespace Smash_Forge
                 Mesh3D screenTriangle = ScreenDrawing.CreateScreenTriangle();
 
                 GL.Viewport(texRgbGlControl.ClientRectangle);
-                ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenTriangle);
+                if (displayTexture != null)
+                    ScreenDrawing.DrawTexturedQuad(displayTexture, 1, 1, screenTriangle);
                 texRgbGlControl.SwapBuffers();
             }
         }
@@ -917,9 +916,9 @@ namespace Smash_Forge
             {
                 string selectedMatPropKey = propertiesListView.SelectedItems[0].Text;
                 colorSelect.BackColor = Color.FromArgb(255,
-                    ColorTools.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][0]),
-                    ColorTools.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][1]),
-                    ColorTools.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][2]));
+                    ColorUtils.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][0]),
+                    ColorUtils.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][1]),
+                    ColorUtils.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][2]));
             }
             catch (ArgumentOutOfRangeException)
             {

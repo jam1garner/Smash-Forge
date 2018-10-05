@@ -12,22 +12,23 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using SALT.Moveset.AnimCMD;
 using SFGraphics.Cameras;
-using SFGraphics.GLObjects;
+using SFGraphics.GLObjects.Framebuffers;
 using SFGraphics.GLObjects.Textures;
-using SFGraphics.Tools;
+using SFGraphics.Utils;
 using Smash_Forge.Params;
 using Smash_Forge.Rendering;
 using Smash_Forge.Rendering.Lights;
 using Smash_Forge.Rendering.Meshes;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.GLObjectManagement;
+using Smash_Forge.Filetypes.Melee;
 
 namespace Smash_Forge
 {
     public partial class ModelViewport : EditorBase
     {
         // View controls
-        public ForgeCamera camera = new ForgeCamera();
+        public ForgeCamera camera = new ForgePerspCamera();
         public GUI.Menus.CameraSettings cameraPosForm = null;
 
         // Rendering Stuff
@@ -246,7 +247,6 @@ namespace Smash_Forge
         public ModelViewport()
         {
             InitializeComponent();
-            camera = new ForgeCamera();
             FilePath = "";
             Text = "Model Viewport";
 
@@ -272,7 +272,7 @@ namespace Smash_Forge
             byamlEditor.MaximumSize = new Size(300, 2000);
             AddControl(byamlEditor);
 
-            // This selection mode is the last annoying mode for now.
+            // This selection mode is the least annoying mode for now.
             // It doesn't really do anything.
             modeBone.Checked = true;
             modeMesh.Checked = false;
@@ -579,8 +579,8 @@ namespace Smash_Forge
                     {
                         // The color is the polygon index (not the render order).
                         // Convert to Vector3 to ignore the alpha.
-                        Vector3 polyColor = ColorTools.Vector4FromColor(Color.FromArgb(p.DisplayId)).Xyz;
-                        Vector3 pickedColor = ColorTools.Vector4FromColor(pixelColor).Xyz;
+                        Vector3 polyColor = ColorUtils.Vector4FromColor(Color.FromArgb(p.DisplayId)).Xyz;
+                        Vector3 pickedColor = ColorUtils.Vector4FromColor(pixelColor).Xyz;
 
                         if (polyColor == pickedColor)
                             return p;
@@ -626,8 +626,8 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(0, 0, glViewport.Width, glViewport.Height);
 
-                camera.renderWidth = glViewport.Width;
-                camera.renderHeight = glViewport.Height;
+                camera.RenderWidth = glViewport.Width;
+                camera.RenderHeight = glViewport.Height;
                 fboRenderWidth = glViewport.Width;
                 fboRenderHeight = glViewport.Height;
                 camera.UpdateFromMouse();
@@ -713,6 +713,14 @@ namespace Smash_Forge
 
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
+                if(node is MeleeDataNode)
+                {
+                    foreach (MeleeRootNode n in ((MeleeDataNode)node).GetAllRoots())
+                    {
+                        currentAnimation.SetFrame(animFrameNum);
+                        currentAnimation.NextFrame(((MeleeRootNode)n).RenderBones);
+                    }
+                }
                 if (!(node is ModelContainer)) continue;
                 ModelContainer m = (ModelContainer)node;
                 currentAnimation.SetFrame(animFrameNum);
@@ -933,7 +941,6 @@ namespace Smash_Forge
             Radius.Sort();
 
             camera.FrameBoundingSphere(new Vector3(X[X.Count - 1], Y[Y.Count - 1], Z[Z.Count - 1]), Radius[Radius.Count - 1]);
-            camera.UpdateMatrices();
         }
 
         private void FrameSelectedPolygon()
@@ -1010,8 +1017,6 @@ namespace Smash_Forge
                 camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 0);
             else
                 camera.ResetToDefaultPosition();
-
-            camera.UpdateMatrices();
         }
 
         #region Moveset
@@ -1180,6 +1185,56 @@ namespace Smash_Forge
 
         public void BatchRenderNudModels()
         {
+            BatchRenderModels("*model.nud", OpenNud);
+        }
+
+        public void BatchRenderMeleeDatModels()
+        {
+            BatchRenderModels("*.dat", OpenMeleeDat);
+        }
+
+        public void BatchRenderBotwBfresModels()
+        {
+            // Get the source model folder and then the output folder. 
+            using (var folderSelect = new FolderSelectDialog())
+            {
+                folderSelect.Title = "Models Directory";
+                if (folderSelect.ShowDialog() == DialogResult.OK)
+                {
+                    using (var outputFolderSelect = new FolderSelectDialog())
+                    {
+                        outputFolderSelect.Title = "Output Renders Directory";
+                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
+                        {
+                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, "*.sbfres", SearchOption.AllDirectories))
+                            {
+                                if (file.ToLower().Contains("tex") || file.ToLower().Contains("animation"))
+                                    continue;
+
+                                try
+                                {
+                                    OpenBfres(file);
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.WriteLine(e.Message);
+                                    Debug.WriteLine(e.StackTrace);
+                                }
+                                BatchRenderViewportToFile(file, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+
+                                // Cleanup the models and nodes but keep the same viewport.
+                                ClearModelContainers();
+                                // Make sure the reference counts get updated for all the GLObjects so we can clean up next frame.
+                                GC.WaitForPendingFinalizers();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void BatchRenderModels(string searchPattern, Action<string> openFiles)
+        {
             // Ignore warnings.
             Runtime.checkNudTexIdOnOpen = false;
 
@@ -1194,11 +1249,11 @@ namespace Smash_Forge
                         outputFolderSelect.Title = "Output Renders Directory";
                         if (outputFolderSelect.ShowDialog() == DialogResult.OK)
                         {
-                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, "*model.nud", SearchOption.AllDirectories))
+                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, searchPattern, SearchOption.AllDirectories))
                             {
                                 try
                                 {
-                                    MainForm.Instance.OpenNud(file, "", this);
+                                    openFiles(file);
                                 }
                                 catch (Exception e)
                                 {
@@ -1222,50 +1277,26 @@ namespace Smash_Forge
             Runtime.checkNudTexIdOnOpen = true;
         }
 
-        public void BatchRenderBotwBfresModels()
+        private void OpenNud(string file)
         {
-            // Get the source model folder and then the output folder. 
-            using (var folderSelect = new FolderSelectDialog())
-            {
-                folderSelect.Title = "Models Directory";
-                if (folderSelect.ShowDialog() == DialogResult.OK)
-                {
-                    using (var outputFolderSelect = new FolderSelectDialog())
-                    {
-                        outputFolderSelect.Title = "Output Renders Directory";
-                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
-                        {
-                            foreach (string file in Directory.EnumerateFiles(folderSelect.SelectedPath, "*.sbfres", SearchOption.AllDirectories))
-                            {
-                                if (file.ToLower().Contains("tex") || file.ToLower().Contains("animation"))
-                                    continue;
+            MainForm.Instance.OpenNud(file, "", this);
+        }
 
-                                try
-                                {
-                                    MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(file), file, "", this);
+        private void OpenMeleeDat(string file)
+        {
+            byte[] data = File.ReadAllBytes(file);
+            MainForm.Instance.OpenMeleeDat(data, file, "", this);
+        }
 
-                                    string nameNoExtension = Path.GetFileNameWithoutExtension(file);
-                                    string textureFileName = Path.GetDirectoryName(file) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
+        private void OpenBfres(string file)
+        {
+            MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(file), file, "", this);
 
-                                    if (File.Exists(textureFileName))
-                                        MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
-                                }
-                                catch (Exception e)
-                                {
-                                    Debug.WriteLine(e.Message);
-                                    Debug.WriteLine(e.StackTrace);
-                                }
-                                BatchRenderViewportToFile(file, folderSelect.SelectedPath, outputFolderSelect.SelectedPath);
+            string nameNoExtension = Path.GetFileNameWithoutExtension(file);
+            string textureFileName = Path.GetDirectoryName(file) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
 
-                                // Cleanup the models and nodes but keep the same viewport.
-                                ClearModelContainers();
-                                // Make sure the reference counts get updated for all the GLObjects so we can clean up next frame.
-                                GC.WaitForPendingFinalizers();
-                            }
-                        }
-                    }
-                }
-            }
+            if (File.Exists(textureFileName))
+                MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
         }
 
         private void BatchRenderStages()
@@ -1294,13 +1325,13 @@ namespace Smash_Forge
             }
         }
 
-        private void BatchRenderViewportToFile(string nudFileName, string sourcePath, string outputPath)
+        private void BatchRenderViewportToFile(string fileName, string sourcePath, string outputPath)
         {
             SetUpAndRenderViewport();
 
             using (Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, true))
             {
-                string renderName = ConvertDirSeparatorsToUnderscore(nudFileName, sourcePath);
+                string renderName = ConvertDirSeparatorsToUnderscore(fileName, sourcePath);
                 screenCapture.Save(outputPath + "\\" + renderName + ".png");
             }
         }
@@ -1682,7 +1713,7 @@ namespace Smash_Forge
                 cameraPosForm.ApplyCameraAnimation(camera, animationTrackBar.Value);
 
             if (Runtime.renderFloor)
-                RenderTools.DrawFloor(camera.MvpMatrix);
+                ShapeDrawing.DrawFloor(camera.MvpMatrix);
 
             // Depth testing isn't set by materials.
             SetDepthTesting();
@@ -1704,13 +1735,13 @@ namespace Smash_Forge
                 // Draw the texture to the screen into a smaller FBO.
                 imageBrightHdrFbo.Bind();
                 GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
-                ScreenDrawing.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1].Id, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
+                ScreenDrawing.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1], imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, width, height);
 
-                ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0].Id, imageBrightHdrFbo.ColorAttachments[0].Id, screenVao);
+                ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0], imageBrightHdrFbo.ColorAttachments[0], screenVao);
             }
 
             FixedFunctionRendering();
@@ -1766,8 +1797,8 @@ namespace Smash_Forge
 
         private void DrawViewportBackground()
         {
-            Vector3 topColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
-            Vector3 bottomColor = ColorTools.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
+            Vector3 topColor = ColorUtils.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
+            Vector3 bottomColor = ColorUtils.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
 
             // Only use the top color for solid color rendering.
             if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
@@ -1787,8 +1818,15 @@ namespace Smash_Forge
         {
             if (Runtime.renderModel || Runtime.renderModelWireframe)
                 foreach (TreeNode m in draw)
+                {
+                    if (m is MeleeDataNode)
+                    {
+                        ((MeleeDataNode)m).Render(camera);
+                    }
                     if (m is ModelContainer)
-                        ((ModelContainer)m).Render(camera, depthMap.Id, lightMatrix, new Vector2(glViewport.Width, glViewport.Height), drawShadow);
+                        ((ModelContainer)m).Render(camera, depthMap, lightMatrix, new Vector2(glViewport.Width, glViewport.Height), drawShadow);
+
+                }
 
             if (ViewComboBox.SelectedIndex == 1)
                 foreach (TreeNode m in draw)
@@ -1805,8 +1843,9 @@ namespace Smash_Forge
                 lvd.Render();
 
             if (Runtime.renderBones)
-                foreach (ModelContainer m in draw)
-                    m.RenderBones();
+                foreach (TreeNode m in draw)
+                    if(m is ModelContainer)
+                        ((ModelContainer)m).RenderBones();
 
             // ACMD
             if (paramManager != null && Runtime.renderHurtboxes && draw.Count > 0 && (draw[0] is ModelContainer))
@@ -1936,7 +1975,7 @@ namespace Smash_Forge
 
             if (e.KeyChar == 'i')
             {
-                ShaderTools.SetupShaders(true);
+                ShaderTools.SetUpShaders(true);
                 ShaderTools.SaveErrorLogs();
             }
         }
@@ -1944,12 +1983,6 @@ namespace Smash_Forge
         private void ModelViewport_KeyDown(object sender, KeyEventArgs e)
         {
             // Super secret commands. I'm probably going to be the only one that uses them anyway...
-            if (Keyboard.GetState().IsKeyDown(Key.X) && Keyboard.GetState().IsKeyDown(Key.M) && Keyboard.GetState().IsKeyDown(Key.L))
-                MaterialXmlBatchExport.ExportAllMaterialsFromFolder();
-
-            if (Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T) && Keyboard.GetState().IsKeyDown(Key.M))
-                BatchRenderStages();
-
             if (Keyboard.GetState().IsKeyDown(Key.L) && Keyboard.GetState().IsKeyDown(Key.S) && Keyboard.GetState().IsKeyDown(Key.T))
                 ParamTools.BatchExportParamValuesAsCsv("light_set");
 
@@ -2061,7 +2094,7 @@ namespace Smash_Forge
         {
             GL.PopAttrib();
             NutTexture tex = ((NutTexture)meshList.filesTreeView.SelectedNode);
-            ScreenDrawing.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HashId].Id, tex.Width, tex.Height, screenVao);
+            ScreenDrawing.DrawTexturedQuad(((NUT)tex.Parent).glTexByHashId[tex.HashId], tex.Width, tex.Height, screenVao);
         }
 
         private void DrawBchTex()
@@ -2101,7 +2134,7 @@ namespace Smash_Forge
             {
                 Color color = Color.White;
 
-                RenderTools.DrawRectangularPrism(new Vector3(light.positionX, light.positionY, light.positionZ),
+                ShapeDrawing.DrawRectangularPrism(new Vector3(light.positionX, light.positionY, light.positionZ),
                     light.scaleX, light.scaleY, light.scaleZ, true);
             }
         }

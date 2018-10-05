@@ -1,23 +1,21 @@
-﻿using System;
-using System.IO;
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using SALT.Graphics;
+using SFGraphics.Cameras;
+using SFGraphics.GLObjects.BufferObjects;
+using SFGraphics.GLObjects.Shaders;
+using SFGraphics.GLObjects.Textures;
+using SFGraphics.Utils;
+using Smash_Forge.Filetypes.Models.Nuds;
+using Smash_Forge.Rendering;
+using Smash_Forge.Rendering.Lights;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Diagnostics;
-using OpenTK.Graphics.OpenGL;
-using OpenTK;
-using System.Windows.Forms;
-using SALT.Graphics;
 using System.Text;
-using Smash_Forge.Rendering.Lights;
-using Smash_Forge.Rendering;
-using Smash_Forge.Rendering.Meshes;
-using SFGraphics.GLObjects.Textures;
-using SFGraphics.GLObjects.Shaders;
-using SFGraphics.GLObjects;
-using SFGraphics.Tools;
-using SFGraphics.Cameras;
-using Smash_Forge.Filetypes.Models.Nuds;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -27,9 +25,15 @@ namespace Smash_Forge
         private BufferObject bonesUbo;
         private BufferObject selectVbo;
 
-        public const int SMASH = 0;
-        public const int POKKEN = 1;
-        public int type = SMASH;
+        //Smash and Pokkén both use version 0x0200 NUD
+        //Smash uses big endian NUD (NDP3)
+        //Pokkén uses little endian NUD (NDWD)
+        public override Endianness Endian { get; set; }
+        public ushort version = 0x0200;
+
+        //If the ModelContainer of the NUD has no bones, we will write the type as 0 regardless of this value
+        //If it does have bones, this value will be written as normal. 2 is common but it can also validly be 0 and other values
+        public ushort type = 2;
         public int boneCount = 0;
         public bool hasBones = false;
         public float[] boundingSphere = new float[4];
@@ -44,69 +48,6 @@ namespace Smash_Forge
         public int drawingOrder = 0;
         public bool useDirectUVTime = false;
         public string modelType = "";
-
-        public override Endianness Endian { get; set; }
-
-        public static readonly Dictionary<int, BlendingFactor> srcFactorsByMatValue = new Dictionary<int, BlendingFactor>()
-        {
-            { 0x00, BlendingFactor.One },
-            { 0x01, BlendingFactor.SrcAlpha},
-            { 0x02, BlendingFactor.One},
-            { 0x03, BlendingFactor.SrcAlpha},
-            { 0x04, BlendingFactor.SrcAlpha},
-        };
-
-        public static readonly Dictionary<int, BlendingFactor> dstFactorsByMatValue = new Dictionary<int, BlendingFactor>()
-        {
-            { 0x00, BlendingFactor.Zero },
-            { 0x01, BlendingFactor.OneMinusSrcAlpha},
-            { 0x02, BlendingFactor.One},
-            { 0x03, BlendingFactor.One},
-        };
-
-        public static readonly Dictionary<int, TextureWrapMode> wrapmode = new Dictionary<int, TextureWrapMode>()
-        {
-            { 0x01, TextureWrapMode.Repeat},
-            { 0x02, TextureWrapMode.MirroredRepeat},
-            { 0x03, TextureWrapMode.ClampToEdge}
-        };
-
-        public static readonly Dictionary<int, TextureMinFilter> minfilter = new Dictionary<int, TextureMinFilter>()
-        {
-            { 0x00, TextureMinFilter.LinearMipmapLinear},
-            { 0x01, TextureMinFilter.Nearest},
-            { 0x02, TextureMinFilter.Linear},
-            { 0x03, TextureMinFilter.NearestMipmapLinear},
-        };
-
-        public static readonly Dictionary<int, TextureMagFilter> magfilter = new Dictionary<int, TextureMagFilter>()
-        {
-            { 0x00, TextureMagFilter.Linear},
-            { 0x01, TextureMagFilter.Nearest},
-            { 0x02, TextureMagFilter.Linear}
-        };
-
-        public enum TextureFlags
-        {
-            Glow = 0x00000080,
-            Shadow = 0x00000040,
-            DummyRamp = 0x00000020,
-            SphereMap = 0x00000010,
-            StageAOMap = 0x00000008,
-            RampCubeMap = 0x00000004,
-            NormalMap = 0x00000002,
-            DiffuseMap = 0x00000001
-        }
-
-        public enum DummyTextures
-        {
-            StageMapLow = 0x10101000,
-            StageMapHigh = 0x10102000,
-            PokemonStadium = 0x10040001,
-            PunchOut = 0x10040000,
-            DummyRamp = 0x10080000,
-            ShadowMap = 0x10100000
-        }
 
         public static readonly Dictionary<int, Color> lightSetColorByIndex = new Dictionary<int, Color>()
         {
@@ -199,7 +140,7 @@ namespace Smash_Forge
                             }
 
                             // Checks to see if the texture ID is a valid dummy texture.
-                            foreach (DummyTextures dummyTex in Enum.GetValues(typeof(DummyTextures)))
+                            foreach (NudEnums.DummyTexture dummyTex in Enum.GetValues(typeof(NudEnums.DummyTexture)))
                             {
                                 if (matTex.hash == (int)dummyTex)
                                 {
@@ -339,7 +280,7 @@ namespace Smash_Forge
 
             // Draw NUD bounding box. 
             GL.Color4(Color.GhostWhite);
-            RenderTools.DrawCube(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], true);
+            ShapeDrawing.DrawCube(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], true);
 
             // Draw all the mesh bounding boxes. Selected: White. Deselected: Orange.
             foreach (Mesh mesh in Nodes)
@@ -355,11 +296,11 @@ namespace Smash_Forge
                     {
                         // Use the center of the bone as the bounding box center for NSC meshes. 
                         Vector3 center = ((ModelContainer)Parent).VBN.bones[mesh.singlebind].pos;
-                        RenderTools.DrawCube(center, mesh.boundingSphere[3], true);
+                        ShapeDrawing.DrawCube(center, mesh.boundingSphere[3], true);
                     }
                     else
                     {
-                        RenderTools.DrawCube(new Vector3(mesh.boundingSphere[0], mesh.boundingSphere[1], mesh.boundingSphere[2]), mesh.boundingSphere[3], true);
+                        ShapeDrawing.DrawCube(new Vector3(mesh.boundingSphere[0], mesh.boundingSphere[1], mesh.boundingSphere[2]), mesh.boundingSphere[3], true);
                     }
                 }
             }
@@ -560,9 +501,9 @@ namespace Smash_Forge
             }
         }
 
-        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<DummyTextures, Texture> dummyTextures, bool drawId = false)
+        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, bool drawId = false)
         {
-            if (p.vertexIndices.Count <= 3)
+            if (p.vertexIndices.Count < 3)
                 return;
 
             Material material = p.materials[0];
@@ -579,7 +520,7 @@ namespace Smash_Forge
             p.renderMesh.Draw(shader, camera);
         }
 
-        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<DummyTextures, Texture> dummyTextures, int id = 0, bool drawId = false)
+        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, int id = 0, bool drawId = false)
         {
             // Shader Uniforms
             shader.SetUint("flags", material.Flags);
@@ -597,7 +538,7 @@ namespace Smash_Forge
             shader.SetVector3("cameraPosition", camera.Position);
             shader.SetFloat("zBufferOffset", material.zBufferOffset);
             shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
-            shader.SetVector3("colorId", ColorTools.Vector4FromColor(Color.FromArgb(id)).Xyz);
+            shader.SetVector3("colorId", ColorUtils.Vector4FromColor(Color.FromArgb(id)).Xyz);
             shader.SetBoolToInt("drawId", drawId);
 
             // The fragment alpha is set to 1 when alpha blending/testing aren't used.
@@ -668,7 +609,7 @@ namespace Smash_Forge
             if (lightSetNumber >= 0 && lightSetNumber <= maxLightSet)
             {
                 Color color = lightSetColorByIndex[lightSetNumber];
-                shader.SetVector3("lightSetColor", ColorTools.Vector4FromColor(color).Xyz);
+                shader.SetVector3("lightSetColor", ColorUtils.Vector4FromColor(color).Xyz);
             }
         }
 
@@ -698,10 +639,10 @@ namespace Smash_Forge
             // Override the model color with white in the shader.
             shader.SetInt("drawSelection", 1);
 
-            GL.PolygonMode(MaterialFace.Front, PolygonMode.Line);
             GL.LineWidth(2.0f);
+            p.renderMesh.SetWireFrame(true);
             p.renderMesh.Draw(shader, camera);
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            p.renderMesh.SetWireFrame(false);
 
             shader.SetInt("drawSelection", 0);
 
@@ -750,15 +691,15 @@ namespace Smash_Forge
                 foreach (Polygon p in m.Nodes)
                 {
                     //vertexDataVbo.Bind();
-                    GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
-                    GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vBone"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 72);
-                    GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
+                    GL.VertexAttribPointer(shader.GetAttribLocation("vPosition"), 3, VertexAttribPointerType.Float, false, DisplayVertex.Size, 0);
+                    GL.VertexAttribPointer(shader.GetAttribLocation("vBone"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 72);
+                    GL.VertexAttribPointer(shader.GetAttribLocation("vWeight"), 4, VertexAttribPointerType.Float, false, DisplayVertex.Size, 88);
 
                     selectVbo.Bind();
                     if (p.selectedVerts == null)
                         return;
                     selectVbo.SetData(p.selectedVerts, BufferUsageHint.StaticDraw);
-                    GL.VertexAttribPointer(shader.GetVertexAttributeUniformLocation("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
+                    GL.VertexAttribPointer(shader.GetAttribLocation("vSelected"), 1, VertexAttribPointerType.Int, false, sizeof(int), 0);
 
                     //vertexIndexEbo.Bind();
                     GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -883,16 +824,24 @@ namespace Smash_Forge
 
             // read header
             string magic = fileData.readString(0, 4);
+            fileData.seek(4);
+            if (magic.Equals("NDP3"))
+                Endian = Endianness.Big;
+            else if (magic.Equals("NDWD"))
+                Endian = Endianness.Little;
 
-            if (magic.Equals("NDWD"))
-                fileData.Endian = Endianness.Little;
+            fileData.Endian = Endian;
+            fileData.readUInt(); //Filesize
 
-            Endian = fileData.Endian;
+            //Always read version in BE
+            fileData.Endian = Endianness.Big;
+            version = fileData.readUShort();
+            fileData.Endian = Endian;
 
-            fileData.seek(0xA);
             int polysets = fileData.readUShort();
+            type = fileData.readUShort();
             boneCount = fileData.readUShort();
-            fileData.skip(2);  // somethingsets
+
             int polyClumpStart = fileData.readInt() + 0x30;
             int polyClumpSize = fileData.readInt();
             int vertClumpStart = polyClumpStart + polyClumpSize;
@@ -927,8 +876,9 @@ namespace Smash_Forge
                 obj[i].name = (fileData.readString());
                 // read name string
                 fileData.seek(temp);
-                boneflags[i] = fileData.readInt();
-                obj[i].singlebind = fileData.readShort();
+                fileData.readUShort(); //Seems to be always 0
+                boneflags[i] = fileData.readUShort(); //Controls whether it's single-bound, weighted, or unbound
+                obj[i].singlebind = fileData.readShort(); //Bone index if it is single-bound, otherwise -1
                 obj[i].polyCount = fileData.readUShort();
                 obj[i].positionb = fileData.readInt();
             }
@@ -988,7 +938,7 @@ namespace Smash_Forge
                 Material m = new Material();
                 mats.Add(m);
 
-                m.Flags = (uint)d.readInt();
+                m.Flags = d.readUInt();
                 d.skip(4);
                 m.srcFactor = d.readUShort();
                 ushort texCount = d.readUShort();
@@ -996,10 +946,9 @@ namespace Smash_Forge
                 m.alphaTest = d.readByte();
                 m.alphaFunction = d.readByte();
 
-                d.skip(1); // unknown
-                m.RefAlpha = d.readByte();
+                m.RefAlpha = d.readUShort();
                 m.cullMode = d.readUShort();
-                d.skip(4); // padding
+                d.skip(4); // unknown
                 m.unkownWater = d.readInt();
                 m.zBufferOffset = d.readInt();
 
@@ -1020,19 +969,25 @@ namespace Smash_Forge
                     m.textures.Add(tex);
                 }
 
-                int head = 0x20;
-
-                if(d.Endian != Endianness.Little)
-                while (head != 0)
+                int matAttSize;
+                do
                 {
-                    head = d.readInt();
+                    int pos = d.pos();
+
+                    matAttSize = d.readInt();
                     int nameStart = d.readInt();
+                    //valueCount has the same position regardless of endianness
+                    //This could either mean that it's one byte long, or that it's always BE
+                    //We assume the former, for now
+                    d.skip(3);
+                    byte valueCount = d.readByte();
+                    d.skip(4); //Unknown, always 0, probably padding
+
+                    //If it doesn't have any values, we want to skip over it
+                    if (valueCount == 0)
+                        goto Continue;
 
                     string name = d.readString(nameOffset + nameStart, -1);
-
-                    int pos = d.pos();
-                    int valueCount = d.readInt();
-                    d.skip(4);
 
                     // Material properties should always have 4 values. Use 0 for remaining values.
                     float[] values = new float[4];
@@ -1045,13 +1000,12 @@ namespace Smash_Forge
                     }
                     m.entries.Add(name, values);
 
-                    d.seek(pos);
-
-                    if (head == 0)
-                        d.skip(0x20 - 8);
+                Continue:
+                    if (matAttSize == 0)
+                        d.seek(pos + 0x10 + (valueCount * 4));
                     else
-                        d.skip(head - 8);
-                }
+                        d.seek(pos + matAttSize);
+                } while (matAttSize != 0);
 
                 if (propoff == p.texprop1)
                     propoff = p.texprop2;
@@ -1167,7 +1121,7 @@ namespace Smash_Forge
                 }
                 else if (vertexType == (int)Polygon.VertexTypes.NormalsTanBiTanFloat)
                 {
-                    d.skip(4);
+                    d.skip(4); //Don't know what this is but it's not nothing
                     v.nrm.X = d.readFloat();
                     v.nrm.Y = d.readFloat();
                     v.nrm.Z = d.readFloat();
@@ -1275,15 +1229,24 @@ namespace Smash_Forge
         {
             FileOutput d = new FileOutput(); // data
             d.Endian = Endianness.Big;
+            if (Endian == Endianness.Big)
+                d.writeString("NDP3");
+            else if (Endian == Endianness.Little)
+                d.writeString("NDWD");
 
-            d.writeString("NDP3");
-            d.writeInt(0); //FileSize
-            d.writeShort(0x200); //  version num
+            d.Endian = Endian;
+            d.writeInt(0); //Filesize
+
+            //Always write version in BE
+            d.Endian = Endianness.Big;
+            d.writeUShort(version);
+            d.Endian = Endian;
+
             d.writeShort(Nodes.Count); // polysets
 
             boneCount = ((ModelContainer)Parent).VBN == null ? 0 : ((ModelContainer)Parent).VBN.bones.Count;
 
-            d.writeShort(boneCount == 0 ? 0 : 2); // type
+            d.writeShort(boneCount == 0 ? 0 : type); // type
             d.writeShort(boneCount == 0 ? boneCount : boneCount - 1); // Number of bones
 
             d.writeInt(0); // polyClump start
@@ -1298,19 +1261,19 @@ namespace Smash_Forge
 
             // other sections....
             FileOutput obj = new FileOutput();
-            obj.Endian = Endianness.Big;
+            obj.Endian = Endian;
             FileOutput tex = new FileOutput();
-            tex.Endian = Endianness.Big;
+            tex.Endian = Endian;
 
             FileOutput poly = new FileOutput();
-            poly.Endian = Endianness.Big;
+            poly.Endian = Endian;
             FileOutput vert = new FileOutput();
-            vert.Endian = Endianness.Big;
+            vert.Endian = Endian;
             FileOutput vertadd = new FileOutput();
-            vertadd.Endian = Endianness.Big;
+            vertadd.Endian = Endian;
 
             FileOutput str = new FileOutput();
-            str.Endian = Endianness.Big;
+            str.Endian = Endian;
 
             // obj descriptor
             FileOutput tempstring = new FileOutput();
@@ -1336,8 +1299,9 @@ namespace Smash_Forge
                 tempstring.writeByte(0);
                 tempstring.align(16);
 
-                d.writeInt(m.boneflag); // ID
-                d.writeShort(m.singlebind); // Single Bind 
+                d.writeUShort(0);
+                d.writeUShort((ushort)m.boneflag); // Bind method
+                d.writeShort(m.singlebind); // Bone index
                 d.writeShort(m.Nodes.Count); // poly count
                 d.writeInt(obj.size() + 0x30 + Nodes.Count * 0x30); // position start for obj
 
@@ -1624,10 +1588,10 @@ namespace Smash_Forge
                 d.writeShort(mat.dstFactor);
                 d.writeByte(mat.alphaTest);
                 d.writeByte(mat.alphaFunction);
-                d.writeByte(0); // unknown padding?
-                d.writeByte(mat.RefAlpha);
+
+                d.writeShort(mat.RefAlpha);
                 d.writeShort(mat.cullMode);
-                d.writeInt(0); // padding
+                d.writeInt(0); // unknown
                 d.writeInt(mat.unkownWater);
                 d.writeInt(mat.zBufferOffset);
 
@@ -1647,8 +1611,22 @@ namespace Smash_Forge
                     d.writeShort(tex.unknown2);
                 }
 
+                //If there are no material attributes, write a "blank" entry
+                if (mat.entries.Count == 0)
+                {
+                    d.writeInt(0);
+                    d.writeInt(0);
+                    d.writeInt(0);
+                    d.writeInt(0);
+                }
+
                 for (int i = 0; i < mat.entries.Count; i++)
                 {
+                    //It can be seen in Pokkén NDWD that the last material attribute name
+                    // does not need to be aligned to 16. So, we do the alignment before writing
+                    // the name rather than after.
+                    str.align(16);
+
                     float[] data;
                     mat.entries.TryGetValue(mat.entries.ElementAt(i).Key, out data);
                     d.writeInt(i == mat.entries.Count - 1 ? 0 : 16 + 4 * data.Length);
@@ -1656,9 +1634,9 @@ namespace Smash_Forge
 
                     str.writeString(mat.entries.ElementAt(i).Key);
                     str.writeByte(0);
-                    str.align(16);
 
-                    d.writeInt(data.Length);
+                    d.writeByte(0); d.writeByte(0); d.writeByte(0);
+                    d.writeByte((byte)data.Length);
                     d.writeInt(0);
                     foreach (float f in data)
                         d.writeFloat(f);
@@ -1709,7 +1687,7 @@ namespace Smash_Forge
                         foreach (MatTexture matTexture in material.textures)
                         {
                             // Don't change dummy texture IDs.
-                            if (Enum.IsDefined(typeof(DummyTextures), matTexture.hash))
+                            if (Enum.IsDefined(typeof(NudEnums.DummyTexture), matTexture.hash))
                                 continue;
 
                             // Only change the first 3 bytes.

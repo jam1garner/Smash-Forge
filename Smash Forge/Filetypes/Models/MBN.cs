@@ -1,11 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Diagnostics;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using System.Windows.Forms;
 using SFGraphics.GLObjects.Shaders;
+using SFGraphics.GLObjects.Textures;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
@@ -589,7 +589,7 @@ namespace Smash_Forge
 
             // display
             public bool isVisible = true;
-            public int texId = 0;
+            public Texture texId;
 
             public Mesh()
             {

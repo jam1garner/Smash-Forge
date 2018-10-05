@@ -264,22 +264,22 @@ namespace Smash_Forge
 
                     if (h.isSphere)
                     {
-                        Rendering.RenderTools.drawSphereTransformedVisible(va, h.Size, 30, b.transform);
+                        Rendering.ShapeDrawing.drawSphereTransformedVisible(va, h.Size, 30, b.transform);
                     }
                     else
                     {
-                        Rendering.RenderTools.drawReducedCylinderTransformed(va, va2, h.Size, b.transform);
+                        Rendering.ShapeDrawing.drawReducedCylinderTransformed(va, va2, h.Size, b.transform);
                     }
                     if (Runtime.SelectedHurtboxID == h.ID)
                     {
                         GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorSelected));
                         if (h.isSphere)
                         {
-                            Rendering.RenderTools.drawWireframeSphereTransformedVisible(va, h.Size, 20, b.transform);
+                            Rendering.ShapeDrawing.drawWireframeSphereTransformedVisible(va, h.Size, 20, b.transform);
                         }
                         else
                         {
-                            Rendering.RenderTools.drawWireframeCylinderTransformed(va, va2, h.Size, b.transform);
+                            Rendering.ShapeDrawing.drawWireframeCylinderTransformed(va, va2, h.Size, b.transform);
                         }
                     }
                 }
