@@ -44,6 +44,7 @@ namespace Smash_Forge
         public ByamlList byamlList = new ByamlList() { ShowHint = DockState.DockLeft };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
         public HurtboxList hurtboxList = new HurtboxList() { ShowHint = DockState.DockLeft };
+        public LMList lmList = new LMList() { ShowHint = DockState.DockLeft };
 
         // Editors and Forms
         public NUTEditor nutEditor = null;
@@ -245,6 +246,11 @@ namespace Smash_Forge
             {
                 lvdList = new LVDList();
                 lvdList.fillList();
+            }
+            if (lmList.IsDisposed)
+            {
+                lmList = new LMList();
+                lmList.fillList();
             }
             if (byamlList.IsDisposed)
             {
@@ -1520,6 +1526,13 @@ namespace Smash_Forge
                     mvp.LVD = new LVD(fileName);
                 }
             }
+            if (fileName.EndsWith(".lm"))
+            {
+                mvp.ViewComboBox.SelectedItem = "LM Editor";
+                mvp.Lumen = new Lumen(fileName);
+                LMList LM = new LMList { ShowHint = DockState.DockLeft };
+                AddDockedControl(LM);
+            }
 
             if (fileName.EndsWith(".mdl0"))
             {
@@ -2392,6 +2405,11 @@ namespace Smash_Forge
             ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
             if (mvp != null)
                 mvp.BatchRenderMeleeDatModels();
+        }
+
+        private void lMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

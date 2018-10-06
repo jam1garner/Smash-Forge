@@ -1,25 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OpenTK;
+using System.IO;
 
-namespace VBN_Editor
+namespace Smash_Forge
 {
     public class Texlist : FileBase
     {
-        public struct Texture
+        public enum AtlasFlag : int
         {
-            public enum Flags : int
-            {
-                None = 0x00000000,
-                Dynamic = 0x01000000
-            }
+            None = 0x00000000,
+            Dynamic = 0x01000000
+        }
 
+        public class Texture
+        {
             public string name;
-
-            public Flags flags;
 
             public Vector2 topLeft;
             public Vector2 botRight;
@@ -30,50 +26,57 @@ namespace VBN_Editor
             public short atlasId;
         }
 
-        public List<Texture> textures { get; set; }
-        public int numAtlases;
+        public List<Texture> textures = new List<Texture>();
+        public List<AtlasFlag> atlases = new List<AtlasFlag>();
 
-        public override System.IO.Endianness Endian { get; set; }
+        public override Endianness Endian
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
 
         public Texlist()
         {
-            textures = new List<Texture>();
-            numAtlases = 0;
         }
 
-        public Texlist(string filename) : this()
+        public Texlist(string filename)
         {
             Read(filename);
         }
 
         public override void Read(string filename)
         {
-            FileData f = new FileData(filename);
-            // TODO: 3ds 
-            f.Endian = System.IO.Endianness.Big;
+            FileData buf = new FileData(filename);
+            buf.Endian = Endianness.Little;
 
-            f.seek(0x06);
+            buf.seek(0x06);
 
-            numAtlases = f.readUShort();
-            int numTextures = f.readUShort();
-            int flagsOffset = f.readUShort();
-            int entriesOffset = f.readUShort();
-            int stringsOffset = f.readUShort();
+            short numAtlases = buf.readShort();
+            short numTextures = buf.readShort();
+            short flagsOffset = buf.readShort();
+            short entriesOffset = buf.readShort();
+            short stringsOffset = buf.readShort();
 
-            List<Texture.Flags> flags = new List<Texture.Flags>();
 
-            f.seek(flagsOffset);
-            for (int i = 0; i < numTextures; i++)
+            buf.seek(flagsOffset);
+            for (int i = 0; i < numAtlases; i++)
             {
-                flags.Add((Texture.Flags)f.readInt());
+                atlases.Add((AtlasFlag)buf.readInt());
             }
 
-            f.seek(entriesOffset);
+            buf.seek(entriesOffset);
             for (int i = 0; i < numTextures; i++)
             {
                 Texture entry = new Texture();
-                int nameOffset = f.readInt();
-                int nameOffset2 = f.readInt();
+                int nameOffset = buf.readInt();
+                int nameOffset2 = buf.readInt();
 
                 // I have yet to see this.
                 if (nameOffset != nameOffset2)
@@ -81,25 +84,74 @@ namespace VBN_Editor
                     throw new NotImplementedException("texlist name offsets don't match?");
                 }
 
-                entry.name = f.readString(stringsOffset + nameOffset, -1);
-                entry.flags = flags[i];
+                buf.seek(stringsOffset + nameOffset);
+                entry.name = buf.readString();
 
-                entry.topLeft = new Vector2(f.readFloat(), f.readFloat());
-                entry.botRight = new Vector2(f.readFloat(), f.readFloat());
+                entry.topLeft = new Vector2(buf.readFloat(), buf.readFloat());
+                entry.botRight = new Vector2(buf.readFloat(), buf.readFloat());
 
-                entry.width = (short)f.readShort();
-                entry.height = (short)f.readShort();
-                entry.atlasId = (short)f.readShort();
+                entry.width = buf.readShort();
+                entry.height = buf.readShort();
+                entry.atlasId = buf.readShort();
 
                 textures.Add(entry);
 
-                f.skip(0x02); // Padding.
+                buf.skip(0x02); // Padding.
             }
         }
 
         public override byte[] Rebuild()
         {
-            throw new NotImplementedException();
+            FileOutput buf = new FileOutput();
+            buf.Endian = Endianness.Little;
+
+            var flagsOffset = 0x10;
+            var entriesOffset = flagsOffset + (atlases.Count * 4);
+            var stringsOffset = entriesOffset + (textures.Count * 0x20);
+
+            buf.writeInt(0x544C5354); // TLST
+            buf.writeShort(0); // idk
+            buf.writeShort((short)atlases.Count);
+            buf.writeShort((short)textures.Count);
+            buf.writeShort((short)flagsOffset);
+            buf.writeShort((short)entriesOffset);
+            buf.writeShort((short)stringsOffset);
+
+            // flags
+            foreach (var flag in atlases)
+            {
+                buf.writeInt((int)flag);
+            }
+
+            // entries
+            int namePtr = 0;
+            foreach (var texture in textures)
+            {
+                buf.writeInt(namePtr);
+                buf.writeInt(namePtr);
+                namePtr += texture.name.Length + 1;
+
+                buf.writeFloat(texture.topLeft.X);
+                buf.writeFloat(texture.topLeft.Y);
+                buf.writeFloat(texture.botRight.X);
+                buf.writeFloat(texture.botRight.Y);
+
+                buf.writeShort(texture.width);
+                buf.writeShort(texture.height);
+                buf.writeShort(texture.atlasId);
+                buf.writeShort(0); // pad
+            }
+
+            //strings
+            foreach (var texture in textures)
+            {
+                buf.writeString(texture.name);
+                buf.writeByte(0);
+            }
+
+            buf.writeByte(0);
+
+            return buf.getBytes();
         }
     }
 }
