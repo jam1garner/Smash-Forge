@@ -51,6 +51,7 @@ namespace Smash_Forge.GUI
             renderHitboxesCB.Checked = Runtime.renderHitboxes;
             nudHitboxAlpha.Value = Runtime.hitboxAlpha;
             pbHitboxAnglesColor.BackColor = Runtime.hitboxAnglesColor;
+            loadRenderATKD.Checked = Runtime.LoadAndRenderATKD;
 
             // Hurtbox Settings
             renderHurtboxesCB.Checked = Runtime.renderHurtboxes;
@@ -1028,6 +1029,11 @@ namespace Smash_Forge.GUI
         private void bfresPbrCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderBfresPbr = bfresPbrCB.Checked;
+        }
+
+        private void loadRenderATKD_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.LoadAndRenderATKD = loadRenderATKD.Checked;
         }
     }
 }

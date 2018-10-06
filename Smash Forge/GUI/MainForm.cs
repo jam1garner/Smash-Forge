@@ -790,7 +790,7 @@ namespace Smash_Forge
                     MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
                     MainForm.Instance.Progress.ProgressValue = 0;
                     MainForm.Instance.Progress.ControlBox = false;
-                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Character");
+                    MainForm.Instance.Progress.Message = "Please Wait... Opening Character";
                     MainForm.Instance.Progress.Show();
 
                     string fighterName = new DirectoryInfo(ofd.SelectedPath).Name;
@@ -803,13 +803,13 @@ namespace Smash_Forge
                         if (s.EndsWith("model"))
                         {
                             MainForm.Instance.Progress.ProgressValue = 10;
-                            MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Model");
+                            MainForm.Instance.Progress.Message = "Please Wait... Opening Character Model";
                             MainForm.Instance.Progress.Refresh();
                             // load default model
                             mvp = OpenNud(s + "\\body\\c00\\model.nud", "", mvp);
 
                             MainForm.Instance.Progress.ProgressValue = 25;
-                            MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Expressions");
+                            MainForm.Instance.Progress.Message = "Please Wait... Opening Character Expressions";
                             string[] anims = Directory.GetFiles(s + "\\body\\c00\\");
                             float a = 0;
                             foreach (string ss in anims)
@@ -825,7 +825,7 @@ namespace Smash_Forge
                         if (s.EndsWith("motion"))
                         {
                             MainForm.Instance.Progress.ProgressValue = 50;
-                            MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Animation");
+                            MainForm.Instance.Progress.Message = "Please Wait... Opening Character Animation";
                             string[] anims = Directory.GetFiles(s + "\\body\\");
                             //Sort files so main.pac is opened first
                             Array.Sort(anims, (a, b) =>
@@ -849,13 +849,16 @@ namespace Smash_Forge
                             {
                                 mvp.MovesetManager = new MovesetManager(s + "\\animcmd\\body\\motion.mtable");
                             }
+
+                            if (Runtime.LoadAndRenderATKD && File.Exists(s + "\\ai\\attack_data.bin"))
+                                Runtime.currentATKD = s + "\\ai\\attack_data.bin";
                         }
                     }
 
                     mvp.Text = fighterName;
 
-                    MainForm.Instance.Progress.ProgressValue = 99;
-                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Params");
+                    MainForm.Instance.Progress.ProgressValue = 95;
+                    MainForm.Instance.Progress.Message = "Please Wait... Opening Character Params";
                     if (!String.IsNullOrEmpty(Runtime.paramDir))
                     {
                         // If they set the wrong dir, oh well
@@ -873,6 +876,14 @@ namespace Smash_Forge
                             Runtime.modelScale = Convert.ToSingle(characterParams[modelScaleIndex].Value);
                         }
                         catch { }
+                    }
+                    MainForm.Instance.Progress.ProgressValue = 99;
+                    MainForm.Instance.Progress.Message = "Please Wait... Opening Character ATKD";
+                    if (!string.IsNullOrEmpty(Runtime.currentATKD))
+                    {
+                        ATKD_Editor atkd_editor = new ATKD_Editor(Runtime.currentATKD, mvp);
+                        mvp.atkd_editor = atkd_editor;
+                        AddDockedControl(atkd_editor);
                     }
                     MainForm.Instance.Progress.ProgressValue = 100;
                     AddDockedControl(mvp);

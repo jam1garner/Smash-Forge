@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
@@ -124,6 +124,7 @@
             this.zScaleTableLayout = new System.Windows.Forms.TableLayoutPanel();
             this.zScaleTB = new System.Windows.Forms.TextBox();
             this.label76 = new System.Windows.Forms.Label();
+            this.bfresPbrCB = new System.Windows.Forms.CheckBox();
             this.lvdPanelButton = new System.Windows.Forms.Button();
             this.lvdPanel = new System.Windows.Forms.Panel();
             this.renderGeneralShapesCB = new System.Windows.Forms.CheckBox();
@@ -200,7 +201,7 @@
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.defaultRadioButton = new System.Windows.Forms.RadioButton();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.bfresPbrCB = new System.Windows.Forms.CheckBox();
+            this.loadRenderATKD = new System.Windows.Forms.CheckBox();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -253,6 +254,7 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage2.Controls.Add(this.loadRenderATKD);
             this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Controls.Add(this.pbHitboxAnglesColor);
             this.tabPage2.Controls.Add(this.hitboxAnglesCB);
@@ -343,7 +345,7 @@
             // renderReverseLedgeGrabCB
             // 
             this.renderReverseLedgeGrabCB.AutoSize = true;
-            this.renderReverseLedgeGrabCB.Location = new System.Drawing.Point(3, 549);
+            this.renderReverseLedgeGrabCB.Location = new System.Drawing.Point(157, 528);
             this.renderReverseLedgeGrabCB.Name = "renderReverseLedgeGrabCB";
             this.renderReverseLedgeGrabCB.Size = new System.Drawing.Size(191, 17);
             this.renderReverseLedgeGrabCB.TabIndex = 72;
@@ -354,7 +356,7 @@
             // renderTetherLedgeCB
             // 
             this.renderTetherLedgeCB.AutoSize = true;
-            this.renderTetherLedgeCB.Location = new System.Drawing.Point(3, 571);
+            this.renderTetherLedgeCB.Location = new System.Drawing.Point(353, 528);
             this.renderTetherLedgeCB.Name = "renderTetherLedgeCB";
             this.renderTetherLedgeCB.Size = new System.Drawing.Size(182, 17);
             this.renderTetherLedgeCB.TabIndex = 71;
@@ -735,8 +737,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1,
-            listViewItem2});
+            listViewItem3,
+            listViewItem4});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -1315,6 +1317,17 @@
             this.label76.Size = new System.Drawing.Size(66, 13);
             this.label76.TabIndex = 1;
             this.label76.Text = "Z Axis Scale";
+            // 
+            // bfresPbrCB
+            // 
+            this.bfresPbrCB.AutoSize = true;
+            this.bfresPbrCB.Location = new System.Drawing.Point(3, 130);
+            this.bfresPbrCB.Name = "bfresPbrCB";
+            this.bfresPbrCB.Size = new System.Drawing.Size(153, 17);
+            this.bfresPbrCB.TabIndex = 46;
+            this.bfresPbrCB.Text = "Enable Bfres PBR Shading";
+            this.bfresPbrCB.UseVisualStyleBackColor = true;
+            this.bfresPbrCB.CheckedChanged += new System.EventHandler(this.bfresPbrCB_CheckedChanged);
             // 
             // lvdPanelButton
             // 
@@ -2184,25 +2197,25 @@
             this.defaultRadioButton.UseVisualStyleBackColor = true;
             this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
-            // bfresPbrCB
+            // loadRenderATKD
             // 
-            this.bfresPbrCB.AutoSize = true;
-            this.bfresPbrCB.Location = new System.Drawing.Point(3, 130);
-            this.bfresPbrCB.Name = "bfresPbrCB";
-            this.bfresPbrCB.Size = new System.Drawing.Size(153, 17);
-            this.bfresPbrCB.TabIndex = 46;
-            this.bfresPbrCB.Text = "Enable Bfres PBR Shading";
-            this.bfresPbrCB.UseVisualStyleBackColor = true;
-            this.bfresPbrCB.CheckedChanged += new System.EventHandler(this.bfresPbrCB_CheckedChanged);
+            this.loadRenderATKD.AutoSize = true;
+            this.loadRenderATKD.Location = new System.Drawing.Point(3, 551);
+            this.loadRenderATKD.Name = "loadRenderATKD";
+            this.loadRenderATKD.Size = new System.Drawing.Size(122, 17);
+            this.loadRenderATKD.TabIndex = 76;
+            this.loadRenderATKD.Text = "Load/Render ATKD";
+            this.loadRenderATKD.UseVisualStyleBackColor = true;
+            this.loadRenderATKD.CheckedChanged += new System.EventHandler(this.loadRenderATKD_CheckedChanged);
             // 
-            // RenderSettings
+            // RenderSettingsMenu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(565, 654);
             this.Controls.Add(this.tabControl1);
             this.Icon = global::Smash_Forge.Resources.Resources.forge2;
-            this.Name = "RenderSettings";
+            this.Name = "RenderSettingsMenu";
             this.Text = "Render Settings";
             this.Load += new System.EventHandler(this.RenderSettings_Load);
             this.tabPage2.ResumeLayout(false);
@@ -2449,5 +2462,6 @@
         private System.Windows.Forms.Button modelPanelButton;
         private System.Windows.Forms.Panel modelPanel;
         private System.Windows.Forms.CheckBox bfresPbrCB;
+        private System.Windows.Forms.CheckBox loadRenderATKD;
     }
 }

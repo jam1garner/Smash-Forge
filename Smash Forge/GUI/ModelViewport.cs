@@ -147,7 +147,7 @@ namespace Smash_Forge
             }
         }
 
-        // ACMD
+        //Moveset
         public int scriptId = -1;
         public Dictionary<string, int> paramMoveNameIdMapping;
         public CharacterParamManager paramManager;
@@ -174,6 +174,8 @@ namespace Smash_Forge
         public HitboxList hitboxList;
         public HurtboxList hurtboxList;
         public VariableList variableViewer;
+
+        public ATKD_Editor atkd_editor;
 
         // Used in ModelContainer for direct UV time animation.
         public static Stopwatch directUvTimeStopWatch = new Stopwatch();
@@ -1856,6 +1858,10 @@ namespace Smash_Forge
 
             if (acmdScript != null && draw.Count > 0 && (draw[0] is ModelContainer))
                 acmdScript.Render(((ModelContainer)draw[0]).GetVBN());
+
+            // ATKD Render
+            if (Runtime.LoadAndRenderATKD && atkd_editor != null && draw.Count > 0 && (draw[0] is ModelContainer))
+                atkd_editor.Viewport_Render(((ModelContainer)draw[0]).GetVBN());
 
             if (ViewComboBox.SelectedIndex == 2)
             {

@@ -10,9 +10,9 @@ namespace Smash_Forge
     {
         public class Entry
         {
-            public ushort attackId;
-            public ushort start;
-            public ushort end;
+            public ushort subaction;
+            public ushort startFrame;
+            public ushort lastFrame;
             public float xmin;
             public float xmax;
             public float ymin;
@@ -20,10 +20,10 @@ namespace Smash_Forge
 
             public Entry Read(FileData f)
             {
-                attackId = f.readUShort();
+                subaction = f.readUShort();
                 f.readUShort();//skip padding
-                start = f.readUShort();
-                end = f.readUShort();
+                startFrame = f.readUShort();
+                lastFrame = f.readUShort();
                 xmin = f.readFloat();
                 xmax = f.readFloat();
                 ymin = f.readFloat();
@@ -62,10 +62,10 @@ namespace Smash_Forge
             f.writeUInt(uniqueSubactions);
             foreach (Entry e in entries)
             {
-                f.writeUShort(e.attackId);
+                f.writeUShort(e.subaction);
                 f.writeUShort(0);
-                f.writeUShort(e.start);
-                f.writeUShort(e.end);
+                f.writeUShort(e.startFrame);
+                f.writeUShort(e.lastFrame);
                 f.writeFloat(e.xmin);
                 f.writeFloat(e.xmax);
                 f.writeFloat(e.ymin);
