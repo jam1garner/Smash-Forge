@@ -724,6 +724,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Cameras\ForgePerspCamera.cs" />
+    <Compile Include="Rendering\Drawing\FloorDrawing.cs" />
     <Compile Include="Rendering\Drawing\MaterialPreviewRendering.cs" />
     <Compile Include="Rendering\Drawing\NudMatSphereDrawing.cs" />
     <Compile Include="Rendering\Cameras\ForgeCamera.cs" />
