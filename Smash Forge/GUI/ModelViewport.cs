@@ -95,6 +95,8 @@ namespace Smash_Forge
                                 acmdScript.processToFrame(0);
 
                         }
+                        if (atkd_editor != null && scriptId >= 0)
+                            atkd_editor.ViewportEvent_SetSelectedSubaction((uint)scriptId);
                     }
                 }
                 ResetModels();

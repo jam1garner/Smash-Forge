@@ -52,6 +52,8 @@ namespace Smash_Forge
         //and lets us use viewport resources such as frame and current subaction
         ModelViewport mvp;
 
+        public bool isRendered = false;
+
         private void ATKD_Editor_Load(object sender, EventArgs e)
         {
             CmnSubactions_UpDownBox.Value = atkd.commonSubactions;
@@ -63,6 +65,7 @@ namespace Smash_Forge
                 row.ItemArray = new object[] { entry.subaction, entry.startFrame, entry.lastFrame, entry.xmin, entry.xmax, entry.ymin, entry.ymax };
                 tbl.Rows.Add(row);
             }
+            dataGridView.AutoResizeColumns();
         }
 
         public override void Save()
@@ -105,7 +108,7 @@ namespace Smash_Forge
                         atkd.entries[row].xmin = shValue;
                         break;
                     case 4:
-                        atkd.entries[row].xmin = shValue;
+                        atkd.entries[row].xmax = shValue;
                         break;
                     case 5:
                         atkd.entries[row].ymin = shValue;
@@ -136,7 +139,7 @@ namespace Smash_Forge
                         atkd.entries[row].xmin = flValue;
                         break;
                     case 4:
-                        atkd.entries[row].xmin = flValue;
+                        atkd.entries[row].xmax = flValue;
                         break;
                     case 5:
                         atkd.entries[row].ymin = flValue;
@@ -150,27 +153,28 @@ namespace Smash_Forge
 
         public void Viewport_Render(VBN Skeleton)
         {
+            isRendered = false;
             if (Skeleton == null || mvp.CurrentAnimation == null || mvp.acmdScript == null)
                 return;
             
-            Vector3 position = Skeleton.getBone("TransN").pos;
             int subactionID = mvp.scriptId;
             ATKD.Entry entry = atkd.entries.Find(e => e.subaction == subactionID);
             float frame = mvp.acmdScript.animationFrame;
 
             if (entry == null)
                 return;
+            if (frame < entry.startFrame || frame > entry.lastFrame)
+                return;
 
-            if (frame < entry.startFrame || frame > entry.lastFrame) return;
-            
             GL.Color4(Color.MediumVioletRed);
             GL.LineWidth(2);
             GL.Begin(PrimitiveType.LineLoop);
-            GL.Vertex3(0, position.Y + entry.ymin, position.Z + entry.xmin);
-            GL.Vertex3(0, position.Y + entry.ymin, position.Z + entry.xmax);
-            GL.Vertex3(0, position.Y + entry.ymax, position.Z + entry.xmax);
-            GL.Vertex3(0, position.Y + entry.ymax, position.Z + entry.xmin);
+            GL.Vertex3(0, entry.ymin, entry.xmin);
+            GL.Vertex3(0, entry.ymax, entry.xmin);
+            GL.Vertex3(0, entry.ymax, entry.xmax);
+            GL.Vertex3(0, entry.ymin, entry.xmax);
             GL.End();
+            isRendered = true;
         }
 
         public void ViewportEvent_SetXY(ushort subaction, float xmin, float xmax, float ymin, float ymax)
@@ -183,6 +187,12 @@ namespace Smash_Forge
                 tbl.Rows[entryIndex][5] = atkd.entries[entryIndex].ymin = ymin;
                 tbl.Rows[entryIndex][6] = atkd.entries[entryIndex].ymax = ymax;
             }
+        }
+        public void ViewportEvent_SetSelectedSubaction(uint subaction)
+        {
+            int entryIndex;
+            if ((entryIndex = atkd.entries.FindIndex(i => i.subaction == subaction)) >= 0)
+                dataGridView.CurrentCell = dataGridView[0, entryIndex];
         }
     }
 }
