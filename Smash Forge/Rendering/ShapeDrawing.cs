@@ -1,44 +1,11 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
-using System.Drawing;
 
 namespace Smash_Forge.Rendering
 {
     public static class ShapeDrawing
     {
-        public static void drawTranslator(Matrix4 view)
-        {
-            Vector3 center = new Vector3(5, 10, 5);
-
-            // check if within range
-            {
-                Vector3 p1 = Vector3.TransformPosition(center, view).Normalized();
-                Vector3 p2 = Vector3.TransformPosition(center + new Vector3(0, 5, 0), view).Normalized();
-            }
-
-            GL.Color3(Color.Green);
-            GL.LineWidth(1f);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(center);
-            GL.Vertex3(center + new Vector3(0, 5, 0));
-            GL.End();
-
-            GL.Color3(Color.Red);
-            GL.LineWidth(1f);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(center);
-            GL.Vertex3(center + new Vector3(5, 0, 0));
-            GL.End();
-
-            GL.Color3(Color.Blue);
-            GL.LineWidth(1f);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(center);
-            GL.Vertex3(center + new Vector3(0, 0, 5));
-            GL.End();
-        }
-
         #region Taken from Brawllib render TKContext.cs
         public static void drawSphere(Vector3 center, float radius, uint precision, bool useWireframe = false)
         {
@@ -467,43 +434,6 @@ namespace Smash_Forge.Rendering
         public static void DrawWireframeCylinder(Vector3 p1, Vector3 p2, float R)
         {
             DrawCylinder(p1, p2, R, true);
-        }
-
-        public static void draw2DCircle(float x, float y, float radius, Color color, int screenWidth, int screenHeight)
-        {
-            // No shaders
-            GL.UseProgram(0);
-
-            // Go to 2D
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.PushMatrix();
-            GL.LoadIdentity();
-            GL.Ortho(0.0f, screenWidth, screenHeight, 0.0f, -1.0f, 10.0f);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.PushMatrix();
-            GL.LoadIdentity();
-
-            // Allow transparency
-            GL.Enable(EnableCap.Blend);
-
-            // Draw over everything
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.CullFace);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-
-            // Draw here
-            GL.Color4(color);
-            uint precision = 30;  // force particular method overload
-            DrawCircle(new Vector3(x, y, -1f), radius, precision);
-
-            GL.Enable(EnableCap.CullFace);
-            GL.Enable(EnableCap.DepthTest);
-
-            // Back to 3D
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.PopMatrix();
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.PopMatrix();
         }
 
         public static void DrawCircle(float x, float y, float z, float radius, uint precision)
