@@ -51,8 +51,9 @@ namespace Smash_Forge
         //this allows rendering dynamically every time an edit occurs
         //and lets us use viewport resources such as frame and current subaction
         ModelViewport mvp;
-
+        Color renderColor = Color.MediumVioletRed;
         public bool isRendered = false;
+        public int selectedPart = 0;
 
         private void ATKD_Editor_Load(object sender, EventArgs e)
         {
@@ -153,12 +154,10 @@ namespace Smash_Forge
 
         public void Viewport_Render(VBN Skeleton)
         {
-            isRendered = false;
             if (Skeleton == null || mvp.CurrentAnimation == null || mvp.acmdScript == null)
                 return;
             
-            int subactionID = mvp.scriptId;
-            ATKD.Entry entry = atkd.entries.Find(e => e.subaction == subactionID);
+            ATKD.Entry entry = atkd.entries.Find(e => e.subaction == mvp.scriptId);
             float frame = mvp.acmdScript.animationFrame;
 
             if (entry == null)
@@ -166,7 +165,7 @@ namespace Smash_Forge
             if (frame < entry.startFrame || frame > entry.lastFrame)
                 return;
 
-            GL.Color4(Color.MediumVioletRed);
+            GL.Color4(renderColor);
             GL.LineWidth(2);
             GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(0, entry.ymin, entry.xmin);
@@ -176,23 +175,93 @@ namespace Smash_Forge
             GL.End();
             isRendered = true;
         }
-
-        public void ViewportEvent_SetXY(ushort subaction, float xmin, float xmax, float ymin, float ymax)
+        public void ViewportEvent_SetSelection(float projX, float projY)
         {
-            int entryIndex;
-            if ((entryIndex = atkd.entries.FindIndex(i => i.subaction == subaction)) >= 0)
+            RectangleSelectionPart selection = RectangleSelectionPart.None;
+            ATKD.Entry entry;
+            if ((entry = atkd.entries.Find(e => e.subaction == mvp.scriptId)) != null)
             {
-                tbl.Rows[entryIndex][3] = atkd.entries[entryIndex].xmin = xmin;
-                tbl.Rows[entryIndex][4] = atkd.entries[entryIndex].xmax = xmax;
-                tbl.Rows[entryIndex][5] = atkd.entries[entryIndex].ymin = ymin;
-                tbl.Rows[entryIndex][6] = atkd.entries[entryIndex].ymax = ymax;
+                float xmax = entry.xmax;
+                float xmin = entry.xmin;
+                float ymax = entry.ymax;
+                float ymin = entry.ymin;
+                float delta = 0.5f;
+
+                if (projX < xmax + delta && projX > xmin - delta && projY < ymax + delta && projY > ymin - delta)
+                {
+                    if (projX > xmax - delta && projX < xmax + delta)
+                        selection |= RectangleSelectionPart.Right;
+                    if (projX > xmin - delta && projX < xmin + delta)
+                        selection |= RectangleSelectionPart.Left;
+                    if (projY > ymax - delta && projY < ymax + delta)
+                        selection |= RectangleSelectionPart.Top;
+                    if (projY > ymin - delta && projY < ymin + delta)
+                        selection |= RectangleSelectionPart.Bottom;
+                }
+            }
+            selectedPart = (int)selection;
+            if (selectedPart > 0)
+                renderColor = Color.PaleVioletRed;
+            else
+                renderColor = Color.MediumVioletRed;
+        }
+
+        public void ViewportEvent_SetSelectedXY(float projX, float projY)
+        {
+            if (selectedPart == 0) return;
+            int entryIndex;
+            if ((entryIndex = atkd.entries.FindIndex(i => i.subaction == mvp.scriptId)) >= 0)
+            {
+                float delta = 0.5f;
+
+                if ((selectedPart & (int)RectangleSelectionPart.Right) > 0)
+                {
+                    float min = atkd.entries[entryIndex].xmin + delta;
+                    if (projX > min)
+                        tbl.Rows[entryIndex][4] = atkd.entries[entryIndex].xmax = projX;
+                    else
+                        tbl.Rows[entryIndex][4] = atkd.entries[entryIndex].xmax = min;
+                }
+                else if ((selectedPart & (int)RectangleSelectionPart.Left) > 0)
+                {
+                    float max = atkd.entries[entryIndex].xmax - delta;
+                    if (projX < max)
+                        tbl.Rows[entryIndex][3] = atkd.entries[entryIndex].xmin = projX;
+                    else
+                        tbl.Rows[entryIndex][3] = atkd.entries[entryIndex].xmin = max;
+                }
+
+                if ((selectedPart & (int)RectangleSelectionPart.Top) > 0)
+                {
+                    float min = atkd.entries[entryIndex].ymin + delta;
+                    if (projY > min)
+                        tbl.Rows[entryIndex][4] = atkd.entries[entryIndex].ymax = projY;
+                    else
+                        tbl.Rows[entryIndex][4] = atkd.entries[entryIndex].ymax = min;
+                }
+                else if ((selectedPart & (int)RectangleSelectionPart.Bottom) > 0)
+                {
+                    float max = atkd.entries[entryIndex].ymax - delta;
+                    if (projY < max)
+                        tbl.Rows[entryIndex][3] = atkd.entries[entryIndex].ymin = projY;
+                    else
+                        tbl.Rows[entryIndex][3] = atkd.entries[entryIndex].ymin = max;
+                }
             }
         }
-        public void ViewportEvent_SetSelectedSubaction(uint subaction)
+        public void ViewportEvent_SetSelectedSubaction()
         {
             int entryIndex;
-            if ((entryIndex = atkd.entries.FindIndex(i => i.subaction == subaction)) >= 0)
+            if ((entryIndex = atkd.entries.FindIndex(i => i.subaction == mvp.scriptId)) >= 0)
                 dataGridView.CurrentCell = dataGridView[0, entryIndex];
+        }
+        public enum RectangleSelectionPart
+        {
+            None = 0x0,
+            Right = 0x1,
+            Left = 0x2,
+            Top = 0x4,
+            Bottom = 0x8
         }
     }
 }

@@ -888,7 +888,7 @@ namespace Smash_Forge
                     if (!string.IsNullOrEmpty(Runtime.currentATKD))
                     {
                         ATKD_Editor atkd_editor = new ATKD_Editor(Runtime.currentATKD, mvp);
-                        mvp.atkd_editor = atkd_editor;
+                        mvp.atkdEditor = atkd_editor;
                         AddDockedControl(atkd_editor);
                     }
                     MainForm.Instance.Progress.ProgressValue = 100;

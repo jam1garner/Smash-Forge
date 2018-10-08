@@ -95,8 +95,8 @@ namespace Smash_Forge
                                 acmdScript.processToFrame(0);
 
                         }
-                        if (atkd_editor != null && scriptId >= 0)
-                            atkd_editor.ViewportEvent_SetSelectedSubaction((uint)scriptId);
+                        if (atkdEditor != null && scriptId >= 0)
+                            atkdEditor.ViewportEvent_SetSelectedSubaction();
                     }
                 }
                 ResetModels();
@@ -177,7 +177,8 @@ namespace Smash_Forge
         public HurtboxList hurtboxList;
         public VariableList variableViewer;
 
-        public ATKD_Editor atkd_editor;
+        public ATKD_Editor atkdEditor;
+        public bool atkdRectClicked = false;
 
         // Used in ModelContainer for direct UV time animation.
         public static Stopwatch directUvTimeStopWatch = new Stopwatch();
@@ -1153,6 +1154,20 @@ namespace Smash_Forge
                 camera.UpdateFromMouse();
                 UpdateBoneSizeRelativeToViewport();
             }
+
+            if (atkdEditor != null)
+            {
+                Vector3 projection;
+                if (GetMouseYZPlaneProjection(out projection))
+                {
+                    if (atkdEditor.isRendered)
+                    {
+                        atkdEditor.ViewportEvent_SetSelection(projection.Z, projection.Y);
+                        if (currentMode == Mode.Selection && atkdRectClicked)
+                            atkdEditor.ViewportEvent_SetSelectedXY(projection.Z, projection.Y);
+                    }
+                }
+            }
         }
 
         #region Controls
@@ -1651,14 +1666,51 @@ namespace Smash_Forge
             }
         }
 
+        private bool GetMouseYZPlaneProjection(out Vector3 projection)
+        {
+            projection = new Vector3(0, 0, 0);
+            try
+            {
+                Matrix4 mat = camera.RotationMatrix; mat.Transpose();
+                Vector3 pCamera = Vector3.TransformVector(
+                    new Vector3(-camera.Position.X, camera.Position.Y, -camera.Position.Z), mat);
+                Vector3 pMouse = new Ray(camera, glViewport).p1;
+
+                Vector3 direction = pMouse - pCamera;
+                direction.Normalize();
+                float dist = -pMouse.X / direction.X;
+                if (dist <= 0)
+                    return false;
+                projection = pMouse + dist * direction;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private void glViewport_Click(object sender, EventArgs e)
         {
 
         }
 
+        private void glViewport_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (atkdEditor != null && atkdEditor.isRendered && atkdEditor.selectedPart > 0)
+            {
+                atkdRectClicked = true;
+                currentMode = Mode.Selection;
+            }
+        }
+
         private void glViewport_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            //checkSelect();
+            if (atkdRectClicked)
+            {
+                atkdRectClicked = false;
+                currentMode = Mode.Normal;
+            }
         }
 
         private void weightToolButton_Click(object sender, EventArgs e)
@@ -1881,8 +1933,12 @@ namespace Smash_Forge
                 acmdScript.Render(((ModelContainer)draw[0]).GetVBN());
 
             // ATKD Render
-            if (Runtime.LoadAndRenderATKD && atkd_editor != null && draw.Count > 0 && (draw[0] is ModelContainer))
-                atkd_editor.Viewport_Render(((ModelContainer)draw[0]).GetVBN());
+            if (atkdEditor != null)
+            {
+                atkdEditor.isRendered = false;
+                if (Runtime.LoadAndRenderATKD && draw.Count > 0 && (draw[0] is ModelContainer))
+                    atkdEditor.Viewport_Render(((ModelContainer)draw[0]).GetVBN());
+            }
 
             if (ViewComboBox.SelectedIndex == 2)
             {
