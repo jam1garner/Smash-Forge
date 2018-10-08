@@ -1788,7 +1788,7 @@ namespace Smash_Forge
                 cameraPosForm.ApplyCameraAnimation(camera, animationTrackBar.Value);
 
             if (Runtime.renderFloor)
-                ShapeDrawing.DrawFloor(camera.MvpMatrix);
+                FloorDrawing.DrawFloor(camera.MvpMatrix);
 
             // Depth testing isn't set by materials.
             SetDepthTesting();
