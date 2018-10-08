@@ -149,6 +149,8 @@ namespace Smash_Forge
         public static Color grabboxColor = Color.Purple;
         public static Color searchboxColor = Color.DarkOrange;
         public static bool renderHitboxesNoOverlap;
+        public static bool LoadAndRenderATKD = false;
+        public static string currentATKD = null;
         public static bool useFrameDuration = true;
         public static bool useFAFasAnimationLength = false;
         public static bool Is2DView = false;
