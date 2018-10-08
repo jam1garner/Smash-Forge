@@ -68,6 +68,15 @@ namespace Smash_Forge
             dataGridView.AutoResizeColumns();
         }
 
+        private void ATKD_Editor_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (mvp != null)
+            {
+                mvp.atkdEditor = null;
+                Runtime.currentATKD = null;
+            }
+        }
+
         public override void Save()
         {
             atkd.Save(filePath);
