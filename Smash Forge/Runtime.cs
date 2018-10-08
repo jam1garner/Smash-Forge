@@ -108,6 +108,8 @@ namespace Smash_Forge
 
         public static bool renderLVD = true;
 
+        public static bool enableVSync = false;
+
         public static bool renderModel = true;
         public static bool renderModelSelection = true;
         public static bool renderModelWireframe;

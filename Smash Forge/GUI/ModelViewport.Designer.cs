@@ -54,7 +54,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.totalFrame = new System.Windows.Forms.NumericUpDown();
-            this.currentFrame = new System.Windows.Forms.NumericUpDown();
+            this.currentFrameUpDown = new System.Windows.Forms.NumericUpDown();
             this.endButton = new System.Windows.Forms.Button();
             this.nextButton = new System.Windows.Forms.Button();
             this.beginButton = new System.Windows.Forms.Button();
@@ -66,7 +66,7 @@
             this.animationGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animationTrackBar)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalFrame)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.currentFrame)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.currentFrameUpDown)).BeginInit();
             this.viewportPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -292,7 +292,7 @@
             this.animationGroupBox.Controls.Add(this.label2);
             this.animationGroupBox.Controls.Add(this.label1);
             this.animationGroupBox.Controls.Add(this.totalFrame);
-            this.animationGroupBox.Controls.Add(this.currentFrame);
+            this.animationGroupBox.Controls.Add(this.currentFrameUpDown);
             this.animationGroupBox.Controls.Add(this.endButton);
             this.animationGroupBox.Controls.Add(this.nextButton);
             this.animationGroupBox.Controls.Add(this.beginButton);
@@ -353,17 +353,17 @@
             // 
             // currentFrame
             // 
-            this.currentFrame.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.currentFrame.Location = new System.Drawing.Point(520, 67);
-            this.currentFrame.Maximum = new decimal(new int[] {
+            this.currentFrameUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.currentFrameUpDown.Location = new System.Drawing.Point(520, 67);
+            this.currentFrameUpDown.Maximum = new decimal(new int[] {
             99999,
             0,
             0,
             0});
-            this.currentFrame.Name = "currentFrame";
-            this.currentFrame.Size = new System.Drawing.Size(54, 20);
-            this.currentFrame.TabIndex = 5;
-            this.currentFrame.ValueChanged += new System.EventHandler(this.currentFrame_ValueChanged);
+            this.currentFrameUpDown.Name = "currentFrame";
+            this.currentFrameUpDown.Size = new System.Drawing.Size(54, 20);
+            this.currentFrameUpDown.TabIndex = 5;
+            this.currentFrameUpDown.ValueChanged += new System.EventHandler(this.currentFrame_ValueChanged);
             // 
             // endButton
             // 
@@ -432,12 +432,14 @@
             this.glViewport.Load += new System.EventHandler(this.glViewport_Load);
             this.glViewport.Click += new System.EventHandler(this.glViewport_Click);
             this.glViewport.Paint += new System.Windows.Forms.PaintEventHandler(this.glViewport_Paint);
+            this.glViewport.Enter += new System.EventHandler(this.glViewport_Enter);
             this.glViewport.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.glViewport_KeyPress);
             this.glViewport.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseClick);
             this.glViewport.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseDown);
             this.glViewport.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseMove);
             this.glViewport.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseUp);
             this.glViewport.Resize += new System.EventHandler(this.glViewport_Resize);
+            this.glViewport.LostFocus += new System.EventHandler(this.glViewport_LostFocus);
             // 
             // viewportPanel
             // 
@@ -461,9 +463,7 @@
             this.KeyPreview = true;
             this.Name = "ModelViewport";
             this.Text = "ModelViewport";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ModelViewport_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ModelViewport_FormClosed);
-            this.Load += new System.EventHandler(this.ModelViewport_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ModelViewport_KeyDown);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
@@ -471,7 +471,7 @@
             this.animationGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animationTrackBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.totalFrame)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.currentFrame)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.currentFrameUpDown)).EndInit();
             this.viewportPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -489,7 +489,7 @@
         private System.Windows.Forms.Button prevButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown totalFrame;
-        private System.Windows.Forms.NumericUpDown currentFrame;
+        private System.Windows.Forms.NumericUpDown currentFrameUpDown;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripLabel toolStripCameraLabel;

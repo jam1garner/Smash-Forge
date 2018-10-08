@@ -136,25 +136,40 @@ namespace Smash_Forge
             else if (e.Node is ModelContainer)
             {
                 Runtime.TargetVBN = ((ModelContainer)e.Node).VBN;
-            } else
-            if (filesTreeView.SelectedNode is VBN)
+            }
+            else if (filesTreeView.SelectedNode is VBN)
             {
                 Runtime.TargetVBN = ((VBN)e.Node);
             }
-            if (filesTreeView.SelectedNode is BCH_Model)
+            else if (filesTreeView.SelectedNode is BCH_Model)
             {
                 Runtime.TargetVBN = ((BCH_Model)e.Node).skeleton;
             }
-            if (filesTreeView.SelectedNode is MeleeRootNode)
+            else if (filesTreeView.SelectedNode is BCH_Texture)
+            {
+                MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
+            }
+            else if (filesTreeView.SelectedNode is NutTexture)
+            {
+                MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
+            }
+            if (filesTreeView.SelectedNode is BRTI)
+            {
+                MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
+            }
+            else if (filesTreeView.SelectedNode is FTEX)
+            {
+                MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
+            }
+            else if (filesTreeView.SelectedNode is MeleeRootNode)
             {
                 Runtime.TargetVBN = ((MeleeRootNode)e.Node).RenderBones;
             }
-            if (filesTreeView.SelectedNode is MeleeJointAnimationNode)
+            else if (filesTreeView.SelectedNode is MeleeJointAnimationNode)
             {
                 ((ModelViewport)Parent).CurrentAnimation = ((MeleeJointAnimationNode)filesTreeView.SelectedNode).GetAnimation();
             }
-
-            if (filesTreeView.SelectedNode is MeleeJointNode)
+            else if (filesTreeView.SelectedNode is MeleeJointNode)
             {
                 ((MeleeJointNode)e.Node).RenderBone.Selected = true;
             }
