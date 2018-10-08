@@ -1756,7 +1756,8 @@ namespace Smash_Forge
 
         private void glViewport_Click(object sender, EventArgs e)
         {
-
+            // Prevent render updates from being suspended when switching back from another window.
+            renderThreadIsUpdating = true;
         }
 
         private void glViewport_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
