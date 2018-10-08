@@ -33,8 +33,7 @@ namespace Smash_Forge
         private void InitDataGridTable()
         {
             tbl = new DataTable();
-            //tbl.Columns.Add(new DataColumn("ID/Name") { ReadOnly = true });
-            tbl.Columns.Add("ID");
+            tbl.Columns.Add(new DataColumn("ID") { ReadOnly = true });
             tbl.Columns.Add("Start Frame");
             tbl.Columns.Add("Last Frame");
             tbl.Columns.Add("X Min");
@@ -73,7 +72,6 @@ namespace Smash_Forge
         {
             atkd.Save(filePath);
         }
-
         public override void SaveAs()
         {
             using (SaveFileDialog sfd = new SaveFileDialog())
@@ -85,68 +83,95 @@ namespace Smash_Forge
             }
         }
 
+        private ATKD.Entry FindEntry(int id)
+        {
+            if (id < 0) return null;
+            return atkd.entries.Find(e => e.subaction == id);
+        }
+        private DataRow FindDataRow(int id)
+        {
+            if (id < 0) return null;
+            foreach (DataRow r in tbl.Rows)
+            {
+                if (r[0] != null && ushort.Parse((string)r[0]) == id)
+                    return r;
+            }
+            return null;
+        }
+        private DataGridViewRow FindDataGridViewRow(int id)
+        {
+            if (id < 0) return null;
+            foreach (DataGridViewRow r in dataGridView.Rows)
+            {
+                if (r.Cells[0].Value != null && ushort.Parse((string)r.Cells[0].Value) == id)
+                    return r;
+            }
+            return null;
+        }
+
         private void dataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             int row = e.RowIndex;
             int column = e.ColumnIndex;
+            ATKD.Entry entry = FindEntry((int)tbl.Rows[row][0]);
             ushort shValue;
             float flValue;
             
-            if (ushort.TryParse((string)tbl.Rows[row].ItemArray[column], out shValue))
+            if (ushort.TryParse((string)tbl.Rows[row][column], out shValue))
             {
                 switch (column)
                 {
                     case 0:
-                        atkd.entries[row].subaction = shValue;
+                        entry.subaction = shValue;
                         break;
                     case 1:
-                        atkd.entries[row].startFrame = shValue;
+                        entry.startFrame = shValue;
                         break;
                     case 2:
-                        atkd.entries[row].lastFrame = shValue;
+                        entry.lastFrame = shValue;
                         break;
                     case 3:
-                        atkd.entries[row].xmin = shValue;
+                        entry.xmin = shValue;
                         break;
                     case 4:
-                        atkd.entries[row].xmax = shValue;
+                        entry.xmax = shValue;
                         break;
                     case 5:
-                        atkd.entries[row].ymin = shValue;
+                        entry.ymin = shValue;
                         break;
                     case 6:
-                        atkd.entries[row].ymax = shValue;
+                        entry.ymax = shValue;
                         break;
                 }
             }
             else
             {
-                flValue = float.Parse((string)tbl.Rows[row].ItemArray[column]);
+                flValue = float.Parse((string)tbl.Rows[row][column]);
                 if (column < 3 && flValue < 0)
                     flValue = 0;
                 
                 switch (column)
                 {
                     case 0:
-                        tbl.Rows[row][column] = atkd.entries[row].subaction = (ushort)flValue;
+                        tbl.Rows[row][column] = entry.subaction = (ushort)flValue;
                         break;
                     case 1:
-                        tbl.Rows[row][column] = atkd.entries[row].startFrame = (ushort)flValue;
+                        tbl.Rows[row][column] = entry.startFrame = (ushort)flValue;
                         break;
                     case 2:
-                        tbl.Rows[row][column] = atkd.entries[row].lastFrame = (ushort)flValue;
+                        tbl.Rows[row][column] = entry.lastFrame = (ushort)flValue;
                         break;
                     case 3:
-                        atkd.entries[row].xmin = flValue;
+                        entry.xmin = flValue;
                         break;
                     case 4:
-                        atkd.entries[row].xmax = flValue;
+                        entry.xmax = flValue;
                         break;
                     case 5:
-                        atkd.entries[row].ymin = flValue;
+                        entry.ymin = flValue;
                         break;
                     case 6:
-                        atkd.entries[row].ymax = flValue;
+                        entry.ymax = flValue;
                         break;
                 }
             }
@@ -156,8 +181,8 @@ namespace Smash_Forge
         {
             if (Skeleton == null || mvp.CurrentAnimation == null || mvp.acmdScript == null)
                 return;
-            
-            ATKD.Entry entry = atkd.entries.Find(e => e.subaction == mvp.scriptId);
+
+            ATKD.Entry entry = FindEntry(mvp.scriptId);
             float frame = mvp.acmdScript.animationFrame;
 
             if (entry == null)
@@ -175,11 +200,12 @@ namespace Smash_Forge
             GL.End();
             isRendered = true;
         }
+
         public void ViewportEvent_SetSelection(float projX, float projY)
         {
             RectangleSelectionPart selection = RectangleSelectionPart.None;
-            ATKD.Entry entry;
-            if ((entry = atkd.entries.Find(e => e.subaction == mvp.scriptId)) != null)
+            ATKD.Entry entry = FindEntry(mvp.scriptId);
+            if (entry != null)
             {
                 float xmax = entry.xmax;
                 float xmin = entry.xmin;
@@ -205,56 +231,57 @@ namespace Smash_Forge
             else
                 renderColor = Color.MediumVioletRed;
         }
-
         public void ViewportEvent_SetSelectedXY(float projX, float projY)
         {
             if (selectedPart == 0) return;
-            int entryIndex;
-            if ((entryIndex = atkd.entries.FindIndex(i => i.subaction == mvp.scriptId)) >= 0)
+            ATKD.Entry entry = FindEntry(mvp.scriptId);
+            DataRow row = FindDataRow(mvp.scriptId);
+            if (entry != null && row != null)
             {
                 float delta = 0.5f;
-
+                
                 if ((selectedPart & (int)RectangleSelectionPart.Right) > 0)
                 {
-                    float min = atkd.entries[entryIndex].xmin + delta;
+                    float min = entry.xmin + delta;
                     if (projX > min)
-                        tbl.Rows[entryIndex][4] = atkd.entries[entryIndex].xmax = projX;
+                        row[4] = entry.xmax = projX;
                     else
-                        tbl.Rows[entryIndex][4] = atkd.entries[entryIndex].xmax = min;
+                        row[4] = entry.xmax = min;
                 }
                 else if ((selectedPart & (int)RectangleSelectionPart.Left) > 0)
                 {
-                    float max = atkd.entries[entryIndex].xmax - delta;
+                    float max = entry.xmax - delta;
                     if (projX < max)
-                        tbl.Rows[entryIndex][3] = atkd.entries[entryIndex].xmin = projX;
+                        row[3] = entry.xmin = projX;
                     else
-                        tbl.Rows[entryIndex][3] = atkd.entries[entryIndex].xmin = max;
+                        row[3] = entry.xmin = max;
                 }
 
                 if ((selectedPart & (int)RectangleSelectionPart.Top) > 0)
                 {
-                    float min = atkd.entries[entryIndex].ymin + delta;
+                    float min = entry.ymin + delta;
                     if (projY > min)
-                        tbl.Rows[entryIndex][4] = atkd.entries[entryIndex].ymax = projY;
+                        row[4] = entry.ymax = projY;
                     else
-                        tbl.Rows[entryIndex][4] = atkd.entries[entryIndex].ymax = min;
+                        row[4] = entry.ymax = min;
                 }
                 else if ((selectedPart & (int)RectangleSelectionPart.Bottom) > 0)
                 {
-                    float max = atkd.entries[entryIndex].ymax - delta;
+                    float max = entry.ymax - delta;
                     if (projY < max)
-                        tbl.Rows[entryIndex][3] = atkd.entries[entryIndex].ymin = projY;
+                        row[3] = entry.ymin = projY;
                     else
-                        tbl.Rows[entryIndex][3] = atkd.entries[entryIndex].ymin = max;
+                        row[3] = entry.ymin = max;
                 }
             }
         }
         public void ViewportEvent_SetSelectedSubaction()
         {
-            int entryIndex;
-            if ((entryIndex = atkd.entries.FindIndex(i => i.subaction == mvp.scriptId)) >= 0)
-                dataGridView.CurrentCell = dataGridView[0, entryIndex];
+            DataGridViewRow row = FindDataGridViewRow(mvp.scriptId);
+            if (row != null)
+                dataGridView.CurrentCell = row.Cells[0];
         }
+
         public enum RectangleSelectionPart
         {
             None = 0x0,

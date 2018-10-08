@@ -1147,29 +1147,6 @@ namespace Smash_Forge
             cameraPosForm.ShowDialog();
         }
 
-        private void glViewport_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            if (currentMode != Mode.Selection && !freezeCamera)
-            {
-                camera.UpdateFromMouse();
-                UpdateBoneSizeRelativeToViewport();
-            }
-
-            if (atkdEditor != null)
-            {
-                Vector3 projection;
-                if (GetMouseYZPlaneProjection(out projection))
-                {
-                    if (atkdEditor.isRendered)
-                    {
-                        atkdEditor.ViewportEvent_SetSelection(projection.Z, projection.Y);
-                        if (currentMode == Mode.Selection && atkdRectClicked)
-                            atkdEditor.ViewportEvent_SetSelectedXY(projection.Z, projection.Y);
-                    }
-                }
-            }
-        }
-
         #region Controls
 
         public void HideAll()
@@ -1690,6 +1667,27 @@ namespace Smash_Forge
             }
         }
 
+        private void glViewport_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (currentMode != Mode.Selection && !freezeCamera)
+            {
+                camera.UpdateFromMouse();
+                UpdateBoneSizeRelativeToViewport();
+            }
+
+            if (atkdEditor != null && atkdEditor.isRendered)
+            {
+                Vector3 projection;
+                if (GetMouseYZPlaneProjection(out projection))
+                {
+                    if (atkdRectClicked)
+                        atkdEditor.ViewportEvent_SetSelectedXY(projection.Z, projection.Y);
+                    else
+                        atkdEditor.ViewportEvent_SetSelection(projection.Z, projection.Y);
+                }
+            }
+        }
+
         private void glViewport_Click(object sender, EventArgs e)
         {
 
@@ -1697,6 +1695,8 @@ namespace Smash_Forge
 
         private void glViewport_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
+            if (!(Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
+                return;
             if (atkdEditor != null && atkdEditor.isRendered && atkdEditor.selectedPart > 0)
             {
                 atkdRectClicked = true;
