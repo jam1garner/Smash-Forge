@@ -1518,8 +1518,7 @@ namespace Smash_Forge
             if (fileName.EndsWith(".lm"))
             {
                 mvp.ViewComboBox.SelectedItem = "LM Editor";
-                mvp.Lumen = new Lumen(fileName);
-                AddDockedControl(lmList);
+                AddDockedControl(new LMList(fileName));
             }
 
             if (fileName.EndsWith(".mdl0"))

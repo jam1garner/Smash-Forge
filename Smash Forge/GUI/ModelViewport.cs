@@ -200,23 +200,23 @@ namespace Smash_Forge
         LVDEditor lvdEditor = new LVDEditor();
 
         //LM
-        private Lumen lumen;
+        //private Lumen lumen;
 
-        public Lumen Lumen
-        {
-            get
-            {
-                return lumen;
-            }
-            set
-            {
-                lumen = value;
-                lmList.Lumen = lumen;
-                lmList.fillList();
-            }
-        }
+        //public Lumen Lumen
+        //{
+        //    get
+       //     {
+        //        return lumen;
+       //     }
+        //    set
+        //    {
+        //        lumen = value;
+        //        lmList.Lumen = lumen;
+       //         lmList.fillList();
+       //     }
+       // }
 
-        LMList lmList = new LMList();
+        //public LMList lmList = new LMList();
 
         public BfresMaterialEditor bfresMatEditor = new BfresMaterialEditor();
 

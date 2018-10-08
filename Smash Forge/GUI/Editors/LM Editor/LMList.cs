@@ -15,13 +15,16 @@ namespace Smash_Forge
     {
         public Lumen Lumen;
         
-        public LMList()
+        public LMList(string fileName = null)
         {
             InitializeComponent();
-            treeView1.Nodes.Add("Testing");
-            symbolNode.Nodes.Add("");
-
+            if (fileName != null)
+            {
+                Lumen = new Lumen(fileName);
+            }
             treeView1.Nodes.Add(symbolNode);
+
+            fillList();
 
             treeView1.NodeMouseClick += (sender, args) => treeView1.SelectedNode = args.Node;
         }
