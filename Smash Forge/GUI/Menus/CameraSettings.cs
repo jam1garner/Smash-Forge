@@ -1,15 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using SFGraphics.Cameras;
 using Smash_Forge.Rendering;
-using SFGraphics.Cameras;
-
+using System;
+using System.Windows.Forms;
 
 namespace Smash_Forge.GUI.Menus
 {
@@ -39,23 +31,23 @@ namespace Smash_Forge.GUI.Menus
 
         private void SetNumericUpDownMaxMinValues()
         {
-            numericHorizontalRadians.Maximum = Decimal.MaxValue;
-            numericHorizontalRadians.Minimum = Decimal.MinValue;
-            numericHorizontalDegrees.Maximum = Decimal.MaxValue;
-            numericHorizontalDegrees.Minimum = Decimal.MinValue;
+            numericHorizontalRadians.Maximum = decimal.MaxValue;
+            numericHorizontalRadians.Minimum = decimal.MinValue;
+            numericHorizontalDegrees.Maximum = decimal.MaxValue;
+            numericHorizontalDegrees.Minimum = decimal.MinValue;
 
-            numericVerticalRadians.Maximum = Decimal.MaxValue;
-            numericVerticalRadians.Minimum = Decimal.MinValue;
-            numericVerticalDegrees.Maximum = Decimal.MaxValue;
-            numericVerticalDegrees.Minimum = Decimal.MinValue;
+            numericVerticalRadians.Maximum = decimal.MaxValue;
+            numericVerticalRadians.Minimum = decimal.MinValue;
+            numericVerticalDegrees.Maximum = decimal.MaxValue;
+            numericVerticalDegrees.Minimum = decimal.MinValue;
 
-            numericPositionX.Maximum = Decimal.MaxValue;
-            numericPositionX.Minimum = Decimal.MinValue;
-            numericPositionY.Maximum = Decimal.MaxValue;
-            numericPositionY.Minimum = Decimal.MinValue;
+            numericPositionX.Maximum = decimal.MaxValue;
+            numericPositionX.Minimum = decimal.MinValue;
+            numericPositionY.Maximum = decimal.MaxValue;
+            numericPositionY.Minimum = decimal.MinValue;
 
-            numericZoom.Maximum = Decimal.MaxValue;
-            numericZoom.Minimum = Decimal.MinValue;
+            numericZoom.Maximum = decimal.MaxValue;
+            numericZoom.Minimum = decimal.MinValue;
         }
 
         private void CameraPosition_Load(object sender, EventArgs e)
@@ -74,6 +66,9 @@ namespace Smash_Forge.GUI.Menus
             camera.Position = new OpenTK.Vector3(width, height, zoom);
             camera.RotationXRadians = xRotation;
             camera.RotationYRadians = yRotation;
+
+            // Update rendering.
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         public void SetNumericUpDownValues()
