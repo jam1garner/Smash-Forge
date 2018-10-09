@@ -878,12 +878,14 @@ namespace Smash_Forge
 
         private void ResetCamera_Click(object sender, EventArgs e)
         {
-            // Frame the selected NUD or mesh based on the bounding spheres. Frame the NUD if nothing is selected. 
             FrameSelectionAndSort();
+            glViewport.Invalidate();
         }
 
         public void FrameSelectionAndSort()
         {
+            // Frame the selected NUD or mesh based on the bounding spheres. 
+            // Frame the model container if nothing is selected. 
             if (meshList.filesTreeView.SelectedNode is IBoundableModel)
                 FrameBoundableModel((IBoundableModel)meshList.filesTreeView.SelectedNode);
             else if (meshList.filesTreeView.SelectedNode is ModelContainer)
@@ -895,9 +897,7 @@ namespace Smash_Forge
 
             // Depth sorting. 
             foreach (ModelContainer modelContainer in meshList.filesTreeView.Nodes)
-            {
                 modelContainer.DepthSortModels(camera.Position);
-            }
         }
 
         private void FrameSelectedModelContainer()

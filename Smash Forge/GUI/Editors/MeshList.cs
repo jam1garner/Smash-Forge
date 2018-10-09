@@ -101,6 +101,9 @@ namespace Smash_Forge
                 foreach (TreeNode n in e.Node.Nodes) n.Checked = e.Node.Checked;
             if (e.Node is BFRES.Mesh)
                 foreach (TreeNode n in e.Node.Nodes) n.Checked = e.Node.Checked;
+
+            // Update viewport after hiding/showing meshes.
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void polySelected(NUD.Polygon poly, string name)
