@@ -393,10 +393,6 @@ namespace Smash_Forge
 
         private void SetUpBuffersAndTextures()
         {
-            // Use the viewport dimensions by default.
-            fboRenderWidth = glViewport.Width;
-            fboRenderHeight = glViewport.Height;
-
             // Render bright and normal images to separate textures.
             colorHdrFbo = new Framebuffer(FramebufferTarget.Framebuffer, glViewport.Width, glViewport.Height, PixelInternalFormat.Rgba16f, 2);
 
@@ -718,25 +714,7 @@ namespace Smash_Forge
 
         private void ResizeTexturesAndBuffers()
         {
-            // FBOs manage their own resizing.
-            // FBOs may not be initialized yet.
-            if (imageBrightHdrFbo != null)
-            {
-                imageBrightHdrFbo.Width = (int)(fboRenderWidth * Runtime.bloomTexScale);
-                imageBrightHdrFbo.Height = (int)(fboRenderHeight * Runtime.bloomTexScale);
-            }
-
-            if (offscreenRenderFbo != null)
-            {
-                offscreenRenderFbo.Width = fboRenderWidth;
-                offscreenRenderFbo.Height = fboRenderHeight;
-            }
-
-            if (colorHdrFbo != null)
-            {
-                colorHdrFbo.Width = glViewport.Width;
-                colorHdrFbo.Height = glViewport.Height;
-            }
+            SetUpBuffersAndTextures();
         }
 
         #region Animation Events
@@ -1772,13 +1750,13 @@ namespace Smash_Forge
                 // Draw the texture to the screen into a smaller FBO.
                 imageBrightHdrFbo.Bind();
                 GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
-                ScreenDrawing.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1], imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
+                ScreenDrawing.DrawTexturedQuad((Texture)colorHdrFbo.ColorAttachments[1], imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, width, height);
 
-                ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0], imageBrightHdrFbo.ColorAttachments[0], screenVao);
+                ScreenDrawing.DrawScreenQuadPostProcessing((Texture)colorHdrFbo.ColorAttachments[0], (Texture)imageBrightHdrFbo.ColorAttachments[0], screenVao);
             }
 
             FixedFunctionRendering();
@@ -2270,6 +2248,10 @@ namespace Smash_Forge
             if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
             {
                 screenVao = ScreenDrawing.CreateScreenTriangle();
+
+                // Use the viewport dimensions by default.
+                fboRenderWidth = glViewport.Width;
+                fboRenderHeight = glViewport.Height;
 
                 SetUpBuffersAndTextures();
 

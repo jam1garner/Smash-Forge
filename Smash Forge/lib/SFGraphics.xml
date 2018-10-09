@@ -410,6 +410,19 @@
             <param name="y">The vertical pixel coordinate</param>
             <returns>A color with the RGBA values of the selected pixel</returns>
         </member>
+        <member name="T:SFGraphics.GLObjects.Framebuffers.IFramebufferAttachment">
+            <summary>
+            Contains methods for attaching to a <see cref="T:SFGraphics.GLObjects.Framebuffers.Framebuffer"/>
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Framebuffers.IFramebufferAttachment.Attach(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Framebuffers.Framebuffer)">
+            <summary>
+            Binds the object to <paramref name="attachment"/> for
+            <paramref name="target"/>.
+            </summary>
+            <param name="attachment">The attachment point</param>
+            <param name="target">The target framebuffer for attachment</param>
+        </member>
         <member name="T:SFGraphics.GLObjects.GLObjectManagement.GLObjectManager">
             <summary>
             <see cref="T:SFGraphics.GLObjects.GLObject"/> and all subclasses use reference counting 
@@ -576,6 +589,14 @@
             <summary>
             Binds <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> to the RenderbufferTarget.Renderbuffer target.
             </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.RenderBuffers.Renderbuffer.Attach(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Framebuffers.Framebuffer)">
+            <summary>
+            Binds the renderbuffer to <paramref name="attachment"/> for
+            <paramref name="target"/>.
+            </summary>
+            <param name="attachment">The attachment point</param>
+            <param name="target">The target framebuffer for attachment</param>
         </member>
         <member name="T:SFGraphics.GLObjects.Samplers.SamplerObject">
             <summary>
@@ -1281,6 +1302,14 @@
             <summary>
             Binds the Id to <see cref="P:SFGraphics.GLObjects.Textures.Texture.TextureTarget"/>.
             </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture.Attach(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Framebuffers.Framebuffer)">
+            <summary>
+            Binds the texture to <paramref name="attachment"/> for
+            <paramref name="target"/>.
+            </summary>
+            <param name="attachment">The attachment point</param>
+            <param name="target">The target framebuffer for attachment</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture.GetImageData(System.Int32)">
             <summary>
