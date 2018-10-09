@@ -573,12 +573,8 @@ namespace Smash_Forge
                 Ray ray = new Ray(camera, glViewport);
 
                 transformTool.b = null;
-                foreach (TreeNode node in draw)
+                foreach (ModelContainer modelContainer in draw)
                 {
-                    if (!(node is ModelContainer))
-                        continue;
-                    ModelContainer modelContainer = (ModelContainer)node;
-
                     if (modeBone.Checked)
                     {
                         // Bounding spheres work well because bones aren't close together.
@@ -643,12 +639,8 @@ namespace Smash_Forge
         private NUD.Polygon GetSelectedPolygonFromColor(Color pixelColor)
         {
             // Determine what polgyon is selected.
-            foreach (TreeNode node in draw)
+            foreach (ModelContainer con in draw)
             {
-                if (!(node is ModelContainer))
-                    continue;
-                ModelContainer con = (ModelContainer)node;
-
                 foreach (NUD.Mesh mesh in con.NUD.Nodes)
                 {
                     foreach (NUD.Polygon p in mesh.Nodes)
@@ -772,20 +764,16 @@ namespace Smash_Forge
         {
             if (currentMaterialAnimation != null)
             {
-                foreach (TreeNode node in meshList.filesTreeView.Nodes)
-                {
-                    if (!(node is ModelContainer)) continue;
-                    ModelContainer m = (ModelContainer)node;
+                foreach (ModelContainer m in meshList.filesTreeView.Nodes)
+                { 
                     m.NUD.ApplyMta(currentMaterialAnimation, frameNum);
                 }
             }
 
             if (bfresMaterialAnimation != null)
             {
-                foreach (TreeNode node in meshList.filesTreeView.Nodes)
+                foreach (ModelContainer m in meshList.filesTreeView.Nodes)
                 {
-                    if (!(node is ModelContainer)) continue;
-                    ModelContainer m = (ModelContainer)node;
                     m.Bfres.ApplyMta(bfresMaterialAnimation, frameNum);
                 }
             }
@@ -851,10 +839,8 @@ namespace Smash_Forge
 
         public void ResetModels()
         {
-            foreach (TreeNode node in meshList.filesTreeView.Nodes)
+            foreach (ModelContainer m in meshList.filesTreeView.Nodes)
             {
-                if (!(node is ModelContainer)) continue;
-                ModelContainer m = (ModelContainer)node;
                 m.NUD.ClearMta();
                 if (m.VBN != null)
                     m.VBN.reset();
@@ -944,13 +930,9 @@ namespace Smash_Forge
             }
 
             // Depth sorting. 
-            foreach (TreeNode node in meshList.filesTreeView.Nodes)
+            foreach (ModelContainer modelContainer in meshList.filesTreeView.Nodes)
             {
-                if (node is ModelContainer)
-                {
-                    ModelContainer modelContainer = (ModelContainer)node;
-                    modelContainer.DepthSortModels(camera.Position);
-                }
+                modelContainer.DepthSortModels(camera.Position);
             }
         }
 
@@ -1049,53 +1031,49 @@ namespace Smash_Forge
             // Find the max NUD bounding box for all models. 
             float[] boundingSphere = new float[] { 0, 0, 0, 0 };
 
-            foreach (TreeNode node in meshList.filesTreeView.Nodes)
+            foreach (ModelContainer modelContainer in meshList.filesTreeView.Nodes)
             {
-                if (node is ModelContainer)
+                hasModelContainers = true;
+
+                // Use the main bounding box for the NUD.
+                if ((modelContainer.NUD.boundingSphere[3] > boundingSphere[3]) && (modelContainer.NUD.boundingSphere[3] < maxBoundingRadius))
                 {
-                    hasModelContainers = true;
-                    ModelContainer modelContainer = (ModelContainer)node;
+                    boundingSphere[0] = modelContainer.NUD.boundingSphere[0];
+                    boundingSphere[1] = modelContainer.NUD.boundingSphere[1];
+                    boundingSphere[2] = modelContainer.NUD.boundingSphere[2];
+                    boundingSphere[3] = modelContainer.NUD.boundingSphere[3];
+                }
 
-                    // Use the main bounding box for the NUD.
-                    if ((modelContainer.NUD.boundingSphere[3] > boundingSphere[3]) && (modelContainer.NUD.boundingSphere[3] < maxBoundingRadius))
+                // It's possible that only the individual meshes have bounding boxes.
+                foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
+                {
+                    if (mesh.boundingSphere[3] > boundingSphere[3] && mesh.boundingSphere[3] < maxBoundingRadius)
                     {
-                        boundingSphere[0] = modelContainer.NUD.boundingSphere[0];
-                        boundingSphere[1] = modelContainer.NUD.boundingSphere[1];
-                        boundingSphere[2] = modelContainer.NUD.boundingSphere[2];
-                        boundingSphere[3] = modelContainer.NUD.boundingSphere[3];
+                        boundingSphere[0] = mesh.boundingSphere[0];
+                        boundingSphere[1] = mesh.boundingSphere[1];
+                        boundingSphere[2] = mesh.boundingSphere[2];
+                        boundingSphere[3] = mesh.boundingSphere[3];
                     }
+                }
 
-                    // It's possible that only the individual meshes have bounding boxes.
-                    foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
+                if (modelContainer.Bfres != null)
+                {
+                    foreach (var mdl in modelContainer.Bfres.models)
                     {
-                        if (mesh.boundingSphere[3] > boundingSphere[3] && mesh.boundingSphere[3] < maxBoundingRadius)
+                        foreach (var m in mdl.poly)
                         {
-                            boundingSphere[0] = mesh.boundingSphere[0];
-                            boundingSphere[1] = mesh.boundingSphere[1];
-                            boundingSphere[2] = mesh.boundingSphere[2];
-                            boundingSphere[3] = mesh.boundingSphere[3];
-                        }
-                    }
+                            m.GenerateBoundingBoxes();
 
-                    if (modelContainer.Bfres != null)
-                    {
-                        foreach (var mdl in modelContainer.Bfres.models)
-                        {
-                            foreach (var m in mdl.poly)
+                            foreach (var box in m.boundingBoxes)
                             {
-                                m.GenerateBoundingBoxes();
-
-                                foreach (var box in m.boundingBoxes)
+                                // HACK: This sort of works.
+                                float maxExtent = Math.Max(Math.Max(box.Extent.X, box.Extent.Y), box.Extent.Z);
+                                if (maxExtent > boundingSphere[3])
                                 {
-                                    // HACK: This sort of works.
-                                    float maxExtent = Math.Max(Math.Max(box.Extent.X, box.Extent.Y), box.Extent.Z);
-                                    if (maxExtent > boundingSphere[3])
-                                    {
-                                        boundingSphere[0] = box.Center.X;
-                                        boundingSphere[1] = box.Center.Y;
-                                        boundingSphere[2] = box.Center.Z;
-                                        boundingSphere[3] = maxExtent;
-                                    }
+                                    boundingSphere[0] = box.Center.X;
+                                    boundingSphere[1] = box.Center.Y;
+                                    boundingSphere[2] = box.Center.Z;
+                                    boundingSphere[3] = maxExtent;
                                 }
                             }
                         }
@@ -1509,25 +1487,19 @@ namespace Smash_Forge
 
         public void ClearModelContainers()
         {
-            foreach (TreeNode node in meshList.filesTreeView.Nodes)
+            foreach (ModelContainer m in meshList.filesTreeView.Nodes)
             {
-                if (node is ModelContainer)
+                if (m.BNTX != null)
                 {
-                    ModelContainer m = (ModelContainer)node;
-                    Runtime.TextureContainers.Remove(m.NUT);
-
-                    if (m.BNTX != null)
-                    {
-                        m.BNTX.textures.Clear();
-                        m.BNTX.glTexByName.Clear();
-                        Runtime.BNTXList.Remove(m.BNTX);
-                    }
-                    if (m.Bfres != null && m.Bfres.FTEXContainer != null)
-                    {
-                        m.Bfres.FTEXContainer.FTEXtextures.Clear();
-                        m.Bfres.FTEXContainer.glTexByName.Clear();
-                        Runtime.FTEXContainerList.Remove(m.Bfres.FTEXContainer);
-                    }
+                    m.BNTX.textures.Clear();
+                    m.BNTX.glTexByName.Clear();
+                    Runtime.BNTXList.Remove(m.BNTX);
+                }
+                if (m.Bfres != null && m.Bfres.FTEXContainer != null)
+                {
+                    m.Bfres.FTEXContainer.FTEXtextures.Clear();
+                    m.Bfres.FTEXContainer.glTexByName.Clear();
+                    Runtime.FTEXContainerList.Remove(m.Bfres.FTEXContainer);
                 }
             }
             draw.Clear();
@@ -1614,10 +1586,8 @@ namespace Smash_Forge
                     float width = Math.Abs(sx1 - m.X);
                     float height = Math.Abs(sy1 - m.Y);
 
-                    foreach (TreeNode node in draw)
+                    foreach (ModelContainer con in draw)
                     {
-                        if (!(node is ModelContainer)) continue;
-                        ModelContainer con = (ModelContainer)node;
                         foreach (NUD.Mesh mesh in con.NUD.Nodes)
                         {
                             foreach (NUD.Polygon poly in mesh.Nodes)
@@ -1643,10 +1613,8 @@ namespace Smash_Forge
                     // Selects the closest vertex
                     Ray r = RenderTools.CreateRay(camera.MvpMatrix, GetMouseOnViewport());
                     Vector3 close = Vector3.Zero;
-                    foreach (TreeNode node in draw)
+                    foreach (ModelContainer con in draw)
                     {
-                        if (!(node is ModelContainer)) continue;
-                        ModelContainer con = (ModelContainer)node;
                         NUD.Polygon Close = null;
                         int index = 0;
                         double mindis = 999;
@@ -1685,10 +1653,8 @@ namespace Smash_Forge
 
                 vertexTool.vertexListBox.BeginUpdate();
                 vertexTool.vertexListBox.Items.Clear();
-                foreach (TreeNode node in draw)
+                foreach (ModelContainer con in draw)
                 {
-                    if (!(node is ModelContainer)) continue;
-                    ModelContainer con = (ModelContainer)node;
                     foreach (NUD.Mesh mesh in con.NUD.Nodes)
                     {
                         foreach (NUD.Polygon poly in mesh.Nodes)
@@ -1967,13 +1933,13 @@ namespace Smash_Forge
                     }
                     if (m is ModelContainer)
                         ((ModelContainer)m).Render(camera, depthMap, lightMatrix, new Vector2(glViewport.Width, glViewport.Height), drawShadow);
-
                 }
 
             if (ViewComboBox.SelectedIndex == 1)
-                foreach (TreeNode m in draw)
-                    if (m is ModelContainer)
-                        ((ModelContainer)m).RenderPoints(camera);
+            {
+                foreach (ModelContainer m in draw)
+                    m.RenderPoints(camera);
+            }
         }
 
         private void DrawOverlays()
@@ -1985,9 +1951,10 @@ namespace Smash_Forge
                 lvd.Render();
 
             if (Runtime.renderBones)
-                foreach (TreeNode m in draw)
-                    if(m is ModelContainer)
-                        ((ModelContainer)m).RenderBones();
+            {
+                foreach (ModelContainer m in draw)
+                    m.RenderBones();
+            }
 
             // ACMD
             if (paramManager != null && Runtime.renderHurtboxes && draw.Count > 0 && (draw[0] is ModelContainer))
@@ -2291,13 +2258,8 @@ namespace Smash_Forge
 
         private void DrawNSWBFRESUvsForSelectedTexture(BRTI tex)
         {
-            foreach (TreeNode node in meshList.filesTreeView.Nodes)
+            foreach (ModelContainer m in meshList.filesTreeView.Nodes)
             {
-                if (!(node is ModelContainer))
-                    continue;
-
-                ModelContainer m = (ModelContainer)node;
-
                 int textureHash = 0;
                 int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
                 //   RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.Text, tex.display, 4, Color.Red, 1, Color.White);
@@ -2306,13 +2268,8 @@ namespace Smash_Forge
 
         private void DrawBFRESUvsForSelectedTexture(FTEX tex)
         {
-            foreach (TreeNode node in meshList.filesTreeView.Nodes)
-            {
-                if (!(node is ModelContainer))
-                    continue;
-
-                ModelContainer m = (ModelContainer)node;
-
+            foreach (ModelContainer m in meshList.filesTreeView.Nodes)
+            { 
                 int textureHash = 0;
                 int.TryParse(tex.Text, NumberStyles.HexNumber, null, out textureHash);
                 //       RenderTools.BFRES_DrawUv(camera, m.BFRES, tex.Text, tex.display, 4, Color.Red, 1, Color.White);
@@ -2395,7 +2352,7 @@ namespace Smash_Forge
 
         private void glViewport_Enter(object sender, EventArgs e)
         {
-            // Only render when the control is focused, so the gui remains responsive.
+            // Only render when the control is focused, so the GUI remains responsive.
             renderThreadIsUpdating = true;
         }
 
@@ -2407,13 +2364,8 @@ namespace Smash_Forge
         private void RefreshGlTextures()
         {
             // Regenerate all the texture objects.
-            foreach (TreeNode node in meshList.filesTreeView.Nodes)
+            foreach (ModelContainer m in meshList.filesTreeView.Nodes)
             {
-                if (!(node is ModelContainer))
-                    continue;
-
-                ModelContainer m = (ModelContainer)node;
-
                 if (m.NUT != null)
                     m.NUT.RefreshGlTexturesByHashId();
                 if (m.BNTX != null)
