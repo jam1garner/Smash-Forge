@@ -723,6 +723,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\BatchRendering.cs" />
     <Compile Include="Rendering\Cameras\ForgePerspCamera.cs" />
     <Compile Include="Rendering\Drawing\FloorDrawing.cs" />
     <Compile Include="Rendering\Drawing\MaterialPreviewRendering.cs" />

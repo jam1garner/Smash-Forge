@@ -35,7 +35,7 @@ namespace Smash_Forge
         // Rendering Stuff
         private Framebuffer colorHdrFbo;
 
-        // Framerate control
+        // Frame rate control
         private Thread renderThread;
         private bool renderThreadIsUpdating = false;
         private bool isOpen = true;
@@ -492,7 +492,7 @@ namespace Smash_Forge
 
         private void RenderAndAnimationLoop()
         {
-            if (this.IsDisposed)
+            if (IsDisposed)
                 return;
 
             // TODO: We don't really need two timers.
@@ -581,7 +581,6 @@ namespace Smash_Forge
                         SortedList<double, Bone> selected = modelContainer.GetBoneSelection(ray);
                         if (selected.Count > 0)
                             transformTool.b = selected.Values.ElementAt(0);
-                        //break;
                     }
 
                     if (modeMesh.Checked)
@@ -702,20 +701,11 @@ namespace Smash_Forge
 
                 ResizeTexturesAndBuffers();
             }
-
-            UpdateBoneSizeRelativeToViewport();
         }
 
         private void glViewport_LostFocus(object sender, EventArgs e)
         {
             renderThreadIsUpdating = false;
-        }
-
-        private void UpdateBoneSizeRelativeToViewport()
-        {
-            // TODO: Adjust bones to be a fixed size on screen.
-            //float distance = camera.Position.Length / (float)Math.Tan(camera.FovRadians / 2.0f);
-            //Runtime.renderBoneNodeSize = Runtime.difIntensity * distance;
         }
 
         private void ResizeTexturesAndBuffers()
@@ -841,24 +831,17 @@ namespace Smash_Forge
         {
             foreach (ModelContainer m in meshList.filesTreeView.Nodes)
             {
-                m.NUD.ClearMta();
-                if (m.VBN != null)
-                    m.VBN.reset();
+                m.NUD?.ClearMta();
+                m.VBN?.reset();
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
-                if (m.DatMelee != null)
-                {
-                    m.DatMelee.bones.reset();
-                }
+                m.DatMelee?.bones.reset();
 
                 if (m.Bch != null)
                 {
                     foreach (BCH_Model mod in m.Bch.Models.Nodes)
                     {
-                        if (mod.skeleton != null)
-                        {
-                            mod.skeleton.reset();
-                        }
+                        mod.skeleton?.reset();
                     }
                 }
 
@@ -866,10 +849,7 @@ namespace Smash_Forge
                 {
                     foreach (var mod in m.Bfres.models)
                     {
-                        if (mod.skeleton != null)
-                        {
-                            mod.skeleton.reset();
-                        }
+                        mod.skeleton?.reset();
                     }
                 }
             }
@@ -964,7 +944,6 @@ namespace Smash_Forge
 
             camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
-            UpdateBoneSizeRelativeToViewport();
         }
 
         private void FrameSelectedMesh()
@@ -973,7 +952,6 @@ namespace Smash_Forge
             float[] boundingSphere = mesh.boundingSphere;
             camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
-            UpdateBoneSizeRelativeToViewport();
         }
 
         private void FrameSelectedNud()
@@ -982,7 +960,6 @@ namespace Smash_Forge
             float[] boundingSphere = nud.boundingSphere;
             camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
-            UpdateBoneSizeRelativeToViewport();
         }
 
         private void FrameSelectedBfres()
@@ -1021,7 +998,6 @@ namespace Smash_Forge
             float[] boundingSphere = mesh.boundingSphere;
             camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
-            UpdateBoneSizeRelativeToViewport();
         }
 
         private void FrameAllModelContainers(float maxBoundingRadius = 400)
@@ -1244,12 +1220,12 @@ namespace Smash_Forge
 
         public void BatchRenderNudModels()
         {
-            BatchRenderModels("*model.nud", OpenNud);
+            BatchRenderModels("*model.nud", BatchRendering.OpenNud);
         }
 
         public void BatchRenderMeleeDatModels()
         {
-            BatchRenderModels("*.dat", OpenMeleeDat);
+            BatchRenderModels("*.dat", BatchRendering.OpenMeleeDat);
         }
 
         public void BatchRenderBotwBfresModels()
@@ -1272,7 +1248,7 @@ namespace Smash_Forge
 
                                 try
                                 {
-                                    OpenBfres(file);
+                                    BatchRendering.OpenBfres(file, this);
                                 }
                                 catch (Exception e)
                                 {
@@ -1292,7 +1268,7 @@ namespace Smash_Forge
             }
         }
 
-        private void BatchRenderModels(string searchPattern, Action<string> openFiles)
+        private void BatchRenderModels(string searchPattern, Action<string, ModelViewport> openFiles)
         {
             // Ignore warnings.
             Runtime.checkNudTexIdOnOpen = false;
@@ -1312,7 +1288,7 @@ namespace Smash_Forge
                             {
                                 try
                                 {
-                                    openFiles(file);
+                                    openFiles(file, this);
                                 }
                                 catch (Exception e)
                                 {
@@ -1334,54 +1310,6 @@ namespace Smash_Forge
             }
 
             Runtime.checkNudTexIdOnOpen = true;
-        }
-
-        private void OpenNud(string file)
-        {
-            MainForm.Instance.OpenNud(file, "", this);
-        }
-
-        private void OpenMeleeDat(string file)
-        {
-            byte[] data = File.ReadAllBytes(file);
-            MainForm.Instance.OpenMeleeDat(data, file, "", this);
-        }
-
-        private void OpenBfres(string file)
-        {
-            MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(file), file, "", this);
-
-            string nameNoExtension = Path.GetFileNameWithoutExtension(file);
-            string textureFileName = Path.GetDirectoryName(file) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
-
-            if (File.Exists(textureFileName))
-                MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
-        }
-
-        private void BatchRenderStages()
-        {
-            // Get the source model folder and then the output folder. 
-            using (var sourceFolderSelect = new FolderSelectDialog())
-            {
-                sourceFolderSelect.Title = "Stages Directory";
-                if (sourceFolderSelect.ShowDialog() == DialogResult.OK)
-                {
-                    using (var outputFolderSelect = new FolderSelectDialog())
-                    {
-                        outputFolderSelect.Title = "Output Renders Directory";
-                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
-                        {
-                            foreach (string stageFolder in Directory.GetDirectories(sourceFolderSelect.SelectedPath))
-                            {
-                                MainForm.Instance.OpenStageFolder(stageFolder, this);
-                                BatchRenderViewportToFile(stageFolder, sourceFolderSelect.SelectedPath, outputFolderSelect.SelectedPath);
-                                MainForm.Instance.ClearWorkSpace(false);
-                                ClearModelContainers();
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         private void BatchRenderViewportToFile(string fileName, string sourcePath, string outputPath)
@@ -1704,7 +1632,6 @@ namespace Smash_Forge
             if (currentMode != Mode.Selection && !freezeCamera)
             {
                 camera.UpdateFromMouse();
-                UpdateBoneSizeRelativeToViewport();
             }
 
             if (atkdEditor != null && atkdEditor.isRendered)
@@ -1814,7 +1741,6 @@ namespace Smash_Forge
              && !transformTool.hit)
             {
                 camera.UpdateFromMouse();
-                UpdateBoneSizeRelativeToViewport();
             }
 
             if (cameraPosForm != null)
