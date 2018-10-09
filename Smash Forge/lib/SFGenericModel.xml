@@ -21,6 +21,11 @@
             </summary>
             <param name="meshes">The meshes used for drawing</param>
         </member>
+        <member name="M:SFGenericModel.GenericModels.GenericModel.#ctor">
+            <summary>
+            Creates an empty model.
+            </summary>
+        </member>
         <member name="M:SFGenericModel.GenericModels.GenericModel.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
             <summary>
             Draws all meshes.
@@ -62,7 +67,7 @@
         </member>
         <member name="T:SFGenericModel.IDrawableMesh">
             <summary>
-            Defines methods for drawing a mesh using programable shaders.
+            Defines methods for drawing a mesh using programmable shaders.
             </summary>
         </member>
         <member name="M:SFGenericModel.IDrawableMesh.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
@@ -74,8 +79,7 @@
         </member>
         <member name="T:SFGenericModel.IndexedVertexData`1">
             <summary>
-            Creates buffers for indexed vertex data using an interleaved buffer of 
-            vertex attributes.
+            Stores indexed vertex data to be used for drawing with OpenGL.
             </summary>
             <typeparam name="T">The struct used for each vertex</typeparam>
         </member>
@@ -84,19 +88,14 @@
             The size of <typeparamref name="T"/> in bytes.
             </summary>
         </member>
-        <member name="P:SFGenericModel.IndexedVertexData`1.VertexCount">
+        <member name="P:SFGenericModel.IndexedVertexData`1.Vertices">
             <summary>
-            The number of vertices, which is equal to the number of vertex indices.
+            The vertex data.
             </summary>
         </member>
-        <member name="P:SFGenericModel.IndexedVertexData`1.VertexBuffer">
+        <member name="P:SFGenericModel.IndexedVertexData`1.Indices">
             <summary>
-            An interleaved buffer of vertex attributes.
-            </summary>
-        </member>
-        <member name="P:SFGenericModel.IndexedVertexData`1.VertexIndexBuffer">
-            <summary>
-            The buffer of vertex indices.
+            The vertex indices. The number of vertices rendered is the number of indices.
             </summary>
         </member>
         <member name="P:SFGenericModel.IndexedVertexData`1.PrimitiveType">
@@ -108,16 +107,16 @@
             <summary>
             
             </summary>
-            <param name="vertices"></param>
-            <param name="primitiveType"></param>
+            <param name="vertices">The value of <see cref="P:SFGenericModel.IndexedVertexData`1.Vertices"/></param>
+            <param name="primitiveType">The value of <see cref="P:SFGenericModel.IndexedVertexData`1.PrimitiveType"/></param>
         </member>
         <member name="M:SFGenericModel.IndexedVertexData`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
             
             </summary>
-            <param name="vertices"></param>
-            <param name="vertexIndices"></param>
-            <param name="primitiveType"></param>
+            <param name="vertices">The value of <see cref="P:SFGenericModel.IndexedVertexData`1.Vertices"/></param>
+            <param name="indices">The value of <see cref="P:SFGenericModel.IndexedVertexData`1.Indices"/></param>
+            <param name="primitiveType">The value of <see cref="P:SFGenericModel.IndexedVertexData`1.PrimitiveType"/></param>
         </member>
         <member name="T:SFGenericModel.RenderState.PolygonModeSettings">
             <summary>
@@ -485,6 +484,68 @@
             <param name="fragmentSource">The generated GLSL fragment shader source</param>
             <returns>A new shader that can be used for rendering</returns>
         </member>
+        <member name="T:SFGenericModel.Utils.IndexUtils">
+            <summary>
+            Contains methods for generating and manipulating vertex indices.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.Utils.IndexUtils.GenerateIndices(System.Int32)">
+            <summary>
+            Generates consecutive indices starting with 0 
+            up to but not including <paramref name="count"/>.
+            </summary>
+            <param name="count">The number of indices to generate</param>
+            <returns>Generated consecutive indices</returns>
+        </member>
+        <member name="T:SFGenericModel.Utils.MeshBatchUtils">
+            <summary>
+            Contains methods for grouping vertex data to reduce draw calls and improve performance.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.Utils.MeshBatchUtils.GroupContainersByPrimitiveType``1(System.Collections.Generic.List{SFGenericModel.Utils.VertexContainer{``0}})">
+            <summary>
+            Creates a new collection of <see cref="T:SFGenericModel.Utils.VertexContainer`1"/> objects with 
+            only a single container for types that support merging.
+            </summary>
+            <typeparam name="T">The vertex data struct</typeparam>
+            <param name="containers">The unoptimized vertex containers</param>
+            <returns></returns>
+        </member>
+        <member name="T:SFGenericModel.Utils.VertexContainer`1">
+            <summary>
+            Stores indexed vertex data and the primitive to be used for rendering.
+            </summary>
+            <typeparam name="T">The struct used for each vertex</typeparam>
+        </member>
+        <member name="F:SFGenericModel.Utils.VertexContainer`1.vertices">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.Utils.VertexContainer`1.vertexIndices">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SFGenericModel.Utils.VertexContainer`1.primitiveType">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.Utils.VertexContainer`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
+            <summary>
+            
+            </summary>
+            <param name="vertices"></param>
+            <param name="vertexIndices"></param>
+            <param name="primitiveType"></param>
+        </member>
+        <member name="M:SFGenericModel.Utils.VertexContainer`1.#ctor(OpenTK.Graphics.OpenGL.PrimitiveType)">
+            <summary>
+            Creates an empty vertex container.
+            </summary>
+            <param name="primitiveType"></param>
+        </member>
         <member name="T:SFGenericModel.VertexAttributes.AttribPointerUtils">
             <summary>
             Type information for converting from OpenGL vertex attributes to C#.
@@ -757,6 +818,11 @@
             </summary>
             <typeparam name="T">The struct used to define vertex data</typeparam>
         </member>
+        <member name="P:SFGenericModel.GenericMesh`1.PrimitiveType">
+            <summary>
+            Determines how primitives will be constructed from the vertex data.
+            </summary>
+        </member>
         <member name="F:SFGenericModel.GenericMesh`1.renderSettings">
             <summary>
             The collection of OpenGL state set prior to drawing.
@@ -802,6 +868,12 @@
             </summary>
             <param name="vertexData">The vertex indices, data, and primitive type</param>
         </member>
+        <member name="M:SFGenericModel.GenericMesh`1.#ctor(SFGenericModel.IndexedVertexData{`0})">
+            <summary>
+            Creates a new mesh and initializes the vertex buffer data.
+            </summary>
+            <param name="vertexData">Contains the vertices, indices, and primitive type</param>
+        </member>
         <member name="M:SFGenericModel.GenericMesh`1.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera,System.Int32,System.Int32)">
             <summary>
             Sets the uniforms, sets render state, and draws the mesh.
@@ -838,55 +910,6 @@
             
             </summary>
             <param name="shader"></param>
-        </member>
-        <member name="T:SFGenericModel.Utils.MeshBatchUtils">
-            <summary>
-            Contains methods for grouping vertex data to reduce draw calls and improve performance.
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.Utils.MeshBatchUtils.GroupContainersByPrimitiveType``1(System.Collections.Generic.List{SFGenericModel.Utils.VertexContainer{``0}})">
-            <summary>
-            Creates a new collection of <see cref="T:SFGenericModel.Utils.VertexContainer`1"/> objects with 
-            only a single container for types that support merging.
-            </summary>
-            <typeparam name="T">The vertex data struct</typeparam>
-            <param name="containers">The unoptimized vertex containers</param>
-            <returns></returns>
-        </member>
-        <member name="T:SFGenericModel.Utils.VertexContainer`1">
-            <summary>
-            Stores indexed vertex data and the primitive to be used for rendering.
-            </summary>
-            <typeparam name="T">The struct used for each vertex</typeparam>
-        </member>
-        <member name="F:SFGenericModel.Utils.VertexContainer`1.vertices">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.Utils.VertexContainer`1.vertexIndices">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.Utils.VertexContainer`1.primitiveType">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.Utils.VertexContainer`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
-            <summary>
-            
-            </summary>
-            <param name="vertices"></param>
-            <param name="vertexIndices"></param>
-            <param name="primitiveType"></param>
-        </member>
-        <member name="M:SFGenericModel.Utils.VertexContainer`1.#ctor(OpenTK.Graphics.OpenGL.PrimitiveType)">
-            <summary>
-            Creates an empty vertex container.
-            </summary>
-            <param name="primitiveType"></param>
         </member>
     </members>
 </doc>

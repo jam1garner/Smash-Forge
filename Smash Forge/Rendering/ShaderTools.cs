@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using SFGraphics.Tools;
+using SFGraphics.GlUtils;
 
 namespace Smash_Forge.Rendering
 {

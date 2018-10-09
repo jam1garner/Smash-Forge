@@ -4,6 +4,20 @@
         <name>SFGraphics.Utils</name>
     </assembly>
     <members>
+        <member name="T:SFGraphics.Utils.BitmapUtils">
+            <summary>
+            Contains methods for working with <see cref="T:System.Drawing.Bitmap"/> images.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Utils.BitmapUtils.GetBitmap(System.Int32,System.Int32,System.Byte[])">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Bitmap"/> from ABGR pixel data.
+            </summary>
+            <param name="width">The width in pixels of the image data</param>
+            <param name="height">The height in pixels of the image data</param>
+            <param name="imageData">ABGR image pixels</param>
+            <returns>A new image with the given image data</returns>
+        </member>
         <member name="T:SFGraphics.Utils.BoundingSphereGenerator">
             <summary>
             Generates bounding spheres for a collection of vertices.

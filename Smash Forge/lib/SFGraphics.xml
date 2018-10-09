@@ -162,27 +162,27 @@
         </member>
         <member name="M:SFGraphics.Cameras.Camera.UpdateTranslationMatrix">
             <summary>
-            
+            Calculates <see cref="F:SFGraphics.Cameras.Camera.translationMatrix"/>.
             </summary>
         </member>
         <member name="M:SFGraphics.Cameras.Camera.UpdateRotationMatrix">
             <summary>
-            
+            Calculates <see cref="F:SFGraphics.Cameras.Camera.rotationMatrix"/>.
             </summary>
         </member>
         <member name="M:SFGraphics.Cameras.Camera.UpdatePerspectiveMatrix">
             <summary>
-            
+            Calculates <see cref="F:SFGraphics.Cameras.Camera.perspectiveMatrix"/>.
             </summary>
         </member>
         <member name="M:SFGraphics.Cameras.Camera.UpdateModelViewMatrix">
             <summary>
-            
+            Calculates <see cref="F:SFGraphics.Cameras.Camera.modelViewMatrix"/>.
             </summary>
         </member>
         <member name="M:SFGraphics.Cameras.Camera.UpdateMvpMatrix">
             <summary>
-            
+            Calculates <see cref="F:SFGraphics.Cameras.Camera.mvpMatrix"/>.
             </summary>
         </member>
         <member name="M:SFGraphics.Cameras.Camera.ResetToDefaultPosition">
@@ -192,7 +192,7 @@
         </member>
         <member name="M:SFGraphics.Cameras.Camera.FrameBoundingSphere(OpenTK.Vector3,System.Single,System.Single)">
             <summary>
-            
+            Transforms the camera to frame a sphere of the given dimensions in the viewport.
             </summary>
             <param name="center">The position of the center of the bounding sphere.</param>
             <param name="radius">The radius of the bounding sphere in scene units</param>
@@ -1282,6 +1282,22 @@
             Binds the Id to <see cref="P:SFGraphics.GLObjects.Textures.Texture.TextureTarget"/>.
             </summary>
         </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture.GetImageData(System.Int32)">
+            <summary>
+            Gets the image data for <paramref name="mipLevel"/>
+            in an RGBA unsigned byte format.
+            </summary>
+            <param name="mipLevel">The mip level to read</param>
+            <returns>The image data for <paramref name="mipLevel"/></returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture.GetBitmap(System.Int32)">
+            <summary>
+            Gets the image data for <paramref name="mipLevel"/>
+            in an ABGR unsigned byte format.
+            </summary>
+            <param name="mipLevel">The mip level to read</param>
+            <returns>The image data for <paramref name="mipLevel"/></returns>
+        </member>
         <member name="T:SFGraphics.GLObjects.Textures.Texture2D">
             <summary>
             A TextureTarget.Texture2D texture that supports mipmaps.
@@ -1442,14 +1458,14 @@
             Binds the default vertex array value of <c>0</c>.
             </summary>
         </member>
-        <member name="T:SFGraphics.Tools.OpenGLExtensions">
+        <member name="T:SFGraphics.GlUtils.OpenGLExtensions">
             <summary>
             This class contains methods for checking the availability of OpenGL extensions.
             Extensions that aren't core for the current OpenGL version may not be available on all graphics processors.
             For example, an application can target OpenGL 3.30 but still use newer features if available.
             </summary>
         </member>
-        <member name="M:SFGraphics.Tools.OpenGLExtensions.IsAvailable(System.String)">
+        <member name="M:SFGraphics.GlUtils.OpenGLExtensions.IsAvailable(System.String)">
             <summary>
             Returns true if an extension is available. 
             There is no need to check core extensions for the current OpenGL version.
@@ -1459,9 +1475,9 @@
             Ex: GL_KHR_debug. Names are not case sensitive. </param>
             <returns>True if the extension is available</returns>
         </member>
-        <member name="M:SFGraphics.Tools.OpenGLExtensions.InitializeCurrentExtensions">
+        <member name="M:SFGraphics.GlUtils.OpenGLExtensions.InitializeCurrentExtensions">
             <summary>
-            Clears and initializes the available extensions for searching with <see cref="M:SFGraphics.Tools.OpenGLExtensions.IsAvailable(System.String)"/>.
+            Clears and initializes the available extensions for searching with <see cref="M:SFGraphics.GlUtils.OpenGLExtensions.IsAvailable(System.String)"/>.
             </summary>
         </member>
     </members>
