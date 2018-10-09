@@ -210,6 +210,7 @@
     <Compile Include="Filetypes\Melee\MeleeNode.cs" />
     <Compile Include="Filetypes\Melee\Rendering\MeleeRenderTexture.cs" />
     <Compile Include="Filetypes\Melee\MeleeRootNode.cs" />
+    <Compile Include="Filetypes\Models\IBoundableModel.cs" />
     <Compile Include="Filetypes\Models\Nuds\DisplayVertex.cs" />
     <Compile Include="Filetypes\Models\Nuds\Material.cs" />
     <Compile Include="Filetypes\Models\Nuds\MatTexture.cs" />

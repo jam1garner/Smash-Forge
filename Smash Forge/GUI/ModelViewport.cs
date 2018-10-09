@@ -884,30 +884,14 @@ namespace Smash_Forge
 
         public void FrameSelectionAndSort()
         {
-            if (meshList.filesTreeView.SelectedNode is NUD.Mesh)
-            {
-                FrameSelectedMesh();
-            }
-            else if (meshList.filesTreeView.SelectedNode is NUD)
-            {
-                FrameSelectedNud();
-            }
-            else if (meshList.filesTreeView.SelectedNode is NUD.Polygon)
-            {
-                FrameSelectedPolygon();
-            }
+            if (meshList.filesTreeView.SelectedNode is IBoundableModel)
+                FrameBoundableModel((IBoundableModel)meshList.filesTreeView.SelectedNode);
             else if (meshList.filesTreeView.SelectedNode is ModelContainer)
-            {
                 FrameSelectedModelContainer();
-            }
             else if (meshList.filesTreeView.SelectedNode is BFRES)
-            {
                 FrameSelectedBfres();
-            }
             else
-            {
                 FrameAllModelContainers();
-            }
 
             // Depth sorting. 
             foreach (ModelContainer modelContainer in meshList.filesTreeView.Nodes)
@@ -946,20 +930,10 @@ namespace Smash_Forge
             camera.UpdateFromMouse();
         }
 
-        private void FrameSelectedMesh()
+        private void FrameBoundableModel(IBoundableModel model)
         {
-            NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode;
-            float[] boundingSphere = mesh.boundingSphere;
-            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
-            camera.UpdateFromMouse();
-        }
-
-        private void FrameSelectedNud()
-        {
-            NUD nud = (NUD)meshList.filesTreeView.SelectedNode;
-            float[] boundingSphere = nud.boundingSphere;
-            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
-            camera.UpdateFromMouse();
+            if (model != null)
+                camera.FrameBoundingSphere(model.BoundingSphere.Xyz, model.BoundingSphere.W);
         }
 
         private void FrameSelectedBfres()
@@ -990,14 +964,6 @@ namespace Smash_Forge
             Radius.Sort();
 
             camera.FrameBoundingSphere(new Vector3(X[X.Count - 1], Y[Y.Count - 1], Z[Z.Count - 1]), Radius[Radius.Count - 1]);
-        }
-
-        private void FrameSelectedPolygon()
-        {
-            NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode.Parent;
-            float[] boundingSphere = mesh.boundingSphere;
-            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
-            camera.UpdateFromMouse();
         }
 
         private void FrameAllModelContainers(float maxBoundingRadius = 400)
