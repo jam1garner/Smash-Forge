@@ -72,8 +72,14 @@ namespace Smash_Forge
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             int indexNum = treeView1.SelectedNode.Index;
-            Lumen.AddColor(new OpenTK.Vector4(float.Parse(tbl.Rows[0][1].ToString()) / 255f, float.Parse(tbl.Rows[1][1].ToString()) / 255f, float.Parse(tbl.Rows[2][1].ToString()) / 255f, float.Parse(tbl.Rows[3][1].ToString()) / 255f), indexNum);
-            fillList();
+            try
+            {
+                Lumen.AddColor(new OpenTK.Vector4(float.Parse(tbl.Rows[0][1].ToString()) / 255f, float.Parse(tbl.Rows[1][1].ToString()) / 255f, float.Parse(tbl.Rows[2][1].ToString()) / 255f, float.Parse(tbl.Rows[3][1].ToString()) / 255f), indexNum);
+                treeView1.SelectedNode.Text = (Lumen.Colors[indexNum] * 255).ToString();
+            }
+            catch {
+                MessageBox.Show("Incorrect format", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
