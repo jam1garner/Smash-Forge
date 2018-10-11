@@ -915,10 +915,8 @@ namespace Smash_Forge
             try
             {
                 string selectedMatPropKey = propertiesListView.SelectedItems[0].Text;
-                colorSelect.BackColor = Color.FromArgb(255,
-                    ColorUtils.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][0]),
-                    ColorUtils.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][1]),
-                    ColorUtils.FloatToIntClamp(currentMaterialList[currentMatIndex].entries[selectedMatPropKey][2]));
+                float[] values = currentMaterialList[currentMatIndex].entries[selectedMatPropKey];
+                colorSelect.BackColor = ColorUtils.ColorFromVector3(new OpenTK.Vector3(values[0], values[1], values[2]));
             }
             catch (ArgumentOutOfRangeException)
             {

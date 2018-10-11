@@ -40,21 +40,29 @@
         </member>
         <member name="M:SFGraphics.Utils.ColorUtils.Vector4FromColor(System.Drawing.Color)">
             <summary>
-            Converts the byte channel values of the input color [0,255] to float [0.0,1.0]. XYZW = RGBA.
+            Converts the byte channel values of the input color [0,255] to float [0, 1]. XYZW = RGBA.
             </summary>
-            <param name="color"></param>
-            <returns></returns>
+            <param name="color">the RGBA color</param>
+            <returns><paramref name="color"/> converted to a float vector</returns>
+        </member>
+        <member name="M:SFGraphics.Utils.ColorUtils.ColorFromVector3(OpenTK.Vector3)">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Color"/> from <paramref name="color"/>.
+            Values are scaled by 255 and clamped to the range [0, 255].
+            </summary>
+            <param name="color">The input color</param>
+            <returns>A new color</returns>
         </member>
         <member name="M:SFGraphics.Utils.ColorUtils.HsvToRgb(System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Single@)">
             <summary>
-            
+            Updates RGB values given an HSV color.
             </summary>
             <param name="h">Hue in range [0,360]</param>
             <param name="s">Saturation in range [0,1]. Values outside range are clamped.</param>
             <param name="v">Value</param>
-            <param name="r"></param>
-            <param name="g"></param>
-            <param name="b"></param>
+            <param name="r">The resulting red component</param>
+            <param name="g">The resulting green component</param>
+            <param name="b">The resulting blue component</param>
         </member>
         <member name="M:SFGraphics.Utils.ColorUtils.HsvToRgb(OpenTK.Vector3)">
             <summary>
@@ -69,14 +77,14 @@
         </member>
         <member name="M:SFGraphics.Utils.ColorUtils.RgbToHsv(System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Single@)">
             <summary>
-            
+            Updates HSV values given an RGB color.
             </summary>
-            <param name="r"></param>
-            <param name="g"></param>
-            <param name="b"></param>
-            <param name="h"></param>
-            <param name="s"></param>
-            <param name="v"></param>
+            <param name="h">The resulting hue in range [0,360]</param>
+            <param name="s">The resulting saturation in range [0,1]. Values outside range are clamped.</param>
+            <param name="v">The resulting value</param>
+            <param name="r">The red component</param>
+            <param name="g">The green component</param>
+            <param name="b">The blue component</param>
         </member>
         <member name="M:SFGraphics.Utils.ColorUtils.RgbToHsv(OpenTK.Vector3)">
             <summary>
@@ -85,34 +93,28 @@
             output.Z: value.
             </summary>
             <param name="rgb"></param>
-            <returns></returns>
+            <returns>The result float HSV values</returns>
         </member>
         <member name="M:SFGraphics.Utils.ColorUtils.ColorTemp2RGB(System.Single,System.Single@,System.Single@,System.Single@)">
             <summary>
-            Calculates a visually similar RGB color to a blackbody.
+            Calculates a visually similar RGB color to a given blackbody temperature.
             </summary>
             <param name="temp">The color temperature in Kelvin. Ex: temp = 6500 for a calibrated PC monitor.</param>
-            <param name="R"></param>
-            <param name="G"></param>
-            <param name="B"></param>
+            <param name="r">The resulting red component</param>
+            <param name="g">The resulting green component</param>
+            <param name="b">The resulting blue component</param>
         </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.ClampInt(System.Int32,System.Int32,System.Int32)">
+        <member name="M:SFGraphics.Utils.ColorUtils.Clamp``1(``0,``0,``0)">
             <summary>
-            Returns an int restricted between min and max.
+            Returns the result of <paramref name="value"/> clamped between
+            <paramref name="min"/> and <paramref name="max"/>.
             </summary>
-            <param name="i"></param>
-            <param name="min">Values lower than min are clamped to min.</param>
-            <param name="max">Values higher than max are clamped to max.</param>
-            <returns></returns>
-        </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.ClampFloat(System.Single,System.Single,System.Single)">
-            <summary>
-            Returns a float restricted between min and max.
-            </summary>
-            <param name="f"></param>
-            <param name="min">Values lower than min are clamped to min.</param>
-            <param name="max">Values higher than max are clamped to max.</param>
-            <returns></returns>
+            <typeparam name="T">The type of value to compare</typeparam>
+            <param name="value">The input value</param>
+            <param name="min">The lowest possible output</param>
+            <param name="max">The highest possible output</param>
+            <returns>The result of <paramref name="value"/> clamped between
+            <paramref name="min"/> and <paramref name="max"/></returns>
         </member>
         <member name="M:SFGraphics.Utils.ColorUtils.InvertColor(System.Drawing.Color)">
             <summary>
@@ -120,15 +122,6 @@
             </summary>
             <param name="color">The color used to calculate the inverted color</param>
             <returns>A color with inverted RGB but identical alpha as color</returns>
-        </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.FloatToIntClamp(System.Single,System.Int32,System.Int32)">
-            <summary>
-            Converts f to an int clamped to the specified range.
-            </summary>
-            <param name="f">Multiplied by 255 and casted to int before being clamped</param>
-            <param name="min">Values lower than min are clamped to min.</param>
-            <param name="max">Values higher than max are clamped to max.</param>
-            <returns></returns>
         </member>
         <member name="T:SFGraphics.Utils.VectorUtils">
             <summary>

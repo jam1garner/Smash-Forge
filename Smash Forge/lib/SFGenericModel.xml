@@ -145,6 +145,19 @@
             <param name="materialFace"></param>
             <param name="polygonMode"></param>
         </member>
+        <member name="M:SFGenericModel.RenderState.PolygonModeSettings.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.PolygonModeSettings.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:SFGenericModel.RenderState.AlphaBlendSettings">
             <summary>
             The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
@@ -190,6 +203,19 @@
             <param name="blendingEquationRgb"></param>
             <param name="blendingEquationAlpha"></param>
         </member>
+        <member name="M:SFGenericModel.RenderState.AlphaBlendSettings.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.AlphaBlendSettings.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:SFGenericModel.RenderState.AlphaTestSettings">
             <summary>
             The alpha testing state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
@@ -224,6 +250,19 @@
             <param name="alphaFunction"></param>
             <param name="referenceAlpha"></param>
         </member>
+        <member name="M:SFGenericModel.RenderState.AlphaTestSettings.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.AlphaTestSettings.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:SFGenericModel.RenderState.DepthTestSettings">
             <summary>
             The alpha blending state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
@@ -257,6 +296,19 @@
             <param name="depthMask"></param>
             <param name="depthFunction"></param>
         </member>
+        <member name="M:SFGenericModel.RenderState.DepthTestSettings.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.DepthTestSettings.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:SFGenericModel.RenderState.FaceCullingSettings">
             <summary>
             The face culling state set before drawing a <see cref="T:SFGenericModel.GenericMesh`1"/>.
@@ -283,6 +335,19 @@
             </summary>
             <param name="enabled"></param>
             <param name="cullFaceMode"></param>
+        </member>
+        <member name="M:SFGenericModel.RenderState.FaceCullingSettings.Equals(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="obj"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.FaceCullingSettings.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:SFGenericModel.RenderState.RenderSettings">
             <summary>
@@ -703,6 +768,11 @@
         <member name="P:SFGenericModel.MeshEventArgs.AttribSetEventArgs.Name">
             <summary>
             The name of the attribute variable.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.MeshEventArgs.AttribSetEventArgs.Type">
+            <summary>
+            The data type of the attribute variable
             </summary>
         </member>
         <member name="P:SFGenericModel.MeshEventArgs.AttribSetEventArgs.ValueCount">

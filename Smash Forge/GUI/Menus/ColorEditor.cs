@@ -154,7 +154,7 @@ namespace Smash_Forge.GUI.Menus
 
         private void UpdateButtonColor()
         {
-            colorButton.BackColor = Color.FromArgb(255, ColorUtils.FloatToIntClamp(R), ColorUtils.FloatToIntClamp(G), ColorUtils.FloatToIntClamp(B));
+            colorButton.BackColor = ColorUtils.ColorFromVector3(new Vector3(R, G, B));
         }
 
         private void UpdateColorTrackBars()
