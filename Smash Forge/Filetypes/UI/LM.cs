@@ -897,18 +897,25 @@ namespace Smash_Forge
             return index;
         }
 
-        public int AddColor(Vector4 color)
+        public int AddColor(Vector4 color, int index = -1)
         {
-            int index = -1;
 
             if (Colors.Contains(color))
             {
-                index = Colors.IndexOf(color);
+                    index = Colors.IndexOf(color);
             }
             else
             {
-                index = Colors.Count;
-                Colors.Add(color);
+                if (index == -1)
+                {
+                    index = Colors.Count;
+                    Colors.Add(color);
+                }
+                else
+                {
+                    Colors.Insert(index, color);
+                    Colors.Remove(Colors[index + 1]);
+                }
             }
 
             return index;
