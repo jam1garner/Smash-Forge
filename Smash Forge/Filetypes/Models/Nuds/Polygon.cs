@@ -9,7 +9,7 @@ namespace Smash_Forge
 {
     public partial class NUD
     {
-        public class Polygon : TreeNode
+        public class Polygon : TreeNode, IBoundableModel
         {
             // Bone types and vertex types control two bytes of the vertsize.
             public enum BoneTypes
@@ -67,6 +67,18 @@ namespace Smash_Forge
             public void AddVertex(Vertex v)
             {
                 vertices.Add(v);
+            }
+
+            public Vector4 BoundingSphere
+            {
+                get
+                {
+                    Mesh parent = (Mesh)Parent;
+                    if (parent != null)
+                        return new Vector4(parent.BoundingSphere);
+                    else
+                        return new Vector4(0, 0, 0, 100);
+                }
             }
 
             private void GenerateDisplayId()

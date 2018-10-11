@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
-using System.Xml;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL;
 using SALT.PARAMS;
-using SFGraphics.GLObjects.Shaders;
-using SFGraphics.Tools;
-
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 
 namespace Smash_Forge
 {
@@ -108,6 +101,8 @@ namespace Smash_Forge
 
         public static bool renderLVD = true;
 
+        public static bool enableVSync = false;
+
         public static bool renderModel = true;
         public static bool renderModelSelection = true;
         public static bool renderModelWireframe;
@@ -149,6 +144,8 @@ namespace Smash_Forge
         public static Color grabboxColor = Color.Purple;
         public static Color searchboxColor = Color.DarkOrange;
         public static bool renderHitboxesNoOverlap;
+        public static bool LoadAndRenderATKD = false;
+        public static string currentATKD = null;
         public static bool useFrameDuration = true;
         public static bool useFAFasAnimationLength = false;
         public static bool Is2DView = false;

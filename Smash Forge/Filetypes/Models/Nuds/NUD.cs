@@ -19,7 +19,7 @@ using System.Windows.Forms;
 
 namespace Smash_Forge
 {
-    public partial class NUD : FileBase
+    public partial class NUD : FileBase, IBoundableModel
     {
         // OpenGL Buffers
         private BufferObject bonesUbo;
@@ -87,6 +87,11 @@ namespace Smash_Forge
         public NUD(string fname) : this()
         {
             Read(fname);
+        }
+
+        public Vector4 BoundingSphere
+        {
+            get { return new Vector4(boundingSphere[0], boundingSphere[1], boundingSphere[2], boundingSphere[3]); }
         }
 
         private void SetupTreeNode()
