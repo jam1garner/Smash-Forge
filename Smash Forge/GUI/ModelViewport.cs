@@ -650,8 +650,8 @@ namespace Smash_Forge
                     {
                         // The color is the polygon index (not the render order).
                         // Convert to Vector3 to ignore the alpha.
-                        Vector3 polyColor = ColorUtils.Vector4FromColor(Color.FromArgb(p.DisplayId)).Xyz;
-                        Vector3 pickedColor = ColorUtils.Vector4FromColor(pixelColor).Xyz;
+                        Vector3 polyColor = ColorUtils.GetVector3(Color.FromArgb(p.DisplayId));
+                        Vector3 pickedColor = ColorUtils.GetVector3(pixelColor);
 
                         if (polyColor == pickedColor)
                             return p;
@@ -1812,8 +1812,8 @@ namespace Smash_Forge
 
         private void DrawViewportBackground()
         {
-            Vector3 topColor = ColorUtils.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
-            Vector3 bottomColor = ColorUtils.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
+            Vector3 topColor = ColorUtils.GetVector3(Runtime.backgroundGradientTop);
+            Vector3 bottomColor = ColorUtils.GetVector3(Runtime.backgroundGradientBottom);
 
             // Only use the top color for solid color rendering.
             if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)

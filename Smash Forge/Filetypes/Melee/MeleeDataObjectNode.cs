@@ -331,7 +331,7 @@ namespace Smash_Forge.Filetypes.Melee
 
         public void SetRgbaColor(Shader shader, string name, Color color)
         {
-            shader.SetVector4(name, SFGraphics.Utils.ColorUtils.Vector4FromColor(color));
+            shader.SetVector4(name, SFGraphics.Utils.ColorUtils.GetVector4(color));
         }
 
         public void RefreshRendering()

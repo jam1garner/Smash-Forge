@@ -618,7 +618,7 @@ namespace Smash_Forge
             shader.SetVector4("gsys_bake_st1", new Vector4(1, 1, 0, 0));
             shader.SetInt("enableCellShading", 0);
 
-            shader.SetVector3("colorId", ColorUtils.Vector4FromColor(Color.FromArgb(id)).Xyz);
+            shader.SetVector3("colorId", ColorUtils.GetVector3(Color.FromArgb(id)));
             shader.SetBoolToInt("drawId", drawId);
 
             //BOTW uses this shader so lets add in cell shading

@@ -543,7 +543,7 @@ namespace Smash_Forge
             shader.SetVector3("cameraPosition", camera.Position);
             shader.SetFloat("zBufferOffset", material.zBufferOffset);
             shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
-            shader.SetVector3("colorId", ColorUtils.Vector4FromColor(Color.FromArgb(id)).Xyz);
+            shader.SetVector3("colorId", ColorUtils.GetVector3(Color.FromArgb(id)));
             shader.SetBoolToInt("drawId", drawId);
 
             // The fragment alpha is set to 1 when alpha blending/testing aren't used.
@@ -614,7 +614,7 @@ namespace Smash_Forge
             if (lightSetNumber >= 0 && lightSetNumber <= maxLightSet)
             {
                 Color color = lightSetColorByIndex[lightSetNumber];
-                shader.SetVector3("lightSetColor", ColorUtils.Vector4FromColor(color).Xyz);
+                shader.SetVector3("lightSetColor", ColorUtils.GetVector3(color));
             }
         }
 

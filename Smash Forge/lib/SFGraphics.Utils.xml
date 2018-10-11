@@ -38,20 +38,46 @@
             Conversion methods for HSV, RGB, color temperature, and system Colors using floats or OpenTK vectors.
             </summary>
         </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.Vector4FromColor(System.Drawing.Color)">
+        <member name="M:SFGraphics.Utils.ColorUtils.GetVector4(System.Drawing.Color)">
             <summary>
             Converts the byte channel values of the input color [0,255] to float [0, 1]. XYZW = RGBA.
             </summary>
             <param name="color">the RGBA color</param>
             <returns><paramref name="color"/> converted to a float vector</returns>
         </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.ColorFromVector3(OpenTK.Vector3)">
+        <member name="M:SFGraphics.Utils.ColorUtils.GetVector3(System.Drawing.Color)">
             <summary>
-            Creates a <see cref="T:System.Drawing.Color"/> from <paramref name="color"/>.
-            Values are scaled by 255 and clamped to the range [0, 255].
+            Converts the byte channel values of the input color [0,255] to float [0, 1]. XYZ = RGB.
+            </summary>
+            <param name="color">the RGBA color</param>
+            <returns><paramref name="color"/> converted to a float vector</returns>
+        </member>
+        <member name="M:SFGraphics.Utils.ColorUtils.GetColor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Color"/> from float components
+            scaled by 255 and clamped to the range [0, 255].
+            </summary>
+            <param name="r">The red component</param>
+            <param name="g">The green component</param>
+            <param name="b">The blue component</param>
+            <param name="a">The alpha component</param>
+            <returns>A new color from the given floats</returns>
+        </member>
+        <member name="M:SFGraphics.Utils.ColorUtils.GetColor(OpenTK.Vector3)">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Color"/> from float components
+            scaled by 255 and clamped to the range [0, 255].
             </summary>
             <param name="color">The input color</param>
-            <returns>A new color</returns>
+            <returns>A new color from the given floats</returns>
+        </member>
+        <member name="M:SFGraphics.Utils.ColorUtils.GetColor(OpenTK.Vector4)">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Color"/> from float components
+            scaled by 255 and clamped to the range [0, 255].
+            </summary>
+            <param name="color">The input color</param>
+            <returns>A new color from the given floats</returns>
         </member>
         <member name="M:SFGraphics.Utils.ColorUtils.HsvToRgb(System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Single@)">
             <summary>

@@ -268,7 +268,7 @@ namespace Smash_Forge.GUI.Editors
 
         private Color GetColor(LightColor color)
         {
-            return ColorUtils.ColorFromVector3(new Vector3(color.R, color.G, color.B));
+            return ColorUtils.GetColor(color.R, color.G, color.B);
         }
 
         private void RenderCharacterLightGradient(LightColor topColor, LightColor bottomColor)
