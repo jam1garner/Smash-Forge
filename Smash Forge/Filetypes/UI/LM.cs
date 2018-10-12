@@ -1493,7 +1493,7 @@ namespace Smash_Forge
             }
 
             Console.SetOut(oldOut);
-
+            o.save(Filename);
             return o.getBytes();
         }
 

@@ -7,14 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Smash_Forge
 {
-    public partial class LMList : DockContent
+    public partial class LMList : EditorBase
     {
         public Lumen Lumen;
-        
+
         public LMList(string fileName = null)
         {
             InitializeComponent();
@@ -49,7 +48,7 @@ namespace Smash_Forge
             transformNode.Nodes.Clear();
             positionsNode.Nodes.Clear();
 
-            if(Lumen != null)
+            if (Lumen != null)
             {
                 foreach (string s in Lumen.Strings)
                 {
@@ -131,7 +130,7 @@ namespace Smash_Forge
 
                 }
             }
-            catch{}
+            catch { }
         }
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
@@ -172,7 +171,7 @@ namespace Smash_Forge
                     atlas.nameId = int.Parse(tbl.Rows[1][1].ToString());
                     atlas.width = float.Parse(tbl.Rows[2][1].ToString());
                     atlas.height = float.Parse(tbl.Rows[3][1].ToString());
- 
+
                     Lumen.ReplaceAtlas(atlas, indexNum);
                 }
                 else if (treeView1.SelectedNode.Parent.Text == "unk")
@@ -184,6 +183,13 @@ namespace Smash_Forge
             {
                 MessageBox.Show("Incorrect format", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+        public override void Save()
+        {
+            FileOutput o = new FileOutput();
+            byte[] n = Lumen.Rebuild();
+            o.writeBytes(n);
+            o.save(Lumen.Filename);
         }
     }
 }
