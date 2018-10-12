@@ -26,6 +26,9 @@ namespace Smash_Forge
             treeView1.Nodes.Add(colorNode);
             treeView1.Nodes.Add(transformNode);
             treeView1.Nodes.Add(positionsNode);
+            treeView1.Nodes.Add(boundsNode);
+            treeView1.Nodes.Add(atlasNode);
+
 
             fillList();
 
@@ -64,6 +67,14 @@ namespace Smash_Forge
                 {
                     positionsNode.Nodes.Add(new TreeNode("Position 0x" + i.ToString("X")));
                 }
+                for (int i = 0; i < Lumen.Bounds.Count; i++)
+                {
+                    boundsNode.Nodes.Add(new TreeNode("Bounds 0x" + i.ToString("X")));
+                }
+                for (int i = 0; i < Lumen.Atlases.Count; i++)
+                {
+                    atlasNode.Nodes.Add(new TreeNode("Atlas 0x" + i.ToString("X")));
+                }
             }
         }
         public DataTable tbl = new DataTable();
@@ -97,6 +108,24 @@ namespace Smash_Forge
                     tbl.Rows.Add("X", Lumen.Positions[e.Node.Index][0]);
                     tbl.Rows.Add("Y", Lumen.Positions[e.Node.Index][1]);
                 }
+                else if (e.Node.Parent.Text == "Bounds")
+                {
+                    tbl.Rows.Add("Top", Lumen.Bounds[e.Node.Index].TopLeft.X);
+                    tbl.Rows.Add("Left", Lumen.Bounds[e.Node.Index].TopLeft.Y);
+                    tbl.Rows.Add("Bottom", Lumen.Bounds[e.Node.Index].BottomRight.X);
+                    tbl.Rows.Add("Right", Lumen.Bounds[e.Node.Index].BottomRight.Y);
+                }
+                else if (e.Node.Parent.Text == "Atlases")
+                {
+                    tbl.Rows.Add("Texture ID", Lumen.Atlases[e.Node.Index].id);
+                    tbl.Rows.Add("Name ID", Lumen.Atlases[e.Node.Index].nameId);
+                    tbl.Rows.Add("Width", Lumen.Atlases[e.Node.Index].width);
+                    tbl.Rows.Add("Height", Lumen.Atlases[e.Node.Index].height);
+                }
+                else if (e.Node.Parent.Text == "Unk")
+                {
+
+                }
             }
             catch{}
         }
@@ -122,6 +151,25 @@ namespace Smash_Forge
                 else if (treeView1.SelectedNode.Parent.Text == "Positions")
                 {
                     Lumen.ReplacePosition(new OpenTK.Vector2(float.Parse(tbl.Rows[0][1].ToString()), float.Parse(tbl.Rows[1][1].ToString())), indexNum);
+                }
+                else if (treeView1.SelectedNode.Parent.Text == "Bounds")
+                {
+                    Lumen.ReplaceBound(new Lumen.Rect(float.Parse(tbl.Rows[0][1].ToString()), float.Parse(tbl.Rows[1][1].ToString()), float.Parse(tbl.Rows[2][1].ToString()), float.Parse(tbl.Rows[3][1].ToString())), indexNum);
+                }
+                else if (treeView1.SelectedNode.Parent.Text == "Atlases")
+                {
+                    Lumen.TextureAtlas atlas = new Lumen.TextureAtlas();
+
+                    atlas.id = int.Parse(tbl.Rows[0][1].ToString());
+                    atlas.nameId = int.Parse(tbl.Rows[1][1].ToString());
+                    atlas.width = float.Parse(tbl.Rows[2][1].ToString());
+                    atlas.height = float.Parse(tbl.Rows[3][1].ToString());
+ 
+                    Lumen.ReplaceAtlas(atlas, indexNum);
+                }
+                else if (treeView1.SelectedNode.Parent.Text == "unk")
+                {
+
                 }
             }
             catch

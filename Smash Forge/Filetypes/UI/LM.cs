@@ -948,6 +948,48 @@ namespace Smash_Forge
             Transforms.Remove(Transforms[index + 1]);
         }
 
+        public int AddBound(Rect bound)
+        {
+            int index = -1;
+            if (Bounds.Contains(bound))
+            {
+                index = Bounds.IndexOf(bound);
+            }
+            else
+            {
+                index = Bounds.Count;
+                Bounds.Add(bound);
+            }
+            return index;
+        }
+
+        public void ReplaceBound(Rect bound, int index)
+        {
+            Bounds.Insert(index, bound);
+            Bounds.Remove(Bounds[index + 1]);
+        }
+
+        public int AddAtlas(TextureAtlas atlas)
+        {
+            int index = -1;
+            if (Atlases.Contains(atlas))
+            {
+                index = Atlases.IndexOf(atlas);
+            }
+            else
+            {
+                index = Atlases.Count;
+                Atlases.Add(atlas);
+            }
+            return index;
+        }
+        public void ReplaceAtlas(TextureAtlas atlas, int index)
+        {
+            Atlases.Insert(index, atlas);
+            Atlases.Remove(Atlases[index + 1]);
+        }
+        
+
         public override void Read(string filename)
         {
             FileData f = new FileData(filename);
