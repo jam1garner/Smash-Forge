@@ -880,6 +880,12 @@ namespace Smash_Forge
             return index;
         }
 
+        public void ReplacePosition(Vector2 pos, int index)
+        {
+            Positions.Insert(index, pos);
+            Positions.Remove(Positions[index + 1]);
+        }
+
         public int AddString(string str)
         {
             int index = -1;
@@ -897,28 +903,27 @@ namespace Smash_Forge
             return index;
         }
 
-        public int AddColor(Vector4 color, int index = -1)
+        public int AddColor(Vector4 color)
         {
+            int index = -1;
 
             if (Colors.Contains(color))
             {
-                    index = Colors.IndexOf(color);
+                index = Colors.IndexOf(color);
             }
             else
             {
-                if (index == -1)
-                {
-                    index = Colors.Count;
-                    Colors.Add(color);
-                }
-                else
-                {
-                    Colors.Insert(index, color);
-                    Colors.Remove(Colors[index + 1]);
-                }
+                index = Colors.Count;
+                Colors.Add(color);
             }
 
             return index;
+        }
+
+        public void ReplaceColor(Vector4 color, int index)
+        {
+            Colors.Insert(index, color);
+            Colors.Remove(Colors[index + 1]);
         }
 
         public int AddTransform(Matrix4 xform)
@@ -936,6 +941,11 @@ namespace Smash_Forge
             }
 
             return index;
+        }
+        public void ReplaceTransform(Matrix4 xform, int index)
+        {
+            Transforms.Insert(index, xform);
+            Transforms.Remove(Transforms[index + 1]);
         }
 
         public override void Read(string filename)

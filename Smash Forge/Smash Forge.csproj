@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -210,6 +210,7 @@
     <Compile Include="Filetypes\Melee\MeleeNode.cs" />
     <Compile Include="Filetypes\Melee\Rendering\MeleeRenderTexture.cs" />
     <Compile Include="Filetypes\Melee\MeleeRootNode.cs" />
+    <Compile Include="Filetypes\Models\IBoundableModel.cs" />
     <Compile Include="Filetypes\Models\Nuds\DisplayVertex.cs" />
     <Compile Include="Filetypes\Models\Nuds\Material.cs" />
     <Compile Include="Filetypes\Models\Nuds\MatTexture.cs" />
@@ -726,7 +727,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\BatchRendering.cs" />
     <Compile Include="Rendering\Cameras\ForgePerspCamera.cs" />
+    <Compile Include="Rendering\Drawing\FloorDrawing.cs" />
     <Compile Include="Rendering\Drawing\MaterialPreviewRendering.cs" />
     <Compile Include="Rendering\Drawing\NudMatSphereDrawing.cs" />
     <Compile Include="Rendering\Cameras\ForgeCamera.cs" />
