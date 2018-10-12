@@ -87,7 +87,11 @@ namespace Smash_Forge
             tbl.Rows.Clear();
             try
             {
-                if (e.Node.Parent.Text == "Colors")
+                if (e.Node.Parent.Text == "Symbols")
+                {
+                    tbl.Rows.Add("String", Lumen.Strings[e.Node.Index]);
+                }
+                else if (e.Node.Parent.Text == "Colors")
                 {
                     tbl.Rows.Add("Red", Lumen.Colors[e.Node.Index].X * 255);
                     tbl.Rows.Add("Green", Lumen.Colors[e.Node.Index].Y * 255);
@@ -134,7 +138,11 @@ namespace Smash_Forge
             int indexNum = treeView1.SelectedNode.Index;
             try
             {
-                if (treeView1.SelectedNode.Parent.Text == "Colors")
+                if (treeView1.SelectedNode.Parent.Text == "Symbols")
+                {
+                    Lumen.Strings[indexNum] = tbl.Rows[0][1].ToString();
+                }
+                else if (treeView1.SelectedNode.Parent.Text == "Colors")
                 {
                     Lumen.ReplaceColor(new OpenTK.Vector4(float.Parse(tbl.Rows[0][1].ToString()) / 255f, float.Parse(tbl.Rows[1][1].ToString()) / 255f, float.Parse(tbl.Rows[2][1].ToString()) / 255f, float.Parse(tbl.Rows[3][1].ToString()) / 255f), indexNum);
                     treeView1.SelectedNode.Text = (Lumen.Colors[indexNum] * 255).ToString();
