@@ -334,6 +334,9 @@
     <Compile Include="GUI\Editors\LM Editor\LMList.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="GUI\Editors\LM Editor\LMList.Designer.cs">
+      <DependentUpon>LMList.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Melee\DOBJEditor.cs">
       <SubType>Form</SubType>
     </Compile>

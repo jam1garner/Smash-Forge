@@ -52,9 +52,9 @@ namespace Smash_Forge
             }
             if(Width > 0 && Height > 0)
             {
-                texture = _3DS.DecodeImage(data, Width, Height, (_3DS.Tex_Formats)type);
-                //Texture glTex = new Texture2D(texture);
-                //display = glTex.Id;
+                Texture2D texture2D = new Texture2D();
+                texture2D.LoadImageData(_3DS.DecodeImage(data, Width, Height, (_3DS.Tex_Formats)type));
+                display = texture2D;
             }
         }
     }

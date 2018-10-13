@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using OpenTK;
 using OpenTK.Graphics;
@@ -880,6 +880,12 @@ namespace Smash_Forge
             return index;
         }
 
+        public void ReplacePosition(Vector2 pos, int index)
+        {
+            Positions.Insert(index, pos);
+            Positions.Remove(Positions[index + 1]);
+        }
+
         public int AddString(string str)
         {
             int index = -1;
@@ -914,6 +920,12 @@ namespace Smash_Forge
             return index;
         }
 
+        public void ReplaceColor(Vector4 color, int index)
+        {
+            Colors.Insert(index, color);
+            Colors.Remove(Colors[index + 1]);
+        }
+
         public int AddTransform(Matrix4 xform)
         {
             int index = -1;
@@ -930,6 +942,53 @@ namespace Smash_Forge
 
             return index;
         }
+        public void ReplaceTransform(Matrix4 xform, int index)
+        {
+            Transforms.Insert(index, xform);
+            Transforms.Remove(Transforms[index + 1]);
+        }
+
+        public int AddBound(Rect bound)
+        {
+            int index = -1;
+            if (Bounds.Contains(bound))
+            {
+                index = Bounds.IndexOf(bound);
+            }
+            else
+            {
+                index = Bounds.Count;
+                Bounds.Add(bound);
+            }
+            return index;
+        }
+
+        public void ReplaceBound(Rect bound, int index)
+        {
+            Bounds.Insert(index, bound);
+            Bounds.Remove(Bounds[index + 1]);
+        }
+
+        public int AddAtlas(TextureAtlas atlas)
+        {
+            int index = -1;
+            if (Atlases.Contains(atlas))
+            {
+                index = Atlases.IndexOf(atlas);
+            }
+            else
+            {
+                index = Atlases.Count;
+                Atlases.Add(atlas);
+            }
+            return index;
+        }
+        public void ReplaceAtlas(TextureAtlas atlas, int index)
+        {
+            Atlases.Insert(index, atlas);
+            Atlases.Remove(Atlases[index + 1]);
+        }
+        
 
         public override void Read(string filename)
         {
@@ -1434,7 +1493,7 @@ namespace Smash_Forge
             }
 
             Console.SetOut(oldOut);
-
+            o.save(Filename);
             return o.getBytes();
         }
 

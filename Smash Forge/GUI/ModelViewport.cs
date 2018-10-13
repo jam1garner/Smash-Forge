@@ -210,25 +210,6 @@ namespace Smash_Forge
         LVDList lvdList = new LVDList();
         LVDEditor lvdEditor = new LVDEditor();
 
-        //LM
-        private Lumen lumen;
-
-        public Lumen Lumen
-        {
-            get
-            {
-                return lumen;
-            }
-            set
-            {
-                lumen = value;
-                lmList.Lumen = lumen;
-                lmList.fillList();
-            }
-        }
-
-        LMList lmList = new LMList();
-
         public BfresMaterialEditor bfresMatEditor = new BfresMaterialEditor();
 
         //Binary YAML. Used in many Wii U/Switch games
