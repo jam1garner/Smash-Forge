@@ -1812,7 +1812,7 @@ namespace Smash_Forge
                     "NW4R Model (.mdl0)|*.mdl0|" +
                     "Source Model (.SMD)|*.smd|" +
                     "Smash 4 Parameters (.bin)|*.bin|" +
-                    "Lumen UI (.lm)|*.lm;*.nulm" +
+                    "Lumen UI (.lm)|*.lm;*.nulm|" +
                     "Collada Model Format (.dae)|*.dae|" +
                     "Wavefront Object (.obj)|*.obj|" +
                              "Object Motion|*.omo|" +
