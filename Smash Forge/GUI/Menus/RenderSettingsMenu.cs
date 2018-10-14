@@ -1046,5 +1046,10 @@ namespace Smash_Forge.GUI
         {
             Runtime.LoadAndRenderATKD = loadRenderATKD.Checked;
         }
+
+        private void RenderSettingsMenu_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Config.Save();
+        }
     }
 }
