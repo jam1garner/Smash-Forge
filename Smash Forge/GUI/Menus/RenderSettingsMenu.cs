@@ -80,7 +80,8 @@ namespace Smash_Forge.GUI
             pbAbsorbColor.BackColor = Runtime.absorbBubbleColor;
             pbShieldColor.BackColor = Runtime.shieldBubbleColor;
 
-            // Discord Settings        
+            // Discord Settings
+            enabledCheckbox.Checked = DiscordSettings.enabled;
             if (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.UserPicked)
             {
                 customRadioButton.Checked = true;
@@ -789,6 +790,16 @@ namespace Smash_Forge.GUI
 
         private void discordCheckChanged(object sender, EventArgs e)
         {
+            if (sender == enabledCheckbox)
+            {
+                DiscordSettings.enabled = enabledCheckbox.Checked;
+                if (DiscordSettings.enabled)
+                {
+                    DiscordSettings.DiscordController = new DiscordController();
+                    DiscordSettings.DiscordController.Initialize();
+                    DiscordSettings.Update();
+                }
+            }
             if (sender == showActiveWindowCheckbox)
                 DiscordSettings.showCurrentWindow = showActiveWindowCheckbox.Checked;
             if (sender == timeElapsedCheckbox)

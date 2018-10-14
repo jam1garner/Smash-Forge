@@ -84,10 +84,10 @@ namespace Smash_Forge
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            Config.StartupFromFile(executableDir + "\\config.xml");
             DiscordSettings.startTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             dockPanel = dockPanel1;
             DiscordSettings.DiscordController = new DiscordController();
-
             DiscordSettings.DiscordController.Initialize();
             DiscordSettings.Update();
 
@@ -103,8 +103,7 @@ namespace Smash_Forge
             allViewsPreset(new Object(), new EventArgs());
 
             Hashes = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
-
-            Config.StartupFromFile(MainForm.executableDir + "\\config.xml");
+            
             DiscordSettings.Update();
 
             // Make sure everything is loaded before opening files.

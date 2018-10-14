@@ -29,9 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem7 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem8 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.loadRenderATKD = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.pbHitboxAnglesColor = new System.Windows.Forms.PictureBox();
             this.hitboxAnglesCB = new System.Windows.Forms.CheckBox();
@@ -201,7 +202,7 @@
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.defaultRadioButton = new System.Windows.Forms.RadioButton();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.loadRenderATKD = new System.Windows.Forms.CheckBox();
+            this.enabledCheckbox = new System.Windows.Forms.CheckBox();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -312,6 +313,17 @@
             this.tabPage2.Size = new System.Drawing.Size(557, 628);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Hit/Hurt boxes";
+            // 
+            // loadRenderATKD
+            // 
+            this.loadRenderATKD.AutoSize = true;
+            this.loadRenderATKD.Location = new System.Drawing.Point(3, 551);
+            this.loadRenderATKD.Name = "loadRenderATKD";
+            this.loadRenderATKD.Size = new System.Drawing.Size(122, 17);
+            this.loadRenderATKD.TabIndex = 76;
+            this.loadRenderATKD.Text = "Load/Render ATKD";
+            this.loadRenderATKD.UseVisualStyleBackColor = true;
+            this.loadRenderATKD.CheckedChanged += new System.EventHandler(this.loadRenderATKD_CheckedChanged);
             // 
             // label1
             // 
@@ -737,8 +749,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3,
-            listViewItem4});
+            listViewItem7,
+            listViewItem8});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -2075,6 +2087,7 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage3.Controls.Add(this.enabledCheckbox);
             this.tabPage3.Controls.Add(this.timeElapsedCheckbox);
             this.tabPage3.Controls.Add(this.showActiveWindowCheckbox);
             this.tabPage3.Controls.Add(this.modNameTextBox);
@@ -2089,7 +2102,7 @@
             // timeElapsedCheckbox
             // 
             this.timeElapsedCheckbox.AutoSize = true;
-            this.timeElapsedCheckbox.Location = new System.Drawing.Point(14, 182);
+            this.timeElapsedCheckbox.Location = new System.Drawing.Point(14, 187);
             this.timeElapsedCheckbox.Name = "timeElapsedCheckbox";
             this.timeElapsedCheckbox.Size = new System.Drawing.Size(154, 17);
             this.timeElapsedCheckbox.TabIndex = 4;
@@ -2100,7 +2113,7 @@
             // showActiveWindowCheckbox
             // 
             this.showActiveWindowCheckbox.AutoSize = true;
-            this.showActiveWindowCheckbox.Location = new System.Drawing.Point(14, 156);
+            this.showActiveWindowCheckbox.Location = new System.Drawing.Point(14, 164);
             this.showActiveWindowCheckbox.Name = "showActiveWindowCheckbox";
             this.showActiveWindowCheckbox.Size = new System.Drawing.Size(128, 17);
             this.showActiveWindowCheckbox.TabIndex = 3;
@@ -2110,7 +2123,7 @@
             // 
             // modNameTextBox
             // 
-            this.modNameTextBox.Location = new System.Drawing.Point(131, 125);
+            this.modNameTextBox.Location = new System.Drawing.Point(130, 138);
             this.modNameTextBox.Name = "modNameTextBox";
             this.modNameTextBox.Size = new System.Drawing.Size(113, 20);
             this.modNameTextBox.TabIndex = 2;
@@ -2119,7 +2132,7 @@
             // userModCheckbox
             // 
             this.userModCheckbox.AutoSize = true;
-            this.userModCheckbox.Location = new System.Drawing.Point(14, 128);
+            this.userModCheckbox.Location = new System.Drawing.Point(14, 141);
             this.userModCheckbox.Name = "userModCheckbox";
             this.userModCheckbox.Size = new System.Drawing.Size(121, 17);
             this.userModCheckbox.TabIndex = 1;
@@ -2133,7 +2146,7 @@
             this.groupBox7.Controls.Add(this.filenameRadioButton);
             this.groupBox7.Controls.Add(this.customRadioButton);
             this.groupBox7.Controls.Add(this.defaultRadioButton);
-            this.groupBox7.Location = new System.Drawing.Point(14, 12);
+            this.groupBox7.Location = new System.Drawing.Point(14, 34);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Size = new System.Drawing.Size(248, 100);
             this.groupBox7.TabIndex = 0;
@@ -2197,16 +2210,19 @@
             this.defaultRadioButton.UseVisualStyleBackColor = true;
             this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
             // 
-            // loadRenderATKD
+            // enabledCheckbox
             // 
-            this.loadRenderATKD.AutoSize = true;
-            this.loadRenderATKD.Location = new System.Drawing.Point(3, 551);
-            this.loadRenderATKD.Name = "loadRenderATKD";
-            this.loadRenderATKD.Size = new System.Drawing.Size(122, 17);
-            this.loadRenderATKD.TabIndex = 76;
-            this.loadRenderATKD.Text = "Load/Render ATKD";
-            this.loadRenderATKD.UseVisualStyleBackColor = true;
-            this.loadRenderATKD.CheckedChanged += new System.EventHandler(this.loadRenderATKD_CheckedChanged);
+            this.enabledCheckbox.AutoSize = true;
+            this.enabledCheckbox.Checked = true;
+            this.enabledCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.enabledCheckbox.Location = new System.Drawing.Point(14, 11);
+            this.enabledCheckbox.Name = "enabledCheckbox";
+            this.enabledCheckbox.Size = new System.Drawing.Size(65, 17);
+            this.enabledCheckbox.TabIndex = 5;
+            this.enabledCheckbox.Text = "Enabled";
+            this.toolTip1.SetToolTip(this.enabledCheckbox, "May require restart on re-enable");
+            this.enabledCheckbox.UseVisualStyleBackColor = true;
+            this.enabledCheckbox.CheckedChanged += new System.EventHandler(this.discordCheckChanged);
             // 
             // RenderSettingsMenu
             // 
@@ -2463,5 +2479,6 @@
         private System.Windows.Forms.Panel modelPanel;
         private System.Windows.Forms.CheckBox bfresPbrCB;
         private System.Windows.Forms.CheckBox loadRenderATKD;
+        private System.Windows.Forms.CheckBox enabledCheckbox;
     }
 }
