@@ -176,6 +176,9 @@ namespace Smash_Forge
             {
                 ((MeleeJointNode)e.Node).RenderBone.Selected = true;
             }
+
+            // Update selection render.
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
