@@ -135,26 +135,6 @@ namespace Smash_Forge.Rendering
             GL.StencilOp(StencilOp.Keep, StencilOp.Keep, StencilOp.Replace);
         }
 
-        public static void DrawBones(List<ModelContainer> con)
-        {
-            if (con.Count > 0)
-            {
-                foreach (ModelContainer m in con)
-                {
-                    DrawVBN(m.VBN);
-                    if (m.Bch != null)
-                    {
-                        //DrawVBN(m.bch.Models.Nodes[0].skeleton);
-                    }
-
-                    if (m.DatMelee != null)
-                    {
-                        DrawVBN(m.DatMelee.bones);
-                    }
-                }
-            }
-        }
-
         public static void DrawVBN(VBN vbn)
         {
             // Used for NUD, BFRES, BCH.

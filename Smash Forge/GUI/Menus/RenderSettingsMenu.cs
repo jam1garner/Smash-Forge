@@ -165,11 +165,6 @@ namespace Smash_Forge.GUI
                 toolTip1.SetToolTip(floorColorPictureBox, "Click to select a color.");
         }
 
-        private void renderLvdCB_CheckedChanged(object sender, EventArgs e)
-        {
-            checkChanged();
-        }
-
         private void checkChanged()
         {
             if (!disableRuntimeUpdates)
@@ -889,11 +884,6 @@ namespace Smash_Forge.GUI
             floorColorPictureBox.Refresh();
         }
 
-        private void openBackgroundTexButton_Click(object sender, EventArgs e)
-        {
-            OpenBackgroundTexture();
-        }
-
         private void OpenBackgroundTexture()
         {
             using (var ofd = new OpenFileDialog() { Filter = "Image (.png)|*.png|All Files (*.*)|*.*" })
@@ -955,16 +945,6 @@ namespace Smash_Forge.GUI
                 BackgroundGradient2.Visible = true;
 
                 backgroundPictureBox.Visible = false;
-            }
-        }
-
-        private void ClearBackgroundPictureBox()
-        {
-            if (backgroundPictureBox.Image != null)
-            {
-                backgroundPictureBox.Image.Dispose();
-                backgroundPictureBox.Image = null;
-                backgroundPictureBox.Refresh();
             }
         }
 

@@ -395,14 +395,6 @@ namespace Smash_Forge
             }
         }
 
-        private static void SetDatUniforms(Shader shader)
-        {
-            LightColor diffuseColor = Runtime.lightSetParam.characterDiffuse.diffuseColor;
-            LightColor ambientColor = Runtime.lightSetParam.characterDiffuse.ambientColor;
-            shader.SetVector3("difLightColor", diffuseColor.R, diffuseColor.G, diffuseColor.B);
-            shader.SetVector3("ambLightColor", ambientColor.R, ambientColor.G, ambientColor.B);
-        }
-
         private static void SetMbnUniforms(Camera camera, Shader shader)
         {
             if (Runtime.cameraLight)

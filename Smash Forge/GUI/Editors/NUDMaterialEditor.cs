@@ -366,21 +366,6 @@ namespace Smash_Forge
                 currentMaterialList[currentMatIndex].dstFactor = value;
         }
 
-        public void SetValue(TextBox textBox, ComboBox combobox, Dictionary<int, string> dict, out int materialValue)
-        {
-            materialValue = -1;
-            int.TryParse(textBox.Text, out materialValue);
-            if (materialValue != -1)
-            {
-                string descriptionKey = "";
-                dict.TryGetValue(materialValue, out descriptionKey);
-                if (descriptionKey != "")
-                    combobox.Text = descriptionKey;
-            }
-            else
-                textBox.Text = "0";
-        }
-
         private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
         {
             foreach (int i in alphaFuncByMatValue.Keys)

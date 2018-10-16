@@ -187,20 +187,6 @@ namespace Smash_Forge
             depthSortedMeshes = unsortedMeshes.OrderBy(m => m.sortingDistance).ToList();
         }
 
-        private void SortMeshesByObjHeirarchy()
-        {
-            for (int i = 0; i < Nodes.Count; i++)
-            {
-                Mesh mesh = (Mesh)Nodes[i];
-                if (mesh.sortByObjHeirarchy)
-                {
-                    // Just use the mesh list order.
-                    depthSortedMeshes.Remove(mesh);
-                    depthSortedMeshes.Insert(i, mesh);
-                }
-            }
-        }
-
         public void UpdateRenderMeshes()
         {
             foreach (Mesh mesh in Nodes)
@@ -1846,51 +1832,6 @@ namespace Smash_Forge
                     p.vertices = newVertices;
                     p.vertexIndices = newFaces;
                     p.displayFaceSize = 0;
-                }
-            }
-        }
-
-        private void OptimizeSingleBind(bool useSingleBind)
-        {
-            // Use single bind to avoid saving weights.
-            // The space savings are significant but not as much as merging duplicate vertices. 
-
-            foreach (Mesh m in Nodes)
-            {
-                bool isSingleBound = true;
-                int singleBindBone = -1;
-
-                foreach (Polygon p in m.Nodes)
-                {
-                    foreach (Vertex v in p.vertices)
-                    {
-                        if (v.boneIds.Count > 0 && isSingleBound)
-                        {
-                            // Can't use single bind if some vertices aren't weighted to the same bone. 
-                            if (singleBindBone == -1)
-                            {
-                                singleBindBone = v.boneIds[0];
-                            }
-                            else if(singleBindBone != v.boneIds[0])
-                            {
-                                isSingleBound = false;
-                                break;
-                            }
-
-                            // Vertices bound to a single bone will have a node.Count of 1.
-                            if (v.boneIds.Count > 1)
-                            {
-                                isSingleBound = false;
-                                break;
-                            }
-                     
-                        }
-                    }
-                }
-
-                if (isSingleBound && useSingleBind)
-                {
-                    SingleBindMesh(m, singleBindBone);
                 }
             }
         }

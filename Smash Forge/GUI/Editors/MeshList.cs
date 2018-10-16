@@ -549,24 +549,6 @@ namespace Smash_Forge
             RefreshNodes();
         }
 
-        private void belowToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            TreeNode n = filesTreeView.SelectedNode.NextNode;
-            if (n != null)
-            {
-                merge(n);
-            }
-        }
-
-        private void aboveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            TreeNode n = filesTreeView.SelectedNode.PrevNode;
-            if (n != null)
-            {
-                merge(n);
-            }
-        }
-
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string filename = "";
@@ -855,29 +837,6 @@ namespace Smash_Forge
             n.UpdateRenderMeshes();
         }
 
-        private void calculateNormalsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void calculateNormalsToolStripMenuItem_Click_1(object sender, EventArgs e)
-        {
-            if (!(filesTreeView.SelectedNode is NUD))
-                return;
-
-            NUD n = (NUD)filesTreeView.SelectedNode;
-            foreach (NUD.Mesh mesh in n.Nodes)
-            {
-                foreach (NUD.Polygon poly in mesh.Nodes)
-                {
-                    poly.CalculateNormals();
-                }
-            }
-
-            // Update the data for rendering.
-            n.UpdateRenderMeshes();
-        }
-
         private void useAOAsSpecToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (filesTreeView.SelectedNode is NUD)
@@ -1042,24 +1001,6 @@ namespace Smash_Forge
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
                     poly.SmoothNormals();
-                }
-            }
-
-            // Update the data for rendering.
-            n.UpdateRenderMeshes();
-        }
-
-        private void recalculateToolStripMenuItem2_Click(object sender, EventArgs e)
-        {
-            if (!(filesTreeView.SelectedNode is NUD))
-                return;
-
-            NUD n = (NUD)filesTreeView.SelectedNode;
-            foreach (NUD.Mesh mesh in n.Nodes)
-            {
-                foreach (NUD.Polygon poly in mesh.Nodes)
-                {
-                    poly.CalculateNormals();
                 }
             }
 
@@ -1821,13 +1762,6 @@ namespace Smash_Forge
 
             mdl.SmoothNormalEachMesh();
             UpdateBFRESMeshList();
-        }
-
-        private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!(filesTreeView.SelectedNode is BFRES.FMDL_Model))
-                return;
-
         }
 
         private void copyChannel1To2ToolStripMenuItem_Click(object sender, EventArgs e)

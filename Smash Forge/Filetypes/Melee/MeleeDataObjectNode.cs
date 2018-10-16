@@ -276,12 +276,6 @@ namespace Smash_Forge.Filetypes.Melee
             return IsFlagSet(renderTex.Flag, (uint)MeleeDatEnums.TextureFlag.Diffuse) || IsFlagSet(renderTex.Flag, (uint)MeleeDatEnums.TextureFlag.Unk4);
         }
 
-        private static void SetSphereTexUniforms(Shader shader, MeleeRenderTexture renderTex)
-        {
-            shader.SetVector2("sphereScale", new Vector2(renderTex.WScale, renderTex.HScale));
-            shader.SetTexture("sphereTex", renderTex.texture, 1);
-        }
-
         private static void SetBumpMapTexUniforms(Shader shader, MeleeRenderTexture renderTex)
         {
             shader.SetVector2("bumpMapTexScale", new Vector2(renderTex.WScale, renderTex.HScale));
@@ -301,11 +295,6 @@ namespace Smash_Forge.Filetypes.Melee
         {
             shader.SetVector2("specularScale", new Vector2(renderTex.WScale, renderTex.HScale));
             shader.SetTexture("specularTex", renderTex.texture, 3);
-        }
-
-        private static uint GetTextureType(MeleeRenderTexture renderTex)
-        {
-            return renderTex.Flag & 0xFF;
         }
 
         private static void DrawModelSelection(MeleeMesh mesh, Shader shader, Camera camera)

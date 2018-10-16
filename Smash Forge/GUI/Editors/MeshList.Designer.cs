@@ -676,7 +676,7 @@
             this.recalculateToolStripMenuItem2.Name = "recalculateToolStripMenuItem2";
             this.recalculateToolStripMenuItem2.Size = new System.Drawing.Size(134, 22);
             this.recalculateToolStripMenuItem2.Text = "Recalculate";
-            this.recalculateToolStripMenuItem2.Click += new System.EventHandler(this.recalculateToolStripMenuItem2_Click);
+            this.recalculateToolStripMenuItem2.Click += new System.EventHandler(this.recalculateToolStripMenuItem_Click);
             //
             // smoothToolStripMenuItem2
             //
