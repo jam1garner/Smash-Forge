@@ -4,6 +4,7 @@ using MeleeLib.GCX;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SFGenericModel.Utils;
+using SFGenericModel;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Shaders;
 using Smash_Forge.Filetypes.Melee.Rendering;
@@ -334,7 +335,7 @@ namespace Smash_Forge.Filetypes.Melee
             renderMeshes.Clear();
             GXVertexDecompressor decom = new GXVertexDecompressor(GetRoot().Root);
 
-            List<VertexContainer<MeleeVertex>> vertexContainers = new List<VertexContainer<MeleeVertex>>();
+            var vertexContainers = new List<IndexedVertexData<MeleeVertex>>();
 
             // Each display list can have a different primitive type, so we need to generate a lot of containers.
             foreach (DatPolygon polygon in DOBJ.Polygons)
@@ -350,7 +351,7 @@ namespace Smash_Forge.Filetypes.Melee
             GroupContainersCreateRenderMeshes(vertexContainers);
         }
 
-        private static void AddVertexContainer(GXVertexDecompressor decom, List<VertexContainer<MeleeVertex>> vertexContainers, DatPolygon polygon, GXDisplayList displayList)
+        private static void AddVertexContainer(GXVertexDecompressor decom, List<IndexedVertexData<MeleeVertex>> vertexContainers, DatPolygon polygon, GXDisplayList displayList)
         {
             List<MeleeVertex> vertices = new List<MeleeVertex>();
             List<int> vertexIndices = new List<int>();
@@ -363,16 +364,16 @@ namespace Smash_Forge.Filetypes.Melee
             vertices.AddRange(ConvertVerts(decom.GetFormattedVertices(displayList, polygon)));
 
             PrimitiveType primitiveType = MeleeDatToOpenGL.GetGLPrimitiveType(displayList.PrimitiveType);
-            VertexContainer<MeleeVertex> vertexContainer = new VertexContainer<MeleeVertex>(vertices, vertexIndices, primitiveType);
+            var vertexContainer = new IndexedVertexData<MeleeVertex>(vertices, vertexIndices, primitiveType);
             vertexContainers.Add(vertexContainer);
         }
 
-        private void GroupContainersCreateRenderMeshes(List<VertexContainer<MeleeVertex>> vertexContainers)
+        private void GroupContainersCreateRenderMeshes(List<IndexedVertexData<MeleeVertex>> vertexContainers)
         {
-            List<VertexContainer<MeleeVertex>> optimizedContainers = MeshBatchUtils.GroupContainersByPrimitiveType(vertexContainers);
+            var optimizedContainers = MeshBatchUtils.GroupContainersByPrimitiveType(vertexContainers);
             foreach (var container in optimizedContainers)
             {
-                MeleeMesh meleeMesh = new MeleeMesh(container.vertices, container.vertexIndices, container.primitiveType);
+                MeleeMesh meleeMesh = new MeleeMesh(container.Vertices, container.Indices, container.PrimitiveType);
                 renderMeshes.Add(meleeMesh);
             }
         }

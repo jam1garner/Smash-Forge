@@ -145,18 +145,36 @@
             <param name="materialFace"></param>
             <param name="polygonMode"></param>
         </member>
+        <member name="M:SFGenericModel.RenderState.PolygonModeSettings.op_Equality(SFGenericModel.RenderState.PolygonModeSettings,SFGenericModel.RenderState.PolygonModeSettings)">
+            <summary>
+            Compares <paramref name="lhs"/> and <paramref name="rhs"/>
+            using <see cref="M:SFGenericModel.RenderState.PolygonModeSettings.Equals(System.Object)"/>.
+            </summary>
+            <param name="lhs">The left object to compare</param>
+            <param name="rhs">The right object to compare</param>
+            <returns><c>true</c> if <paramref name="lhs"/> and <paramref name="rhs"/> are equal</returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.PolygonModeSettings.op_Inequality(SFGenericModel.RenderState.PolygonModeSettings,SFGenericModel.RenderState.PolygonModeSettings)">
+            <summary>
+            Compares <paramref name="lhs"/> and <paramref name="rhs"/>
+            using <see cref="M:SFGenericModel.RenderState.PolygonModeSettings.Equals(System.Object)"/>.
+            </summary>
+            <param name="lhs">The left object to compare</param>
+            <param name="rhs">The right object to compare</param>
+            <returns><c>true</c> if <paramref name="lhs"/> and <paramref name="rhs"/> are not equal</returns>
+        </member>
         <member name="M:SFGenericModel.RenderState.PolygonModeSettings.Equals(System.Object)">
             <summary>
-            
+            Compares the values of the object's fields with <paramref name="obj"/>
             </summary>
-            <param name="obj"></param>
-            <returns></returns>
+            <param name="obj">The object to compare with the current object</param>
+            <returns><c>true</c> if the specified object is equal to the current object</returns>
         </member>
         <member name="M:SFGenericModel.RenderState.PolygonModeSettings.GetHashCode">
             <summary>
-            
+            Returns a hash code based on the object's fields.
             </summary>
-            <returns></returns>
+            <returns>A hash code for the current object</returns>
         </member>
         <member name="T:SFGenericModel.RenderState.AlphaBlendSettings">
             <summary>
@@ -203,18 +221,36 @@
             <param name="blendingEquationRgb"></param>
             <param name="blendingEquationAlpha"></param>
         </member>
+        <member name="M:SFGenericModel.RenderState.AlphaBlendSettings.op_Equality(SFGenericModel.RenderState.AlphaBlendSettings,SFGenericModel.RenderState.AlphaBlendSettings)">
+            <summary>
+            Compares <paramref name="lhs"/> and <paramref name="rhs"/>
+            using <see cref="M:SFGenericModel.RenderState.AlphaBlendSettings.Equals(System.Object)"/>.
+            </summary>
+            <param name="lhs">The left object to compare</param>
+            <param name="rhs">The right object to compare</param>
+            <returns><c>true</c> if <paramref name="lhs"/> and <paramref name="rhs"/> are equal</returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.AlphaBlendSettings.op_Inequality(SFGenericModel.RenderState.AlphaBlendSettings,SFGenericModel.RenderState.AlphaBlendSettings)">
+            <summary>
+            Compares <paramref name="lhs"/> and <paramref name="rhs"/>
+            using <see cref="M:SFGenericModel.RenderState.AlphaBlendSettings.Equals(System.Object)"/>.
+            </summary>
+            <param name="lhs">The left object to compare</param>
+            <param name="rhs">The right object to compare</param>
+            <returns><c>true</c> if <paramref name="lhs"/> and <paramref name="rhs"/> are not equal</returns>
+        </member>
         <member name="M:SFGenericModel.RenderState.AlphaBlendSettings.Equals(System.Object)">
             <summary>
-            
+            Compares the values of the object's fields with <paramref name="obj"/>
             </summary>
-            <param name="obj"></param>
-            <returns></returns>
+            <param name="obj">The object to compare with the current object</param>
+            <returns><c>true</c> if the specified object is equal to the current object</returns>
         </member>
         <member name="M:SFGenericModel.RenderState.AlphaBlendSettings.GetHashCode">
             <summary>
-            
+            Returns a hash code based on the object's fields.
             </summary>
-            <returns></returns>
+            <returns>A hash code for the current object</returns>
         </member>
         <member name="T:SFGenericModel.RenderState.AlphaTestSettings">
             <summary>
@@ -250,18 +286,36 @@
             <param name="alphaFunction"></param>
             <param name="referenceAlpha"></param>
         </member>
+        <member name="M:SFGenericModel.RenderState.AlphaTestSettings.op_Equality(SFGenericModel.RenderState.AlphaTestSettings,SFGenericModel.RenderState.AlphaTestSettings)">
+            <summary>
+            Compares <paramref name="lhs"/> and <paramref name="rhs"/>
+            using <see cref="M:SFGenericModel.RenderState.AlphaTestSettings.Equals(System.Object)"/>.
+            </summary>
+            <param name="lhs">The left object to compare</param>
+            <param name="rhs">The right object to compare</param>
+            <returns><c>true</c> if <paramref name="lhs"/> and <paramref name="rhs"/> are equal</returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.AlphaTestSettings.op_Inequality(SFGenericModel.RenderState.AlphaTestSettings,SFGenericModel.RenderState.AlphaTestSettings)">
+            <summary>
+            Compares <paramref name="lhs"/> and <paramref name="rhs"/>
+            using <see cref="M:SFGenericModel.RenderState.AlphaTestSettings.Equals(System.Object)"/>.
+            </summary>
+            <param name="lhs">The left object to compare</param>
+            <param name="rhs">The right object to compare</param>
+            <returns><c>true</c> if <paramref name="lhs"/> and <paramref name="rhs"/> are not equal</returns>
+        </member>
         <member name="M:SFGenericModel.RenderState.AlphaTestSettings.Equals(System.Object)">
             <summary>
-            
+            Compares the values of the object's fields with <paramref name="obj"/>
             </summary>
-            <param name="obj"></param>
-            <returns></returns>
+            <param name="obj">The object to compare with the current object</param>
+            <returns><c>true</c> if the specified object is equal to the current object</returns>
         </member>
         <member name="M:SFGenericModel.RenderState.AlphaTestSettings.GetHashCode">
             <summary>
-            
+            Returns a hash code based on the object's fields.
             </summary>
-            <returns></returns>
+            <returns>A hash code for the current object</returns>
         </member>
         <member name="T:SFGenericModel.RenderState.DepthTestSettings">
             <summary>
@@ -296,18 +350,36 @@
             <param name="depthMask"></param>
             <param name="depthFunction"></param>
         </member>
+        <member name="M:SFGenericModel.RenderState.DepthTestSettings.op_Equality(SFGenericModel.RenderState.DepthTestSettings,SFGenericModel.RenderState.DepthTestSettings)">
+            <summary>
+            Compares <paramref name="lhs"/> and <paramref name="rhs"/>
+            using <see cref="M:SFGenericModel.RenderState.DepthTestSettings.Equals(System.Object)"/>.
+            </summary>
+            <param name="lhs">The left object to compare</param>
+            <param name="rhs">The right object to compare</param>
+            <returns><c>true</c> if <paramref name="lhs"/> and <paramref name="rhs"/> are equal</returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.DepthTestSettings.op_Inequality(SFGenericModel.RenderState.DepthTestSettings,SFGenericModel.RenderState.DepthTestSettings)">
+            <summary>
+            Compares <paramref name="lhs"/> and <paramref name="rhs"/>
+            using <see cref="M:SFGenericModel.RenderState.DepthTestSettings.Equals(System.Object)"/>.
+            </summary>
+            <param name="lhs">The left object to compare</param>
+            <param name="rhs">The right object to compare</param>
+            <returns><c>true</c> if <paramref name="lhs"/> and <paramref name="rhs"/> are not equal</returns>
+        </member>
         <member name="M:SFGenericModel.RenderState.DepthTestSettings.Equals(System.Object)">
             <summary>
-            
+            Compares the values of the object's fields with <paramref name="obj"/>
             </summary>
-            <param name="obj"></param>
-            <returns></returns>
+            <param name="obj">The object to compare with the current object</param>
+            <returns><c>true</c> if the specified object is equal to the current object</returns>
         </member>
         <member name="M:SFGenericModel.RenderState.DepthTestSettings.GetHashCode">
             <summary>
-            
+            Returns a hash code based on the object's fields.
             </summary>
-            <returns></returns>
+            <returns>A hash code for the current object</returns>
         </member>
         <member name="T:SFGenericModel.RenderState.FaceCullingSettings">
             <summary>
@@ -336,18 +408,36 @@
             <param name="enabled"></param>
             <param name="cullFaceMode"></param>
         </member>
+        <member name="M:SFGenericModel.RenderState.FaceCullingSettings.op_Equality(SFGenericModel.RenderState.FaceCullingSettings,SFGenericModel.RenderState.FaceCullingSettings)">
+            <summary>
+            Compares <paramref name="lhs"/> and <paramref name="rhs"/>
+            using <see cref="M:SFGenericModel.RenderState.FaceCullingSettings.Equals(System.Object)"/>.
+            </summary>
+            <param name="lhs">The left object to compare</param>
+            <param name="rhs">The right object to compare</param>
+            <returns><c>true</c> if <paramref name="lhs"/> and <paramref name="rhs"/> are equal</returns>
+        </member>
+        <member name="M:SFGenericModel.RenderState.FaceCullingSettings.op_Inequality(SFGenericModel.RenderState.FaceCullingSettings,SFGenericModel.RenderState.FaceCullingSettings)">
+            <summary>
+            Compares <paramref name="lhs"/> and <paramref name="rhs"/>
+            using <see cref="M:SFGenericModel.RenderState.FaceCullingSettings.Equals(System.Object)"/>.
+            </summary>
+            <param name="lhs">The left object to compare</param>
+            <param name="rhs">The right object to compare</param>
+            <returns><c>true</c> if <paramref name="lhs"/> and <paramref name="rhs"/> are not equal</returns>
+        </member>
         <member name="M:SFGenericModel.RenderState.FaceCullingSettings.Equals(System.Object)">
             <summary>
-            
+            Compares the values of the object's fields with <paramref name="obj"/>
             </summary>
-            <param name="obj"></param>
-            <returns></returns>
+            <param name="obj">The object to compare with the current object</param>
+            <returns><c>true</c> if the specified object is equal to the current object</returns>
         </member>
         <member name="M:SFGenericModel.RenderState.FaceCullingSettings.GetHashCode">
             <summary>
-            
+            Returns a hash code based on the object's fields.
             </summary>
-            <returns></returns>
+            <returns>A hash code for the current object</returns>
         </member>
         <member name="T:SFGenericModel.RenderState.RenderSettings">
             <summary>
@@ -567,49 +657,14 @@
             Contains methods for grouping vertex data to reduce draw calls and improve performance.
             </summary>
         </member>
-        <member name="M:SFGenericModel.Utils.MeshBatchUtils.GroupContainersByPrimitiveType``1(System.Collections.Generic.List{SFGenericModel.Utils.VertexContainer{``0}})">
+        <member name="M:SFGenericModel.Utils.MeshBatchUtils.GroupContainersByPrimitiveType``1(System.Collections.Generic.List{SFGenericModel.IndexedVertexData{``0}})">
             <summary>
-            Creates a new collection of <see cref="T:SFGenericModel.Utils.VertexContainer`1"/> objects with 
+            Creates a new collection of <see cref="T:SFGenericModel.IndexedVertexData`1"/> objects with 
             only a single container for types that support merging.
             </summary>
             <typeparam name="T">The vertex data struct</typeparam>
             <param name="containers">The unoptimized vertex containers</param>
             <returns></returns>
-        </member>
-        <member name="T:SFGenericModel.Utils.VertexContainer`1">
-            <summary>
-            Stores indexed vertex data and the primitive to be used for rendering.
-            </summary>
-            <typeparam name="T">The struct used for each vertex</typeparam>
-        </member>
-        <member name="F:SFGenericModel.Utils.VertexContainer`1.vertices">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.Utils.VertexContainer`1.vertexIndices">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.Utils.VertexContainer`1.primitiveType">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.Utils.VertexContainer`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
-            <summary>
-            
-            </summary>
-            <param name="vertices"></param>
-            <param name="vertexIndices"></param>
-            <param name="primitiveType"></param>
-        </member>
-        <member name="M:SFGenericModel.Utils.VertexContainer`1.#ctor(OpenTK.Graphics.OpenGL.PrimitiveType)">
-            <summary>
-            Creates an empty vertex container.
-            </summary>
-            <param name="primitiveType"></param>
         </member>
         <member name="T:SFGenericModel.VertexAttributes.AttribPointerUtils">
             <summary>
@@ -931,12 +986,6 @@
             <param name="vertices"></param>
             <param name="vertexIndices"></param>
             <param name="primitiveType">Determines how primitives will be constructed from the vertex data</param>
-        </member>
-        <member name="M:SFGenericModel.GenericMesh`1.#ctor(SFGenericModel.Utils.VertexContainer{`0})">
-            <summary>
-            Creates a new mesh and initializes the vertex buffer data.
-            </summary>
-            <param name="vertexData">The vertex indices, data, and primitive type</param>
         </member>
         <member name="M:SFGenericModel.GenericMesh`1.#ctor(SFGenericModel.IndexedVertexData{`0})">
             <summary>
