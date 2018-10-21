@@ -32,6 +32,14 @@
             <param name="vertexPositions"></param>
             <returns>Vector4(center.Xyz, radius)</returns>
         </member>
+        <member name="M:SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.List{OpenTK.Vector4})">
+            <summary>
+            Generates a single bounding sphere that contains all the given
+            bounding spheres.
+            </summary>
+            <param name="boundingSpheres">The list of bounding sphere centers (xyz) and radii (w)</param>
+            <returns>A single bounding sphere that contains <paramref name="boundingSpheres"/></returns>
+        </member>
         <member name="T:SFGraphics.Utils.ColorUtils">
             <summary>
             Conversion methods for HSV, RGB, color temperature, and system Colors using floats or OpenTK vectors.

@@ -105,18 +105,18 @@
         </member>
         <member name="M:SFGenericModel.IndexedVertexData`1.#ctor(System.Collections.Generic.List{`0},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
-            
+            Creates a new vertex data container with generated indices.
             </summary>
-            <param name="vertices">The value of <see cref="P:SFGenericModel.IndexedVertexData`1.Vertices"/></param>
-            <param name="primitiveType">The value of <see cref="P:SFGenericModel.IndexedVertexData`1.PrimitiveType"/></param>
+            <param name="vertices">The vertex data</param>
+            <param name="primitiveType">Determines how primitives will be constructed from vertex data</param>
         </member>
         <member name="M:SFGenericModel.IndexedVertexData`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
-            
+            Creates a new vertex data container.
             </summary>
-            <param name="vertices">The value of <see cref="P:SFGenericModel.IndexedVertexData`1.Vertices"/></param>
-            <param name="indices">The value of <see cref="P:SFGenericModel.IndexedVertexData`1.Indices"/></param>
-            <param name="primitiveType">The value of <see cref="P:SFGenericModel.IndexedVertexData`1.PrimitiveType"/></param>
+            <param name="vertices">The vertex data</param>
+            <param name="indices">The vertex indices</param>
+            <param name="primitiveType">Determines how primitives will be constructed from vertex data</param>
         </member>
         <member name="T:SFGenericModel.RenderState.PolygonModeSettings">
             <summary>
@@ -618,9 +618,9 @@
             <summary>
             
             </summary>
-            <param name="attributeInfo">The value of <see cref="P:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.AttributeInfo"/></param>
-            <param name="normalize">The value of <see cref="P:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.Normalize"/></param>
-            <param name="remapToVisibleRange">The value of <see cref="P:SFGenericModel.ShaderGenerators.VertexAttributeRenderInfo.RemapToVisibleRange"/></param>
+            <param name="attributeInfo">Information about the attribute name and type</param>
+            <param name="normalize">Normalize the vector before rendering</param>
+            <param name="remapToVisibleRange">Remap values in range [-1, 1] to range [0, 1]</param>
         </member>
         <member name="T:SFGenericModel.ShaderGenerators.VertexAttributeShaderGenerator">
             <summary>
