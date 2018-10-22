@@ -320,15 +320,14 @@
             All attached textures, renderbuffers, etc are resized when set. The framebuffer's contents will not be preserved when resizing.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.ColorAttachments">
+        <member name="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.Attachments">
             <summary>
-            All color attachment textures. 
+            
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget)">
             <summary>
-            Generates an empty framebuffer with no attachments bound to the specified target. 
-            Binds the framebuffer.
+            Generates an incomplete framebuffer of the specified target with no attachments. 
             </summary>
             <param name="framebufferTarget">The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound</param>
         </member>
@@ -348,9 +347,10 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.GetStatus">
             <summary>
-            Gets the framebuffer status for this framebuffer.
+            Gets the framebuffer status, which indicates
+            if the framebuffer is complete and valid for rendering.
             </summary>
-            <returns></returns>
+            <returns>The framebuffer status</returns>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.AddAttachment(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Framebuffers.IFramebufferAttachment)">
             <summary>
@@ -358,7 +358,7 @@
             Draw and read buffers must be configured separately.
             </summary>
             <param name="attachmentPoint">The target attachment point</param>
-            <param name="attachment">The texture to attach</param>
+            <param name="attachment">The object to attach</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.Bind">
             <summary>

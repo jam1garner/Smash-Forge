@@ -1695,13 +1695,13 @@ namespace Smash_Forge
                 // Draw the texture to the screen into a smaller FBO.
                 imageBrightHdrFbo.Bind();
                 GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
-                ScreenDrawing.DrawTexturedQuad((Texture)colorHdrFbo.ColorAttachments[1], imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
+                ScreenDrawing.DrawTexturedQuad((Texture)colorHdrFbo.Attachments[1], imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, width, height);
 
-                ScreenDrawing.DrawScreenQuadPostProcessing((Texture)colorHdrFbo.ColorAttachments[0], (Texture)imageBrightHdrFbo.ColorAttachments[0], screenVao);
+                ScreenDrawing.DrawScreenQuadPostProcessing((Texture)colorHdrFbo.Attachments[0], (Texture)imageBrightHdrFbo.Attachments[0], screenVao);
             }
 
             FixedFunctionRendering();
