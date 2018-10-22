@@ -352,28 +352,13 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.AttachTexture(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Textures.Texture2D)">
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.AddAttachment(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Framebuffers.IFramebufferAttachment)">
             <summary>
-            Attaches <paramref name="texture"/> to <paramref name="attachment"/>.
+            Attaches <paramref name="attachment"/> to <paramref name="attachmentPoint"/>.
             Draw and read buffers must be configured separately.
             </summary>
-            <param name="attachment">The attachment target for the texture</param>
-            <param name="texture">The texture to attach</param>
-        </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.AttachDepthTexture(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Textures.DepthTexture)">
-            <summary>
-            Attaches <paramref name="depthTexture"/> to <paramref name="attachment"/>.
-            </summary>
-            <param name="attachment">The attachment target for the texture. This should be a depth attachment.</param>
-            <param name="depthTexture">The depth texture to attach</param>
-        </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.AttachRenderbuffer(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.RenderBuffers.Renderbuffer)">
-            <summary>
-            Attaches <paramref name="renderbuffer"/> to <paramref name="attachment"/>.
-            Draw and read buffers must be configured separately.
-            </summary>
-            <param name="attachment">The attachment target for the renderbuffer</param>
-            <param name="renderbuffer">The renderbuffer to attach</param>
+            <param name="attachmentPoint">The target attachment point</param>
+            <param name="attachment">The texture to attach</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.Bind">
             <summary>

@@ -25,11 +25,11 @@
         </member>
         <member name="M:SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.List{OpenTK.Vector3})">
             <summary>
-            The center is the average of the min and max values for X, Y, Z.
-            The radius is calculated based on the smallest sphere that will contain all of <paramref name="vertexPositions"/>.
+            Generates a close to optimal sphere that contains all of the given points
+            within the sphere.
             Returns Vector4(center.Xyz, radius).
             </summary>
-            <param name="vertexPositions"></param>
+            <param name="points">The points that should be contained within the bounding sphere</param>
             <returns>Vector4(center.Xyz, radius)</returns>
         </member>
         <member name="M:SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.List{OpenTK.Vector4})">

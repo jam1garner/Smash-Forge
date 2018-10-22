@@ -400,7 +400,7 @@ namespace Smash_Forge
 
             // Attach the depth map texture.
             depthMap = new DepthTexture(shadowWidth, shadowHeight, PixelInternalFormat.DepthComponent24);
-            depthMapFbo.AttachDepthTexture(FramebufferAttachment.DepthAttachment, depthMap);
+            depthMapFbo.AddAttachment(FramebufferAttachment.DepthAttachment, depthMap);
         }
 
         public Camera GetCamera()
