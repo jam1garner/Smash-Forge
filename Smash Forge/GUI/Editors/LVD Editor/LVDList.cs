@@ -124,7 +124,7 @@ namespace Smash_Forge
                 MenuItem AddPoint = new MenuItem("Add New General Shape (Point)");
                 AddPoint.Click += delegate
                 {
-                    TargetLVD.generalShapes.Add(new GeneralShape() { name = "GeneralPoint_NEW", subname = "00_NEW", type = 1 });
+                    TargetLVD.generalShapes.Add(new GeneralShape(1) { name = "GeneralPoint_NEW", subname = "00_NEW"});
                     fillList();
                 };
                 node.ContextMenu.MenuItems.Add(AddPoint);
@@ -132,7 +132,7 @@ namespace Smash_Forge
                 MenuItem AddCircle = new MenuItem("Add New General Shape (Circle)");
                 AddCircle.Click += delegate
                 {
-                    TargetLVD.generalShapes.Add(new GeneralShape() { name = "GeneralCircle_NEW", subname = "00_NEW", type = 2 });
+                    TargetLVD.generalShapes.Add(new GeneralShape(2) { name = "GeneralCircle_NEW", subname = "00_NEW"});
                     fillList();
                 };
                 node.ContextMenu.MenuItems.Add(AddCircle);
@@ -140,7 +140,7 @@ namespace Smash_Forge
                 MenuItem AddRect = new MenuItem("Add New General Shape (Rectangle)");
                 AddRect.Click += delegate
                 {
-                    TargetLVD.generalShapes.Add(new GeneralShape() { name = "GeneralRect_NEW", subname = "00_NEW", type = 3 });
+                    TargetLVD.generalShapes.Add(new GeneralShape(3) { name = "GeneralRect_NEW", subname = "00_NEW"});
                     fillList();
                 };
                 node.ContextMenu.MenuItems.Add(AddRect);
@@ -148,7 +148,7 @@ namespace Smash_Forge
                 MenuItem AddPath = new MenuItem("Add New General Shape (Path)");
                 AddPath.Click += delegate
                 {
-                    TargetLVD.generalShapes.Add(new GeneralShape() { name = "GeneralPath_NEW", subname = "00_NEW", type = 4 });
+                    TargetLVD.generalShapes.Add(new GeneralShape(4) { name = "GeneralPath_NEW", subname = "00_NEW"});
                     fillList();
                 };
                 node.ContextMenu.MenuItems.Add(AddPath);
@@ -190,10 +190,10 @@ namespace Smash_Forge
             {
                 TreeNode node = enemyNode;
                 node.ContextMenu = new ContextMenu();
-                MenuItem Add = new MenuItem("Add New Enemy Spawner");
+                MenuItem Add = new MenuItem("Add New Enemy Generator");
                 Add.Click += delegate
                 {
-                    TargetLVD.enemySpawns.Add(new EnemyGenerator() { name = "EnemyGenerator_NEW", subname = "00_NEW" });
+                    TargetLVD.enemyGenerators.Add(new EnemyGenerator() { name = "EnemyGenerator_NEW", subname = "00_NEW" });
                     fillList();
                 };
                 node.ContextMenu.MenuItems.Add(Add);
@@ -264,7 +264,7 @@ namespace Smash_Forge
         public TreeNode shapeNode = new TreeNode("General Shapes");
         public TreeNode pointNode = new TreeNode("General Points");
         public TreeNode hurtNode = new TreeNode("Hurtboxes");
-        public TreeNode enemyNode = new TreeNode("Enemy Spawners");
+        public TreeNode enemyNode = new TreeNode("Enemy Generators");
 
         public void fillList()
         {
@@ -331,7 +331,7 @@ namespace Smash_Forge
                     hurtNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
                 }
 
-                foreach (EnemyGenerator c in TargetLVD.enemySpawns)
+                foreach (EnemyGenerator c in TargetLVD.enemyGenerators)
                 {
                     enemyNode.Nodes.Add(new TreeNode(c.name) { Tag = c, ContextMenu = ElementCM });
                 }
@@ -371,7 +371,7 @@ namespace Smash_Forge
             if (entry is DamageShape)
                 TargetLVD.damageShapes.Remove((DamageShape)entry);
             if (entry is EnemyGenerator)
-                TargetLVD.enemySpawns.Remove((EnemyGenerator)entry);
+                TargetLVD.enemyGenerators.Remove((EnemyGenerator)entry);
             if (entry is GeneralShape)
                 TargetLVD.generalShapes.Remove((GeneralShape)entry);
             if (entry is ItemSpawner)
