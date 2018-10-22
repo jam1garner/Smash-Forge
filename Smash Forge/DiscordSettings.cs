@@ -17,6 +17,7 @@ namespace Smash_Forge
         }
 
         // Fields to be saved between runs
+        public static bool enabled = true;
         public static ImageKeyMode imageKeyMode;
         public static string userPickedImageKey = "forge";
         public static bool useUserModName;
@@ -27,6 +28,12 @@ namespace Smash_Forge
 
         public static void Update()
         {
+            if (!enabled)
+            {
+                DiscordRpc.Shutdown();
+                return;
+            }
+                
             if (imageKeyMode == ImageKeyMode.Default)
             {
                 DiscordController.presence = new DiscordRpc.RichPresence()

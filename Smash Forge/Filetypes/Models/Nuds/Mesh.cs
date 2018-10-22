@@ -7,11 +7,11 @@ using System.Windows.Forms;
 
 namespace Smash_Forge
 {
-    public partial class NUD
+    public partial class NUD : IBoundableModel
     {
         // typically a mesh will just have 1 polygon
         // but you can just use the mesh class without polygons
-        public class Mesh : TreeNode
+        public class Mesh : TreeNode, IBoundableModel
         {
             public enum BoneFlags
             {
@@ -55,6 +55,11 @@ namespace Smash_Forge
                 index++;
                 previousDisplayIds.Add(index);
                 displayId = index;
+            }
+
+            public Vector4 BoundingSphere
+            {
+                get { return new Vector4(boundingSphere[0], boundingSphere[1], boundingSphere[2], boundingSphere[3]); }
             }
 
             public void addVertex(Vertex v)

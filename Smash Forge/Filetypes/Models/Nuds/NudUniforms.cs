@@ -3,7 +3,7 @@ using OpenTK.Graphics.OpenGL;
 using SFGenericModel.Materials;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects.Textures;
-using SFGraphics.Tools;
+using SFGraphics.GlUtils;
 using Smash_Forge.Rendering;
 using System;
 using System.Collections.Generic;

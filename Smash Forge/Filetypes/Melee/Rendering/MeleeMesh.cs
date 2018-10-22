@@ -65,14 +65,14 @@ namespace Smash_Forge.Filetypes.Melee.Rendering
         {
             return new List<VertexAttribute>()
             {
-                new VertexAttributeInfo("vPosition", ValueCount.Three, VertexAttribPointerType.Float),
-                new VertexAttributeInfo("vNormal",   ValueCount.Three, VertexAttribPointerType.Float),
-                new VertexAttributeInfo("vBitan",    ValueCount.Three, VertexAttribPointerType.Float),
-                new VertexAttributeInfo("vTan",      ValueCount.Three, VertexAttribPointerType.Float),
-                new VertexAttributeInfo("vUV0",      ValueCount.Two,   VertexAttribPointerType.Float),
-                new VertexAttributeInfo("vColor",    ValueCount.Four,  VertexAttribPointerType.Float),
-                new VertexAttributeInfo("vBone",     ValueCount.Four,  VertexAttribPointerType.Float),
-                new VertexAttributeInfo("vWeight",   ValueCount.Four,  VertexAttribPointerType.Float)
+                new VertexFloatAttribute("vPosition", ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vNormal",   ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vBitan",    ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vTan",      ValueCount.Three, VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vUV0",      ValueCount.Two,   VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vColor",    ValueCount.Four,  VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vBone",     ValueCount.Four,  VertexAttribPointerType.Float),
+                new VertexFloatAttribute("vWeight",   ValueCount.Four,  VertexAttribPointerType.Float)
             };
         }
     }

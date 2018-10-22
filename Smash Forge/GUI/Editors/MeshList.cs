@@ -101,6 +101,9 @@ namespace Smash_Forge
                 foreach (TreeNode n in e.Node.Nodes) n.Checked = e.Node.Checked;
             if (e.Node is BFRES.Mesh)
                 foreach (TreeNode n in e.Node.Nodes) n.Checked = e.Node.Checked;
+
+            // Update viewport after hiding/showing meshes.
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void polySelected(NUD.Polygon poly, string name)
@@ -136,28 +139,46 @@ namespace Smash_Forge
             else if (e.Node is ModelContainer)
             {
                 Runtime.TargetVBN = ((ModelContainer)e.Node).VBN;
-            } else
-            if (filesTreeView.SelectedNode is VBN)
+            }
+            else if (filesTreeView.SelectedNode is VBN)
             {
                 Runtime.TargetVBN = ((VBN)e.Node);
             }
-            if (filesTreeView.SelectedNode is BCH_Model)
+            else if (filesTreeView.SelectedNode is BCH_Model)
             {
                 Runtime.TargetVBN = ((BCH_Model)e.Node).skeleton;
             }
-            if (filesTreeView.SelectedNode is MeleeRootNode)
+            else if (filesTreeView.SelectedNode is BCH_Texture)
+            {
+                MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
+            }
+            else if (filesTreeView.SelectedNode is NutTexture)
+            {
+                MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
+            }
+            if (filesTreeView.SelectedNode is BRTI)
+            {
+                MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
+            }
+            else if (filesTreeView.SelectedNode is FTEX)
+            {
+                MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
+            }
+            else if (filesTreeView.SelectedNode is MeleeRootNode)
             {
                 Runtime.TargetVBN = ((MeleeRootNode)e.Node).RenderBones;
             }
-            if (filesTreeView.SelectedNode is MeleeJointAnimationNode)
+            else if (filesTreeView.SelectedNode is MeleeJointAnimationNode)
             {
                 ((ModelViewport)Parent).CurrentAnimation = ((MeleeJointAnimationNode)filesTreeView.SelectedNode).GetAnimation();
             }
-
-            if (filesTreeView.SelectedNode is MeleeJointNode)
+            else if (filesTreeView.SelectedNode is MeleeJointNode)
             {
                 ((MeleeJointNode)e.Node).RenderBone.Selected = true;
             }
+
+            // Update selection render.
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
@@ -528,24 +549,6 @@ namespace Smash_Forge
             RefreshNodes();
         }
 
-        private void belowToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            TreeNode n = filesTreeView.SelectedNode.NextNode;
-            if (n != null)
-            {
-                merge(n);
-            }
-        }
-
-        private void aboveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            TreeNode n = filesTreeView.SelectedNode.PrevNode;
-            if (n != null)
-            {
-                merge(n);
-            }
-        }
-
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string filename = "";
@@ -834,29 +837,6 @@ namespace Smash_Forge
             n.UpdateRenderMeshes();
         }
 
-        private void calculateNormalsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void calculateNormalsToolStripMenuItem_Click_1(object sender, EventArgs e)
-        {
-            if (!(filesTreeView.SelectedNode is NUD))
-                return;
-
-            NUD n = (NUD)filesTreeView.SelectedNode;
-            foreach (NUD.Mesh mesh in n.Nodes)
-            {
-                foreach (NUD.Polygon poly in mesh.Nodes)
-                {
-                    poly.CalculateNormals();
-                }
-            }
-
-            // Update the data for rendering.
-            n.UpdateRenderMeshes();
-        }
-
         private void useAOAsSpecToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (filesTreeView.SelectedNode is NUD)
@@ -1021,24 +1001,6 @@ namespace Smash_Forge
                 foreach (NUD.Polygon poly in mesh.Nodes)
                 {
                     poly.SmoothNormals();
-                }
-            }
-
-            // Update the data for rendering.
-            n.UpdateRenderMeshes();
-        }
-
-        private void recalculateToolStripMenuItem2_Click(object sender, EventArgs e)
-        {
-            if (!(filesTreeView.SelectedNode is NUD))
-                return;
-
-            NUD n = (NUD)filesTreeView.SelectedNode;
-            foreach (NUD.Mesh mesh in n.Nodes)
-            {
-                foreach (NUD.Polygon poly in mesh.Nodes)
-                {
-                    poly.CalculateNormals();
                 }
             }
 
@@ -1800,13 +1762,6 @@ namespace Smash_Forge
 
             mdl.SmoothNormalEachMesh();
             UpdateBFRESMeshList();
-        }
-
-        private void replaceToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (!(filesTreeView.SelectedNode is BFRES.FMDL_Model))
-                return;
-
         }
 
         private void copyChannel1To2ToolStripMenuItem_Click(object sender, EventArgs e)

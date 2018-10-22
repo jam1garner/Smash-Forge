@@ -4,101 +4,130 @@
         <name>SFGraphics.Utils</name>
     </assembly>
     <members>
+        <member name="T:SFGraphics.Utils.BitmapUtils">
+            <summary>
+            Contains methods for working with <see cref="T:System.Drawing.Bitmap"/> images.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Utils.BitmapUtils.GetBitmap(System.Int32,System.Int32,System.Byte[])">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Bitmap"/> from ABGR pixel data.
+            </summary>
+            <param name="width">The width in pixels of the image data</param>
+            <param name="height">The height in pixels of the image data</param>
+            <param name="imageData">ABGR image pixels</param>
+            <returns>A new image with the given image data</returns>
+        </member>
         <member name="T:SFGraphics.Utils.BoundingSphereGenerator">
             <summary>
-            Generates bounding spheres for a collection of vertices.
-            This can be used with <see cref="!:SFGraphics.Cameras.Camera.FrameBoundingSphere(Vector3, float, float)"/> to make models visible in the viewport.
+            Contains methods to generate a bounding sphere for a collection of vertices.
             </summary>
         </member>
         <member name="M:SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.List{OpenTK.Vector3})">
             <summary>
-            The center is the average of the min and max values for X, Y, Z.
-            The radius is calculated based on the smallest sphere that will contain all of <paramref name="vertexPositions"/>.
+            Generates a close to optimal sphere that contains all of the given points
+            within the sphere.
             Returns Vector4(center.Xyz, radius).
             </summary>
-            <param name="vertexPositions"></param>
+            <param name="points">The points that should be contained within the bounding sphere</param>
             <returns>Vector4(center.Xyz, radius)</returns>
+        </member>
+        <member name="M:SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.List{OpenTK.Vector4})">
+            <summary>
+            Generates a single bounding sphere that contains all the given
+            bounding spheres.
+            </summary>
+            <param name="boundingSpheres">The list of bounding sphere centers (xyz) and radii (w)</param>
+            <returns>A single bounding sphere that contains <paramref name="boundingSpheres"/></returns>
         </member>
         <member name="T:SFGraphics.Utils.ColorUtils">
             <summary>
             Conversion methods for HSV, RGB, color temperature, and system Colors using floats or OpenTK vectors.
             </summary>
         </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.Vector4FromColor(System.Drawing.Color)">
+        <member name="M:SFGraphics.Utils.ColorUtils.GetVector4(System.Drawing.Color)">
             <summary>
-            Converts the byte channel values of the input color [0,255] to float [0.0,1.0]. XYZW = RGBA.
+            Converts the byte channel values of the input color [0,255] to float [0, 1]. XYZW = RGBA.
             </summary>
-            <param name="color"></param>
-            <returns></returns>
+            <param name="color">the RGBA color</param>
+            <returns><paramref name="color"/> converted to a float vector</returns>
+        </member>
+        <member name="M:SFGraphics.Utils.ColorUtils.GetVector3(System.Drawing.Color)">
+            <summary>
+            Converts the byte channel values of the input color [0,255] to float [0, 1]. XYZ = RGB.
+            </summary>
+            <param name="color">the RGBA color</param>
+            <returns><paramref name="color"/> converted to a float vector</returns>
+        </member>
+        <member name="M:SFGraphics.Utils.ColorUtils.GetColor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Color"/> from float components
+            scaled by 255 and clamped to the range [0, 255].
+            </summary>
+            <param name="r">The red component</param>
+            <param name="g">The green component</param>
+            <param name="b">The blue component</param>
+            <param name="a">The alpha component</param>
+            <returns>A new color from the given floats</returns>
+        </member>
+        <member name="M:SFGraphics.Utils.ColorUtils.GetColor(OpenTK.Vector3)">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Color"/> from float components
+            scaled by 255 and clamped to the range [0, 255].
+            </summary>
+            <param name="color">The input color</param>
+            <returns>A new color from the given floats</returns>
+        </member>
+        <member name="M:SFGraphics.Utils.ColorUtils.GetColor(OpenTK.Vector4)">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Color"/> from float components
+            scaled by 255 and clamped to the range [0, 255].
+            </summary>
+            <param name="color">The input color</param>
+            <returns>A new color from the given floats</returns>
         </member>
         <member name="M:SFGraphics.Utils.ColorUtils.HsvToRgb(System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Single@)">
             <summary>
-            
+            Updates RGB values given an HSV color.
             </summary>
             <param name="h">Hue in range [0,360]</param>
             <param name="s">Saturation in range [0,1]. Values outside range are clamped.</param>
             <param name="v">Value</param>
-            <param name="r"></param>
-            <param name="g"></param>
-            <param name="b"></param>
-        </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.HsvToRgb(OpenTK.Vector3)">
-            <summary>
-            Calculates a floating point RGB color given HSV values.
-            </summary>
-            <param name="hsv">
-            X: Hue in range [0.0,1.0],
-            Y: Saturation in range [0.0,1.0],
-            Z: Value
-            </param>
-            <returns>The given HSV color in RGB</returns>
+            <param name="r">The resulting red component</param>
+            <param name="g">The resulting green component</param>
+            <param name="b">The resulting blue component</param>
         </member>
         <member name="M:SFGraphics.Utils.ColorUtils.RgbToHsv(System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Single@)">
             <summary>
-            
+            Updates HSV values given an RGB color.
             </summary>
-            <param name="r"></param>
-            <param name="g"></param>
-            <param name="b"></param>
-            <param name="h"></param>
-            <param name="s"></param>
-            <param name="v"></param>
+            <param name="h">The resulting hue in range [0,360]</param>
+            <param name="s">The resulting saturation in range [0,1]. Values outside range are clamped.</param>
+            <param name="v">The resulting value</param>
+            <param name="r">The red component</param>
+            <param name="g">The green component</param>
+            <param name="b">The blue component</param>
         </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.RgbToHsv(OpenTK.Vector3)">
+        <member name="M:SFGraphics.Utils.ColorUtils.GetRgb(System.Single,System.Single@,System.Single@,System.Single@)">
             <summary>
-            Converts the floating point color in RGB to HSV. 
-            output.X: hue in range [0,1], output.Y: saturation in range [0,1], 
-            output.Z: value.
+            Calculates a visually similar RGB color to a given blackbody temperature.
             </summary>
-            <param name="rgb"></param>
-            <returns></returns>
+            <param name="temperatureKelvin">The color temperature in Kelvin. Ex: temp = 6500 for a calibrated PC monitor.</param>
+            <param name="r">The resulting red component</param>
+            <param name="g">The resulting green component</param>
+            <param name="b">The resulting blue component</param>
         </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.ColorTemp2RGB(System.Single,System.Single@,System.Single@,System.Single@)">
+        <member name="M:SFGraphics.Utils.ColorUtils.Clamp``1(``0,``0,``0)">
             <summary>
-            Calculates a visually similar RGB color to a blackbody.
+            Returns the result of <paramref name="value"/> clamped between
+            <paramref name="min"/> and <paramref name="max"/>.
             </summary>
-            <param name="temp">The color temperature in Kelvin. Ex: temp = 6500 for a calibrated PC monitor.</param>
-            <param name="R"></param>
-            <param name="G"></param>
-            <param name="B"></param>
-        </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.ClampInt(System.Int32,System.Int32,System.Int32)">
-            <summary>
-            Returns an int restricted between min and max.
-            </summary>
-            <param name="i"></param>
-            <param name="min">Values lower than min are clamped to min.</param>
-            <param name="max">Values higher than max are clamped to max.</param>
-            <returns></returns>
-        </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.ClampFloat(System.Single,System.Single,System.Single)">
-            <summary>
-            Returns a float restricted between min and max.
-            </summary>
-            <param name="f"></param>
-            <param name="min">Values lower than min are clamped to min.</param>
-            <param name="max">Values higher than max are clamped to max.</param>
-            <returns></returns>
+            <typeparam name="T">The type of value to compare</typeparam>
+            <param name="value">The input value</param>
+            <param name="min">The lowest possible output</param>
+            <param name="max">The highest possible output</param>
+            <returns>The result of <paramref name="value"/> clamped between
+            <paramref name="min"/> and <paramref name="max"/></returns>
         </member>
         <member name="M:SFGraphics.Utils.ColorUtils.InvertColor(System.Drawing.Color)">
             <summary>
@@ -107,18 +136,19 @@
             <param name="color">The color used to calculate the inverted color</param>
             <returns>A color with inverted RGB but identical alpha as color</returns>
         </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.FloatToIntClamp(System.Single,System.Int32,System.Int32)">
-            <summary>
-            Converts f to an int clamped to the specified range.
-            </summary>
-            <param name="f">Multiplied by 255 and casted to int before being clamped</param>
-            <param name="min">Values lower than min are clamped to min.</param>
-            <param name="max">Values higher than max are clamped to max.</param>
-            <returns></returns>
-        </member>
         <member name="T:SFGraphics.Utils.VectorUtils">
             <summary>
             Utility methods for normals, tangents, bitangents, and angle conversions
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Utils.VectorUtils.defaultTangent">
+            <summary>
+            The default value when the generated tangent would be a zero vector.
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Utils.VectorUtils.defaultBitangent">
+            <summary>
+            The default value when the generated bitangent would be a zero vector.
             </summary>
         </member>
         <member name="M:SFGraphics.Utils.VectorUtils.GetDegrees(System.Double)">
@@ -137,12 +167,8 @@
         </member>
         <member name="M:SFGraphics.Utils.VectorUtils.Orthogonalize(OpenTK.Vector3,OpenTK.Vector3)">
             <summary>
-            Uses the Gran-Schmidt method for orthogonalizing a vector to another vector.
-            The resulting vector is normalized.    
-            <para></para>
-            <para>
-            Ex: <c>Vector3 tanOrthoToNrm = Orthogonalize(tan, nrm);</c>
-            </para>
+            Uses the Gran-Schmidt method for returning a normalized copy 
+            of <paramref name="target"/> that is orthogonal to <paramref name="source"/>.
             </summary>
             <param name="target">The vector to normalize</param>
             <param name="source">The vector to normalize against</param>
@@ -150,14 +176,10 @@
         </member>
         <member name="M:SFGraphics.Utils.VectorUtils.GenerateTangentBitangent(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector3@,OpenTK.Vector3@)">
             <summary>
-            Generates a tangent vector <paramref name="tangent"/> and a bitangent vector
-            <paramref name="bitangent"/> for a triangle face. 
-            If the three vertices have the same UVs or position, <paramref name="tangent"/> is set to (1, 0, 0)
-            and <paramref name="bitangent"/> is set to (0, 1, 0). This prevents black shading artifacts.
+            Calculates <paramref name="tangent"/> and <paramref name="bitangent"/> 
+            for a triangle face. 
             <para></para><para></para>
-            <paramref name="tangent"/> and <paramref name="bitangent"/> should be added to the existing tangent
-            and bitangent value for each vertex in the triangle. Normalizing the final sum 
-            averages the tangents and bitangents for smoother results.
+            Zero vectors are set to <see cref="F:SFGraphics.Utils.VectorUtils.defaultTangent"/> and <see cref="F:SFGraphics.Utils.VectorUtils.defaultBitangent"/>.
             </summary>
             <param name="v1">The position of the first vertex</param>
             <param name="v2">The position of the second vertex</param>
@@ -172,7 +194,7 @@
             <summary>
             Calculates the face normal of a triangle. The result is not normalized.
             A triangle facing the camera will have a positive normal when 
-            the verts are ordered counter-clockwise.
+            the vertices are ordered counter-clockwise.
             </summary>
             <param name="v1">The position of the first vertex</param>
             <param name="v2">The position of the second vertex</param>

@@ -51,6 +51,7 @@ namespace Smash_Forge.GUI
             renderHitboxesCB.Checked = Runtime.renderHitboxes;
             nudHitboxAlpha.Value = Runtime.hitboxAlpha;
             pbHitboxAnglesColor.BackColor = Runtime.hitboxAnglesColor;
+            loadRenderATKD.Checked = Runtime.LoadAndRenderATKD;
 
             // Hurtbox Settings
             renderHurtboxesCB.Checked = Runtime.renderHurtboxes;
@@ -79,7 +80,8 @@ namespace Smash_Forge.GUI
             pbAbsorbColor.BackColor = Runtime.absorbBubbleColor;
             pbShieldColor.BackColor = Runtime.shieldBubbleColor;
 
-            // Discord Settings        
+            // Discord Settings
+            enabledCheckbox.Checked = DiscordSettings.enabled;
             if (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.UserPicked)
             {
                 customRadioButton.Checked = true;
@@ -161,11 +163,6 @@ namespace Smash_Forge.GUI
                 toolTip1.SetToolTip(floorColorPictureBox, "Click to select an image.");
             else
                 toolTip1.SetToolTip(floorColorPictureBox, "Click to select a color.");
-        }
-
-        private void renderLvdCB_CheckedChanged(object sender, EventArgs e)
-        {
-            checkChanged();
         }
 
         private void checkChanged()
@@ -788,6 +785,16 @@ namespace Smash_Forge.GUI
 
         private void discordCheckChanged(object sender, EventArgs e)
         {
+            if (sender == enabledCheckbox)
+            {
+                DiscordSettings.enabled = enabledCheckbox.Checked;
+                if (DiscordSettings.enabled)
+                {
+                    DiscordSettings.DiscordController = new DiscordController();
+                    DiscordSettings.DiscordController.Initialize();
+                    DiscordSettings.Update();
+                }
+            }
             if (sender == showActiveWindowCheckbox)
                 DiscordSettings.showCurrentWindow = showActiveWindowCheckbox.Checked;
             if (sender == timeElapsedCheckbox)
@@ -877,11 +884,6 @@ namespace Smash_Forge.GUI
             floorColorPictureBox.Refresh();
         }
 
-        private void openBackgroundTexButton_Click(object sender, EventArgs e)
-        {
-            OpenBackgroundTexture();
-        }
-
         private void OpenBackgroundTexture()
         {
             using (var ofd = new OpenFileDialog() { Filter = "Image (.png)|*.png|All Files (*.*)|*.*" })
@@ -943,16 +945,6 @@ namespace Smash_Forge.GUI
                 BackgroundGradient2.Visible = true;
 
                 backgroundPictureBox.Visible = false;
-            }
-        }
-
-        private void ClearBackgroundPictureBox()
-        {
-            if (backgroundPictureBox.Image != null)
-            {
-                backgroundPictureBox.Image.Dispose();
-                backgroundPictureBox.Image = null;
-                backgroundPictureBox.Refresh();
             }
         }
 
@@ -1028,6 +1020,16 @@ namespace Smash_Forge.GUI
         private void bfresPbrCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderBfresPbr = bfresPbrCB.Checked;
+        }
+
+        private void loadRenderATKD_CheckedChanged(object sender, EventArgs e)
+        {
+            Runtime.LoadAndRenderATKD = loadRenderATKD.Checked;
+        }
+
+        private void RenderSettingsMenu_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Config.Save();
         }
     }
 }

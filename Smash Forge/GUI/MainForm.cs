@@ -44,6 +44,7 @@ namespace Smash_Forge
         public ByamlList byamlList = new ByamlList() { ShowHint = DockState.DockLeft };
         public MeshList meshList = new MeshList() { ShowHint = DockState.DockRight };
         public HurtboxList hurtboxList = new HurtboxList() { ShowHint = DockState.DockLeft };
+        public LMList lmList = new LMList() { ShowHint = DockState.DockLeft };
 
         // Editors and Forms
         public NUTEditor nutEditor = null;
@@ -83,10 +84,10 @@ namespace Smash_Forge
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            Config.StartupFromFile(executableDir + "\\config.xml");
             DiscordSettings.startTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             dockPanel = dockPanel1;
             DiscordSettings.DiscordController = new DiscordController();
-
             DiscordSettings.DiscordController.Initialize();
             DiscordSettings.Update();
 
@@ -102,8 +103,7 @@ namespace Smash_Forge
             allViewsPreset(new Object(), new EventArgs());
 
             Hashes = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
-
-            Config.StartupFromFile(MainForm.executableDir + "\\config.xml");
+            
             DiscordSettings.Update();
 
             // Make sure everything is loaded before opening files.
@@ -219,13 +219,13 @@ namespace Smash_Forge
                 content.Show(dockPanel1);
         }
 
-        public Control GetActiveModelViewport()
+        public ModelViewport GetActiveModelViewport()
         {
             // Find the selected modelviewport (there may be many).
-            foreach (Control c in dockPanel1.Contents)
+            foreach (var c in dockPanel1.Contents)
             {
                 if (c is ModelViewport && c == dockPanel1.ActiveDocument)
-                    return c;
+                    return (ModelViewport)c;
             }
             return null;
         }
@@ -245,6 +245,11 @@ namespace Smash_Forge
             {
                 lvdList = new LVDList();
                 lvdList.fillList();
+            }
+            if (lmList.IsDisposed)
+            {
+                lmList = new LMList();
+                lmList.fillList();
             }
             if (byamlList.IsDisposed)
             {
@@ -790,7 +795,7 @@ namespace Smash_Forge
                     MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
                     MainForm.Instance.Progress.ProgressValue = 0;
                     MainForm.Instance.Progress.ControlBox = false;
-                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Character");
+                    MainForm.Instance.Progress.Message = "Please Wait... Opening Character";
                     MainForm.Instance.Progress.Show();
 
                     string fighterName = new DirectoryInfo(ofd.SelectedPath).Name;
@@ -803,13 +808,13 @@ namespace Smash_Forge
                         if (s.EndsWith("model"))
                         {
                             MainForm.Instance.Progress.ProgressValue = 10;
-                            MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Model");
+                            MainForm.Instance.Progress.Message = "Please Wait... Opening Character Model";
                             MainForm.Instance.Progress.Refresh();
                             // load default model
                             mvp = OpenNud(s + "\\body\\c00\\model.nud", "", mvp);
 
                             MainForm.Instance.Progress.ProgressValue = 25;
-                            MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Expressions");
+                            MainForm.Instance.Progress.Message = "Please Wait... Opening Character Expressions";
                             string[] anims = Directory.GetFiles(s + "\\body\\c00\\");
                             float a = 0;
                             foreach (string ss in anims)
@@ -825,7 +830,7 @@ namespace Smash_Forge
                         if (s.EndsWith("motion"))
                         {
                             MainForm.Instance.Progress.ProgressValue = 50;
-                            MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Animation");
+                            MainForm.Instance.Progress.Message = "Please Wait... Opening Character Animation";
                             string[] anims = Directory.GetFiles(s + "\\body\\");
                             //Sort files so main.pac is opened first
                             Array.Sort(anims, (a, b) =>
@@ -849,13 +854,16 @@ namespace Smash_Forge
                             {
                                 mvp.MovesetManager = new MovesetManager(s + "\\animcmd\\body\\motion.mtable");
                             }
+
+                            if (Runtime.LoadAndRenderATKD && File.Exists(s + "\\ai\\attack_data.bin"))
+                                Runtime.currentATKD = s + "\\ai\\attack_data.bin";
                         }
                     }
 
                     mvp.Text = fighterName;
 
-                    MainForm.Instance.Progress.ProgressValue = 99;
-                    MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Params");
+                    MainForm.Instance.Progress.ProgressValue = 95;
+                    MainForm.Instance.Progress.Message = "Please Wait... Opening Character Params";
                     if (!String.IsNullOrEmpty(Runtime.paramDir))
                     {
                         // If they set the wrong dir, oh well
@@ -873,6 +881,14 @@ namespace Smash_Forge
                             Runtime.modelScale = Convert.ToSingle(characterParams[modelScaleIndex].Value);
                         }
                         catch { }
+                    }
+                    MainForm.Instance.Progress.ProgressValue = 99;
+                    MainForm.Instance.Progress.Message = "Please Wait... Opening Character ATKD";
+                    if (!string.IsNullOrEmpty(Runtime.currentATKD))
+                    {
+                        ATKD_Editor atkd_editor = new ATKD_Editor(Runtime.currentATKD, mvp);
+                        mvp.atkdEditor = atkd_editor;
+                        AddDockedControl(atkd_editor);
                     }
                     MainForm.Instance.Progress.ProgressValue = 100;
                     AddDockedControl(mvp);
@@ -1509,6 +1525,11 @@ namespace Smash_Forge
                     mvp.LVD = new LVD(fileName);
                 }
             }
+            if (fileName.EndsWith(".lm"))
+            {
+                mvp.ViewComboBox.SelectedItem = "LM Editor";
+                AddDockedControl(new LMList(fileName));
+            }
 
             if (fileName.EndsWith(".mdl0"))
             {
@@ -1629,10 +1650,6 @@ namespace Smash_Forge
                 Runtime.Moveset = new MovesetManager(fileName);
                 Runtime.acmdEditor.updateCrcList();
             }
-            if (fileName.EndsWith(".atkd"))
-            {
-                AddDockedControl(new ATKD_Editor(new ATKD().Read(fileName)));
-            }
             if (fileName.EndsWith("path.bin"))
             {
                 Runtime.TargetPath = new PathBin(fileName);
@@ -1683,7 +1700,7 @@ namespace Smash_Forge
                 }
                 else if (f.readString(0, 4) == "ATKD")
                 {
-                    AddDockedControl(new ATKD_Editor(new ATKD().Read(fileName)));
+                    AddDockedControl(new ATKD_Editor(fileName));
                 }
                 else
                 {
@@ -1787,13 +1804,14 @@ namespace Smash_Forge
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter =
-                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0;*.bntx;*.szs;*.sbfres;*.sarc;*.pack;*.byaml;*.byml;*.kcl;*.dat|" +
+                    "Supported Formats|*.vbn;*.lvd;*.nud;*.xmb;*.bin;*.dae;*.obj;*.wrkspc;*.nut;*.sb;*.tex;*.smd;*.mta;*.pac;*.xmb;*.bch;*.mbn;*.bfres;*.mdl0;*.bntx;*.szs;*.sbfres;*.sarc;*.pack;*.byaml;*.byml;*.kcl;*.dat;*.lm;*.nulm|" +
                     "Smash 4 Boneset (.vbn)|*.vbn|" +
                     "Namco Model (.nud)|*.nud|" +
                     "Smash 4 Level Data (.lvd)|*.lvd|" +
                     "NW4R Model (.mdl0)|*.mdl0|" +
                     "Source Model (.SMD)|*.smd|" +
                     "Smash 4 Parameters (.bin)|*.bin|" +
+                    "Lumen UI (.lm)|*.lm;*.nulm|" +
                     "Collada Model Format (.dae)|*.dae|" +
                     "Wavefront Object (.obj)|*.obj|" +
                              "Object Motion|*.omo|" +
@@ -2385,6 +2403,11 @@ namespace Smash_Forge
             ModelViewport mvp = (ModelViewport)GetActiveModelViewport();
             if (mvp != null)
                 mvp.BatchRenderMeleeDatModels();
+        }
+
+        private void lMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -92,6 +92,9 @@ namespace Smash_Forge
                     case "render_depth":
                         float.TryParse(node.InnerText, out Runtime.renderDepth);
                         break;
+                    case "enable_vSync":
+                        bool.TryParse(node.InnerText, out Runtime.enableVSync);
+                        break;
                     case "fov":
                         float.TryParse(node.InnerText, out Runtime.fov);
                         break;
@@ -270,8 +273,14 @@ namespace Smash_Forge
                     case "wtSlowdownBubble_color":
                         TryParseHexColor(node, ref Runtime.wtSlowdownBubbleColor);
                         break;
+                    case "loadAndRenderATKD":
+                        bool.TryParse(node.InnerText, out Runtime.LoadAndRenderATKD);
+                        break;
 
                     //Discord Stuff
+                    case "discord_enabled":
+                        bool.TryParse(node.InnerText, out DiscordSettings.enabled);
+                        break;
                     case "image_key_mode":
                         int.TryParse(node.InnerText, out discordImageKey);
                         DiscordSettings.imageKeyMode = (DiscordSettings.ImageKeyMode)discordImageKey;
@@ -404,6 +413,8 @@ namespace Smash_Forge
             viewportNode.AppendChild(createNode(doc, "zoom_modifier_multiplier", Runtime.zoomModifierScale.ToString()));
             viewportNode.AppendChild(createNode(doc, "fov", Runtime.fov.ToString()));
             viewportNode.AppendChild(createNode(doc, "render_depth", Runtime.renderDepth.ToString()));
+            viewportNode.AppendChild(createNode(doc, "enable_vSync", Runtime.enableVSync.ToString()));
+
             AppendBackgroundSettings(doc, viewportNode);
             AppendOdysseyCostumeEditor(doc, viewportNode);
 
@@ -524,6 +535,7 @@ namespace Smash_Forge
             parentNode.AppendChild(createNode(doc, "shieldBubble_color", ColorTranslator.ToHtml(Runtime.shieldBubbleColor)));
             parentNode.AppendChild(createNode(doc, "absorbBubble_color", ColorTranslator.ToHtml(Runtime.absorbBubbleColor)));
             parentNode.AppendChild(createNode(doc, "wtSlowdownBubble_color", ColorTranslator.ToHtml(Runtime.wtSlowdownBubbleColor)));
+            parentNode.AppendChild(createNode(doc, "loadAndRenderATKD", Runtime.LoadAndRenderATKD.ToString()));
 
             XmlNode hitboxKbColorNode = doc.CreateElement("hitbox_kb_colors");
             parentNode.AppendChild(hitboxKbColorNode);
@@ -568,6 +580,7 @@ namespace Smash_Forge
         private static void AppendDiscordSettings(XmlDocument doc, XmlNode parentNode)
         {
             XmlNode discordNode = doc.CreateElement("DISCORDSETTINGS");
+            discordNode.AppendChild(createNode(doc, "discord_enabled", DiscordSettings.enabled.ToString()));
             discordNode.AppendChild(createNode(doc, "image_key_mode", ((int)DiscordSettings.imageKeyMode).ToString()));
             discordNode.AppendChild(createNode(doc, "user_image_key", DiscordSettings.userPickedImageKey));
             discordNode.AppendChild(createNode(doc, "use_user_mod_name", DiscordSettings.useUserModName.ToString()));

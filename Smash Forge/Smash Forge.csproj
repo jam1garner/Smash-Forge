@@ -12,6 +12,21 @@
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -195,6 +210,7 @@
     <Compile Include="Filetypes\Melee\MeleeNode.cs" />
     <Compile Include="Filetypes\Melee\Rendering\MeleeRenderTexture.cs" />
     <Compile Include="Filetypes\Melee\MeleeRootNode.cs" />
+    <Compile Include="Filetypes\Models\IBoundableModel.cs" />
     <Compile Include="Filetypes\Models\Nuds\DisplayVertex.cs" />
     <Compile Include="Filetypes\Models\Nuds\Material.cs" />
     <Compile Include="Filetypes\Models\Nuds\MatTexture.cs" />
@@ -227,6 +243,8 @@
     <Compile Include="Filetypes\Sounds\WAVE.cs" />
     <Compile Include="Filetypes\Textures\3DSTex.cs" />
     <Compile Include="Filetypes\Textures\RG_ETC1.cs" />
+    <Compile Include="Filetypes\UI\LM.cs" />
+    <Compile Include="Filetypes\UI\Texlist.cs" />
     <Compile Include="Filetypes\Yaz0.cs" />
     <Compile Include="GUI\Editors\BFRES Editors\BNTXMaterialTextureEditor.cs">
       <SubType>Form</SubType>
@@ -312,6 +330,12 @@
     </Compile>
     <Compile Include="GUI\Editors\BYAML Editor\BYAMLList.Designer.cs">
       <DependentUpon>BYAMLList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\LM Editor\LMList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\LM Editor\LMList.Designer.cs">
+      <DependentUpon>LMList.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Melee\DOBJEditor.cs">
       <SubType>Form</SubType>
@@ -703,7 +727,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\BatchRendering.cs" />
     <Compile Include="Rendering\Cameras\ForgePerspCamera.cs" />
+    <Compile Include="Rendering\Drawing\FloorDrawing.cs" />
     <Compile Include="Rendering\Drawing\MaterialPreviewRendering.cs" />
     <Compile Include="Rendering\Drawing\NudMatSphereDrawing.cs" />
     <Compile Include="Rendering\Cameras\ForgeCamera.cs" />
@@ -805,6 +831,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\HurtboxList.resx">
       <DependentUpon>HurtboxList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\LM Editor\LMList.resx">
+      <DependentUpon>LMList.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\LVD Editor\LVDEditor.resx">
       <DependentUpon>LVDEditor.cs</DependentUpon>
@@ -1522,6 +1551,13 @@
   <ItemGroup>
     <Folder Include="GUI\Editors\2D\" />
     <Folder Include="Shader\Shader Cache\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

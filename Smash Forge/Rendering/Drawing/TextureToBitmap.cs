@@ -16,20 +16,6 @@ namespace Smash_Forge.Rendering
             return DrawTextureToBitmap(texture, texture.Width, texture.Height, r, g, b, a);
         }
 
-        public static Bitmap RenderBitmapUseExistingContext(Texture2D texture,
-            bool r = true, bool g = true, bool b = true, bool a = false)
-        {
-            // Use the texture's dimensions.
-            return DrawTextureToBitmapUseExistingContext(texture, texture.Width, texture.Height, r, g, b, a);
-        }
-
-        public static Bitmap RenderBitmap(Texture2D texture, int width, int height,
-            bool r = true, bool g = true, bool b = true, bool a = false)
-        {
-            // Scale the image to new dimensions.
-            return DrawTextureToBitmap(texture, width, height, r, g, b, a);
-        }
-
         public static Bitmap RenderBitmapUseExistingContext(Texture2D texture, int width, int height,
             bool r = true, bool g = true, bool b = true, bool a = false)
         {

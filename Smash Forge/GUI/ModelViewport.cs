@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -33,6 +34,11 @@ namespace Smash_Forge
 
         // Rendering Stuff
         private Framebuffer colorHdrFbo;
+
+        // Frame rate control
+        private Thread renderThread;
+        private bool renderThreadIsUpdating = false;
+        private bool isOpen = true;
 
         // The texture that will be blurred for bloom.
         private Framebuffer imageBrightHdrFbo;
@@ -95,6 +101,8 @@ namespace Smash_Forge
                                 acmdScript.processToFrame(0);
 
                         }
+                        if (atkdEditor != null && scriptId >= 0)
+                            atkdEditor.ViewportEvent_SetSelectedSubaction();
                     }
                 }
                 ResetModels();
@@ -102,8 +110,8 @@ namespace Smash_Forge
                 currentAnimation = value;
                 totalFrame.Value = value.FrameCount;
                 animationTrackBar.TickFrequency = 1;
-                currentFrame.Value = 1;
-                currentFrame.Value = 0;
+                currentFrameUpDown.Value = 1;
+                currentFrameUpDown.Value = 0;
             }
         }
 
@@ -122,8 +130,8 @@ namespace Smash_Forge
                 totalFrame.Value = value.frameCount;
                 animationTrackBar.TickFrequency = 1;
                 animationTrackBar.SetRange(0, (int)value.frameCount);
-                currentFrame.Value = 1;
-                currentFrame.Value = 0;
+                currentFrameUpDown.Value = 1;
+                currentFrameUpDown.Value = 0;
             }
         }
 
@@ -142,12 +150,12 @@ namespace Smash_Forge
                 totalFrame.Value = value.FrameCount;
                 animationTrackBar.TickFrequency = 1;
                 animationTrackBar.SetRange(0, (int)value.FrameCount);
-                currentFrame.Value = 1;
-                currentFrame.Value = 0;
+                currentFrameUpDown.Value = 1;
+                currentFrameUpDown.Value = 0;
             }
         }
 
-        // ACMD
+        //Moveset
         public int scriptId = -1;
         public Dictionary<string, int> paramMoveNameIdMapping;
         public CharacterParamManager paramManager;
@@ -174,6 +182,9 @@ namespace Smash_Forge
         public HitboxList hitboxList;
         public HurtboxList hurtboxList;
         public VariableList variableViewer;
+
+        public ATKD_Editor atkdEditor;
+        public bool atkdRectClicked = false;
 
         // Used in ModelContainer for direct UV time animation.
         public static Stopwatch directUvTimeStopWatch = new Stopwatch();
@@ -249,6 +260,9 @@ namespace Smash_Forge
             InitializeComponent();
             FilePath = "";
             Text = "Model Viewport";
+
+            // Wait for everything to be visible.
+            Shown += ModelViewport_Shown;
 
             SetUpMeshList();
             SetUpAnimListPanel();
@@ -360,10 +374,6 @@ namespace Smash_Forge
 
         private void SetUpBuffersAndTextures()
         {
-            // Use the viewport dimensions by default.
-            fboRenderWidth = glViewport.Width;
-            fboRenderHeight = glViewport.Height;
-
             // Render bright and normal images to separate textures.
             colorHdrFbo = new Framebuffer(FramebufferTarget.Framebuffer, glViewport.Width, glViewport.Height, PixelInternalFormat.Rgba16f, 2);
 
@@ -390,7 +400,7 @@ namespace Smash_Forge
 
             // Attach the depth map texture.
             depthMap = new DepthTexture(shadowWidth, shadowHeight, PixelInternalFormat.DepthComponent24);
-            depthMapFbo.AttachDepthTexture(FramebufferAttachment.DepthAttachment, depthMap);
+            depthMapFbo.AddAttachment(FramebufferAttachment.DepthAttachment, depthMap);
         }
 
         public Camera GetCamera()
@@ -449,30 +459,73 @@ namespace Smash_Forge
             Controls.Add(frm);
         }
 
-        private void ModelViewport_Load(object sender, EventArgs e)
+        private void ModelViewport_Shown(object sender, EventArgs e)
         {
-            // HACK: Frame time control.
-            var timer = new System.Windows.Forms.Timer();
-            timer.Interval = 8;
-            timer.Tick += new EventHandler(Application_Idle);
-            timer.Start();
+            // Frame time control.
+            glViewport.VSync = Runtime.enableVSync;
+            renderThread = new Thread(new ThreadStart(RenderAndAnimationLoop));
+            renderThread.Start();
         }
 
-        private void Application_Idle(object sender, EventArgs e)
+        private void RenderAndAnimationLoop()
         {
-            if (this.IsDisposed)
+            if (IsDisposed)
                 return;
 
-            if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
-            {
-                if (isPlaying)
+            // TODO: We don't really need two timers.
+            Stopwatch renderStopwatch = Stopwatch.StartNew();
+            Stopwatch animationStopwatch = Stopwatch.StartNew();
+
+            // Wait for UI to load before triggering paint events.
+            int waitTimeMs = 500;
+            Thread.Sleep(waitTimeMs);
+
+            glViewport.Invalidate();
+
+            int frameUpdateInterval = 5;
+            int animationUpdateInterval = 16;
+
+            while (isOpen)
+            {             
+                // Always refresh the viewport when animations are playing.
+                if (renderThreadIsUpdating || isPlaying)
                 {
-                    if (animationTrackBar.Value == totalFrame.Value)
-                        animationTrackBar.Value = 0;
-                    else
-                        animationTrackBar.Value++;
+                    if (renderStopwatch.ElapsedMilliseconds > frameUpdateInterval)
+                    {
+                        glViewport.Invalidate();
+                        renderStopwatch.Restart();
+                    }
+
+                    if (animationStopwatch.ElapsedMilliseconds > animationUpdateInterval)
+                    {
+                        UpdateAnimationFrame();
+                        animationStopwatch.Restart();
+                    }
                 }
-                glViewport.Invalidate();
+                else
+                {
+                    // Avoid wasting the CPU if we don't need to render anything.
+                    Thread.Sleep(1);
+                }
+            }
+        }
+
+        private void UpdateAnimationFrame()
+        {
+            if (isPlaying)
+            {
+                if (nextButton.InvokeRequired)
+                {
+                    // Increase playback speed by not waiting for GUI thread.
+                    nextButton.BeginInvoke((Action)(() =>
+                    {
+                        nextButton.PerformClick();
+                    }));
+                }
+                else
+                {
+                    nextButton.PerformClick();
+                }
             }
         }
 
@@ -509,7 +562,6 @@ namespace Smash_Forge
                         SortedList<double, Bone> selected = modelContainer.GetBoneSelection(ray);
                         if (selected.Count > 0)
                             transformTool.b = selected.Values.ElementAt(0);
-                        //break;
                     }
 
                     if (modeMesh.Checked)
@@ -579,8 +631,8 @@ namespace Smash_Forge
                     {
                         // The color is the polygon index (not the render order).
                         // Convert to Vector3 to ignore the alpha.
-                        Vector3 polyColor = ColorUtils.Vector4FromColor(Color.FromArgb(p.DisplayId)).Xyz;
-                        Vector3 pickedColor = ColorUtils.Vector4FromColor(pixelColor).Xyz;
+                        Vector3 polyColor = ColorUtils.GetVector3(Color.FromArgb(p.DisplayId));
+                        Vector3 pickedColor = ColorUtils.GetVector3(pixelColor);
 
                         if (polyColor == pickedColor)
                             return p;
@@ -626,61 +678,47 @@ namespace Smash_Forge
                 GL.LoadIdentity();
                 GL.Viewport(0, 0, glViewport.Width, glViewport.Height);
 
-                camera.renderWidth = glViewport.Width;
-                camera.renderHeight = glViewport.Height;
+                camera.RenderWidth = glViewport.Width;
+                camera.RenderHeight = glViewport.Height;
                 fboRenderWidth = glViewport.Width;
                 fboRenderHeight = glViewport.Height;
                 camera.UpdateFromMouse();
 
                 ResizeTexturesAndBuffers();
             }
-
-            UpdateBoneSizeRelativeToViewport();
         }
 
-        private void UpdateBoneSizeRelativeToViewport()
+        private void glViewport_LostFocus(object sender, EventArgs e)
         {
-            // TODO: Adjust bones to be a fixed size on screen.
-            //float distance = camera.Position.Length / (float)Math.Tan(camera.FovRadians / 2.0f);
-            //Runtime.renderBoneNodeSize = Runtime.difIntensity * distance;
+            renderThreadIsUpdating = false;
         }
 
         private void ResizeTexturesAndBuffers()
         {
-            // FBOs manage their own resizing.
-            // FBOs may not be initialized yet.
-            if (imageBrightHdrFbo != null)
-            {
-                imageBrightHdrFbo.Width = (int)(fboRenderWidth * Runtime.bloomTexScale);
-                imageBrightHdrFbo.Height = (int)(fboRenderHeight * Runtime.bloomTexScale);
-            }
-
-            if (offscreenRenderFbo != null)
-            {
-                offscreenRenderFbo.Width = fboRenderWidth;
-                offscreenRenderFbo.Height = fboRenderHeight;
-            }
-
-            if (colorHdrFbo != null)
-            {
-                colorHdrFbo.Width = glViewport.Width;
-                colorHdrFbo.Height = glViewport.Height;
-            }
+            SetUpBuffersAndTextures();
         }
 
         #region Animation Events
 
         private void animationTrackBar_ValueChanged(object sender, EventArgs e)
         {
-            if (animationTrackBar.Value > totalFrame.Value)
+            if (animationTrackBar.Value > (int)totalFrame.Value)
                 animationTrackBar.Value = 0;
             if (animationTrackBar.Value < 0)
                 animationTrackBar.Value = (int)totalFrame.Value;
-            currentFrame.Value = animationTrackBar.Value;
+            currentFrameUpDown.Value = animationTrackBar.Value;
 
+            int currentFrame = animationTrackBar.Value;
 
-            int frameNum = animationTrackBar.Value;
+            SetAnimationsToFrame(currentFrame);
 
+            // If the render thread isn't triggering updates, update the viewport manually.
+            if (!renderThreadIsUpdating || !isPlaying)
+                glViewport.Invalidate();
+        }
+
+        private void SetAnimationsToFrame(int frameNum)
+        {
             if (currentMaterialAnimation != null)
             {
                 foreach (TreeNode node in meshList.filesTreeView.Nodes)
@@ -701,7 +739,8 @@ namespace Smash_Forge
                 }
             }
 
-            if (currentAnimation == null) return;
+            if (currentAnimation == null)
+                return;
 
             // Process script first in case we have to speed up the animation
             if (acmdScript != null)
@@ -713,15 +752,16 @@ namespace Smash_Forge
 
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
-                if(node is MeleeDataNode)
+                if (node is MeleeDataNode)
                 {
                     foreach (MeleeRootNode n in ((MeleeDataNode)node).GetAllRoots())
                     {
                         currentAnimation.SetFrame(animFrameNum);
-                        currentAnimation.NextFrame(((MeleeRootNode)n).RenderBones);
+                        currentAnimation.NextFrame(n.RenderBones);
                     }
                 }
-                if (!(node is ModelContainer)) continue;
+                if (!(node is ModelContainer))
+                    continue;
                 ModelContainer m = (ModelContainer)node;
                 currentAnimation.SetFrame(animFrameNum);
                 if (m.VBN != null)
@@ -756,8 +796,6 @@ namespace Smash_Forge
                     }
                 }
             }
-
-            //Frame = (int)animFrameNum;
         }
 
         public void ResetModels()
@@ -771,19 +809,13 @@ namespace Smash_Forge
                     m.VBN.reset();
 
                 // Deliberately do not ever use ACMD/animFrame to modify these other types of model
-                if (m.DatMelee != null)
-                {
-                    m.DatMelee.bones.reset();
-                }
+                m.DatMelee?.bones.reset();
 
                 if (m.Bch != null)
                 {
                     foreach (BCH_Model mod in m.Bch.Models.Nodes)
                     {
-                        if (mod.skeleton != null)
-                        {
-                            mod.skeleton.reset();
-                        }
+                        mod.skeleton?.reset();
                     }
                 }
 
@@ -791,10 +823,7 @@ namespace Smash_Forge
                 {
                     foreach (var mod in m.Bfres.models)
                     {
-                        if (mod.skeleton != null)
-                        {
-                            mod.skeleton.reset();
-                        }
+                        mod.skeleton?.reset();
                     }
                 }
             }
@@ -802,9 +831,10 @@ namespace Smash_Forge
 
         private void currentFrame_ValueChanged(object sender, EventArgs e)
         {
-            if (currentFrame.Value > totalFrame.Value)
-                currentFrame.Value = totalFrame.Value;
-            animationTrackBar.Value = (int)currentFrame.Value;
+            if (currentFrameUpDown.Value > totalFrame.Value)
+                currentFrameUpDown.Value = totalFrame.Value;
+
+            animationTrackBar.Value = (int)currentFrameUpDown.Value;
         }
 
         private void playButton_Click(object sender, EventArgs e)
@@ -822,36 +852,22 @@ namespace Smash_Forge
 
         private void ResetCamera_Click(object sender, EventArgs e)
         {
-            // Frame the selected NUD or mesh based on the bounding spheres. Frame the NUD if nothing is selected. 
             FrameSelectionAndSort();
+            glViewport.Invalidate();
         }
 
         public void FrameSelectionAndSort()
         {
-            if (meshList.filesTreeView.SelectedNode is NUD.Mesh)
-            {
-                FrameSelectedMesh();
-            }
-            else if (meshList.filesTreeView.SelectedNode is NUD)
-            {
-                FrameSelectedNud();
-            }
-            else if (meshList.filesTreeView.SelectedNode is NUD.Polygon)
-            {
-                FrameSelectedPolygon();
-            }
+            // Frame the selected NUD or mesh based on the bounding spheres. 
+            // Frame the model container if nothing is selected. 
+            if (meshList.filesTreeView.SelectedNode is IBoundableModel)
+                FrameBoundableModel((IBoundableModel)meshList.filesTreeView.SelectedNode);
             else if (meshList.filesTreeView.SelectedNode is ModelContainer)
-            {
                 FrameSelectedModelContainer();
-            }
             else if (meshList.filesTreeView.SelectedNode is BFRES)
-            {
                 FrameSelectedBfres();
-            }
             else
-            {
                 FrameAllModelContainers();
-            }
 
             // Depth sorting. 
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
@@ -892,64 +908,28 @@ namespace Smash_Forge
 
             camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
             camera.UpdateFromMouse();
-            UpdateBoneSizeRelativeToViewport();
         }
 
-        private void FrameSelectedMesh()
+        private void FrameBoundableModel(IBoundableModel model)
         {
-            NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode;
-            float[] boundingSphere = mesh.boundingSphere;
-            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
-            camera.UpdateFromMouse();
-            UpdateBoneSizeRelativeToViewport();
-        }
-
-        private void FrameSelectedNud()
-        {
-            NUD nud = (NUD)meshList.filesTreeView.SelectedNode;
-            float[] boundingSphere = nud.boundingSphere;
-            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
-            camera.UpdateFromMouse();
-            UpdateBoneSizeRelativeToViewport();
+            if (model != null)
+                camera.FrameBoundingSphere(model.BoundingSphere.Xyz, model.BoundingSphere.W);
         }
 
         private void FrameSelectedBfres()
         {
-            Console.WriteLine("BFRES selected");
             BFRES bfres = (BFRES)meshList.filesTreeView.SelectedNode;
-
-            List<float> X = new List<float>();
-            List<float> Y = new List<float>();
-            List<float> Z = new List<float>();
-            List<float> Radius = new List<float>();
-
+            var spheres = new List<Vector4>();
             foreach (BFRES.FMDL_Model mdl in bfres.models)
             {
                 foreach (BFRES.Mesh msh in mdl.poly)
                 {
-                    X.Add(msh.boundingBoxes[0].Center.X);
-                    Y.Add(msh.boundingBoxes[0].Center.Y);
-                    Z.Add(msh.boundingBoxes[0].Center.Z);
-
-                    Radius.Add(msh.radius[0]);
+                    spheres.Add(msh.BoundingSphere);
                 }
             }
 
-            X.Sort();
-            Y.Sort();
-            Z.Sort();
-            Radius.Sort();
-
-            camera.FrameBoundingSphere(new Vector3(X[X.Count - 1], Y[Y.Count - 1], Z[Z.Count - 1]), Radius[Radius.Count - 1]);
-        }
-
-        private void FrameSelectedPolygon()
-        {
-            NUD.Mesh mesh = (NUD.Mesh)meshList.filesTreeView.SelectedNode.Parent;
-            float[] boundingSphere = mesh.boundingSphere;
-            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
-            camera.UpdateFromMouse();
-            UpdateBoneSizeRelativeToViewport();
+            Vector4 result = BoundingSphereGenerator.GenerateBoundingSphere(spheres);
+            camera.FrameBoundingSphere(result.Xyz, result.W);
         }
 
         private void FrameAllModelContainers(float maxBoundingRadius = 400)
@@ -957,7 +937,7 @@ namespace Smash_Forge
             bool hasModelContainers = false;
 
             // Find the max NUD bounding box for all models. 
-            float[] boundingSphere = new float[] { 0, 0, 0, 0 };
+            var spheres = new List<Vector4>();
 
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
@@ -967,24 +947,12 @@ namespace Smash_Forge
                     ModelContainer modelContainer = (ModelContainer)node;
 
                     // Use the main bounding box for the NUD.
-                    if ((modelContainer.NUD.boundingSphere[3] > boundingSphere[3]) && (modelContainer.NUD.boundingSphere[3] < maxBoundingRadius))
-                    {
-                        boundingSphere[0] = modelContainer.NUD.boundingSphere[0];
-                        boundingSphere[1] = modelContainer.NUD.boundingSphere[1];
-                        boundingSphere[2] = modelContainer.NUD.boundingSphere[2];
-                        boundingSphere[3] = modelContainer.NUD.boundingSphere[3];
-                    }
+                    spheres.Add(modelContainer.NUD.BoundingSphere);
 
                     // It's possible that only the individual meshes have bounding boxes.
                     foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
                     {
-                        if (mesh.boundingSphere[3] > boundingSphere[3] && mesh.boundingSphere[3] < maxBoundingRadius)
-                        {
-                            boundingSphere[0] = mesh.boundingSphere[0];
-                            boundingSphere[1] = mesh.boundingSphere[1];
-                            boundingSphere[2] = mesh.boundingSphere[2];
-                            boundingSphere[3] = mesh.boundingSphere[3];
-                        }
+                        spheres.Add(mesh.BoundingSphere);
                     }
 
                     if (modelContainer.Bfres != null)
@@ -993,28 +961,18 @@ namespace Smash_Forge
                         {
                             foreach (var m in mdl.poly)
                             {
-                                m.GenerateBoundingBoxes();
-
-                                foreach (var box in m.boundingBoxes)
-                                {
-                                    // HACK: This sort of works.
-                                    float maxExtent = Math.Max(Math.Max(box.Extent.X, box.Extent.Y), box.Extent.Z);
-                                    if (maxExtent > boundingSphere[3])
-                                    {
-                                        boundingSphere[0] = box.Center.X;
-                                        boundingSphere[1] = box.Center.Y;
-                                        boundingSphere[2] = box.Center.Z;
-                                        boundingSphere[3] = maxExtent;
-                                    }
-                                }
+                                m.GenerateBoundingSpheres();
+                                spheres.Add(m.BoundingSphere);
                             }
                         }
                     }
                 }
             }
 
+            Vector4 result = BoundingSphereGenerator.GenerateBoundingSphere(spheres);
+
             if (hasModelContainers)
-                camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 0);
+                camera.FrameBoundingSphere(result.Xyz, result.W, 0);
             else
                 camera.ResetToDefaultPosition();
         }
@@ -1123,15 +1081,6 @@ namespace Smash_Forge
             cameraPosForm.ShowDialog();
         }
 
-        private void glViewport_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            if (currentMode != Mode.Selection && !freezeCamera)
-            {
-                camera.UpdateFromMouse();
-                UpdateBoneSizeRelativeToViewport();
-            }
-        }
-
         #region Controls
 
         public void HideAll()
@@ -1185,12 +1134,12 @@ namespace Smash_Forge
 
         public void BatchRenderNudModels()
         {
-            BatchRenderModels("*model.nud", OpenNud);
+            BatchRenderModels("*model.nud", BatchRendering.OpenNud);
         }
 
         public void BatchRenderMeleeDatModels()
         {
-            BatchRenderModels("*.dat", OpenMeleeDat);
+            BatchRenderModels("*.dat", BatchRendering.OpenMeleeDat);
         }
 
         public void BatchRenderBotwBfresModels()
@@ -1213,7 +1162,7 @@ namespace Smash_Forge
 
                                 try
                                 {
-                                    OpenBfres(file);
+                                    BatchRendering.OpenBfres(file, this);
                                 }
                                 catch (Exception e)
                                 {
@@ -1233,7 +1182,7 @@ namespace Smash_Forge
             }
         }
 
-        private void BatchRenderModels(string searchPattern, Action<string> openFiles)
+        private void BatchRenderModels(string searchPattern, Action<string, ModelViewport> openFiles)
         {
             // Ignore warnings.
             Runtime.checkNudTexIdOnOpen = false;
@@ -1253,7 +1202,7 @@ namespace Smash_Forge
                             {
                                 try
                                 {
-                                    openFiles(file);
+                                    openFiles(file, this);
                                 }
                                 catch (Exception e)
                                 {
@@ -1275,54 +1224,6 @@ namespace Smash_Forge
             }
 
             Runtime.checkNudTexIdOnOpen = true;
-        }
-
-        private void OpenNud(string file)
-        {
-            MainForm.Instance.OpenNud(file, "", this);
-        }
-
-        private void OpenMeleeDat(string file)
-        {
-            byte[] data = File.ReadAllBytes(file);
-            MainForm.Instance.OpenMeleeDat(data, file, "", this);
-        }
-
-        private void OpenBfres(string file)
-        {
-            MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(file), file, "", this);
-
-            string nameNoExtension = Path.GetFileNameWithoutExtension(file);
-            string textureFileName = Path.GetDirectoryName(file) + "\\" + String.Format("{0}.Tex1.sbfres", nameNoExtension);
-
-            if (File.Exists(textureFileName))
-                MainForm.Instance.OpenBfres(MainForm.GetUncompressedSzsSbfresData(textureFileName), textureFileName, "", this);
-        }
-
-        private void BatchRenderStages()
-        {
-            // Get the source model folder and then the output folder. 
-            using (var sourceFolderSelect = new FolderSelectDialog())
-            {
-                sourceFolderSelect.Title = "Stages Directory";
-                if (sourceFolderSelect.ShowDialog() == DialogResult.OK)
-                {
-                    using (var outputFolderSelect = new FolderSelectDialog())
-                    {
-                        outputFolderSelect.Title = "Output Renders Directory";
-                        if (outputFolderSelect.ShowDialog() == DialogResult.OK)
-                        {
-                            foreach (string stageFolder in Directory.GetDirectories(sourceFolderSelect.SelectedPath))
-                            {
-                                MainForm.Instance.OpenStageFolder(stageFolder, this);
-                                BatchRenderViewportToFile(stageFolder, sourceFolderSelect.SelectedPath, outputFolderSelect.SelectedPath);
-                                MainForm.Instance.ClearWorkSpace(false);
-                                ClearModelContainers();
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         private void BatchRenderViewportToFile(string fileName, string sourcePath, string outputPath)
@@ -1377,14 +1278,14 @@ namespace Smash_Forge
 
             ScaleFactor = settings.ScaleFactor;
 
-            int cFrame = (int)currentFrame.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
+            int cFrame = (int)currentFrameUpDown.Value; //Get current frame so at the end of capturing all frames of the animation it goes back to this frame
                                                   //Disable controls
             this.Enabled = false;
 
             for (int i = settings.StartFrame; i <= settings.EndFrame + 1; i++)
             {
-                currentFrame.Value = i;
-                currentFrame.Refresh(); //Refresh the frame counter control
+                currentFrameUpDown.Value = i;
+                currentFrameUpDown.Refresh(); //Refresh the frame counter control
                 Render(null, null, glViewport.Width, glViewport.Height);
 
                 if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
@@ -1416,12 +1317,14 @@ namespace Smash_Forge
             //Enable controls
             this.Enabled = true;
 
-            currentFrame.Value = cFrame;
+            currentFrameUpDown.Value = cFrame;
         }
 
         private void ModelViewport_FormClosed(object sender, FormClosedEventArgs e)
         {
+            isOpen = false;
             ClearModelContainers();
+            glViewport.Dispose();
         }
 
         public void ClearModelContainers()
@@ -1452,24 +1355,27 @@ namespace Smash_Forge
 
         private void beginButton_Click(object sender, EventArgs e)
         {
-            currentFrame.Value = 0;
+            currentFrameUpDown.Value = 0;
         }
 
         private void endButton_Click(object sender, EventArgs e)
         {
-            currentFrame.Value = totalFrame.Value;
+            currentFrameUpDown.Value = totalFrame.Value;
         }
 
         private void nextButton_Click(object sender, EventArgs e)
         {
-            if (currentFrame.Value != totalFrame.Value)
-                currentFrame.Value++;
+            // Loop the animation.
+            if (currentFrameUpDown.Value == totalFrame.Value)
+                currentFrameUpDown.Value = 0;
+            else
+                currentFrameUpDown.Value++;
         }
 
         private void prevButton_Click(object sender, EventArgs e)
         {
-            if (currentFrame.Value != 0)
-                currentFrame.Value--;
+            if (currentFrameUpDown.Value != 0)
+                currentFrameUpDown.Value--;
         }
 
         private void viewStripButtonsBone(object sender, EventArgs e)
@@ -1487,11 +1393,6 @@ namespace Smash_Forge
         }
 
         #endregion
-
-        private void ModelViewport_FormClosing(object sender, FormClosingEventArgs e)
-        {
-
-        }
 
         private void toolStripSaveRenderAlphaButton_Click(object sender, EventArgs e)
         {
@@ -1628,14 +1529,74 @@ namespace Smash_Forge
             }
         }
 
+        private bool GetMouseYZPlaneProjection(out Vector3 projection)
+        {
+            projection = new Vector3(0, 0, 0);
+            try
+            {
+                Matrix4 mat = camera.RotationMatrix; mat.Transpose();
+                Vector3 pCamera = Vector3.TransformVector(
+                    new Vector3(-camera.Position.X, camera.Position.Y, -camera.Position.Z), mat);
+                Vector3 pMouse = new Ray(camera, glViewport).p1;
+
+                Vector3 direction = pMouse - pCamera;
+                direction.Normalize();
+                float dist = -pMouse.X / direction.X;
+                if (dist <= 0)
+                    return false;
+                projection = pMouse + dist * direction;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private void glViewport_MouseMove(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (currentMode != Mode.Selection && !freezeCamera)
+            {
+                camera.UpdateFromMouse();
+            }
+
+            if (atkdEditor != null && atkdEditor.isRendered)
+            {
+                Vector3 projection;
+                if (GetMouseYZPlaneProjection(out projection))
+                {
+                    if (atkdRectClicked)
+                        atkdEditor.ViewportEvent_SetSelectedXY(projection.Z, projection.Y);
+                    else
+                        atkdEditor.ViewportEvent_SetSelection(projection.Z, projection.Y);
+                }
+            }
+        }
+
         private void glViewport_Click(object sender, EventArgs e)
         {
+            // Prevent render updates from being suspended when switching back from another window.
+            renderThreadIsUpdating = true;
+        }
 
+        private void glViewport_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (!(Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
+                return;
+            if (atkdEditor != null && atkdEditor.isRendered && atkdEditor.selectedPart > 0)
+            {
+                atkdRectClicked = true;
+                currentMode = Mode.Selection;
+            }
         }
 
         private void glViewport_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            //checkSelect();
+            if (atkdRectClicked)
+            {
+                atkdRectClicked = false;
+                currentMode = Mode.Normal;
+            }
         }
 
         private void weightToolButton_Click(object sender, EventArgs e)
@@ -1706,14 +1667,13 @@ namespace Smash_Forge
              && !transformTool.hit)
             {
                 camera.UpdateFromMouse();
-                UpdateBoneSizeRelativeToViewport();
             }
 
             if (cameraPosForm != null)
                 cameraPosForm.ApplyCameraAnimation(camera, animationTrackBar.Value);
 
             if (Runtime.renderFloor)
-                ShapeDrawing.DrawFloor(camera.MvpMatrix);
+                FloorDrawing.DrawFloor(camera.MvpMatrix);
 
             // Depth testing isn't set by materials.
             SetDepthTesting();
@@ -1735,13 +1695,13 @@ namespace Smash_Forge
                 // Draw the texture to the screen into a smaller FBO.
                 imageBrightHdrFbo.Bind();
                 GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
-                ScreenDrawing.DrawTexturedQuad(colorHdrFbo.ColorAttachments[1], imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
+                ScreenDrawing.DrawTexturedQuad((Texture)colorHdrFbo.Attachments[1], imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, width, height);
 
-                ScreenDrawing.DrawScreenQuadPostProcessing(colorHdrFbo.ColorAttachments[0], imageBrightHdrFbo.ColorAttachments[0], screenVao);
+                ScreenDrawing.DrawScreenQuadPostProcessing((Texture)colorHdrFbo.Attachments[0], (Texture)imageBrightHdrFbo.Attachments[0], screenVao);
             }
 
             FixedFunctionRendering();
@@ -1797,8 +1757,8 @@ namespace Smash_Forge
 
         private void DrawViewportBackground()
         {
-            Vector3 topColor = ColorUtils.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
-            Vector3 bottomColor = ColorUtils.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
+            Vector3 topColor = ColorUtils.GetVector3(Runtime.backgroundGradientTop);
+            Vector3 bottomColor = ColorUtils.GetVector3(Runtime.backgroundGradientBottom);
 
             // Only use the top color for solid color rendering.
             if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)
@@ -1856,6 +1816,14 @@ namespace Smash_Forge
 
             if (acmdScript != null && draw.Count > 0 && (draw[0] is ModelContainer))
                 acmdScript.Render(((ModelContainer)draw[0]).GetVBN());
+
+            // ATKD Render
+            if (atkdEditor != null)
+            {
+                atkdEditor.isRendered = false;
+                if (Runtime.LoadAndRenderATKD && draw.Count > 0 && (draw[0] is ModelContainer))
+                    atkdEditor.Viewport_Render(((ModelContainer)draw[0]).GetVBN());
+            }
 
             if (ViewComboBox.SelectedIndex == 2)
             {
@@ -1963,7 +1931,7 @@ namespace Smash_Forge
                     }
 
                     // update or add the key frame
-                    ThisNode.SetKeyFromBone((float)currentFrame.Value, transformTool.b);
+                    ThisNode.SetKeyFromBone((float)currentFrameUpDown.Value, transformTool.b);
                 }
             }
         }
@@ -2226,6 +2194,10 @@ namespace Smash_Forge
             {
                 screenVao = ScreenDrawing.CreateScreenTriangle();
 
+                // Use the viewport dimensions by default.
+                fboRenderWidth = glViewport.Width;
+                fboRenderHeight = glViewport.Height;
+
                 SetUpBuffersAndTextures();
 
                 if (Runtime.enableOpenTKDebugOutput)
@@ -2241,6 +2213,17 @@ namespace Smash_Forge
             int spacing = 8;
             glViewport.Width = viewportPanel.Width - spacing;
             glViewport.Height = viewportPanel.Height - spacing;
+        }
+
+        private void glViewport_Enter(object sender, EventArgs e)
+        {
+            // Only render when the control is focused, so the GUI remains responsive.
+            renderThreadIsUpdating = true;
+        }
+
+        private void glViewport_Leave(object sender, EventArgs e)
+        {
+            renderThreadIsUpdating = false;
         }
 
         private void RefreshGlTextures()

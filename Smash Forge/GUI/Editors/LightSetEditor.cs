@@ -258,20 +258,17 @@ namespace Smash_Forge.GUI.Editors
 
         private void UpdateStageButtonColor()
         {
-            int red = ColorUtils.FloatToIntClamp(selectedStageLight.diffuseColor.R);
-            int green = ColorUtils.FloatToIntClamp(selectedStageLight.diffuseColor.G);
-            int blue = ColorUtils.FloatToIntClamp(selectedStageLight.diffuseColor.B);
-            Color stageColor = Color.FromArgb(255, red, green, blue);
-            stageDifColorButton.BackColor = stageColor;
+            stageDifColorButton.BackColor = GetColor(selectedStageLight.diffuseColor);
         }
 
         private void UpdateFogButtonColor()
         {
-            int red = ColorUtils.FloatToIntClamp(selectedFogColor.R);
-            int green = ColorUtils.FloatToIntClamp(selectedFogColor.G);
-            int blue = ColorUtils.FloatToIntClamp(selectedFogColor.B);
-            Color fogColor = Color.FromArgb(255, red, green, blue);
-            fogColorButton.BackColor = fogColor;
+            fogColorButton.BackColor = GetColor(selectedFogColor);
+        }
+
+        private Color GetColor(LightColor color)
+        {
+            return ColorUtils.GetColor(color.R, color.G, color.B);
         }
 
         private void RenderCharacterLightGradient(LightColor topColor, LightColor bottomColor)

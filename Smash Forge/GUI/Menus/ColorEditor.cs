@@ -146,7 +146,7 @@ namespace Smash_Forge.GUI.Menus
 
         private void UpdateValuesFromTemp()
         {
-            ColorUtils.ColorTemp2RGB(colorTemp, out R, out G, out B);
+            ColorUtils.GetRgb(colorTemp, out R, out G, out B);
             UpdateValuesFromRgb();
             UpdateColorTrackBars();
             UpdateButtonColor();
@@ -154,7 +154,7 @@ namespace Smash_Forge.GUI.Menus
 
         private void UpdateButtonColor()
         {
-            colorButton.BackColor = Color.FromArgb(255, ColorUtils.FloatToIntClamp(R), ColorUtils.FloatToIntClamp(G), ColorUtils.FloatToIntClamp(B));
+            colorButton.BackColor = ColorUtils.GetColor(R, G, B);
         }
 
         private void UpdateColorTrackBars()

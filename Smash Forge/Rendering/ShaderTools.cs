@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using SFGraphics.Tools;
+using SFGraphics.GlUtils;
 
 namespace Smash_Forge.Rendering
 {
@@ -255,7 +255,7 @@ namespace Smash_Forge.Rendering
 
         public static void SystemColorVector3Uniform(Shader shader, System.Drawing.Color color, string name)
         {
-            shader.SetVector3(name, ColorUtils.Vector4FromColor(color).Xyz);
+            shader.SetVector3(name, ColorUtils.GetVector3(color));
         }
 
         public static void SaveErrorLogs()
