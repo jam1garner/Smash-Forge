@@ -96,6 +96,22 @@
             this.label14 = new System.Windows.Forms.Label();
             this.topValUpDown = new System.Windows.Forms.NumericUpDown();
             this.rightValUpDown = new System.Windows.Forms.NumericUpDown();
+            this.enemyGeneratorGroup = new System.Windows.Forms.GroupBox();
+            this.label60 = new System.Windows.Forms.Label();
+            this.enemyGeneratorIdUpDown = new System.Windows.Forms.NumericUpDown();
+            this.label61 = new System.Windows.Forms.Label();
+            this.enemyGeneratorUnknown1UpDown = new System.Windows.Forms.NumericUpDown();
+            this.enemyGeneratorUnknown2UpDown = new System.Windows.Forms.NumericUpDown();
+            this.label62 = new System.Windows.Forms.Label();
+            this.enemyGeneratorSpawnPlusButton = new System.Windows.Forms.Button();
+            this.enemyGeneratorSpawnMinusButton = new System.Windows.Forms.Button();
+            this.label63 = new System.Windows.Forms.Label();
+            this.enemyGeneratorZonePlusButton = new System.Windows.Forms.Button();
+            this.enemyGeneratorZoneMinusButton = new System.Windows.Forms.Button();
+            this.enemyGeneratorSpawnTreeView = new System.Windows.Forms.TreeView();
+            this.enemyGeneratorZoneTreeView = new System.Windows.Forms.TreeView();
+            this.label64 = new System.Windows.Forms.Label();
+            this.enemyGeneratorSubIdUpDown = new System.Windows.Forms.NumericUpDown();
             this.itemSpawnerGroup = new System.Windows.Forms.GroupBox();
             this.itemSpawnVertTreeView = new System.Windows.Forms.TreeView();
             this.label21 = new System.Windows.Forms.Label();
@@ -109,15 +125,20 @@
             this.label18 = new System.Windows.Forms.Label();
             this.removeItemSpawnSectionButton = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
+            this.generalShapeGroup = new System.Windows.Forms.GroupBox();
+            this.label58 = new System.Windows.Forms.Label();
+            this.generalShapeIdUpDown = new System.Windows.Forms.NumericUpDown();
             this.shapeGroup = new System.Windows.Forms.GroupBox();
+            this.label59 = new System.Windows.Forms.Label();
+            this.shapeTypeComboBox = new System.Windows.Forms.ComboBox();
             this.label24 = new System.Windows.Forms.Label();
+            this.shapeValue1UpDown = new System.Windows.Forms.NumericUpDown();
             this.label25 = new System.Windows.Forms.Label();
-            this.rectLowerY = new System.Windows.Forms.NumericUpDown();
-            this.rectLowerX = new System.Windows.Forms.NumericUpDown();
+            this.shapeValue2UpDown = new System.Windows.Forms.NumericUpDown();
             this.label26 = new System.Windows.Forms.Label();
+            this.shapeValue3UpDown = new System.Windows.Forms.NumericUpDown();
             this.label27 = new System.Windows.Forms.Label();
-            this.rectUpperY = new System.Windows.Forms.NumericUpDown();
-            this.rectUpperX = new System.Windows.Forms.NumericUpDown();
+            this.shapeValue4UpDown = new System.Windows.Forms.NumericUpDown();
             this.treeViewPath = new System.Windows.Forms.TreeView();
             this.label28 = new System.Windows.Forms.Label();
             this.button8 = new System.Windows.Forms.Button();
@@ -216,14 +237,21 @@
             ((System.ComponentModel.ISupportInitialize)(this.leftVal)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.topValUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.rightValUpDown)).BeginInit();
+            this.enemyGeneratorGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.enemyGeneratorIdUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.enemyGeneratorUnknown1UpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.enemyGeneratorUnknown2UpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.enemyGeneratorSubIdUpDown)).BeginInit();
             this.itemSpawnerGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
+            this.generalShapeGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.generalShapeIdUpDown)).BeginInit();
             this.shapeGroup.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.rectLowerY)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rectLowerX)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rectUpperY)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rectUpperX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.shapeValue1UpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.shapeValue2UpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.shapeValue3UpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.shapeValue4UpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeY)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeX)).BeginInit();
             this.damageShapeGroup.SuspendLayout();
@@ -263,7 +291,9 @@
             this.flowLayoutPanel1.Controls.Add(this.point3dGroup);
             this.flowLayoutPanel1.Controls.Add(this.point2dGroup);
             this.flowLayoutPanel1.Controls.Add(this.boundsGroup);
+            this.flowLayoutPanel1.Controls.Add(this.enemyGeneratorGroup);
             this.flowLayoutPanel1.Controls.Add(this.itemSpawnerGroup);
+            this.flowLayoutPanel1.Controls.Add(this.generalShapeGroup);
             this.flowLayoutPanel1.Controls.Add(this.shapeGroup);
             this.flowLayoutPanel1.Controls.Add(this.damageShapeGroup);
             this.flowLayoutPanel1.Controls.Add(this.meleeCollisionGroup);
@@ -1220,6 +1250,199 @@
             this.rightValUpDown.TabIndex = 32;
             this.rightValUpDown.ValueChanged += new System.EventHandler(this.boundsChanged);
             // 
+            // enemyGeneratorGroup
+            // 
+            this.enemyGeneratorGroup.Controls.Add(this.label60);
+            this.enemyGeneratorGroup.Controls.Add(this.enemyGeneratorIdUpDown);
+            this.enemyGeneratorGroup.Controls.Add(this.label61);
+            this.enemyGeneratorGroup.Controls.Add(this.enemyGeneratorUnknown1UpDown);
+            this.enemyGeneratorGroup.Controls.Add(this.enemyGeneratorUnknown2UpDown);
+            this.enemyGeneratorGroup.Controls.Add(this.label62);
+            this.enemyGeneratorGroup.Controls.Add(this.enemyGeneratorSpawnPlusButton);
+            this.enemyGeneratorGroup.Controls.Add(this.enemyGeneratorSpawnMinusButton);
+            this.enemyGeneratorGroup.Controls.Add(this.label63);
+            this.enemyGeneratorGroup.Controls.Add(this.enemyGeneratorZonePlusButton);
+            this.enemyGeneratorGroup.Controls.Add(this.enemyGeneratorZoneMinusButton);
+            this.enemyGeneratorGroup.Controls.Add(this.enemyGeneratorSpawnTreeView);
+            this.enemyGeneratorGroup.Controls.Add(this.enemyGeneratorZoneTreeView);
+            this.enemyGeneratorGroup.Controls.Add(this.label64);
+            this.enemyGeneratorGroup.Controls.Add(this.enemyGeneratorSubIdUpDown);
+            this.enemyGeneratorGroup.Location = new System.Drawing.Point(2, 1228);
+            this.enemyGeneratorGroup.Margin = new System.Windows.Forms.Padding(2);
+            this.enemyGeneratorGroup.Name = "enemyGeneratorGroup";
+            this.enemyGeneratorGroup.Padding = new System.Windows.Forms.Padding(2);
+            this.enemyGeneratorGroup.Size = new System.Drawing.Size(276, 240);
+            this.enemyGeneratorGroup.TabIndex = 38;
+            this.enemyGeneratorGroup.TabStop = false;
+            this.enemyGeneratorGroup.Text = "Enemy Generator";
+            this.enemyGeneratorGroup.Visible = false;
+            // 
+            // label60
+            // 
+            this.label60.AutoSize = true;
+            this.label60.Location = new System.Drawing.Point(6, 22);
+            this.label60.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label60.Name = "label60";
+            this.label60.Size = new System.Drawing.Size(17, 13);
+            this.label60.TabIndex = 34;
+            this.label60.Text = "ID";
+            // 
+            // enemyGeneratorIdUpDown
+            // 
+            this.enemyGeneratorIdUpDown.DecimalPlaces = 0;
+            this.enemyGeneratorIdUpDown.Location = new System.Drawing.Point(32, 20);
+            this.enemyGeneratorIdUpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.enemyGeneratorIdUpDown.Maximum = 2147483647;
+            this.enemyGeneratorIdUpDown.Minimum = -2147483648;
+            this.enemyGeneratorIdUpDown.Name = "enemyGeneratorIdUpDown";
+            this.enemyGeneratorIdUpDown.Size = new System.Drawing.Size(86, 20);
+            this.enemyGeneratorIdUpDown.TabIndex = 34;
+            this.enemyGeneratorIdUpDown.Value = 0;
+            this.enemyGeneratorIdUpDown.ValueChanged += new System.EventHandler(this.enemyGenerator_ValueChanged);
+            // 
+            // label61
+            // 
+            this.label61.AutoSize = true;
+            this.label61.Location = new System.Drawing.Point(6, 49);
+            this.label61.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label61.Name = "label61";
+            this.label61.Size = new System.Drawing.Size(17, 13);
+            this.label61.TabIndex = 34;
+            this.label61.Text = "Unknowns";
+            // 
+            // enemyGeneratorUnknown1UpDown
+            // 
+            this.enemyGeneratorUnknown1UpDown.DecimalPlaces = 0;
+            this.enemyGeneratorUnknown1UpDown.Location = new System.Drawing.Point(68, 47);
+            this.enemyGeneratorUnknown1UpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.enemyGeneratorUnknown1UpDown.Maximum = 2147483647;
+            this.enemyGeneratorUnknown1UpDown.Minimum = -2147483648;
+            this.enemyGeneratorUnknown1UpDown.Name = "enemyGeneratorUnknown1UpDown";
+            this.enemyGeneratorUnknown1UpDown.Size = new System.Drawing.Size(86, 20);
+            this.enemyGeneratorUnknown1UpDown.TabIndex = 34;
+            this.enemyGeneratorUnknown1UpDown.Value = 0;
+            this.enemyGeneratorUnknown1UpDown.ValueChanged += new System.EventHandler(this.enemyGenerator_ValueChanged);
+            // 
+            // enemyGeneratorUnknown2UpDown
+            // 
+            this.enemyGeneratorUnknown2UpDown.DecimalPlaces = 0;
+            this.enemyGeneratorUnknown2UpDown.Location = new System.Drawing.Point(156, 47);
+            this.enemyGeneratorUnknown2UpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.enemyGeneratorUnknown2UpDown.Maximum = 2147483647;
+            this.enemyGeneratorUnknown2UpDown.Minimum = -2147483648;
+            this.enemyGeneratorUnknown2UpDown.Name = "enemyGeneratorUnknown2UpDown";
+            this.enemyGeneratorUnknown2UpDown.Size = new System.Drawing.Size(86, 20);
+            this.enemyGeneratorUnknown2UpDown.TabIndex = 34;
+            this.enemyGeneratorUnknown2UpDown.Value = 0;
+            this.enemyGeneratorUnknown2UpDown.ValueChanged += new System.EventHandler(this.enemyGenerator_ValueChanged);
+            // 
+            // label62
+            // 
+            this.label62.AutoSize = true;
+            this.label62.Location = new System.Drawing.Point(6, 83);
+            this.label62.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label62.Name = "label62";
+            this.label62.Size = new System.Drawing.Size(17, 13);
+            this.label62.TabIndex = 34;
+            this.label62.Text = "Spawns";
+            // 
+            // enemyGeneratorSpawnPlusButton
+            // 
+            this.enemyGeneratorSpawnPlusButton.Location = new System.Drawing.Point(60, 80);
+            this.enemyGeneratorSpawnPlusButton.Margin = new System.Windows.Forms.Padding(2);
+            this.enemyGeneratorSpawnPlusButton.Name = "enemyGeneratorSpawnPlusButton";
+            this.enemyGeneratorSpawnPlusButton.Size = new System.Drawing.Size(37, 18);
+            this.enemyGeneratorSpawnPlusButton.TabIndex = 43;
+            this.enemyGeneratorSpawnPlusButton.Text = "+";
+            this.enemyGeneratorSpawnPlusButton.UseVisualStyleBackColor = true;
+            this.enemyGeneratorSpawnPlusButton.Click += new System.EventHandler(this.enemyGeneratorSpawnPlusButton_Click);
+            // 
+            // enemyGeneratorSpawnMinusButton
+            // 
+            this.enemyGeneratorSpawnMinusButton.Location = new System.Drawing.Point(97, 80);
+            this.enemyGeneratorSpawnMinusButton.Margin = new System.Windows.Forms.Padding(2);
+            this.enemyGeneratorSpawnMinusButton.Name = "enemyGeneratorSpawnMinusButton";
+            this.enemyGeneratorSpawnMinusButton.Size = new System.Drawing.Size(37, 18);
+            this.enemyGeneratorSpawnMinusButton.TabIndex = 43;
+            this.enemyGeneratorSpawnMinusButton.Text = "-";
+            this.enemyGeneratorSpawnMinusButton.UseVisualStyleBackColor = true;
+            this.enemyGeneratorSpawnMinusButton.Click += new System.EventHandler(this.enemyGeneratorSpawnMinusButton_Click);
+            // 
+            // label63
+            // 
+            this.label63.AutoSize = true;
+            this.label63.Location = new System.Drawing.Point(144, 83);
+            this.label63.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label63.Name = "label63";
+            this.label63.Size = new System.Drawing.Size(17, 13);
+            this.label63.TabIndex = 34;
+            this.label63.Text = "Zones";
+            // 
+            // enemyGeneratorZonePlusButton
+            // 
+            this.enemyGeneratorZonePlusButton.Location = new System.Drawing.Point(198, 80);
+            this.enemyGeneratorZonePlusButton.Margin = new System.Windows.Forms.Padding(2);
+            this.enemyGeneratorZonePlusButton.Name = "enemyGeneratorZonePlusButton";
+            this.enemyGeneratorZonePlusButton.Size = new System.Drawing.Size(37, 18);
+            this.enemyGeneratorZonePlusButton.TabIndex = 43;
+            this.enemyGeneratorZonePlusButton.Text = "+";
+            this.enemyGeneratorZonePlusButton.UseVisualStyleBackColor = true;
+            this.enemyGeneratorZonePlusButton.Click += new System.EventHandler(this.enemyGeneratorZonePlusButton_Click);
+            // 
+            // enemyGeneratorZoneMinusButton
+            // 
+            this.enemyGeneratorZoneMinusButton.Location = new System.Drawing.Point(235, 80);
+            this.enemyGeneratorZoneMinusButton.Margin = new System.Windows.Forms.Padding(2);
+            this.enemyGeneratorZoneMinusButton.Name = "enemyGeneratorZoneMinusButton";
+            this.enemyGeneratorZoneMinusButton.Size = new System.Drawing.Size(37, 18);
+            this.enemyGeneratorZoneMinusButton.TabIndex = 43;
+            this.enemyGeneratorZoneMinusButton.Text = "-";
+            this.enemyGeneratorZoneMinusButton.UseVisualStyleBackColor = true;
+            this.enemyGeneratorZoneMinusButton.Click += new System.EventHandler(this.enemyGeneratorZoneMinusButton_Click);
+            // 
+            // enemyGeneratorSpawnTreeView
+            // 
+            this.enemyGeneratorSpawnTreeView.HideSelection = false;
+            this.enemyGeneratorSpawnTreeView.Location = new System.Drawing.Point(4, 98);
+            this.enemyGeneratorSpawnTreeView.Margin = new System.Windows.Forms.Padding(2);
+            this.enemyGeneratorSpawnTreeView.Name = "enemyGeneratorSpawnTreeView";
+            this.enemyGeneratorSpawnTreeView.Size = new System.Drawing.Size(130, 103);
+            this.enemyGeneratorSpawnTreeView.TabIndex = 45;
+            this.enemyGeneratorSpawnTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.enemyGeneratorTreeViews_AfterSelect);
+            // 
+            // enemyGeneratorZoneTreeView
+            // 
+            this.enemyGeneratorZoneTreeView.HideSelection = false;
+            this.enemyGeneratorZoneTreeView.Location = new System.Drawing.Point(142, 98);
+            this.enemyGeneratorZoneTreeView.Margin = new System.Windows.Forms.Padding(2);
+            this.enemyGeneratorZoneTreeView.Name = "enemyGeneratorZoneTreeView";
+            this.enemyGeneratorZoneTreeView.Size = new System.Drawing.Size(130, 103);
+            this.enemyGeneratorZoneTreeView.TabIndex = 45;
+            this.enemyGeneratorZoneTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.enemyGeneratorTreeViews_AfterSelect);
+            // 
+            // label64
+            // 
+            this.label64.AutoSize = true;
+            this.label64.Location = new System.Drawing.Point(70, 209);
+            this.label64.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label64.Name = "label64";
+            this.label64.Size = new System.Drawing.Size(17, 13);
+            this.label64.TabIndex = 34;
+            this.label64.Text = "ID";
+            // 
+            // enemyGeneratorSubIdUpDown
+            // 
+            this.enemyGeneratorSubIdUpDown.DecimalPlaces = 0;
+            this.enemyGeneratorSubIdUpDown.Location = new System.Drawing.Point(125, 207);
+            this.enemyGeneratorSubIdUpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.enemyGeneratorSubIdUpDown.Maximum = 2147483647;
+            this.enemyGeneratorSubIdUpDown.Minimum = -2147483648;
+            this.enemyGeneratorSubIdUpDown.Name = "enemyGeneratorSubIdUpDown";
+            this.enemyGeneratorSubIdUpDown.Size = new System.Drawing.Size(86, 20);
+            this.enemyGeneratorSubIdUpDown.TabIndex = 34;
+            this.enemyGeneratorSubIdUpDown.Value = 0;
+            this.enemyGeneratorSubIdUpDown.ValueChanged += new System.EventHandler(this.enemyGenerator_ValueChanged);
+            // 
             // itemSpawnerGroup
             // 
             this.itemSpawnerGroup.Controls.Add(this.itemSpawnVertTreeView);
@@ -1388,16 +1611,55 @@
             this.label19.TabIndex = 37;
             this.label19.Text = "X";
             // 
+            // generalShapeGroup
+            // 
+            this.generalShapeGroup.Controls.Add(this.label58);
+            this.generalShapeGroup.Controls.Add(this.generalShapeIdUpDown);
+            this.generalShapeGroup.Location = new System.Drawing.Point(2, 1228);
+            this.generalShapeGroup.Margin = new System.Windows.Forms.Padding(2);
+            this.generalShapeGroup.Name = "generalShapeGroup";
+            this.generalShapeGroup.Padding = new System.Windows.Forms.Padding(2);
+            this.generalShapeGroup.Size = new System.Drawing.Size(276, 50);
+            this.generalShapeGroup.TabIndex = 38;
+            this.generalShapeGroup.TabStop = false;
+            this.generalShapeGroup.Text = "General Shape";
+            this.generalShapeGroup.Visible = false;
+            // 
+            // label58
+            // 
+            this.label58.AutoSize = true;
+            this.label58.Location = new System.Drawing.Point(6, 22);
+            this.label58.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label58.Name = "label58";
+            this.label58.Size = new System.Drawing.Size(17, 13);
+            this.label58.TabIndex = 34;
+            this.label58.Text = "ID";
+            // 
+            // generalShapeIdUpDown
+            // 
+            this.generalShapeIdUpDown.DecimalPlaces = 0;
+            this.generalShapeIdUpDown.Location = new System.Drawing.Point(32, 20);
+            this.generalShapeIdUpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.generalShapeIdUpDown.Maximum = 2147483647;
+            this.generalShapeIdUpDown.Minimum = -2147483648;
+            this.generalShapeIdUpDown.Name = "generalShapeIdUpDown";
+            this.generalShapeIdUpDown.Size = new System.Drawing.Size(86, 20);
+            this.generalShapeIdUpDown.TabIndex = 34;
+            this.generalShapeIdUpDown.Value = 0;
+            this.generalShapeIdUpDown.ValueChanged += new System.EventHandler(this.generalShape_ValueChanged);
+            // 
             // shapeGroup
             // 
+            this.shapeGroup.Controls.Add(this.label59);
+            this.shapeGroup.Controls.Add(this.shapeTypeComboBox);
             this.shapeGroup.Controls.Add(this.label24);
+            this.shapeGroup.Controls.Add(this.shapeValue1UpDown);
             this.shapeGroup.Controls.Add(this.label25);
-            this.shapeGroup.Controls.Add(this.rectLowerY);
-            this.shapeGroup.Controls.Add(this.rectLowerX);
+            this.shapeGroup.Controls.Add(this.shapeValue2UpDown);
             this.shapeGroup.Controls.Add(this.label26);
+            this.shapeGroup.Controls.Add(this.shapeValue3UpDown);
             this.shapeGroup.Controls.Add(this.label27);
-            this.shapeGroup.Controls.Add(this.rectUpperY);
-            this.shapeGroup.Controls.Add(this.rectUpperX);
+            this.shapeGroup.Controls.Add(this.shapeValue4UpDown);
             this.shapeGroup.Controls.Add(this.treeViewPath);
             this.shapeGroup.Controls.Add(this.label28);
             this.shapeGroup.Controls.Add(this.button8);
@@ -1410,146 +1672,166 @@
             this.shapeGroup.Margin = new System.Windows.Forms.Padding(2);
             this.shapeGroup.Name = "shapeGroup";
             this.shapeGroup.Padding = new System.Windows.Forms.Padding(2);
-            this.shapeGroup.Size = new System.Drawing.Size(276, 230);
+            this.shapeGroup.Size = new System.Drawing.Size(276, 259);
             this.shapeGroup.TabIndex = 38;
             this.shapeGroup.TabStop = false;
             this.shapeGroup.Text = "Shape";
             this.shapeGroup.Visible = false;
             // 
+            // label59
+            // 
+            this.label59.AutoSize = true;
+            this.label59.Location = new System.Drawing.Point(6, 22);
+            this.label59.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label59.Name = "label59";
+            this.label59.Size = new System.Drawing.Size(17, 13);
+            this.label59.TabIndex = 34;
+            this.label59.Text = "Type";
+            // 
+            // shapeTypeComboBox
+            // 
+            this.shapeTypeComboBox.FormattingEnabled = true;
+            this.shapeTypeComboBox.Location = new System.Drawing.Point(43, 20);
+            this.shapeTypeComboBox.Margin = new System.Windows.Forms.Padding(2);
+            this.shapeTypeComboBox.Name = "shapeTypeComboBox";
+            this.shapeTypeComboBox.Size = new System.Drawing.Size(92, 21);
+            this.shapeTypeComboBox.TabIndex = 20;
+            this.shapeTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.shapeTypeComboBox_SelectedIndexChanged);
+            // 
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(90, 20);
+            this.label24.Location = new System.Drawing.Point(6, 50);
             this.label24.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(17, 13);
             this.label24.TabIndex = 34;
-            this.label24.Text = "Y-";
+            this.label24.Text = "label24 placeholder";
+            // 
+            // shapeValue1UpDown
+            // 
+            this.shapeValue1UpDown.DecimalPlaces = 4;
+            this.shapeValue1UpDown.Location = new System.Drawing.Point(48, 48);
+            this.shapeValue1UpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.shapeValue1UpDown.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.shapeValue1UpDown.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.shapeValue1UpDown.Name = "shapeValue1UpDown";
+            this.shapeValue1UpDown.Size = new System.Drawing.Size(56, 20);
+            this.shapeValue1UpDown.TabIndex = 36;
+            this.shapeValue1UpDown.ValueChanged += new System.EventHandler(this.shapeValueChanged);
             // 
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(6, 20);
+            this.label25.Location = new System.Drawing.Point(110, 50);
             this.label25.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(17, 13);
             this.label25.TabIndex = 35;
-            this.label25.Text = "X-";
+            this.label25.Text = "label25 placeholder";
             // 
-            // rectLowerY
+            // shapeValue2UpDown
             // 
-            this.rectLowerY.DecimalPlaces = 4;
-            this.rectLowerY.Location = new System.Drawing.Point(112, 18);
-            this.rectLowerY.Margin = new System.Windows.Forms.Padding(2);
-            this.rectLowerY.Maximum = new decimal(new int[] {
+            this.shapeValue2UpDown.DecimalPlaces = 4;
+            this.shapeValue2UpDown.Location = new System.Drawing.Point(152, 48);
+            this.shapeValue2UpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.shapeValue2UpDown.Maximum = new decimal(new int[] {
             1000000000,
             0,
             0,
             0});
-            this.rectLowerY.Minimum = new decimal(new int[] {
+            this.shapeValue2UpDown.Minimum = new decimal(new int[] {
             1000000000,
             0,
             0,
             -2147483648});
-            this.rectLowerY.Name = "rectLowerY";
-            this.rectLowerY.Size = new System.Drawing.Size(56, 20);
-            this.rectLowerY.TabIndex = 37;
-            this.rectLowerY.ValueChanged += new System.EventHandler(this.rectValueChanged);
-            // 
-            // rectLowerX
-            // 
-            this.rectLowerX.DecimalPlaces = 4;
-            this.rectLowerX.Location = new System.Drawing.Point(28, 18);
-            this.rectLowerX.Margin = new System.Windows.Forms.Padding(2);
-            this.rectLowerX.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.rectLowerX.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.rectLowerX.Name = "rectLowerX";
-            this.rectLowerX.Size = new System.Drawing.Size(56, 20);
-            this.rectLowerX.TabIndex = 36;
-            this.rectLowerX.ValueChanged += new System.EventHandler(this.rectValueChanged);
+            this.shapeValue2UpDown.Name = "shapeValue2UpDown";
+            this.shapeValue2UpDown.Size = new System.Drawing.Size(56, 20);
+            this.shapeValue2UpDown.TabIndex = 37;
+            this.shapeValue2UpDown.ValueChanged += new System.EventHandler(this.shapeValueChanged);
             // 
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(90, 40);
+            this.label26.Location = new System.Drawing.Point(6, 72);
             this.label26.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(20, 13);
             this.label26.TabIndex = 32;
-            this.label26.Text = "Y+";
+            this.label26.Text = "label26 placeholder";
+            // 
+            // shapeValue3UpDown
+            // 
+            this.shapeValue3UpDown.DecimalPlaces = 4;
+            this.shapeValue3UpDown.Location = new System.Drawing.Point(48, 70);
+            this.shapeValue3UpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.shapeValue3UpDown.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.shapeValue3UpDown.Minimum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            -2147483648});
+            this.shapeValue3UpDown.Name = "shapeValue3UpDown";
+            this.shapeValue3UpDown.Size = new System.Drawing.Size(56, 20);
+            this.shapeValue3UpDown.TabIndex = 32;
+            this.shapeValue3UpDown.ValueChanged += new System.EventHandler(this.shapeValueChanged);
             // 
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(6, 40);
+            this.label27.Location = new System.Drawing.Point(110, 72);
             this.label27.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(20, 13);
             this.label27.TabIndex = 32;
-            this.label27.Text = "X+";
+            this.label27.Text = "label27 placeholder";
             // 
-            // rectUpperY
+            // shapeValue4UpDown
             // 
-            this.rectUpperY.DecimalPlaces = 4;
-            this.rectUpperY.Location = new System.Drawing.Point(112, 38);
-            this.rectUpperY.Margin = new System.Windows.Forms.Padding(2);
-            this.rectUpperY.Maximum = new decimal(new int[] {
+            this.shapeValue4UpDown.DecimalPlaces = 4;
+            this.shapeValue4UpDown.Location = new System.Drawing.Point(152, 70);
+            this.shapeValue4UpDown.Margin = new System.Windows.Forms.Padding(2);
+            this.shapeValue4UpDown.Maximum = new decimal(new int[] {
             1000000000,
             0,
             0,
             0});
-            this.rectUpperY.Minimum = new decimal(new int[] {
+            this.shapeValue4UpDown.Minimum = new decimal(new int[] {
             1000000000,
             0,
             0,
             -2147483648});
-            this.rectUpperY.Name = "rectUpperY";
-            this.rectUpperY.Size = new System.Drawing.Size(56, 20);
-            this.rectUpperY.TabIndex = 33;
-            this.rectUpperY.ValueChanged += new System.EventHandler(this.rectValueChanged);
-            // 
-            // rectUpperX
-            // 
-            this.rectUpperX.DecimalPlaces = 4;
-            this.rectUpperX.Location = new System.Drawing.Point(28, 38);
-            this.rectUpperX.Margin = new System.Windows.Forms.Padding(2);
-            this.rectUpperX.Maximum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            0});
-            this.rectUpperX.Minimum = new decimal(new int[] {
-            1000000000,
-            0,
-            0,
-            -2147483648});
-            this.rectUpperX.Name = "rectUpperX";
-            this.rectUpperX.Size = new System.Drawing.Size(56, 20);
-            this.rectUpperX.TabIndex = 32;
-            this.rectUpperX.ValueChanged += new System.EventHandler(this.rectValueChanged);
+            this.shapeValue4UpDown.Name = "shapeValue4UpDown";
+            this.shapeValue4UpDown.Size = new System.Drawing.Size(56, 20);
+            this.shapeValue4UpDown.TabIndex = 33;
+            this.shapeValue4UpDown.ValueChanged += new System.EventHandler(this.shapeValueChanged);
             // 
             // treeViewPath
             // 
             this.treeViewPath.HideSelection = false;
-            this.treeViewPath.Location = new System.Drawing.Point(4, 93);
+            this.treeViewPath.Location = new System.Drawing.Point(4, 119);
             this.treeViewPath.Margin = new System.Windows.Forms.Padding(2);
             this.treeViewPath.Name = "treeViewPath";
-            this.treeViewPath.Size = new System.Drawing.Size(180, 103);
+            this.treeViewPath.Size = new System.Drawing.Size(208, 103);
             this.treeViewPath.TabIndex = 45;
             this.treeViewPath.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewPath_AfterSelect);
             // 
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(56, 76);
+            this.label28.Location = new System.Drawing.Point(80, 102);
             this.label28.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(45, 13);
@@ -1558,7 +1840,7 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(105, 73);
+            this.button8.Location = new System.Drawing.Point(133, 99);
             this.button8.Margin = new System.Windows.Forms.Padding(2);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(37, 18);
@@ -1569,7 +1851,7 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(146, 73);
+            this.button9.Location = new System.Drawing.Point(174, 99);
             this.button9.Margin = new System.Windows.Forms.Padding(2);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(37, 18);
@@ -1581,7 +1863,7 @@
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(79, 203);
+            this.label29.Location = new System.Drawing.Point(104, 229);
             this.label29.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(14, 13);
@@ -1591,7 +1873,7 @@
             // label30
             // 
             this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(9, 203);
+            this.label30.Location = new System.Drawing.Point(30, 229);
             this.label30.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(14, 13);
@@ -1600,8 +1882,8 @@
             // 
             // pathNodeY
             // 
-            this.pathNodeY.DecimalPlaces = 3;
-            this.pathNodeY.Location = new System.Drawing.Point(97, 200);
+            this.pathNodeY.DecimalPlaces = 4;
+            this.pathNodeY.Location = new System.Drawing.Point(122, 226);
             this.pathNodeY.Margin = new System.Windows.Forms.Padding(2);
             this.pathNodeY.Maximum = new decimal(new int[] {
             1000000000,
@@ -1614,14 +1896,14 @@
             0,
             -2147483648});
             this.pathNodeY.Name = "pathNodeY";
-            this.pathNodeY.Size = new System.Drawing.Size(50, 20);
+            this.pathNodeY.Size = new System.Drawing.Size(56, 20);
             this.pathNodeY.TabIndex = 41;
             this.pathNodeY.ValueChanged += new System.EventHandler(this.pathValueChanged);
             // 
             // pathNodeX
             // 
-            this.pathNodeX.DecimalPlaces = 3;
-            this.pathNodeX.Location = new System.Drawing.Point(27, 200);
+            this.pathNodeX.DecimalPlaces = 4;
+            this.pathNodeX.Location = new System.Drawing.Point(48, 226);
             this.pathNodeX.Margin = new System.Windows.Forms.Padding(2);
             this.pathNodeX.Maximum = new decimal(new int[] {
             1000000000,
@@ -1634,7 +1916,7 @@
             0,
             -2147483648});
             this.pathNodeX.Name = "pathNodeX";
-            this.pathNodeX.Size = new System.Drawing.Size(50, 20);
+            this.pathNodeX.Size = new System.Drawing.Size(56, 20);
             this.pathNodeX.TabIndex = 40;
             this.pathNodeX.ValueChanged += new System.EventHandler(this.pathValueChanged);
             // 
@@ -2592,16 +2874,25 @@
             ((System.ComponentModel.ISupportInitialize)(this.leftVal)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.topValUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.rightValUpDown)).EndInit();
+            this.enemyGeneratorGroup.ResumeLayout(false);
+            this.enemyGeneratorGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.enemyGeneratorIdUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.enemyGeneratorUnknown1UpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.enemyGeneratorUnknown2UpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.enemyGeneratorSubIdUpDown)).EndInit();
             this.itemSpawnerGroup.ResumeLayout(false);
             this.itemSpawnerGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
+            this.generalShapeGroup.ResumeLayout(false);
+            this.generalShapeGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.generalShapeIdUpDown)).EndInit();
             this.shapeGroup.ResumeLayout(false);
             this.shapeGroup.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.rectLowerY)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rectLowerX)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rectUpperY)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.rectUpperX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.shapeValue1UpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.shapeValue2UpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.shapeValue3UpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.shapeValue4UpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeY)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pathNodeX)).EndInit();
             this.damageShapeGroup.ResumeLayout(false);
@@ -2647,6 +2938,8 @@
         private System.Windows.Forms.GroupBox collisionGroup;
         private System.Windows.Forms.TextBox nameTB;
         private System.Windows.Forms.TextBox subnameTB;
+        private System.Windows.Forms.Button boneRigSelectButton;
+        private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Button removeVertButton;
         private System.Windows.Forms.Button addVertButton;
         private System.Windows.Forms.Label label1;
@@ -2690,8 +2983,22 @@
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.NumericUpDown bottomVal;
         private System.Windows.Forms.NumericUpDown leftVal;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Button boneRigSelectButton;
+        private System.Windows.Forms.GroupBox enemyGeneratorGroup;
+        private System.Windows.Forms.Label label60;
+        private System.Windows.Forms.NumericUpDown enemyGeneratorIdUpDown;
+        private System.Windows.Forms.Label label61;
+        private System.Windows.Forms.NumericUpDown enemyGeneratorUnknown1UpDown;
+        private System.Windows.Forms.NumericUpDown enemyGeneratorUnknown2UpDown;
+        private System.Windows.Forms.Label label62;
+        private System.Windows.Forms.Button enemyGeneratorSpawnPlusButton;
+        private System.Windows.Forms.Button enemyGeneratorSpawnMinusButton;
+        private System.Windows.Forms.Label label63;
+        private System.Windows.Forms.Button enemyGeneratorZonePlusButton;
+        private System.Windows.Forms.Button enemyGeneratorZoneMinusButton;
+        private System.Windows.Forms.TreeView enemyGeneratorSpawnTreeView;
+        private System.Windows.Forms.TreeView enemyGeneratorZoneTreeView;
+        private System.Windows.Forms.Label label64;
+        private System.Windows.Forms.NumericUpDown enemyGeneratorSubIdUpDown;
         private System.Windows.Forms.GroupBox itemSpawnerGroup;
         private System.Windows.Forms.TreeView itemSpawnVertTreeView;
         private System.Windows.Forms.Label label21;
@@ -2723,15 +3030,20 @@
         private System.Windows.Forms.NumericUpDown pointShapeXUpDown;
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.NumericUpDown pointShapeIdUpDown;
+        private System.Windows.Forms.GroupBox generalShapeGroup;
+        private System.Windows.Forms.Label label58;
+        private System.Windows.Forms.NumericUpDown generalShapeIdUpDown;
         private System.Windows.Forms.GroupBox shapeGroup;
+        private System.Windows.Forms.Label label59;
+        private System.Windows.Forms.ComboBox shapeTypeComboBox;
         private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.NumericUpDown shapeValue1UpDown;
         private System.Windows.Forms.Label label25;
-        private System.Windows.Forms.NumericUpDown rectLowerY;
-        private System.Windows.Forms.NumericUpDown rectLowerX;
+        private System.Windows.Forms.NumericUpDown shapeValue2UpDown;
         private System.Windows.Forms.Label label26;
+        private System.Windows.Forms.NumericUpDown shapeValue3UpDown;
         private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.NumericUpDown rectUpperY;
-        private System.Windows.Forms.NumericUpDown rectUpperX;
+        private System.Windows.Forms.NumericUpDown shapeValue4UpDown;
         private System.Windows.Forms.TreeView treeViewPath;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Button button8;
