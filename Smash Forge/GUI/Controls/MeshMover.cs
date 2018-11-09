@@ -72,6 +72,7 @@ namespace Smash_Forge
 
             NUD n = (NUD)mesh.Parent;
             n.UpdateRenderMeshes();
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void posXTB_ValueChanged(object sender, EventArgs e)

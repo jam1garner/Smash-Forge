@@ -12,6 +12,7 @@
         <member name="P:SFGraphics.Cameras.Camera.DefaultPosition">
             <summary>
             The camera's initial position or position after <see cref="M:SFGraphics.Cameras.Camera.ResetToDefaultPosition"/>.
+            Defaults to (0, 10, -80).
             </summary>
         </member>
         <member name="P:SFGraphics.Cameras.Camera.Position">
@@ -319,15 +320,14 @@
             All attached textures, renderbuffers, etc are resized when set. The framebuffer's contents will not be preserved when resizing.
             </summary>
         </member>
-        <member name="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.ColorAttachments">
+        <member name="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.Attachments">
             <summary>
-            All color attachment textures. 
+            
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget)">
             <summary>
-            Generates an empty framebuffer with no attachments bound to the specified target. 
-            Binds the framebuffer.
+            Generates an incomplete framebuffer of the specified target with no attachments. 
             </summary>
             <param name="framebufferTarget">The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound</param>
         </member>
@@ -347,32 +347,18 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.GetStatus">
             <summary>
-            Gets the framebuffer status for this framebuffer.
+            Gets the framebuffer status, which indicates
+            if the framebuffer is complete and valid for rendering.
             </summary>
-            <returns></returns>
+            <returns>The framebuffer status</returns>
         </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.AttachTexture(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Textures.Texture2D)">
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.AddAttachment(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Framebuffers.IFramebufferAttachment)">
             <summary>
-            Attaches <paramref name="texture"/> to <paramref name="attachment"/>.
+            Attaches <paramref name="attachment"/> to <paramref name="attachmentPoint"/>.
             Draw and read buffers must be configured separately.
             </summary>
-            <param name="attachment">The attachment target for the texture</param>
-            <param name="texture">The texture to attach</param>
-        </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.AttachDepthTexture(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Textures.DepthTexture)">
-            <summary>
-            Attaches <paramref name="depthTexture"/> to <paramref name="attachment"/>.
-            </summary>
-            <param name="attachment">The attachment target for the texture. This should be a depth attachment.</param>
-            <param name="depthTexture">The depth texture to attach</param>
-        </member>
-        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.AttachRenderbuffer(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.RenderBuffers.Renderbuffer)">
-            <summary>
-            Attaches <paramref name="renderbuffer"/> to <paramref name="attachment"/>.
-            Draw and read buffers must be configured separately.
-            </summary>
-            <param name="attachment">The attachment target for the renderbuffer</param>
-            <param name="renderbuffer">The renderbuffer to attach</param>
+            <param name="attachmentPoint">The target attachment point</param>
+            <param name="attachment">The object to attach</param>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.Bind">
             <summary>
@@ -641,10 +627,89 @@
             </summary>
             <param name="textureUnit"></param>
         </member>
+        <member name="T:SFGraphics.GLObjects.Shaders.ShaderEventArgs.LinkStatusEventArgs">
+            <summary>
+            Contains information about a shader program linking.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.LinkStatusEventArgs.LinkStatus">
+            <summary>
+            <c>true</c> if the shader program linked successfully.
+            </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Shaders.ShaderEventArgs.TextureSetEventArgs">
+            <summary>
+            Contains the data used to set a shader sampler uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.TextureSetEventArgs.Name">
+            <summary>
+            The name of the uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.TextureSetEventArgs.Type">
+            <summary>
+            The data type of the texture uniform.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.TextureSetEventArgs.Value">
+            <summary>
+            The texture used to initialize the uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.TextureSetEventArgs.TextureUnit">
+            <summary>
+            The texture unit to which <see cref="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.TextureSetEventArgs.Value"/> was bound.
+            </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs">
+            <summary>
+            Contains the data used to set a shader uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Name">
+            <summary>
+            The name of the uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Type">
+            <summary>
+            The data type of the uniform.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Value">
+            <summary>
+            The value used to initialize the uniform variable.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Size">
+            <summary>
+            The number of components for <see cref="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Value"/>.
+            </summary>
+        </member>
         <member name="T:SFGraphics.GLObjects.Shaders.Utils.ShaderLog">
             <summary>
             Stores hardware info, OpenGL/GLSL version, invalid uniform/attribute names, shader compilation errors, and linker errors.
             </summary>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Shaders.Utils.ShaderValidation">
+            <summary>
+            Contains methods for validating <see cref="T:SFGraphics.GLObjects.Shaders.Shader"/> objects prior to rendering.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Utils.ShaderValidation.GetProgramLinkStatus(System.Int32)">
+            <summary>
+            Returns <c>true</c> if the program linked successfully.
+            </summary>
+            <param name="programId">The program ID generated by OpenGL</param>
+            <returns><c>true</c> if the program linked successfully</returns>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Utils.ShaderValidation.GetProgramValidateStatus(System.Int32)">
+            <summary>
+            Returns <c>true</c> if the program status is valid for rendering.
+            </summary>
+            <param name="programId">The program ID generated by OpenGL</param>
+            <returns><c>true</c> if the program status is valid for rendering</returns>
         </member>
         <member name="T:SFGraphics.GLObjects.Shaders.Shader">
             <summary>
@@ -814,6 +879,14 @@
         </member>
         <member name="T:SFGraphics.GLObjects.Shaders.Shader.InvalidUniformSetEventHandler">
             <summary>
+            
+            </summary>
+            <param name="sender">The shader that generated the error</param>
+            <param name="e">The arguments used to set the uniform</param>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Shaders.Shader.InvalidTextureSetEventHandler">
+            <summary>
+            
             </summary>
             <param name="sender">The shader that generated the error</param>
             <param name="e">The arguments used to set the uniform</param>
@@ -823,7 +896,7 @@
             
             </summary>
             <param name="sender">The shader that generated the event</param>
-            <param name="linkStatusIsOk">The new link status. 
+            <param name="e">Information about the previous shader program linking. 
             <c>true</c> when linking was successful</param>
         </member>
         <member name="E:SFGraphics.GLObjects.Shaders.Shader.OnInvalidUniformSet">
@@ -854,16 +927,14 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.EnableVertexAttributes">
             <summary>
-            Enables the vertex attribute arrays for all active attributes
-            for the currently bound vertex array object.
-            Ensures that extra attributes aren't enabled, which causes crashes on Geforce drivers.
+            Enables the vertex attribute arrays for all active attributes.
+            Use a <see cref="T:SFGraphics.GLObjects.VertexArrays.VertexArrayObject"/> for modern OpenGL.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.DisableVertexAttributes">
             <summary>
-            Disables the vertex attribute arrays for all active attributes 
-            for the currently bound vertex array object.
-            Ensures that extra attributes aren't enabled, which causes crashes on Geforce drivers.
+            Disables the vertex attribute arrays for all active attributes.
+            Use a <see cref="T:SFGraphics.GLObjects.VertexArrays.VertexArrayObject"/> for modern OpenGL.
             </summary>
         </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.AttachShader(System.Int32,OpenTK.Graphics.OpenGL.ShaderType,System.String)">
@@ -956,46 +1027,21 @@
             <param name="name">The name of the uniform block</param>
             <returns>The index of <paramref name="name"/></returns>
         </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.UniformBlockBinding(System.String,System.Int32)">
+            <summary>
+            Sets the binding point for a uniform block.
+            Invalid names are ignored. 
+            </summary>
+            <param name="name">The name of the uniform block</param>
+            <param name="bindingPoint">The binding point for the uniform block</param>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="bindingPoint"/> is negative</exception>
+        </member>
         <member name="M:SFGraphics.GLObjects.Shaders.Shader.GetErrorLog">
             <summary>
             Gets the error log containing hardware info, version number, compilation/linker errors, 
             and attempts to initialize invalid uniform or vertex attribute names.
             </summary>
             <returns>A String of all detected errors</returns>
-        </member>
-        <member name="T:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs">
-            <summary>
-            Contains the data used to set a shader uniform variable.
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Name">
-            <summary>
-            The name of the uniform variable.
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Type">
-            <summary>
-            The data type of the uniform.
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Value">
-            <summary>
-            The value used to initialize the uniform variable.
-            </summary>
-        </member>
-        <member name="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Size">
-            <summary>
-            The number of components for <see cref="P:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.Value"/>.
-            </summary>
-        </member>
-        <member name="M:SFGraphics.GLObjects.Shaders.ShaderEventArgs.UniformSetEventArgs.#ctor(System.String,OpenTK.Graphics.OpenGL.ActiveUniformType,System.Object,System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="name"></param>
-            <param name="type"></param>
-            <param name="value"></param>
-            <param name="size"></param>
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.Utils.MipmapLoading">
             <summary>
@@ -1225,6 +1271,25 @@
             </summary>
             <param name="target">The texture target</param>
             <returns>True if the target is a cube map target</returns>
+        </member>
+        <member name="T:SFGraphics.GLObjects.Textures.Texture2DMultisample">
+            <summary>
+            A TextureTarget.Texture2DMultisample texture that does not support mipmaps.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Textures.Texture2DMultisample.Samples">
+            <summary>
+            The number of texture samples.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2DMultisample.#ctor(System.Int32,System.Int32,OpenTK.Graphics.OpenGL.PixelInternalFormat,System.Int32)">
+            <summary>
+            Creates a multisampled 2D texture of the given dimensions and format
+            </summary>
+            <param name="width">The width of the texture in pixels</param>
+            <param name="height">The height of the texture in pixels</param>
+            <param name="format">The format used to store the image data</param>
+            <param name="samples">The number of texture samples</param>
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.DepthTexture">
             <summary>

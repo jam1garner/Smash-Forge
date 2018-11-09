@@ -1,15 +1,9 @@
-﻿using System;
+﻿using SFGraphics.GLObjects.Textures;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Smash_Forge.GUI.Menus;
-using SFGraphics.GLObjects.Textures;
 
 namespace Smash_Forge.GUI
 {
@@ -80,7 +74,8 @@ namespace Smash_Forge.GUI
             pbAbsorbColor.BackColor = Runtime.absorbBubbleColor;
             pbShieldColor.BackColor = Runtime.shieldBubbleColor;
 
-            // Discord Settings        
+            // Discord Settings
+            enabledCheckbox.Checked = DiscordSettings.enabled;
             if (DiscordSettings.imageKeyMode == DiscordSettings.ImageKeyMode.UserPicked)
             {
                 customRadioButton.Checked = true;
@@ -99,7 +94,7 @@ namespace Smash_Forge.GUI
 
             // LVD Settings
             renderLvdCB.Checked = Runtime.renderLVD;
-            checkChanged();
+            CheckBoxChanged();
 
             renderCollisionsCB.Checked = Runtime.renderCollisions;
             renderSpawnsCB.Checked = Runtime.renderSpawns;
@@ -164,12 +159,7 @@ namespace Smash_Forge.GUI
                 toolTip1.SetToolTip(floorColorPictureBox, "Click to select a color.");
         }
 
-        private void renderLvdCB_CheckedChanged(object sender, EventArgs e)
-        {
-            checkChanged();
-        }
-
-        private void checkChanged()
+        private void CheckBoxChanged()
         {
             if (!disableRuntimeUpdates)
             {
@@ -209,9 +199,10 @@ namespace Smash_Forge.GUI
             renderPassthroughCB.Enabled = renderLvdCB.Checked && renderCollisionsCB.Checked;
         }
 
-        private void checkChanged(object sender, EventArgs e)
+        private void CheckBoxChanged(object sender, EventArgs e)
         {
-            checkChanged();
+            CheckBoxChanged();
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate(); 
         }
 
         private void populateColorsFromRuntime()
@@ -349,91 +340,110 @@ namespace Smash_Forge.GUI
             fresnelCB.Enabled = materialLightingCB.Checked;
             specularCB.Enabled = materialLightingCB.Checked;
             reflectionCB.Enabled = materialLightingCB.Checked;
+
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void renderAlphaCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderAlpha= renderAlphaCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void cb_vertcolor_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderVertColor = vertColorCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void diffuseCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderDiffuse = diffuseCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void fresnelCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderFresnel = fresnelCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void specularCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderSpecular = specularCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void reflectionCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderReflection = reflectionCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void useNormCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderNormalMap = useNormCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void backgroundCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderBackGround = renderBackgroundCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void boundingCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderBoundingSphere = boundingCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void modelSelectCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderModelSelection = modelSelectCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void wireframeCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderModelWireframe = wireframeCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void cameraLightCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.cameraLight = cameraLightCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void difTB_TextChanged(object sender, EventArgs e)
         {
             Runtime.difIntensity = GuiTools.TryParseTBFloat(difTB);
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void spcTB_TextChanged(object sender, EventArgs e)
         {
             Runtime.spcIntentensity = GuiTools.TryParseTBFloat(spcTB);
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void frsTB_TextChanged(object sender, EventArgs e)
         {
             Runtime.frsIntensity = GuiTools.TryParseTBFloat(frsTB);
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void ambTB_TextChanged(object sender, EventArgs e)
         {
             Runtime.ambItensity = GuiTools.TryParseTBFloat(ambTB);
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void refTB_TextChanged(object sender, EventArgs e)
         {
             Runtime.refIntensity = GuiTools.TryParseTBFloat(refTB);
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void modelscaleTB_TextChanged(object sender, EventArgs e)
@@ -656,17 +666,20 @@ namespace Smash_Forge.GUI
         private void areaLightBoundingBoxCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.drawAreaLightBoundingBoxes = areaLightBoundingBoxCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void stageLightingCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderStageLighting = stageLightingCB.Checked;
             renderFogCB.Enabled = stageLightingCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void renderFogCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderFog = renderFogCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void renderChannelR_Click(object sender, EventArgs e)
@@ -682,6 +695,7 @@ namespace Smash_Forge.GUI
                 Runtime.renderR = true;
                 renderChannelR.ForeColor = Color.Red;
             }
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void renderChannelG_Click(object sender, EventArgs e)
@@ -696,6 +710,7 @@ namespace Smash_Forge.GUI
                 Runtime.renderG = true;
                 renderChannelG.ForeColor = Color.Green;
             }
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void renderChannelB_Click(object sender, EventArgs e)
@@ -711,6 +726,7 @@ namespace Smash_Forge.GUI
                 Runtime.renderB = true;
                 renderChannelB.ForeColor = Color.Blue;
             }
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void renderChannelA_Click(object sender, EventArgs e)
@@ -726,26 +742,31 @@ namespace Smash_Forge.GUI
                 Runtime.renderAlpha = true;
                 renderChannelA.ForeColor = Color.Black;
             }
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.uvChannel = Runtime.UVChannel.Channel1;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.uvChannel = Runtime.UVChannel.Channel2;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void radioButton3_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.uvChannel = Runtime.UVChannel.Channel3;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void debug1CB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.debug1 = debug1CB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void pbHitboxAnglesColor_Click(object sender, EventArgs e)
@@ -789,6 +810,16 @@ namespace Smash_Forge.GUI
 
         private void discordCheckChanged(object sender, EventArgs e)
         {
+            if (sender == enabledCheckbox)
+            {
+                DiscordSettings.enabled = enabledCheckbox.Checked;
+                if (DiscordSettings.enabled)
+                {
+                    DiscordSettings.DiscordController = new DiscordController();
+                    DiscordSettings.DiscordController.Initialize();
+                    DiscordSettings.Update();
+                }
+            }
             if (sender == showActiveWindowCheckbox)
                 DiscordSettings.showCurrentWindow = showActiveWindowCheckbox.Checked;
             if (sender == timeElapsedCheckbox)
@@ -808,6 +839,7 @@ namespace Smash_Forge.GUI
                 Runtime.backgroundGradientTop = Color.FromArgb(0xFF, colorDialog.Color);
                 BackgroundGradient1.BackColor = Runtime.backgroundGradientTop;
             }
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void BackgroundGradient2_Click(object sender, EventArgs e)
@@ -818,27 +850,32 @@ namespace Smash_Forge.GUI
                 Runtime.backgroundGradientBottom = Color.FromArgb(0xFF, colorDialog.Color);
                 BackgroundGradient2.BackColor = Runtime.backgroundGradientBottom;
             }
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void postProcessingCB_CheckedChanged(object sender, EventArgs e)
         {
             bloomGroupBox.Enabled = postProcessingCB.Checked;
             Runtime.usePostProcessing = postProcessingCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void bloomCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.renderBloom = bloomCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void bloomIntensityTB_TextChanged(object sender, EventArgs e)
         {
             Runtime.bloomIntensity = GuiTools.TryParseTBFloat(bloomIntensityTB);
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void bloomThresholdTB_TextChanged(object sender, EventArgs e)
         {
             Runtime.bloomThreshold = GuiTools.TryParseTBFloat(bloomThresholdTB);
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void groupBox8_Enter(object sender, EventArgs e)
@@ -876,11 +913,6 @@ namespace Smash_Forge.GUI
 
             SetFloorPictureBoxToolTip();
             floorColorPictureBox.Refresh();
-        }
-
-        private void openBackgroundTexButton_Click(object sender, EventArgs e)
-        {
-            OpenBackgroundTexture();
         }
 
         private void OpenBackgroundTexture()
@@ -947,16 +979,6 @@ namespace Smash_Forge.GUI
             }
         }
 
-        private void ClearBackgroundPictureBox()
-        {
-            if (backgroundPictureBox.Image != null)
-            {
-                backgroundPictureBox.Image.Dispose();
-                backgroundPictureBox.Image = null;
-                backgroundPictureBox.Refresh();
-            }
-        }
-
         private void floorScaleTB_TextChanged(object sender, EventArgs e)
         {
             Runtime.floorSize = GuiTools.TryParseTBFloat(floorScaleTB);
@@ -988,12 +1010,14 @@ namespace Smash_Forge.GUI
         private void drawShadowCB_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.drawModelShadow = drawShadowCB.Checked;
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void renderModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             Runtime.renderType = (Runtime.RenderTypes)renderModeComboBox.SelectedIndex;
             UpdateDebugButtonsFromRenderType();
+            MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
         private void debugPanelButton_Click(object sender, EventArgs e)
@@ -1034,6 +1058,11 @@ namespace Smash_Forge.GUI
         private void loadRenderATKD_CheckedChanged(object sender, EventArgs e)
         {
             Runtime.LoadAndRenderATKD = loadRenderATKD.Checked;
+        }
+
+        private void RenderSettingsMenu_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Config.Save();
         }
     }
 }

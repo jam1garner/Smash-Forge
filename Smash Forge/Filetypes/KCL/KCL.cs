@@ -235,18 +235,6 @@ namespace Smash_Forge
             }
         }
 
-        private void SetupShader()
-        {
-            int maxUniformBlockSize = GL.GetInteger(GetPName.MaxUniformBlockSize);
-            if (shader == null)
-            {
-                shader = new Shader();
-                shader = OpenTKSharedResources.shaders["KCL"];
-            }
-            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-
-        }
-
         public void Render(Matrix4 view)
         {
             shader = OpenTKSharedResources.shaders["KCL"];

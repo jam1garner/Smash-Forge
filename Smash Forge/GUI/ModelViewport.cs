@@ -400,7 +400,7 @@ namespace Smash_Forge
 
             // Attach the depth map texture.
             depthMap = new DepthTexture(shadowWidth, shadowHeight, PixelInternalFormat.DepthComponent24);
-            depthMapFbo.AttachDepthTexture(FramebufferAttachment.DepthAttachment, depthMap);
+            depthMapFbo.AddAttachment(FramebufferAttachment.DepthAttachment, depthMap);
         }
 
         public Camera GetCamera()
@@ -631,8 +631,8 @@ namespace Smash_Forge
                     {
                         // The color is the polygon index (not the render order).
                         // Convert to Vector3 to ignore the alpha.
-                        Vector3 polyColor = ColorUtils.Vector4FromColor(Color.FromArgb(p.DisplayId)).Xyz;
-                        Vector3 pickedColor = ColorUtils.Vector4FromColor(pixelColor).Xyz;
+                        Vector3 polyColor = ColorUtils.GetVector3(Color.FromArgb(p.DisplayId));
+                        Vector3 pickedColor = ColorUtils.GetVector3(pixelColor);
 
                         if (polyColor == pickedColor)
                             return p;
@@ -918,32 +918,18 @@ namespace Smash_Forge
 
         private void FrameSelectedBfres()
         {
-            Console.WriteLine("BFRES selected");
             BFRES bfres = (BFRES)meshList.filesTreeView.SelectedNode;
-
-            List<float> X = new List<float>();
-            List<float> Y = new List<float>();
-            List<float> Z = new List<float>();
-            List<float> Radius = new List<float>();
-
+            var spheres = new List<Vector4>();
             foreach (BFRES.FMDL_Model mdl in bfres.models)
             {
                 foreach (BFRES.Mesh msh in mdl.poly)
                 {
-                    X.Add(msh.boundingBoxes[0].Center.X);
-                    Y.Add(msh.boundingBoxes[0].Center.Y);
-                    Z.Add(msh.boundingBoxes[0].Center.Z);
-
-                    Radius.Add(msh.radius[0]);
+                    spheres.Add(msh.BoundingSphere);
                 }
             }
 
-            X.Sort();
-            Y.Sort();
-            Z.Sort();
-            Radius.Sort();
-
-            camera.FrameBoundingSphere(new Vector3(X[X.Count - 1], Y[Y.Count - 1], Z[Z.Count - 1]), Radius[Radius.Count - 1]);
+            Vector4 result = BoundingSphereGenerator.GenerateBoundingSphere(spheres);
+            camera.FrameBoundingSphere(result.Xyz, result.W);
         }
 
         private void FrameAllModelContainers(float maxBoundingRadius = 400)
@@ -951,7 +937,7 @@ namespace Smash_Forge
             bool hasModelContainers = false;
 
             // Find the max NUD bounding box for all models. 
-            float[] boundingSphere = new float[] { 0, 0, 0, 0 };
+            var spheres = new List<Vector4>();
 
             foreach (TreeNode node in meshList.filesTreeView.Nodes)
             {
@@ -961,24 +947,12 @@ namespace Smash_Forge
                     ModelContainer modelContainer = (ModelContainer)node;
 
                     // Use the main bounding box for the NUD.
-                    if ((modelContainer.NUD.boundingSphere[3] > boundingSphere[3]) && (modelContainer.NUD.boundingSphere[3] < maxBoundingRadius))
-                    {
-                        boundingSphere[0] = modelContainer.NUD.boundingSphere[0];
-                        boundingSphere[1] = modelContainer.NUD.boundingSphere[1];
-                        boundingSphere[2] = modelContainer.NUD.boundingSphere[2];
-                        boundingSphere[3] = modelContainer.NUD.boundingSphere[3];
-                    }
+                    spheres.Add(modelContainer.NUD.BoundingSphere);
 
                     // It's possible that only the individual meshes have bounding boxes.
                     foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
                     {
-                        if (mesh.boundingSphere[3] > boundingSphere[3] && mesh.boundingSphere[3] < maxBoundingRadius)
-                        {
-                            boundingSphere[0] = mesh.boundingSphere[0];
-                            boundingSphere[1] = mesh.boundingSphere[1];
-                            boundingSphere[2] = mesh.boundingSphere[2];
-                            boundingSphere[3] = mesh.boundingSphere[3];
-                        }
+                        spheres.Add(mesh.BoundingSphere);
                     }
 
                     if (modelContainer.Bfres != null)
@@ -987,28 +961,18 @@ namespace Smash_Forge
                         {
                             foreach (var m in mdl.poly)
                             {
-                                m.GenerateBoundingBoxes();
-
-                                foreach (var box in m.boundingBoxes)
-                                {
-                                    // HACK: This sort of works.
-                                    float maxExtent = Math.Max(Math.Max(box.Extent.X, box.Extent.Y), box.Extent.Z);
-                                    if (maxExtent > boundingSphere[3])
-                                    {
-                                        boundingSphere[0] = box.Center.X;
-                                        boundingSphere[1] = box.Center.Y;
-                                        boundingSphere[2] = box.Center.Z;
-                                        boundingSphere[3] = maxExtent;
-                                    }
-                                }
+                                m.GenerateBoundingSpheres();
+                                spheres.Add(m.BoundingSphere);
                             }
                         }
                     }
                 }
             }
 
+            Vector4 result = BoundingSphereGenerator.GenerateBoundingSphere(spheres);
+
             if (hasModelContainers)
-                camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 0);
+                camera.FrameBoundingSphere(result.Xyz, result.W, 0);
             else
                 camera.ResetToDefaultPosition();
         }
@@ -1731,13 +1695,13 @@ namespace Smash_Forge
                 // Draw the texture to the screen into a smaller FBO.
                 imageBrightHdrFbo.Bind();
                 GL.Viewport(0, 0, imageBrightHdrFbo.Width, imageBrightHdrFbo.Height);
-                ScreenDrawing.DrawTexturedQuad((Texture)colorHdrFbo.ColorAttachments[1], imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
+                ScreenDrawing.DrawTexturedQuad((Texture)colorHdrFbo.Attachments[1], imageBrightHdrFbo.Width, imageBrightHdrFbo.Height, screenVao);
 
                 // Setup the normal viewport dimensions again.
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, defaultFbo);
                 GL.Viewport(0, 0, width, height);
 
-                ScreenDrawing.DrawScreenQuadPostProcessing((Texture)colorHdrFbo.ColorAttachments[0], (Texture)imageBrightHdrFbo.ColorAttachments[0], screenVao);
+                ScreenDrawing.DrawScreenQuadPostProcessing((Texture)colorHdrFbo.Attachments[0], (Texture)imageBrightHdrFbo.Attachments[0], screenVao);
             }
 
             FixedFunctionRendering();
@@ -1793,8 +1757,8 @@ namespace Smash_Forge
 
         private void DrawViewportBackground()
         {
-            Vector3 topColor = ColorUtils.Vector4FromColor(Runtime.backgroundGradientTop).Xyz;
-            Vector3 bottomColor = ColorUtils.Vector4FromColor(Runtime.backgroundGradientBottom).Xyz;
+            Vector3 topColor = ColorUtils.GetVector3(Runtime.backgroundGradientTop);
+            Vector3 bottomColor = ColorUtils.GetVector3(Runtime.backgroundGradientBottom);
 
             // Only use the top color for solid color rendering.
             if (Runtime.backgroundStyle == Runtime.BackgroundStyle.Solid)

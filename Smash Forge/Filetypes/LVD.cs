@@ -116,38 +116,39 @@ namespace Smash_Forge
 
     public enum CollisionMatType : byte
     {
-        Brick = 0x00,
-        Rock = 0x01,
-        Grass = 0x02,
-        Soil = 0x03,
-        Wood = 0x04,
-        LightMetal = 0x05,
-        HeavyMetal = 0x06,
-        Carpet = 0x07,
-        Fence = 0x08,
-        MasterFortress = 0x09,
-        Water = 0x0a,
-        Bubbles = 0x0b,
-        Ice = 0x0c,
-        Snow = 0x0d,
-        SnowIce = 0x0e,
-        Gamewatch = 0x0f,
-        Ice2 = 0x10,
-        Danbouru = 0x11,
-        SpikesTargetTestOnly = 0x12, //Untested; from Brawl
-        Hazard2SSEOnly = 0x13, //Untested; from Brawl
-        Hazard3SSEOnly = 0x14, //Untested; from Brawl
-        LargeBubbles = 0x15,
-        Clouds = 0x16,
-        Subspace = 0x17, //Untested; from Brawl
-        Stone2 = 0x18,
-        Unknown2 = 0x19, //Untested; from Brawl
-        NES8Bit = 0x1a, //Untested; from Brawl
-        Metal2 = 0x1b,
-        Sand = 0x1c,
-        Homerun = 0x1d, //Untested; from Brawl
-        WaterNoSplash = 0x1e, //Untested; from Brawl
-        Hurt = 0x1f
+        Basic = 0x00,            //
+        Rock = 0x01,             //
+        Grass = 0x02,            //Increased traction (1.5)
+        Soil = 0x03,             //
+        Wood = 0x04,             //
+        LightMetal = 0x05,       //"Iron" internally.
+        HeavyMetal = 0x06,       //"NibuIron" (Iron2) internally.
+        Carpet = 0x07,           //Used for Delfino Plaza roof things
+        Alien = 0x08,            //"NumeNume" (squelch sound) internally. Used on Brinstar
+        MasterFortress = 0x09,   //"Creature" internally.
+        WaterShallow = 0x0a,     //"Asase" (shallows) internally. Used for Delfino Plaza shallow water
+        Soft = 0x0b,             //Used on Woolly World
+        TuruTuru = 0x0c,         //Reduced traction (0.1). Unknown meaning and use
+        Snow = 0x0d,             //
+        Ice = 0x0e,              //Reduced traction (0.2). Used on P. Stadium 2 ice form
+        GameWatch = 0x0f,        //Used on Flat Zone
+        Oil = 0x10,              //Reduced traction (0.1). Used for Flat Zone oil spill (presumably; not found in any collisions)
+        Cardboard = 0x11,        //"Danbouru" (corrugated cardboard) internally. Used on Paper Mario
+        SpikesTargetTest = 0x12, //Unknown. From Brawl, and appears to still be hazard-related but is probably not functional
+        Hazard2SSEOnly = 0x13,   //See above
+        Hazard3SSEOnly = 0x14,   //See above
+        Electroplankton = 0x15,  //"ElectroP" internally. Not known to be used anywhere in this game
+        Cloud = 0x16,            //Used on Skyworld, Magicant
+        Subspace = 0x17,         //"Akuukan" (subspace) internally. Not known to be used anywhere in this game
+        Brick = 0x18,            //Used on Skyworld, Gerudo V., Smash Run
+        Unknown1 = 0x19,         //Unknown. From Brawl
+        NES8Bit = 0x1a,          //"Famicom" internally. Not known to be used anywhere in this game
+        Grate = 0x1b,            //Used on Delfino and P. Stadium 2
+        Sand = 0x1c,             //
+        Homerun = 0x1d,          //From Brawl, may not be functional
+        WaterNoSplash = 0x1e,    //From Brawl, may not be functional
+        Hurt = 0x1f,             //Takes hitbox data from stdat. Used for Cave and M. Fortress Danger Zones
+        Unknown2 = 0x20          //Unknown. Uses bomb SFX?
     }
 
     public class CollisionMat
@@ -291,7 +292,7 @@ namespace Smash_Forge
             {
                 f.skip(1);
                 CollisionMat temp = new CollisionMat();
-                temp.material = f.read(0xC);//Temporary, will work on fleshing out material more later
+                temp.material = f.read(0xC); //Temporary, will work on fleshing out material more later
                 materials.Add(temp);
             }
 
@@ -369,10 +370,10 @@ namespace Smash_Forge
     {
         public override string magic { get { return "020401017735BB7500000002"; } }
 
-        public float top;
-        public float bottom;
         public float left;
         public float right;
+        public float top;
+        public float bottom;
 
         public new void read(FileData f)
         {
@@ -404,13 +405,42 @@ namespace Smash_Forge
         Path = 4
     }
 
-    //Basic shape structure, this is used for the sections of item spawners and enemy generators
-    //GeneralShape has this structure too, but doesn't use this class
+    //Basic 2D shape structure used for a variety of purposes within LVD:
+    // - ItemSpawner sections
+    // - EnemyGenerator enemy spawns and trigger zones
+    // - GeneralShape object type
+    // - More (unimplemented) things
     public class LVDShape
     {
         public int type;
-        public float x1, y1, x2, y2;
+        //The object always contains four floats, but how they are used differs depending on shape type
+        public float shapeValue1, shapeValue2, shapeValue3, shapeValue4;
         public List<Vector2> points = new List<Vector2>();
+
+        //Point and Circle properties
+        public float x
+        { get {return shapeValue1;}
+          set {shapeValue1 = value;} }
+        public float y
+        { get {return shapeValue2;}
+          set {shapeValue2 = value;} }
+        public float radius
+        { get {return shapeValue3;}
+          set {shapeValue3 = value;} }
+
+        //Rectangle properties
+        public float left
+        { get {return shapeValue1;}
+          set {shapeValue1 = value;} }
+        public float right
+        { get {return shapeValue2;}
+          set {shapeValue2 = value;} }
+        public float bottom
+        { get {return shapeValue3;}
+          set {shapeValue3 = value;} }
+        public float top
+        { get {return shapeValue4;}
+          set {shapeValue4 = value;} }
 
         public LVDShape()
         {
@@ -424,13 +454,6 @@ namespace Smash_Forge
         {
             read(f);
         }
-        public LVDShape(GeneralShape s)
-        {
-            type = s.type;
-            x1 = s.x1; y1 = s.y1; x2 = s.x2; y2 = s.y2;
-            foreach (Vector2 point in s.points)
-                points.Add(new Vector2(point.X, point.Y));
-        }
 
         public void read(FileData f)
         {
@@ -439,10 +462,10 @@ namespace Smash_Forge
             if (!Enum.IsDefined(typeof(LVDShapeType), type))
                 throw new NotImplementedException($"Unknown shape type {type} at offset {f.pos()-4}");
 
-            x1 = f.readFloat();
-            y1 = f.readFloat();
-            x2 = f.readFloat();
-            y2 = f.readFloat();
+            shapeValue1 = f.readFloat();
+            shapeValue2 = f.readFloat();
+            shapeValue3 = f.readFloat();
+            shapeValue4 = f.readFloat();
 
             f.skip(1);
             f.skip(1);
@@ -458,10 +481,10 @@ namespace Smash_Forge
             f.writeByte(0x3);
             f.writeInt(type);
 
-            f.writeFloat(x1);
-            f.writeFloat(y1);
-            f.writeFloat(x2);
-            f.writeFloat(y2);
+            f.writeFloat(shapeValue1);
+            f.writeFloat(shapeValue2);
+            f.writeFloat(shapeValue3);
+            f.writeFloat(shapeValue4);
 
             f.writeByte(1);
             f.writeByte(1);
@@ -522,119 +545,121 @@ namespace Smash_Forge
     {
         public override string magic { get { return "030401017735BB7500000002"; } }
 
+        public List<LVDShape> spawns = new List<LVDShape>();
+        public List<LVDShape> zones = new List<LVDShape>();
+        public int egUnk1 = 0;
         public int id;
-        public List<LVDShape> sections = new List<LVDShape>();
-        public List<LVDShape> sections2 = new List<LVDShape>();
-        public List<int> ids = new List<int>();
-        public int padCount = 0;
+        public List<int> spawnIds = new List<int>();
+        public int egUnk2 = 0;
+        public List<int> zoneIds = new List<int>();
 
         public new void read(FileData f)
         {
             base.read(f);
 
             f.skip(0x2); //x01 01
-            int sectionCount = f.readInt();
-            for (int i = 0; i < sectionCount; i++)
+            int spawnCount = f.readInt();
+            for (int i = 0; i < spawnCount; i++)
             {
                 f.skip(1);
-                sections.Add(new LVDShape(f));
+                spawns.Add(new LVDShape(f));
             }
 
             f.skip(0x2); //x01 01
-            int sectionCount2 = f.readInt();
-            for (int i = 0; i < sectionCount2; i++)
+            int zoneCount = f.readInt();
+            for (int i = 0; i < zoneCount; i++)
             {
                 f.skip(1);
-                sections2.Add(new LVDShape(f));
+                zones.Add(new LVDShape(f));
             }
 
             f.skip(0x2); //x01 01
-            int unkCount = f.readInt();
-            for (int i = 0; i < unkCount; i++)
-            {
-                //Only seen this count as 0
-            }
+            egUnk1 = f.readInt(); //Only seen as 0
 
             f.skip(1); //x01
             id = f.readInt();
 
             f.skip(1); //x01
-            int idCount = f.readInt();
-            for (int i = 0; i < idCount; i++)
+            int spawnIdCount = f.readInt();
+            for (int i = 0; i < spawnIdCount; i++)
             {
                 f.skip(1);
-                ids.Add(f.readInt());
+                spawnIds.Add(f.readInt());
             }
 
             f.skip(1); //x01
-            f.readInt(); //Only seen as 0
+            egUnk2 = f.readInt(); //Only seen as 0
+
             f.skip(1); //x01
-            padCount = f.readInt(); //Don't know the purpose of this, it just seems to be 1 if there's the extra 5 bytes thrown on the end
-            for (int i = 0; i < padCount; i++)
-                f.skip(0x5); //x01 00 00 00 00
+            int zoneIdCount = f.readInt();
+            for (int i = 0; i < zoneIdCount; i++)
+            {
+                f.skip(1);
+                zoneIds.Add(f.readInt());
+            }
         }
         public new void save(FileOutput f)
         {
             base.save(f);
 
             f.writeHex("0101");
-            f.writeInt(sections.Count);
-            foreach (LVDShape temp in sections)
+            f.writeInt(spawns.Count);
+            foreach (LVDShape temp in spawns)
             {
                 f.writeByte(1);
                 temp.save(f);
             }
 
             f.writeHex("0101");
-            f.writeInt(sections2.Count);
-            foreach (LVDShape temp in sections2)
+            f.writeInt(zones.Count);
+            foreach (LVDShape temp in zones)
             {
                 f.writeByte(1);
                 temp.save(f);
             }
 
             f.writeHex("0101");
-            f.writeInt(0);
+            f.writeInt(egUnk1);
 
             f.writeByte(1);
             f.writeInt(id);
 
             f.writeByte(1);
-            f.writeInt(ids.Count);
-            foreach (int temp in ids)
+            f.writeInt(spawnIds.Count);
+            foreach (int temp in spawnIds)
             {
                 f.writeByte(1);
                 f.writeInt(temp);
             }
 
             f.writeByte(1);
-            f.writeInt(0);
+            f.writeInt(egUnk2);
+
             f.writeByte(1);
-            f.writeInt(padCount);
-            for (int i = 0; i < padCount; i++)
-                f.writeHex("0100000000");
+            f.writeInt(zoneIds.Count);
+            foreach (int temp in zoneIds)
+            {
+                f.writeByte(1);
+                f.writeInt(temp);
+            }
         }
     }
 
-    //This is merely an LVDShape as an LVDEntry (plus an id int)
-    //Can be converted to LVDShape via constructor, which we currently use for DrawShape
+    //This is basically an LVDShape as a standalone object plus an id int
     public class GeneralShape : LVDEntry
     {
         public override string magic { get { return "010401017735BB7500000002"; } }
 
         public int id;
-
-        public int type;
-        public float x1, y1, x2, y2;
-        public List<Vector2> points = new List<Vector2>();
+        public LVDShape shape;
 
         public GeneralShape()
         {
-            type = 1;
+            shape = new LVDShape();
         }
-        public GeneralShape(int type)
+        public GeneralShape(int type) : this()
         {
-            this.type = type;
+            shape.type = type;
         }
 
         public new void read(FileData f)
@@ -644,24 +669,8 @@ namespace Smash_Forge
             f.skip(1);
             id = f.readInt();
 
-            f.readByte();
-            type = f.readInt();
-            if (!Enum.IsDefined(typeof(LVDShapeType), type))
-                throw new NotImplementedException($"Unknown shape type {type} at offset {f.pos()-4}");
-
-            x1 = f.readFloat();
-            y1 = f.readFloat();
-            x2 = f.readFloat();
-            y2 = f.readFloat();
-
-            f.skip(1);
-            f.skip(1);
-            int pointCount = f.readInt();
-            for(int i = 0; i < pointCount; i++)
-            {
-                f.skip(1);
-                points.Add(new Vector2(f.readFloat(), f.readFloat()));
-            }
+            shape = new LVDShape();
+            shape.read(f);
         }
         public new void save(FileOutput f)
         {
@@ -670,23 +679,7 @@ namespace Smash_Forge
             f.writeByte(1);
             f.writeInt(id);
 
-            f.writeByte(0x3);
-            f.writeInt(type);
-
-            f.writeFloat(x1);
-            f.writeFloat(y1);
-            f.writeFloat(x2);
-            f.writeFloat(y2);
-
-            f.writeByte(1);
-            f.writeByte(1);
-            f.writeInt(points.Count);
-            foreach(Vector2 point in points)
-            {
-                f.writeByte(1);
-                f.writeFloat(point.X);
-                f.writeFloat(point.Y);
-            }
+            shape.save(f);
         }
     }
     
@@ -825,7 +818,7 @@ namespace Smash_Forge
             respawns = new List<Spawn>();
             cameraBounds = new List<Bounds>();
             blastzones = new List<Bounds>();
-            enemySpawns = new List<EnemyGenerator>();
+            enemyGenerators = new List<EnemyGenerator>();
             damageShapes = new List<DamageShape>();
             itemSpawns = new List<ItemSpawner>();
             generalShapes = new List<GeneralShape>();
@@ -840,7 +833,7 @@ namespace Smash_Forge
         public List<Spawn> respawns { get; set; }
         public List<Bounds> cameraBounds { get; set; }
         public List<Bounds> blastzones { get; set; }
-        public List<EnemyGenerator> enemySpawns { get; set; }
+        public List<EnemyGenerator> enemyGenerators { get; set; }
         public List<DamageShape> damageShapes { get; set; }
         public List<ItemSpawner> itemSpawns { get; set; }
         public List<GeneralShape> generalShapes { get; set; }
@@ -851,19 +844,19 @@ namespace Smash_Forge
         /*type 1  - collisions
           type 2  - spawns
           type 3  - respawns
-          type 4  - camera bounds
+          type 4  - camera boundaries
           type 5  - death boundaries
-          type 6  - enemy generator
+          type 6  - enemy generators
           type 7  - ITEMPT_transform
           type 8  - ???
           type 9  - ITEMPT
           type 10 - fsAreaCam (and other fsArea's ? )
           type 11 - fsCamLimit
-          type 12 - damageShapes (damage sphere and damage capsule are the only ones I've seen, type 2 and 3 respectively)
+          type 12 - damage shapes (damage sphere and damage capsule are the only ones I've seen, type 2 and 3 respectively)
           type 13 - item spawners
           type 14 - general shapes (general rect, general path, etc.)
           type 15 - general points
-          type 16 - ???
+          type 16 - area lights?
           type 17 - FsStartPoint
           type 18 - ???
           type 19 - ???*/
@@ -871,7 +864,7 @@ namespace Smash_Forge
         public override void Read(string filename)
         {
             FileData f = new FileData(filename);
-            f.skip(0xA);//It's magic
+            f.skip(0xA); //It's magic
 
             f.skip(1);
             int collisionCount = f.readInt();
@@ -924,7 +917,7 @@ namespace Smash_Forge
             {
                 EnemyGenerator temp = new EnemyGenerator();
                 temp.read(f);
-                enemySpawns.Add(temp);
+                enemyGenerators.Add(temp);
             }
 
             f.skip(1);
@@ -1037,8 +1030,8 @@ namespace Smash_Forge
                 b.save(f);
 
             f.writeByte(1);
-            f.writeInt(enemySpawns.Count);
-            foreach (EnemyGenerator e in enemySpawns)
+            f.writeInt(enemyGenerators.Count);
+            foreach (EnemyGenerator e in enemyGenerators)
                 e.save(f);
 
             for (int i = 0; i < 5; i++)
@@ -1290,12 +1283,12 @@ namespace Smash_Forge
 
                     GL.Color4(Color.FromArgb(200, Color.Fuchsia));
                     foreach (GeneralShape s in generalShapes)
-                        DrawShape(s);
+                        DrawShape(s.shape, s.useStartPos, s.startPos);
                 }
 
                 if (Runtime.renderOtherLVDEntries)
                 {
-                    foreach (EnemyGenerator e in enemySpawns)
+                    foreach (EnemyGenerator e in enemyGenerators)
                         DrawEnemyGenerator(e);
 
                     foreach (DamageShape s in damageShapes)
@@ -1322,54 +1315,39 @@ namespace Smash_Forge
             Rendering.ShapeDrawing.DrawCube(pos, 3, true);
         }
 
-        public static void DrawShape(object obj)
+        public static void DrawShape(LVDShape s)
+        {
+            DrawShape(s, false, new Vector3(0, 0, 0));
+        }
+
+        public static void DrawShape(LVDShape s, bool useStartPos, Vector3 sPos)
         {
             GL.LineWidth(2);
 
-            LVDShape s;
-            bool useStartPos;
-            Vector3 sPos;
-
-            if (obj is LVDShape)
-            {
-                useStartPos = false;
+            if (!useStartPos)
                 sPos = new Vector3(0, 0, 0);
-                s = (LVDShape)obj;
-            }
-            else if (obj is GeneralShape)
-            {
-                GeneralShape g = (GeneralShape)obj;
-                useStartPos = g.useStartPos;
-                if (useStartPos)
-                    sPos = g.startPos;
-                else
-                    sPos = new Vector3(0, 0, 0);
-                s = new LVDShape(g);
-            }
-            else
-                throw new Exception($"DrawShape function only accepts objects of type 'LVDShape' or 'GeneralShape'; got type '{obj.GetType()}'");
 
             if (s.type == (int)LVDShapeType.Point)
             {
                 if (useStartPos)
                     Rendering.ShapeDrawing.DrawCube(sPos, 3, true);
                 else
-                    Rendering.ShapeDrawing.DrawCube(new Vector3(s.x1, s.y1, 0), 3, true);
+                    Rendering.ShapeDrawing.DrawCube(new Vector3(s.x, s.y, 0), 3, true);
             }
             else if (s.type == (int)LVDShapeType.Circle)
             {
                 if (useStartPos)
-                    Rendering.ShapeDrawing.drawCircleOutline(sPos, s.x2, 24);
+                    Rendering.ShapeDrawing.drawCircleOutline(sPos, s.radius, 24);
                 else
-                    Rendering.ShapeDrawing.drawCircleOutline(new Vector3(s.x1, s.y1, 0), s.x2, 24);
+                    Rendering.ShapeDrawing.drawCircleOutline(new Vector3(s.x, s.y, 0), s.radius, 24);
             }
             else if (s.type == (int)LVDShapeType.Rectangle)
             {
                 GL.Begin(PrimitiveType.LineLoop);
-                GL.Vertex3(s.x1 + sPos.X, s.y1 + sPos.Y, sPos.Z);
-                GL.Vertex3(s.x2 + sPos.X, s.y1 + sPos.Y, sPos.Z);
-                GL.Vertex3(s.x2 + sPos.X, s.y2 + sPos.Y, sPos.Z);
-                GL.Vertex3(s.x1 + sPos.X, s.y2 + sPos.Y, sPos.Z);
+                GL.Vertex3(s.left  + sPos.X, s.bottom + sPos.Y, sPos.Z);
+                GL.Vertex3(s.right + sPos.X, s.bottom + sPos.Y, sPos.Z);
+                GL.Vertex3(s.right + sPos.X, s.top    + sPos.Y, sPos.Z);
+                GL.Vertex3(s.left  + sPos.X, s.top    + sPos.Y, sPos.Z);
             }
             else if (s.type == (int)LVDShapeType.Path)
             {
@@ -1399,11 +1377,11 @@ namespace Smash_Forge
         public static void DrawEnemyGenerator(EnemyGenerator e)
         {
             GL.Color4(Color.FromArgb(200, Color.Orange));
-            foreach (LVDShape s in e.sections)
+            foreach (LVDShape s in e.spawns)
                 DrawShape(s);
 
             GL.Color4(Color.FromArgb(200, Color.White));
-            foreach (LVDShape s in e.sections2)
+            foreach (LVDShape s in e.zones)
                 DrawShape(s);
         }
 
@@ -1500,10 +1478,10 @@ namespace Smash_Forge
             GL.Color4(Color.FromArgb(128, color));
             GL.Begin(PrimitiveType.LineLoop);
 
-            GL.Vertex3(b.left+sPos[0], b.top+sPos[1], 0+sPos[2]);
-            GL.Vertex3(b.right+sPos[0], b.top+sPos[1], 0+sPos[2]);
-            GL.Vertex3(b.right+sPos[0], b.bottom+sPos[1], 0+sPos[2]);
-            GL.Vertex3(b.left+sPos[0], b.bottom+sPos[1], 0+sPos[2]);
+            GL.Vertex3(b.left  + sPos.X, b.top    + sPos.Y, sPos.Z);
+            GL.Vertex3(b.right + sPos.X, b.top    + sPos.Y, sPos.Z);
+            GL.Vertex3(b.right + sPos.X, b.bottom + sPos.Y, sPos.Z);
+            GL.Vertex3(b.left  + sPos.X, b.bottom + sPos.Y, sPos.Z);
 
             GL.End();
         }

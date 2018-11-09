@@ -618,7 +618,7 @@ namespace Smash_Forge
             shader.SetVector4("gsys_bake_st1", new Vector4(1, 1, 0, 0));
             shader.SetInt("enableCellShading", 0);
 
-            shader.SetVector3("colorId", ColorUtils.Vector4FromColor(Color.FromArgb(id)).Xyz);
+            shader.SetVector3("colorId", ColorUtils.GetVector3(Color.FromArgb(id)));
             shader.SetBoolToInt("drawId", drawId);
 
             //BOTW uses this shader so lets add in cell shading
@@ -1119,7 +1119,7 @@ namespace Smash_Forge
             public Vector3 pos2 = new Vector3();
         }
 
-        public class Mesh : TreeNode
+        public class Mesh : TreeNode, IBoundableModel
         {
             public List<Vertex> vertices = new List<Vertex>();
             public List<int> texHashs = new List<int>();
@@ -1146,6 +1146,12 @@ namespace Smash_Forge
             // Used to generate a unique color for viewport selection.
             private static List<int> previousDisplayIds = new List<int>();
             public int DisplayId { get { return displayId; } }
+
+            public Vector4 BoundingSphere
+            {
+                get; private set;
+            }
+
             private int displayId = 0;
 
             public int DisplayLODIndex = 0;
@@ -1499,7 +1505,7 @@ namespace Smash_Forge
                 }
             }
 
-            public void GenerateBoundingBoxes()
+            public void GenerateBoundingSpheres()
             {
                 //Set center and extent
                 //Each sub mesh has their own bounding + for BOTW/switch has per LOD mesh too
@@ -1510,7 +1516,8 @@ namespace Smash_Forge
                     vertexPositions.Add(vertex.pos);
                 }
 
-                Vector4 boundingSphere = SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(vertexPositions);
+                Vector4 boundingSphere = BoundingSphereGenerator.GenerateBoundingSphere(vertexPositions);
+                BoundingSphere = boundingSphere;
 
                 for (int i = 0; i < BoundingCount; i++)
                 {

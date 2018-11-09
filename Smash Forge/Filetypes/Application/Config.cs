@@ -278,6 +278,9 @@ namespace Smash_Forge
                         break;
 
                     //Discord Stuff
+                    case "discord_enabled":
+                        bool.TryParse(node.InnerText, out DiscordSettings.enabled);
+                        break;
                     case "image_key_mode":
                         int.TryParse(node.InnerText, out discordImageKey);
                         DiscordSettings.imageKeyMode = (DiscordSettings.ImageKeyMode)discordImageKey;
@@ -577,6 +580,7 @@ namespace Smash_Forge
         private static void AppendDiscordSettings(XmlDocument doc, XmlNode parentNode)
         {
             XmlNode discordNode = doc.CreateElement("DISCORDSETTINGS");
+            discordNode.AppendChild(createNode(doc, "discord_enabled", DiscordSettings.enabled.ToString()));
             discordNode.AppendChild(createNode(doc, "image_key_mode", ((int)DiscordSettings.imageKeyMode).ToString()));
             discordNode.AppendChild(createNode(doc, "user_image_key", DiscordSettings.userPickedImageKey));
             discordNode.AppendChild(createNode(doc, "use_user_mod_name", DiscordSettings.useUserModName.ToString()));

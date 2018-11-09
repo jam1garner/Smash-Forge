@@ -155,10 +155,10 @@ namespace Smash_Forge
             {
                 foreach (var texture in nut.glTexByHashId)
                 {
-                    if (!(nut.glTexByHashId[texture.Key] is SFGraphics.GLObjects.Textures.Texture2D))
+                    if (!(nut.glTexByHashId[texture.Key] is Texture2D))
                         continue;
 
-                    Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((SFGraphics.GLObjects.Textures.Texture2D)nut.glTexByHashId[texture.Key], 64, 64);
+                    Bitmap bitmap = TextureToBitmap.RenderBitmapUseExistingContext((Texture2D)nut.glTexByHashId[texture.Key], 64, 64);
                     imageList.Images.Add(texture.Key.ToString("X"), bitmap);
 
                     // StackOverflow makes the bad exceptions go away.
@@ -366,21 +366,6 @@ namespace Smash_Forge
                 currentMaterialList[currentMatIndex].dstFactor = value;
         }
 
-        public void SetValue(TextBox textBox, ComboBox combobox, Dictionary<int, string> dict, out int materialValue)
-        {
-            materialValue = -1;
-            int.TryParse(textBox.Text, out materialValue);
-            if (materialValue != -1)
-            {
-                string descriptionKey = "";
-                dict.TryGetValue(materialValue, out descriptionKey);
-                if (descriptionKey != "")
-                    combobox.Text = descriptionKey;
-            }
-            else
-                textBox.Text = "0";
-        }
-
         private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
         {
             foreach (int i in alphaFuncByMatValue.Keys)
@@ -407,11 +392,6 @@ namespace Smash_Forge
                 texParamsTableLayout.Enabled = false;
                 textureIdTB.Enabled = false;
             }
-            if (index >= currentMaterialList[currentMatIndex].textures.Count)
-            {
-                MessageBox.Show("Texture doesn't exist");
-                return;
-            }
 
             UpdateSelectedTextureControlValues(index);
 
@@ -434,18 +414,11 @@ namespace Smash_Forge
 
         private void flagsTB_TextChanged(object sender, EventArgs e)
         {
-            uint f = 0;
-            if (uint.TryParse(flagsTB.Text, NumberStyles.HexNumber, CultureInfo.CurrentCulture, out f))// && listView1.SelectedIndices.Count > 0
-            {
-                currentMaterialList[currentMatIndex].Flags = f;
-                flagsTB.BackColor = Color.White;
+            currentMaterialList[currentMatIndex].Flags = GuiTools.TryParseTBUint(flagsTB, true);
 
-                // Clear the texture list to prevent displaying duplicates
-                texturesListView.Clear();
-                FillForm();
-            }
-            else
-                flagsTB.BackColor = Color.Red;
+            // Clear the texture list to prevent displaying duplicates
+            texturesListView.Clear();
+            FillForm();
         }
 
         private void textureIdTB_TextChanged(object sender, EventArgs e)
@@ -655,7 +628,7 @@ namespace Smash_Forge
                     GuiTools.UpdateTrackBarFromValue(value, param1TrackBar, 0, max);
             }
 
-            UpdateButtonColor();
+            UpdatePropertyButtonColor();
         }
 
         private void ParseMaterialHashTBText()
@@ -675,7 +648,7 @@ namespace Smash_Forge
             if (enableParam2SliderUpdates)
                 GuiTools.UpdateTrackBarFromValue(value, param2TrackBar, 0, max);
 
-            UpdateButtonColor();
+            UpdatePropertyButtonColor();
         }
 
         private void param3TB_TextChanged(object sender, EventArgs e)
@@ -688,7 +661,7 @@ namespace Smash_Forge
             if (enableParam3SliderUpdates)
                 GuiTools.UpdateTrackBarFromValue(value, param3TrackBar, 0, max);
 
-            UpdateButtonColor();
+            UpdatePropertyButtonColor();
         }
 
         private void param4TB_TextChanged(object sender, EventArgs e)
@@ -701,7 +674,7 @@ namespace Smash_Forge
             if (enableParam4SliderUpdates)
                 GuiTools.UpdateTrackBarFromValue(value, param4TrackBar, 0, max);
 
-            UpdateButtonColor();
+            UpdatePropertyButtonColor();
         }
 
         private void SetParamLabelsAndToolTips(Params.MatParam matParam)
@@ -781,15 +754,6 @@ namespace Smash_Forge
             if (currentMaterialList[currentMatIndex].textures.Count < 4)
             {
                 currentMaterialList[currentMatIndex].textures.Add(NUD.MatTexture.GetDefault());
-                FillForm();
-            }
-        }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            if (texturesListView.SelectedItems.Count > 0 && currentMaterialList[currentMatIndex].textures.Count > 1)
-            {
-                currentMaterialList[currentMatIndex].textures.RemoveAt(texturesListView.Items.IndexOf(texturesListView.SelectedItems[0]));
                 FillForm();
             }
         }
@@ -893,30 +857,18 @@ namespace Smash_Forge
             }
         }
 
-        private void texturesListView_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if(e.KeyChar == 'd' && texturesListView.SelectedIndices.Count > 0)
-            {
-                if(currentMaterialList[currentMatIndex].textures.Count > 1)
-                {
-                    currentMaterialList[currentMatIndex].textures.RemoveAt(texturesListView.SelectedIndices[0]);
-                    FillForm();
-                }
-            }
-        }
-
         private void NUDMaterialEditor_Scroll(object sender, ScrollEventArgs e)
         {
             RenderTexture();
         }
 
-        private void UpdateButtonColor()
+        private void UpdatePropertyButtonColor()
         {
             try
             {
                 string selectedMatPropKey = propertiesListView.SelectedItems[0].Text;
                 float[] values = currentMaterialList[currentMatIndex].entries[selectedMatPropKey];
-                colorSelect.BackColor = ColorUtils.ColorFromVector3(new OpenTK.Vector3(values[0], values[1], values[2]));
+                colorSelect.BackColor = ColorUtils.GetColor(values[0], values[1], values[2]);
             }
             catch (ArgumentOutOfRangeException)
             {

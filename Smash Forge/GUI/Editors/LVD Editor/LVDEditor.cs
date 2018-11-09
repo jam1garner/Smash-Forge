@@ -23,6 +23,7 @@ namespace Smash_Forge
         {
             HideAllGroupBoxes();
             physicsMatComboBox.DataSource = Enum.GetValues(typeof(CollisionMatType));
+            shapeTypeComboBox.DataSource = Enum.GetValues(typeof(LVDShapeType));
         }
 
         public LVD LVD;
@@ -30,8 +31,7 @@ namespace Smash_Forge
         public LVDEntry currentEntry;
         private TreeNode currentTreeNode;
         private CollisionMat currentMat;
-        private Spawn currentPoint;
-        private Bounds currentBounds;
+        private LVDShape currentShape;
 
         private DAT.JOBJ currentJobj;
         public DAT datToPrerender = null;
@@ -59,8 +59,10 @@ namespace Smash_Forge
             cliffGroup.Visible = false;
             point2dGroup.Visible = false;
             boundsGroup.Visible = false;
+            enemyGeneratorGroup.Visible = false;
             itemSpawnerGroup.Visible = false;
             point3dGroup.Visible = false;
+            generalShapeGroup.Visible = false;
             shapeGroup.Visible = false;
             damageShapeGroup.Visible = false;
             meleeCollisionGroup.Visible = false;
@@ -71,8 +73,7 @@ namespace Smash_Forge
             currentEntry = null;
             currentTreeNode = null;
             currentMat = null;
-            currentPoint = null;
-            currentBounds = null;
+            currentShape = null;
             nameTB.Text = "";
             subnameTB.Text = "";
             HideAllGroupBoxes();
@@ -121,10 +122,13 @@ namespace Smash_Forge
             {
                 OpenBounds(entry);
             }
+            else if (entry is EnemyGenerator)
+            {
+                OpenEnemyGenerator((EnemyGenerator)entry);
+            }
             else if (entry is ItemSpawner)
             {
                 OpenItemSpawner(entry);
-
             }
             else if (entry is GeneralPoint)
             {
@@ -167,14 +171,16 @@ namespace Smash_Forge
                 meleePolygons.Nodes.Add(new TreeNode($"Polygon {k++}") { Tag = ate });
         }
 
-        private void OpenGeneralShape(GeneralShape shape)
+        private void OpenShape(LVDShape shape)
         {
             shapeGroup.Visible = true;
 
-            rectLowerX.Value = (decimal)shape.x1;
-            rectLowerY.Value = (decimal)shape.y1;
-            rectUpperX.Value = (decimal)shape.x2;
-            rectUpperY.Value = (decimal)shape.y2;
+            shapeTypeComboBox.SelectedItem = (LVDShapeType)shape.type;
+
+            shapeValue1UpDown.Value = (decimal)shape.shapeValue1;
+            shapeValue2UpDown.Value = (decimal)shape.shapeValue2;
+            shapeValue3UpDown.Value = (decimal)shape.shapeValue3;
+            shapeValue4UpDown.Value = (decimal)shape.shapeValue4;
 
             treeViewPath.Nodes.Clear();
             for (int i = 0; i < shape.points.Count; ++i)
@@ -182,37 +188,43 @@ namespace Smash_Forge
             renamePathTreeview();
 
             if (shape.type == (int)LVDShapeType.Point)
-                shapeGroup.Text = "Point (Shape)";
+            {
+                this.label24.Text = "X";
+                this.label25.Text = "Y";
+                this.label26.Text = "";
+                this.label27.Text = "";
+            }
             else if (shape.type == (int)LVDShapeType.Circle)
-                shapeGroup.Text = "Circle (Shape)";
-            else if (shape.type == (int)LVDShapeType.Rectangle)
-                shapeGroup.Text = "Rectangle (Shape)";
-            else if (shape.type == (int)LVDShapeType.Path)
-                shapeGroup.Text = "Path (Shape)";
-            /*if (shape.type == (int)LVDShapeType.Point)
             {
-                point2dGroup.Visible = true;
-                xPointUpDown.Value = (decimal)shape.x1;
-                yPointUpDown.Value = (decimal)shape.y1;
+                this.label24.Text = "X";
+                this.label25.Text = "Y";
+                this.label26.Text = "Radius";
+                this.label27.Text = "";
             }
             else if (shape.type == (int)LVDShapeType.Rectangle)
             {
-                shapeGroup.Visible = true;
-                currentGeneralRect = shape;
-                rectUpperX.Value = (Decimal)shape.x2;
-                rectUpperY.Value = (Decimal)shape.y2;
-                rectLowerX.Value = (Decimal)shape.x1;
-                rectLowerY.Value = (Decimal)shape.y1;
+                this.label24.Text = "X-";
+                this.label25.Text = "X+";
+                this.label26.Text = "Y-";
+                this.label27.Text = "Y+";
             }
             else if (shape.type == (int)LVDShapeType.Path)
             {
-                pathGroup.Visible = true;
-                currentGeneralPath = shape;
-                treeViewPath.Nodes.Clear();
-                int j = 0;
-                foreach (Vector2 v in shape.points)
-                    treeViewPath.Nodes.Add(new TreeNode($"Point {++j} ({v.X},{v.Y})") { Tag = v });
-            }*/
+                this.label24.Text = "";
+                this.label25.Text = "";
+                this.label26.Text = "";
+                this.label27.Text = "";
+            }
+        }
+
+        private void OpenGeneralShape(GeneralShape gshape)
+        {
+            generalShapeGroup.Visible = true;
+
+            generalShapeIdUpDown.Value = gshape.id;
+
+            currentShape = gshape.shape;
+            OpenShape(currentShape);
         }
 
         private void OpenDamageShape(DamageShape shape)
@@ -227,6 +239,28 @@ namespace Smash_Forge
             damageShapeRadiusUpDown.Value = (Decimal)shape.radius;
             damageShapeUnknown1UpDown.Value = shape.dsUnk1;
             damageShapeUnknown2UpDown.Value = shape.dsUnk2;
+        }
+
+        private void OpenEnemyGenerator(EnemyGenerator egen)
+        {
+            enemyGeneratorGroup.Visible = true;
+
+            enemyGeneratorIdUpDown.Value = egen.id;
+            enemyGeneratorUnknown1UpDown.Value = egen.egUnk1;
+            enemyGeneratorUnknown2UpDown.Value = egen.egUnk2;
+
+            enemyGeneratorSpawnTreeView.Nodes.Clear();
+            for (int i = 0; i < egen.spawns.Count; i++)
+                enemyGeneratorSpawnTreeView.Nodes.Add(new TreeNode($"{i} - {(LVDShapeType)egen.spawns[i].type}"));
+            enemyGeneratorZoneTreeView.Nodes.Clear();
+            for (int i = 0; i < egen.zones.Count; i++)
+                enemyGeneratorZoneTreeView.Nodes.Add(new TreeNode($"{i} - {(LVDShapeType)egen.zones[i].type}"));
+
+            label64.Visible = false;
+            enemyGeneratorSubIdUpDown.Visible = false;
+
+            shapeGroup.Visible = false;
+            currentShape = null;
         }
 
         private void OpenGeneralPoint(GeneralPoint point)
@@ -251,17 +285,15 @@ namespace Smash_Forge
         private void OpenBounds(LVDEntry entry)
         {
             boundsGroup.Visible = true;
-            currentBounds = (Bounds)entry;
-            topValUpDown.Value = (decimal)currentBounds.top;
-            rightValUpDown.Value = (decimal)currentBounds.right;
-            leftVal.Value = (decimal)currentBounds.left;
-            bottomVal.Value = (decimal)currentBounds.bottom;
+            topValUpDown.Value = (decimal)((Bounds)currentEntry).top;
+            rightValUpDown.Value = (decimal)((Bounds)currentEntry).right;
+            leftVal.Value = (decimal)((Bounds)currentEntry).left;
+            bottomVal.Value = (decimal)((Bounds)currentEntry).bottom;
         }
 
         private void OpenSpawn(LVDEntry entry)
         {
             point2dGroup.Visible = true;
-            currentPoint = (Spawn)entry;
             xPointUpDown.Value = (decimal)((Spawn)entry).x;
             yPointUpDown.Value = (decimal)((Spawn)entry).y;
         }
@@ -440,29 +472,22 @@ namespace Smash_Forge
             if (currentEntry is Spawn)
             {
                 if (sender == xPointUpDown)
-                    currentPoint.x = (float)xPointUpDown.Value;
+                    ((Spawn)currentEntry).x = (float)xPointUpDown.Value;
                 if (sender == yPointUpDown)
-                    currentPoint.y = (float)yPointUpDown.Value;
-            }
-            else if (currentEntry is GeneralShape)
-            {
-                if (sender == xPointUpDown)
-                    ((GeneralShape)currentEntry).x1 = (float)xPointUpDown.Value;
-                if (sender == yPointUpDown)
-                    ((GeneralShape)currentEntry).y1 = (float)yPointUpDown.Value;
+                    ((Spawn)currentEntry).y = (float)yPointUpDown.Value;
             }
         }
 
         private void boundsChanged(object sender, EventArgs e)
         {
             if (sender == topValUpDown)
-                currentBounds.top = (float)topValUpDown.Value;
+                ((Bounds)currentEntry).top = (float)topValUpDown.Value;
             if (sender == bottomVal)
-                currentBounds.bottom = (float)bottomVal.Value;
+                ((Bounds)currentEntry).bottom = (float)bottomVal.Value;
             if (sender == leftVal)
-                currentBounds.left = (float)leftVal.Value;
+                ((Bounds)currentEntry).left = (float)leftVal.Value;
             if (sender == rightValUpDown)
-                currentBounds.right = (float)rightValUpDown.Value;
+                ((Bounds)currentEntry).right = (float)rightValUpDown.Value;
         }
 
         private void addVertButtonClicked(object sender, EventArgs e)
@@ -678,23 +703,42 @@ namespace Smash_Forge
                 point.z = (float)pointShapeZUpDown.Value;
         }
 
-        private void rectValueChanged(object sender, EventArgs e)
+        private void generalShape_ValueChanged(object sender, EventArgs e)
         {
-            GeneralShape shape = (GeneralShape)currentEntry;
+            GeneralShape gshape = (GeneralShape)currentEntry;
 
-            if (sender == rectLowerX)
-                shape.x1 = (float)rectLowerX.Value;
-            if (sender == rectLowerY)
-                shape.y1 = (float)rectLowerY.Value;
-            if(sender == rectUpperX)
-                shape.x2 = (float)rectUpperX.Value;
-            if (sender == rectUpperY)
-                shape.y2 = (float)rectUpperY.Value;
+            if (sender == generalShapeIdUpDown)
+                gshape.id = (int)generalShapeIdUpDown.Value;
+        }
+
+        private void shapeTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (currentShape == null)
+                return;
+            currentShape.type = ((int)Enum.Parse(typeof(LVDShapeType), shapeTypeComboBox.Text));
+            OpenShape(currentShape);
+
+            if (currentEntry is EnemyGenerator)
+                renameEnemyGeneratorTreeViews();
+        }
+
+        private void shapeValueChanged(object sender, EventArgs e)
+        {
+            LVDShape shape = currentShape;
+
+            if (sender == shapeValue1UpDown)
+                shape.shapeValue1 = (float)shapeValue1UpDown.Value;
+            if (sender == shapeValue2UpDown)
+                shape.shapeValue2 = (float)shapeValue2UpDown.Value;
+            if (sender == shapeValue3UpDown)
+                shape.shapeValue3 = (float)shapeValue3UpDown.Value;
+            if (sender == shapeValue4UpDown)
+                shape.shapeValue4 = (float)shapeValue4UpDown.Value;
         }
 
         private void treeViewPath_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            GeneralShape shape = (GeneralShape)currentEntry;
+            LVDShape shape = currentShape;
             int selectionIndex = treeViewPath.SelectedNode.Index;
             Vector2 vert = shape.points[selectionIndex];
 
@@ -704,7 +748,7 @@ namespace Smash_Forge
 
         private void pathValueChanged(object sender, EventArgs e)
         {
-            GeneralShape shape = (GeneralShape)currentEntry;
+            LVDShape shape = currentShape;
             int selectionIndex = treeViewPath.SelectedNode.Index;
             Vector2 vert = shape.points[selectionIndex];
 
@@ -719,7 +763,7 @@ namespace Smash_Forge
 
         private void renamePathTreeview()
         {
-            GeneralShape shape = (GeneralShape)currentEntry;
+            LVDShape shape = currentShape;
 
             for (int i = 0; i < shape.points.Count; ++i)
                 treeViewPath.Nodes[i].Text = $"Point {i + 1} ({shape.points[i].X},{shape.points[i].Y})";
@@ -728,7 +772,7 @@ namespace Smash_Forge
         //Add path point
         private void addPathPointButton_Click(object sender, EventArgs e)
         {
-            GeneralShape shape = (GeneralShape)currentEntry;
+            LVDShape shape = currentShape;
 
             int selectionIndex;
             if (treeViewPath.SelectedNode != null)
@@ -744,7 +788,7 @@ namespace Smash_Forge
         //Remove path point
         private void removePathPointButton_Click(object sender, EventArgs e)
         {
-            GeneralShape shape = (GeneralShape)currentEntry;
+            LVDShape shape = currentShape;
             if (shape.points.Count == 0)
                 return;
 
@@ -781,6 +825,135 @@ namespace Smash_Forge
                 shape.dsUnk1 = (byte)damageShapeUnknown1UpDown.Value;
             if (sender == damageShapeUnknown2UpDown)
                 shape.dsUnk2 = (int)damageShapeUnknown2UpDown.Value;
+        }
+
+        private void enemyGenerator_ValueChanged(object sender, EventArgs e)
+        {
+            EnemyGenerator egen = (EnemyGenerator)currentEntry;
+
+            if (sender == enemyGeneratorIdUpDown)
+                egen.id = (int)enemyGeneratorIdUpDown.Value;
+            if (sender == enemyGeneratorUnknown1UpDown)
+                egen.egUnk1 = (int)enemyGeneratorUnknown1UpDown.Value;
+            if (sender == enemyGeneratorUnknown2UpDown)
+                egen.egUnk2 = (int)enemyGeneratorUnknown2UpDown.Value;
+            if (sender == enemyGeneratorSubIdUpDown)
+            {
+                if (enemyGeneratorSpawnTreeView.SelectedNode != null)
+                {
+                    int selectionIndex = enemyGeneratorSpawnTreeView.SelectedNode.Index;
+                    egen.spawnIds[selectionIndex] = (int)enemyGeneratorSubIdUpDown.Value;
+                }
+                else if (enemyGeneratorZoneTreeView.SelectedNode != null)
+                {
+                    int selectionIndex = enemyGeneratorZoneTreeView.SelectedNode.Index;
+                    egen.zoneIds[selectionIndex] = (int)enemyGeneratorSubIdUpDown.Value;
+                }
+            }
+        }
+
+        private void enemyGeneratorSpawnPlusButton_Click(object sender, EventArgs e)
+        {
+            EnemyGenerator egen = (EnemyGenerator)currentEntry;
+
+            int selectionIndex;
+            if (enemyGeneratorSpawnTreeView.SelectedNode != null)
+                selectionIndex = enemyGeneratorSpawnTreeView.SelectedNode.Index + 1;
+            else
+                selectionIndex = egen.spawns.Count;
+
+            egen.spawns.Insert(selectionIndex, new LVDShape(1));
+            egen.spawnIds.Insert(selectionIndex, new int());
+            enemyGeneratorSpawnTreeView.Nodes.Insert(selectionIndex, new TreeNode());
+            renameEnemyGeneratorTreeViews();
+        }
+
+        private void enemyGeneratorSpawnMinusButton_Click(object sender, EventArgs e)
+        {
+            EnemyGenerator egen = (EnemyGenerator)currentEntry;
+            if (egen.spawns.Count == 0)
+                return;
+
+            int selectionIndex;
+            if (enemyGeneratorSpawnTreeView.SelectedNode != null)
+                selectionIndex = enemyGeneratorSpawnTreeView.SelectedNode.Index;
+            else
+                selectionIndex = egen.spawns.Count - 1;
+
+            egen.spawns.RemoveAt(selectionIndex);
+            egen.spawnIds.RemoveAt(selectionIndex);
+            enemyGeneratorSpawnTreeView.Nodes.RemoveAt(selectionIndex);
+            renameEnemyGeneratorTreeViews();
+        }
+
+        private void enemyGeneratorZonePlusButton_Click(object sender, EventArgs e)
+        {
+            EnemyGenerator egen = (EnemyGenerator)currentEntry;
+
+            int selectionIndex;
+            if (enemyGeneratorZoneTreeView.SelectedNode != null)
+                selectionIndex = enemyGeneratorZoneTreeView.SelectedNode.Index + 1;
+            else
+                selectionIndex = egen.zones.Count;
+
+            egen.zones.Insert(selectionIndex, new LVDShape(3));
+            egen.zoneIds.Insert(selectionIndex, new int());
+            enemyGeneratorZoneTreeView.Nodes.Insert(selectionIndex, new TreeNode());
+            renameEnemyGeneratorTreeViews();
+        }
+
+        private void enemyGeneratorZoneMinusButton_Click(object sender, EventArgs e)
+        {
+            EnemyGenerator egen = (EnemyGenerator)currentEntry;
+            if (egen.zones.Count == 0)
+                return;
+
+            int selectionIndex;
+            if (enemyGeneratorZoneTreeView.SelectedNode != null)
+                selectionIndex = enemyGeneratorZoneTreeView.SelectedNode.Index;
+            else
+                selectionIndex = egen.zones.Count - 1;
+
+            egen.zones.RemoveAt(selectionIndex);
+            egen.zoneIds.RemoveAt(selectionIndex);
+            enemyGeneratorZoneTreeView.Nodes.RemoveAt(selectionIndex);
+            renameEnemyGeneratorTreeViews();
+        }
+
+        private void renameEnemyGeneratorTreeViews()
+        {
+            EnemyGenerator egen = (EnemyGenerator)currentEntry;
+
+            for (int i = 0; i < egen.spawns.Count; i++)
+                enemyGeneratorSpawnTreeView.Nodes[i].Text = $"{i} - {(LVDShapeType)egen.spawns[i].type}";
+            for (int i = 0; i < egen.zones.Count; i++)
+                enemyGeneratorZoneTreeView.Nodes[i].Text = $"{i} - {(LVDShapeType)egen.zones[i].type}";
+        }
+
+        private void enemyGeneratorTreeViews_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            EnemyGenerator egen = (EnemyGenerator)currentEntry;
+
+            if (sender == enemyGeneratorSpawnTreeView)
+            {
+                enemyGeneratorZoneTreeView.SelectedNode = null;
+                int selectionIndex = enemyGeneratorSpawnTreeView.SelectedNode.Index;
+                label64.Text = "Spawn ID";
+                enemyGeneratorSubIdUpDown.Value = egen.spawnIds[selectionIndex];
+                currentShape = egen.spawns[selectionIndex];
+            }
+            if (sender == enemyGeneratorZoneTreeView)
+            {
+                enemyGeneratorSpawnTreeView.SelectedNode = null;
+                int selectionIndex = enemyGeneratorZoneTreeView.SelectedNode.Index;
+                label64.Text = "Zone ID";
+                enemyGeneratorSubIdUpDown.Value = egen.zoneIds[selectionIndex];
+                currentShape = egen.zones[selectionIndex];
+            }
+
+            label64.Visible = true;
+            enemyGeneratorSubIdUpDown.Visible = true;
+            OpenShape(currentShape);
         }
 
         #region meleeCollisions

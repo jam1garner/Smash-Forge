@@ -20,38 +20,71 @@
         </member>
         <member name="T:SFGraphics.Utils.BoundingSphereGenerator">
             <summary>
-            Generates bounding spheres for a collection of vertices.
-            This can be used with <see cref="!:SFGraphics.Cameras.Camera.FrameBoundingSphere(Vector3, float, float)"/> to make models visible in the viewport.
+            Contains methods to generate a bounding sphere for a collection of vertices.
             </summary>
         </member>
         <member name="M:SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.List{OpenTK.Vector3})">
             <summary>
-            The center is the average of the min and max values for X, Y, Z.
-            The radius is calculated based on the smallest sphere that will contain all of <paramref name="vertexPositions"/>.
+            Generates a close to optimal sphere that contains all of the given points
+            within the sphere.
             Returns Vector4(center.Xyz, radius).
             </summary>
-            <param name="vertexPositions"></param>
+            <param name="points">The points that should be contained within the bounding sphere</param>
             <returns>Vector4(center.Xyz, radius)</returns>
+        </member>
+        <member name="M:SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.List{OpenTK.Vector4})">
+            <summary>
+            Generates a single bounding sphere that contains all the given
+            bounding spheres.
+            </summary>
+            <param name="boundingSpheres">The list of bounding sphere centers (xyz) and radii (w)</param>
+            <returns>A single bounding sphere that contains <paramref name="boundingSpheres"/></returns>
         </member>
         <member name="T:SFGraphics.Utils.ColorUtils">
             <summary>
             Conversion methods for HSV, RGB, color temperature, and system Colors using floats or OpenTK vectors.
             </summary>
         </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.Vector4FromColor(System.Drawing.Color)">
+        <member name="M:SFGraphics.Utils.ColorUtils.GetVector4(System.Drawing.Color)">
             <summary>
             Converts the byte channel values of the input color [0,255] to float [0, 1]. XYZW = RGBA.
             </summary>
             <param name="color">the RGBA color</param>
             <returns><paramref name="color"/> converted to a float vector</returns>
         </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.ColorFromVector3(OpenTK.Vector3)">
+        <member name="M:SFGraphics.Utils.ColorUtils.GetVector3(System.Drawing.Color)">
             <summary>
-            Creates a <see cref="T:System.Drawing.Color"/> from <paramref name="color"/>.
-            Values are scaled by 255 and clamped to the range [0, 255].
+            Converts the byte channel values of the input color [0,255] to float [0, 1]. XYZ = RGB.
+            </summary>
+            <param name="color">the RGBA color</param>
+            <returns><paramref name="color"/> converted to a float vector</returns>
+        </member>
+        <member name="M:SFGraphics.Utils.ColorUtils.GetColor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Color"/> from float components
+            scaled by 255 and clamped to the range [0, 255].
+            </summary>
+            <param name="r">The red component</param>
+            <param name="g">The green component</param>
+            <param name="b">The blue component</param>
+            <param name="a">The alpha component</param>
+            <returns>A new color from the given floats</returns>
+        </member>
+        <member name="M:SFGraphics.Utils.ColorUtils.GetColor(OpenTK.Vector3)">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Color"/> from float components
+            scaled by 255 and clamped to the range [0, 255].
             </summary>
             <param name="color">The input color</param>
-            <returns>A new color</returns>
+            <returns>A new color from the given floats</returns>
+        </member>
+        <member name="M:SFGraphics.Utils.ColorUtils.GetColor(OpenTK.Vector4)">
+            <summary>
+            Creates a <see cref="T:System.Drawing.Color"/> from float components
+            scaled by 255 and clamped to the range [0, 255].
+            </summary>
+            <param name="color">The input color</param>
+            <returns>A new color from the given floats</returns>
         </member>
         <member name="M:SFGraphics.Utils.ColorUtils.HsvToRgb(System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Single@)">
             <summary>
@@ -64,17 +97,6 @@
             <param name="g">The resulting green component</param>
             <param name="b">The resulting blue component</param>
         </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.HsvToRgb(OpenTK.Vector3)">
-            <summary>
-            Calculates a floating point RGB color given HSV values.
-            </summary>
-            <param name="hsv">
-            X: Hue in range [0.0,1.0],
-            Y: Saturation in range [0.0,1.0],
-            Z: Value
-            </param>
-            <returns>The given HSV color in RGB</returns>
-        </member>
         <member name="M:SFGraphics.Utils.ColorUtils.RgbToHsv(System.Single,System.Single,System.Single,System.Single@,System.Single@,System.Single@)">
             <summary>
             Updates HSV values given an RGB color.
@@ -86,20 +108,11 @@
             <param name="g">The green component</param>
             <param name="b">The blue component</param>
         </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.RgbToHsv(OpenTK.Vector3)">
-            <summary>
-            Converts the floating point color in RGB to HSV. 
-            output.X: hue in range [0,1], output.Y: saturation in range [0,1], 
-            output.Z: value.
-            </summary>
-            <param name="rgb"></param>
-            <returns>The result float HSV values</returns>
-        </member>
-        <member name="M:SFGraphics.Utils.ColorUtils.ColorTemp2RGB(System.Single,System.Single@,System.Single@,System.Single@)">
+        <member name="M:SFGraphics.Utils.ColorUtils.GetRgb(System.Single,System.Single@,System.Single@,System.Single@)">
             <summary>
             Calculates a visually similar RGB color to a given blackbody temperature.
             </summary>
-            <param name="temp">The color temperature in Kelvin. Ex: temp = 6500 for a calibrated PC monitor.</param>
+            <param name="temperatureKelvin">The color temperature in Kelvin. Ex: temp = 6500 for a calibrated PC monitor.</param>
             <param name="r">The resulting red component</param>
             <param name="g">The resulting green component</param>
             <param name="b">The resulting blue component</param>
