@@ -1,18 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data;
+using System.IO;
+using Smash_Forge.GUI.Menus;
 using System.Windows.Forms;
+using Smash_Forge.Rendering;
+using OpenTK.Graphics.OpenGL;
+using Smash_Forge.Rendering.Meshes;
+using SFGraphics.GLObjects.Shaders;
+using OpenTK;
+using SFGraphics.GLObjects.Textures;
+using SFGraphics.GLObjects.GLObjectManagement;
 
 namespace Smash_Forge
 {
     public partial class LMList : EditorBase
     {
         public Lumen Lumen;
+        public NUT Nut;
 
         public LMList(string fileName = null)
         {
@@ -27,6 +30,7 @@ namespace Smash_Forge
             treeView1.Nodes.Add(positionsNode);
             treeView1.Nodes.Add(boundsNode);
             treeView1.Nodes.Add(atlasNode);
+            treeView1.Nodes.Add(shapesNode);
 
 
             fillList();
@@ -39,6 +43,7 @@ namespace Smash_Forge
         public TreeNode positionsNode = new TreeNode("Positions");
         public TreeNode boundsNode = new TreeNode("Bounds");
         public TreeNode atlasNode = new TreeNode("Atlases");
+        public TreeNode shapesNode = new TreeNode("Shapes");
 
 
         public void fillList()
@@ -47,6 +52,9 @@ namespace Smash_Forge
             colorNode.Nodes.Clear();
             transformNode.Nodes.Clear();
             positionsNode.Nodes.Clear();
+            boundsNode.Nodes.Clear();
+            atlasNode.Nodes.Clear();
+            shapesNode.Nodes.Clear();
 
             if (Lumen != null)
             {
@@ -73,6 +81,15 @@ namespace Smash_Forge
                 for (int i = 0; i < Lumen.Atlases.Count; i++)
                 {
                     atlasNode.Nodes.Add(new TreeNode("Atlas 0x" + i.ToString("X")));
+                }
+                for (int i = 0; i < Lumen.Shapes.Count; i++)
+                {
+                    TreeNode newNode = new TreeNode("Shape 0x" + i.ToString("X"));
+                    for (int j = 0; j < Lumen.Shapes[i].numGraphics; j++)
+                    {
+                        newNode.Nodes.Add("Graphic 0x" + j.ToString("X"));
+                    }
+                    shapesNode.Nodes.Add(newNode);
                 }
             }
         }
@@ -125,6 +142,14 @@ namespace Smash_Forge
                     tbl.Rows.Add("Width", Lumen.Atlases[e.Node.Index].width);
                     tbl.Rows.Add("Height", Lumen.Atlases[e.Node.Index].height);
                 }
+                else if (e.Node.Text.StartsWith("Graphic 0x"))
+                {
+                    string filename = (Path.GetDirectoryName(Lumen.Filename) + "\\img-" + (e.Node.Index.ToString("00000")) + ".nut");
+                    Nut = new NUT(filename);
+                    Nut.RefreshGlTexturesByHashId();
+                    LMUVViewer UvViewer = new LMUVViewer(Lumen, Nut, e.Node.Parent.Index, e.Node.Index);
+                    UvViewer.Show();
+                }
                 else if (e.Node.Parent.Text == "Unk")
                 {
 
@@ -134,6 +159,7 @@ namespace Smash_Forge
         }
         private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
+            Edited = true;
             int indexNum = treeView1.SelectedNode.Index;
             try
             {
@@ -190,6 +216,7 @@ namespace Smash_Forge
             byte[] n = Lumen.Rebuild();
             o.writeBytes(n);
             o.save(Lumen.Filename);
+            Edited = false;
         }
     }
 }
