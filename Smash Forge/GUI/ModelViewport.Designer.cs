@@ -60,7 +60,7 @@
             this.beginButton = new System.Windows.Forms.Button();
             this.prevButton = new System.Windows.Forms.Button();
             this.playButton = new System.Windows.Forms.Button();
-            this.glViewport = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(new OpenTK.Graphics.ColorFormat(8, 8, 8, 8), 24, 8, 16));
+            this.glViewport = new SFGraphics.Controls.GLViewport();
             this.viewportPanel = new System.Windows.Forms.Panel();
             this.toolStrip1.SuspendLayout();
             this.animationGroupBox.SuspendLayout();
@@ -480,7 +480,7 @@
 
         #endregion
 
-        public OpenTK.GLControl glViewport;
+        public SFGraphics.Controls.GLViewport glViewport;
         private System.Windows.Forms.GroupBox animationGroupBox;
         private System.Windows.Forms.Button playButton;
         private System.Windows.Forms.Button endButton;

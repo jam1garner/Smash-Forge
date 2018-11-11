@@ -312,12 +312,12 @@
         </member>
         <member name="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.Width">
             <summary>
-            All attached textures, renderbuffers, etc are resized when set. The framebuffer's contents will not be preserved when resizing.
+            The width of all attachments in pixels.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.Height">
             <summary>
-            All attached textures, renderbuffers, etc are resized when set. The framebuffer's contents will not be preserved when resizing.
+            The height of all attachments in pixels.
             </summary>
         </member>
         <member name="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.Attachments">
@@ -327,7 +327,8 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.#ctor(OpenTK.Graphics.OpenGL.FramebufferTarget)">
             <summary>
-            Generates an incomplete framebuffer of the specified target with no attachments. 
+            Generates an incomplete framebuffer of the specified target with no attachments.
+            The dimensions are invalid until an attachment is added.
             </summary>
             <param name="framebufferTarget">The target to which <see cref="F:SFGraphics.GLObjects.GLObject.Id"/> is bound</param>
         </member>
@@ -355,10 +356,11 @@
         <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.AddAttachment(OpenTK.Graphics.OpenGL.FramebufferAttachment,SFGraphics.GLObjects.Framebuffers.IFramebufferAttachment)">
             <summary>
             Attaches <paramref name="attachment"/> to <paramref name="attachmentPoint"/>.
-            Draw and read buffers must be configured separately.
+            Sets <see cref="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.Width"/> and <see cref="P:SFGraphics.GLObjects.Framebuffers.Framebuffer.Height"/> if this is the first attachment.
             </summary>
             <param name="attachmentPoint">The target attachment point</param>
             <param name="attachment">The object to attach</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">The attachment dimensions do not match the framebuffer's dimensions.</exception>
         </member>
         <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.Bind">
             <summary>
@@ -409,6 +411,16 @@
             <param name="attachment">The attachment point</param>
             <param name="target">The target framebuffer for attachment</param>
         </member>
+        <member name="P:SFGraphics.GLObjects.Framebuffers.IFramebufferAttachment.Width">
+            <summary>
+            The width of the attachment in pixels.
+            </summary>
+        </member>
+        <member name="P:SFGraphics.GLObjects.Framebuffers.IFramebufferAttachment.Height">
+            <summary>
+            The height of the attachment in pixels.
+            </summary>
+        </member>
         <member name="T:SFGraphics.GLObjects.GLObjectManagement.GLObjectManager">
             <summary>
             <see cref="T:SFGraphics.GLObjects.GLObject"/> and all subclasses use reference counting 
@@ -424,7 +436,7 @@
         <member name="M:SFGraphics.GLObjects.GLObjectManagement.GLObjectManager.DeleteUnusedGLObjects">
             <summary>
             The appropriate GL.Delete() function is called for all <see cref="T:SFGraphics.GLObjects.GLObject"/> instances
-            with no references.
+            that have been finalized.
             </summary>
         </member>
         <member name="T:SFGraphics.GLObjects.GLObjectManagement.ReferenceCounting">
@@ -1196,9 +1208,9 @@
             <summary>
             Initializes the format information for an uncompressed format.
             </summary>
-            <param name="pixelInternalFormat"></param>
-            <param name="pixelFormat"></param>
-            <param name="pixelType"></param>
+            <param name="pixelInternalFormat">The format used by OpenGL to store the data</param>
+            <param name="pixelFormat">The format of the color components for the input data</param>
+            <param name="pixelType">The data type of each color component for the input data</param>
             <exception cref="T:System.ArgumentException"><paramref name="pixelInternalFormat"/> is a compressed format.</exception>
         </member>
         <member name="T:SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatTools">
@@ -1403,6 +1415,15 @@
             The texture is incomplete until the dimensions and format are set.
             </summary>
         </member>
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
+            <summary>
+            Specifies the texture's dimensions and format but leaves the image data
+            uninitialized.
+            </summary>
+            <param name="width">The new width in pixels</param>
+            <param name="height">The new height in pixels</param>
+            <param name="format">The format to store the image data</param>
+        </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Drawing.Bitmap)">
             <summary>
             Loads RGBA texture data with mipmaps generated from the specified bitmap.
@@ -1424,7 +1445,8 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,SFGraphics.GLObjects.BufferObjects.BufferObject,OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
-            
+            Loads texture data of the specified format for the first mip level.
+            Mipmaps are generated by OpenGL.
             </summary>
             <param name="width">The width of <paramref name="baseMipLevel"/> in pixels</param>
             <param name="height">The height of <paramref name="baseMipLevel"/> in pixels</param>
@@ -1444,7 +1466,8 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,SFGraphics.GLObjects.BufferObjects.BufferObject,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
-            
+            Loads texture data of the specified format for the first mip level.
+            Mipmaps are generated by OpenGL.
             </summary>
             <param name="width">The width of the base mip level in pixels</param>
             <param name="height">The height of the base mip level in pixels</param>
@@ -1453,7 +1476,7 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData``1(System.Int32,System.Int32,System.Collections.Generic.List{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
-            Loads a mip level of compressed texture texture data
+            Loads a mip level of compressed texture data
             for each array in <paramref name="mipmaps"/>.
             </summary>
             <typeparam name="T"></typeparam>
