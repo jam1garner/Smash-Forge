@@ -31,6 +31,7 @@ namespace Smash_Forge
             treeView1.Nodes.Add(boundsNode);
             treeView1.Nodes.Add(atlasNode);
             treeView1.Nodes.Add(shapesNode);
+            treeView1.Nodes.Add(spritesNode);
 
 
             fillList();
@@ -44,6 +45,7 @@ namespace Smash_Forge
         public TreeNode boundsNode = new TreeNode("Bounds");
         public TreeNode atlasNode = new TreeNode("Atlases");
         public TreeNode shapesNode = new TreeNode("Shapes");
+        public TreeNode spritesNode = new TreeNode("Sprites");
 
 
         public void fillList()
@@ -55,6 +57,8 @@ namespace Smash_Forge
             boundsNode.Nodes.Clear();
             atlasNode.Nodes.Clear();
             shapesNode.Nodes.Clear();
+            spritesNode.Nodes.Clear();
+            
 
             if (Lumen != null)
             {
@@ -90,6 +94,34 @@ namespace Smash_Forge
                         newNode.Nodes.Add("Graphic 0x" + j.ToString("X"));
                     }
                     shapesNode.Nodes.Add(newNode);
+                }
+                for (int i = 0; i < Lumen.Sprites.Count; i++)
+                {
+                    TreeNode spriteNode = new TreeNode("Sprite 0x" + i.ToString("X"));
+                    TreeNode labelNode = new TreeNode("Frame Labels");
+                    TreeNode showNode = new TreeNode("Show Frames");
+                    TreeNode keyNode = new TreeNode("Key Frames");
+
+                    for (int j = 0; j < Lumen.Sprites[i].labels.Count; j++)
+                    {
+                        labelNode.Nodes.Add("Label 0x" + j.ToString("X"));
+                    }
+
+                    for (int j = 0; j < Lumen.Sprites[i].Frames.Count; j++)
+                    {
+                        showNode.Nodes.Add("Show Frame 0x" + j.ToString("X"));
+                    }
+
+                    for (int j = 0; j < Lumen.Sprites[i].Keyframes.Count; j++)
+                    {
+                        keyNode.Nodes.Add("Key Frame 0x" + j.ToString("X"));
+                    }
+
+                    spriteNode.Nodes.Add(labelNode);
+                    spriteNode.Nodes.Add(showNode);
+                    spriteNode.Nodes.Add(keyNode);
+
+                    spritesNode.Nodes.Add(spriteNode);
                 }
             }
         }
