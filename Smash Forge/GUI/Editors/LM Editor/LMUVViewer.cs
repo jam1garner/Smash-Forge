@@ -6,7 +6,7 @@ using SFGraphics.GLObjects.Shaders;
 using OpenTK;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Framebuffers;
-using System.Collections.Generic;
+using SFGraphics.GLObjects.GLObjectManagement;
 
 namespace Smash_Forge.GUI.Menus
 {
@@ -31,14 +31,14 @@ namespace Smash_Forge.GUI.Menus
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
-            
+            RenderUvs();
+            GLObjectManager.DeleteUnusedGLObjects();
         }
 
         private void RenderUvs()
         {
             int hash;
-            glControl1.MakeCurrent();
-            Mesh3D screenTriangle = ScreenDrawing.CreateScreenTriangle();
+            glControl1.MakeCurrent(); 
 
             GL.Viewport(glControl1.ClientRectangle);
 
@@ -84,9 +84,9 @@ namespace Smash_Forge.GUI.Menus
             OpenTKSharedResources.InitializeSharedResources();
             if (OpenTKSharedResources.SetupStatus == OpenTKSharedResources.SharedResourceStatus.Initialized)
             {
+                nut.RefreshGlTexturesByHashId();
                 pngExportFramebuffer = new Framebuffer(FramebufferTarget.Framebuffer, glControl1.Width, glControl1.Height);
                 screenTriangle = ScreenDrawing.CreateScreenTriangle();
-                RenderUvs();
             }
         }
     }
