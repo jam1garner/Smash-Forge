@@ -188,6 +188,26 @@ namespace Smash_Forge
                     LMUVViewer UvViewer = new LMUVViewer(Lumen, Nut, e.Node.Parent.Index, e.Node.Index);
                     UvViewer.Show();
                 }
+                else if (e.Node.Parent.Text == "Texts")
+                {
+                    tbl.Rows.Add("Character ID", Lumen.Texts[e.Node.Index].CharacterId);
+                    tbl.Rows.Add("unk 1", Lumen.Texts[e.Node.Index].unk1);
+                    tbl.Rows.Add("Placeholder Text ID", Lumen.Texts[e.Node.Index].placeholderTextId);
+                    tbl.Rows.Add("unk 2", Lumen.Texts[e.Node.Index].unk2);
+                    tbl.Rows.Add("Stroke Color ID", Lumen.Texts[e.Node.Index].strokeColorId);
+                    tbl.Rows.Add("unk 3", Lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("unk 4", Lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("unk 5", Lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("Text Alignment", Lumen.Texts[e.Node.Index].alignment);
+                    tbl.Rows.Add("unk 6", Lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("unk 7", Lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("unk 8", Lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("Size", Lumen.Texts[e.Node.Index].size);
+                    tbl.Rows.Add("unk 9", Lumen.Texts[e.Node.Index].unk3);
+                    tbl.Rows.Add("unk 10", Lumen.Texts[e.Node.Index].unk10);
+                    tbl.Rows.Add("unk 11", Lumen.Texts[e.Node.Index].unk11);
+                    tbl.Rows.Add("unk 12", Lumen.Texts[e.Node.Index].unk12);
+                }
                 else if (e.Node.Parent.Text == "Unk")
                 {
 
