@@ -32,6 +32,7 @@ namespace Smash_Forge
             treeView1.Nodes.Add(atlasNode);
             treeView1.Nodes.Add(shapesNode);
             treeView1.Nodes.Add(spritesNode);
+            treeView1.Nodes.Add(textsNode);
 
 
             fillList();
@@ -46,7 +47,7 @@ namespace Smash_Forge
         public TreeNode atlasNode = new TreeNode("Atlases");
         public TreeNode shapesNode = new TreeNode("Shapes");
         public TreeNode spritesNode = new TreeNode("Sprites");
-
+        public TreeNode textsNode = new TreeNode("Texts");
 
         public void fillList()
         {
@@ -58,6 +59,7 @@ namespace Smash_Forge
             atlasNode.Nodes.Clear();
             shapesNode.Nodes.Clear();
             spritesNode.Nodes.Clear();
+            textsNode.Nodes.Clear();
             
 
             if (Lumen != null)
@@ -122,6 +124,10 @@ namespace Smash_Forge
                     spriteNode.Nodes.Add(keyNode);
 
                     spritesNode.Nodes.Add(spriteNode);
+                }
+                for (int i = 0; i < Lumen.Texts.Count; i++)
+                {
+                    textsNode.Nodes.Add("Text 0x" + i.ToString("X"));
                 }
             }
         }
