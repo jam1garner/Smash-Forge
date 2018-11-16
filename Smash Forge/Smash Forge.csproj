@@ -86,6 +86,9 @@
       <HintPath>lib\SFGraphics.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="SFGraphics.Controls">
+      <HintPath>lib\SFGraphics.Controls.dll</HintPath>
+    </Reference>
     <Reference Include="SFGraphics.Utils">
       <HintPath>lib\SFGraphics.Utils.dll</HintPath>
     </Reference>
@@ -1509,6 +1512,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="lib\SFGenericModel.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="lib\SFGraphics.Controls.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="lib\SFGraphics.dll">
