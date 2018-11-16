@@ -31,14 +31,15 @@ namespace Smash_Forge.GUI.Menus
 
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
-            RenderUvs();
+            RenderTexture();
+            DrawPolygonUvs();
             GLObjectManager.DeleteUnusedGLObjects();
         }
 
-        private void RenderUvs()
+        private void RenderTexture()
         {
             int hash;
-            glControl1.MakeCurrent(); 
+            glControl1.MakeCurrent();
 
             GL.Viewport(glControl1.ClientRectangle);
 
@@ -48,8 +49,14 @@ namespace Smash_Forge.GUI.Menus
                 {
                     hash = nutTexture.HashId;
                     Texture texture = nut.glTexByHashId[hash];
-                    ScreenDrawing.DrawTexturedQuad(texture, 1.0f, screenTriangle);
+                    int width = nutTexture.Width;
+                    int height = nutTexture.Height;
+
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+                    ScreenDrawing.DrawTexturedQuad(texture, width, height, screenTriangle);
                 }
+                glControl1.SwapBuffers();
             }
             else
             {
@@ -58,11 +65,10 @@ namespace Smash_Forge.GUI.Menus
                 {
                     hash = nutTexture.HashId;
                     Texture texture = nut.glTexByHashId[hash];
-                    ScreenDrawing.DrawTexturedQuad(texture, 1.0f, screenTriangle);
+                    //ScreenDrawing.DrawTexturedQuad(texture, 1.0f, screenTriangle);
+                    ScreenDrawing.DrawTexturedQuad(RenderTools.uvTestPattern, 1.0f, screenTriangle);
                 }
             }
-
-            DrawPolygonUvs();
         }
 
         private void DrawPolygonUvs()
