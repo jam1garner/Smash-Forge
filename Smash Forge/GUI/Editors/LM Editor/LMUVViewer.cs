@@ -60,14 +60,18 @@ namespace Smash_Forge.GUI.Menus
             }
             else
             {
-                // for 3ds stuff in the future
                 foreach (NutTexture nutTexture in nut.Nodes)
                 {
                     hash = nutTexture.HashId;
                     Texture texture = nut.glTexByHashId[hash];
-                    //ScreenDrawing.DrawTexturedQuad(texture, 1.0f, screenTriangle);
-                    ScreenDrawing.DrawTexturedQuad(RenderTools.uvTestPattern, 1.0f, screenTriangle);
+                    int width = nutTexture.Width;
+                    int height = nutTexture.Height;
+
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+                    ScreenDrawing.DrawTexturedQuad(texture, width, height, screenTriangle);
                 }
+                glControl1.SwapBuffers();
             }
         }
 
