@@ -258,6 +258,28 @@ namespace Smash_Forge
 
                     Lumen.ReplaceAtlas(atlas, indexNum);
                 }
+                else if (treeView1.SelectedNode.Parent.Text == "Texts")
+                {
+                    Lumen.DynamicText text = new Lumen.DynamicText();
+
+                    text.CharacterId = int.Parse(tbl.Rows[0][1].ToString());
+                    text.unk1 = int.Parse(tbl.Rows[1][1].ToString());
+                    text.placeholderTextId = int.Parse(tbl.Rows[2][1].ToString());
+                    text.unk2 = int.Parse(tbl.Rows[3][1].ToString());
+                    text.strokeColorId = int.Parse(tbl.Rows[4][1].ToString());
+                    text.unk3 = int.Parse(tbl.Rows[5][1].ToString());
+                    text.unk4 = int.Parse(tbl.Rows[6][1].ToString());
+                    text.unk5 = int.Parse(tbl.Rows[7][1].ToString());
+                    text.alignment = (Lumen.TextAlignment)int.Parse(tbl.Rows[8][1].ToString());
+                    text.unk6 = short.Parse(tbl.Rows[9][1].ToString());
+                    text.unk7 = int.Parse(tbl.Rows[10][1].ToString());
+                    text.unk8 = int.Parse(tbl.Rows[11][1].ToString());
+                    text.size = int.Parse(tbl.Rows[12][1].ToString());
+                    text.unk9 = int.Parse(tbl.Rows[13][1].ToString());
+                    text.unk10 = int.Parse(tbl.Rows[14][1].ToString());
+                    text.unk11 = int.Parse(tbl.Rows[15][1].ToString());
+                    text.unk12 = int.Parse(tbl.Rows[16][1].ToString());
+                }
                 else if (treeView1.SelectedNode.Parent.Text == "unk")
                 {
 
