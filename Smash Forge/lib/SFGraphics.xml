@@ -381,6 +381,15 @@
             </summary>
             <param name="readBufferMode">The buffer used for read operations</param>
         </member>
+        <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.ReadDefaultFramebufferImagePixels(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Reads the default framebuffer's contents into a Bitmap. The default framebuffer is bound prior to reading.
+            </summary>
+            <param name="width">The width of the default framebuffer in pixels.</param>
+            <param name="height">The height of the default framebuffer in pixels.</param>
+            <param name="saveAlpha">The alpha channel is preserved when true or set to 255 (white when false</param>
+            <returns>A bitmap of the framebuffer's contents</returns>
+        </member>
         <member name="M:SFGraphics.GLObjects.Framebuffers.Framebuffer.ReadImagePixels(System.Boolean)">
             <summary>
             Reads the framebuffer's contents into a Bitmap.
@@ -1517,18 +1526,19 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.TextureCubeMap.LoadImageData(System.Drawing.Bitmap,System.Int32)">
             <summary>
-            Initializes an uncompressed cube map without mipmaps from vertically arranged faces in <paramref name="cubeMapFaces"/>.
+            Initializes an uncompressed cube map without mipmaps from vertically arranged faces in <paramref name="facesImage"/>.
             </summary>
-            <param name="cubeMapFaces">Faces arranged from top to bottom in the order
+            <param name="facesImage">Faces arranged from top to bottom in the order
             X+, X-, Y+, Y-, Z+, Z- </param>
             <param name="faceSideLength">The length in pixels of a side of any of the faces</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.TextureCubeMap.LoadImageData(System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]},System.Collections.Generic.List{System.Byte[]})">
+        <member name="M:SFGraphics.GLObjects.Textures.TextureCubeMap.LoadImageData``1(System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]})">
             <summary>
             Initializes a compressed cube map with mipmaps.
             Each face should have the same dimensions, image format, and number of mipmaps.
             </summary>
-            <param name="faceSideLength">The side length in pixels of each face. Faces must be square.</param>
+            <typeparam name="T"></typeparam>
+            <param name="faceSideLength">The side length in pixels of each face.</param>
             <param name="internalFormat"></param>
             <param name="mipsPosX">Mipmaps for the positive x target</param>
             <param name="mipsNegX">Mipmaps for the negative x target</param>
@@ -1539,13 +1549,14 @@
             <exception cref="T:System.ArgumentException"><paramref name="internalFormat"/> is not a compressed format.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">The mipmap counts are not equal for all faces.</exception>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.TextureCubeMap.LoadImageData(System.Int32,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed,System.Byte[],System.Byte[],System.Byte[],System.Byte[],System.Byte[],System.Byte[])">
+        <member name="M:SFGraphics.GLObjects.Textures.TextureCubeMap.LoadImageData``1(System.Int32,SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed,``0[],``0[],``0[],``0[],``0[],``0[])">
             <summary>
             Initializes an uncompressed cube map without mipmaps.
             Each face should have the same dimensions and image format.
             </summary>
-            <param name="faceSideLength"></param>
-            <param name="textureFormat"></param>
+            <typeparam name="T"></typeparam>
+            <param name="faceSideLength">The side length in pixels of each face.</param>
+            <param name="format"></param>
             <param name="facePosX">The base mip level for the positive x target</param>
             <param name="faceNegX">The base mip level for the negative x target</param>
             <param name="facePosY">The base mip level for the positive y target</param>

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SFShapes</name>
+    </assembly>
+    <members>
+        <member name="T:SFShapes.ShapeGenerator">
+            <summary>
+            Contains methods to generate vertex positions for drawing 
+            geometric primitives as triangle lists.
+            </summary>
+        </member>
+        <member name="F:SFShapes.ShapeGenerator.minSpherePrecision">
+            <summary>
+            The minimum precision that can generate a valid sphere.
+            </summary>
+        </member>
+        <member name="M:SFShapes.ShapeGenerator.GetCubePositions(OpenTK.Vector3,System.Single)">
+            <summary>
+            Creates a triangle list cube with side length <paramref name="scale"/>.
+            </summary>
+            <param name="center">The center of the shape</param>
+            <param name="scale">The side length of each cube face</param>
+            <returns></returns>
+        </member>
+        <member name="M:SFShapes.ShapeGenerator.GetRectangularPrismPositions(OpenTK.Vector3,System.Single,System.Single,System.Single)">
+            <summary>
+            Creates a triangle list rectangular prism of dimensions <paramref name="scaleX"/>
+            * <paramref name="scaleY"/> * <paramref name="scaleZ"/>.
+            </summary>
+            <param name="center">The center of the shape</param>
+            <param name="scaleX">The total width of the shape</param>
+            <param name="scaleY">The total height of the shape</param>
+            <param name="scaleZ">The total depth of the shape</param>
+            <returns></returns>
+        </member>
+        <member name="M:SFShapes.ShapeGenerator.GetSpherePositions(OpenTK.Vector3,System.Single,System.Int32)">
+            <summary>
+            Creates a subdivided triangle strip sphere.
+            </summary>
+            <param name="center">The center of the sphere</param>
+            <param name="radius">The radius of the sphere</param>
+            <param name="precision">The amount of subdivisions</param>
+            <returns>Vertices for a triangle strip sphere</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Radius is <c>0</c> or negative. 
+            Precision is less than <see cref="F:SFShapes.ShapeGenerator.minSpherePrecision"/>.</exception>
+        </member>
+    </members>
+</doc>

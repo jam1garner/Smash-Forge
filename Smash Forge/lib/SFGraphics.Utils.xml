@@ -168,11 +168,11 @@
         <member name="M:SFGraphics.Utils.VectorUtils.Orthogonalize(OpenTK.Vector3,OpenTK.Vector3)">
             <summary>
             Uses the Gran-Schmidt method for returning a normalized copy 
-            of <paramref name="target"/> that is orthogonal to <paramref name="source"/>.
+            of <paramref name="vectorToOrthogonalize"/> that is orthogonal to <paramref name="source"/>.
             </summary>
-            <param name="target">The vector to normalize</param>
+            <param name="vectorToOrthogonalize">The vector to normalize</param>
             <param name="source">The vector to normalize against</param>
-            <returns><paramref name="target"/> orthogonalized to <paramref name="source"/></returns>
+            <returns><paramref name="vectorToOrthogonalize"/> orthogonalized to <paramref name="source"/></returns>
         </member>
         <member name="M:SFGraphics.Utils.VectorUtils.GenerateTangentBitangent(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector3@,OpenTK.Vector3@)">
             <summary>

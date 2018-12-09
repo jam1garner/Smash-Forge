@@ -1230,7 +1230,7 @@ namespace Smash_Forge
         {
             SetUpAndRenderViewport();
 
-            using (Bitmap screenCapture = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderHeight, true))
+            using (Bitmap screenCapture = Framebuffer.ReadDefaultFramebufferImagePixels(fboRenderWidth, fboRenderHeight, true))
             {
                 string renderName = ConvertDirSeparatorsToUnderscore(fileName, sourcePath);
                 screenCapture.Save(outputPath + "\\" + renderName + ".png");
@@ -1290,7 +1290,7 @@ namespace Smash_Forge
 
                 if (i != settings.StartFrame) //On i=StartFrame it captures the frame the user had before setting frame to it so ignore that one, the +1 on the for makes it so the last frame is captured
                 {
-                    using (Bitmap cs = FramebufferTools.ReadFrameBufferPixels(0, FramebufferTarget.Framebuffer, fboRenderWidth, fboRenderWidth))
+                    using (Bitmap cs = Framebuffer.ReadDefaultFramebufferImagePixels(fboRenderWidth, fboRenderWidth))
                     {
                         images.Add(new Bitmap(cs, new Size((int)(cs.Width / ScaleFactor), (int)(cs.Height / settings.ScaleFactor)))); //Resize images
                     }

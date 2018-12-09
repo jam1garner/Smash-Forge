@@ -797,15 +797,20 @@
             A floating point vertex attribute. Integer types are converted directly to floats.
             </summary>
         </member>
-        <member name="M:SFGenericModel.VertexAttributes.VertexFloatAttribute.#ctor(System.String,SFGenericModel.VertexAttributes.ValueCount,OpenTK.Graphics.OpenGL.VertexAttribPointerType)">
+        <member name="P:SFGenericModel.VertexAttributes.VertexFloatAttribute.Normalized">
+            <summary>
+            Integer types are converted to floating point when <c>true</c>.
+            </summary>
+        </member>
+        <member name="M:SFGenericModel.VertexAttributes.VertexFloatAttribute.#ctor(System.String,SFGenericModel.VertexAttributes.ValueCount,OpenTK.Graphics.OpenGL.VertexAttribPointerType,System.Boolean)">
             <summary>
             Creates a new vertex attribute.
             </summary>
             <param name="name">The name of the attribute in the shader</param>
             <param name="valueCount">The number of components for the value</param>
             <param name="type">The data type of the value</param>
-            <exception cref="T:System.NotSupportedException"><paramref name="type"/> is not 
-            a supported attribute type.</exception>
+            <param name="normalized">Indicates whether integer types should be converted to floating point</param>
+            <exception cref="T:System.NotImplementedException"><paramref name="type"/> is not an implemented attribute type.</exception>
         </member>
         <member name="M:SFGenericModel.VertexAttributes.VertexFloatAttribute.SetVertexAttribute(System.Int32,System.Int32,System.Int32)">
             <summary>
