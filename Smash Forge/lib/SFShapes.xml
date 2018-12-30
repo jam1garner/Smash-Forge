@@ -4,6 +4,11 @@
         <name>SFShapes</name>
     </assembly>
     <members>
+        <member name="T:SFShapes.Mesh3D">
+            <summary>
+            Draws simple geometry given a collection of vertex positions.
+            </summary>
+        </member>
         <member name="T:SFShapes.ShapeGenerator">
             <summary>
             Contains methods to generate vertex positions for drawing 

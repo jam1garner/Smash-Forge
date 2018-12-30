@@ -652,6 +652,25 @@
             <param name="count">The number of indices to generate</param>
             <returns>Generated consecutive indices</returns>
         </member>
+        <member name="M:SFGenericModel.Utils.IndexUtils.OptimizedVertexData``1(System.Collections.Generic.List{``0},System.Collections.Generic.List{``0}@,System.Collections.Generic.List{System.Int32}@)">
+            <summary>
+            Generates new vertices and indices with no repeated vertices.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="vertices">The original vertex list</param>
+            <param name="newVertices">The optimized list of vertices</param>
+            <param name="newIndices">The optimized list of indices</param>
+        </member>
+        <member name="M:SFGenericModel.Utils.IndexUtils.OptimizedVertexData``1(System.Collections.Generic.List{``0},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{``0}@,System.Collections.Generic.List{System.Int32}@)">
+            <summary>
+            Generates new vertices and indices with no repeated vertices.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="vertices">The original vertex list</param>
+            <param name="indices">The original vertex indices</param>
+            <param name="newVertices">The optimized list of vertices</param>
+            <param name="newIndices">The optimized list of indices</param>
+        </member>
         <member name="T:SFGenericModel.Utils.MeshBatchUtils">
             <summary>
             Contains methods for grouping vertex data to reduce draw calls and improve performance.
@@ -780,13 +799,12 @@
             Methods for configuring vertex attributes for a <see cref="T:SFGraphics.GLObjects.Shaders.Shader"/>.
             </summary>
         </member>
-        <member name="M:SFGenericModel.VertexAttributes.VertexAttributeUtils.SetVertexAttribute(SFGraphics.GLObjects.Shaders.Shader,System.String,SFGenericModel.VertexAttributes.VertexAttribute,System.Int32,System.Int32)">
+        <member name="M:SFGenericModel.VertexAttributes.VertexAttributeUtils.SetVertexAttribute(SFGraphics.GLObjects.Shaders.Shader,SFGenericModel.VertexAttributes.VertexAttribute,System.Int32,System.Int32)">
             <summary>
             Configures a vertex attribute for the currently bound element array buffer.
             Returns false on error.
             </summary>
             <param name="shader">The current shader used for rendering</param>
-            <param name="name">The name of the attribute variable</param>
             <param name="attribute">The vertex attribute information</param>
             <param name="offsetInBytes">The offset into the vertex data</param>
             <param name="strideInBytes">The size in bytes of each vertex</param>
@@ -948,9 +966,19 @@
             </summary>
             <typeparam name="T">The struct used to define vertex data</typeparam>
         </member>
+        <member name="P:SFGenericModel.GenericMesh`1.VertexCount">
+            <summary>
+            The number of vertices stored in the buffers used for drawing.
+            </summary>
+        </member>
         <member name="P:SFGenericModel.GenericMesh`1.PrimitiveType">
             <summary>
             Determines how primitives will be constructed from the vertex data.
+            </summary>
+        </member>
+        <member name="P:SFGenericModel.GenericMesh`1.DrawElementsType">
+            <summary>
+            Specifies the data type of the index values.
             </summary>
         </member>
         <member name="F:SFGenericModel.GenericMesh`1.renderSettings">
@@ -981,15 +1009,23 @@
             Creates a new mesh and initializes the vertex buffer data.
             An index is generated for each vertex in <paramref name="vertices"/>.
             </summary>
-            <param name="vertices"></param>
-            <param name="primitiveType"></param>
+            <param name="vertices">The vertex data</param>
+            <param name="primitiveType">Determines how primitives will be constructed from the vertex data</param>
         </member>
         <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
             Creates a new mesh and initializes the vertex buffer data.
             </summary>
-            <param name="vertices"></param>
-            <param name="vertexIndices"></param>
+            <param name="vertices">The vertex data</param>
+            <param name="vertexIndices">The vertex index data</param>
+            <param name="primitiveType">Determines how primitives will be constructed from the vertex data</param>
+        </member>
+        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.UInt32},OpenTK.Graphics.OpenGL.PrimitiveType)">
+            <summary>
+            Creates a new mesh and initializes the vertex buffer data.
+            </summary>
+            <param name="vertices">The vertex data</param>
+            <param name="vertexIndices">The vertex index data</param>
             <param name="primitiveType">Determines how primitives will be constructed from the vertex data</param>
         </member>
         <member name="M:SFGenericModel.GenericMesh`1.#ctor(SFGenericModel.IndexedVertexData{`0})">
@@ -1016,8 +1052,8 @@
         </member>
         <member name="M:SFGenericModel.GenericMesh`1.GetVertexAttributes">
             <summary>
-            The order of vertex attributes in the list should match 
-            the order of the fields in <typeparamref name="T"/>.
+            Gets the attribute rendering information for all the members of <typeparamref name="T"/> with a <see cref="T:SFGenericModel.VertexAttributes.VertexAttribute"/> using reflection.
+            When overriding this method, the order of attributes in the list should match the order of the member variables.
             </summary>
             <returns>Vertex attribute information</returns>
         </member>
