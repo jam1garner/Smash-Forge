@@ -113,7 +113,7 @@ namespace Smash_Forge.Rendering
 
         public static void DrawScreenTriangle(Shader shader, Mesh3D screenTriangle)
         {
-            screenTriangle.Draw(shader, null);
+            screenTriangle.Draw(shader);
         }
     }
 }

@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OpenTK.Graphics.OpenGL;
 using SFGenericModel;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using SFGraphics.Cameras;
-using SFGraphics.GLObjects.Shaders;
 using SFGenericModel.VertexAttributes;
+using System.Collections.Generic;
 
 namespace Smash_Forge
 {
@@ -18,11 +11,6 @@ namespace Smash_Forge
             : base(vertices, vertexIndices, PrimitiveType.Triangles)
         {
 
-        }
-
-        protected override void SetCameraUniforms(Shader shader, Camera camera)
-        {
-            // Do nothing for now.
         }
 
         public override List<VertexAttribute> GetVertexAttributes()

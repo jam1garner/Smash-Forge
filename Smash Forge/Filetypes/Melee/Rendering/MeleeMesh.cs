@@ -23,6 +23,8 @@ namespace Smash_Forge.Filetypes.Melee.Rendering
 
     public class MeleeMesh : GenericMesh<MeleeVertex>
     {
+        private RenderSettings renderSettings = new RenderSettings();
+
         public MeleeMesh(IList<MeleeVertex> vertices, IList<int> vertexIndices, PrimitiveType primitiveType)
             : base(vertices, vertexIndices, primitiveType)
         {
@@ -37,6 +39,8 @@ namespace Smash_Forge.Filetypes.Melee.Rendering
 
             SetAlphaTesting(datDOBJ);
             SetAlphaBlending(datDOBJ);
+
+            GLRenderSettings.SetRenderSettings(renderSettings);
         }
 
         private void SetAlphaBlending(DatDOBJ datDOBJ)

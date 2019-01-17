@@ -4,78 +4,17 @@
         <name>SFGenericModel</name>
     </assembly>
     <members>
-        <member name="T:SFGenericModel.GenericModels.GenericModel">
-            <summary>
-            Allows for drawing a collection of renderable meshes.
-            </summary>
-        </member>
-        <member name="P:SFGenericModel.GenericModels.GenericModel.Meshes">
-            <summary>
-            The collection of meshes that 
-            will be rendered during <see cref="M:SFGenericModel.GenericModels.GenericModel.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)"/>.
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.GenericModels.GenericModel.#ctor(System.Collections.Generic.List{SFGenericModel.GenericModels.HideableMesh})">
-            <summary>
-            Creates a model from <paramref name="meshes"/>.
-            </summary>
-            <param name="meshes">The meshes used for drawing</param>
-        </member>
-        <member name="M:SFGenericModel.GenericModels.GenericModel.#ctor">
-            <summary>
-            Creates an empty model.
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.GenericModels.GenericModel.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
-            <summary>
-            Draws all meshes.
-            </summary>
-            <param name="shader">The shader used for drawing</param>
-            <param name="camera">The camera used for drawing all objects in <see cref="P:SFGenericModel.GenericModels.GenericModel.Meshes"/></param>
-        </member>
-        <member name="M:SFGenericModel.GenericModels.GenericModel.DisplayAll">
-            <summary>
-            Enables rendering for all meshes.
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.GenericModels.GenericModel.HideAll">
-            <summary>
-            Disables rendering for all meshes.
-            </summary>
-        </member>
-        <member name="T:SFGenericModel.GenericModels.HideableMesh">
-            <summary>
-            A container for a drawable mesh that supports toggling visibility.
-            </summary>
-        </member>
-        <member name="P:SFGenericModel.GenericModels.HideableMesh.Mesh">
-            <summary>
-            The mesh to render.
-            </summary>
-        </member>
-        <member name="P:SFGenericModel.GenericModels.HideableMesh.Visible">
-            <summary>
-            Indicates if the mesh should be rendered.
-            </summary>
-        </member>
-        <member name="M:SFGenericModel.GenericModels.HideableMesh.#ctor(SFGenericModel.IDrawableMesh,System.Boolean)">
-            <summary>
-            Creates a new instance with the specified mesh and visibility.
-            </summary>
-            <param name="mesh"></param>
-            <param name="visible"></param>
-        </member>
         <member name="T:SFGenericModel.IDrawableMesh">
             <summary>
             Defines methods for drawing a mesh using programmable shaders.
             </summary>
         </member>
-        <member name="M:SFGenericModel.IDrawableMesh.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
+        <member name="M:SFGenericModel.IDrawableMesh.Draw(SFGraphics.GLObjects.Shaders.Shader)">
             <summary>
             Draws the geometry using the specified shader and camera.
             </summary>
             <param name="shader">The shader used for drawing</param>
-            <param name="camera">The camera used to transform vertex positions</param>
+            
         </member>
         <member name="T:SFGenericModel.IndexedVertexData`1">
             <summary>
@@ -939,11 +878,8 @@
         </member>
         <member name="T:SFGenericModel.GenericMesh`1">
             <summary>
-            A vertex container that supports drawing indexed vertex data using a user defined 
+            A class for drawing indexed, generic vertex data using a user defined 
             vertex struct <typeparamref name="T"/>.
-            <para></para><para></para>
-            Inherit from this class to override the default 
-            materials and rendering state.
             </summary>
             <typeparam name="T">The struct used to define vertex data</typeparam>
         </member>
@@ -960,16 +896,6 @@
         <member name="P:SFGenericModel.GenericMesh`1.DrawElementsType">
             <summary>
             Specifies the data type of the index values.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.GenericMesh`1.renderSettings">
-            <summary>
-            The collection of OpenGL state set prior to drawing.
-            </summary>
-        </member>
-        <member name="F:SFGenericModel.GenericMesh`1.material">
-            <summary>
-            The collection of shader uniforms updated during drawing.
             </summary>
         </member>
         <member name="T:SFGenericModel.GenericMesh`1.InvalidAttribSetEventHandler">
@@ -1015,21 +941,19 @@
             </summary>
             <param name="vertexData">Contains the vertices, indices, and primitive type</param>
         </member>
-        <member name="M:SFGenericModel.GenericMesh`1.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera,System.Int32,System.Int32)">
+        <member name="M:SFGenericModel.GenericMesh`1.Draw(SFGraphics.GLObjects.Shaders.Shader,System.Int32,System.Int32)">
             <summary>
-            Sets the uniforms, sets render state, and draws the mesh.
+            Draws the geometry data.
             </summary>
             <param name="shader">The shader used for drawing</param>
-            <param name="camera">The camera used to set matrix uniforms if not <c>null</c></param>
             <param name="count">The number of vertices to draw</param>
             <param name="offset">The offset into the index buffer</param>
         </member>
-        <member name="M:SFGenericModel.GenericMesh`1.Draw(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
+        <member name="M:SFGenericModel.GenericMesh`1.Draw(SFGraphics.GLObjects.Shaders.Shader)">
             <summary>
-            Sets the uniforms, sets render state, and draws the mesh.
+            Draws the geometry data.
             </summary>
-            <param name="shader"></param>
-            <param name="camera"></param>
+            <param name="shader">The shader used for drawing</param>
         </member>
         <member name="M:SFGenericModel.GenericMesh`1.GetVertexAttributes">
             <summary>
@@ -1037,14 +961,6 @@
             When overriding this method, the order of attributes in the list should match the order of the member variables.
             </summary>
             <returns>Vertex attribute information</returns>
-        </member>
-        <member name="M:SFGenericModel.GenericMesh`1.SetCameraUniforms(SFGraphics.GLObjects.Shaders.Shader,SFGraphics.Cameras.Camera)">
-            <summary>
-            Sets <c>uniform mat4 mvpMatrix</c> in the shader using <see cref="P:SFGraphics.Cameras.Camera.MvpMatrix"/>.
-            Override this method to provide custom matrices. 
-            </summary>
-            <param name="shader">The shader used for drawing</param>
-            <param name="camera">The camera used for drawing"/></param>
         </member>
         <member name="M:SFGenericModel.GenericMesh`1.ConfigureVertexAttributes(SFGraphics.GLObjects.Shaders.Shader)">
             <summary>

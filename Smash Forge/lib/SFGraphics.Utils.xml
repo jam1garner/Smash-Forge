@@ -143,14 +143,22 @@
         </member>
         <member name="M:SFGraphics.Utils.TriangleListUtils.CalculateTangentsBitangents(System.Collections.Generic.IList{OpenTK.Vector3},System.Collections.Generic.IList{OpenTK.Vector3},System.Collections.Generic.IList{OpenTK.Vector2},System.Collections.Generic.IList{System.Int32},OpenTK.Vector3[]@,OpenTK.Vector3[]@)">
             <summary>
-            
+            Calculates normalized, smooth tangents and bitangents for the given vertex data. Bitangents are adjusted to account for mirrored UVs.
             </summary>
-            <param name="positions"></param>
-            <param name="normals"></param>
-            <param name="uvs"></param>
-            <param name="indices"></param>
-            <param name="tangents"></param>
-            <param name="bitangents"></param>
+            <param name="positions">The vertex positions</param>
+            <param name="normals">The vertex normals</param>
+            <param name="uvs">The vertex texture coordinates</param>
+            <param name="indices">The indices used to define the triangle faces</param>
+            <param name="tangents">The newly generated tangents</param>
+            <param name="bitangents">The newly generated bitangents</param>
+        </member>
+        <member name="M:SFGraphics.Utils.TriangleListUtils.CalculateSmoothNormals(System.Collections.Generic.IList{OpenTK.Vector3},System.Collections.Generic.IList{System.Int32},OpenTK.Vector3[]@)">
+            <summary>
+            Calculates normalized, smooth tangents and bitangents for the given vertex data. Bitangents are adjusted to account for mirrored UVs.
+            </summary>
+            <param name="positions">The vertex positions</param>
+            <param name="normals">The vertex normals</param>
+            <param name="indices">The indices used to define the triangle faces</param>
         </member>
         <member name="T:SFGraphics.Utils.VectorUtils">
             <summary>

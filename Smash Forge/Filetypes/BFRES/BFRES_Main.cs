@@ -491,24 +491,24 @@ namespace Smash_Forge
             {
                 if ((mesh.IsSelected || mesh.Parent.IsSelected))
                 {
-                    DrawModelSelection(mesh, shader, camera);
+                    DrawModelSelection(mesh, shader);
                 }
                 else
                 {
                     if (Runtime.renderModelWireframe)
                     {
-                        DrawModelWireframe(mesh, shader, camera);
+                        DrawModelWireframe(mesh, shader);
                     }
 
                     if (Runtime.renderModel)
                     {
-                        mesh.renderMesh.Draw(shader, camera);
+                        mesh.renderMesh.Draw(shader);
                     }
                 }
             }
         }
 
-        private static void DrawModelWireframe(Mesh mesh, Shader shader, Camera camera)
+        private static void DrawModelWireframe(Mesh mesh, Shader shader)
         {
             // use vertex color for wireframe color
             shader.SetInt("colorOverride", 1);
@@ -516,16 +516,17 @@ namespace Smash_Forge
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
 
-            mesh.renderMesh.Draw(shader, camera);
+            mesh.renderMesh.Draw(shader);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             shader.SetInt("colorOverride", 0);
         }
-        private static void DrawModelSelection(Mesh mesh, Shader shader, Camera camera)
+
+        private static void DrawModelSelection(Mesh mesh, Shader shader)
         {
             //This part needs to be reworked for proper outline. Currently would make model disappear
 
-            mesh.renderMesh.Draw(shader, camera);
+            mesh.renderMesh.Draw(shader);
 
             GL.Enable(EnableCap.StencilTest);
             // use vertex color for wireframe color
@@ -534,7 +535,7 @@ namespace Smash_Forge
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
 
-            mesh.renderMesh.Draw(shader, camera);
+            mesh.renderMesh.Draw(shader);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             shader.SetInt("colorOverride", 0);
