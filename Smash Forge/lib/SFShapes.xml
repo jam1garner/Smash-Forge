@@ -9,6 +9,31 @@
             Draws simple geometry given a collection of vertex positions.
             </summary>
         </member>
+        <member name="M:SFShapes.Mesh3D.#ctor(System.Collections.Generic.List{OpenTK.Vector3},OpenTK.Graphics.OpenGL.PrimitiveType)">
+            <summary>
+            
+            </summary>
+            <param name="vertices"></param>
+            <param name="primitiveType"></param>
+        </member>
+        <member name="M:SFShapes.Mesh3D.#ctor(System.Tuple{System.Collections.Generic.List{OpenTK.Vector3},OpenTK.Graphics.OpenGL.PrimitiveType})">
+            <summary>
+            
+            </summary>
+            <param name="vertices"></param>
+        </member>
+        <member name="M:SFShapes.Mesh3D.GetVertexAttributes">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SFShapes.Mesh3D.GetRenderAttributes">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:SFShapes.ShapeGenerator">
             <summary>
             Contains methods to generate vertex positions for drawing 

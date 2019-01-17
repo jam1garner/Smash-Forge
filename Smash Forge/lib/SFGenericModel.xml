@@ -103,14 +103,14 @@
             Determines how primitives will be constructed from the vertex data.
             </summary>
         </member>
-        <member name="M:SFGenericModel.IndexedVertexData`1.#ctor(System.Collections.Generic.List{`0},OpenTK.Graphics.OpenGL.PrimitiveType)">
+        <member name="M:SFGenericModel.IndexedVertexData`1.#ctor(System.Collections.Generic.IList{`0},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
             Creates a new vertex data container with generated indices.
             </summary>
             <param name="vertices">The vertex data</param>
             <param name="primitiveType">Determines how primitives will be constructed from vertex data</param>
         </member>
-        <member name="M:SFGenericModel.IndexedVertexData`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
+        <member name="M:SFGenericModel.IndexedVertexData`1.#ctor(System.Collections.Generic.IList{`0},System.Collections.Generic.IList{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
             Creates a new vertex data container.
             </summary>
@@ -652,31 +652,12 @@
             <param name="count">The number of indices to generate</param>
             <returns>Generated consecutive indices</returns>
         </member>
-        <member name="M:SFGenericModel.Utils.IndexUtils.OptimizedVertexData``1(System.Collections.Generic.List{``0},System.Collections.Generic.List{``0}@,System.Collections.Generic.List{System.Int32}@)">
-            <summary>
-            Generates new vertices and indices with no repeated vertices.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="vertices">The original vertex list</param>
-            <param name="newVertices">The optimized list of vertices</param>
-            <param name="newIndices">The optimized list of indices</param>
-        </member>
-        <member name="M:SFGenericModel.Utils.IndexUtils.OptimizedVertexData``1(System.Collections.Generic.List{``0},System.Collections.Generic.List{System.Int32},System.Collections.Generic.List{``0}@,System.Collections.Generic.List{System.Int32}@)">
-            <summary>
-            Generates new vertices and indices with no repeated vertices.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="vertices">The original vertex list</param>
-            <param name="indices">The original vertex indices</param>
-            <param name="newVertices">The optimized list of vertices</param>
-            <param name="newIndices">The optimized list of indices</param>
-        </member>
         <member name="T:SFGenericModel.Utils.MeshBatchUtils">
             <summary>
             Contains methods for grouping vertex data to reduce draw calls and improve performance.
             </summary>
         </member>
-        <member name="M:SFGenericModel.Utils.MeshBatchUtils.GroupContainersByPrimitiveType``1(System.Collections.Generic.List{SFGenericModel.IndexedVertexData{``0}})">
+        <member name="M:SFGenericModel.Utils.MeshBatchUtils.GroupContainersByPrimitiveType``1(System.Collections.Generic.IList{SFGenericModel.IndexedVertexData{``0}})">
             <summary>
             Creates a new collection of <see cref="T:SFGenericModel.IndexedVertexData`1"/> objects with 
             only a single container for types that support merging.
@@ -1004,7 +985,7 @@
             Occurs when specified vertex attribute information does not match the shader.
             </summary>
         </member>
-        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},OpenTK.Graphics.OpenGL.PrimitiveType)">
+        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.IList{`0},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
             Creates a new mesh and initializes the vertex buffer data.
             An index is generated for each vertex in <paramref name="vertices"/>.
@@ -1012,7 +993,7 @@
             <param name="vertices">The vertex data</param>
             <param name="primitiveType">Determines how primitives will be constructed from the vertex data</param>
         </member>
-        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
+        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.IList{`0},System.Collections.Generic.IList{System.Int32},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
             Creates a new mesh and initializes the vertex buffer data.
             </summary>
@@ -1020,7 +1001,7 @@
             <param name="vertexIndices">The vertex index data</param>
             <param name="primitiveType">Determines how primitives will be constructed from the vertex data</param>
         </member>
-        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.List{`0},System.Collections.Generic.List{System.UInt32},OpenTK.Graphics.OpenGL.PrimitiveType)">
+        <member name="M:SFGenericModel.GenericMesh`1.#ctor(System.Collections.Generic.IList{`0},System.Collections.Generic.IList{System.UInt32},OpenTK.Graphics.OpenGL.PrimitiveType)">
             <summary>
             Creates a new mesh and initializes the vertex buffer data.
             </summary>

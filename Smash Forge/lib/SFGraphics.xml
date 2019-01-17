@@ -994,7 +994,13 @@
             <param name="shaderType">The type of shader to load</param>
             <param name="shaderName">The title used for the compilation errors section of the error log</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Shaders.Shader.LoadShaders(System.Collections.Generic.List{System.Tuple{System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String}})">
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.LoadShaders(System.Collections.Generic.IEnumerable{System.Tuple{System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String}})">
+            <summary>
+            Compiles and attaches multiple shaders. Linking and setup is performed only once.
+            </summary>
+            <param name="shaders">(shader source, shader type, shader name)</param>
+        </member>
+        <member name="M:SFGraphics.GLObjects.Shaders.Shader.LoadShaders(System.Tuple{System.String,OpenTK.Graphics.OpenGL.ShaderType,System.String}[])">
             <summary>
             Compiles and attaches multiple shaders. Linking and setup is performed only once.
             </summary>
@@ -1113,7 +1119,7 @@
             Provides methods for loading mipmaps for OpenGL textures. 
             </summary>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadCompressedMipMaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadCompressedMipMaps``1(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.IList{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             Loads compressed 2D image data of the compressed format <paramref name="format"/> 
             for all the mip levels in <paramref name="mipmaps"/>.
@@ -1126,7 +1132,7 @@
             <param name="mipmaps">The list of mipmaps to load for <paramref name="target"/></param>
             <param name="format">The input format and internal format information</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadCompressedMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObjects.BufferObject},OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadCompressedMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.IList{SFGraphics.GLObjects.BufferObjects.BufferObject},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             
             </summary>
@@ -1136,7 +1142,7 @@
             <param name="mipmaps"></param>
             <param name="format">The input format and internal format information</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadUncompressedMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObjects.BufferObject},SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadUncompressedMipmaps(OpenTK.Graphics.OpenGL.TextureTarget,System.Int32,System.Int32,System.Collections.Generic.IList{SFGraphics.GLObjects.BufferObjects.BufferObject},SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
             
             </summary>
@@ -1159,7 +1165,7 @@
             <summary>
             
             </summary>
-            <typeparam name="T">The value type used for the image data. This inclues arithmetic types.</typeparam>
+            <typeparam name="T">The value type used for the image data.</typeparam>
             <param name="target">The target of the texture or cube face for loading mip maps</param>
             <param name="width">The width of the texture or cube map face in pixels</param>
             <param name="height">The height of the texture or cube map face in pixels</param>
@@ -1212,7 +1218,7 @@
             <param name="posZ"></param>
             <param name="negZ"></param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadFacesMipmaps``1(System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]})">
+        <member name="M:SFGraphics.GLObjects.Textures.Utils.MipmapLoading.LoadFacesMipmaps``1(System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,System.Collections.Generic.IList{``0[]},System.Collections.Generic.IList{``0[]},System.Collections.Generic.IList{``0[]},System.Collections.Generic.IList{``0[]},System.Collections.Generic.IList{``0[]},System.Collections.Generic.IList{``0[]})">
             <summary>
             Loads image data and mipmaps for all six faces of a cube map.
             </summary>
@@ -1451,8 +1457,7 @@
         </member>
         <member name="M:SFGraphics.GLObjects.Textures.Texture.GetBitmap(System.Int32)">
             <summary>
-            Gets the image data for <paramref name="mipLevel"/>
-            in an ABGR unsigned byte format.
+            Gets the image data for <paramref name="mipLevel"/> in an unsigned byte format.
             </summary>
             <param name="mipLevel">The mip level to read</param>
             <returns>The image data for <paramref name="mipLevel"/></returns>
@@ -1527,7 +1532,7 @@
             <param name="baseMipLevel">The image data of the first mip level</param>
             <param name="format">The image format for all mipmaps</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData``1(System.Int32,System.Int32,System.Collections.Generic.List{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData``1(System.Int32,System.Int32,System.Collections.Generic.IList{``0[]},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             Loads a mip level of compressed texture data
             for each array in <paramref name="mipmaps"/>.
@@ -1539,7 +1544,7 @@
             <param name="internalFormat">The image format of <paramref name="mipmaps"/></param>
             <exception cref="T:System.ArgumentException"><paramref name="internalFormat"/> is not a compressed format.</exception>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObjects.BufferObject},SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,System.Collections.Generic.IList{SFGraphics.GLObjects.BufferObjects.BufferObject},SFGraphics.GLObjects.Textures.TextureFormats.TextureFormatUncompressed)">
             <summary>
             
             </summary>
@@ -1548,7 +1553,7 @@
             <param name="mipmaps">The image data for each mip level</param>
             <param name="format">The image format of <paramref name="mipmaps"/></param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,System.Collections.Generic.List{SFGraphics.GLObjects.BufferObjects.BufferObject},OpenTK.Graphics.OpenGL.InternalFormat)">
+        <member name="M:SFGraphics.GLObjects.Textures.Texture2D.LoadImageData(System.Int32,System.Int32,System.Collections.Generic.IList{SFGraphics.GLObjects.BufferObjects.BufferObject},OpenTK.Graphics.OpenGL.InternalFormat)">
             <summary>
             
             </summary>
@@ -1576,7 +1581,7 @@
             X+, X-, Y+, Y-, Z+, Z- </param>
             <param name="faceSideLength">The length in pixels of a side of any of the faces</param>
         </member>
-        <member name="M:SFGraphics.GLObjects.Textures.TextureCubeMap.LoadImageData``1(System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]},System.Collections.Generic.List{``0[]})">
+        <member name="M:SFGraphics.GLObjects.Textures.TextureCubeMap.LoadImageData``1(System.Int32,OpenTK.Graphics.OpenGL.InternalFormat,System.Collections.Generic.IList{``0[]},System.Collections.Generic.IList{``0[]},System.Collections.Generic.IList{``0[]},System.Collections.Generic.IList{``0[]},System.Collections.Generic.IList{``0[]},System.Collections.Generic.IList{``0[]})">
             <summary>
             Initializes a compressed cube map with mipmaps.
             Each face should have the same dimensions, image format, and number of mipmaps.
