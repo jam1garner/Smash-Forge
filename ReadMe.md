@@ -7,6 +7,9 @@ Smash Forge
 ## Installation
 Download the latest commit from the [releases page](https://github.com/jam1garner/Smash-Forge/releases). See the wiki for more information and basic usage. **Do not accidentally download the source code (contains a .sln).**
 
+## System Requirements
+A minimum OpenGL version of 3.30 is required. See [Rendering Issues](https://github.com/jam1garner/Smash-Forge/wiki/Rendering-Issues) for details.  
+
 ## Features
 * **Smash 4**
     * Accurate renders of Namco models (.nud), Namco textures (.nut), and Smash 4 level data (.lvd)
