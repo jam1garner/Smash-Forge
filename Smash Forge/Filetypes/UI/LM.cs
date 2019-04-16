@@ -310,6 +310,9 @@ namespace Smash_Forge
 
             public int NameId;
             public int AtlasId;
+            public int numVerts;
+            public int numIndices;
+
             public FillType FillType;
 
             public Vertex[] Verts;
@@ -330,8 +333,8 @@ namespace Smash_Forge
                 AtlasId = f.readInt();
                 FillType = (FillType)f.readShort();
 
-                int numVerts = f.readShort();
-                int numIndices = f.readInt();
+                numVerts = f.readShort();
+                numIndices = f.readInt();
 
                 Verts = new Vertex[numVerts];
                 Indices = new ushort[numIndices];
@@ -364,6 +367,7 @@ namespace Smash_Forge
             public int Unk1;
             public int BoundsId;
             public int Unk3;
+            public int numGraphics;
 
             public Graphic[] Graphics;
 
@@ -381,7 +385,7 @@ namespace Smash_Forge
                 BoundsId = f.readInt();
                 Unk3 = f.readInt();
 
-                int numGraphics = f.readInt();
+                numGraphics = f.readInt();
                 Graphics = new Graphic[numGraphics];
 
                 for (int i = 0; i < numGraphics; i++)

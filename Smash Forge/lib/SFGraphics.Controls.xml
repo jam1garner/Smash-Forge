@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SFGraphics.Controls</name>
+    </assembly>
+    <members>
+        <member name="T:SFGraphics.Controls.GLViewport">
+            <summary>
+            Provides functionality similar to <see cref="T:OpenTK.GameWindow"/> for <see cref="T:OpenTK.GLControl"/>.
+            </summary>
+        </member>
+        <member name="F:SFGraphics.Controls.GLViewport.defaultGraphicsMode">
+            <summary>
+            The default graphics mode for rendering. Enables depth/stencil buffers and anti-aliasing. 
+            </summary>
+        </member>
+        <member name="T:SFGraphics.Controls.GLViewport.OnRenderFrameEventHandler">
+            <summary>
+            Describes the arguments used for a rendered frame. 
+            </summary>
+            <param name="sender">The control rendering the frame</param>
+            <param name="e">information about the rendered frame</param>
+        </member>
+        <member name="E:SFGraphics.Controls.GLViewport.OnRenderFrame">
+            <summary>
+            Occurs after frame setup and before the front and back buffer are swapped. To render a frame, use <see cref="M:SFGraphics.Controls.GLViewport.RenderFrame"/>.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Controls.GLViewport.#ctor">
+            <summary>
+            Creates a new viewport with <see cref="F:SFGraphics.Controls.GLViewport.defaultGraphicsMode"/>.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Controls.GLViewport.RenderFrame">
+            <summary>
+            Sets up, renders, and displays a frame. Subscribe to <see cref="E:SFGraphics.Controls.GLViewport.OnRenderFrame"/> to add custom rendering code.
+            </summary>
+        </member>
+    </members>
+</doc>

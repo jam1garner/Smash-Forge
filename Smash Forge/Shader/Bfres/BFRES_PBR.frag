@@ -270,8 +270,11 @@ void main()
 	vec3 H = normalize(specLightDirection + I); // half angle
     vec3 R = reflect(I, N); // reflection
 
+    vec3 f0 = mix(vec3(0.04), albedo, metallic); // dialectric
+    vec3 kS = FresnelSchlickRoughness(max(dot(N, H), 0.0), f0, roughness);
+
     // Diffuse pass
-    vec3 diffuseIblColor = texture(irradianceMap, R).rgb;
+    vec3 diffuseIblColor = texture(irradianceMap, N).rgb;
     vec3 diffuseTerm = albedo * diffuseIblColor;
     diffuseTerm *= cavity;
     diffuseTerm *= ao;
@@ -280,11 +283,11 @@ void main()
     // Adjust for metalness.
     diffuseTerm *= clamp(1 - metallic, 0, 1);
 
+    diffuseTerm *= vec3(1) - kS.xxx;
+
     // Specular pass.
     int maxSpecularLod = 8;
     vec3 specularIblColor = textureLod(specularIbl, R, roughness * maxSpecularLod).rgb;
-    vec3 f0 = mix(vec3(0.04), albedo, metallic); // dialectric
-    vec3 kS = FresnelSchlickRoughness(max(dot(N, H), 0.0), f0, roughness);
 
     vec3 specularTerm = specularIblColor * kS;
 

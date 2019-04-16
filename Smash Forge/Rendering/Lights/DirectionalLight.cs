@@ -87,8 +87,8 @@ namespace Smash_Forge.Rendering.Lights
         {
             // calculate light vector from 3 rotation angles
             Matrix4 lightRotMatrix = Matrix4.CreateFromAxisAngle(Vector3.UnitX, (float)VectorUtils.GetRadians(RotationXDegrees))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, RotationYDegrees * (float)VectorUtils.GetRadians(RotationYDegrees))
-             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, RotationZDegrees * (float)VectorUtils.GetRadians(RotationZDegrees));
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitY, (float)VectorUtils.GetRadians(RotationYDegrees))
+             * Matrix4.CreateFromAxisAngle(Vector3.UnitZ, (float)VectorUtils.GetRadians(RotationZDegrees));
 
             direction = Vector3.TransformVector(new Vector3(0f, 0f, 1f), lightRotMatrix).Normalized();
         }

@@ -86,6 +86,9 @@
       <HintPath>lib\SFGraphics.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="SFGraphics.Controls">
+      <HintPath>lib\SFGraphics.Controls.dll</HintPath>
+    </Reference>
     <Reference Include="SFGraphics.Utils">
       <HintPath>lib\SFGraphics.Utils.dll</HintPath>
     </Reference>
@@ -336,6 +339,12 @@
     </Compile>
     <Compile Include="GUI\Editors\LM Editor\LMList.Designer.cs">
       <DependentUpon>LMList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Editors\LM Editor\LMUVViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Editors\LM Editor\LMUVViewer.designer.cs">
+      <DependentUpon>LMUVViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Melee\DOBJEditor.cs">
       <SubType>Form</SubType>
@@ -734,7 +743,6 @@
     <Compile Include="Rendering\Drawing\NudMatSphereDrawing.cs" />
     <Compile Include="Rendering\Cameras\ForgeCamera.cs" />
     <Compile Include="Rendering\Cameras\ForgeOrthoCamera.cs" />
-    <Compile Include="Rendering\FramebufferTools.cs" />
     <Compile Include="Rendering\Lights\AreaLight.cs" />
     <Compile Include="Rendering\Lights\DirectionalLight.cs" />
     <Compile Include="Rendering\Lights\HemisphereFresnel.cs" />
@@ -834,6 +842,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\LM Editor\LMList.resx">
       <DependentUpon>LMList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Editors\LM Editor\LMUVViewer.resx">
+      <DependentUpon>LMUVViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Editors\LVD Editor\LVDEditor.resx">
       <DependentUpon>LVDEditor.cs</DependentUpon>
@@ -1502,6 +1513,9 @@
     <Content Include="lib\SFGenericModel.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="lib\SFGraphics.Controls.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="lib\SFGraphics.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -1585,6 +1599,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

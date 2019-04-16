@@ -204,9 +204,9 @@ namespace Smash_Forge.Filetypes.Melee
                     m.SetRenderSettings(DOBJ);
 
                     if (IsSelected)
-                        DrawModelSelection(m, shader, c);
+                        DrawModelSelection(m, shader);
                     else
-                        m.Draw(shader, c);
+                        m.Draw(shader);
                 }
             }
         }
@@ -298,11 +298,11 @@ namespace Smash_Forge.Filetypes.Melee
             shader.SetTexture("specularTex", renderTex.texture, 3);
         }
 
-        private static void DrawModelSelection(MeleeMesh mesh, Shader shader, Camera camera)
+        private static void DrawModelSelection(MeleeMesh mesh, Shader shader)
         {
             //This part needs to be reworked for proper outline. Currently would make model disappear
 
-            mesh.Draw(shader, camera);
+            mesh.Draw(shader);
 
             GL.Enable(EnableCap.StencilTest);
             // use vertex color for wireframe color
@@ -311,7 +311,7 @@ namespace Smash_Forge.Filetypes.Melee
             GL.Enable(EnableCap.LineSmooth);
             GL.LineWidth(1.5f);
 
-            mesh.Draw(shader, camera);
+            mesh.Draw(shader);
 
             GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             shader.SetInt("colorOverride", 0);

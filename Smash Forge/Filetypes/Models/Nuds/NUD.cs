@@ -450,7 +450,7 @@ namespace Smash_Forge
                     {
                         if ((p.IsSelected || p.Parent.IsSelected))
                         {
-                            DrawModelSelection(p, shader, camera);
+                            DrawModelSelection(p, shader);
                         }
                     }
                 }
@@ -506,9 +506,9 @@ namespace Smash_Forge
             // Update render mesh settings.
             // This is slow, but performance isn't an issue for NUDs.
             p.renderMesh.SetRenderSettings(material);
-            p.renderMesh.SetMaterialValues(material);
+            p.renderMesh.SetMaterialValues(material, shader);
 
-            p.renderMesh.Draw(shader, camera);
+            p.renderMesh.Draw(shader);
         }
 
         private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, int id = 0, bool drawId = false)
@@ -604,7 +604,7 @@ namespace Smash_Forge
             }
         }
 
-        private void DrawModelSelection(Polygon p, Shader shader, Camera camera)
+        private void DrawModelSelection(Polygon p, Shader shader)
         {
             // This might have been changed to reverse subtract.
             GL.BlendEquation(BlendEquationMode.FuncAdd);
@@ -620,7 +620,7 @@ namespace Smash_Forge
             GL.StencilFunc(StencilFunction.Always, 1, 0xFF);
             GL.StencilMask(0xFF);
 
-            p.renderMesh.Draw(shader, camera);
+            p.renderMesh.Draw(shader);
 
             GL.ColorMask(cwm[0], cwm[1], cwm[2], cwm[3]);
 
@@ -632,7 +632,7 @@ namespace Smash_Forge
 
             GL.LineWidth(2.0f);
             p.renderMesh.SetWireFrame(true);
-            p.renderMesh.Draw(shader, camera);
+            p.renderMesh.Draw(shader);
             p.renderMesh.SetWireFrame(false);
 
             shader.SetInt("drawSelection", 0);

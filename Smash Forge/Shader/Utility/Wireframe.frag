@@ -4,8 +4,8 @@ float WireframeIntensity(vec3 distanceToEdges) {
     float minDistance = min(min(distanceToEdges.x, distanceToEdges.y), distanceToEdges.z);
 
     // Constant wireframe thickness relative to the screen size.
-    float thickness = 0.5;
-    float smoothAmount = 0.5;
+    float thickness = 0.01;
+    float smoothAmount = 1.0;
 
     float delta = fwidth(minDistance);
     float edge0 = delta * thickness;

@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.ListViewItem listViewItem9 = new System.Windows.Forms.ListViewItem("test");
-            System.Windows.Forms.ListViewItem listViewItem10 = new System.Windows.Forms.ListViewItem("test2");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("test");
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("test2");
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.loadRenderATKD = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -192,6 +192,7 @@
             this.bloomCB = new System.Windows.Forms.CheckBox();
             this.postProcessingCB = new System.Windows.Forms.CheckBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.enabledCheckbox = new System.Windows.Forms.CheckBox();
             this.timeElapsedCheckbox = new System.Windows.Forms.CheckBox();
             this.showActiveWindowCheckbox = new System.Windows.Forms.CheckBox();
             this.modNameTextBox = new System.Windows.Forms.TextBox();
@@ -202,7 +203,6 @@
             this.customRadioButton = new System.Windows.Forms.RadioButton();
             this.defaultRadioButton = new System.Windows.Forms.RadioButton();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.enabledCheckbox = new System.Windows.Forms.CheckBox();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbHitboxAnglesColor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbShieldColor)).BeginInit();
@@ -352,7 +352,7 @@
             this.hitboxAnglesCB.TabIndex = 73;
             this.hitboxAnglesCB.Text = "Render Hitbox Angles";
             this.hitboxAnglesCB.UseVisualStyleBackColor = true;
-            this.hitboxAnglesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.hitboxAnglesCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderReverseLedgeGrabCB
             // 
@@ -363,7 +363,7 @@
             this.renderReverseLedgeGrabCB.TabIndex = 72;
             this.renderReverseLedgeGrabCB.Text = "Render Reverse Ledge Grabboxes";
             this.renderReverseLedgeGrabCB.UseVisualStyleBackColor = true;
-            this.renderReverseLedgeGrabCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderReverseLedgeGrabCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderTetherLedgeCB
             // 
@@ -374,7 +374,7 @@
             this.renderTetherLedgeCB.TabIndex = 71;
             this.renderTetherLedgeCB.Text = "Render Tether Ledge Grabboxes";
             this.renderTetherLedgeCB.UseVisualStyleBackColor = true;
-            this.renderTetherLedgeCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderTetherLedgeCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderLedgeGrabCB
             // 
@@ -385,7 +385,7 @@
             this.renderLedgeGrabCB.TabIndex = 70;
             this.renderLedgeGrabCB.Text = "Render Ledge Grabboxes";
             this.renderLedgeGrabCB.UseVisualStyleBackColor = true;
-            this.renderLedgeGrabCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderLedgeGrabCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderSpecialBubblesCB
             // 
@@ -396,7 +396,7 @@
             this.renderSpecialBubblesCB.TabIndex = 69;
             this.renderSpecialBubblesCB.Text = "Render Special Bubbles";
             this.renderSpecialBubblesCB.UseVisualStyleBackColor = true;
-            this.renderSpecialBubblesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderSpecialBubblesCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // label80
             // 
@@ -738,7 +738,7 @@
             this.renderPriorityTopCB.TabIndex = 31;
             this.renderPriorityTopCB.Text = "Render higher priority hitboxes on top";
             this.renderPriorityTopCB.UseVisualStyleBackColor = true;
-            this.renderPriorityTopCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderPriorityTopCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // listViewKbColors
             // 
@@ -749,8 +749,8 @@
             this.listViewKbColors.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.listViewKbColors.HideSelection = false;
             this.listViewKbColors.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem9,
-            listViewItem10});
+            listViewItem3,
+            listViewItem4});
             this.listViewKbColors.Location = new System.Drawing.Point(37, 123);
             this.listViewKbColors.MultiSelect = false;
             this.listViewKbColors.Name = "listViewKbColors";
@@ -796,7 +796,7 @@
             this.renderHitboxesCB.TabIndex = 3;
             this.renderHitboxesCB.Text = "Render Hitboxes";
             this.renderHitboxesCB.UseVisualStyleBackColor = true;
-            this.renderHitboxesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderHitboxesCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderHurtboxesCB
             // 
@@ -807,7 +807,7 @@
             this.renderHurtboxesCB.TabIndex = 23;
             this.renderHurtboxesCB.Text = "Render Hurtboxes";
             this.renderHurtboxesCB.UseVisualStyleBackColor = true;
-            this.renderHurtboxesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderHurtboxesCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderEnvCollisionBoxCB
             // 
@@ -818,7 +818,7 @@
             this.renderEnvCollisionBoxCB.TabIndex = 25;
             this.renderEnvCollisionBoxCB.Text = "Render Environment Collision Boxes";
             this.renderEnvCollisionBoxCB.UseVisualStyleBackColor = true;
-            this.renderEnvCollisionBoxCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderEnvCollisionBoxCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderHurtboxZonesCB
             // 
@@ -829,7 +829,7 @@
             this.renderHurtboxZonesCB.TabIndex = 24;
             this.renderHurtboxZonesCB.Text = "Render Hurtboxes Zones";
             this.renderHurtboxZonesCB.UseVisualStyleBackColor = true;
-            this.renderHurtboxZonesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderHurtboxZonesCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderInterpHitboxCB
             // 
@@ -840,7 +840,7 @@
             this.renderInterpHitboxCB.TabIndex = 25;
             this.renderInterpHitboxCB.Text = "Render Interpolated Hitboxes";
             this.renderInterpHitboxCB.UseVisualStyleBackColor = true;
-            this.renderInterpHitboxCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderInterpHitboxCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // tabPage1
             // 
@@ -915,7 +915,7 @@
             this.renderModelCB.TabIndex = 0;
             this.renderModelCB.Text = "Render Model";
             this.renderModelCB.UseVisualStyleBackColor = true;
-            this.renderModelCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderModelCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // modelSelectCB
             // 
@@ -1192,7 +1192,7 @@
             this.renderBonesCB.TabIndex = 1;
             this.renderBonesCB.Text = "Render Bones";
             this.renderBonesCB.UseVisualStyleBackColor = true;
-            this.renderBonesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderBonesCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // swagYCB
             // 
@@ -1259,7 +1259,7 @@
             this.renderCameraPathCB.TabIndex = 2;
             this.renderCameraPathCB.Text = "Render Camera Path";
             this.renderCameraPathCB.UseVisualStyleBackColor = true;
-            this.renderCameraPathCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderCameraPathCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // areaLightBoundingBoxCB
             // 
@@ -1374,7 +1374,7 @@
             this.renderGeneralShapesCB.TabIndex = 33;
             this.renderGeneralShapesCB.Text = "Render General Shapes and Points";
             this.renderGeneralShapesCB.UseVisualStyleBackColor = true;
-            this.renderGeneralShapesCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderGeneralShapesCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderLvdCB
             // 
@@ -1385,7 +1385,7 @@
             this.renderLvdCB.TabIndex = 27;
             this.renderLvdCB.Text = "Render LVD";
             this.renderLvdCB.UseVisualStyleBackColor = true;
-            this.renderLvdCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderLvdCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderCollisionsCB
             // 
@@ -1396,7 +1396,7 @@
             this.renderCollisionsCB.TabIndex = 28;
             this.renderCollisionsCB.Text = "Render Collisions";
             this.renderCollisionsCB.UseVisualStyleBackColor = true;
-            this.renderCollisionsCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderCollisionsCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderItemSpawnersCB
             // 
@@ -1407,7 +1407,7 @@
             this.renderItemSpawnersCB.TabIndex = 31;
             this.renderItemSpawnersCB.Text = "Render Item Spawners";
             this.renderItemSpawnersCB.UseVisualStyleBackColor = true;
-            this.renderItemSpawnersCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderItemSpawnersCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderPassthroughCB
             // 
@@ -1418,7 +1418,7 @@
             this.renderPassthroughCB.TabIndex = 32;
             this.renderPassthroughCB.Text = "Render Passthrough Angles";
             this.renderPassthroughCB.UseVisualStyleBackColor = true;
-            this.renderPassthroughCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderPassthroughCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderSpawnsCB
             // 
@@ -1429,7 +1429,7 @@
             this.renderSpawnsCB.TabIndex = 29;
             this.renderSpawnsCB.Text = "Render Spawns";
             this.renderSpawnsCB.UseVisualStyleBackColor = true;
-            this.renderSpawnsCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderSpawnsCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // renderRespawnsCB
             // 
@@ -1440,7 +1440,7 @@
             this.renderRespawnsCB.TabIndex = 30;
             this.renderRespawnsCB.Text = "Render Respawns";
             this.renderRespawnsCB.UseVisualStyleBackColor = true;
-            this.renderRespawnsCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderRespawnsCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // tabControl1
             // 
@@ -1967,7 +1967,7 @@
             this.renderFloorCB.TabIndex = 32;
             this.renderFloorCB.Text = "Render Floor";
             this.renderFloorCB.UseVisualStyleBackColor = true;
-            this.renderFloorCB.CheckedChanged += new System.EventHandler(this.checkChanged);
+            this.renderFloorCB.CheckedChanged += new System.EventHandler(this.CheckBoxChanged);
             // 
             // tabPage4
             // 
@@ -2099,6 +2099,20 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Discord Rich Presence";
             // 
+            // enabledCheckbox
+            // 
+            this.enabledCheckbox.AutoSize = true;
+            this.enabledCheckbox.Checked = true;
+            this.enabledCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.enabledCheckbox.Location = new System.Drawing.Point(14, 11);
+            this.enabledCheckbox.Name = "enabledCheckbox";
+            this.enabledCheckbox.Size = new System.Drawing.Size(65, 17);
+            this.enabledCheckbox.TabIndex = 5;
+            this.enabledCheckbox.Text = "Enabled";
+            this.toolTip1.SetToolTip(this.enabledCheckbox, "May require restart on re-enable");
+            this.enabledCheckbox.UseVisualStyleBackColor = true;
+            this.enabledCheckbox.CheckedChanged += new System.EventHandler(this.discordCheckChanged);
+            // 
             // timeElapsedCheckbox
             // 
             this.timeElapsedCheckbox.AutoSize = true;
@@ -2209,20 +2223,6 @@
             this.defaultRadioButton.Text = "Default";
             this.defaultRadioButton.UseVisualStyleBackColor = true;
             this.defaultRadioButton.CheckedChanged += new System.EventHandler(this.imageModeChanged);
-            // 
-            // enabledCheckbox
-            // 
-            this.enabledCheckbox.AutoSize = true;
-            this.enabledCheckbox.Checked = true;
-            this.enabledCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.enabledCheckbox.Location = new System.Drawing.Point(14, 11);
-            this.enabledCheckbox.Name = "enabledCheckbox";
-            this.enabledCheckbox.Size = new System.Drawing.Size(65, 17);
-            this.enabledCheckbox.TabIndex = 5;
-            this.enabledCheckbox.Text = "Enabled";
-            this.toolTip1.SetToolTip(this.enabledCheckbox, "May require restart on re-enable");
-            this.enabledCheckbox.UseVisualStyleBackColor = true;
-            this.enabledCheckbox.CheckedChanged += new System.EventHandler(this.discordCheckChanged);
             // 
             // RenderSettingsMenu
             // 

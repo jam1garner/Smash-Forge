@@ -23,7 +23,9 @@ namespace Smash_Forge.Filetypes.Melee.Rendering
 
     public class MeleeMesh : GenericMesh<MeleeVertex>
     {
-        public MeleeMesh(List<MeleeVertex> vertices, List<int> vertexIndices, PrimitiveType primitiveType)
+        private RenderSettings renderSettings = new RenderSettings();
+
+        public MeleeMesh(IList<MeleeVertex> vertices, IList<int> vertexIndices, PrimitiveType primitiveType)
             : base(vertices, vertexIndices, primitiveType)
         {
             // TODO: Why is this flipped?
@@ -37,6 +39,8 @@ namespace Smash_Forge.Filetypes.Melee.Rendering
 
             SetAlphaTesting(datDOBJ);
             SetAlphaBlending(datDOBJ);
+
+            GLRenderSettings.SetRenderSettings(renderSettings);
         }
 
         private void SetAlphaBlending(DatDOBJ datDOBJ)

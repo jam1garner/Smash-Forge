@@ -31,8 +31,7 @@ namespace Smash_Forge
 
             // Used to generate a unique color for viewport selection.
             private static List<int> previousDisplayIds = new List<int>();
-            public int DisplayId { get { return displayId; } }
-            private int displayId = 0;
+            public int DisplayId { get; private set; } = 0;
 
             // The number of vertices is vertexIndices.Count because many vertices are shared.
             public List<Vertex> vertices = new List<Vertex>();
@@ -91,7 +90,7 @@ namespace Smash_Forge
                     index = previousDisplayIds.Last();
                 index++;
                 previousDisplayIds.Add(index);
-                displayId = index;
+                DisplayId = index;
             }
 
             public void AOSpecRefBlend()
@@ -160,12 +159,13 @@ namespace Smash_Forge
                 if (!(vertType == 3 || vertType == 7))
                     return;
 
-                List<int> f = GetRenderingVertexIndices();
-                Vector3[] tanArray = new Vector3[vertices.Count];
-                Vector3[] bitanArray = new Vector3[vertices.Count];
+                List<int> vertexIndices = GetRenderingVertexIndices();
 
-                CalculateTanBitanArrays(f, tanArray, bitanArray);
-                ApplyTanBitanArray(tanArray, bitanArray);
+                Vector3[] tangents;
+                Vector3[] bitangents;
+                TriangleListUtils.CalculateTangentsBitangents(GetPositions(), GetNormals(), GetUv0(), vertexIndices, out tangents, out bitangents);
+
+                ApplyTanBitanArray(tangents, bitangents);
             }
 
             public void SetVertexColor(Vector4 intColor)
@@ -185,40 +185,6 @@ namespace Smash_Forge
                     Vertex v = vertices[i];
                     Vector3 newTan = tanArray[i];
                     Vector3 newBitan = bitanArray[i];
-
-                    // The tangent and bitangent should be orthogonal to the normal but not each other. 
-                    // Bitangents are not calculated with a cross product to prevent flipped shading with mirrored normal maps.
-                    v.tan = new Vector4(VectorUtils.Orthogonalize(newTan, v.nrm), 1);
-                    v.bitan = new Vector4(VectorUtils.Orthogonalize(newBitan, v.nrm), 1);
-                    v.bitan *= -1;
-                }
-            }
-
-            private void CalculateTanBitanArrays(List<int> faces, Vector3[] tanArray, Vector3[] bitanArray)
-            {
-                // Three verts per face.
-                for (int i = 0; i < displayFaceSize; i += 3)
-                {
-                    Vertex v1 = vertices[faces[i]];
-                    Vertex v2 = vertices[faces[i + 1]];
-                    Vertex v3 = vertices[faces[i + 2]];
-
-                    // Check for index out of range errors and just skip this face.
-                    if (v1.uv.Count < 1 || v2.uv.Count < 1 || v3.uv.Count < 1)
-                        continue;
-
-                    Vector3 s = new Vector3();
-                    Vector3 t = new Vector3();
-                    VectorUtils.GenerateTangentBitangent(v1.pos, v2.pos, v3.pos, v1.uv[0], v2.uv[0], v3.uv[0], out s, out t);
-
-                    // Average tangents and bitangents.
-                    tanArray[faces[i]] += s;
-                    tanArray[faces[i + 1]] += s;
-                    tanArray[faces[i + 2]] += s;
-
-                    bitanArray[faces[i]] += t;
-                    bitanArray[faces[i + 1]] += t;
-                    bitanArray[faces[i + 2]] += t;
                 }
             }
 
@@ -263,6 +229,37 @@ namespace Smash_Forge
                         }
                     }
                 }
+            }
+
+            private List<Vector3> GetPositions()
+            {
+                var values = new List<Vector3>();
+                foreach (var vertex in vertices)
+                {
+                    values.Add(vertex.pos);
+                }
+                return values;
+            }
+
+            private List<Vector3> GetNormals()
+            {
+                var values = new List<Vector3>();
+                foreach (var vertex in vertices)
+                {
+                    values.Add(vertex.nrm);
+                }
+                return values;
+            }
+
+
+            private List<Vector2> GetUv0()
+            {
+                var values = new List<Vector2>();
+                foreach (var vertex in vertices)
+                {
+                    values.Add(vertex.uv[0]);
+                }
+                return values;
             }
 
             public void CalculateNormals()

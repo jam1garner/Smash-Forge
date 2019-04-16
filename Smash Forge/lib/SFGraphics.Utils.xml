@@ -23,7 +23,7 @@
             Contains methods to generate a bounding sphere for a collection of vertices.
             </summary>
         </member>
-        <member name="M:SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.List{OpenTK.Vector3})">
+        <member name="M:SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.IEnumerable{OpenTK.Vector3})">
             <summary>
             Generates a close to optimal sphere that contains all of the given points
             within the sphere.
@@ -32,7 +32,7 @@
             <param name="points">The points that should be contained within the bounding sphere</param>
             <returns>Vector4(center.Xyz, radius)</returns>
         </member>
-        <member name="M:SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.List{OpenTK.Vector4})">
+        <member name="M:SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.IEnumerable{OpenTK.Vector4})">
             <summary>
             Generates a single bounding sphere that contains all the given
             bounding spheres.
@@ -136,6 +136,30 @@
             <param name="color">The color used to calculate the inverted color</param>
             <returns>A color with inverted RGB but identical alpha as color</returns>
         </member>
+        <member name="T:SFGraphics.Utils.TriangleListUtils">
+            <summary>
+            Contains methods for calculating vertex properties for PrimitiveType.Triangles.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Utils.TriangleListUtils.CalculateTangentsBitangents(System.Collections.Generic.IList{OpenTK.Vector3},System.Collections.Generic.IList{OpenTK.Vector3},System.Collections.Generic.IList{OpenTK.Vector2},System.Collections.Generic.IList{System.Int32},OpenTK.Vector3[]@,OpenTK.Vector3[]@)">
+            <summary>
+            Calculates normalized, smooth tangents and bitangents for the given vertex data. Bitangents are adjusted to account for mirrored UVs.
+            </summary>
+            <param name="positions">The vertex positions</param>
+            <param name="normals">The vertex normals</param>
+            <param name="uvs">The vertex texture coordinates</param>
+            <param name="indices">The indices used to define the triangle faces</param>
+            <param name="tangents">The newly generated tangents</param>
+            <param name="bitangents">The newly generated bitangents</param>
+        </member>
+        <member name="M:SFGraphics.Utils.TriangleListUtils.CalculateSmoothNormals(System.Collections.Generic.IList{OpenTK.Vector3},System.Collections.Generic.IList{System.Int32},OpenTK.Vector3[]@)">
+            <summary>
+            Calculates normalized, smooth tangents and bitangents for the given vertex data. Bitangents are adjusted to account for mirrored UVs.
+            </summary>
+            <param name="positions">The vertex positions</param>
+            <param name="normals">The vertex normals</param>
+            <param name="indices">The indices used to define the triangle faces</param>
+        </member>
         <member name="T:SFGraphics.Utils.VectorUtils">
             <summary>
             Utility methods for normals, tangents, bitangents, and angle conversions
@@ -168,11 +192,11 @@
         <member name="M:SFGraphics.Utils.VectorUtils.Orthogonalize(OpenTK.Vector3,OpenTK.Vector3)">
             <summary>
             Uses the Gran-Schmidt method for returning a normalized copy 
-            of <paramref name="target"/> that is orthogonal to <paramref name="source"/>.
+            of <paramref name="vectorToOrthogonalize"/> that is orthogonal to <paramref name="source"/>.
             </summary>
-            <param name="target">The vector to normalize</param>
+            <param name="vectorToOrthogonalize">The vector to normalize</param>
             <param name="source">The vector to normalize against</param>
-            <returns><paramref name="target"/> orthogonalized to <paramref name="source"/></returns>
+            <returns><paramref name="vectorToOrthogonalize"/> orthogonalized to <paramref name="source"/></returns>
         </member>
         <member name="M:SFGraphics.Utils.VectorUtils.GenerateTangentBitangent(OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector3,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector2,OpenTK.Vector3@,OpenTK.Vector3@)">
             <summary>
@@ -200,6 +224,30 @@
             <param name="v2">The position of the second vertex</param>
             <param name="v3">The position of the third vertex</param>
             <returns>The calculated face normal</returns>
+        </member>
+        <member name="T:SFGraphics.Utils.VertexOptimization">
+            <summary>
+            Contains methods for simplifying duplicate vertex data.
+            </summary>
+        </member>
+        <member name="M:SFGraphics.Utils.VertexOptimization.OptimizeVertexData``1(System.Collections.Generic.IList{``0},System.Collections.Generic.List{``0}@,System.Collections.Generic.List{System.Int32}@)">
+            <summary>
+            Generates new vertices and indices with no repeated vertices.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="vertices">The original vertex list</param>
+            <param name="newVertices">The optimized list of vertices</param>
+            <param name="newIndices">The optimized list of indices</param>
+        </member>
+        <member name="M:SFGraphics.Utils.VertexOptimization.OptimizeVertexData``1(System.Collections.Generic.IList{``0},System.Collections.Generic.IList{System.Int32},System.Collections.Generic.List{``0}@,System.Collections.Generic.List{System.Int32}@)">
+            <summary>
+            Generates new vertices and indices with no repeated vertices.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="vertices">The original vertex list</param>
+            <param name="indices">The original vertex indices</param>
+            <param name="newVertices">The optimized list of vertices</param>
+            <param name="newIndices">The optimized list of indices</param>
         </member>
     </members>
 </doc>

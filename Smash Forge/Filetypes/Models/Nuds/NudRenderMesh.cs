@@ -10,15 +10,19 @@ namespace Smash_Forge
 {
     public class NudRenderMesh : GenericMesh<NUD.DisplayVertex>
     {
+        private RenderSettings renderSettings = new RenderSettings();
+
         public NudRenderMesh(List<NUD.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices, PrimitiveType.Triangles)
         {
 
         }
 
-        public void SetMaterialValues(NUD.Material nudMaterial)
+        public void SetMaterialValues(NUD.Material nudMaterial, SFGraphics.GLObjects.Shaders.Shader shader)
         {
-            material = new GenericMaterial();
+            var material = new GenericMaterial();
             NudUniforms.SetMaterialPropertyUniforms(material, nudMaterial);
+
+            material.SetShaderUniforms(shader);
         }
 
         public void SetWireFrame(bool enabled)
@@ -27,6 +31,8 @@ namespace Smash_Forge
                 renderSettings.polygonModeSettings = new PolygonModeSettings(MaterialFace.Front, PolygonMode.Line);
             else
                 renderSettings.polygonModeSettings = PolygonModeSettings.Default;
+
+            GLRenderSettings.SetRenderSettings(renderSettings);
         }
 
         public void SetRenderSettings(NUD.Material material)
@@ -35,6 +41,8 @@ namespace Smash_Forge
             SetAlphaTesting(material);
             SetDepthTesting(material);
             SetFaceCulling(material);
+
+            GLRenderSettings.SetRenderSettings(renderSettings);
         }
 
         public void ResetRenderSettings()
