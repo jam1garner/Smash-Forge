@@ -29,13 +29,31 @@ namespace Smash_Forge
             Read(filename);
         }
 
+        public const uint Magic = 0x50415448; // "PATH"
+
         public List<pathFrame> Frames { get; set; }
         public override Endianness Endian { get; set; }
 
         public override void Read(string filename)
         {
             FileData f = new FileData(filename);
-            byte[] magic = f.read(0xC); ;
+            f.Endian = Endianness.Big;
+            f.seek(4);
+            if (f.readUInt() != Magic)
+                return;
+
+            f.seek(0);
+            uint bom = f.readUInt();
+            if (bom == 0xFFFE0000)
+                Endian = Endianness.Little;
+            else if (bom == 0x0000FEFF)
+                Endian = Endianness.Big;
+            else
+                return;
+            f.Endian = Endian;
+
+            f.seek(8);
+            f.readInt(); // Always 0
             int frameCount = f.readInt();
             for (int i = 0; i < frameCount; i++)
             {
@@ -52,7 +70,27 @@ namespace Smash_Forge
         }
         public override byte[] Rebuild()
         {
-            throw new NotImplementedException("Yell at jam to implement this");
+            FileOutput f = new FileOutput();
+            f.Endian = Endian;
+            f.writeUInt(0x0000FEFF);
+            f.Endian = Endianness.Big;
+            f.writeUInt(Magic);
+
+            f.Endian = Endian;
+            f.writeInt(0); // Always 0
+            f.writeInt(Frames.Count);
+            for (int i = 0; i < Frames.Count; i++)
+            {
+                f.writeFloat(Frames[i].qx);
+                f.writeFloat(Frames[i].qy);
+                f.writeFloat(Frames[i].qz);
+                f.writeFloat(Frames[i].qw);
+                f.writeFloat(Frames[i].x);
+                f.writeFloat(Frames[i].y);
+                f.writeFloat(Frames[i].z);
+            }
+
+            return f.getBytes();
         }
     }
 }
