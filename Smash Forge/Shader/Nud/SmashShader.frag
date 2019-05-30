@@ -213,7 +213,7 @@ vec3 TintColor(vec3 diffuseColor, float tintAmount) {
 vec3 RampColor(float rampCoord, sampler2D ramp, int hasRamp) {
     // TODO: Vertical component is always 0?
 	rampCoord = clamp(rampCoord, 0.01, 0.99);
-	return texture(ramp, vec2(1 - rampCoord, 0.0)).rgb * hasRamp;
+	return pow(texture(ramp, vec2(1 - rampCoord, 0.0)).rgb, vec3(2.2)) * hasRamp;
 }
 
 vec3 SphereMapColor(vec3 viewNormal, sampler2D spheremap) {
@@ -483,12 +483,12 @@ vec3 DiffusePass(vec3 N, vec4 diffuseMap, VertexAttributes vert) {
     // Stage lighting
     vec3 lighting = Lighting(N, halfLambert);
 
-    // TODO: Improve ramp shading. This should use two char diffuse lights for intensities.
-    vec3 rampTotal = (0.2 * RampColor(halfLambert, ramp, hasRamp)) + (0.5 * RampColor(halfLambert, dummyRamp, hasDummyRamp));
-    vec3 rampAdd = pow(rampTotal, vec3(2.2));
     diffusePass = diffuseColorFinal * lighting;
-    diffusePass += diffusePass * min(rampAdd, vec3(1));
+    // TODO: Improve ramp shading. This should use two char diffuse lights for intensities.
+    diffusePass += diffuseColorFinal * 0.5 * RampColor(halfLambert, ramp, hasRamp);
+    diffusePass += diffuseColorFinal * 0.2 * RampColor(halfLambert, dummyRamp, hasDummyRamp);
 
+    // Soft lighting.
     vec3 softLightDif = diffuseColorFinal * difLightColor;
     vec3 softLightAmb = diffuseColorFinal * ambLightColor;
     if (hasSoftLight == 1)
