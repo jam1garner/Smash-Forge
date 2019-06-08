@@ -213,7 +213,8 @@ namespace Smash_Forge.Rendering
         {
             // Save program binary and format.
             BinaryFormat binaryFormat;
-            byte[] programBinary = shader.GetProgramBinary(out binaryFormat);
+            byte[] programBinary;
+            shader.GetProgramBinary(out programBinary, out binaryFormat);
 
             File.WriteAllBytes(compiledBinaryPath, programBinary);
             File.WriteAllBytes(compiledFormatPath, BitConverter.GetBytes((int)binaryFormat));
@@ -282,14 +283,14 @@ namespace Smash_Forge.Rendering
             }
 
             // Display how many shaders correctly compiled.
-            string message = String.Format("{0} of {1} shaders compiled successfully. Error logs have been saved to the Shader Error Logs directory.\n",
+            string message = string.Format("{0} of {1} shaders compiled successfully. Error logs have been saved to the Shader Error Logs directory.\n",
                 successfulCompilations, OpenTKSharedResources.shaders.Count);
 
             // Display the shaders that didn't compile.
             if (compileErrorList.Count > 0)
             {
                 message += "The following shaders failed to compile:\n";
-                foreach (String shader in compileErrorList)
+                foreach (string shader in compileErrorList)
                     message += shader + "\n";
             }
 

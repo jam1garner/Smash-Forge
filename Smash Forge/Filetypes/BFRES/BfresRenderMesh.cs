@@ -17,18 +17,18 @@ namespace Smash_Forge
         {
             return new List<VertexAttribute>()
             {
-                new VertexFloatAttribute("vPosition",  ValueCount.Three, VertexAttribPointerType.Float),
-                new VertexFloatAttribute("vNormal",    ValueCount.Three, VertexAttribPointerType.Float),
-                new VertexFloatAttribute("vTangent",   ValueCount.Three, VertexAttribPointerType.Float),
-                new VertexFloatAttribute("vBitangent", ValueCount.Three, VertexAttribPointerType.Float),
-                new VertexFloatAttribute("vUV0",       ValueCount.Two,   VertexAttribPointerType.Float),
-                new VertexFloatAttribute("vColor",     ValueCount.Four,  VertexAttribPointerType.Float),
-                new VertexFloatAttribute("vBone",      ValueCount.Four,  VertexAttribPointerType.Float),
-                new VertexFloatAttribute("vWeight",    ValueCount.Four,  VertexAttribPointerType.Float),
-                new VertexFloatAttribute("vUV1",       ValueCount.Two,   VertexAttribPointerType.Float),
-                new VertexFloatAttribute("vUV2",       ValueCount.Two,   VertexAttribPointerType.Float),
-                new VertexFloatAttribute("vPosition2", ValueCount.Three, VertexAttribPointerType.Float),
-                new VertexFloatAttribute("vPosition3", ValueCount.Three, VertexAttribPointerType.Float)
+                new VertexFloatAttribute("vPosition",  ValueCount.Three, VertexAttribPointerType.Float, false),
+                new VertexFloatAttribute("vNormal",    ValueCount.Three, VertexAttribPointerType.Float, false),
+                new VertexFloatAttribute("vTangent",   ValueCount.Three, VertexAttribPointerType.Float, false),
+                new VertexFloatAttribute("vBitangent", ValueCount.Three, VertexAttribPointerType.Float, false),
+                new VertexFloatAttribute("vUV0",       ValueCount.Two,   VertexAttribPointerType.Float, false),
+                new VertexFloatAttribute("vColor",     ValueCount.Four,  VertexAttribPointerType.Float, false),
+                new VertexFloatAttribute("vBone",      ValueCount.Four,  VertexAttribPointerType.Float, false),
+                new VertexFloatAttribute("vWeight",    ValueCount.Four,  VertexAttribPointerType.Float, false),
+                new VertexFloatAttribute("vUV1",       ValueCount.Two,   VertexAttribPointerType.Float, false),
+                new VertexFloatAttribute("vUV2",       ValueCount.Two,   VertexAttribPointerType.Float, false),
+                new VertexFloatAttribute("vPosition2", ValueCount.Three, VertexAttribPointerType.Float, false),
+                new VertexFloatAttribute("vPosition3", ValueCount.Three, VertexAttribPointerType.Float, false)
             };
         }
     }
