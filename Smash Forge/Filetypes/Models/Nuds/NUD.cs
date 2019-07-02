@@ -463,23 +463,33 @@ namespace Smash_Forge
             List<Polygon> opaque = new List<Polygon>();
             List<Polygon> transparent = new List<Polygon>();
 
-            foreach (Mesh m in depthSortedMeshes)
+            // Opaque meshes aren't depth sorted.
+            foreach (Mesh m in Nodes)
             {
                 foreach (Polygon p in m.Nodes)
                 {
-                    if (p.materials.Count > 0 && p.materials[0].srcFactor != 0 || p.materials[0].dstFactor != 0)
-                        transparent.Add(p);
-                    else
+                    if (!p.IsTransparent)
                         opaque.Add(p);
                 }
             }
 
+            foreach (Mesh m in depthSortedMeshes)
+            {
+                foreach (Polygon p in m.Nodes)
+                {
+                    if (p.IsTransparent)
+                        transparent.Add(p);
+                }
+            }
+
             // Only draw polgons if the polygon and its parent are both checked.
+            //System.Diagnostics.Debug.WriteLine("Draw Polygons");
             foreach (Polygon p in opaque)
             {
                 if (p.Parent != null && ((Mesh)p.Parent).Checked && p.Checked)
                 {
                     DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, drawPolyIds);
+                    //System.Diagnostics.Debug.WriteLine($"{p.vertexIndices.Count}");
                 }
             }
 
@@ -488,8 +498,10 @@ namespace Smash_Forge
                 if (((Mesh)p.Parent).Checked && p.Checked)
                 {
                     DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, drawPolyIds);
+                    //System.Diagnostics.Debug.WriteLine($"{p.vertexIndices.Count}");
                 }
             }
+            //System.Diagnostics.Debug.WriteLine("");
         }
 
         private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, bool drawId = false)
@@ -534,8 +546,7 @@ namespace Smash_Forge
 
             // The fragment alpha is set to 1 when alpha blending/testing aren't used.
             // This fixes the alpha output for PNG renders.
-            p.isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
-            shader.SetBoolToInt("isTransparent", p.isTransparent);
+            shader.SetBoolToInt("isTransparent", p.IsTransparent);
         }
 
         public static void SetStageLightingUniforms(Shader shader, int lightSetNumber)
