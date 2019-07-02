@@ -183,8 +183,8 @@ namespace Smash_Forge
             }
 
             // Order by the distance from the camera to the closest point on the bounding sphere. 
-            // Positive values are usually closer to camera. Negative values are usually farther away. 
-            depthSortedMeshes = unsortedMeshes.OrderBy(m => m.sortingDistance).ToList();
+            // More distance objects will be rendered first.
+            depthSortedMeshes = unsortedMeshes.OrderBy(m => -m.sortingDistance).ToList();
         }
 
         public void UpdateRenderMeshes()
@@ -489,19 +489,21 @@ namespace Smash_Forge
                 if (p.Parent != null && ((Mesh)p.Parent).Checked && p.Checked)
                 {
                     DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, drawPolyIds);
-                    //System.Diagnostics.Debug.WriteLine($"{p.vertexIndices.Count}");
+                    System.Diagnostics.Debug.WriteLine($"{p.vertexIndices.Count}");
                 }
             }
 
+            int i = 0;
             foreach (Polygon p in transparent)
             {
                 if (((Mesh)p.Parent).Checked && p.Checked)
                 {
                     DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, drawPolyIds);
-                    //System.Diagnostics.Debug.WriteLine($"{p.vertexIndices.Count}");
+                    System.Diagnostics.Debug.WriteLine($"[{i}] {p.vertexIndices.Count}");
+                    i++;
                 }
             }
-            //System.Diagnostics.Debug.WriteLine("");
+            System.Diagnostics.Debug.WriteLine("");
         }
 
         private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, bool drawId = false)

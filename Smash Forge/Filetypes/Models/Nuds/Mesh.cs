@@ -159,6 +159,7 @@ namespace Smash_Forge
             public float CalculateSortingDistance(Vector3 cameraPosition)
             {
                 Vector3 meshCenter = new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]);
+                // TODO: How does this work?
                 if (useNsc && singlebind != -1)
                 {
                     // Use the bone position as the bounding box center
@@ -183,26 +184,24 @@ namespace Smash_Forge
                 int sortBiasValue = 0;
                 int.TryParse(sortBiasText, out sortBiasValue);
 
-                // TODO: What does "m" do? Ex: SORTBIASm50_
-                int firstSortBiasCharIndex = Text.IndexOf(sortBiasKeyWord) + sortBiasKeyWord.Length;
-                if (Text[firstSortBiasCharIndex] == 'm')
-                    sortBiasValue *= -1;
-
                 return sortBiasValue;
             }
 
             private string GetSortBiasNumbers(string sortBiasKeyWord)
             {
-                string sortBiasText = "";
-                for (int i = Text.IndexOf(sortBiasKeyWord) + sortBiasKeyWord.Length; i < Text.Length; i++)
+                // HACK: Just ignore the 'm' prefix.
+                string modifiedText = Text.Replace("m", "");
+
+                string numbers = "";
+                for (int i = modifiedText.IndexOf(sortBiasKeyWord) + sortBiasKeyWord.Length; i < Text.Length; i++)
                 {
-                    if (Text[i] != '_')
-                        sortBiasText += Text[i];
+                    if (modifiedText[i] != '_')
+                        numbers += modifiedText[i];
                     else
                         break;
                 }
 
-                return sortBiasText;
+                return numbers;
             }
 
             public void SetMeshAttributesFromName()
