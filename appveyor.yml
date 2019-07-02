@@ -8,21 +8,11 @@ branches:
     - master
 
 before_build:
-- cmd: cd SFGraphics
-# Update SFGraphics to the latest build.
-- git checkout master
-- git pull
-# Restore after in case any projects were changed.
-- ps: nuget restore
-- cmd: cd ..
 
 build:
   verbosity: minimal
 
 build_script:
-  - msbuild "SFGraphics/SFGraphics.sln"
-  - copy /Y "%APPVEYOR_BUILD_FOLDER%\SFGraphics\Projects\SFGraphics\bin\Release\SFGraphics.dll" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\lib\"
-  - copy /Y "%APPVEYOR_BUILD_FOLDER%\SFGraphics\Projects\SFGraphics\bin\Release\SFGraphics.xml" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\lib\"
   - msbuild "Smash Forge.sln"
 
 deploy:
@@ -41,12 +31,6 @@ deploy:
 
 install:
   - git submodule update --init --recursive
-
-test:
-  assemblies:
-    except:
-    - 'SFGraphics\Test Projects\SFGraphics.Test\bin\Release\SFGraphics.Test.dll'
-    - 'SFGraphics\Test Projects\SFGenericModel.Test\bin\Release\SFGenericModel.Test.dll'
 
 after_build:
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\Smash Forge.exe"
