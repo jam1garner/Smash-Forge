@@ -11,7 +11,12 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             { 0x01, BlendingFactor.SrcAlpha },
             { 0x02, BlendingFactor.One },
             { 0x03, BlendingFactor.SrcAlpha },
-            { 0x04, BlendingFactor.SrcAlpha },
+            { 0x04, BlendingFactor.Zero },
+            { 0x05, BlendingFactor.SrcAlpha },
+            { 0x06, BlendingFactor.DstAlpha },
+            { 0x07, BlendingFactor.DstAlpha },
+            { 0x08, BlendingFactor.DstColor },
+            { 0x0a, BlendingFactor.DstColor },
         };
 
         public static readonly Dictionary<int, BlendingFactor> dstFactorByMatValue = new Dictionary<int, BlendingFactor>()
@@ -20,7 +25,12 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             { 0x01, BlendingFactor.OneMinusSrcAlpha },
             { 0x02, BlendingFactor.One },
             { 0x03, BlendingFactor.One },
-            { 0x05, BlendingFactor.OneMinusSrcColor }
+            { 0x04, BlendingFactor.SrcAlpha },
+            { 0x05, BlendingFactor.SrcAlpha },
+            { 0x06, BlendingFactor.OneMinusDstAlpha },
+            { 0x07, BlendingFactor.One },
+            { 0x08, BlendingFactor.Zero },
+            { 0x0a, BlendingFactor.Zero },
         };
 
         public static readonly Dictionary<int, TextureWrapMode> wrapModeByMatValue = new Dictionary<int, TextureWrapMode>()

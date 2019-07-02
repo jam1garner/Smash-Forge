@@ -102,12 +102,8 @@ namespace Smash_Forge
             if (NudEnums.dstFactorByMatValue.ContainsKey(material.dstFactor))
                 renderSettings.alphaBlendSettings.destinationFactor = NudEnums.dstFactorByMatValue[material.dstFactor];
 
-            // A weird multiplicative blend mode with premultiplied alpha.
-            if (material.dstFactor == 5)
-                renderSettings.alphaBlendSettings.sourceFactor = BlendingFactor.Zero;
-
             renderSettings.alphaBlendSettings.blendingEquationRgb = BlendEquationMode.FuncAdd;
-            if (material.dstFactor == 3)
+            if (material.dstFactor == 3 || material.dstFactor == 5)
                 renderSettings.alphaBlendSettings.blendingEquationRgb = BlendEquationMode.FuncReverseSubtract;
 
             renderSettings.alphaBlendSettings.blendingEquationAlpha = BlendEquationMode.FuncAdd;
