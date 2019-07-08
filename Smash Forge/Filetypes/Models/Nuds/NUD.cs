@@ -482,6 +482,10 @@ namespace Smash_Forge
                 }
             }
 
+
+            shader.UseProgram();
+            SetGlobalShaderUniforms(shader, camera, RenderTools.dummyTextures);
+
             // Only draw polgons if the polygon and its parent are both checked.
             //System.Diagnostics.Debug.WriteLine("Draw Polygons");
             foreach (Polygon p in opaque)
@@ -489,7 +493,7 @@ namespace Smash_Forge
                 if (p.Parent != null && ((Mesh)p.Parent).Checked && p.Checked)
                 {
                     DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, drawPolyIds);
-                    System.Diagnostics.Debug.WriteLine($"{p.vertexIndices.Count}");
+                    //System.Diagnostics.Debug.WriteLine($"{p.vertexIndices.Count}");
                 }
             }
 
@@ -499,11 +503,11 @@ namespace Smash_Forge
                 if (((Mesh)p.Parent).Checked && p.Checked)
                 {
                     DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, drawPolyIds);
-                    System.Diagnostics.Debug.WriteLine($"[{i}] {p.vertexIndices.Count}");
+                    //System.Diagnostics.Debug.WriteLine($"[{i}] {p.vertexIndices.Count}");
                     i++;
                 }
             }
-            System.Diagnostics.Debug.WriteLine("");
+            //System.Diagnostics.Debug.WriteLine("");
         }
 
         private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, bool drawId = false)
@@ -515,7 +519,8 @@ namespace Smash_Forge
 
             // Set Shader Values.
             shader.UseProgram();
-            SetShaderUniforms(p, shader, camera, material, dummyTextures, p.DisplayId, drawId);
+
+            SetPolygonSpecificUniforms(p, shader, dummyTextures, material);
 
             // Update render mesh settings.
             // This is slow, but performance isn't an issue for NUDs.
@@ -525,30 +530,36 @@ namespace Smash_Forge
             p.renderMesh.Draw(shader);
         }
 
-        private void SetShaderUniforms(Polygon p, Shader shader, Camera camera, Material material, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, int id = 0, bool drawId = false)
+        private void SetPolygonSpecificUniforms(Polygon p, Shader shader, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, Material material, bool shouldDrawIdPass = false)
         {
-            // Shader Uniforms
-            shader.SetUint("flags", material.Flags);
-            shader.SetBoolToInt("renderVertColor", Runtime.renderVertColor && material.useVertexColor);
             NudUniforms.SetTextureUniforms(shader, material, dummyTextures);
-
-            SetStageLightingUniforms(shader, lightSetNumber);
             SetXMBUniforms(shader, p);
             SetNscUniform(p, shader);
+
+            // The fragment alpha is set to 1 when alpha blending/testing aren't used.
+            // This fixes the alpha output for PNG renders.
+            shader.SetBoolToInt("isTransparent", p.IsTransparent);
+
+            shader.SetVector3("colorId", ColorUtils.GetVector3(Color.FromArgb(p.DisplayId)));
+            shader.SetBoolToInt("drawId", shouldDrawIdPass);
+
+            shader.SetUint("flags", material.Flags);
+            shader.SetFloat("zBufferOffset", material.zBufferOffset);
+
+            shader.SetBoolToInt("renderVertColor", Runtime.renderVertColor && material.UseVertexColor);
+        }
+
+        private void SetGlobalShaderUniforms(Shader shader, Camera camera, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
+        {
+            SetStageLightingUniforms(shader, lightSetNumber);
 
             // Misc Uniforms
             shader.SetInt("selectedBoneIndex", Runtime.selectedBoneIndex);
             shader.SetBoolToInt("drawWireFrame", Runtime.renderModelWireframe);
             shader.SetFloat("lineWidth", Runtime.wireframeLineWidth);
             shader.SetVector3("cameraPosition", camera.Position);
-            shader.SetFloat("zBufferOffset", material.zBufferOffset);
-            shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
-            shader.SetVector3("colorId", ColorUtils.GetVector3(Color.FromArgb(id)));
-            shader.SetBoolToInt("drawId", drawId);
 
-            // The fragment alpha is set to 1 when alpha blending/testing aren't used.
-            // This fixes the alpha output for PNG renders.
-            shader.SetBoolToInt("isTransparent", p.IsTransparent);
+            shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
         }
 
         public static void SetStageLightingUniforms(Shader shader, int lightSetNumber)

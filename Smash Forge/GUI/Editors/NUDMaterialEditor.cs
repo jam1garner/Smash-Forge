@@ -264,8 +264,8 @@ namespace Smash_Forge
 
         private void InitializeCheckBoxes(NUD.Material mat)
         {
-            shadowCB.Checked = mat.hasShadow;
-            GlowCB.Checked = mat.glow;
+            shadowCB.Checked = mat.HasShadow;
+            GlowCB.Checked = mat.Glow;
 
             alphaTestCB.Checked = mat.alphaTest == (int)NUD.Material.AlphaTest.Enabled;
             // Enable/disable extra controls.
@@ -322,25 +322,25 @@ namespace Smash_Forge
             else
             {
                 // The order of the textures is critical.
-                if (mat.hasDiffuse)
+                if (mat.HasDiffuse)
                     texturesListView.Items.Add("Diffuse", mat.diffuse1ID.ToString("X"));
-                if (mat.hasSphereMap)
+                if (mat.HasSphereMap)
                     texturesListView.Items.Add("SphereMap", mat.sphereMapID.ToString("X"));
-                if (mat.hasDiffuse2)
+                if (mat.HasDiffuse2)
                     texturesListView.Items.Add("Diffuse2", mat.diffuse2ID.ToString("X"));
-                if (mat.hasDiffuse3)
+                if (mat.HasDiffuse3)
                     texturesListView.Items.Add("Diffuse3", mat.diffuse3ID.ToString("X"));
-                if (mat.hasStageMap)
+                if (mat.HasStageMap)
                     texturesListView.Items.Add("StageMap", mat.stageMapID.ToString("X"));
-                if (mat.hasCubeMap)
+                if (mat.HasCubeMap)
                     texturesListView.Items.Add("Cubemap", mat.cubeMapID.ToString("X"));
-                if (mat.hasAoMap)
+                if (mat.HasAoMap)
                     texturesListView.Items.Add("AOMap", mat.aoMapID.ToString("X"));
-                if (mat.hasNormalMap)
+                if (mat.HasNormalMap)
                     texturesListView.Items.Add("NormalMap", mat.normalID.ToString("X"));
-                if (mat.hasRamp)
+                if (mat.HasRamp)
                     texturesListView.Items.Add("Ramp", mat.rampID.ToString("X"));
-                if (mat.hasDummyRamp)
+                if (mat.HasDummyRamp)
                     texturesListView.Items.Add("DummyRamp", mat.dummyRampID.ToString("X"));
             }
         }
@@ -890,19 +890,19 @@ namespace Smash_Forge
 
         private void sphereMapCB_CheckedChanged(object sender, EventArgs e)
         {
-            currentMaterialList[currentMatIndex].hasSphereMap = sphereMapCB.Checked;
+            currentMaterialList[currentMatIndex].HasSphereMap = sphereMapCB.Checked;
             FillForm();
         }
 
         private void shadowCB_CheckedChanged(object sender, EventArgs e)
         {
-            currentMaterialList[currentMatIndex].hasShadow = shadowCB.Checked;
+            currentMaterialList[currentMatIndex].HasShadow = shadowCB.Checked;
             FillForm();
         }
 
         private void GlowCB_CheckedChanged(object sender, EventArgs e)
         {
-            currentMaterialList[currentMatIndex].glow = GlowCB.Checked;
+            currentMaterialList[currentMatIndex].Glow = GlowCB.Checked;
             FillForm();
         }
 

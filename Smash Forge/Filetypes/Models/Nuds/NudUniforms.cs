@@ -86,9 +86,9 @@ namespace Smash_Forge.Filetypes.Models.Nuds
         {
             // Attempt to get the values from the material. 
             float[] values = null;
-            mat.entries.TryGetValue(propertyName, out values);
-            if (mat.anims.ContainsKey(propertyName))
-                values = mat.anims[propertyName];
+
+            if (!mat.anims.TryGetValue(propertyName, out values))
+                mat.entries.TryGetValue(propertyName, out values);
 
             if (values == null || values.Length != 4)
                 values = new float[] { defaultValue.X, defaultValue.Y, defaultValue.Z, defaultValue.W };
@@ -99,11 +99,6 @@ namespace Smash_Forge.Filetypes.Models.Nuds
 
         public static Texture GetTexture(int hash, NUD.MatTexture matTexture, int loc, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
-            if (Enum.IsDefined(typeof(NudEnums.DummyTexture), hash))
-            {
-                return dummyTextures[(NudEnums.DummyTexture)hash];
-            }
-
             // Look through all loaded textures and not just the current modelcontainer.
             foreach (NUT nut in Runtime.TextureContainers)
             {
@@ -115,21 +110,25 @@ namespace Smash_Forge.Filetypes.Models.Nuds
                 }
             }
 
+            if (Enum.IsDefined(typeof(NudEnums.DummyTexture), hash))
+            {
+                return dummyTextures[(NudEnums.DummyTexture)hash];
+            }
+
             return RenderTools.defaultTex;
         }
 
-        private static void SetTextureParameters(Texture target, NUD.MatTexture matTexture)
+        private static void SetTextureParameters(Texture texture, NUD.MatTexture matTexture)
         {
-            // TODO: Use a sampler object.
             // Set the texture's parameters based on the material settings.
-            target.TextureWrapS = NudEnums.wrapModeByMatValue[matTexture.wrapModeS];
-            target.TextureWrapT = NudEnums.wrapModeByMatValue[matTexture.wrapModeT];
-            target.MinFilter = NudEnums.minFilterByMatValue[matTexture.minFilter];
-            target.MagFilter = NudEnums.magFilterByMatValue[matTexture.magFilter];
+            texture.TextureWrapS = NudEnums.wrapModeByMatValue[matTexture.wrapModeS];
+            texture.TextureWrapT = NudEnums.wrapModeByMatValue[matTexture.wrapModeT];
+            texture.MinFilter = NudEnums.minFilterByMatValue[matTexture.minFilter];
+            texture.MagFilter = NudEnums.magFilterByMatValue[matTexture.magFilter];
 
-            if (OpenGLExtensions.IsAvailable("GL_EXT_texture_filter_anisotropic") && (target is Texture2D))
+            if (OpenGLExtensions.IsAvailable("GL_EXT_texture_filter_anisotropic") && (texture is Texture2D))
             {
-                target.Bind();
+                texture.Bind();
                 TextureParameterName anisotropy = (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt;
                 GL.TexParameter(TextureTarget.Texture2D, anisotropy, 0.0f);
                 if (matTexture.mipDetail == 0x4 || matTexture.mipDetail == 0x6)
@@ -146,16 +145,16 @@ namespace Smash_Forge.Filetypes.Models.Nuds
 
             // The type of texture can be partially determined by texture order.
             GenericMaterial textures = new GenericMaterial(nutTextureUnitOffset);
-            textures.AddTexture("dif", GetTextureAndSetTexId(mat, mat.hasDiffuse, "dif", ref textureIndex, ref mat.diffuse1ID, dummyTextures));
-            textures.AddTexture("spheremap", GetTextureAndSetTexId(mat, mat.hasSphereMap, "spheremap", ref textureIndex, ref mat.sphereMapID, dummyTextures));
-            textures.AddTexture("dif2", GetTextureAndSetTexId(mat, mat.hasDiffuse2, "dif2", ref textureIndex, ref mat.diffuse2ID, dummyTextures));
-            textures.AddTexture("dif3", GetTextureAndSetTexId(mat, mat.hasDiffuse3, "dif3", ref textureIndex, ref mat.diffuse3ID, dummyTextures));
-            textures.AddTexture("stagecube", GetTextureAndSetTexId(mat, mat.hasStageMap, "stagecube", ref textureIndex, ref mat.stageMapID, dummyTextures));
-            textures.AddTexture("cube", GetTextureAndSetTexId(mat, mat.hasCubeMap, "cube", ref textureIndex, ref mat.cubeMapID, dummyTextures));
-            textures.AddTexture("ao", GetTextureAndSetTexId(mat, mat.hasAoMap, "ao", ref textureIndex, ref mat.aoMapID, dummyTextures));
-            textures.AddTexture("normalMap", GetTextureAndSetTexId(mat, mat.hasNormalMap, "normalMap", ref textureIndex, ref mat.normalID, dummyTextures));
-            textures.AddTexture("ramp", GetTextureAndSetTexId(mat, mat.hasRamp, "ramp", ref textureIndex, ref mat.rampID, dummyTextures));
-            textures.AddTexture("dummyRamp", GetTextureAndSetTexId(mat, mat.hasDummyRamp, "dummyRamp", ref textureIndex, ref mat.dummyRampID, dummyTextures));
+            textures.AddTexture("dif", GetTextureAndSetTexId(mat, mat.HasDiffuse, "dif", ref textureIndex, ref mat.diffuse1ID, dummyTextures));
+            textures.AddTexture("spheremap", GetTextureAndSetTexId(mat, mat.HasSphereMap, "spheremap", ref textureIndex, ref mat.sphereMapID, dummyTextures));
+            textures.AddTexture("dif2", GetTextureAndSetTexId(mat, mat.HasDiffuse2, "dif2", ref textureIndex, ref mat.diffuse2ID, dummyTextures));
+            textures.AddTexture("dif3", GetTextureAndSetTexId(mat, mat.HasDiffuse3, "dif3", ref textureIndex, ref mat.diffuse3ID, dummyTextures));
+            textures.AddTexture("stagecube", GetTextureAndSetTexId(mat, mat.HasStageMap, "stagecube", ref textureIndex, ref mat.stageMapID, dummyTextures));
+            textures.AddTexture("cube", GetTextureAndSetTexId(mat, mat.HasCubeMap, "cube", ref textureIndex, ref mat.cubeMapID, dummyTextures));
+            textures.AddTexture("ao", GetTextureAndSetTexId(mat, mat.HasAoMap, "ao", ref textureIndex, ref mat.aoMapID, dummyTextures));
+            textures.AddTexture("normalMap", GetTextureAndSetTexId(mat, mat.HasNormalMap, "normalMap", ref textureIndex, ref mat.normalID, dummyTextures));
+            textures.AddTexture("ramp", GetTextureAndSetTexId(mat, mat.HasRamp, "ramp", ref textureIndex, ref mat.rampID, dummyTextures));
+            textures.AddTexture("dummyRamp", GetTextureAndSetTexId(mat, mat.HasDummyRamp, "dummyRamp", ref textureIndex, ref mat.dummyRampID, dummyTextures));
 
             textures.SetShaderUniforms(shader);
         }
@@ -230,21 +229,21 @@ namespace Smash_Forge.Filetypes.Models.Nuds
 
         public static void SetHasTextureUniforms(Shader shader, NUD.Material mat)
         {
-            shader.SetBoolToInt("hasDif", mat.hasDiffuse);
-            shader.SetBoolToInt("hasDif2", mat.hasDiffuse2);
-            shader.SetBoolToInt("hasDif3", mat.hasDiffuse3);
-            shader.SetBoolToInt("hasStage", mat.hasStageMap);
-            shader.SetBoolToInt("hasCube", mat.hasCubeMap);
-            shader.SetBoolToInt("hasAo", mat.hasAoMap);
-            shader.SetBoolToInt("hasNrm", mat.hasNormalMap);
-            shader.SetBoolToInt("hasRamp", mat.hasRamp);
-            shader.SetBoolToInt("hasDummyRamp", mat.hasDummyRamp);
-            shader.SetBoolToInt("hasColorGainOffset", mat.useColorGainOffset);
-            shader.SetBoolToInt("useDiffuseBlend", mat.useDiffuseBlend);
-            shader.SetBoolToInt("hasSphereMap", mat.hasSphereMap);
-            shader.SetBoolToInt("hasBayoHair", mat.hasBayoHair);
-            shader.SetBoolToInt("useDifRefMask", mat.useReflectionMask);
-            shader.SetBoolToInt("softLightBrighten", mat.softLightBrighten);
+            shader.SetBoolToInt("hasDif", mat.HasDiffuse);
+            shader.SetBoolToInt("hasDif2", mat.HasDiffuse2);
+            shader.SetBoolToInt("hasDif3", mat.HasDiffuse3);
+            shader.SetBoolToInt("hasStage", mat.HasStageMap);
+            shader.SetBoolToInt("hasCube", mat.HasCubeMap);
+            shader.SetBoolToInt("hasAo", mat.HasAoMap);
+            shader.SetBoolToInt("hasNrm", mat.HasNormalMap);
+            shader.SetBoolToInt("hasRamp", mat.HasRamp);
+            shader.SetBoolToInt("hasDummyRamp", mat.HasDummyRamp);
+            shader.SetBoolToInt("hasColorGainOffset", mat.UseColorGainOffset);
+            shader.SetBoolToInt("useDiffuseBlend", mat.UseDiffuseBlend);
+            shader.SetBoolToInt("hasSphereMap", mat.HasSphereMap);
+            shader.SetBoolToInt("hasBayoHair", mat.HasBayoHair);
+            shader.SetBoolToInt("useDifRefMask", mat.UseReflectionMask);
+            shader.SetBoolToInt("softLightBrighten", mat.SoftLightBrighten);
         }
     }
 }
