@@ -274,15 +274,14 @@ namespace Smash_Forge.Filetypes.Melee
             }
         }
 
-        public void Render(Camera c)
+        public void Render(Shader shader, Camera c)
         {
-            if (!Checked) return;
-            Shader shader = OpenTKSharedResources.shaders["Dat"];
-            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                shader = OpenTKSharedResources.shaders["DatDebug"];
-            shader.UseProgram();
+            if (!Checked)
+                return;
 
-            SetSharedUniforms(c, shader);
+            // Bones use immediate mode for drawing.
+            if (Runtime.renderBones)
+                shader.UseProgram();
 
             if (bonesUbo == null)
                 bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
@@ -295,9 +294,6 @@ namespace Smash_Forge.Filetypes.Melee
             if (binds.Length > 0)
                 shader.SetMatrix4x4("binds", binds);
 
-            // TODO: Why is this flipped?
-            GLRenderSettings.SetFaceCulling(new FaceCullingSettings(false, CullFaceMode.Front));
-
             var previousRenderSettings = new RenderSettings();
 
             foreach (MeleeDataObjectNode n in DataObjects.Nodes)
@@ -309,40 +305,15 @@ namespace Smash_Forge.Filetypes.Melee
                 n.Render(c, shader);
             }
 
-            GL.UseProgram(0);
-            GL.PushAttrib(AttribMask.DepthBufferBit);
-            GL.Disable(EnableCap.DepthTest);
-
             if (Runtime.renderBones)
+            {
+                GL.UseProgram(0);
+                GL.PushAttrib(AttribMask.DepthBufferBit);
+                GL.Disable(EnableCap.DepthTest);
+
                 RenderTools.DrawVBN(RenderBones);
-            GL.PopAttrib();
-        }
-
-        private static void SetSharedUniforms(Camera c, Shader shader)
-        {
-            Matrix4 mvpMatrix = c.MvpMatrix;
-            shader.SetMatrix4x4("mvpMatrix", ref mvpMatrix);
-
-            Matrix4 sphereMatrix = c.ModelViewMatrix;
-            sphereMatrix.Invert();
-            sphereMatrix.Transpose();
-            shader.SetMatrix4x4("sphereMatrix", ref sphereMatrix);
-
-            shader.SetInt("renderType", (int)Runtime.renderType);
-
-            shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern, 10);
-
-            shader.SetBoolToInt("renderR", Runtime.renderR);
-            shader.SetBoolToInt("renderG", Runtime.renderG);
-            shader.SetBoolToInt("renderB", Runtime.renderB);
-            shader.SetBoolToInt("renderAlpha", Runtime.renderAlpha);
-            bool alphaOverride = Runtime.renderAlpha && !Runtime.renderR && !Runtime.renderG && !Runtime.renderB;
-            shader.SetBoolToInt("alphaOverride", alphaOverride);
-
-            shader.SetBoolToInt("renderNormalMap", Runtime.renderNormalMap);
-
-            shader.SetBoolToInt("renderDiffuse", Runtime.renderDiffuse);
-            shader.SetBoolToInt("renderSpecular", Runtime.renderSpecular);
+                GL.PopAttrib();
+            }
         }
     }
 }

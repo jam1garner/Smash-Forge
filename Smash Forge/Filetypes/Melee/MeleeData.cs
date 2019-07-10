@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.IO;
-using MeleeLib.DAT;
-using MeleeLib.IO;
-using MeleeLib.DAT.Script;
-using MeleeLib.DAT.Helpers;
+﻿using MeleeLib.DAT;
 using MeleeLib.DAT.Animation;
+using MeleeLib.DAT.Helpers;
+using MeleeLib.DAT.Script;
+using MeleeLib.IO;
+using SFGenericModel.RenderState;
 using SFGraphics.Cameras;
+using SFGraphics.GLObjects.Shaders;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
 
 namespace Smash_Forge.Filetypes.Melee
 {
@@ -223,13 +222,51 @@ namespace Smash_Forge.Filetypes.Melee
                 hasCreatedRenderMeshes = true;
             }
 
-            //Gather All Melee Roots... they can be deeper into the structure
+            // Only initialize this once to improve frame rates.
+            Shader shader = Smash_Forge.Rendering.OpenTKSharedResources.shaders["Dat"];
+            if (Runtime.renderType != Runtime.RenderTypes.Shaded)
+                shader = Smash_Forge.Rendering.OpenTKSharedResources.shaders["DatDebug"];
+            shader.UseProgram();
+
+            // TODO: Why is this flipped?
+            GLRenderSettings.SetFaceCulling(new FaceCullingSettings(false, OpenTK.Graphics.OpenGL.CullFaceMode.Front));
+
+            SetSharedUniforms(c, shader);
+
+            // Melee roots can be deeper into the structure.
             List<MeleeRootNode> Nodes = GetAllRoots();
             foreach (MeleeRootNode n in Nodes)
             {
-                n.Render(c);
+                n.Render(shader, c);
             }
         }
+
+        private static void SetSharedUniforms(Camera c, Shader shader)
+        {
+            shader.SetMatrix4x4("mvpMatrix", c.MvpMatrix);
+
+            OpenTK.Matrix4 sphereMatrix = c.ModelViewMatrix;
+            sphereMatrix.Invert();
+            sphereMatrix.Transpose();
+            shader.SetMatrix4x4("sphereMatrix", sphereMatrix);
+
+            shader.SetInt("renderType", (int)Runtime.renderType);
+
+            shader.SetTexture("UVTestPattern", Smash_Forge.Rendering.RenderTools.uvTestPattern, 10);
+
+            shader.SetBoolToInt("renderR", Runtime.renderR);
+            shader.SetBoolToInt("renderG", Runtime.renderG);
+            shader.SetBoolToInt("renderB", Runtime.renderB);
+            shader.SetBoolToInt("renderAlpha", Runtime.renderAlpha);
+            bool alphaOverride = Runtime.renderAlpha && !Runtime.renderR && !Runtime.renderG && !Runtime.renderB;
+            shader.SetBoolToInt("alphaOverride", alphaOverride);
+
+            shader.SetBoolToInt("renderNormalMap", Runtime.renderNormalMap);
+
+            shader.SetBoolToInt("renderDiffuse", Runtime.renderDiffuse);
+            shader.SetBoolToInt("renderSpecular", Runtime.renderSpecular);
+        }
+
 
         public void LoadPlayerAJ(string fname)
         {
