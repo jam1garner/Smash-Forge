@@ -490,13 +490,13 @@ namespace Smash_Forge
                 // Always refresh the viewport when animations are playing.
                 if (renderThreadShouldRun || isPlaying)
                 {
-                    if (renderStopwatch.ElapsedMilliseconds > frameUpdateInterval)
+                    if (renderStopwatch.ElapsedMilliseconds >= frameUpdateInterval)
                     {
                         glViewport.Invalidate();
                         renderStopwatch.Restart();
                     }
 
-                    if (animationStopwatch.ElapsedMilliseconds > animationUpdateInterval)
+                    if (animationStopwatch.ElapsedMilliseconds >= animationUpdateInterval)
                     {
                         UpdateAnimationFrame();
                         animationStopwatch.Restart();
@@ -901,14 +901,14 @@ namespace Smash_Forge
                 }
             }
 
-            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3]);
+            camera.FrameBoundingSphere(new Vector3(boundingSphere[0], boundingSphere[1], boundingSphere[2]), boundingSphere[3], 10);
             camera.UpdateFromMouse();
         }
 
         private void FrameBoundableModel(IBoundableModel model)
         {
             if (model != null)
-                camera.FrameBoundingSphere(model.BoundingSphere.Xyz, model.BoundingSphere.W);
+                camera.FrameBoundingSphere(model.BoundingSphere, 10);
         }
 
         private void FrameSelectedBfres()
@@ -924,7 +924,7 @@ namespace Smash_Forge
             }
 
             Vector4 result = BoundingSphereGenerator.GenerateBoundingSphere(spheres);
-            camera.FrameBoundingSphere(result.Xyz, result.W);
+            camera.FrameBoundingSphere(result, 10);
         }
 
         private void FrameAllModelContainers(float maxBoundingRadius = 400)

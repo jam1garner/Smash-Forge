@@ -637,7 +637,7 @@ namespace Smash_Forge
 
         private void importToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var ofd = new OpenFileDialog())
+            using (var ofd = new OpenFileDialog() { ShowHelp = true })
             {
                 ofd.Filter = "Supported Formats|*.omo;*.anim;*.bch;*.chr0;*.smd;*.mta;*.pac;*.dat;*.xmb|" +
                              "Object Motion|*.omo|" +

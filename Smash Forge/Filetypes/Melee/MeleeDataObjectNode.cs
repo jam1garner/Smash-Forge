@@ -183,6 +183,22 @@ namespace Smash_Forge.Filetypes.Melee
 
         public void Render(Camera c, Shader shader)
         {
+            SetShaderUniforms(shader);
+
+            if (Checked)
+            {
+                foreach (var m in renderMeshes)
+                {
+                    if (IsSelected)
+                        DrawModelSelection(m, shader);
+                    else
+                        m.Draw(shader);
+                }
+            }
+        }
+
+        private void SetShaderUniforms(Shader shader)
+        {
             shader.SetInt("BoneIndex", BoneIndex);
 
             SetTextureUniforms(shader);
@@ -197,17 +213,6 @@ namespace Smash_Forge.Filetypes.Melee
 
             shader.SetFloat("glossiness", DOBJ.Material.MaterialColor.Glossiness);
             shader.SetFloat("transparency", DOBJ.Material.MaterialColor.Transparency);
-
-            if (Checked)
-            {
-                foreach (var m in renderMeshes)
-                {
-                    if (IsSelected)
-                        DrawModelSelection(m, shader);
-                    else
-                        m.Draw(shader);
-                }
-            }
         }
 
         public RenderSettings GetRenderSettings()

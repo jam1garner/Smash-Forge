@@ -298,12 +298,14 @@ namespace Smash_Forge.Filetypes.Melee
             // TODO: Why is this flipped?
             GLRenderSettings.SetFaceCulling(new FaceCullingSettings(false, CullFaceMode.Front));
 
-            var currentRenderSettings = new RenderSettings();
+            var previousRenderSettings = new RenderSettings();
 
             foreach (MeleeDataObjectNode n in DataObjects.Nodes)
             {
                 var newRenderSettings = n.GetRenderSettings();
-                GLRenderSettings.SetRenderSettings(newRenderSettings);
+                GLRenderSettings.SetRenderSettings(newRenderSettings, previousRenderSettings);
+                previousRenderSettings = newRenderSettings;
+
                 n.Render(c, shader);
             }
 

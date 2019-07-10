@@ -23,7 +23,7 @@
             Contains methods to generate a bounding sphere for a collection of vertices.
             </summary>
         </member>
-        <member name="M:SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.IEnumerable{OpenTK.Vector3})">
+        <member name="M:SFGraphics.Utils.BoundingSphereGenerator.GenerateBoundingSphere(System.Collections.Generic.IList{OpenTK.Vector3})">
             <summary>
             Generates a close to optimal sphere that contains all of the given points
             within the sphere.
@@ -234,7 +234,7 @@
             <summary>
             Generates new vertices and indices with no repeated vertices.
             </summary>
-            <typeparam name="T"></typeparam>
+            <typeparam name="T">The vertex data type</typeparam>
             <param name="vertices">The original vertex list</param>
             <param name="newVertices">The optimized list of vertices</param>
             <param name="newIndices">The optimized list of indices</param>
@@ -243,7 +243,7 @@
             <summary>
             Generates new vertices and indices with no repeated vertices.
             </summary>
-            <typeparam name="T"></typeparam>
+            <typeparam name="T">The vertex data type</typeparam>
             <param name="vertices">The original vertex list</param>
             <param name="indices">The original vertex indices</param>
             <param name="newVertices">The optimized list of vertices</param>

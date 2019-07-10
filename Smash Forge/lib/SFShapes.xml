@@ -13,14 +13,14 @@
             <summary>
             
             </summary>
-            <param name="vertices"></param>
-            <param name="primitiveType"></param>
+            <param name="vertices">The points for the shape</param>
+            <param name="primitiveType">Determines how the shape should be drawn</param>
         </member>
         <member name="M:SFShapes.Mesh3D.#ctor(System.Tuple{System.Collections.Generic.List{OpenTK.Vector3},OpenTK.Graphics.OpenGL.PrimitiveType})">
             <summary>
             
             </summary>
-            <param name="vertices"></param>
+            <param name="vertices">The points of the shape</param>
         </member>
         <member name="M:SFShapes.Mesh3D.GetVertexAttributes">
             <summary>
@@ -62,7 +62,7 @@
             <param name="scaleX">The total width of the shape</param>
             <param name="scaleY">The total height of the shape</param>
             <param name="scaleZ">The total depth of the shape</param>
-            <returns></returns>
+            <returns>Points for a rectangular prism</returns>
         </member>
         <member name="M:SFShapes.ShapeGenerator.GetSpherePositions(OpenTK.Vector3,System.Single,System.Int32)">
             <summary>
