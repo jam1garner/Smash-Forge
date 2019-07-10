@@ -23,46 +23,10 @@ namespace Smash_Forge.Filetypes.Melee.Rendering
 
     public class MeleeMesh : GenericMesh<MeleeVertex>
     {
-        private RenderSettings renderSettings = new RenderSettings();
-
         public MeleeMesh(IList<MeleeVertex> vertices, IList<int> vertexIndices, PrimitiveType primitiveType)
             : base(vertices, vertexIndices, primitiveType)
         {
-            // TODO: Why is this flipped?
-            renderSettings.faceCullingSettings = new FaceCullingSettings(false, CullFaceMode.Front);
-        }
 
-        public void SetRenderSettings(DatDOBJ datDOBJ)
-        {
-            if (datDOBJ.Material == null)
-                return;
-
-            SetAlphaTesting(datDOBJ);
-            SetAlphaBlending(datDOBJ);
-
-            GLRenderSettings.SetRenderSettings(renderSettings);
-        }
-
-        private void SetAlphaBlending(DatDOBJ datDOBJ)
-        {
-            if (datDOBJ?.Material.PixelProcessing != null)
-            {
-                renderSettings.alphaBlendSettings.enabled = datDOBJ?.Material?.PixelProcessing.BlendMode == MeleeLib.GCX.GXBlendMode.Blend;
-            }
-        }
-
-        private void SetAlphaTesting(DatDOBJ datDOBJ)
-        {
-            bool enabled = (datDOBJ.Material.Flags & (uint)MeleeDatEnums.MiscFlags.AlphaTest) > 0;
-            float refAlpha = AlphaTestSettings.Default.referenceAlpha;
-            AlphaFunction alphaFunction = AlphaTestSettings.Default.alphaFunction;
-            if (datDOBJ?.Material.PixelProcessing != null)
-            {
-                refAlpha = datDOBJ.Material.PixelProcessing.AlphaRef0 / 255.0f;
-                alphaFunction = MeleeDatToOpenGL.GetAlphaFunction(datDOBJ.Material.PixelProcessing.AlphaComp0);
-            }
-
-            renderSettings.alphaTestSettings = new AlphaTestSettings(enabled, alphaFunction, refAlpha);
         }
 
         public override List<VertexAttribute> GetVertexAttributes()

@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Smash_Forge.Filetypes.Melee.Utils;
+using SFGenericModel.RenderState;
 
 namespace Smash_Forge.Filetypes.Melee
 {
@@ -199,16 +200,55 @@ namespace Smash_Forge.Filetypes.Melee
 
             if (Checked)
             {
+                SetRenderSettings(DOBJ);
+
                 foreach (var m in renderMeshes)
                 {
-                    m.SetRenderSettings(DOBJ);
-
                     if (IsSelected)
                         DrawModelSelection(m, shader);
                     else
                         m.Draw(shader);
                 }
             }
+        }
+
+        private void SetRenderSettings(DatDOBJ datDOBJ)
+        {
+            if (datDOBJ.Material == null)
+                return;
+
+            // TODO: Why is this flipped?
+            RenderSettings renderSettings = new RenderSettings
+            {
+                faceCullingSettings = new FaceCullingSettings(false, CullFaceMode.Front)
+            };
+
+            SetAlphaTesting(datDOBJ, renderSettings);
+            SetAlphaBlending(datDOBJ, renderSettings);
+
+            GLRenderSettings.SetRenderSettings(renderSettings);
+        }
+
+        private void SetAlphaBlending(DatDOBJ datDOBJ, RenderSettings renderSettings)
+        {
+            if (datDOBJ?.Material.PixelProcessing != null)
+            {
+                renderSettings.alphaBlendSettings.enabled = datDOBJ?.Material?.PixelProcessing.BlendMode == MeleeLib.GCX.GXBlendMode.Blend;
+            }
+        }
+
+        private void SetAlphaTesting(DatDOBJ datDOBJ, RenderSettings renderSettings)
+        {
+            bool enabled = (datDOBJ.Material.Flags & (uint)MeleeDatEnums.MiscFlags.AlphaTest) > 0;
+            float refAlpha = AlphaTestSettings.Default.referenceAlpha;
+            AlphaFunction alphaFunction = AlphaTestSettings.Default.alphaFunction;
+            if (datDOBJ?.Material.PixelProcessing != null)
+            {
+                refAlpha = datDOBJ.Material.PixelProcessing.AlphaRef0 / 255.0f;
+                alphaFunction = MeleeDatToOpenGL.GetAlphaFunction(datDOBJ.Material.PixelProcessing.AlphaComp0);
+            }
+
+            renderSettings.alphaTestSettings = new AlphaTestSettings(enabled, alphaFunction, refAlpha);
         }
 
         private bool IsDiffuseLightingBitSet()

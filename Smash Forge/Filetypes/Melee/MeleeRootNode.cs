@@ -286,13 +286,13 @@ namespace Smash_Forge.Filetypes.Melee
             if (bonesUbo == null)
                 bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
 
-            bonesUbo.BindBase(BufferRangeTarget.UniformBuffer, shader.GetUniformBlockIndex("Bones"));
-
+            GL.UniformBlockBinding(shader.Id, shader.GetUniformBlockIndex("Bones"), 0);
+            bonesUbo.BindBase(BufferRangeTarget.UniformBuffer, 0);
             bonesUbo.SetData(RenderBones.GetShaderMatricesNoInverse(), BufferUsageHint.DynamicDraw);
 
             Matrix4[] binds = RenderBones.GetShaderMatrices();
             if (binds.Length > 0)
-                GL.UniformMatrix4(GL.GetUniformLocation(shader.Id, "binds"), binds.Length, false, ref binds[0].Row0.X);
+                shader.SetMatrix4x4("binds", binds);
 
             foreach (MeleeDataObjectNode n in DataObjects.Nodes)
             {
