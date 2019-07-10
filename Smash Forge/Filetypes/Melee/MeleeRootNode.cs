@@ -288,11 +288,14 @@ namespace Smash_Forge.Filetypes.Melee
 
             GL.UniformBlockBinding(shader.Id, shader.GetUniformBlockIndex("Bones"), 0);
             bonesUbo.BindBase(BufferRangeTarget.UniformBuffer, 0);
-            bonesUbo.SetData(RenderBones.GetShaderMatricesNoInverse(), BufferUsageHint.DynamicDraw);
 
+            Matrix4[] matrices = RenderBones.GetShaderMatricesNoInverse();
             Matrix4[] binds = RenderBones.GetShaderMatrices();
-            if (binds.Length > 0)
-                shader.SetMatrix4x4("binds", binds);
+
+            int mat4Size = 16 * 4;
+            bonesUbo.SetCapacity(400 * mat4Size, BufferUsageHint.DynamicDraw);
+            bonesUbo.SetSubData(matrices, 0);
+            bonesUbo.SetSubData(binds, 200 * mat4Size);
 
             var previousRenderSettings = new RenderSettings();
 

@@ -22,9 +22,8 @@ uniform mat4 mvpMatrix;
 uniform Bones
 {
     mat4 transforms[200];
-} bones;
-
-uniform mat4 binds[200];
+    mat4 binds[200];
+};
 
 vec4 Skin(vec4 P, ivec4 B)
 {
@@ -48,10 +47,10 @@ void main() {
 
 	if(vBone.y == 0 && vBone.x != 0)
 	{
-		position = bones.transforms[int(vBone.x)] * position;
-		normal = (inverse(transpose(bones.transforms[int(vBone.x)])) * vec4(vNormal, 0)).xyz;
+		position = transforms[int(vBone.x)] * position;
+		normal = (inverse(transpose(transforms[int(vBone.x)])) * vec4(vNormal, 0)).xyz;
 	}
-	position.xyz = (bones.transforms[int(BoneIndex)] * vec4(position.xyz, 1.0)).xyz;
+	position.xyz = (transforms[int(BoneIndex)] * vec4(position.xyz, 1.0)).xyz;
 
 	position = Skin(position, ivec4(vBone));
 
