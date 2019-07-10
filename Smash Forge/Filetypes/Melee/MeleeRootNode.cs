@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Smash_Forge.Filetypes.Melee.Utils;
 using SFGraphics.GLObjects.BufferObjects;
+using SFGenericModel.RenderState;
 
 namespace Smash_Forge.Filetypes.Melee
 {
@@ -294,8 +295,15 @@ namespace Smash_Forge.Filetypes.Melee
             if (binds.Length > 0)
                 shader.SetMatrix4x4("binds", binds);
 
+            // TODO: Why is this flipped?
+            GLRenderSettings.SetFaceCulling(new FaceCullingSettings(false, CullFaceMode.Front));
+
+            var currentRenderSettings = new RenderSettings();
+
             foreach (MeleeDataObjectNode n in DataObjects.Nodes)
             {
+                var newRenderSettings = n.GetRenderSettings();
+                GLRenderSettings.SetRenderSettings(newRenderSettings);
                 n.Render(c, shader);
             }
 

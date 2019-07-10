@@ -336,11 +336,6 @@ namespace Smash_Forge
                 }
             }
 
-            if (DatMelee != null && OpenTKSharedResources.shaders["Dat"].LinkStatusIsOk)
-            {
-                DatMelee.Render(camera.MvpMatrix);
-            }
-
             LightColor diffuseColor = Runtime.lightSetParam.characterDiffuse.diffuseColor;
             LightColor ambientColor = Runtime.lightSetParam.characterDiffuse.ambientColor;
 

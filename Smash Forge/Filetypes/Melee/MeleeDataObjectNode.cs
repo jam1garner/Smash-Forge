@@ -200,8 +200,6 @@ namespace Smash_Forge.Filetypes.Melee
 
             if (Checked)
             {
-                SetRenderSettings(DOBJ);
-
                 foreach (var m in renderMeshes)
                 {
                     if (IsSelected)
@@ -212,21 +210,16 @@ namespace Smash_Forge.Filetypes.Melee
             }
         }
 
-        private void SetRenderSettings(DatDOBJ datDOBJ)
+        public RenderSettings GetRenderSettings()
         {
-            if (datDOBJ.Material == null)
-                return;
+            RenderSettings renderSettings = new RenderSettings();
+            if (DOBJ.Material == null)
+                return renderSettings;
 
-            // TODO: Why is this flipped?
-            RenderSettings renderSettings = new RenderSettings
-            {
-                faceCullingSettings = new FaceCullingSettings(false, CullFaceMode.Front)
-            };
+            SetAlphaTesting(DOBJ, renderSettings);
+            SetAlphaBlending(DOBJ, renderSettings);
 
-            SetAlphaTesting(datDOBJ, renderSettings);
-            SetAlphaBlending(datDOBJ, renderSettings);
-
-            GLRenderSettings.SetRenderSettings(renderSettings);
+            return renderSettings;
         }
 
         private void SetAlphaBlending(DatDOBJ datDOBJ, RenderSettings renderSettings)

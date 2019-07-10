@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
-using System.Drawing;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using System.Windows.Forms;
-using static Smash_Forge.DAT.POBJ;
-using System.IO;
-using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
-
+using SFGraphics.GLObjects.Textures;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Windows.Forms;
 
 namespace Smash_Forge
 {
