@@ -5,6 +5,12 @@ namespace Smash_Forge.Filetypes.Models.Nuds
 {
     public static class NudEnums
     {
+        public enum AlphaTest
+        {
+            Enabled = 0x02,
+            Disabled = 0x00
+        }
+
         public static readonly Dictionary<int, BlendingFactor> srcFactorByMatValue = new Dictionary<int, BlendingFactor>()
         {
             { 0x00, BlendingFactor.One },
@@ -31,6 +37,13 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             { 0x07, BlendingFactor.One },
             { 0x08, BlendingFactor.Zero },
             { 0x0a, BlendingFactor.Zero },
+        };
+
+        public static readonly Dictionary<int, AlphaFunction> alphaFunctionByMatValue = new Dictionary<int, AlphaFunction>()
+        {
+            { 0x0, AlphaFunction.Never },
+            { 0x4, AlphaFunction.Gequal },
+            { 0x6, AlphaFunction.Gequal },
         };
 
         public static readonly Dictionary<int, TextureWrapMode> wrapModeByMatValue = new Dictionary<int, TextureWrapMode>()

@@ -76,11 +76,11 @@ namespace Smash_Forge
         private void SetAlphaTesting(NUD.Material material)
         {
 
-            bool enabled = (material.alphaTest == (int)NUD.Material.AlphaTest.Enabled);
+            bool enabled = (material.alphaTest == (int)NudEnums.AlphaTest.Enabled);
 
             AlphaFunction alphaFunc = AlphaFunction.Always;
-            if (NUD.Material.alphaFunctionByMatValue.ContainsKey(material.alphaFunction))
-                alphaFunc = NUD.Material.alphaFunctionByMatValue[material.alphaFunction];
+            if (NudEnums.alphaFunctionByMatValue.ContainsKey(material.alphaFunction))
+                alphaFunc = NudEnums.alphaFunctionByMatValue[material.alphaFunction];
 
             float refAlpha = material.RefAlpha / 255.0f;
 

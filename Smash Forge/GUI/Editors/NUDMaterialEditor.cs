@@ -267,7 +267,7 @@ namespace Smash_Forge
             shadowCB.Checked = mat.HasShadow;
             GlowCB.Checked = mat.Glow;
 
-            alphaTestCB.Checked = mat.alphaTest == (int)NUD.Material.AlphaTest.Enabled;
+            alphaTestCB.Checked = mat.alphaTest == (int)NudEnums.AlphaTest.Enabled;
             // Enable/disable extra controls.
             alphaTestCB_CheckedChanged(null, null);
         }
@@ -1022,9 +1022,9 @@ namespace Smash_Forge
         private void alphaTestCB_CheckedChanged(object sender, EventArgs e)
         {
             if (alphaTestCB.Checked)
-                currentMaterialList[currentMatIndex].alphaTest = (int)NUD.Material.AlphaTest.Enabled;
+                currentMaterialList[currentMatIndex].alphaTest = (int)NudEnums.AlphaTest.Enabled;
             else
-                currentMaterialList[currentMatIndex].alphaTest = (int)NUD.Material.AlphaTest.Disabled;
+                currentMaterialList[currentMatIndex].alphaTest = (int)NudEnums.AlphaTest.Disabled;
 
             // Only enable extra settings when alpha testing is enabled.
             alphaFuncRefPanel.Visible = alphaTestCB.Checked;

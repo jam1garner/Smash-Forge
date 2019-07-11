@@ -8,32 +8,10 @@ namespace Smash_Forge
     {
         public class Material
         {
-            public enum AlphaTest
-            {
-                Enabled = 0x02,
-                Disabled = 0x00
-            }
-
-            // TODO: How are 0x4 and 0x6 different?
-            public enum AlphaFunction
-            {
-                Never = 0x0,
-                GequalRefAlpha1 = 0x4,
-                GequalRefAlpha2 = 0x6
-            }
-
-            public static Dictionary<int, OpenTK.Graphics.OpenGL.AlphaFunction> alphaFunctionByMatValue = new Dictionary<int, OpenTK.Graphics.OpenGL.AlphaFunction>()
-            {
-                { 0x0, OpenTK.Graphics.OpenGL.AlphaFunction.Never },
-                { 0x4, OpenTK.Graphics.OpenGL.AlphaFunction.Gequal },
-                { 0x6, OpenTK.Graphics.OpenGL.AlphaFunction.Gequal },
-            };
-
             public Dictionary<string, float[]> entries = new Dictionary<string, float[]>();
             public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
             public List<MatTexture> textures = new List<MatTexture>();
 
-            private uint flag;
             public uint Flags
             {
                 get
@@ -47,40 +25,7 @@ namespace Smash_Forge
                     UpdateLabelledTextureIds();
                 }
             }
-
-            private void UpdateLabelledTextureIds()
-            {
-                int textureIndex = 0;
-                if ((flag & 0xFFFFFFFF) == 0x9AE11163)
-                {
-                    UpdateLabelledId(HasDiffuse,   ref diffuse1ID, ref textureIndex);
-                    UpdateLabelledId(HasDiffuse2,  ref diffuse2ID, ref textureIndex);
-                    UpdateLabelledId(HasNormalMap, ref normalID,   ref textureIndex);
-                }
-                else
-                {
-                    // The order of the textures here is critical. 
-                    UpdateLabelledId(HasDiffuse,   ref diffuse1ID,  ref textureIndex);
-                    UpdateLabelledId(HasSphereMap, ref sphereMapID, ref textureIndex);
-                    UpdateLabelledId(HasDiffuse2,  ref diffuse2ID,  ref textureIndex);
-                    UpdateLabelledId(HasDiffuse3,  ref diffuse3ID,  ref textureIndex);
-                    UpdateLabelledId(HasStageMap,  ref stageMapID,  ref textureIndex);
-                    UpdateLabelledId(HasCubeMap ,  ref cubeMapID,   ref textureIndex);
-                    UpdateLabelledId(HasAoMap,     ref aoMapID,     ref textureIndex);
-                    UpdateLabelledId(HasNormalMap, ref normalID,    ref textureIndex);
-                    UpdateLabelledId(HasRamp,      ref rampID,      ref textureIndex);
-                    UpdateLabelledId(HasDummyRamp, ref dummyRampID, ref textureIndex);
-                }
-            }
-
-            private void UpdateLabelledId(bool hasTexture, ref int textureId, ref int textureIndex)
-            {
-                if (hasTexture && textureIndex < textures.Count)
-                {
-                    textureId = textures[textureIndex].hash;
-                    textureIndex += 1;
-                }
-            }
+            private uint flag;
 
             public int blendMode = 0;
             public int dstFactor = 0;
@@ -184,10 +129,12 @@ namespace Smash_Forge
 
             public static Material GetStageDefault()
             {
-                Material material = new Material();
-                material.Flags = 0xA2001001;
-                material.RefAlpha = 128;
-                material.cullMode = 1029;
+                Material material = new Material
+                {
+                    Flags = 0xA2001001,
+                    RefAlpha = 128,
+                    cullMode = 1029
+                };
 
                 // Display a default texture rather than a dummy texture.
                 material.textures.Add(new MatTexture(0));
@@ -333,6 +280,40 @@ namespace Smash_Forge
                 flag = (flag & 0xFFFFFF00) | new4thByte;
 
                 return flag;
+            }
+
+            private void UpdateLabelledTextureIds()
+            {
+                int textureIndex = 0;
+                if ((flag & 0xFFFFFFFF) == 0x9AE11163)
+                {
+                    UpdateLabelledId(HasDiffuse, ref diffuse1ID, ref textureIndex);
+                    UpdateLabelledId(HasDiffuse2, ref diffuse2ID, ref textureIndex);
+                    UpdateLabelledId(HasNormalMap, ref normalID, ref textureIndex);
+                }
+                else
+                {
+                    // The order of the textures here is critical. 
+                    UpdateLabelledId(HasDiffuse, ref diffuse1ID, ref textureIndex);
+                    UpdateLabelledId(HasSphereMap, ref sphereMapID, ref textureIndex);
+                    UpdateLabelledId(HasDiffuse2, ref diffuse2ID, ref textureIndex);
+                    UpdateLabelledId(HasDiffuse3, ref diffuse3ID, ref textureIndex);
+                    UpdateLabelledId(HasStageMap, ref stageMapID, ref textureIndex);
+                    UpdateLabelledId(HasCubeMap, ref cubeMapID, ref textureIndex);
+                    UpdateLabelledId(HasAoMap, ref aoMapID, ref textureIndex);
+                    UpdateLabelledId(HasNormalMap, ref normalID, ref textureIndex);
+                    UpdateLabelledId(HasRamp, ref rampID, ref textureIndex);
+                    UpdateLabelledId(HasDummyRamp, ref dummyRampID, ref textureIndex);
+                }
+            }
+
+            private void UpdateLabelledId(bool hasTexture, ref int textureId, ref int textureIndex)
+            {
+                if (hasTexture && textureIndex < textures.Count)
+                {
+                    textureId = textures[textureIndex].hash;
+                    textureIndex += 1;
+                }
             }
 
             private void CheckFlags()
