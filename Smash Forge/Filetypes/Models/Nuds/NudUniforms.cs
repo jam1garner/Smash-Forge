@@ -55,8 +55,10 @@ namespace Smash_Forge.Filetypes.Models.Nuds
         // Default bind location for NUT textures.
         private static readonly int nutTextureUnitOffset = 0;
 
-        public static void SetMaterialPropertyUniforms(GenericMaterial genericMaterial, NUD.Material mat)
+        public static void SetMaterialPropertyUniforms(Shader shader, NUD.Material mat)
         {
+            var genericMaterial = new GenericMaterial();
+
             foreach (var property in defaultValueByProperty)
             {
                 MatPropertyShaderUniform(genericMaterial, mat, property.Key, property.Value);
@@ -71,6 +73,8 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             HasMatPropertyShaderUniform(genericMaterial, mat, "NU_normalSamplerBUV", "hasNrmSamplerBUV");
             HasMatPropertyShaderUniform(genericMaterial, mat, "NU_finalColorGain", "hasFinalColorGain");
             HasMatPropertyShaderUniform(genericMaterial, mat, "NU_effUniverseParam", "hasUniverseParam");
+
+            genericMaterial.SetShaderUniforms(shader);
         }
 
         private static void HasMatPropertyShaderUniform(GenericMaterial genericMaterial, NUD.Material mat, string propertyName, string uniformName)

@@ -17,14 +17,6 @@ namespace Smash_Forge
 
         }
 
-        public void SetMaterialValues(NUD.Material nudMaterial, SFGraphics.GLObjects.Shaders.Shader shader)
-        {
-            var material = new GenericMaterial();
-            NudUniforms.SetMaterialPropertyUniforms(material, nudMaterial);
-
-            material.SetShaderUniforms(shader);
-        }
-
         public void SetWireFrame(bool enabled)
         {
             if (enabled)

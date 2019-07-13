@@ -526,7 +526,7 @@ namespace Smash_Forge
             // Update render mesh settings.
             // TODO: Avoid redundant state changes.
             p.renderMesh.SetRenderSettings(material);
-            p.renderMesh.SetMaterialValues(material, shader);
+            NudUniforms.SetMaterialPropertyUniforms(shader, material);
 
             p.renderMesh.Draw(shader);
         }
