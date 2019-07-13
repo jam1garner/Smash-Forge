@@ -47,13 +47,7 @@ uniform int hasDualNormal;
 uniform int hasSoftLight;
 uniform int hasCustomSoftLight;
 
-// Da Flags
-uniform uint flags;
-uniform int isTransparent;
-
 uniform vec3 lightSetColor;
-uniform int isStage;
-uniform int renderStageLighting;
 
 uniform int uvChannel;
 uniform int debug1;
@@ -87,14 +81,7 @@ uniform vec4 softLightingParams;
 uniform vec4 customSoftLightParams;
 
 // render settings
-uniform int renderDiffuse;
-uniform int renderSpecular;
-uniform int renderFresnel;
-uniform int renderReflection;
 uniform int renderType;
-uniform int renderLighting;
-uniform int renderVertColor;
-uniform int renderNormal;
 uniform int useNormalMap;
 
 uniform int renderR;
@@ -103,54 +90,12 @@ uniform int renderB;
 uniform int renderAlpha;
 uniform int alphaOverride;
 
-uniform float diffuseIntensity;
-uniform float ambientIntensity;
-uniform float specularIntensity;
-uniform float fresnelIntensity;
-uniform float reflectionIntensity;
-
 // character lighting
 uniform vec3 difLightColor;
 uniform vec3 ambLightColor;
 uniform vec3 difLightDirection;
-uniform vec3 fresGroundColor;
-uniform vec3 fresSkyColor;
-uniform vec3 specLightColor;
-uniform vec3 specLightDirection;
-uniform vec3 refLightColor;
 
-// stage light 1
-uniform int renderStageLight1;
-uniform vec3 stageLight1Color;
-uniform vec3 stageLight1Direction;
-
-// stage light 2
-uniform int renderStageLight2;
-uniform vec3 stageLight2Color;
-uniform vec3 stageLight2Direction;
-
-// stage light 3
-uniform int renderStageLight3;
-uniform vec3 stageLight3Color;
-uniform vec3 stageLight3Direction;
-
-// stage light 4
-uniform int renderStageLight4;
-uniform vec3 stageLight4Color;
-uniform vec3 stageLight4Direction;
-
-// light_set fog
-uniform int renderFog;
 uniform vec3 stageFogColor;
-
-uniform mat4 mvpMatrix;
-uniform vec3 lightPosition;
-uniform vec3 lightDirection;
-uniform sampler2D shadowMap;
-
-uniform int selectedBoneIndex;
-uniform vec3 NSC;
-uniform float elapsedTime;
 
 uniform int drawSelection;
 
