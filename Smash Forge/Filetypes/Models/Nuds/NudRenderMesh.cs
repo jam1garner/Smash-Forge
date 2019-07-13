@@ -54,7 +54,7 @@ namespace Smash_Forge
         {
             bool enabled = true;
             CullFaceMode cullFaceMode = CullFaceMode.Back;
-            switch (material.cullMode)
+            switch (material.CullMode)
             {
                 case 0x0000:
                     enabled = false;
@@ -76,11 +76,11 @@ namespace Smash_Forge
         private void SetAlphaTesting(NUD.Material material)
         {
 
-            bool enabled = (material.alphaTest == (int)NudEnums.AlphaTest.Enabled);
+            bool enabled = (material.AlphaTest == (int)NudEnums.AlphaTest.Enabled);
 
             AlphaFunction alphaFunc = AlphaFunction.Always;
-            if (NudEnums.alphaFunctionByMatValue.ContainsKey(material.alphaFunction))
-                alphaFunc = NudEnums.alphaFunctionByMatValue[material.alphaFunction];
+            if (NudEnums.alphaFunctionByMatValue.ContainsKey(material.AlphaFunction))
+                alphaFunc = NudEnums.alphaFunctionByMatValue[material.AlphaFunction];
 
             float refAlpha = material.RefAlpha / 255.0f;
 
@@ -89,21 +89,21 @@ namespace Smash_Forge
 
         private void SetDepthTesting(NUD.Material material)
         {
-            bool depthMask = (material.srcFactor != 4) && (material.srcFactor != 51) && (material.srcFactor != 50);
+            bool depthMask = (material.SrcFactor != 4) && (material.SrcFactor != 51) && (material.SrcFactor != 50);
             renderSettings.depthTestSettings = new DepthTestSettings(true, depthMask, DepthFunction.Lequal);
         }
 
         private void SetAlphaBlending(NUD.Material material)
         {
-            renderSettings.alphaBlendSettings.enabled = material.srcFactor != 0 || material.dstFactor != 0;
-            if (NudEnums.srcFactorByMatValue.ContainsKey(material.srcFactor))
-                renderSettings.alphaBlendSettings.sourceFactor = NudEnums.srcFactorByMatValue[material.srcFactor];
+            renderSettings.alphaBlendSettings.enabled = material.SrcFactor != 0 || material.DstFactor != 0;
+            if (NudEnums.srcFactorByMatValue.ContainsKey(material.SrcFactor))
+                renderSettings.alphaBlendSettings.sourceFactor = NudEnums.srcFactorByMatValue[material.SrcFactor];
 
-            if (NudEnums.dstFactorByMatValue.ContainsKey(material.dstFactor))
-                renderSettings.alphaBlendSettings.destinationFactor = NudEnums.dstFactorByMatValue[material.dstFactor];
+            if (NudEnums.dstFactorByMatValue.ContainsKey(material.DstFactor))
+                renderSettings.alphaBlendSettings.destinationFactor = NudEnums.dstFactorByMatValue[material.DstFactor];
 
             renderSettings.alphaBlendSettings.blendingEquationRgb = BlendEquationMode.FuncAdd;
-            if (material.dstFactor == 3 || material.dstFactor == 5)
+            if (material.DstFactor == 3 || material.DstFactor == 5)
                 renderSettings.alphaBlendSettings.blendingEquationRgb = BlendEquationMode.FuncReverseSubtract;
 
             renderSettings.alphaBlendSettings.blendingEquationAlpha = BlendEquationMode.FuncAdd;

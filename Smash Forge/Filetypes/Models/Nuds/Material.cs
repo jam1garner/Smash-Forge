@@ -16,63 +16,104 @@ namespace Smash_Forge
             {
                 get
                 {
-                    return RebuildFlag4thByte();
+                    // TODO: This should be called when updating the booleans.
+                    byte new4thByte = RebuildFlag4thByte();
+                    flags = (flags & 0xFFFFFF00) | new4thByte;
+
+                    return flags;
                 }
                 set
                 {
-                    flag = value;
+                    flags = value;
                     CheckFlags();
                     UpdateLabelledTextureIds();
                 }
             }
-            private uint flag;
+            private uint flags;
 
-            public int blendMode = 0;
-            public int dstFactor = 0;
-            public int srcFactor = 0;
-            public int alphaTest = 0;
-            public int alphaFunction = 0;
-            public int RefAlpha = 0;
-            public int cullMode = 0;
+            public int BlendMode { get; set; } = 0;
+            public int DstFactor { get; set; } = 0;
+            public int SrcFactor { get; set; } = 0;
+
+            public int AlphaTest { get; set; } = 0;
+            public int AlphaFunction { get; set; } = 0;
+            public int RefAlpha { get; set; } = 0;
+
+            public int CullMode { get; set; } = 0;
+
+            public int Unk1 { get; set; } = 0;
+            public int Unk2 { get; set; } = 0;
+
+            public int ZBufferOffset { get; set; } = 0;
+
             public int displayTexId = -1;
-
-            public int unknown1 = 0;
-            public int unkownWater = 0;
-            public int zBufferOffset = 0;
 
             //flags
             public bool Glow { get; set; } = false;
+
             public bool HasShadow { get; set; } = false;
+
             public bool UseVertexColor { get; private set; } = false;
+
             public bool UseReflectionMask { get; private set; } = false;
+
             public bool UseColorGainOffset { get; private set; } = false;
+
             public bool HasBayoHair { get; private set; } = false;
+
             public bool UseDiffuseBlend { get; private set; } = false;
+
             public bool SoftLightBrighten { get; private set; } = false;
 
             // Texture flags
             public bool HasDiffuse { get; private set; } = false;
-            public bool HasNormalMap { get; private set; } = false;
             public bool HasDiffuse2 { get; private set; } = false;
             public bool HasDiffuse3 { get; private set; } = false;
+
+            public bool HasNormalMap { get; private set; } = false;
+
             public bool HasAoMap { get; private set; } = false;
+
             public bool HasStageMap { get; private set; } = false;
+
             public bool HasCubeMap { get; private set; } = false;
+
             public bool HasRamp { get; private set; } = false;
+
             public bool HasSphereMap { get; set; } = false;
+
             public bool HasDummyRamp { get; private set; } = false;
 
             // texture IDs for preserving existing textures
-            public int diffuse1ID = 0;
-            public int diffuse2ID = 0;
-            public int diffuse3ID = 0;
-            public int normalID = 0;
-            public int rampID = (int)NudEnums.DummyTexture.DummyRamp;
-            public int dummyRampID = (int)NudEnums.DummyTexture.DummyRamp;
-            public int sphereMapID = 0;
-            public int aoMapID = 0;
-            public int stageMapID = (int)NudEnums.DummyTexture.StageMapHigh;
-            public int cubeMapID = 0;
+            public int Diffuse1Id => diffuse1Id;
+            private int diffuse1Id = 0;
+
+            public int Diffuse2Id => diffuse2Id;
+            private int diffuse2Id = 0;
+
+            public int Diffuse3Id => diffuse3ID;
+            private int diffuse3ID = 0;
+
+            public int NormalId => normalId;
+            private int normalId = 0;
+
+            public int RampId => rampId;
+            private int rampId = (int)NudEnums.DummyTexture.DummyRamp;
+
+            public int DummyRampId => dummyRampId;
+            private int dummyRampId = (int)NudEnums.DummyTexture.DummyRamp;
+
+            public int SphereMapId => sphereMapId;
+            private int sphereMapId= 0;
+
+            public int AoMapId => aoMapId;
+            private int aoMapId = 0;
+
+            public int StageMapId => stageMapId;
+            private int stageMapId = (int)NudEnums.DummyTexture.StageMapHigh;
+
+            public int CubeMapId => cubeMapId;
+            private int cubeMapId= 0;
 
             public Material()
             {
@@ -87,18 +128,19 @@ namespace Smash_Forge
                     m.entries.Add(e.Key, e.Value);
 
                 m.Flags = Flags;
-                m.blendMode = blendMode;
-                m.dstFactor = dstFactor;
-                m.srcFactor = srcFactor;
-                m.alphaTest = alphaTest;
-                m.alphaFunction = alphaFunction;
+                m.BlendMode = BlendMode;
+                m.DstFactor = DstFactor;
+                m.SrcFactor = SrcFactor;
+                m.AlphaTest = AlphaTest;
+                m.AlphaFunction = AlphaFunction;
                 m.RefAlpha = RefAlpha;
-                m.cullMode = cullMode;
+                m.CullMode = CullMode;
+
                 m.displayTexId = displayTexId;
 
-                m.unknown1 = 0;
-                m.unkownWater = 0;
-                m.zBufferOffset = 0;
+                m.Unk1 = 0;
+                m.Unk2 = 0;
+                m.ZBufferOffset = 0;
 
                 foreach(MatTexture t in textures)
                 {
@@ -112,7 +154,7 @@ namespace Smash_Forge
             {
                 Material material = new Material();
                 material.Flags = 0x94010161;
-                material.cullMode = 0x0405;
+                material.CullMode = 0x0405;
                 material.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
                 material.entries.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });
                 material.entries.Add("NU_blinkColor", new float[] { 0, 0, 0, 0 });
@@ -133,7 +175,7 @@ namespace Smash_Forge
                 {
                     Flags = 0xA2001001,
                     RefAlpha = 128,
-                    cullMode = 1029
+                    CullMode = 1029
                 };
 
                 // Display a default texture rather than a dummy texture.
@@ -218,7 +260,7 @@ namespace Smash_Forge
                 // The texture ID used for diffuse later. 
                 int difTexID = newDifTexId;
                 if (preserveDiffuse)
-                    difTexID = diffuse1ID;
+                    difTexID = Diffuse1Id;
 
                 // add all the textures
                 textures.Clear();
@@ -226,7 +268,7 @@ namespace Smash_Forge
 
                 MatTexture diffuse = new MatTexture(difTexID);
                 MatTexture cube = new MatTexture(newCubeTexId);
-                MatTexture normal = new MatTexture(normalID);
+                MatTexture normal = new MatTexture(normalId);
                 MatTexture dummyRamp = MatTexture.GetDefault();
                 dummyRamp.hash = 0x10080000;
 
@@ -258,7 +300,7 @@ namespace Smash_Forge
                 entries.Add("NU_materialHash", new float[] { materialHash, 0f, 0f, 0 });
             }
 
-            public uint RebuildFlag4thByte()
+            public byte RebuildFlag4thByte()
             {
                 byte new4thByte = 0;
                 if (HasDiffuse)
@@ -277,33 +319,32 @@ namespace Smash_Forge
                     new4thByte |= (byte)NudEnums.TextureFlag.Shadow;
                 if (HasDummyRamp)
                     new4thByte |= (byte)NudEnums.TextureFlag.DummyRamp; 
-                flag = (flag & 0xFFFFFF00) | new4thByte;
 
-                return flag;
+                return new4thByte;
             }
 
             private void UpdateLabelledTextureIds()
             {
                 int textureIndex = 0;
-                if ((flag & 0xFFFFFFFF) == 0x9AE11163)
+                if ((flags & 0xFFFFFFFF) == 0x9AE11163)
                 {
-                    UpdateLabelledId(HasDiffuse, ref diffuse1ID, ref textureIndex);
-                    UpdateLabelledId(HasDiffuse2, ref diffuse2ID, ref textureIndex);
-                    UpdateLabelledId(HasNormalMap, ref normalID, ref textureIndex);
+                    UpdateLabelledId(HasDiffuse, ref diffuse1Id, ref textureIndex);
+                    UpdateLabelledId(HasDiffuse2, ref diffuse2Id, ref textureIndex);
+                    UpdateLabelledId(HasNormalMap, ref normalId, ref textureIndex);
                 }
                 else
                 {
                     // The order of the textures here is critical. 
-                    UpdateLabelledId(HasDiffuse, ref diffuse1ID, ref textureIndex);
-                    UpdateLabelledId(HasSphereMap, ref sphereMapID, ref textureIndex);
-                    UpdateLabelledId(HasDiffuse2, ref diffuse2ID, ref textureIndex);
+                    UpdateLabelledId(HasDiffuse, ref diffuse1Id, ref textureIndex);
+                    UpdateLabelledId(HasSphereMap, ref sphereMapId, ref textureIndex);
+                    UpdateLabelledId(HasDiffuse2, ref diffuse2Id, ref textureIndex);
                     UpdateLabelledId(HasDiffuse3, ref diffuse3ID, ref textureIndex);
-                    UpdateLabelledId(HasStageMap, ref stageMapID, ref textureIndex);
-                    UpdateLabelledId(HasCubeMap, ref cubeMapID, ref textureIndex);
-                    UpdateLabelledId(HasAoMap, ref aoMapID, ref textureIndex);
-                    UpdateLabelledId(HasNormalMap, ref normalID, ref textureIndex);
-                    UpdateLabelledId(HasRamp, ref rampID, ref textureIndex);
-                    UpdateLabelledId(HasDummyRamp, ref dummyRampID, ref textureIndex);
+                    UpdateLabelledId(HasStageMap, ref stageMapId, ref textureIndex);
+                    UpdateLabelledId(HasCubeMap, ref cubeMapId, ref textureIndex);
+                    UpdateLabelledId(HasAoMap, ref aoMapId, ref textureIndex);
+                    UpdateLabelledId(HasNormalMap, ref normalId, ref textureIndex);
+                    UpdateLabelledId(HasRamp, ref rampId, ref textureIndex);
+                    UpdateLabelledId(HasDummyRamp, ref dummyRampId, ref textureIndex);
                 }
             }
 
@@ -318,19 +359,19 @@ namespace Smash_Forge
 
             private void CheckFlags()
             {
-                int intFlags = ((int)flag);
+                int intFlags = ((int)flags);
                 Glow = (intFlags & (int)NudEnums.TextureFlag.Glow) > 0;
                 HasShadow = (intFlags & (int)NudEnums.TextureFlag.Shadow) > 0;
                 CheckMisc(intFlags);
-                CheckTextures(flag);
+                CheckTextures(flags);
             }
 
             private void CheckMisc(int matFlags)
             {
                 // Some hacky workarounds until I understand flags better.
-                UseColorGainOffset = CheckColorGain(flag);
+                UseColorGainOffset = CheckColorGain(flags);
                 UseDiffuseBlend = (matFlags & 0xD0090000) == 0xD0090000 || (matFlags & 0x90005000) == 0x90005000;
-                UseVertexColor = CheckVertexColor(flag);
+                UseVertexColor = CheckVertexColor(flags);
                 UseReflectionMask = (matFlags & 0xFFFFFF00) == 0xF8820000;
                 HasBayoHair = (matFlags & 0x00FF0000) == 0x00420000;
                 SoftLightBrighten = ((matFlags & 0x00FF0000) == 0x00810000 || (matFlags & 0xFFFF0000) == 0xFA600000);

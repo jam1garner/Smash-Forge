@@ -49,7 +49,7 @@ namespace Smash_Forge.Rendering
             shader.SetFloat("zBufferOffset", 0);
             shader.SetFloat("bloomThreshold", Runtime.bloomThreshold);
 
-            bool isTransparent = (material.srcFactor > 0) || (material.dstFactor > 0) || (material.alphaFunction > 0) || (material.alphaTest > 0);
+            bool isTransparent = (material.SrcFactor > 0) || (material.DstFactor > 0) || (material.AlphaFunction > 0) || (material.AlphaTest > 0);
             shader.SetBoolToInt("isTransparent", isTransparent);
 
             // Set texture uniforms for the mesh attributes. 

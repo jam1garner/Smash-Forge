@@ -50,7 +50,7 @@ namespace Smash_Forge
             public int polflag = 0x04;
 
             // for drawing
-            public bool IsTransparent => (materials[0].srcFactor > 0) || (materials[0].dstFactor > 0);
+            public bool IsTransparent => (materials[0].SrcFactor > 0) || (materials[0].DstFactor > 0);
             public int[] display;
             public int[] selectedVerts;
 

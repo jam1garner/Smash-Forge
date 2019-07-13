@@ -145,27 +145,26 @@ namespace Smash_Forge.Filetypes.Models.Nuds
 
             // The type of texture can be partially determined by texture order.
             GenericMaterial textures = new GenericMaterial(nutTextureUnitOffset);
-            textures.AddTexture("dif", GetTextureAndSetTexId(mat, mat.HasDiffuse, "dif", ref textureIndex, ref mat.diffuse1ID, dummyTextures));
-            textures.AddTexture("spheremap", GetTextureAndSetTexId(mat, mat.HasSphereMap, "spheremap", ref textureIndex, ref mat.sphereMapID, dummyTextures));
-            textures.AddTexture("dif2", GetTextureAndSetTexId(mat, mat.HasDiffuse2, "dif2", ref textureIndex, ref mat.diffuse2ID, dummyTextures));
-            textures.AddTexture("dif3", GetTextureAndSetTexId(mat, mat.HasDiffuse3, "dif3", ref textureIndex, ref mat.diffuse3ID, dummyTextures));
-            textures.AddTexture("stagecube", GetTextureAndSetTexId(mat, mat.HasStageMap, "stagecube", ref textureIndex, ref mat.stageMapID, dummyTextures));
-            textures.AddTexture("cube", GetTextureAndSetTexId(mat, mat.HasCubeMap, "cube", ref textureIndex, ref mat.cubeMapID, dummyTextures));
-            textures.AddTexture("ao", GetTextureAndSetTexId(mat, mat.HasAoMap, "ao", ref textureIndex, ref mat.aoMapID, dummyTextures));
-            textures.AddTexture("normalMap", GetTextureAndSetTexId(mat, mat.HasNormalMap, "normalMap", ref textureIndex, ref mat.normalID, dummyTextures));
-            textures.AddTexture("ramp", GetTextureAndSetTexId(mat, mat.HasRamp, "ramp", ref textureIndex, ref mat.rampID, dummyTextures));
-            textures.AddTexture("dummyRamp", GetTextureAndSetTexId(mat, mat.HasDummyRamp, "dummyRamp", ref textureIndex, ref mat.dummyRampID, dummyTextures));
+            textures.AddTexture("dif", GetTextureAndSetTexId(mat, mat.HasDiffuse, "dif", ref textureIndex, dummyTextures));
+            textures.AddTexture("spheremap", GetTextureAndSetTexId(mat, mat.HasSphereMap, "spheremap", ref textureIndex, dummyTextures));
+            textures.AddTexture("dif2", GetTextureAndSetTexId(mat, mat.HasDiffuse2, "dif2", ref textureIndex, dummyTextures));
+            textures.AddTexture("dif3", GetTextureAndSetTexId(mat, mat.HasDiffuse3, "dif3", ref textureIndex, dummyTextures));
+            textures.AddTexture("stagecube", GetTextureAndSetTexId(mat, mat.HasStageMap, "stagecube", ref textureIndex, dummyTextures));
+            textures.AddTexture("cube", GetTextureAndSetTexId(mat, mat.HasCubeMap, "cube", ref textureIndex, dummyTextures));
+            textures.AddTexture("ao", GetTextureAndSetTexId(mat, mat.HasAoMap, "ao", ref textureIndex, dummyTextures));
+            textures.AddTexture("normalMap", GetTextureAndSetTexId(mat, mat.HasNormalMap, "normalMap", ref textureIndex, dummyTextures));
+            textures.AddTexture("ramp", GetTextureAndSetTexId(mat, mat.HasRamp, "ramp", ref textureIndex, dummyTextures));
+            textures.AddTexture("dummyRamp", GetTextureAndSetTexId(mat, mat.HasDummyRamp, "dummyRamp", ref textureIndex, dummyTextures));
 
             textures.SetShaderUniforms(shader);
         }
 
-        public static Texture GetTextureAndSetTexId(NUD.Material mat, bool hasTex, string name, ref int textureIndex, ref int texIdForCurrentTextureType, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
+        public static Texture GetTextureAndSetTexId(NUD.Material mat, bool hasTex, string name, ref int textureIndex, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             Texture texture;
             if (hasTex && textureIndex < mat.textures.Count)
             {
                 // We won't know what type a texture is used for until we iterate through the textures.
-                texIdForCurrentTextureType = mat.textures[textureIndex].hash;
                 texture = GetTexture(mat.textures[textureIndex].hash, mat.textures[textureIndex], textureIndex, dummyTextures);
                 textureIndex++;
             }

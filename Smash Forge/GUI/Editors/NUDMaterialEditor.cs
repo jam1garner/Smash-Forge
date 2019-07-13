@@ -258,8 +258,8 @@ namespace Smash_Forge
 
         private void InitializeComboBoxes(NUD.Material mat)
         {
-            alphaFuncComboBox.SelectedItem = alphaFuncByMatValue[mat.alphaFunction];
-            cullModeComboBox.SelectedItem = cullModeByMatValue[mat.cullMode];
+            alphaFuncComboBox.SelectedItem = alphaFuncByMatValue[mat.AlphaFunction];
+            cullModeComboBox.SelectedItem = cullModeByMatValue[mat.CullMode];
         }
 
         private void InitializeCheckBoxes(NUD.Material mat)
@@ -267,7 +267,7 @@ namespace Smash_Forge
             shadowCB.Checked = mat.HasShadow;
             GlowCB.Checked = mat.Glow;
 
-            alphaTestCB.Checked = mat.alphaTest == (int)NudEnums.AlphaTest.Enabled;
+            alphaTestCB.Checked = mat.AlphaTest == (int)NudEnums.AlphaTest.Enabled;
             // Enable/disable extra controls.
             alphaTestCB_CheckedChanged(null, null);
         }
@@ -275,10 +275,10 @@ namespace Smash_Forge
         private void InitializeTextBoxes(NUD.Material mat)
         {
             flagsTB.Text = mat.Flags.ToString("X");
-            srcTB.Text = mat.srcFactor + "";
-            dstTB.Text = mat.dstFactor + "";
+            srcTB.Text = mat.SrcFactor + "";
+            dstTB.Text = mat.DstFactor + "";
             refAlphaTB.Text = mat.RefAlpha + "";
-            zBufferTB.Text = mat.zBufferOffset + "";
+            zBufferTB.Text = mat.ZBufferOffset + "";
         }
 
         private void InitializePropertiesListView(NUD.Material mat)
@@ -302,46 +302,46 @@ namespace Smash_Forge
             // Jigglypuff has weird eyes.
             if ((mat.Flags & 0xFFFFFFFF) == 0x9AE11163)
             {
-                texturesListView.Items.Add("Diffuse", mat.diffuse1ID.ToString("X"));
-                texturesListView.Items.Add("Diffuse2", mat.diffuse2ID.ToString("X"));
-                texturesListView.Items.Add("NormalMap", mat.normalID.ToString("X"));
+                texturesListView.Items.Add("Diffuse", mat.Diffuse1Id.ToString("X"));
+                texturesListView.Items.Add("Diffuse2", mat.Diffuse2Id.ToString("X"));
+                texturesListView.Items.Add("NormalMap", mat.NormalId.ToString("X"));
             }
             else if ((mat.Flags & 0xFFFFFFFF) == 0x92F01101)
             {
                 // These flags are even weirder. 
-                texturesListView.Items.Add("Diffuse", mat.diffuse1ID.ToString("X"));
-                texturesListView.Items.Add("Diffuse2", mat.diffuse2ID.ToString("X"));
+                texturesListView.Items.Add("Diffuse", mat.Diffuse1Id.ToString("X"));
+                texturesListView.Items.Add("Diffuse2", mat.Diffuse2Id.ToString("X"));
                 if (currentMatIndex == 0)
                 {
                     // The second material doesn't have these textures.
                     // The texture are probably shared with the first material.
-                    texturesListView.Items.Add("Ramp", mat.rampID.ToString("X"));
-                    texturesListView.Items.Add("DummyRamp", mat.dummyRampID.ToString("X"));
+                    texturesListView.Items.Add("Ramp", mat.RampId.ToString("X"));
+                    texturesListView.Items.Add("DummyRamp", mat.DummyRampId.ToString("X"));
                 }
             }
             else
             {
                 // The order of the textures is critical.
                 if (mat.HasDiffuse)
-                    texturesListView.Items.Add("Diffuse", mat.diffuse1ID.ToString("X"));
+                    texturesListView.Items.Add("Diffuse", mat.Diffuse1Id.ToString("X"));
                 if (mat.HasSphereMap)
-                    texturesListView.Items.Add("SphereMap", mat.sphereMapID.ToString("X"));
+                    texturesListView.Items.Add("SphereMap", mat.SphereMapId.ToString("X"));
                 if (mat.HasDiffuse2)
-                    texturesListView.Items.Add("Diffuse2", mat.diffuse2ID.ToString("X"));
+                    texturesListView.Items.Add("Diffuse2", mat.Diffuse2Id.ToString("X"));
                 if (mat.HasDiffuse3)
-                    texturesListView.Items.Add("Diffuse3", mat.diffuse3ID.ToString("X"));
+                    texturesListView.Items.Add("Diffuse3", mat.Diffuse3Id.ToString("X"));
                 if (mat.HasStageMap)
-                    texturesListView.Items.Add("StageMap", mat.stageMapID.ToString("X"));
+                    texturesListView.Items.Add("StageMap", mat.StageMapId.ToString("X"));
                 if (mat.HasCubeMap)
-                    texturesListView.Items.Add("Cubemap", mat.cubeMapID.ToString("X"));
+                    texturesListView.Items.Add("Cubemap", mat.CubeMapId.ToString("X"));
                 if (mat.HasAoMap)
-                    texturesListView.Items.Add("AOMap", mat.aoMapID.ToString("X"));
+                    texturesListView.Items.Add("AOMap", mat.AoMapId.ToString("X"));
                 if (mat.HasNormalMap)
-                    texturesListView.Items.Add("NormalMap", mat.normalID.ToString("X"));
+                    texturesListView.Items.Add("NormalMap", mat.NormalId.ToString("X"));
                 if (mat.HasRamp)
-                    texturesListView.Items.Add("Ramp", mat.rampID.ToString("X"));
+                    texturesListView.Items.Add("Ramp", mat.RampId.ToString("X"));
                 if (mat.HasDummyRamp)
-                    texturesListView.Items.Add("DummyRamp", mat.dummyRampID.ToString("X"));
+                    texturesListView.Items.Add("DummyRamp", mat.DummyRampId.ToString("X"));
             }
         }
 
@@ -356,14 +356,14 @@ namespace Smash_Forge
         {
             int value = GuiTools.TryParseTBInt(srcTB);
             if (value != -1)
-                currentMaterialList[currentMatIndex].srcFactor = value;
+                currentMaterialList[currentMatIndex].SrcFactor = value;
         }
 
         private void dstTB_TextChanged(object sender, EventArgs e)
         {
             int value = GuiTools.TryParseTBInt(dstTB);
             if (value != -1)
-                currentMaterialList[currentMatIndex].dstFactor = value;
+                currentMaterialList[currentMatIndex].DstFactor = value;
         }
 
         private void AlphaFuncCB_SelectedIndexChanged(object sender, EventArgs e)
@@ -372,7 +372,7 @@ namespace Smash_Forge
             {
                 if (alphaFuncByMatValue[i].Equals(alphaFuncComboBox.SelectedItem))
                 {
-                    currentMaterialList[currentMatIndex].alphaFunction = i;
+                    currentMaterialList[currentMatIndex].AlphaFunction = i;
                     break;
                 }
             }
@@ -448,7 +448,7 @@ namespace Smash_Forge
         {
             int value = GuiTools.TryParseTBInt(zBufferTB);
             if (value != -1)
-                currentMaterialList[currentMatIndex].zBufferOffset = value;
+                currentMaterialList[currentMatIndex].ZBufferOffset = value;
         }
 
         private void mapModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -1022,9 +1022,9 @@ namespace Smash_Forge
         private void alphaTestCB_CheckedChanged(object sender, EventArgs e)
         {
             if (alphaTestCB.Checked)
-                currentMaterialList[currentMatIndex].alphaTest = (int)NudEnums.AlphaTest.Enabled;
+                currentMaterialList[currentMatIndex].AlphaTest = (int)NudEnums.AlphaTest.Enabled;
             else
-                currentMaterialList[currentMatIndex].alphaTest = (int)NudEnums.AlphaTest.Disabled;
+                currentMaterialList[currentMatIndex].AlphaTest = (int)NudEnums.AlphaTest.Disabled;
 
             // Only enable extra settings when alpha testing is enabled.
             alphaFuncRefPanel.Visible = alphaTestCB.Checked;
@@ -1107,7 +1107,7 @@ namespace Smash_Forge
         {
             NUD.Material mat = currentMaterialList[currentMatIndex];
             if (matValueByCullModeName.ContainsKey(cullModeComboBox.SelectedItem.ToString()))
-                mat.cullMode = matValueByCullModeName[cullModeComboBox.SelectedItem.ToString()];
+                mat.CullMode = matValueByCullModeName[cullModeComboBox.SelectedItem.ToString()];
         }
 
         private void glControlTableLayout_Resize(object sender, EventArgs e)

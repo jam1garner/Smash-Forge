@@ -544,7 +544,7 @@ namespace Smash_Forge
             shader.SetBoolToInt("drawId", shouldDrawIdPass);
 
             shader.SetUint("flags", material.Flags);
-            shader.SetFloat("zBufferOffset", material.zBufferOffset);
+            shader.SetFloat("zBufferOffset", material.ZBufferOffset);
 
             shader.SetBoolToInt("renderVertColor", Runtime.renderVertColor && material.UseVertexColor);
         }
@@ -955,17 +955,17 @@ namespace Smash_Forge
 
                 m.Flags = d.readUInt();
                 d.skip(4);
-                m.srcFactor = d.readUShort();
+                m.SrcFactor = d.readUShort();
                 ushort texCount = d.readUShort();
-                m.dstFactor = d.readUShort();
-                m.alphaTest = d.readByte();
-                m.alphaFunction = d.readByte();
+                m.DstFactor = d.readUShort();
+                m.AlphaTest = d.readByte();
+                m.AlphaFunction = d.readByte();
 
                 m.RefAlpha = d.readUShort();
-                m.cullMode = d.readUShort();
+                m.CullMode = d.readUShort();
                 d.skip(4); // unknown
-                m.unkownWater = d.readInt();
-                m.zBufferOffset = d.readInt();
+                m.Unk2 = d.readInt();
+                m.ZBufferOffset = d.readInt();
 
                 for (ushort i = 0; i < texCount; i++)
                 {
@@ -1598,17 +1598,17 @@ namespace Smash_Forge
                 offs[c++] = d.size();
                 d.writeInt((int)mat.Flags);
                 d.writeInt(0); // padding
-                d.writeShort(mat.srcFactor);
+                d.writeShort(mat.SrcFactor);
                 d.writeShort(mat.textures.Count);
-                d.writeShort(mat.dstFactor);
-                d.writeByte(mat.alphaTest);
-                d.writeByte(mat.alphaFunction);
+                d.writeShort(mat.DstFactor);
+                d.writeByte(mat.AlphaTest);
+                d.writeByte(mat.AlphaFunction);
 
                 d.writeShort(mat.RefAlpha);
-                d.writeShort(mat.cullMode);
+                d.writeShort(mat.CullMode);
                 d.writeInt(0); // unknown
-                d.writeInt(mat.unkownWater);
-                d.writeInt(mat.zBufferOffset);
+                d.writeInt(mat.Unk2);
+                d.writeInt(mat.ZBufferOffset);
 
                 foreach (MatTexture tex in mat.textures)
                 {

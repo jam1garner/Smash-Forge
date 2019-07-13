@@ -77,13 +77,13 @@ namespace Smash_Forge
         private static void WriteMatAttributes(XmlDocument doc, NUD.Material mat, XmlNode matNode)
         {
             AddUintAttribute(doc, "flags", mat.Flags, matNode, true);
-            AddIntAttribute(doc, "srcFactor", mat.srcFactor, matNode, false);
-            AddIntAttribute(doc, "dstFactor", mat.dstFactor, matNode, false);
-            AddIntAttribute(doc, "AlphaFunc", mat.alphaFunction, matNode, false);
-            AddIntAttribute(doc, "AlphaTest", mat.alphaTest, matNode, false);
+            AddIntAttribute(doc, "srcFactor", mat.SrcFactor, matNode, false);
+            AddIntAttribute(doc, "dstFactor", mat.DstFactor, matNode, false);
+            AddIntAttribute(doc, "AlphaFunc", mat.AlphaFunction, matNode, false);
+            AddIntAttribute(doc, "AlphaTest", mat.AlphaTest, matNode, false);
             AddIntAttribute(doc, "RefAlpha", mat.RefAlpha, matNode, false);
-            AddIntAttribute(doc, "cullmode", mat.cullMode, matNode, true);
-            AddIntAttribute(doc, "zbuffoff", mat.zBufferOffset, matNode, false);
+            AddIntAttribute(doc, "cullmode", mat.CullMode, matNode, true);
+            AddIntAttribute(doc, "zbuffoff", mat.ZBufferOffset, matNode, false);
         }
 
         private static void WriteTextureAttributes(XmlDocument doc, NUD.Material mat, XmlNode matnode)
@@ -257,6 +257,7 @@ namespace Smash_Forge
 
         private static void ReadAttributes(XmlNode materialNode, NUD.Material material)
         {
+            int value = 0;
             foreach (XmlAttribute attribute in materialNode.Attributes)
             {
                 switch (attribute.Name)
@@ -267,25 +268,32 @@ namespace Smash_Forge
                             material.Flags = newFlags;
                         break;
                     case "srcFactor":
-                        int.TryParse(attribute.Value, out material.srcFactor);
+                        int.TryParse(attribute.Value, out value);
+                        material.SrcFactor = value;
                         break;
                     case "dstFactor":
-                        int.TryParse(attribute.Value, out material.dstFactor);
+                        int.TryParse(attribute.Value, out value);
+                        material.DstFactor = value;
                         break;
                     case "AlphaFunc":
-                        int.TryParse(attribute.Value, out material.alphaFunction);
+                        int.TryParse(attribute.Value, out value);
+                        material.AlphaFunction = value;
                         break;
                     case "AlphaTest":
-                        int.TryParse(attribute.Value, out material.alphaTest);
+                        int.TryParse(attribute.Value, out value);
+                        material.AlphaTest = value;
                         break;
                     case "RefAlpha":
-                        int.TryParse(attribute.Value, out material.RefAlpha);
+                        int.TryParse(attribute.Value, out value);
+                        material.RefAlpha = value;
                         break;
                     case "cullmode":
-                        int.TryParse(attribute.Value, NumberStyles.HexNumber, null, out material.cullMode);
+                        int.TryParse(attribute.Value, NumberStyles.HexNumber, null, out value);
+                        material.CullMode = value;
                         break;
                     case "zbuffoff":
-                        int.TryParse(attribute.Value, out material.zBufferOffset);
+                        int.TryParse(attribute.Value, out value);
+                        material.ZBufferOffset = value;
                         break;
                 }
             }
