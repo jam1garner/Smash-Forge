@@ -120,6 +120,25 @@ namespace Smash_Forge
 
             }
 
+            public bool EqualTextures(Material other)
+            {
+                if (other == null || textures.Count != other.textures.Count)
+                    return false;
+
+                for (int i = 0; i < textures.Count; i++)
+                {
+                    if (textures[i].hash != other.textures[i].hash)
+                        return false;
+                }
+
+                return true;
+            }
+
+            private static bool StructuralEquals<T>(T a, T b) where T : System.Collections.IStructuralEquatable
+            {
+                return a.Equals(b, System.Collections.StructuralComparisons.StructuralEqualityComparer);
+            }
+
             public Material Clone()
             {
                 Material m = new Material();

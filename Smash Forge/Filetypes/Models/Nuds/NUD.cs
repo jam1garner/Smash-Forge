@@ -487,30 +487,28 @@ namespace Smash_Forge
             SetGlobalShaderUniforms(shader, camera, RenderTools.dummyTextures);
 
             // Only draw polgons if the polygon and its parent are both checked.
-            //System.Diagnostics.Debug.WriteLine("Draw Polygons");
+            Material previousMaterial = null;
             foreach (Polygon p in opaque)
             {
                 if (p.Parent != null && ((Mesh)p.Parent).Checked && p.Checked)
                 {
-                    DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, drawPolyIds);
-                    //System.Diagnostics.Debug.WriteLine($"{p.vertexIndices.Count}");
+                    DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, previousMaterial, drawPolyIds);
+                    previousMaterial = p.materials[0];
                 }
             }
 
-            int i = 0;
             foreach (Polygon p in transparent)
             {
                 if (((Mesh)p.Parent).Checked && p.Checked)
                 {
-                    DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, drawPolyIds);
-                    //System.Diagnostics.Debug.WriteLine($"[{i}] {p.vertexIndices.Count}");
-                    i++;
+                    DrawPolygonShaded(p, shader, camera, RenderTools.dummyTextures, previousMaterial, drawPolyIds);
+                    previousMaterial = p.materials[0];
                 }
             }
             //System.Diagnostics.Debug.WriteLine("");
         }
 
-        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, bool drawId = false)
+        private void DrawPolygonShaded(Polygon p, Shader shader, Camera camera, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, Material previousMaterial, bool drawId)
         {
             if (p.vertexIndices.Count < 3)
                 return;
@@ -520,19 +518,21 @@ namespace Smash_Forge
             // Set Shader Values.
             shader.UseProgram();
 
-            SetPolygonSpecificUniforms(p, shader, dummyTextures, material);
+            SetPolygonSpecificUniforms(p, shader, material);
+
+            if (!material.EqualTextures(previousMaterial))
+                NudUniforms.SetTextureUniforms(shader, material, dummyTextures);
 
             // Update render mesh settings.
-            // This is slow, but performance isn't an issue for NUDs.
+            // TODO: Avoid redundant state changes.
             p.renderMesh.SetRenderSettings(material);
             p.renderMesh.SetMaterialValues(material, shader);
 
             p.renderMesh.Draw(shader);
         }
 
-        private void SetPolygonSpecificUniforms(Polygon p, Shader shader, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures, Material material, bool shouldDrawIdPass = false)
+        private void SetPolygonSpecificUniforms(Polygon p, Shader shader, Material material, bool shouldDrawIdPass = false)
         {
-            NudUniforms.SetTextureUniforms(shader, material, dummyTextures);
             SetXMBUniforms(shader, p);
             SetNscUniform(p, shader);
 
