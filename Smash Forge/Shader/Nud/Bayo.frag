@@ -156,35 +156,41 @@ uniform vec3 fresSkyColor;
 uniform vec3 fresSkyDirection;
 uniform vec3 fresGroundDirection;
 
-// NU_ Material Properties
-uniform vec4 colorOffset;
-uniform vec4 aoMinGain;
-uniform vec4 fresnelColor;
-uniform vec4 specularColor;
-uniform vec4 specularColorGain;
-uniform vec4 diffuseColor;
-uniform vec4 characterColor;
-uniform vec4 colorGain;
-uniform vec4 finalColorGain;
-uniform vec4 finalColorGain2;
-uniform vec4 finalColorGain3;
-uniform vec4 reflectionColor;
-uniform vec4 fogColor;
-uniform vec4 effColorGain;
-uniform vec4 zOffset;
+uniform MaterialProperties
+{
+    vec4 colorOffset;
+    vec4 aoMinGain;
+    vec4 fresnelColor;
+    vec4 specularColor;
+    vec4 specularColorGain;
+    vec4 diffuseColor;
+    vec4 characterColor;
+    vec4 colorGain;
+    vec4 finalColorGain;
+    vec4 finalColorGain2;
+    vec4 finalColorGain3;
+    vec4 reflectionColor;
+    vec4 fogColor;
+    vec4 effColorGain;
+    vec4 zOffset;
+    vec4 colorSamplerUV;
+    vec4 colorSampler2UV;
+    vec4 colorSampler3UV;
+    vec4 normalSamplerAUV;
+    vec4 normalSamplerBUV;
 
-// NU_ material params
-uniform vec4 fresnelParams;
-uniform vec4 specularParams;
-uniform vec4 reflectionParams;
-uniform vec4 fogParams;
-uniform vec4 normalParams;
-uniform vec4 angleFadeParams;
-uniform vec4 dualNormalScrollParams;
-uniform vec4 alphaBlendParams;
-uniform vec4 softLightingParams;
-uniform vec4 customSoftLightParams;
-uniform vec4 effUniverseParam;
+    vec4 fresnelParams;
+    vec4 specularParams;
+    vec4 reflectionParams;
+    vec4 fogParams;
+    vec4 normalParams;
+    vec4 angleFadeParams;
+    vec4 dualNormalScrollParams;
+    vec4 alphaBlendParams;
+    vec4 softLightingParams;
+    vec4 customSoftLightParams;
+    vec4 effUniverseParam;
+};
 
 // Defined in SmashShader.frag.
 float AnisotropicSpecExponent(vec3 halfAngle, float width, float height, vec3 tangent, vec3 bitangent);

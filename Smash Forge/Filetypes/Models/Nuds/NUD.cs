@@ -259,7 +259,6 @@ namespace Smash_Forge
 
             // Update bone matrices for the shader.
             bonesUbo.BindBlock(shader, "BoneMatrices");
-
             bonesUbo.SetValues("transforms", boneMatrices);
 
             shader.SetBoolToInt("useBones", true);

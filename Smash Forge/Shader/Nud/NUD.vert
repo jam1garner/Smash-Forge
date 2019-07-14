@@ -29,11 +29,41 @@ out vec2 geomNormaltexCoord;
 out vec4 geomVertexColor;
 out vec3 geomBoneWeightsColored;
 
-uniform vec4 colorSamplerUV;
-uniform vec4 colorSampler2UV;
-uniform vec4 colorSampler3UV;
-uniform vec4 normalSamplerAUV;
-uniform vec4 normalSamplerBUV;
+uniform MaterialProperties
+{
+    vec4 colorOffset;
+    vec4 aoMinGain;
+    vec4 fresnelColor;
+    vec4 specularColor;
+    vec4 specularColorGain;
+    vec4 diffuseColor;
+    vec4 characterColor;
+    vec4 colorGain;
+    vec4 finalColorGain;
+    vec4 finalColorGain2;
+    vec4 finalColorGain3;
+    vec4 reflectionColor;
+    vec4 fogColor;
+    vec4 effColorGain;
+    vec4 zOffset;
+    vec4 colorSamplerUV;
+    vec4 colorSampler2UV;
+    vec4 colorSampler3UV;
+    vec4 normalSamplerAUV;
+    vec4 normalSamplerBUV;
+
+    vec4 fresnelParams;
+    vec4 specularParams;
+    vec4 reflectionParams;
+    vec4 fogParams;
+    vec4 normalParams;
+    vec4 angleFadeParams;
+    vec4 dualNormalScrollParams;
+    vec4 alphaBlendParams;
+    vec4 softLightingParams;
+    vec4 customSoftLightParams;
+    vec4 effUniverseParam;
+};
 
 uniform mat4 mvpMatrix;
 uniform mat4 nscMatrix;
@@ -43,7 +73,6 @@ uniform mat4 lightMatrix;
 
 uniform uint flags;
 uniform float zScale;
-uniform vec4 zOffset;
 
 uniform float elapsedTime;
 uniform int useDirectUVTime;

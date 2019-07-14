@@ -57,14 +57,16 @@ namespace Smash_Forge.Filetypes.Models.Nuds
 
         public static void SetMaterialPropertyUniforms(Shader shader, NUD.Material mat)
         {
-            var genericMaterial = new GenericMaterial();
-
+            var uniformBlock = new UniformBlock(shader, "MaterialProperties") { BlockBinding = 1 };
             foreach (var property in defaultValueByProperty)
             {
-                MatPropertyShaderUniform(genericMaterial, mat, property.Key, property.Value);
+                MatPropertyShaderUniform(uniformBlock, mat, property.Key, property.Value);
             }
+            uniformBlock.BindBlock(shader, "MaterialProperties");
 
             // Create some conditionals rather than using different shaders.
+            var genericMaterial = new GenericMaterial();
+
             HasMatPropertyShaderUniform(genericMaterial, mat, "NU_softLightingParams", "hasSoftLight");
             HasMatPropertyShaderUniform(genericMaterial, mat, "NU_customSoftLightParams", "hasCustomSoftLight");
             HasMatPropertyShaderUniform(genericMaterial, mat, "NU_specularParams", "hasSpecularParams");
@@ -86,7 +88,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
                 genericMaterial.AddInt(uniformName, 0);
         }
 
-        private static void MatPropertyShaderUniform(GenericMaterial genericMaterial, NUD.Material mat, string propertyName, Vector4 defaultValue)
+        private static void MatPropertyShaderUniform(UniformBlock uniformBlock, NUD.Material mat, string propertyName, Vector4 defaultValue)
         {
             // Attempt to get the values from the material. 
             float[] values = null;
@@ -98,7 +100,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
                 values = new float[] { defaultValue.X, defaultValue.Y, defaultValue.Z, defaultValue.W };
 
             string uniformName = propertyName.Replace("NU_", "");
-            genericMaterial.AddVector4(uniformName, new Vector4(values[0], values[1], values[2], values[3]));
+            uniformBlock.SetValue(uniformName, new Vector4(values[0], values[1], values[2], values[3]));
         }
 
         public static Texture GetTexture(int hash, NUD.MatTexture matTexture, int loc, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
