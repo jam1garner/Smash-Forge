@@ -16,13 +16,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using SFGenericModel.Materials;
 
 namespace Smash_Forge
 {
     public partial class NUD : FileBase, IBoundableModel
     {
         // OpenGL Buffers
-        private BufferObject bonesUbo;
+        private UniformBlock bonesUbo;
         private BufferObject selectVbo;
 
         //Smash and Pokkén both use version 0x0200 NUD
@@ -103,7 +104,7 @@ namespace Smash_Forge
 
         private void GenerateBuffers()
         {
-            bonesUbo = new BufferObject(BufferTarget.UniformBuffer);
+            bonesUbo = new UniformBlock(OpenTKSharedResources.shaders["Nud"], "BoneMatrices") { BlockBinding = 0 };
             selectVbo = new BufferObject(BufferTarget.ArrayBuffer);
         }
 
@@ -239,7 +240,7 @@ namespace Smash_Forge
             DrawAllPolygons(shader, camera, drawPolyIds);
         }
 
-        private void UpdateBonesBuffer(VBN vbn, Shader shader, BufferObject bonesUbo)
+        private void UpdateBonesBuffer(VBN vbn, Shader shader, UniformBlock bonesUbo)
         {
             shader.UseProgram();
 
@@ -257,10 +258,9 @@ namespace Smash_Forge
             }
 
             // Update bone matrices for the shader.
-            int blockIndex = GL.GetUniformBlockIndex(shader.Id, "bones");
-            bonesUbo.BindBase(BufferRangeTarget.UniformBuffer, blockIndex);
+            bonesUbo.BindBlock(shader, "BoneMatrices");
 
-            bonesUbo.SetData(boneMatrices, BufferUsageHint.DynamicDraw);
+            bonesUbo.SetValues("transforms", boneMatrices);
 
             shader.SetBoolToInt("useBones", true);
         }
