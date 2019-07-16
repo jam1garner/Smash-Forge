@@ -734,7 +734,7 @@ namespace SmashForge
                 {
                     foreach (Material ma in p.materials)
                     {
-                        ma.anims.Clear();
+                        ma.ClearAnims();
                     }
                 }
             }
@@ -750,8 +750,7 @@ namespace SmashForge
                     {
                         foreach (Material material in polygon.materials)
                         {
-                            float[] matHashFloat;
-                            material.entries.TryGetValue("NU_materialHash", out matHashFloat);
+                            float[] matHashFloat = material.GetPropertyValues("NU_materialHash");
                             if (matHashFloat != null)
                             {
                                 byte[] bytes = new byte[4];
@@ -770,10 +769,7 @@ namespace SmashForge
                                     {
                                         if (md.frames.Count > 0 && md.frames.Count > frm)
                                         {
-                                            if (material.anims.ContainsKey(md.name))
-                                                material.anims[md.name] = md.frames[frm].values;
-                                            else
-                                                material.anims.Add(md.name, md.frames[frm].values);
+                                            material.UpdatePropertyAnim(md.name, md.frames[frm].values);
                                         }                                          
                                     }
                                 }
@@ -1012,7 +1008,7 @@ namespace SmashForge
                         else
                             values[i] = 0;
                     }
-                    m.entries.Add(name, values);
+                    m.UpdateProperty(name, values);
 
                 Continue:
                     if (matAttSize == 0)
@@ -1626,7 +1622,7 @@ namespace SmashForge
                 }
 
                 //If there are no material attributes, write a "blank" entry
-                if (mat.entries.Count == 0)
+                if (mat.PropertyCount == 0)
                 {
                     d.writeInt(0);
                     d.writeInt(0);
@@ -1634,19 +1630,18 @@ namespace SmashForge
                     d.writeInt(0);
                 }
 
-                for (int i = 0; i < mat.entries.Count; i++)
+                for (int i = 0; i < mat.PropertyCount; i++)
                 {
                     //It can be seen in Pokkén NDWD that the last material attribute name
                     // does not need to be aligned to 16. So, we do the alignment before writing
                     // the name rather than after.
                     str.align(16);
 
-                    float[] data;
-                    mat.entries.TryGetValue(mat.entries.ElementAt(i).Key, out data);
-                    d.writeInt(i == mat.entries.Count - 1 ? 0 : 16 + 4 * data.Length);
+                    float[] data = mat.GetPropertyValues(mat.PropertyNames.ElementAt(i));
+                    d.writeInt(i == mat.PropertyCount - 1 ? 0 : 16 + 4 * data.Length);
                     d.writeInt(str.Size());
 
-                    str.WriteString(mat.entries.ElementAt(i).Key);
+                    str.WriteString(mat.PropertyNames.ElementAt(i));
                     str.writeByte(0);
 
                     d.writeByte(0); d.writeByte(0); d.writeByte(0);

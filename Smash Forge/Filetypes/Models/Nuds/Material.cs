@@ -8,8 +8,10 @@ namespace SmashForge
     {
         public class Material
         {
-            public Dictionary<string, float[]> entries = new Dictionary<string, float[]>();
-            public Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
+            private Dictionary<string, float[]> entries = new Dictionary<string, float[]>();
+
+            private Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
+
             public List<MatTexture> textures = new List<MatTexture>();
 
             public uint Flags
@@ -114,6 +116,38 @@ namespace SmashForge
 
             public int CubeMapId => cubeMapId;
             private int cubeMapId;
+
+            public bool HasProperty(string name) => entries.ContainsKey(name);
+
+            public bool HasPropertyAnim(string name) => anims.ContainsKey(name);
+
+            public int PropertyCount => entries.Count;
+
+            public float[] GetPropertyValues(string name)
+            {
+                return entries[name];
+            }
+
+            public float[] GetPropertyValuesAnim(string name) => anims[name];
+
+            public void UpdateProperty(string name, float[] values)
+            {
+                entries[name] = values;
+            }
+
+            public void UpdatePropertyAnim(string name, float[] values)
+            {
+                anims[name] = values;
+            }
+
+            public bool RemoveProperty(string name) => entries.Remove(name);
+
+            public IEnumerable<string> PropertyNames => entries.Keys;
+
+            public void ClearAnims()
+            {
+                anims.Clear();
+            }
 
             public bool EqualTextures(Material other)
             {

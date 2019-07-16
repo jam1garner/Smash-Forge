@@ -285,7 +285,7 @@ namespace SmashForge
         {
             propertiesListView.Items.Clear();
             propertiesListView.View = View.List;
-            foreach (string propertyName in mat.entries.Keys)
+            foreach (string propertyName in mat.PropertyNames)
             {
                 propertiesListView.Items.Add(propertyName);
             }
@@ -573,7 +573,7 @@ namespace SmashForge
                 Nud.Material mat = currentMaterialList[currentMatIndex];
                 foreach (ListViewItem property in propertiesListView.SelectedItems)
                 {
-                    mat.entries.Remove(property.Text);
+                    mat.RemoveProperty(property.Text);
                 }
                 FillForm();
                 e.Handled = true;
@@ -584,18 +584,18 @@ namespace SmashForge
         {
             if (propertyNameLabel.Text.Contains("NU_materialHash"))
             {
-                int materialHash = BitConverter.ToInt32(BitConverter.GetBytes(currentMaterialList[currentMatIndex].entries[propertyName][0]), 0);
+                int materialHash = BitConverter.ToInt32(BitConverter.GetBytes(currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[0]), 0);
                 param1TB.Text = materialHash.ToString("X");
-                param2TB.Text = currentMaterialList[currentMatIndex].entries[propertyName][1] + "";
-                param3TB.Text = currentMaterialList[currentMatIndex].entries[propertyName][2] + "";
-                param4TB.Text = currentMaterialList[currentMatIndex].entries[propertyName][3] + "";
+                param2TB.Text = currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[1] + "";
+                param3TB.Text = currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[2] + "";
+                param4TB.Text = currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[3] + "";
             }
             else
             {
-                param1TB.Text = currentMaterialList[currentMatIndex].entries[propertyName][0] + "";
-                param2TB.Text = currentMaterialList[currentMatIndex].entries[propertyName][1] + "";
-                param3TB.Text = currentMaterialList[currentMatIndex].entries[propertyName][2] + "";
-                param4TB.Text = currentMaterialList[currentMatIndex].entries[propertyName][3] + "";
+                param1TB.Text = currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[0] + "";
+                param2TB.Text = currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[1] + "";
+                param3TB.Text = currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[2] + "";
+                param4TB.Text = currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[3] + "";
             }
         }
 
@@ -621,7 +621,7 @@ namespace SmashForge
             else
             {
                 float value = GuiTools.TryParseTBFloat(param1TB);
-                currentMaterialList[currentMatIndex].entries[propertyName][0] = value;
+                currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[0] = value;
 
                 float max = GetMatParamMax(propertyName, 0);
                 if (enableParam1SliderUpdates)
@@ -635,14 +635,14 @@ namespace SmashForge
         {
             int hash = GuiTools.TryParseTBInt(param1TB, true);
             if (hash != -1 && propertiesListView.SelectedItems.Count > 0)
-                currentMaterialList[currentMatIndex].entries[propertiesListView.SelectedItems[0].Text][0] = BitConverter.ToSingle(BitConverter.GetBytes(hash), 0);
+                currentMaterialList[currentMatIndex].GetPropertyValues(propertiesListView.SelectedItems[0].Text)[0] = BitConverter.ToSingle(BitConverter.GetBytes(hash), 0);
         }
 
         private void param2TB_TextChanged(object sender, EventArgs e)
         {
             string propertyName = propertiesListView.SelectedItems[0].Text;
             float value = GuiTools.TryParseTBFloat(param2TB);
-            currentMaterialList[currentMatIndex].entries[propertyName][1] = value;
+            currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[1] = value;
 
             float max = GetMatParamMax(propertyName, 1);
             if (enableParam2SliderUpdates)
@@ -655,7 +655,7 @@ namespace SmashForge
         {
             string propertyName = propertiesListView.SelectedItems[0].Text;
             float value = GuiTools.TryParseTBFloat(param3TB);
-            currentMaterialList[currentMatIndex].entries[propertyName][2] = value;
+            currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[2] = value;
 
             float max = GetMatParamMax(propertyName, 2);
             if (enableParam3SliderUpdates)
@@ -668,7 +668,7 @@ namespace SmashForge
         {
             string propertyName = propertiesListView.SelectedItems[0].Text;
             float value = GuiTools.TryParseTBFloat(param4TB);
-            currentMaterialList[currentMatIndex].entries[propertyName][3] = value;
+            currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[3] = value;
 
             float max = GetMatParamMax(propertyName, 3);
             if (enableParam4SliderUpdates)
@@ -711,7 +711,7 @@ namespace SmashForge
         {
             // Prevent adding duplicate material properties.
             addMatPropertyButton.Enabled = true;
-            if (currentMaterialList[currentMatIndex].entries.ContainsKey(matPropertyComboBox.Text))
+            if (currentMaterialList[currentMatIndex].HasProperty(matPropertyComboBox.Text))
             {
                 addMatPropertyButton.Enabled = false;
             }
@@ -731,7 +731,7 @@ namespace SmashForge
         {
             if (!matPropertyComboBox.Text.Equals(""))
             {
-                currentMaterialList[currentMatIndex].entries.Add(matPropertyComboBox.Text, new float[] { 0, 0, 0, 0 });
+                currentMaterialList[currentMatIndex].UpdateProperty(matPropertyComboBox.Text, new float[] { 0, 0, 0, 0 });
                 FillForm();
                 addMatPropertyButton.Enabled = false;
             }
@@ -741,9 +741,9 @@ namespace SmashForge
         {
             // Check if the property exists first.
             string propertyName = propertiesListView.SelectedItems[0].Text;
-            if (currentMaterialList[currentMatIndex].entries.ContainsKey(propertyName))
+            if (currentMaterialList[currentMatIndex].HasProperty(propertyName))
             {
-                currentMaterialList[currentMatIndex].entries.Remove(propertyName);
+                currentMaterialList[currentMatIndex].RemoveProperty(propertyName);
                 FillForm();
                 addMatPropertyButton.Enabled = true; // The property can be added again.
             }
@@ -811,7 +811,7 @@ namespace SmashForge
             // Get the selected NUT texture.
             NutTexture nutTexture = null;
             Texture displayTexture = null;
-            if (currentMaterialList[currentMatIndex].entries.ContainsKey("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
+            if (currentMaterialList[currentMatIndex].HasProperty("NU_materialHash") && texturesListView.SelectedIndices.Count > 0)
             {
                 int hash = currentMaterialList[currentMatIndex].textures[texturesListView.SelectedIndices[0]].hash;
 
@@ -867,7 +867,7 @@ namespace SmashForge
             try
             {
                 string selectedMatPropKey = propertiesListView.SelectedItems[0].Text;
-                float[] values = currentMaterialList[currentMatIndex].entries[selectedMatPropKey];
+                float[] values = currentMaterialList[currentMatIndex].GetPropertyValues(selectedMatPropKey);
                 colorSelect.BackColor = ColorUtils.GetColor(values[0], values[1], values[2]);
             }
             catch (ArgumentOutOfRangeException)

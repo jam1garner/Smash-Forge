@@ -96,12 +96,12 @@ namespace SmashForge
             public void AOSpecRefBlend()
             {
                 // change aomingain to only affect specular and reflection. ignore 2nd material
-                if (materials[0].entries.ContainsKey("NU_aoMinGain"))
+                if (materials[0].HasProperty("NU_aoMinGain"))
                 {
-                    materials[0].entries["NU_aoMinGain"][0] = 15.0f;
-                    materials[0].entries["NU_aoMinGain"][1] = 15.0f;
-                    materials[0].entries["NU_aoMinGain"][2] = 15.0f;
-                    materials[0].entries["NU_aoMinGain"][3] = 0.0f;
+                    materials[0].GetPropertyValues("NU_aoMinGain")[0] = 15.0f;
+                    materials[0].GetPropertyValues("NU_aoMinGain")[1] = 15.0f;
+                    materials[0].GetPropertyValues("NU_aoMinGain")[2] = 15.0f;
+                    materials[0].GetPropertyValues("NU_aoMinGain")[3] = 0.0f;
                 }
             }
 

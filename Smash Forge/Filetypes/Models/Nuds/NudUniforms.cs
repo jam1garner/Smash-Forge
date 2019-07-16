@@ -81,7 +81,7 @@ namespace SmashForge.Filetypes.Models.Nuds
 
         private static void HasMatPropertyShaderUniform(GenericMaterial genericMaterial, Nud.Material mat, string propertyName, string uniformName)
         {
-            bool hasValue = mat.entries.ContainsKey(propertyName) || mat.anims.ContainsKey(propertyName);
+            bool hasValue = mat.HasProperty(propertyName) || mat.HasPropertyAnim(propertyName);
             if (hasValue)
                 genericMaterial.AddInt(uniformName, 1);
             else
@@ -101,10 +101,12 @@ namespace SmashForge.Filetypes.Models.Nuds
 
         private static float[] GetValues(Nud.Material mat, string propertyName, Vector4 defaultValue)
         {
-            float[] values;
+            float[] values = null;
 
-            if (!mat.anims.TryGetValue(propertyName, out values))
-                mat.entries.TryGetValue(propertyName, out values);
+            if (mat.HasPropertyAnim(propertyName))
+                values = mat.GetPropertyValuesAnim(propertyName);
+            else if (mat.HasProperty(propertyName))
+                values = mat.GetPropertyValues(propertyName);
 
             if (values == null || values.Length != 4)
                 values = new float[] { defaultValue.X, defaultValue.Y, defaultValue.Z, defaultValue.W };

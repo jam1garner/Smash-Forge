@@ -105,22 +105,22 @@ namespace SmashForge
 
         private static void WriteMatParams(XmlDocument doc, Nud.Material mat, XmlNode matnode)
         {
-            foreach (KeyValuePair<string, float[]> materialProperty in mat.entries)
+            foreach (string materialProperty in mat.PropertyNames)
             {
                 XmlNode paramnode = doc.CreateElement("param");
-                XmlAttribute a = doc.CreateAttribute("name"); a.Value = materialProperty.Key; paramnode.Attributes.Append(a);
+                XmlAttribute a = doc.CreateAttribute("name"); a.Value = materialProperty; paramnode.Attributes.Append(a);
                 matnode.AppendChild(paramnode);
 
-                if (materialProperty.Key == "NU_materialHash")
+                if (materialProperty == "NU_materialHash")
                 {
                     // Material hash should be in hex for easier reading.
-                    foreach (float f in materialProperty.Value)
+                    foreach (float f in mat.GetPropertyValues(materialProperty))
                         paramnode.InnerText += BitConverter.ToUInt32(BitConverter.GetBytes(f), 0).ToString("x") + " ";
                 }
                 else
                 {
                     int count = 0;
-                    foreach (float f in materialProperty.Value)
+                    foreach (float f in mat.GetPropertyValues(materialProperty))
                     {
                         // Only print 4 values and avoids tons of trailing 0's.
                         if (count <= 4)
@@ -346,9 +346,9 @@ namespace SmashForge
                 throw new ParamArrayLengthException(polyNode.ChildNodes.Count, name);
 
             // Prevents duplicate material parameters.
-            if (!material.entries.ContainsKey(name))
+            if (!material.HasProperty(name))
             {
-                material.entries.Add(name, valueList.ToArray());
+                material.UpdateProperty(name, valueList.ToArray());
             }
             else
             {
