@@ -8,9 +8,12 @@ namespace SmashForge
     {
         public class Material
         {
-            private Dictionary<string, float[]> entries = new Dictionary<string, float[]>();
+            private readonly Dictionary<string, float[]> propertyValuesByName = new Dictionary<string, float[]>();
 
-            private Dictionary<string, float[]> anims = new Dictionary<string, float[]>();
+            private readonly Dictionary<string, float[]> animatedPropertyValuesByName = new Dictionary<string, float[]>();
+
+            // HACK: Used for rendering optimizations.
+            public bool ShouldUpdateRendering { get; set; } = true;
 
             public List<MatTexture> textures = new List<MatTexture>();
 
@@ -117,36 +120,48 @@ namespace SmashForge
             public int CubeMapId => cubeMapId;
             private int cubeMapId;
 
-            public bool HasProperty(string name) => entries.ContainsKey(name);
+            public bool HasProperty(string name) => propertyValuesByName.ContainsKey(name);
 
-            public bool HasPropertyAnim(string name) => anims.ContainsKey(name);
+            public bool HasPropertyAnim(string name) => animatedPropertyValuesByName.ContainsKey(name);
 
-            public int PropertyCount => entries.Count;
+            public int PropertyCount => propertyValuesByName.Count;
 
             public float[] GetPropertyValues(string name)
             {
-                return entries[name];
+                return propertyValuesByName[name];
             }
 
-            public float[] GetPropertyValuesAnim(string name) => anims[name];
+            public float[] GetPropertyValuesAnim(string name) => animatedPropertyValuesByName[name];
 
             public void UpdateProperty(string name, float[] values)
             {
-                entries[name] = values;
+                propertyValuesByName[name] = values;
+                ShouldUpdateRendering = true;
+            }
+
+            public void UpdateProperty(string name, float value, int index)
+            { 
+                propertyValuesByName[name][index] = value;
+                ShouldUpdateRendering = true;
             }
 
             public void UpdatePropertyAnim(string name, float[] values)
             {
-                anims[name] = values;
+                animatedPropertyValuesByName[name] = values;
+                ShouldUpdateRendering = true;
             }
 
-            public bool RemoveProperty(string name) => entries.Remove(name);
+            public bool RemoveProperty(string name)
+            {
+                ShouldUpdateRendering = true;
+                return propertyValuesByName.Remove(name);
+            }
 
-            public IEnumerable<string> PropertyNames => entries.Keys;
+            public IEnumerable<string> PropertyNames => propertyValuesByName.Keys;
 
             public void ClearAnims()
             {
-                anims.Clear();
+                animatedPropertyValuesByName.Clear();
             }
 
             public bool EqualTextures(Material other)
@@ -167,8 +182,8 @@ namespace SmashForge
             {
                 Material m = new Material();
 
-                foreach (KeyValuePair<string, float[]> e in entries)
-                    m.entries.Add(e.Key, e.Value);
+                foreach (KeyValuePair<string, float[]> e in propertyValuesByName)
+                    m.propertyValuesByName.Add(e.Key, e.Value);
 
                 m.Flags = Flags;
                 m.BlendMode = BlendMode;
@@ -200,14 +215,14 @@ namespace SmashForge
                     Flags = 0x94010161,
                     CullMode = 0x0405
                 };
-                material.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
-                material.entries.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });
-                material.entries.Add("NU_blinkColor", new float[] { 0, 0, 0, 0 });
-                material.entries.Add("NU_aoMinGain", new float[] { 0, 0, 0, 0 });
-                material.entries.Add("NU_lightMapColorOffset", new float[] { 0, 0, 0, 0 });
-                material.entries.Add("NU_fresnelParams", new float[] { 1, 0, 0, 0 });
-                material.entries.Add("NU_alphaBlendParams", new float[] { 0, 0, 0, 0 });
-                material.entries.Add("NU_materialHash", new float[] { FileData.toFloat(0x7E538F65), 0, 0, 0 });
+                material.propertyValuesByName.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
+                material.propertyValuesByName.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });
+                material.propertyValuesByName.Add("NU_blinkColor", new float[] { 0, 0, 0, 0 });
+                material.propertyValuesByName.Add("NU_aoMinGain", new float[] { 0, 0, 0, 0 });
+                material.propertyValuesByName.Add("NU_lightMapColorOffset", new float[] { 0, 0, 0, 0 });
+                material.propertyValuesByName.Add("NU_fresnelParams", new float[] { 1, 0, 0, 0 });
+                material.propertyValuesByName.Add("NU_alphaBlendParams", new float[] { 0, 0, 0, 0 });
+                material.propertyValuesByName.Add("NU_materialHash", new float[] { FileData.toFloat(0x7E538F65), 0, 0, 0 });
 
                 material.textures.Add(new MatTexture(0x10000000));
                 material.textures.Add(MatTexture.GetDefault());
@@ -226,9 +241,9 @@ namespace SmashForge
                 // Display a default texture rather than a dummy texture.
                 material.textures.Add(new MatTexture(0));
 
-                material.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
-                material.entries.Add("NU_diffuseColor", new float[] { 1, 1, 1, 0.5f });
-                material.entries.Add("NU_materialHash", new float[] { BitConverter.ToSingle(new byte[] { 0x12, 0xEE, 0x2A, 0x1B }, 0), 0, 0, 0 });
+                material.propertyValuesByName.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
+                material.propertyValuesByName.Add("NU_diffuseColor", new float[] { 1, 1, 1, 0.5f });
+                material.propertyValuesByName.Add("NU_materialHash", new float[] { BitConverter.ToSingle(new byte[] { 0x12, 0xEE, 0x2A, 0x1B }, 0), 0, 0, 0 });
                 return material;
             }
 
@@ -297,10 +312,10 @@ namespace SmashForge
                 UpdateLabeledTextureIds();
 
                 float materialHash = -1f;
-                if (entries.ContainsKey("NU_materialHash"))
-                    materialHash = entries["NU_materialHash"][0];
-                anims.Clear();
-                entries.Clear();
+                if (propertyValuesByName.ContainsKey("NU_materialHash"))
+                    materialHash = propertyValuesByName["NU_materialHash"][0];
+                animatedPropertyValuesByName.Clear();
+                propertyValuesByName.Clear();
 
                 // The texture ID used for diffuse later. 
                 int difTexId = newDifTexId;
@@ -334,15 +349,15 @@ namespace SmashForge
                 }
 
                 // add material properties
-                entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
-                entries.Add("NU_fresnelColor", fresColor);
-                entries.Add("NU_blinkColor", new float[] { 0f, 0f, 0f, 0 });
-                entries.Add("NU_reflectionColor", refColor);
-                entries.Add("NU_aoMinGain", minGain);
-                entries.Add("NU_lightMapColorOffset", new float[] { 0f, 0f, 0f, 0 });
-                entries.Add("NU_fresnelParams", fresParams);
-                entries.Add("NU_alphaBlendParams", new float[] { 0f, 0f, 0f, 0 });
-                entries.Add("NU_materialHash", new float[] { materialHash, 0f, 0f, 0 });
+                propertyValuesByName.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
+                propertyValuesByName.Add("NU_fresnelColor", fresColor);
+                propertyValuesByName.Add("NU_blinkColor", new float[] { 0f, 0f, 0f, 0 });
+                propertyValuesByName.Add("NU_reflectionColor", refColor);
+                propertyValuesByName.Add("NU_aoMinGain", minGain);
+                propertyValuesByName.Add("NU_lightMapColorOffset", new float[] { 0f, 0f, 0f, 0 });
+                propertyValuesByName.Add("NU_fresnelParams", fresParams);
+                propertyValuesByName.Add("NU_alphaBlendParams", new float[] { 0f, 0f, 0f, 0 });
+                propertyValuesByName.Add("NU_materialHash", new float[] { materialHash, 0f, 0f, 0 });
             }
 
             public byte RebuildFlag4thByte()

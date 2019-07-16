@@ -58,10 +58,17 @@ namespace SmashForge.Filetypes.Models.Nuds
 
         public static void SetMaterialPropertyUniforms(UniformBlock uniformBlock, Shader shader, Nud.Material mat)
         {
-            foreach (var property in defaultValueByProperty)
+            // Skip expensive buffer updates for redundant value updates.
+            if (mat.ShouldUpdateRendering)
             {
-                MatPropertyShaderUniform(uniformBlock, mat, property.Key, property.Value);
+                foreach (var property in defaultValueByProperty)
+                {
+                    MatPropertyShaderUniform(uniformBlock, mat, property.Key, property.Value);
+                }
+                mat.ShouldUpdateRendering = false;
             }
+
+            // Always bind the uniform block because each polygon has its own uniform block.
             uniformBlock.BindBlock(shader, "MaterialProperties");
 
             // Create some conditionals rather than using different shaders.

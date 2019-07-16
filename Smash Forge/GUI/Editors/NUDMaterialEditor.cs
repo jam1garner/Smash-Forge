@@ -621,7 +621,7 @@ namespace SmashForge
             else
             {
                 float value = GuiTools.TryParseTBFloat(param1TB);
-                currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[0] = value;
+                currentMaterialList[currentMatIndex].UpdateProperty(propertyName, value, 0);
 
                 float max = GetMatParamMax(propertyName, 0);
                 if (enableParam1SliderUpdates)
@@ -635,14 +635,14 @@ namespace SmashForge
         {
             int hash = GuiTools.TryParseTBInt(param1TB, true);
             if (hash != -1 && propertiesListView.SelectedItems.Count > 0)
-                currentMaterialList[currentMatIndex].GetPropertyValues(propertiesListView.SelectedItems[0].Text)[0] = BitConverter.ToSingle(BitConverter.GetBytes(hash), 0);
+                currentMaterialList[currentMatIndex].UpdateProperty(propertiesListView.SelectedItems[0].Text, BitConverter.ToSingle(BitConverter.GetBytes(hash), 0), 0);
         }
 
         private void param2TB_TextChanged(object sender, EventArgs e)
         {
             string propertyName = propertiesListView.SelectedItems[0].Text;
             float value = GuiTools.TryParseTBFloat(param2TB);
-            currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[1] = value;
+            currentMaterialList[currentMatIndex].UpdateProperty(propertyName, value, 1);
 
             float max = GetMatParamMax(propertyName, 1);
             if (enableParam2SliderUpdates)
@@ -655,7 +655,7 @@ namespace SmashForge
         {
             string propertyName = propertiesListView.SelectedItems[0].Text;
             float value = GuiTools.TryParseTBFloat(param3TB);
-            currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[2] = value;
+            currentMaterialList[currentMatIndex].UpdateProperty(propertyName, value, 2);
 
             float max = GetMatParamMax(propertyName, 2);
             if (enableParam3SliderUpdates)
@@ -668,7 +668,7 @@ namespace SmashForge
         {
             string propertyName = propertiesListView.SelectedItems[0].Text;
             float value = GuiTools.TryParseTBFloat(param4TB);
-            currentMaterialList[currentMatIndex].GetPropertyValues(propertyName)[3] = value;
+            currentMaterialList[currentMatIndex].UpdateProperty(propertyName, value, 3);
 
             float max = GetMatParamMax(propertyName, 3);
             if (enableParam4SliderUpdates)

@@ -33,7 +33,6 @@ namespace SmashForge
 
         public void SetMaterialValues(Shader shader, Nud.Material material)
         {
-
             NudUniforms.SetMaterialPropertyUniforms(uniformBlock, shader, material);
         }
 
