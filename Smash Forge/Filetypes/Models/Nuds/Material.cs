@@ -26,7 +26,7 @@ namespace SmashForge
                 {
                     flags = value;
                     CheckFlags();
-                    UpdateLabelledTextureIds();
+                    UpdateLabeledTextureIds();
                 }
             }
             private uint flags;
@@ -91,8 +91,8 @@ namespace SmashForge
             public int Diffuse2Id => diffuse2Id;
             private int diffuse2Id = 0;
 
-            public int Diffuse3Id => diffuse3ID;
-            private int diffuse3ID = 0;
+            public int Diffuse3Id => diffuse3Id;
+            private int diffuse3Id = 0;
 
             public int NormalId => normalId;
             private int normalId = 0;
@@ -115,11 +115,6 @@ namespace SmashForge
             public int CubeMapId => cubeMapId;
             private int cubeMapId= 0;
 
-            public Material()
-            {
-
-            }
-
             public bool EqualTextures(Material other)
             {
                 if (other == null || textures.Count != other.textures.Count)
@@ -132,11 +127,6 @@ namespace SmashForge
                 }
 
                 return true;
-            }
-
-            private static bool StructuralEquals<T>(T a, T b) where T : System.Collections.IStructuralEquatable
-            {
-                return a.Equals(b, System.Collections.StructuralComparisons.StructuralEqualityComparer);
             }
 
             public Material Clone()
@@ -171,9 +161,11 @@ namespace SmashForge
 
             public static Material GetDefault()
             {
-                Material material = new Material();
-                material.Flags = 0x94010161;
-                material.CullMode = 0x0405;
+                Material material = new Material
+                {
+                    Flags = 0x94010161,
+                    CullMode = 0x0405
+                };
                 material.entries.Add("NU_colorSamplerUV", new float[] { 1, 1, 0, 0 });
                 material.entries.Add("NU_fresnelColor", new float[] { 1, 1, 1, 1 });
                 material.entries.Add("NU_blinkColor", new float[] { 0, 0, 0, 0 });
@@ -268,7 +260,7 @@ namespace SmashForge
 
             public void MakeMetal(int newDifTexId, int newCubeTexId, float[] minGain, float[] refColor, float[] fresParams, float[] fresColor, bool preserveDiffuse = false, bool preserveNrmMap = true)
             {
-                UpdateLabelledTextureIds();
+                UpdateLabeledTextureIds();
 
                 float materialHash = -1f;
                 if (entries.ContainsKey("NU_materialHash"))
@@ -277,15 +269,15 @@ namespace SmashForge
                 entries.Clear();
 
                 // The texture ID used for diffuse later. 
-                int difTexID = newDifTexId;
+                int difTexId = newDifTexId;
                 if (preserveDiffuse)
-                    difTexID = Diffuse1Id;
+                    difTexId = Diffuse1Id;
 
                 // add all the textures
                 textures.Clear();
                 displayTexId = -1;
 
-                MatTexture diffuse = new MatTexture(difTexID);
+                MatTexture diffuse = new MatTexture(difTexId);
                 MatTexture cube = new MatTexture(newCubeTexId);
                 MatTexture normal = new MatTexture(normalId);
                 MatTexture dummyRamp = MatTexture.GetDefault();
@@ -342,32 +334,32 @@ namespace SmashForge
                 return new4thByte;
             }
 
-            private void UpdateLabelledTextureIds()
+            private void UpdateLabeledTextureIds()
             {
                 int textureIndex = 0;
                 if ((flags & 0xFFFFFFFF) == 0x9AE11163)
                 {
-                    UpdateLabelledId(HasDiffuse, ref diffuse1Id, ref textureIndex);
-                    UpdateLabelledId(HasDiffuse2, ref diffuse2Id, ref textureIndex);
-                    UpdateLabelledId(HasNormalMap, ref normalId, ref textureIndex);
+                    UpdateLabeledId(HasDiffuse, ref diffuse1Id, ref textureIndex);
+                    UpdateLabeledId(HasDiffuse2, ref diffuse2Id, ref textureIndex);
+                    UpdateLabeledId(HasNormalMap, ref normalId, ref textureIndex);
                 }
                 else
                 {
                     // The order of the textures here is critical. 
-                    UpdateLabelledId(HasDiffuse, ref diffuse1Id, ref textureIndex);
-                    UpdateLabelledId(HasSphereMap, ref sphereMapId, ref textureIndex);
-                    UpdateLabelledId(HasDiffuse2, ref diffuse2Id, ref textureIndex);
-                    UpdateLabelledId(HasDiffuse3, ref diffuse3ID, ref textureIndex);
-                    UpdateLabelledId(HasStageMap, ref stageMapId, ref textureIndex);
-                    UpdateLabelledId(HasCubeMap, ref cubeMapId, ref textureIndex);
-                    UpdateLabelledId(HasAoMap, ref aoMapId, ref textureIndex);
-                    UpdateLabelledId(HasNormalMap, ref normalId, ref textureIndex);
-                    UpdateLabelledId(HasRamp, ref rampId, ref textureIndex);
-                    UpdateLabelledId(HasDummyRamp, ref dummyRampId, ref textureIndex);
+                    UpdateLabeledId(HasDiffuse, ref diffuse1Id, ref textureIndex);
+                    UpdateLabeledId(HasSphereMap, ref sphereMapId, ref textureIndex);
+                    UpdateLabeledId(HasDiffuse2, ref diffuse2Id, ref textureIndex);
+                    UpdateLabeledId(HasDiffuse3, ref diffuse3Id, ref textureIndex);
+                    UpdateLabeledId(HasStageMap, ref stageMapId, ref textureIndex);
+                    UpdateLabeledId(HasCubeMap, ref cubeMapId, ref textureIndex);
+                    UpdateLabeledId(HasAoMap, ref aoMapId, ref textureIndex);
+                    UpdateLabeledId(HasNormalMap, ref normalId, ref textureIndex);
+                    UpdateLabeledId(HasRamp, ref rampId, ref textureIndex);
+                    UpdateLabeledId(HasDummyRamp, ref dummyRampId, ref textureIndex);
                 }
             }
 
-            private void UpdateLabelledId(bool hasTexture, ref int textureId, ref int textureIndex)
+            private void UpdateLabeledId(bool hasTexture, ref int textureId, ref int textureIndex)
             {
                 if (hasTexture && textureIndex < textures.Count)
                 {
@@ -396,7 +388,7 @@ namespace SmashForge
                 SoftLightBrighten = ((matFlags & 0x00FF0000) == 0x00810000 || (matFlags & 0xFFFF0000) == 0xFA600000);
             }
 
-            private bool CheckVertexColor(uint matFlags)
+            private static bool CheckVertexColor(uint matFlags)
             {
                 // Characters and stages use different values for enabling vertex color.
                 // Always use vertex color for effect materials for now.
@@ -407,7 +399,7 @@ namespace SmashForge
                 return vertexColor;
             }
 
-            private bool CheckColorGain(uint matFlags)
+            private static bool CheckColorGain(uint matFlags)
             {
                 byte byte1 = (byte)(matFlags >> 24);
                 byte byte2 = (byte)(matFlags >> 16);
@@ -422,10 +414,9 @@ namespace SmashForge
 
             private void CheckTextures(uint matFlags)
             {
-                // Why figure out how these values work when you can just hardcode all the important ones?
+                // Why figure out how these values work when you can just hard code all the important ones?
                 // Effect materials use 4th byte 00 but often still have a diffuse texture.
                 byte byte1 = (byte)(matFlags >> 24);
-                byte byte2 = (byte)(matFlags >> 16);
                 byte byte3 = (byte)(matFlags >> 8);
                 byte byte4 = (byte)(matFlags & 0xFF);
 
@@ -451,7 +442,7 @@ namespace SmashForge
                 HasDiffuse2 = hasRampCubeMap && ((matFlags & (int)NudEnums.TextureFlag.NormalMap) == 0)
                     && (HasDummyRamp || HasDiffuse3);
 
-                // Jigglypuff has weird eyes, so just hardcode it.
+                // Jigglypuff has weird eyes, so just hard code it.
                 if ((matFlags & 0xFFFFFFFF) == 0x9AE11163)
                 {
                     HasDiffuse2 = true;

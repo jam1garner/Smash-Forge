@@ -56,19 +56,15 @@ namespace SmashForge
 
         public static List<NUS3BANK> SoundContainers = new List<NUS3BANK>();
 
-        public static Dictionary<string, Rendering.Lights.AreaLight> areaLights = new Dictionary<string, Rendering.Lights.AreaLight>();
-
         public static SortedList<string, FileBase> OpenedFiles { get; set; }
 
         public static VBN TargetVBN { get; set; }
-        public static Nud TargetNUD { get; set; }
         public static LVD TargetLVD { get; set; }
         public static BYAML TargetBYAML { get; set; }
         public static PathBin TargetPath { get; set; }
         public static LIGH.LighBin TargetLigh { get; set; }
         public static CMR0 TargetCMR0 { get; set; }
         public static List<MTA> TargetMTA = new List<MTA>();
-        public static Object LVDSelection { get; set; }
         public static HitboxList hitboxList { get; set; }
         public static VariableList variableViewer { get; set; }
 
@@ -87,8 +83,6 @@ namespace SmashForge
             NORMAL = 0,
             EDITVERT = 1
         }
-
-        public static ViewportModes ViewportMode = ViewportModes.EDITVERT;
 
         // The messages are annoying when batch rendering.
         public static bool checkNudTexIdOnOpen = true;
@@ -112,7 +106,6 @@ namespace SmashForge
         public static bool renderCollisionNormals = false;
         public static bool renderHitboxes = true;
         public static bool renderInterpolatedHitboxes = true;
-        public static bool renderHitboxesColorByKb;
         public static bool renderHitboxAngles = true;
         public static bool renderPath = true;
         public static bool renderRespawns = true;
@@ -147,8 +140,6 @@ namespace SmashForge
         public static bool LoadAndRenderATKD = false;
         public static string currentATKD = null;
         public static bool useFrameDuration = true;
-        public static bool useFAFasAnimationLength = false;
-        public static bool Is2DView = false;
 
         public static Color counterBubbleColor = Color.FromArgb(0x89, 0x89, 0x89);
         public static Color reflectBubbleColor = Color.Cyan;
@@ -228,21 +219,9 @@ namespace SmashForge
         // Polygon ID Maps
         public static bool drawNudColorIdPass = false;
 
-        public static float specularHue = 360.0f;
-        public static float specularSaturation = 0.0f;
-        public static float specularIntensity = 0.65f;
-        public static float specularRotX = 0.0f;
-        public static float specularRotY = 0.0f;
-        public static float specularRotZ = 0.0f;
-
         public static float reflectionHue = 360.0f;
         public static float reflectionSaturation = 0.0f;
         public static float reflectionIntensity = 1.0f;
-
-        public static bool renderStageLight1 = true;
-        public static bool renderStageLight2 = true;
-        public static bool renderStageLight3 = true;
-        public static bool renderStageLight4 = true;
 
         public static bool renderFog = true;
 
@@ -263,7 +242,6 @@ namespace SmashForge
         public static bool renderB = true;
         public static bool renderAlpha = true;
         public static UVChannel uvChannel = UVChannel.Channel1;
-        public static bool useDebugShading = false;
         public static bool debug1 = false;
         public static bool debug2 = false;
 
@@ -345,16 +323,6 @@ namespace SmashForge
         public static void ClearMoveset()
         {
             Moveset = null;
-        }
-
-        public static bool KillWorkspace { get; set; }
-
-        // Make sure subscribers unsubscribe or this will prevent garbage collection!
-        public static event EventHandler AnimationChanged;
-        private static void OnAnimationChanged()
-        {
-            if (AnimationChanged != null && !KillWorkspace)
-                AnimationChanged(typeof(Runtime), EventArgs.Empty);
         }
     }
 }

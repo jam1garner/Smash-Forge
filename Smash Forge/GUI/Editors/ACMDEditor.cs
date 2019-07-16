@@ -51,7 +51,7 @@ namespace SmashForge
 
         private void ACMDEditor_FormClosed(object sender, FormClosedEventArgs e)
         {
-            MainForm.Instance.ACMDEditors.Remove(this);
+            MainForm.Instance.acmdEditors.Remove(this);
         }
     }
 }

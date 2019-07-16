@@ -284,7 +284,7 @@ namespace SmashForge
             foreach (Bone bone in VBN.bones)
             {
                 uint bi = 0;
-                MainForm.Hashes.names.TryGetValue(bone.Text, out bi);
+                MainForm.hashes.names.TryGetValue(bone.Text, out bi);
                 bone.boneId = bi;
                 if (bone.boneId == 0)
                     bone.boneId = Crc32.Compute(bone.Text);

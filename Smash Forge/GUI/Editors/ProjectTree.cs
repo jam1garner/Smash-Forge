@@ -166,7 +166,7 @@ namespace SmashForge
 
         private void openFile(object sender, TreeNodeMouseClickEventArgs e)
         {
-            foreach (ACMDEditor a in MainForm.Instance.ACMDEditors)
+            foreach (ACMDEditor a in MainForm.Instance.acmdEditors)
             {
                 if (a.fname.Equals("workspace/animcmd/" + e.Node.Text))
                 {
@@ -180,7 +180,7 @@ namespace SmashForge
                 if (e.Node.Parent.Text.Equals("ACMD"))
                 {
                     ACMDEditor temp = new ACMDEditor(Path.Combine(Application.StartupPath, "workspace/animcmd/") + e.Node.Text, this);
-                    MainForm.Instance.ACMDEditors.Add(temp);
+                    MainForm.Instance.acmdEditors.Add(temp);
                     MainForm.Instance.AddDockedControl(temp);
                 }
             }
@@ -209,7 +209,7 @@ namespace SmashForge
             {
                 if (((BaseNode)treeView1.SelectedNode).Openable)
                 {
-                    MainForm.Instance.openFile(((FileInfo)treeView1.SelectedNode.Tag).FullName);
+                    MainForm.Instance.OpenFile(((FileInfo)treeView1.SelectedNode.Tag).FullName);
                 }
             }
         }

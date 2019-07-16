@@ -15,7 +15,6 @@ namespace SmashForge
     {
         public Collada()
         {
-
         }
 
         public Collada(string fileName)

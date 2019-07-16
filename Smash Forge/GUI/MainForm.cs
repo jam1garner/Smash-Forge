@@ -1,41 +1,37 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using System.Security.Cryptography;
-using WeifenLuo.WinFormsUI.Docking;
-using System.Diagnostics;
-using System.Threading;
+﻿using SALT.Graphics;
 using SALT.PARAMS;
-using SALT.Graphics;
-using System.ComponentModel;
-using System.Text.RegularExpressions;
-using SmashForge.Filetypes.Melee.Utils;
 using SmashForge.Filetypes.Melee;
 using SmashForge.Gui.Editors;
 using SmashForge.Gui.Menus;
 using SmashForge.Rendering;
 using SmashForge.Rendering.Lights;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace SmashForge
 {
     public partial class MainForm : FormBase
     {
-        public static MainForm Instance
-        {
-            get { return _instance != null ? _instance : (_instance = new MainForm()); }
-        }
+        public static MainForm Instance => instance != null ? instance : (instance = new MainForm());
 
-        private static MainForm _instance;
+        private static MainForm instance;
 
         public static string executableDir = null;
-        public static csvHashes Hashes;
+        public static csvHashes hashes;
         public static DockPanel dockPanel;
 
         public WorkspaceManager Workspace { get; set; }
         public String[] filesToOpen = null;
-        public ProgressAlert Progress = new ProgressAlert();
+        public ProgressAlert progress = new ProgressAlert();
 
         // Lists
         public AnimListPanel animList = new AnimListPanel() { ShowHint = DockState.DockRight };
@@ -57,8 +53,8 @@ namespace SmashForge
 
         public List<PARAMEditor> paramEditors = new List<PARAMEditor>() { };
         public List<MTAEditor> mtaEditors = new List<MTAEditor>() { };
-        public List<ACMDEditor> ACMDEditors = new List<ACMDEditor>() { };
-        public List<SwagEditor> SwagEditors = new List<SwagEditor>() { };
+        public List<ACMDEditor> acmdEditors = new List<ACMDEditor>() { };
+        public List<SwagEditor> swagEditors = new List<SwagEditor>() { };
 
         public MainForm()
         {
@@ -67,7 +63,7 @@ namespace SmashForge
 
         public void UpdateProgress(object sender, ProgressChangedEventArgs e)
         {
-            Progress.ProgressValue = e.ProgressPercentage;
+            progress.ProgressValue = e.ProgressPercentage;
         }
 
         private void AppIdle(object sender, EventArgs e)
@@ -100,10 +96,10 @@ namespace SmashForge
 
             Application.Idle += AppIdle;
 
-            allViewsPreset(new Object(), new EventArgs());
+            AllViewsPreset(new Object(), new EventArgs());
 
-            Hashes = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
-            
+            hashes = new csvHashes(Path.Combine(executableDir, "hashTable.csv"));
+
             DiscordSettings.Update();
 
             // Make sure everything is loaded before opening files.
@@ -115,10 +111,10 @@ namespace SmashForge
                 exportErrorLogToolStripMenuItem.Enabled = false;
             }
 
-            openFiles();
+            OpenFiles();
         }
 
-        public void openFiles()
+        public void OpenFiles()
         {
             for (int i = 0; i < filesToOpen.Length; i++)
             {
@@ -126,18 +122,18 @@ namespace SmashForge
                 if (file.Equals("--clean"))
                 {
                     clearWorkspaceToolStripMenuItem_Click(new object(), new EventArgs());
-                    cleanPreset(new object(), new EventArgs());
+                    CleanPreset(new object(), new EventArgs());
                 }
                 else if (file.Equals("--superclean"))
                 {
                     clearWorkspaceToolStripMenuItem_Click(new object(), new EventArgs());
-                    superCleanPreset(new object(), new EventArgs());
+                    SuperCleanPreset(new object(), new EventArgs());
                 }
                 else if (file.Equals("--preview"))
                 {
                     Text = "Meteor Preview";
-                    NUT chr_00_nut = null, chr_11_nut = null, chr_13_nut = null, stock_90_nut = null;
-                    string chr_00_loc = null, chr_11_loc = null, chr_13_loc = null, stock_90_loc = null;
+                    NUT chr00Nut = null, chr11Nut = null, chr13Nut = null, stock90Nut = null;
+                    string chr00Loc = null, chr11Loc = null, chr13Loc = null, stock90Loc = null;
                     String nud = null, nut, vbn;
                     for (int j = i + 1; j < filesToOpen.Length; j++)
                     {
@@ -153,28 +149,28 @@ namespace SmashForge
                                 vbn = filesToOpen[j + 1];
                                 break;
                             case "-chr_00":
-                                chr_00_loc = filesToOpen[j + 1];
+                                chr00Loc = filesToOpen[j + 1];
                                 if (!File.Exists(filesToOpen[j + 1])) break;
-                                chr_00_nut = new NUT(filesToOpen[j + 1]);
-                                Runtime.TextureContainers.Add(chr_00_nut);
+                                chr00Nut = new NUT(filesToOpen[j + 1]);
+                                Runtime.TextureContainers.Add(chr00Nut);
                                 break;
                             case "-chr_11":
-                                chr_11_loc = filesToOpen[j + 1];
+                                chr11Loc = filesToOpen[j + 1];
                                 if (!File.Exists(filesToOpen[j + 1])) break;
-                                chr_11_nut = new NUT(filesToOpen[j + 1]);
-                                Runtime.TextureContainers.Add(chr_11_nut);
+                                chr11Nut = new NUT(filesToOpen[j + 1]);
+                                Runtime.TextureContainers.Add(chr11Nut);
                                 break;
                             case "-chr_13":
-                                chr_13_loc = filesToOpen[j + 1];
+                                chr13Loc = filesToOpen[j + 1];
                                 if (!File.Exists(filesToOpen[j + 1])) break;
-                                chr_13_nut = new NUT(filesToOpen[j + 1]);
-                                Runtime.TextureContainers.Add(chr_13_nut);
+                                chr13Nut = new NUT(filesToOpen[j + 1]);
+                                Runtime.TextureContainers.Add(chr13Nut);
                                 break;
                             case "-stock_90":
-                                stock_90_loc = filesToOpen[j + 1];
+                                stock90Loc = filesToOpen[j + 1];
                                 if (!File.Exists(filesToOpen[j + 1])) break;
-                                stock_90_nut = new NUT(filesToOpen[j + 1]);
-                                Runtime.TextureContainers.Add(stock_90_nut);
+                                stock90Nut = new NUT(filesToOpen[j + 1]);
+                                Runtime.TextureContainers.Add(stock90Nut);
                                 break;
                         }
                         i++;
@@ -184,11 +180,11 @@ namespace SmashForge
                         OpenNud(nud);
                     }
 
-                    UIPreview uiPreview = new UIPreview(chr_00_nut, chr_11_nut, chr_13_nut, stock_90_nut);
-                    uiPreview.chr_00_loc = chr_00_loc;
-                    uiPreview.chr_11_loc = chr_11_loc;
-                    uiPreview.chr_13_loc = chr_13_loc;
-                    uiPreview.stock_90_loc = stock_90_loc;
+                    UIPreview uiPreview = new UIPreview(chr00Nut, chr11Nut, chr13Nut, stock90Nut);
+                    uiPreview.chr_00_loc = chr00Loc;
+                    uiPreview.chr_11_loc = chr11Loc;
+                    uiPreview.chr_13_loc = chr13Loc;
+                    uiPreview.stock_90_loc = stock90Loc;
                     uiPreview.ShowHint = DockState.DockRight;
                     dockPanel1.DockRightPortion = 270;
                     AddDockedControl(uiPreview);
@@ -197,7 +193,7 @@ namespace SmashForge
                 }
                 else
                 {
-                    openFile(file);
+                    OpenFile(file);
                 }
             }
             filesToOpen = null;
@@ -302,24 +298,24 @@ namespace SmashForge
                 return;
             }
             PARAMEditor currentParam = null;
-            ACMDEditor currentACMD = null;
+            ACMDEditor currentAcmd = null;
             SwagEditor currentSwagEditor = null;
             foreach (PARAMEditor p in paramEditors)
                 if (p.ContainsFocus)
                     currentParam = p;
 
-            foreach (ACMDEditor a in ACMDEditors)
+            foreach (ACMDEditor a in acmdEditors)
                 if (a.ContainsFocus)
-                    currentACMD = a;
+                    currentAcmd = a;
 
-            foreach (SwagEditor s in SwagEditors)
+            foreach (SwagEditor s in swagEditors)
                 if (s.ContainsFocus)
                     currentSwagEditor = s;
 
             if (currentParam != null)
                 currentParam.SaveAs();
-            else if (currentACMD != null)
-                currentACMD.save();
+            else if (currentAcmd != null)
+                currentAcmd.save();
             else if (currentSwagEditor != null)
                 currentSwagEditor.save();
             else
@@ -332,44 +328,44 @@ namespace SmashForge
                 if (result == DialogResult.OK)
                 {
                     filename = save.FileName;
-                    saveFile(filename);
+                    SaveFile(filename);
                 }
             }
         }
-        string pathNUT = "";
+        string pathNut = "";
 
         public ModelViewport OpenNud(string pathNud, string viewportTitle = "", ModelViewport mvp = null)
         {
             // All the model files will be in the same directory as the model.nud file.
             string[] files = Directory.GetFiles(Path.GetDirectoryName(pathNud));
 
-            string pathJTB = "";
-            string pathVBN = "";
-            string pathMTA = "";
-            string pathSB = "";
-            string pathMOI = "";
-            string pathXMB = "";
+            string pathJtb = "";
+            string pathVbn = "";
+            string pathMta = "";
+            string pathSb = "";
+            string pathMoi = "";
+            string pathXmb = "";
             List<string> pacs = new List<string>();
 
             foreach (string fPath in files)
             {
                 string fName = Path.GetFileName(fPath);
                 if (fName.EndsWith(".nut"))
-                    pathNUT = fPath;
+                    pathNut = fPath;
                 if (fName.EndsWith(".vbn") || fName.StartsWith("bindpose"))
-                    pathVBN = fPath;
+                    pathVbn = fPath;
                 if (fName.EndsWith(".jtb"))
-                    pathJTB = fPath;
+                    pathJtb = fPath;
                 if (fName.EndsWith(".mta"))
-                    pathMTA = fPath;
+                    pathMta = fPath;
                 if (fName.EndsWith(".sb") /*|| fName.StartsWith("swingbone")*/)
-                    pathSB = fPath;
+                    pathSb = fPath;
                 if (fName.EndsWith(".moi"))
-                    pathMOI = fPath;
+                    pathMoi = fPath;
                 if (fName.EndsWith(".pac"))
                     pacs.Add(fPath);
                 if (fName.EndsWith("xmb"))
-                    pathXMB = fPath;
+                    pathXmb = fPath;
             }
 
             if (mvp == null)
@@ -387,12 +383,12 @@ namespace SmashForge
             if (modelContainer.NUD != null)
                 modelContainer.NUD.MergePoly();
 
-            OpenSkeleton(pathJTB, pathVBN, pathSB, modelContainer);
-            OpenNut(pathNUT, modelContainer);
+            OpenSkeleton(pathJtb, pathVbn, pathSb, modelContainer);
+            OpenNut(pathNut, modelContainer);
             OpenPacs(pacs, modelContainer);
-            OpenModelXmb(pathXMB, modelContainer);
-            OpenMta(pathMTA, modelContainer);
-            OpenMoi(pathMOI, modelContainer);
+            OpenModelXmb(pathXmb, modelContainer);
+            OpenMta(pathMta, modelContainer);
+            OpenMoi(pathMoi, modelContainer);
 
             // Reset the camera. 
             mvp.FrameSelectionAndSort();
@@ -458,7 +454,7 @@ namespace SmashForge
 
         public ModelViewport OpenBfres(byte[] fileData, string fileName, string viewportTitle = "", ModelViewport mvp = null)
         {
-            //Todo. Support loading bfres texture and animations if seperate and in same directory
+            //Todo: Support loading bfres texture and animations if separate and in same directory
             if (mvp == null)
             {
                 Console.WriteLine("Creating new viewport");
@@ -483,7 +479,7 @@ namespace SmashForge
             if (modelContainer.Bfres.models.Count != 0)
             {
                 Runtime.TargetVBN = modelContainer.Bfres.models[0].skeleton;
-                resyncTargetVBN();
+                ResyncTargetVbn();
             }
 
             if (Runtime.BNTXList.Count > 0 || Runtime.FTEXContainerList.Count > 0)
@@ -563,7 +559,7 @@ namespace SmashForge
             }
         }
 
-        private static void OpenSkeleton(string fileNameJtb, string fileNameVbn, string fileNameSB, ModelContainer modelContainer)
+        private static void OpenSkeleton(string fileNameJtb, string fileNameVbn, string fileNameSb, ModelContainer modelContainer)
         {
             if (!File.Exists(fileNameVbn))
                 return;
@@ -571,8 +567,8 @@ namespace SmashForge
 
             if (File.Exists(fileNameJtb))
                 modelContainer.JTB = new JTB(fileNameJtb);
-            if (File.Exists(fileNameSB))
-                modelContainer.VBN.SwingBones.Read(fileNameSB);
+            if (File.Exists(fileNameSb))
+                modelContainer.VBN.SwingBones.Read(fileNameSb);
         }
 
         private static void OpenMoi(string fileName, ModelContainer modelContainer)
@@ -624,15 +620,8 @@ namespace SmashForge
             if (fileName.EndsWith("stprm.bin"))
             {
                 Runtime.stprmParam = new ParamFile(fileName);
-                Rendering.RenderTools.SetCameraValuesFromParam(modelViewport.GetCamera(), Runtime.stprmParam);
+                RenderTools.SetCameraValuesFromParam(modelViewport.GetCamera(), Runtime.stprmParam);
             }
-        }
-
-        private void addMaterialAnimation(string name, MTA m)
-        {
-            if (!Runtime.MaterialAnimations.ContainsValue(m) && !Runtime.MaterialAnimations.ContainsKey(name))
-                Runtime.MaterialAnimations.Add(name, m);
-            animList.treeView1.Nodes.Add(name);
         }
 
         private void importToolStripMenuItem_Click(object sender, EventArgs e)
@@ -652,7 +641,7 @@ namespace SmashForge
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                     foreach (string filename in ofd.FileNames)
-                        openAnimation(filename);
+                        OpenAnimation(filename);
 
             }
         }
@@ -692,51 +681,22 @@ namespace SmashForge
             }
         }
 
-        private void animationPanelToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            animList.Show(dockPanel1);
-        }
-
-        private void viewportWindowToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void animationsWindowToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void boneTreeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
-        {
-            Runtime.TargetVBN.Endian = Endianness.Big;
-            Runtime.TargetVBN.unk_1 = 1;
-            Runtime.TargetVBN.unk_2 = 2;
-        }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
-        {
-            Runtime.TargetVBN.Endian = Endianness.Little;
-            Runtime.TargetVBN.unk_1 = 2;
-            Runtime.TargetVBN.unk_2 = 1;
-        }
-
-        public void openMats(Nud.Polygon poly, string name)
+        public void OpenMats(Nud.Polygon poly, string name)
         {
             (new NUDMaterialEditor(poly) { ShowHint = DockState.DockLeft, Text = name }).Show();
         }
 
-        public void openBFRESMats(BFRES.Mesh poly, string name)
+        public void OpenBfresMats(BFRES.Mesh poly, string name)
         {
             ModelViewport mvp = (ModelViewport)dockPanel1.ActiveContent;
             mvp.BfresOpenMats(poly, name);
         }
-        public void bfresOpenMeshEditor(BFRES.Mesh mesh, BFRES.FMDL_Model mdl, BFRES bfres, string name)
+
+        public void BfresOpenMeshEditor(BFRES.Mesh mesh, BFRES.FMDL_Model mdl, BFRES bfres, string name)
         {
             (new BfresMeshEditor(mesh, mdl, bfres) { Text = name }).Show();
         }
+
         private void clearWorkspaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ClearWorkSpace();
@@ -744,8 +704,6 @@ namespace SmashForge
 
         public void ClearWorkSpace(bool closeEditors = true)
         {
-            Runtime.KillWorkspace = true;
-
             Runtime.ParamManager.Reset();
             hurtboxList.refresh();
             Runtime.Animnames.Clear();
@@ -770,20 +728,6 @@ namespace SmashForge
             renderSettings.Show();
         }
 
-        private void meshListToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            meshList.RefreshNodes();
-            AddDockedControl(meshList);
-        }
-
-        private void projectTreeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (project.DockState == DockState.Unknown)
-                project = new ProjectTree();
-            else
-                project.Focus();
-        }
-
         private void openCharacterToolStripMenuItem_Click(object sender, EventArgs e)
         {
             using (var ofd = new FolderSelectDialog())
@@ -791,12 +735,12 @@ namespace SmashForge
                 ofd.Title = "Character Folder";
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    MainForm.Instance.Progress = new ProgressAlert();
-                    MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
-                    MainForm.Instance.Progress.ProgressValue = 0;
-                    MainForm.Instance.Progress.ControlBox = false;
-                    MainForm.Instance.Progress.Message = "Please Wait... Opening Character";
-                    MainForm.Instance.Progress.Show();
+                    Instance.progress = new ProgressAlert();
+                    Instance.progress.StartPosition = FormStartPosition.CenterScreen;
+                    Instance.progress.ProgressValue = 0;
+                    Instance.progress.ControlBox = false;
+                    Instance.progress.Message = "Please Wait... Opening Character";
+                    Instance.progress.Show();
 
                     string fighterName = new DirectoryInfo(ofd.SelectedPath).Name;
                     string[] dirs = Directory.GetDirectories(ofd.SelectedPath);
@@ -807,30 +751,30 @@ namespace SmashForge
                     {
                         if (s.EndsWith("model"))
                         {
-                            MainForm.Instance.Progress.ProgressValue = 10;
-                            MainForm.Instance.Progress.Message = "Please Wait... Opening Character Model";
-                            MainForm.Instance.Progress.Refresh();
+                            Instance.progress.ProgressValue = 10;
+                            Instance.progress.Message = "Please Wait... Opening Character Model";
+                            Instance.progress.Refresh();
                             // load default model
                             mvp = OpenNud(s + "\\body\\c00\\model.nud", "", mvp);
 
-                            MainForm.Instance.Progress.ProgressValue = 25;
-                            MainForm.Instance.Progress.Message = "Please Wait... Opening Character Expressions";
+                            Instance.progress.ProgressValue = 25;
+                            Instance.progress.Message = "Please Wait... Opening Character Expressions";
                             string[] anims = Directory.GetFiles(s + "\\body\\c00\\");
                             float a = 0;
                             foreach (string ss in anims)
                             {
-                                MainForm.Instance.Progress.ProgressValue = 25 + (int)((a++ / anims.Length) * 25f);
+                                Instance.progress.ProgressValue = 25 + (int)((a++ / anims.Length) * 25f);
                                 if (ss.EndsWith(".pac"))
                                 {
-                                    mvp.animListPanel.treeView1.Nodes.Add(openAnimation(ss));
+                                    mvp.animListPanel.treeView1.Nodes.Add(OpenAnimation(ss));
                                 }
                             }
                         }
 
                         if (s.EndsWith("motion"))
                         {
-                            MainForm.Instance.Progress.ProgressValue = 50;
-                            MainForm.Instance.Progress.Message = "Please Wait... Opening Character Animation";
+                            Instance.progress.ProgressValue = 50;
+                            Instance.progress.Message = "Please Wait... Opening Character Animation";
                             string[] anims = Directory.GetFiles(s + "\\body\\");
                             //Sort files so main.pac is opened first
                             Array.Sort(anims, (a, b) =>
@@ -844,12 +788,12 @@ namespace SmashForge
                             });
                             foreach (string a in anims)
 
-                                mvp.animListPanel.treeView1.Nodes.Add(openAnimation(a));
+                                mvp.animListPanel.treeView1.Nodes.Add(OpenAnimation(a));
                         }
                         if (s.EndsWith("script"))
                         {
-                            MainForm.Instance.Progress.ProgressValue = 75;
-                            MainForm.Instance.Progress.Message = ("Please Wait... Opening Character Scripts");
+                            Instance.progress.ProgressValue = 75;
+                            Instance.progress.Message = ("Please Wait... Opening Character Scripts");
                             if (File.Exists(s + "\\animcmd\\body\\motion.mtable"))
                             {
                                 mvp.MovesetManager = new MovesetManager(s + "\\animcmd\\body\\motion.mtable");
@@ -862,8 +806,8 @@ namespace SmashForge
 
                     mvp.Text = fighterName;
 
-                    MainForm.Instance.Progress.ProgressValue = 95;
-                    MainForm.Instance.Progress.Message = "Please Wait... Opening Character Params";
+                    Instance.progress.ProgressValue = 95;
+                    Instance.progress.Message = "Please Wait... Opening Character Params";
                     if (!String.IsNullOrEmpty(Runtime.paramDir))
                     {
                         // If they set the wrong dir, oh well
@@ -882,32 +826,18 @@ namespace SmashForge
                         }
                         catch { }
                     }
-                    MainForm.Instance.Progress.ProgressValue = 99;
-                    MainForm.Instance.Progress.Message = "Please Wait... Opening Character ATKD";
+                    Instance.progress.ProgressValue = 99;
+                    Instance.progress.Message = "Please Wait... Opening Character ATKD";
                     if (!string.IsNullOrEmpty(Runtime.currentATKD))
                     {
-                        ATKD_Editor atkd_editor = new ATKD_Editor(Runtime.currentATKD, mvp);
-                        mvp.atkdEditor = atkd_editor;
-                        AddDockedControl(atkd_editor);
+                        ATKD_Editor atkdEditor = new ATKD_Editor(Runtime.currentATKD, mvp);
+                        mvp.atkdEditor = atkdEditor;
+                        AddDockedControl(atkdEditor);
                     }
-                    MainForm.Instance.Progress.ProgressValue = 100;
+                    Instance.progress.ProgressValue = 100;
                     AddDockedControl(mvp);
                 }
             }
-        }
-
-        private void openNUTEditorToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (nutEditor == null || nutEditor.IsDisposed)
-            {
-                nutEditor = new NUTEditor();
-                nutEditor.Show();
-            }
-            else
-            {
-                nutEditor.BringToFront();
-            }
-            nutEditor.FillForm();
         }
 
         private void exportToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -926,11 +856,6 @@ namespace SmashForge
             }
         }
 
-        private void deleteLVDEntryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            lvdList.deleteSelected();
-        }
-
         private void openStageToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             using (var ofd = new FolderSelectDialog())
@@ -946,12 +871,14 @@ namespace SmashForge
 
         public void OpenStageFolder(string stagePath, ModelViewport mvp = null)
         {
-            MainForm.Instance.Progress = new ProgressAlert();
-            MainForm.Instance.Progress.StartPosition = FormStartPosition.CenterScreen;
-            MainForm.Instance.Progress.ProgressValue = 0;
-            MainForm.Instance.Progress.ControlBox = false;
-            MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Models");
-            MainForm.Instance.Progress.Show();
+            Instance.progress = new ProgressAlert
+            {
+                StartPosition = FormStartPosition.CenterScreen,
+                ProgressValue = 0,
+                ControlBox = false,
+                Message = ("Please Wait... Opening Stage Models")
+            };
+            Instance.progress.Show();
 
             string modelPath = stagePath + "\\model\\";
             string paramPath = stagePath + "\\param\\";
@@ -978,8 +905,8 @@ namespace SmashForge
                 }
             }
 
-            MainForm.Instance.Progress.ProgressValue = 50;
-            MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Parameters");
+            Instance.progress.ProgressValue = 50;
+            Instance.progress.Message = ("Please Wait... Opening Stage Parameters");
             if (Directory.Exists(paramPath))
             {
                 foreach (string fileName in Directory.GetFiles(paramPath))
@@ -994,8 +921,8 @@ namespace SmashForge
                 }
             }
 
-            MainForm.Instance.Progress.ProgressValue = 75;
-            MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Path");
+            Instance.progress.ProgressValue = 75;
+            Instance.progress.Message = ("Please Wait... Opening Stage Path");
             if (Directory.Exists(renderPath))
             {
                 foreach (string fileName in Directory.GetFiles(renderPath))
@@ -1018,8 +945,8 @@ namespace SmashForge
                 }
             }
 
-            MainForm.Instance.Progress.ProgressValue = 80;
-            MainForm.Instance.Progress.Message = ("Please Wait... Opening Stage Animation");
+            Instance.progress.ProgressValue = 80;
+            Instance.progress.Message = ("Please Wait... Opening Stage Animation");
             if (Directory.Exists(animationPath))
             {
                 foreach (string d in Directory.GetDirectories(animationPath))
@@ -1040,14 +967,14 @@ namespace SmashForge
                     }
                 }
             }
-            MainForm.Instance.Progress.ProgressValue = 100;
+            Instance.progress.ProgressValue = 100;
             AddDockedControl(mvp);
         }
 
         //<summary>
         //Open an animation based on filename
         //</summary>
-        public TreeNode openAnimation(string filename)
+        public TreeNode OpenAnimation(string filename)
         {
             if (filename.EndsWith(".mta"))
             {
@@ -1083,11 +1010,11 @@ namespace SmashForge
                         Console.WriteLine("Adding " + pair.Key);
                         var anim = OMOOld.read(new FileData(pair.Value));
                         animGroup.Nodes.Add(anim);
-                        string AnimName = pair.Key;
-                        if (!string.IsNullOrEmpty(AnimName))
+                        string animName = pair.Key;
+                        if (!string.IsNullOrEmpty(animName))
                         {
-                            anim.Text = AnimName;
-                            AddAnimName(AnimName.Substring(3).Replace(".omo", ""));
+                            anim.Text = animName;
+                            AddAnimName(animName.Substring(3).Replace(".omo", ""));
                         }
                     }
                     else if (pair.Key.EndsWith(".mta"))
@@ -1134,24 +1061,11 @@ namespace SmashForge
             return null;
         }
 
-        private static void writeDatJobjPositions(TreeNode node, FileOutput f)
-        {
-            if (node.Tag is DAT.JOBJ)
-            {
-                DAT.JOBJ jobj = (DAT.JOBJ)node.Tag;
-                f.writeFloatAt((float)jobj.pos.X, jobj.posOff);
-                f.writeFloatAt((float)jobj.pos.Y, jobj.posOff + 4);
-                f.writeFloatAt((float)jobj.pos.Z, jobj.posOff + 8);
-            }
-            foreach (TreeNode child in node.Nodes)
-                writeDatJobjPositions(child, f);
-        }
-
         ///<summary>
         /// Save file as if "Save" option was selected
         /// </summary>
         /// <param name="filename"> Filename of file to save</param>
-        public void saveFile(string filename)
+        public void SaveFile(string filename)
         {
             if (filename.EndsWith(".vbn"))
             {
@@ -1175,7 +1089,7 @@ namespace SmashForge
         ///Open a file based on the filename
         ///</summary>
         /// <param name="fileName"> Filename of file to open</param>
-        public void openFile(string fileName)
+        public void OpenFile(string fileName)
         {
             DiscordSettings.lastFileOpened = Path.GetFileName(fileName);
 
@@ -1212,12 +1126,12 @@ namespace SmashForge
                     if (dialogResult == DialogResult.Yes)
                     {
                         mvp = (ModelViewport)dockPanel1.ActiveContent;
-                        mvp.animListPanel.treeView1.Nodes.Add(openAnimation(fileName));
+                        mvp.animListPanel.treeView1.Nodes.Add(OpenAnimation(fileName));
                         return;
                     }
                     else
                     {
-                        mvp.animListPanel.treeView1.Nodes.Add(openAnimation(fileName));
+                        mvp.animListPanel.treeView1.Nodes.Add(OpenAnimation(fileName));
                     }
                     mvp.Text = fileName;
                     AddDockedControl(mvp);
@@ -1338,25 +1252,25 @@ namespace SmashForge
 
                 if (magic2 == "BNTX") //SARC compressed
                 {
-                    BNTX BNTX = new BNTX();
-                    BNTX.ReadBNTXFile(fileByteData);
-                    Runtime.BNTXList.Add(BNTX);
+                    BNTX bntx = new BNTX();
+                    bntx.ReadBNTXFile(fileByteData);
+                    Runtime.BNTXList.Add(bntx);
 
-                    BNTXEditor editor = new BNTXEditor(BNTX);
+                    BNTXEditor editor = new BNTXEditor(bntx);
                     AddDockedControl(editor);
 
                 }
 
                 if (magic2 == "SARC") //SARC compressed
                 {
-                    var SzsFiles = new SARC().unpackRam(uncompressedFileData.getSection(0, uncompressedFileData.eof()));
+                    var szsFiles = new SARC().unpackRam(uncompressedFileData.getSection(0, uncompressedFileData.eof()));
 
-                    foreach (var s in SzsFiles.Keys)
+                    foreach (var s in szsFiles.Keys)
                     {
                         if (s.Contains(".bfres"))
                         {
                             Console.WriteLine("Found bfres");
-                            fileByteData = SzsFiles[s];
+                            fileByteData = szsFiles[s];
                             uncompressedFileData = new FileData(fileByteData);
 
                             OpenBfres(fileByteData, s, s, (ModelViewport)dockPanel1.ActiveContent);
@@ -1365,7 +1279,7 @@ namespace SmashForge
                         if (s.Contains(".kcl"))
                         {
                             Console.WriteLine("Found kcl");
-                            fileByteData = SzsFiles[s];
+                            fileByteData = szsFiles[s];
                             uncompressedFileData = new FileData(fileByteData);
 
                             OpenKcl(fileByteData, s, s, (ModelViewport)dockPanel1.ActiveContent);
@@ -1558,9 +1472,9 @@ namespace SmashForge
             if (fileName.EndsWith(".smd"))
             {
                 ModelContainer modelContainer = new ModelContainer();
-                VBN TargetVBN = new VBN();
-                SMD.read(fileName, new Animation(fileName), TargetVBN);
-                modelContainer.VBN = TargetVBN;
+                VBN targetVbn = new VBN();
+                SMD.read(fileName, new Animation(fileName), targetVbn);
+                modelContainer.VBN = targetVbn;
                 modelContainer.NUD = SMD.toNUD(fileName);
                 modelContainer.VBN.reset();
 
@@ -1635,11 +1549,11 @@ namespace SmashForge
 
             if (fileName.EndsWith(".mta"))
             {
-                MTA TargetMTA = new MTA();
-                TargetMTA.Read(fileName);
+                MTA targetMta = new MTA();
+                targetMta.Read(fileName);
                 Runtime.TargetMTA.Clear();
-                Runtime.TargetMTA.Add(TargetMTA);
-                MTAEditor temp = new MTAEditor(TargetMTA) { ShowHint = DockState.DockLeft };
+                Runtime.TargetMTA.Add(targetMta);
+                MTAEditor temp = new MTAEditor(targetMta) { ShowHint = DockState.DockLeft };
                 temp.Text = Path.GetFileName(fileName);
                 AddDockedControl(temp);
                 mtaEditors.Add(temp);
@@ -1678,7 +1592,7 @@ namespace SmashForge
                     {
                         // should this always replace existing settings?
                         Runtime.stprmParam = new ParamFile(fileName);
-                        Rendering.RenderTools.SetCameraValuesFromParam(mvp.GetCamera(), Runtime.stprmParam);
+                        RenderTools.SetCameraValuesFromParam(mvp.GetCamera(), Runtime.stprmParam);
                     }
 
                 }
@@ -1749,9 +1663,9 @@ namespace SmashForge
         {
             FileData f = new FileData(fileName);
             byte[] fileBytes = f.getSection(0, f.eof());
-            string Magic = f.readString(0, 4);
+            string magic = f.readString(0, 4);
 
-            if (Magic == "Yaz0") //YAZO compressed
+            if (magic == "Yaz0") //YAZO compressed
                 fileBytes = EveryFileExplorer.YAZ0.Decompress(fileName);
 
             return fileBytes;
@@ -1793,8 +1707,9 @@ namespace SmashForge
             return false;
         }
 
-        private ModelContainer resyncTargetVBN()
+        private ModelContainer ResyncTargetVbn()
         {
+            // TODO: ???
             ModelContainer modelContainer = null;
             return modelContainer;
         }
@@ -1828,7 +1743,7 @@ namespace SmashForge
 
                 if (ofd.ShowDialog() == DialogResult.OK)
                     foreach (string filename in ofd.FileNames)
-                        openFile(filename);
+                        OpenFile(filename);
             }
         }
 
@@ -1839,7 +1754,7 @@ namespace SmashForge
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 foreach (string filePath in files)
                 {
-                    openFile(filePath);
+                    OpenFile(filePath);
                 }
             }
         }
@@ -1870,36 +1785,19 @@ namespace SmashForge
                 p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 p.StartInfo.CreateNoWindow = true;
                 p.Start();
-                System.Windows.Forms.Application.Exit();
+                Application.Exit();
             }
         }
 
-        private void mergeModelsMeshListToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            meshList.mergeModel();
-        }
-
-        private void allViewsPreset(object sender, EventArgs e)
+        private void AllViewsPreset(object sender, EventArgs e)
         {
         }
 
-        private void modelViewPreset(object sender, EventArgs e)
+        private void CleanPreset(object sender, EventArgs e)
         {
         }
 
-        private void movesetModdingPreset(object sender, EventArgs e)
-        {
-        }
-
-        private void stageWorkPreset(object sender, EventArgs e)
-        {
-        }
-
-        private void cleanPreset(object sender, EventArgs e)
-        {
-        }
-
-        private void superCleanPreset(object sender, EventArgs e)
+        private void SuperCleanPreset(object sender, EventArgs e)
         {
         }
 
@@ -1918,7 +1816,7 @@ namespace SmashForge
 
         private void exportErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Rendering.ShaderTools.SaveErrorLogs();
+            ShaderTools.SaveErrorLogs();
         }
 
         private void nESROMInjectorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1952,9 +1850,7 @@ namespace SmashForge
 
         private void openDATTextureEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DAT datToOpen = null;
-            if (datToOpen != null)
-                AddDockedControl(new DatTexEditor(datToOpen));
+
         }
 
         private void saveConfigToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1967,13 +1863,13 @@ namespace SmashForge
             cameraForm.Show();
         }
 
-        private void AddAnimName(string AnimName)
+        private void AddAnimName(string animName)
         {
-            uint crc = Crc32.Compute(AnimName.ToLower());
-            if (Runtime.Animnames.ContainsValue(AnimName) || Runtime.Animnames.ContainsKey(crc))
+            uint crc = Crc32.Compute(animName.ToLower());
+            if (Runtime.Animnames.ContainsValue(animName) || Runtime.Animnames.ContainsKey(crc))
                 return;
 
-            Runtime.Animnames.Add(crc, AnimName);
+            Runtime.Animnames.Add(crc, animName);
         }
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
@@ -2081,16 +1977,16 @@ namespace SmashForge
                     ModelViewport mvp = new ModelViewport();
                     mvp.Text = fighterName;
 
-                    String ModelFolder = ofd.SelectedPath + "\\body\\h00\\";
-                    Console.WriteLine(ModelFolder);
-                    if (Directory.Exists(ModelFolder))
+                    String modelFolder = ofd.SelectedPath + "\\body\\h00\\";
+                    Console.WriteLine(modelFolder);
+                    if (Directory.Exists(modelFolder))
                     {
                         ModelContainer modelContainer = new ModelContainer();
-                        if (File.Exists(ModelFolder + "normal.bch"))
+                        if (File.Exists(modelFolder + "normal.bch"))
                         {
-                            BCH bch = new BCH(ModelFolder + "normal.bch");
-                            if (bch.Models.Nodes.Count > 0 && File.Exists(ModelFolder + "normal.mbn"))
-                                ((BCH_Model)bch.Models.Nodes[0]).OpenMBN(new FileData(ModelFolder + "normal.mbn"));
+                            BCH bch = new BCH(modelFolder + "normal.bch");
+                            if (bch.Models.Nodes.Count > 0 && File.Exists(modelFolder + "normal.mbn"))
+                                ((BCH_Model)bch.Models.Nodes[0]).OpenMBN(new FileData(modelFolder + "normal.mbn"));
                             modelContainer.Bch = bch;
                         }
 
@@ -2101,10 +1997,10 @@ namespace SmashForge
                         mvp.draw.Add(modelContainer);
                     }
 
-                    String AnimationFolder = ofd.SelectedPath.Replace("model", "motion") + "\\body\\";
-                    if (Directory.Exists(AnimationFolder))
+                    String animationFolder = ofd.SelectedPath.Replace("model", "motion") + "\\body\\";
+                    if (Directory.Exists(animationFolder))
                     {
-                        string[] anims = Directory.GetFiles(ModelFolder);
+                        string[] anims = Directory.GetFiles(modelFolder);
                         foreach (string s in anims)
                         {
                             if (s.EndsWith("main.bch"))
@@ -2113,10 +2009,10 @@ namespace SmashForge
 
                     }
 
-                    String ACMDFolder = ofd.SelectedPath.Replace("model", "animcmd") + "\\";
-                    if (Directory.Exists(ACMDFolder))
+                    String acmdFolder = ofd.SelectedPath.Replace("model", "animcmd") + "\\";
+                    if (Directory.Exists(acmdFolder))
                     {
-                        mvp.MovesetManager = new MovesetManager(ACMDFolder + "motion.mtable");
+                        mvp.MovesetManager = new MovesetManager(acmdFolder + "motion.mtable");
                     }
 
                     AddDockedControl(mvp);
@@ -2126,7 +2022,7 @@ namespace SmashForge
 
         private void forgeWikiToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/jam1garner/Smash-Forge/wiki");
+            Process.Start("https://github.com/jam1garner/Smash-Forge/wiki");
         }
 
         private void importWiiUNUTAsPS3NUTToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2144,7 +2040,7 @@ namespace SmashForge
                     {
                         foreach (string filename in ofd.FileNames)
                         {
-                            HackyWiiUtoPS3NUT(new FileData(filename));
+                            HackyWiiUtoPs3Nut(new FileData(filename));
                         }
                     }
                 }
@@ -2155,7 +2051,7 @@ namespace SmashForge
             }
         }
 
-        private void HackyWiiUtoPS3NUT(FileData data)
+        private void HackyWiiUtoPs3Nut(FileData data)
         {
             NUT n = new NUT();
             data.Endian = Endianness.Big;
@@ -2174,12 +2070,12 @@ namespace SmashForge
                 data.skip(4); //int fullsize = d.readInt();
                 data.skip(4);
                 int size = data.readInt();
-                int DDSSize = size;
+                int ddsSize = size;
                 headerSize = data.readUShort();
                 data.skip(5);
                 int typet = data.readByte();
-                int Width = data.readUShort();
-                int Height = data.readUShort();
+                int width = data.readUShort();
+                int height = data.readUShort();
 
                 data.skip(8);// mipmaps and padding
 
@@ -2193,22 +2089,22 @@ namespace SmashForge
                 }
                 if (headerSize == 0x90)
                 {
-                    DDSSize = data.readInt();
+                    ddsSize = data.readInt();
                     data.skip(0x3C);
                 }
                 if (headerSize == 0x80)
                 {
-                    DDSSize = data.readInt();
+                    ddsSize = data.readInt();
                     data.skip(44);
                 }
                 if (headerSize == 0x70)
                 {
-                    DDSSize = data.readInt();
+                    ddsSize = data.readInt();
                     data.skip(28);
                 }
                 if (headerSize == 0x60)
                 {
-                    DDSSize = data.readInt();
+                    ddsSize = data.readInt();
                     data.skip(12);
                 }
 
@@ -2239,14 +2135,14 @@ namespace SmashForge
                         o.writeHex(mem);
 
                         Console.WriteLine(fileNum.ToString("x"));
-                        o.writeBytes(data.getSection(offset1 + padfix, DDSSize));
+                        o.writeBytes(data.getSection(offset1 + padfix, ddsSize));
 
                         mem = "424C4B7B00000020000000010000000000000001000000000000000000000000";
                         o.writeHex(mem);
 
                         o.Endian = Endianness.Big;
                         o.writeIntAt(1, 0x50);
-                        o.writeIntAt(DDSSize, 0xF0);
+                        o.writeIntAt(ddsSize, 0xF0);
 
                         o.save("TexConv/temp.gtx");
 
@@ -2273,8 +2169,8 @@ namespace SmashForge
 
         private void openOdysseyCostumeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OdysseyCostumeSelector OCS = new OdysseyCostumeSelector();
-            OCS.ShowDialog(this);
+            OdysseyCostumeSelector ocs = new OdysseyCostumeSelector();
+            ocs.ShowDialog(this);
         }
 
         public void LoadCostumes(string fileName)
@@ -2285,27 +2181,27 @@ namespace SmashForge
             ModelViewport mvp = new ModelViewport();
             AddDockedControl(mvp);
 
-            List<string> CostumeNames = new List<string>();
-            CostumeNames.Add($"{fileName}.szs");
-            CostumeNames.Add($"{fileName}Face.szs");
-            CostumeNames.Add($"{fileName}Eye.szs");
-            CostumeNames.Add($"{fileName}Head.szs");
-            CostumeNames.Add($"{fileName}HeadTexture.szs");
-            CostumeNames.Add($"{fileName}Under.szs");
-            CostumeNames.Add($"{fileName}HandL.szs");
-            CostumeNames.Add($"{fileName}HandR.szs");
-            CostumeNames.Add($"{fileName}HandTexture.szs");
-            CostumeNames.Add($"{fileName}BodyTexture.szs");
-            CostumeNames.Add($"{fileName}Shell.szs");
-            CostumeNames.Add($"{fileName}Tail.szs");
-            CostumeNames.Add($"{fileName}Hair.szs");
+            List<string> costumeNames = new List<string>();
+            costumeNames.Add($"{fileName}.szs");
+            costumeNames.Add($"{fileName}Face.szs");
+            costumeNames.Add($"{fileName}Eye.szs");
+            costumeNames.Add($"{fileName}Head.szs");
+            costumeNames.Add($"{fileName}HeadTexture.szs");
+            costumeNames.Add($"{fileName}Under.szs");
+            costumeNames.Add($"{fileName}HandL.szs");
+            costumeNames.Add($"{fileName}HandR.szs");
+            costumeNames.Add($"{fileName}HandTexture.szs");
+            costumeNames.Add($"{fileName}BodyTexture.szs");
+            costumeNames.Add($"{fileName}Shell.szs");
+            costumeNames.Add($"{fileName}Tail.szs");
+            costumeNames.Add($"{fileName}Hair.szs");
             //     CostumeNames.Add($"{fileName}Hakama.szs");
-            CostumeNames.Add($"{fileName}Skirt.szs");
+            costumeNames.Add($"{fileName}Skirt.szs");
             //     CostumeNames.Add($"{fileName}Poncho.szs");
-            CostumeNames.Add($"{fileName}Guitar.szs");
+            costumeNames.Add($"{fileName}Guitar.szs");
 
 
-            foreach (string path in CostumeNames)
+            foreach (string path in costumeNames)
             {
                 Console.WriteLine("Path = " + path);
 
@@ -2316,13 +2212,13 @@ namespace SmashForge
                 else
                 {
                     //Load default meshes unless it's these file names
-                    List<string> ExcludeFileList = new List<string>(new string[] {
+                    List<string> excludeFileList = new List<string>(new string[] {
                     "MarioHack","MarioDot",
                      });
 
-                    bool Exluded = ExcludeFileList.Any(path.Contains);
+                    bool exluded = excludeFileList.Any(path.Contains);
 
-                    if (Exluded == false)
+                    if (exluded == false)
                     {
                         string parent = Directory.GetParent(path).FullName;
 
@@ -2354,13 +2250,13 @@ namespace SmashForge
 
             FileData t = new FileData(data);
 
-            var SzsFiles = new SARC().unpackRam(t.getSection(0, t.eof()));
+            var szsFiles = new SARC().unpackRam(t.getSection(0, t.eof()));
 
-            foreach (var s in SzsFiles.Keys)
+            foreach (var s in szsFiles.Keys)
             {
                 if (s.Contains(".bfres"))
                 {
-                    data = SzsFiles[s];
+                    data = szsFiles[s];
                     t = new FileData(data);
 
                     OpenBfres(data, s, s, mvp);

@@ -76,7 +76,7 @@ namespace SmashForge
         }
 
         //Bytes per block (4x4 pixels) for block formats, bytes per pixel for non-block formats
-        public static uint getFormatSize(uint fourCC)
+        public static uint GetFormatSize(uint fourCC)
         {
             switch (fourCC)
             {
@@ -329,7 +329,7 @@ namespace SmashForge
                     break;
             }
 
-            uint formatSize = getFormatSize(header.ddspf.fourCC);
+            uint formatSize = GetFormatSize(header.ddspf.fourCC);
 
             FileData d = new FileData(bdata);
             if (header.mipmapCount == 0)

@@ -108,11 +108,11 @@ namespace SmashForge
 
         private void polySelected(Nud.Polygon poly, string name)
         {
-            MainForm.Instance.openMats(poly,name);
+            MainForm.Instance.OpenMats(poly,name);
         }
         private void bfresShapeSelected(BFRES.Mesh poly, string name)
         {
-            MainForm.Instance.openBFRESMats(poly, name);
+            MainForm.Instance.OpenBfresMats(poly, name);
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
@@ -1459,7 +1459,7 @@ namespace SmashForge
 
         private void openPolygonEditorToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MainForm.Instance.bfresOpenMeshEditor((BFRES.Mesh)filesTreeView.SelectedNode, (BFRES.FMDL_Model)filesTreeView.SelectedNode.Parent, (BFRES)filesTreeView.SelectedNode.Parent.Parent.Parent, $"");
+            MainForm.Instance.BfresOpenMeshEditor((BFRES.Mesh)filesTreeView.SelectedNode, (BFRES.FMDL_Model)filesTreeView.SelectedNode.Parent, (BFRES)filesTreeView.SelectedNode.Parent.Parent.Parent, $"");
         }
 
         private void bfresSaveToolStripMenuItem_Click(object sender, EventArgs e)

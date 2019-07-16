@@ -185,7 +185,7 @@ namespace SmashForge
             {
                 string bid = "";
                 int hash = -1;
-                if (!MainForm.Hashes.ids.TryGetValue(baseNode[j].hash, out bid))
+                if (!MainForm.hashes.ids.TryGetValue(baseNode[j].hash, out bid))
                 {
                     hash = (int)baseNode[j].hash;
                 }
@@ -571,8 +571,8 @@ namespace SmashForge
                 flag |= 0x00000001;
 
                 int hash = -1;
-                if(MainForm.Hashes.names.ContainsKey(getNodeId(vbn, nodeid[i]).Text))
-                    hash = (int)MainForm.Hashes.names[getNodeId(vbn, nodeid[i]).Text];
+                if(MainForm.hashes.names.ContainsKey(getNodeId(vbn, nodeid[i]).Text))
+                    hash = (int)MainForm.hashes.names[getNodeId(vbn, nodeid[i]).Text];
                 //else hash = (int)FileData.crc12(getNodeId(vbn, nodeid[i]).Text);
                 o.writeInt(flag); // flags...
                 o.writeInt(hash); //hash
@@ -953,8 +953,8 @@ namespace SmashForge
                 
                 Bone b = vbn.getBone(a.Bones[i].Text);
                 int hash = -1;
-                if (MainForm.Hashes.names.ContainsKey(a.Bones[i].Text))
-                    hash = (int)MainForm.Hashes.names[a.Bones[i].Text];
+                if (MainForm.hashes.names.ContainsKey(a.Bones[i].Text))
+                    hash = (int)MainForm.hashes.names[a.Bones[i].Text];
                 else
                 {
                     if (b != null)
