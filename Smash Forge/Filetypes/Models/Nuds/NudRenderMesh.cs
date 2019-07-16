@@ -4,12 +4,16 @@ using SFGenericModel.Materials;
 using SFGenericModel.RenderState;
 using SFGenericModel.VertexAttributes;
 using System.Collections.Generic;
+using SFGraphics.GLObjects.Shaders;
 using SmashForge.Filetypes.Models.Nuds;
+using SmashForge.Rendering;
 
 namespace SmashForge
 {
     public class NudRenderMesh : GenericMesh<Nud.DisplayVertex>
     {
+        private readonly UniformBlock uniformBlock = new UniformBlock(OpenTKSharedResources.shaders["Nud"], "MaterialProperties") { BlockBinding = 1 };
+
         private RenderSettings renderSettings = new RenderSettings();
 
         public NudRenderMesh(List<Nud.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices, PrimitiveType.Triangles)
@@ -25,6 +29,12 @@ namespace SmashForge
                 renderSettings.polygonModeSettings = PolygonModeSettings.Default;
 
             GLRenderSettings.SetRenderSettings(renderSettings);
+        }
+
+        public void SetMaterialValues(Shader shader, Nud.Material material)
+        {
+
+            NudUniforms.SetMaterialPropertyUniforms(uniformBlock, shader, material);
         }
 
         public void SetRenderSettings(Nud.Material material)

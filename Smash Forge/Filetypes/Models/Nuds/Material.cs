@@ -31,71 +31,71 @@ namespace SmashForge
             }
             private uint flags;
 
-            public int BlendMode { get; set; } = 0;
-            public int DstFactor { get; set; } = 0;
-            public int SrcFactor { get; set; } = 0;
+            public int BlendMode { get; set; }
+            public int DstFactor { get; set; }
+            public int SrcFactor { get; set; }
 
-            public int AlphaTest { get; set; } = 0;
-            public int AlphaFunction { get; set; } = 0;
-            public int RefAlpha { get; set; } = 0;
+            public int AlphaTest { get; set; }
+            public int AlphaFunction { get; set; }
+            public int RefAlpha { get; set; }
 
-            public int CullMode { get; set; } = 0;
+            public int CullMode { get; set; }
 
-            public int Unk1 { get; set; } = 0;
-            public int Unk2 { get; set; } = 0;
+            public int Unk1 { get; set; }
+            public int Unk2 { get; set; }
 
-            public int ZBufferOffset { get; set; } = 0;
+            public int ZBufferOffset { get; set; }
 
             public int displayTexId = -1;
 
             //flags
-            public bool Glow { get; set; } = false;
+            public bool Glow { get; set; }
 
-            public bool HasShadow { get; set; } = false;
+            public bool HasShadow { get; set; }
 
-            public bool UseVertexColor { get; private set; } = false;
+            public bool UseVertexColor { get; private set; }
 
-            public bool UseReflectionMask { get; private set; } = false;
+            public bool UseReflectionMask { get; private set; }
 
-            public bool UseColorGainOffset { get; private set; } = false;
+            public bool UseColorGainOffset { get; private set; }
 
-            public bool HasBayoHair { get; private set; } = false;
+            public bool HasBayoHair { get; private set; }
 
-            public bool UseDiffuseBlend { get; private set; } = false;
+            public bool UseDiffuseBlend { get; private set; }
 
-            public bool SoftLightBrighten { get; private set; } = false;
+            public bool SoftLightBrighten { get; private set; }
 
             // Texture flags
-            public bool HasDiffuse { get; private set; } = false;
-            public bool HasDiffuse2 { get; private set; } = false;
-            public bool HasDiffuse3 { get; private set; } = false;
+            public bool HasDiffuse { get; private set; }
+            public bool HasDiffuse2 { get; private set; }
+            public bool HasDiffuse3 { get; private set; }
 
-            public bool HasNormalMap { get; private set; } = false;
+            public bool HasNormalMap { get; private set; }
 
-            public bool HasAoMap { get; private set; } = false;
+            public bool HasAoMap { get; private set; }
 
-            public bool HasStageMap { get; private set; } = false;
+            public bool HasStageMap { get; private set; }
 
-            public bool HasCubeMap { get; private set; } = false;
+            public bool HasCubeMap { get; private set; }
 
-            public bool HasRamp { get; private set; } = false;
+            public bool HasRamp { get; private set; }
 
-            public bool HasSphereMap { get; set; } = false;
+            public bool HasSphereMap { get; set; }
 
-            public bool HasDummyRamp { get; private set; } = false;
+            public bool HasDummyRamp { get; private set; }
 
             // texture IDs for preserving existing textures
             public int Diffuse1Id => diffuse1Id;
-            private int diffuse1Id = 0;
+            private int diffuse1Id;
 
             public int Diffuse2Id => diffuse2Id;
-            private int diffuse2Id = 0;
+            private int diffuse2Id;
 
             public int Diffuse3Id => diffuse3Id;
-            private int diffuse3Id = 0;
+            private int diffuse3Id;
 
             public int NormalId => normalId;
-            private int normalId = 0;
+            private int normalId;
 
             public int RampId => rampId;
             private int rampId = (int)NudEnums.DummyTexture.DummyRamp;
@@ -104,16 +104,16 @@ namespace SmashForge
             private int dummyRampId = (int)NudEnums.DummyTexture.DummyRamp;
 
             public int SphereMapId => sphereMapId;
-            private int sphereMapId= 0;
+            private int sphereMapId;
 
             public int AoMapId => aoMapId;
-            private int aoMapId = 0;
+            private int aoMapId;
 
             public int StageMapId => stageMapId;
             private int stageMapId = (int)NudEnums.DummyTexture.StageMapHigh;
 
             public int CubeMapId => cubeMapId;
-            private int cubeMapId= 0;
+            private int cubeMapId;
 
             public bool EqualTextures(Material other)
             {

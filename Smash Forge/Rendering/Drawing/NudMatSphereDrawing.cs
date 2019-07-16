@@ -31,7 +31,8 @@ namespace SmashForge.Rendering
             shader.UseProgram();
 
             // Use the same uniforms as the NUD shader. 
-            NudUniforms.SetMaterialPropertyUniforms(shader, material);
+            var uniformBlock = new UniformBlock(shader, "MaterialProperties") {BlockBinding = 1};
+            NudUniforms.SetMaterialPropertyUniforms(uniformBlock, shader, material);
 
             Nud.SetStageLightingUniforms(shader, 0);
             ModelContainer.SetRenderSettingsUniforms(shader);

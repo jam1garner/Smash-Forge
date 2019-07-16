@@ -6,6 +6,7 @@ using SFGraphics.GLObjects.Textures;
 using SFGraphics.GlUtils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SmashForge.Rendering;
 
 namespace SmashForge.Filetypes.Models.Nuds
@@ -55,9 +56,8 @@ namespace SmashForge.Filetypes.Models.Nuds
         // Default bind location for NUT textures.
         private static readonly int nutTextureUnitOffset = 0;
 
-        public static void SetMaterialPropertyUniforms(Shader shader, Nud.Material mat)
+        public static void SetMaterialPropertyUniforms(UniformBlock uniformBlock, Shader shader, Nud.Material mat)
         {
-            var uniformBlock = new UniformBlock(shader, "MaterialProperties") { BlockBinding = 1 };
             foreach (var property in defaultValueByProperty)
             {
                 MatPropertyShaderUniform(uniformBlock, mat, property.Key, property.Value);
@@ -88,10 +88,20 @@ namespace SmashForge.Filetypes.Models.Nuds
                 genericMaterial.AddInt(uniformName, 0);
         }
 
-        private static void MatPropertyShaderUniform(UniformBlock uniformBlock, Nud.Material mat, string propertyName, Vector4 defaultValue)
+        private static void MatPropertyShaderUniform(UniformBlock uniformBlock, Nud.Material mat, string propertyName,
+            Vector4 defaultValue)
         {
             // Attempt to get the values from the material. 
-            float[] values = null;
+            var newValues = GetValues(mat, propertyName, defaultValue);
+
+            string uniformName = propertyName.Replace("NU_", "");
+
+            uniformBlock.SetValue(uniformName, new Vector4(newValues[0], newValues[1], newValues[2], newValues[3]));
+        }
+
+        private static float[] GetValues(Nud.Material mat, string propertyName, Vector4 defaultValue)
+        {
+            float[] values;
 
             if (!mat.anims.TryGetValue(propertyName, out values))
                 mat.entries.TryGetValue(propertyName, out values);
@@ -99,8 +109,7 @@ namespace SmashForge.Filetypes.Models.Nuds
             if (values == null || values.Length != 4)
                 values = new float[] { defaultValue.X, defaultValue.Y, defaultValue.Z, defaultValue.W };
 
-            string uniformName = propertyName.Replace("NU_", "");
-            uniformBlock.SetValue(uniformName, new Vector4(values[0], values[1], values[2], values[3]));
+            return values;
         }
 
         public static Texture GetTexture(int hash, Nud.MatTexture matTexture, int loc, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
