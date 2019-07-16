@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using OpenTK;
 using System.Text;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public struct SMDVertex
     {
@@ -403,14 +403,14 @@ namespace Smash_Forge
             vbn.update();
         }
 
-        public static NUD toNUD(string fname)
+        public static Nud toNUD(string fname)
         {
             StreamReader reader = File.OpenText(fname);
             string line;
 
             string current = "";
 
-            NUD nud = new NUD();
+            Nud nud = new Nud();
 
             while ((line = reader.ReadLine()) != null)
             {
@@ -435,7 +435,7 @@ namespace Smash_Forge
                         args = line.Replace(";", "").TrimStart().Split(' ');
                         // read triangle strip
                         int parent = int.Parse(args[0]);
-                        NUD.Vertex vert = new NUD.Vertex();
+                        Nud.Vertex vert = new Nud.Vertex();
                         vert.pos = new Vector3(float.Parse(args[1]), float.Parse(args[2]), float.Parse(args[3]));
                         vert.nrm = new Vector3(float.Parse(args[4]), float.Parse(args[5]), float.Parse(args[6]));
                         vert.uv.Add(new Vector2(float.Parse(args[7]), float.Parse(args[8])));
@@ -447,8 +447,8 @@ namespace Smash_Forge
                             vert.boneWeights.Add(float.Parse(args[w++]));
                         }
 
-                        NUD.Mesh mes = null;
-                        foreach (NUD.Mesh m in nud.Nodes)
+                        Nud.Mesh mes = null;
+                        foreach (Nud.Mesh m in nud.Nodes)
                         {
                             if (m.Text.Equals(meshName))
                             {
@@ -457,19 +457,19 @@ namespace Smash_Forge
                         }
                         if (mes == null)
                         {
-                            mes = new NUD.Mesh();
+                            mes = new Nud.Mesh();
                             mes.Text = meshName;
                             nud.Nodes.Add(mes);
                         }
                         if (mes.Nodes.Count == 0)
                         {
-                            NUD.Polygon poly = new NUD.Polygon();
+                            Nud.Polygon poly = new Nud.Polygon();
                             poly.AddDefaultMaterial();
                             mes.Nodes.Add(poly);
                         }
                         {
-                            ((NUD.Polygon)mes.Nodes[0]).vertexIndices.Add(((NUD.Polygon)mes.Nodes[0]).vertices.Count);
-                            ((NUD.Polygon)mes.Nodes[0]).vertices.Add(vert);
+                            ((Nud.Polygon)mes.Nodes[0]).vertexIndices.Add(((Nud.Polygon)mes.Nodes[0]).vertices.Count);
+                            ((Nud.Polygon)mes.Nodes[0]).vertices.Add(vert);
                         }
                     }
                 }

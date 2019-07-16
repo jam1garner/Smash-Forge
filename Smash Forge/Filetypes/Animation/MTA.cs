@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class PatData
     {
@@ -76,7 +76,7 @@ namespace Smash_Forge
                 f.writeInt(k.frameNum);
             }
 
-            return f.getBytes();
+            return f.GetBytes();
         }
     }
 
@@ -143,7 +143,7 @@ namespace Smash_Forge
 
             f.writeInt(position);
             f.writeBytes(new byte[8]);
-            f.writeString(name);
+            f.WriteString(name);
             f.writeByte(0);
             while ((pos + f.pos()) % 0x10 != 0)
                 f.writeByte(0);
@@ -153,7 +153,7 @@ namespace Smash_Forge
                     f.writeFloat(fr.values[i]);
             f.writeBytes(new byte[0x10]);
 
-            return f.getBytes();
+            return f.GetBytes();
         }
     }
 
@@ -246,7 +246,7 @@ namespace Smash_Forge
                 g.writeBytes(new byte[8]);
             }
 
-            g.writeString(name);
+            g.WriteString(name);
             g.writeByte(0);
             while ((pos2 + g.pos()) % 0x10 != 0)
                 g.writeByte(0);
@@ -277,11 +277,11 @@ namespace Smash_Forge
             }
 
             f.writeInt(pos2 + g.pos());
-            f.writeBytes(g.getBytes());
+            f.writeBytes(g.GetBytes());
             if(hasPat)
                 f.writeBytes(pat0.Rebuild(f.pos()));
 
-            return f.getBytes();
+            return f.GetBytes();
         }
     }
 
@@ -357,7 +357,7 @@ namespace Smash_Forge
             offset += 0x10;
             f.writeInt(offset);
             f.writeBytes(new byte[0x14]);
-            f.writeString(name);
+            f.WriteString(name);
             f.writeByte(0);
             while ((pos + f.pos()) % 16 != 0)
                 f.writeByte(0);
@@ -374,7 +374,7 @@ namespace Smash_Forge
                 f.writeByte(keyframe.unknown);
             }
 
-            return f.getBytes();
+            return f.GetBytes();
         }
     }
 
@@ -505,7 +505,7 @@ namespace Smash_Forge
             FileOutput f = new FileOutput();
             f.Endian = Endianness.Big;
 
-            f.writeString("MTA4");
+            f.WriteString("MTA4");
             f.writeUInt(unknown);
             f.writeUInt(frameCount);
             f.writeUInt(startFrame);
@@ -569,7 +569,7 @@ namespace Smash_Forge
                     f.writeByte(0);
             }
 
-            return f.getBytes();
+            return f.GetBytes();
         }
 
         public string Decompile()

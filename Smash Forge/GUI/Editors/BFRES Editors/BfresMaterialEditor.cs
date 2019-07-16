@@ -12,9 +12,9 @@ using Syroot.NintenTools.Bfres.GX2;
 using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using WeifenLuo.WinFormsUI.Docking;
-using Smash_Forge.Rendering;
+using SmashForge.Rendering;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class BfresMaterialEditor : DockContent
     {

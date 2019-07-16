@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MeleeLib.DAT.Script;
 
-namespace Smash_Forge.GUI.Melee
+namespace SmashForge.Gui.Melee
 {
     public partial class MeleeCMDEditor : Form
     {

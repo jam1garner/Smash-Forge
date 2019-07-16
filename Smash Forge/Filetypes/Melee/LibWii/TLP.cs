@@ -26,7 +26,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     #region Enums
     public enum TPL_TextureFormat : int

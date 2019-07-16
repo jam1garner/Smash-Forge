@@ -2,7 +2,7 @@
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 
-namespace Smash_Forge.Rendering
+namespace SmashForge.Rendering
 {
     public static class FloorDrawing
     {

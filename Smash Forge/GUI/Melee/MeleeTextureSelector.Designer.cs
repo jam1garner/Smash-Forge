@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge.GUI.Melee
+﻿namespace SmashForge.Gui.Melee
 {
     partial class MeleeTextureSelector
     {

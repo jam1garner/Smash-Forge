@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using OpenTK;
-using Smash_Forge.Rendering;
+using SmashForge.Rendering;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class ByamlEditor : DockContent
     {

@@ -1,4 +1,6 @@
-﻿namespace Smash_Forge {
+﻿using SmashForge.Gui;
+
+namespace SmashForge {
     partial class MTAEditorGUI
     {
         /// <summary>
@@ -29,8 +31,8 @@
         {
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.matPropList1 = new Smash_Forge.GUI.MatPropList();
-            this.colorList1 = new Smash_Forge.ColorList();
+            this.matPropList1 = new MatPropList();
+            this.colorList1 = new ColorList();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -106,6 +108,6 @@
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private ColorList colorList1;
-        private GUI.MatPropList matPropList1;
+        private Gui.MatPropList matPropList1;
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge.Filetypes.Melee.Utils
+﻿namespace SmashForge.Filetypes.Melee.Utils
 {
     public static class MeleeDatEnums
     {

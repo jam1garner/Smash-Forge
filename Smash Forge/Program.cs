@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.IO;
 using Microsoft.VisualBasic.ApplicationServices;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     static class Program
     {
@@ -50,20 +50,20 @@ namespace Smash_Forge
                 List<string> args = new List<string>();
                 foreach (string arg in e.CommandLine)
                     args.Add(arg);
-                Smash_Forge.MainForm.Instance.filesToOpen = args.ToArray();
+                SmashForge.MainForm.Instance.filesToOpen = args.ToArray();
             }
 
             void this_StartupNextInstance(object sender, StartupNextInstanceEventArgs e)
             {
                 e.BringToForeground = true;
-                Smash_Forge.MainForm form = MainForm as Smash_Forge.MainForm;
-                Smash_Forge.MainForm.Instance.filesToOpen = e.CommandLine.ToArray();
-                Smash_Forge.MainForm.Instance.openFiles();
+                MainForm form = MainForm as MainForm;
+                SmashForge.MainForm.Instance.filesToOpen = e.CommandLine.ToArray();
+                SmashForge.MainForm.Instance.openFiles();
             }
 
             protected override void OnCreateMainForm()
             {
-                MainForm = Smash_Forge.MainForm.Instance;
+                MainForm = SmashForge.MainForm.Instance;
             }
         }
     }

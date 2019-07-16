@@ -1,8 +1,8 @@
-﻿using Smash_Forge.Filetypes.Models.Nuds;
+﻿using SmashForge.Filetypes.Models.Nuds;
 
-namespace Smash_Forge
+namespace SmashForge
 {
-    public partial class NUD
+    public partial class Nud
     {
         public class MatTexture
         {

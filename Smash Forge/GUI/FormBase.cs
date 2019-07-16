@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using System.Drawing;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class FormBase : DockContent
     {

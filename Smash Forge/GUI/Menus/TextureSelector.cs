@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using SFGraphics.GLObjects.Textures;
 
-namespace Smash_Forge.GUI.Menus
+namespace SmashForge.Gui.Menus
 {
     public partial class TextureSelector : Form
     {

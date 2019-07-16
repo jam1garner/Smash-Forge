@@ -1,23 +1,23 @@
 ﻿using OpenTK;
 using System;
 
-namespace Smash_Forge
+namespace SmashForge
 {
-    public partial class NUD
+    public partial class Nud
     {
         public struct Vector4I
         {
-            int x;
-            int y;
-            int z;
-            int w;
+            public int X { get; }
+            public int Y { get; }
+            public int Z { get; }
+            public int W { get; }
 
             public Vector4I(int x, int y, int z, int w)
             {
-                this.x = x;
-                this.y = y;
-                this.z = z;
-                this.w = w;
+                X = x;
+                Y = y;
+                Z = z;
+                W = w;
             }
         }
 

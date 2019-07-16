@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge
+﻿namespace SmashForge
 {
     partial class About
     {
@@ -57,7 +57,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::Smash_Forge.Properties.Resources.ForgeBack;
+            this.pictureBox1.Image = global::SmashForge.Properties.Resources.ForgeBack;
             this.pictureBox1.Location = new System.Drawing.Point(12, 15);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(105, 105);

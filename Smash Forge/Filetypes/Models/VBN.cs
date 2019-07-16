@@ -7,7 +7,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class Bone : TreeNode
     {
@@ -672,14 +672,14 @@ namespace Smash_Forge
                 if (Endian == Endianness.Little)
                 {
                     file.Endian = Endianness.Little;
-                    file.writeString(" NBV");
+                    file.WriteString(" NBV");
                     file.writeShort(0x02);
                     file.writeShort(0x01);
                 }
                 else if (Endian == Endianness.Big)
                 {
                     file.Endian = Endianness.Big;
-                    file.writeString("VBN ");
+                    file.WriteString("VBN ");
                     file.writeShort(0x01);
                     file.writeShort(0x02);
                 }
@@ -766,7 +766,7 @@ namespace Smash_Forge
 
                 for (int i = 0; i < bones.Count; i++)
                 {
-                    file.writeString(bones[i].Text);
+                    file.WriteString(bones[i].Text);
                     for (int j = 0; j < 64 - bones[i].Text.Length; j++)
                         file.writeByte(0);
                     file.writeInt((int)bones[i].boneType);
@@ -790,7 +790,7 @@ namespace Smash_Forge
                     file.writeFloat(bones[i].scale[2]);
                 }
             }
-            return file.getBytes();
+            return file.GetBytes();
         }
 
         /*public void readJointTable(string fname)
@@ -1102,7 +1102,7 @@ namespace Smash_Forge
             FileOutput o = new FileOutput();
             o.Endian = Endianness.Little;
 
-            o.writeString(" BWS");
+            o.WriteString(" BWS");
             o.writeShort(0x05);
             o.writeShort(0x01);
             o.writeInt(bones.Count);
@@ -1138,12 +1138,12 @@ namespace Smash_Forge
                     o.writeInt(s.ints[j]);
             }
 
-            return o.getBytes();
+            return o.GetBytes();
         }
     }
 }
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class csvHashes
     {

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class BCH : FileBase
     {

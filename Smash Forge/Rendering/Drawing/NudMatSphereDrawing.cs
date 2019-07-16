@@ -3,11 +3,11 @@ using OpenTK.Graphics.OpenGL;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Shaders;
-using Smash_Forge.Filetypes.Models.Nuds;
-using Smash_Forge.Rendering.Meshes;
 using SFGenericModel.Materials;
+using SmashForge.Filetypes.Models.Nuds;
+using SmashForge.Rendering.Meshes;
 
-namespace Smash_Forge.Rendering
+namespace SmashForge.Rendering
 {
     static class NudMatSphereDrawing
     {
@@ -23,7 +23,7 @@ namespace Smash_Forge.Rendering
 
         private static ForgeCamera nudSphereCamera = new ForgePerspCamera();
 
-        public static void DrawNudMaterialSphere(Shader shader, NUD.Material material, Mesh3D screenTriangle, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
+        public static void DrawNudMaterialSphere(Shader shader, Nud.Material material, Mesh3D screenTriangle, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             if (!shader.LinkStatusIsOk)
                 return;
@@ -33,7 +33,7 @@ namespace Smash_Forge.Rendering
             // Use the same uniforms as the NUD shader. 
             NudUniforms.SetMaterialPropertyUniforms(shader, material);
 
-            NUD.SetStageLightingUniforms(shader, 0);
+            Nud.SetStageLightingUniforms(shader, 0);
             ModelContainer.SetRenderSettingsUniforms(shader);
 
             ModelContainer.SetLightingUniforms(shader, nudSphereCamera);

@@ -10,7 +10,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Syroot.NintenTools.Yaz0;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class BFRES : TreeNode
     {

@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge.GUI.BFRES_Loaders
+﻿namespace SmashForge.Gui.BFRES_Loaders
 {
     partial class OdysseyCostumeLoader
     {

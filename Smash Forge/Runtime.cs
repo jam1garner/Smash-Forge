@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class Runtime
     {
@@ -61,7 +61,7 @@ namespace Smash_Forge
         public static SortedList<string, FileBase> OpenedFiles { get; set; }
 
         public static VBN TargetVBN { get; set; }
-        public static NUD TargetNUD { get; set; }
+        public static Nud TargetNUD { get; set; }
         public static LVD TargetLVD { get; set; }
         public static BYAML TargetBYAML { get; set; }
         public static PathBin TargetPath { get; set; }
@@ -193,7 +193,7 @@ namespace Smash_Forge
         public static Color backgroundGradientTop = Color.FromArgb(255, 26, 26, 26);
         public static Color backgroundGradientBottom = Color.FromArgb(255, 77, 77, 77);
         public static float fov = 0.524f; // default 30 degrees from stage param files
-        public static float zoomspeed = 1.25f;
+        public static float zoomSpeed = 1.25f;
         public static float zoomModifierScale = 2.0f;
         public static bool cameraLight = false;
 
@@ -213,10 +213,10 @@ namespace Smash_Forge
 
         // Render Passes Intensities
         public static float difIntensity = 1.00f;
-        public static float spcIntentensity = 1.00f;
+        public static float spcIntensity = 1.00f;
         public static float frsIntensity = 1.00f;
         public static float refIntensity = 1.00f;
-        public static float ambItensity = 1.00f;
+        public static float ambIntensity = 1.00f;
 
         // Misc Scale Stuff
         public static float modelScale = 1f;
@@ -276,7 +276,7 @@ namespace Smash_Forge
         // OpenGL System Information
         public static string renderer = "";
         public static string openGLVersion = "";
-        public static string GLSLVersion = "";
+        public static string glslVersion = "";
 
         // Texture creation needs to be delayed until we actually have a context.
         public static bool glTexturesNeedRefreshing = false;
@@ -342,18 +342,18 @@ namespace Smash_Forge
             return path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
         }
 
-        public static void clearMoveset()
+        public static void ClearMoveset()
         {
             Moveset = null;
         }
 
-        public static bool killWorkspace { get; set; }
+        public static bool KillWorkspace { get; set; }
 
         // Make sure subscribers unsubscribe or this will prevent garbage collection!
         public static event EventHandler AnimationChanged;
         private static void OnAnimationChanged()
         {
-            if (AnimationChanged != null && !killWorkspace)
+            if (AnimationChanged != null && !KillWorkspace)
                 AnimationChanged(typeof(Runtime), EventArgs.Empty);
         }
     }

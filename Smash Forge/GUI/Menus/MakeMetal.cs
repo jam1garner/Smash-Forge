@@ -11,11 +11,11 @@ using System.Globalization;
 
 
 
-namespace Smash_Forge.GUI.Menus
+namespace SmashForge.Gui.Menus
 {
     public partial class MakeMetal : Form
     {
-        private NUD nud;
+        private Nud nud;
 
         private int difTexId = 0x40000001;
         private int cubeTexId = 0x10102000;
@@ -28,7 +28,7 @@ namespace Smash_Forge.GUI.Menus
         private float[] fresParams = new float[] { 3.7f, 0f, 0f, 1 };
         private float[] fresColor = new float[] { 0.6f, 0.6f, 0.6f, 1 };
 
-        public MakeMetal(NUD nud)
+        public MakeMetal(Nud nud)
         {
             InitializeComponent();
             this.nud = nud;

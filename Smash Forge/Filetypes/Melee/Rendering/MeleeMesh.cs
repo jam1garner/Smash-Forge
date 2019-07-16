@@ -4,32 +4,32 @@ using SFGenericModel;
 using SFGenericModel.VertexAttributes;
 using System.Collections.Generic;
 
-namespace Smash_Forge.Filetypes.Melee.Rendering
+namespace SmashForge.Filetypes.Melee.Rendering
 {
     public struct MeleeVertex
     {
-        [VertexFloatAttribute("vPosition", ValueCount.Three, VertexAttribPointerType.Float, false)]
+        [VertexFloat("vPosition", ValueCount.Three, VertexAttribPointerType.Float, false)]
         public Vector3 Pos;
 
-        [VertexFloatAttribute("vNormal", ValueCount.Three, VertexAttribPointerType.Float, false)]
+        [VertexFloat("vNormal", ValueCount.Three, VertexAttribPointerType.Float, false)]
         public Vector3 Nrm;
 
-        [VertexFloatAttribute("vBitan", ValueCount.Three, VertexAttribPointerType.Float, false)]
+        [VertexFloat("vBitan", ValueCount.Three, VertexAttribPointerType.Float, false)]
         public Vector3 Bit;
 
-        [VertexFloatAttribute("vTan", ValueCount.Three, VertexAttribPointerType.Float, false)]
+        [VertexFloat("vTan", ValueCount.Three, VertexAttribPointerType.Float, false)]
         public Vector3 Tan;
 
-        [VertexFloatAttribute("vUV0", ValueCount.Two, VertexAttribPointerType.Float, false)]
+        [VertexFloat("vUV0", ValueCount.Two, VertexAttribPointerType.Float, false)]
         public Vector2 UV0;
 
-        [VertexFloatAttribute("vColor", ValueCount.Four, VertexAttribPointerType.Float, false)]
+        [VertexFloat("vColor", ValueCount.Four, VertexAttribPointerType.Float, false)]
         public Vector4 Clr;
 
-        [VertexFloatAttribute("vBone", ValueCount.Four, VertexAttribPointerType.Float, false)]
+        [VertexFloat("vBone", ValueCount.Four, VertexAttribPointerType.Float, false)]
         public Vector4 Bone;
 
-        [VertexFloatAttribute("vWeight", ValueCount.Four, VertexAttribPointerType.Float, false)]
+        [VertexFloat("vWeight", ValueCount.Four, VertexAttribPointerType.Float, false)]
         public Vector4 Weight;
     }
 

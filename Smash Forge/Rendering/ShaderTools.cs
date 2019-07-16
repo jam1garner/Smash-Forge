@@ -1,15 +1,15 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.Utils;
-using Smash_Forge.Rendering.Lights;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using SFGraphics.GlUtils;
+using SmashForge.Rendering.Lights;
 
-namespace Smash_Forge.Rendering
+namespace SmashForge.Rendering
 {
     static class ShaderTools
     {

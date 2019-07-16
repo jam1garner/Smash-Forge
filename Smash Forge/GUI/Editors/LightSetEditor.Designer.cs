@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge.GUI.Editors
+﻿namespace SmashForge.Gui.Editors
 {
     partial class LightSetEditor
     {

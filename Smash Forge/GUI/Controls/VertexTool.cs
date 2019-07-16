@@ -8,17 +8,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class VertexTool : Form
     {
-        private NUD.Vertex _selectedVertex;
+        private Nud.Vertex _selectedVertex;
         public ModelViewport vp;
         private VBN VBN;
         
         private int SelectedWeight = -1;
 
-        public NUD.Vertex SelectedVertex
+        public Nud.Vertex SelectedVertex
         {
             get
             {
@@ -36,7 +36,7 @@ namespace Smash_Forge
             InitializeComponent();
         }
 
-        public void LoadVertexInfo(NUD.Vertex v)
+        public void LoadVertexInfo(Nud.Vertex v)
         {
             boneWeightList.Items.Clear();
             if (v == null)
@@ -61,7 +61,7 @@ namespace Smash_Forge
         {
             if (vertexListBox.SelectedIndex >= 0)
             {
-                SelectedVertex = ((NUD.Vertex)vertexListBox.SelectedItem);
+                SelectedVertex = ((Nud.Vertex)vertexListBox.SelectedItem);
             }
         }
 

@@ -9,7 +9,7 @@ using MeleeLib.IO;
 using MeleeLib.DAT.Animation;
 using MeleeLib.DAT.Helpers;
 
-namespace Smash_Forge.Filetypes.Melee
+namespace SmashForge.Filetypes.Melee
 {
     public class MeleeJointAnimationNode : MeleeNode
     {
@@ -149,7 +149,7 @@ namespace Smash_Forge.Filetypes.Melee
 
         public virtual Animation GetAnimation()
         {
-            Animation a = new Smash_Forge.Animation(Text);
+            Animation a = new Animation(Text);
 
             a.FrameCount = (int)DatAnimation.FrameCount;
 

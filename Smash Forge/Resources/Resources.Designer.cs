@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Smash_Forge.Resources {
+namespace SmashForge.Resources {
     using System;
     
     

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using Nintaco;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class ROM_Injector : Form
     {
@@ -42,7 +42,7 @@ namespace Smash_Forge
                             f.writeInt(0);
                             f.writeInt(0x1B + rom.Length);
                             f.writeInt(0x1B + rom.Length);
-                            f.writeString("JAM WAS HERE");
+                            f.WriteString("JAM WAS HERE");
                             f.writeInt(0);
                             f.writeBytes(rom);
                             f.writeHex("3C00000000001000090002080000000100000000000000000000000000000000");

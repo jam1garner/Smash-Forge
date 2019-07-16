@@ -11,7 +11,7 @@ using System.IO;
 using System.Diagnostics;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class ProjectTree : DockContent
     {

@@ -2,11 +2,11 @@
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects.Textures;
-using Smash_Forge.Rendering.Meshes;
 using System.Collections.Generic;
 using System.Drawing;
+using SmashForge.Rendering.Meshes;
 
-namespace Smash_Forge.Rendering
+namespace SmashForge.Rendering
 {
     static class ScreenDrawing
     {

@@ -1,7 +1,7 @@
 ﻿using MeleeLib.DAT;
 using System.Xml;
 
-namespace Smash_Forge.Filetypes.Melee.Utils
+namespace SmashForge.Filetypes.Melee.Utils
 {
     public static class DatMaterialXml
     {

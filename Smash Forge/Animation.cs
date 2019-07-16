@@ -7,7 +7,7 @@ using OpenTK;
 using System.Windows.Forms;
 using System.IO;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class Animation : TreeNode
     {

@@ -4,11 +4,11 @@ using SFGenericModel.Materials;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GlUtils;
-using Smash_Forge.Rendering;
 using System;
 using System.Collections.Generic;
+using SmashForge.Rendering;
 
-namespace Smash_Forge.Filetypes.Models.Nuds
+namespace SmashForge.Filetypes.Models.Nuds
 {
     public static class NudUniforms
     {
@@ -55,7 +55,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
         // Default bind location for NUT textures.
         private static readonly int nutTextureUnitOffset = 0;
 
-        public static void SetMaterialPropertyUniforms(Shader shader, NUD.Material mat)
+        public static void SetMaterialPropertyUniforms(Shader shader, Nud.Material mat)
         {
             var uniformBlock = new UniformBlock(shader, "MaterialProperties") { BlockBinding = 1 };
             foreach (var property in defaultValueByProperty)
@@ -79,7 +79,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             genericMaterial.SetShaderUniforms(shader);
         }
 
-        private static void HasMatPropertyShaderUniform(GenericMaterial genericMaterial, NUD.Material mat, string propertyName, string uniformName)
+        private static void HasMatPropertyShaderUniform(GenericMaterial genericMaterial, Nud.Material mat, string propertyName, string uniformName)
         {
             bool hasValue = mat.entries.ContainsKey(propertyName) || mat.anims.ContainsKey(propertyName);
             if (hasValue)
@@ -88,7 +88,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
                 genericMaterial.AddInt(uniformName, 0);
         }
 
-        private static void MatPropertyShaderUniform(UniformBlock uniformBlock, NUD.Material mat, string propertyName, Vector4 defaultValue)
+        private static void MatPropertyShaderUniform(UniformBlock uniformBlock, Nud.Material mat, string propertyName, Vector4 defaultValue)
         {
             // Attempt to get the values from the material. 
             float[] values = null;
@@ -103,7 +103,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             uniformBlock.SetValue(uniformName, new Vector4(values[0], values[1], values[2], values[3]));
         }
 
-        public static Texture GetTexture(int hash, NUD.MatTexture matTexture, int loc, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
+        public static Texture GetTexture(int hash, Nud.MatTexture matTexture, int loc, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             // Look through all loaded textures and not just the current modelcontainer.
             foreach (NUT nut in Runtime.TextureContainers)
@@ -124,7 +124,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             return RenderTools.defaultTex;
         }
 
-        private static void SetTextureParameters(Texture texture, NUD.MatTexture matTexture)
+        private static void SetTextureParameters(Texture texture, Nud.MatTexture matTexture)
         {
             // Set the texture's parameters based on the material settings.
             texture.TextureWrapS = NudEnums.wrapModeByMatValue[matTexture.wrapModeS];
@@ -142,7 +142,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             }
         }
 
-        public static void SetTextureUniforms(Shader shader, NUD.Material mat, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
+        public static void SetTextureUniforms(Shader shader, Nud.Material mat, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             SetHasTextureUniforms(shader, mat);
             SetRenderModeTextureUniforms(shader);
@@ -165,7 +165,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             textures.SetShaderUniforms(shader);
         }
 
-        public static Texture GetTextureAndSetTexId(NUD.Material mat, bool hasTex, string name, ref int textureIndex, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
+        public static Texture GetTextureAndSetTexId(Nud.Material mat, bool hasTex, string name, ref int textureIndex, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             Texture texture;
             if (hasTex && textureIndex < mat.textures.Count)
@@ -185,14 +185,14 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             return texture;
         }
 
-        public static void SetTextureUniformsNudMatSphere(Shader shader, NUD.Material mat, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
+        public static void SetTextureUniformsNudMatSphere(Shader shader, Nud.Material mat, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             SetHasTextureUniforms(shader, mat);
             SetRenderModeTextureUniforms(shader);
 
             // The material shader just uses predefined textures from the Resources folder.
-            NUD.MatTexture diffuse = new NUD.MatTexture((int)NudEnums.DummyTexture.DummyRamp);
-            NUD.MatTexture cubeMapHigh = new NUD.MatTexture((int)NudEnums.DummyTexture.StageMapHigh);
+            Nud.MatTexture diffuse = new Nud.MatTexture((int)NudEnums.DummyTexture.DummyRamp);
+            Nud.MatTexture cubeMapHigh = new Nud.MatTexture((int)NudEnums.DummyTexture.StageMapHigh);
 
             SetHasTextureUniforms(shader, mat);
             SetRenderModeTextureUniforms(shader);
@@ -232,7 +232,7 @@ namespace Smash_Forge.Filetypes.Models.Nuds
             shader.SetTexture("weightRamp2", RenderTools.boneWeightGradient2, 12);
         }
 
-        public static void SetHasTextureUniforms(Shader shader, NUD.Material mat)
+        public static void SetHasTextureUniforms(Shader shader, Nud.Material mat)
         {
             shader.SetBoolToInt("hasDif", mat.HasDiffuse);
             shader.SetBoolToInt("hasDif2", mat.HasDiffuse2);

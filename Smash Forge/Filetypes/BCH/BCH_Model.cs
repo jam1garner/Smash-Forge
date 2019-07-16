@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
+using SmashForge.Rendering;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class BCH_Model : TreeNode
     {
@@ -272,7 +272,7 @@ namespace Smash_Forge
                 }
             }
 
-            o.writeInt(vertexBuffer.size()); // Vertex Buffer Size
+            o.writeInt(vertexBuffer.Size()); // Vertex Buffer Size
 
             //Mesh Information
             FileOutput indexBuffer = new FileOutput();
@@ -300,9 +300,9 @@ namespace Smash_Forge
 
             if (format != 4) o.align(0x20, 0xFF);
 
-            o.writeOutput(vertexBuffer);
+            o.WriteOutput(vertexBuffer);
             o.align(0x20, 0xFF);
-            o.writeOutput(indexBuffer);
+            o.WriteOutput(indexBuffer);
             o.save(fname);
         }
 
@@ -494,7 +494,7 @@ namespace Smash_Forge
 
 
         // Create from nud
-        public void CreateFromNUD(NUD n)
+        public void CreateFromNUD(Nud n)
         {
             //Alrighty.............................
             /*int meshcount = Nodes.Count;

@@ -9,7 +9,7 @@ using System.Globalization;
 
 
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class GuiTools
     {

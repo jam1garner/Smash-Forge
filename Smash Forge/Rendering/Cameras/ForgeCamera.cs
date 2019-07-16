@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 
-namespace Smash_Forge.Rendering
+namespace SmashForge.Rendering
 {
     public abstract class ForgeCamera : SFGraphics.Cameras.Camera
     {
@@ -10,7 +10,7 @@ namespace Smash_Forge.Rendering
         protected float mouseXLast = 0;
         
         // Apply Forge's camera settings.
-        protected float zoomSpeed = Runtime.zoomspeed;
+        protected float zoomSpeed = Runtime.zoomSpeed;
         protected float zoomDistanceScale = 0.01f;
         protected float rotateYSpeed = 0.0125f;
         protected float rotateXSpeed = 0.005f;

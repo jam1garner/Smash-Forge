@@ -16,21 +16,21 @@ using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Framebuffers;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.Utils;
-using Smash_Forge.Params;
-using Smash_Forge.Rendering;
-using Smash_Forge.Rendering.Lights;
-using Smash_Forge.Rendering.Meshes;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.GLObjectManagement;
-using Smash_Forge.Filetypes.Melee;
+using SmashForge.Filetypes.Melee;
+using SmashForge.Params;
+using SmashForge.Rendering;
+using SmashForge.Rendering.Lights;
+using SmashForge.Rendering.Meshes;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class ModelViewport : EditorBase
     {
         // View controls
         public ForgeCamera camera = new ForgePerspCamera();
-        public GUI.Menus.CameraSettings cameraPosForm = null;
+        public Gui.Menus.CameraSettings cameraPosForm = null;
 
         // Rendering Stuff
         private Framebuffer colorHdrFbo;
@@ -576,9 +576,9 @@ namespace Smash_Forge
             {
                 // Display the MeshList context menus in the viewport.
                 // This is faster than right clicking in the treeview.
-                if (meshList.filesTreeView.SelectedNode is NUD.Polygon && modePolygon.Checked)
+                if (meshList.filesTreeView.SelectedNode is Nud.Polygon && modePolygon.Checked)
                     meshList.PolyContextMenu.Show(glViewport, e.X, e.Y);
-                else if (meshList.filesTreeView.SelectedNode is NUD.Mesh && modeMesh.Checked)
+                else if (meshList.filesTreeView.SelectedNode is Nud.Mesh && modeMesh.Checked)
                     meshList.MeshContextMenu.Show(glViewport, e.X, e.Y);
             }
         }
@@ -611,7 +611,7 @@ namespace Smash_Forge
             Runtime.drawNudColorIdPass = false;
         }
 
-        private NUD.Polygon GetSelectedPolygonFromColor(Color pixelColor)
+        private Nud.Polygon GetSelectedPolygonFromColor(Color pixelColor)
         {
             // Determine what polgyon is selected.
             foreach (TreeNode node in draw)
@@ -620,9 +620,9 @@ namespace Smash_Forge
                     continue;
                 ModelContainer con = (ModelContainer)node;
 
-                foreach (NUD.Mesh mesh in con.NUD.Nodes)
+                foreach (Nud.Mesh mesh in con.NUD.Nodes)
                 {
-                    foreach (NUD.Polygon p in mesh.Nodes)
+                    foreach (Nud.Polygon p in mesh.Nodes)
                     {
                         // The color is the polygon index (not the render order).
                         // Convert to Vector3 to ignore the alpha.
@@ -638,13 +638,13 @@ namespace Smash_Forge
             return null;
         }
 
-        private NUD.Mesh GetSelectedMeshFromColor(Color pixelColor)
+        private Nud.Mesh GetSelectedMeshFromColor(Color pixelColor)
         {
             // Determine what mesh is selected. 
             // We can still use the poly ID pass.
-            NUD.Polygon selectedPolygon = GetSelectedPolygonFromColor(pixelColor);
+            Nud.Polygon selectedPolygon = GetSelectedPolygonFromColor(pixelColor);
             if (selectedPolygon != null && selectedPolygon.Parent != null)
-                return (NUD.Mesh)selectedPolygon.Parent;
+                return (Nud.Mesh)selectedPolygon.Parent;
             else
                 return null;
         }
@@ -890,7 +890,7 @@ namespace Smash_Forge
             }
 
             // It's possible that only the individual meshes have bounding boxes.
-            foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
+            foreach (Nud.Mesh mesh in modelContainer.NUD.Nodes)
             {
                 if (mesh.boundingSphere[3] > boundingSphere[3])
                 {
@@ -945,7 +945,7 @@ namespace Smash_Forge
                     spheres.Add(modelContainer.NUD.BoundingSphere);
 
                     // It's possible that only the individual meshes have bounding boxes.
-                    foreach (NUD.Mesh mesh in modelContainer.NUD.Nodes)
+                    foreach (Nud.Mesh mesh in modelContainer.NUD.Nodes)
                     {
                         spheres.Add(mesh.BoundingSphere);
                     }
@@ -1072,7 +1072,7 @@ namespace Smash_Forge
         private void CameraSettings_Click(object sender, EventArgs e)
         {
             if (cameraPosForm == null)
-                cameraPosForm = new GUI.Menus.CameraSettings(camera);
+                cameraPosForm = new Gui.Menus.CameraSettings(camera);
             cameraPosForm.ShowDialog();
         }
 
@@ -1433,13 +1433,13 @@ namespace Smash_Forge
                     {
                         if (!(node is ModelContainer)) continue;
                         ModelContainer con = (ModelContainer)node;
-                        foreach (NUD.Mesh mesh in con.NUD.Nodes)
+                        foreach (Nud.Mesh mesh in con.NUD.Nodes)
                         {
-                            foreach (NUD.Polygon poly in mesh.Nodes)
+                            foreach (Nud.Polygon poly in mesh.Nodes)
                             {
                                 //if (!poly.IsSelected && !mesh.IsSelected) continue;
                                 int i = 0;
-                                foreach (NUD.Vertex v in poly.vertices)
+                                foreach (Nud.Vertex v in poly.vertices)
                                 {
                                     if (!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
                                         poly.selectedVerts[i] = 0;
@@ -1462,16 +1462,16 @@ namespace Smash_Forge
                     {
                         if (!(node is ModelContainer)) continue;
                         ModelContainer con = (ModelContainer)node;
-                        NUD.Polygon Close = null;
+                        Nud.Polygon Close = null;
                         int index = 0;
                         double mindis = 999;
-                        foreach (NUD.Mesh mesh in con.NUD.Nodes)
+                        foreach (Nud.Mesh mesh in con.NUD.Nodes)
                         {
-                            foreach (NUD.Polygon poly in mesh.Nodes)
+                            foreach (Nud.Polygon poly in mesh.Nodes)
                             {
                                 //if (!poly.IsSelected && !mesh.IsSelected) continue;
                                 int i = 0;
-                                foreach (NUD.Vertex v in poly.vertices)
+                                foreach (Nud.Vertex v in poly.vertices)
                                 {
                                     //if (!poly.IsSelected) continue;
                                     if (!OpenTK.Input.Keyboard.GetState().IsKeyDown(OpenTK.Input.Key.ControlLeft))
@@ -1504,12 +1504,12 @@ namespace Smash_Forge
                 {
                     if (!(node is ModelContainer)) continue;
                     ModelContainer con = (ModelContainer)node;
-                    foreach (NUD.Mesh mesh in con.NUD.Nodes)
+                    foreach (Nud.Mesh mesh in con.NUD.Nodes)
                     {
-                        foreach (NUD.Polygon poly in mesh.Nodes)
+                        foreach (Nud.Polygon poly in mesh.Nodes)
                         {
                             int i = 0;
-                            foreach (NUD.Vertex v in poly.vertices)
+                            foreach (Nud.Vertex v in poly.vertices)
                             {
                                 if (poly.selectedVerts[i++] == 1)
                                 {

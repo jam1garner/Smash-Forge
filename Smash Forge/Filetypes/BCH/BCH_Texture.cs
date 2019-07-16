@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using SFGraphics.GLObjects.Textures;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class BCH_Texture : TreeNode
     {

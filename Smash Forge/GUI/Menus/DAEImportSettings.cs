@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using OpenTK;
 using System.Diagnostics;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class DAEImportSettings : Form
     {
@@ -28,19 +28,19 @@ namespace Smash_Forge
 
         public Dictionary<string, int> BoneTypes = new Dictionary<string, int>()
         {
-            { "None", (int)NUD.Polygon.BoneTypes.NoBones},
-            { "Float", (int)NUD.Polygon.BoneTypes.Float},
-            { "Half Float", (int)NUD.Polygon.BoneTypes.HalfFloat},
-            { "Byte", (int)NUD.Polygon.BoneTypes.Byte}
+            { "None", (int)Nud.Polygon.BoneTypes.NoBones},
+            { "Float", (int)Nud.Polygon.BoneTypes.Float},
+            { "Half Float", (int)Nud.Polygon.BoneTypes.HalfFloat},
+            { "Byte", (int)Nud.Polygon.BoneTypes.Byte}
         };
 
         public Dictionary<string, int> VertexTypes = new Dictionary<string, int>()
         {
-            { "No Normals", (int)NUD.Polygon.VertexTypes.NoNormals},
-            { "Normals (Float)", (int)NUD.Polygon.VertexTypes.NormalsFloat},
-            { "Normals, Tan, Bi-Tan (Float)", (int)NUD.Polygon.VertexTypes.NormalsTanBiTanFloat},
-            { "Normals (Half Float)", (int)NUD.Polygon.VertexTypes.NormalsHalfFloat},
-            { "Normals, Tan, Bi-Tan (Half Float)", (int)NUD.Polygon.VertexTypes.NormalsTanBiTanHalfFloat}
+            { "No Normals", (int)Nud.Polygon.VertexTypes.NoNormals},
+            { "Normals (Float)", (int)Nud.Polygon.VertexTypes.NormalsFloat},
+            { "Normals, Tan, Bi-Tan (Float)", (int)Nud.Polygon.VertexTypes.NormalsTanBiTanFloat},
+            { "Normals (Half Float)", (int)Nud.Polygon.VertexTypes.NormalsHalfFloat},
+            { "Normals, Tan, Bi-Tan (Half Float)", (int)Nud.Polygon.VertexTypes.NormalsTanBiTanHalfFloat}
         };
 
         public DAEImportSettings()
@@ -69,7 +69,7 @@ namespace Smash_Forge
             boneTypeComboBox.EndUpdate();
         }
 
-        public void Apply(NUD nud)
+        public void Apply(Nud nud)
         {
             Matrix4 rotXBy90 = Matrix4.CreateRotationX(0.5f * (float)Math.PI);
             float scale = 1f;
@@ -80,7 +80,7 @@ namespace Smash_Forge
 
             bool hasShownShadowWarning = false;
 
-            foreach (NUD.Mesh mesh in nud.Nodes)
+            foreach (Nud.Mesh mesh in nud.Nodes)
             {
                 if (BoneTypes[(string)boneTypeComboBox.SelectedItem] == BoneTypes["None"])
                     mesh.boneflag = 0;
@@ -95,7 +95,7 @@ namespace Smash_Forge
                 if (fixMeshName)
                     mesh.Text = Collada.RemoveInitialUnderscoreId(mesh.Text);
 
-                foreach (NUD.Polygon poly in mesh.Nodes)
+                foreach (Nud.Polygon poly in mesh.Nodes)
                 {
                     if (BoneTypes[(string)boneTypeComboBox.SelectedItem] == BoneTypes["None"])
                         poly.polflag = 0;
@@ -104,14 +104,14 @@ namespace Smash_Forge
                         poly.SmoothNormals();
 
                     // Set the vertex size before tangent/bitangent calculations.
-                    if (poly.vertSize == (int)NUD.Polygon.VertexTypes.NormalsHalfFloat) // what is this supposed to mean?
+                    if (poly.vertSize == (int)Nud.Polygon.VertexTypes.NormalsHalfFloat) // what is this supposed to mean?
                         poly.vertSize = 0;
                     else
                         poly.vertSize = BoneTypes[(string)boneTypeComboBox.SelectedItem] | VertexTypes[(string)vertTypeComboBox.SelectedItem];
 
                     poly.CalculateTangentBitangent();          
 
-                    int vertSizeShadowWarning = (int)NUD.Polygon.BoneTypes.HalfFloat | (int)NUD.Polygon.VertexTypes.NormalsTanBiTanHalfFloat;
+                    int vertSizeShadowWarning = (int)Nud.Polygon.BoneTypes.HalfFloat | (int)Nud.Polygon.VertexTypes.NormalsTanBiTanHalfFloat;
                     if (!hasShownShadowWarning && poly.vertSize == vertSizeShadowWarning)
                     {
                         MessageBox.Show("Using \"" + (string)boneTypeComboBox.SelectedItem + "\" and \"" + (string)vertTypeComboBox.SelectedItem + "\" can make shadows not appear in-game.",
@@ -122,10 +122,10 @@ namespace Smash_Forge
                     if (stageMatCB.Checked)
                     {
                         poly.materials.Clear();
-                        poly.materials.Add(NUD.Material.GetStageDefault());
+                        poly.materials.Add(Nud.Material.GetStageDefault());
                     }
 
-                    foreach (NUD.Vertex v in poly.vertices)
+                    foreach (Nud.Vertex v in poly.vertices)
                     {
                         //Scroll UVs V by -1
                         if (transUvVerticalCB.Checked)

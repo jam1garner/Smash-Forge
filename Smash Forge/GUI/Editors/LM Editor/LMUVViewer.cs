@@ -1,14 +1,14 @@
 ﻿using System.Windows.Forms;
-using Smash_Forge.Rendering;
 using OpenTK.Graphics.OpenGL;
-using Smash_Forge.Rendering.Meshes;
 using SFGraphics.GLObjects.Shaders;
 using OpenTK;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Framebuffers;
 using SFGraphics.GLObjects.GLObjectManagement;
+using SmashForge.Rendering;
+using SmashForge.Rendering.Meshes;
 
-namespace Smash_Forge.GUI.Menus
+namespace SmashForge.Gui.Menus
 {
     public partial class LMUVViewer : Form
     {

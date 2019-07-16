@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class BFRES
     {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class FileOutput
     {
@@ -12,24 +12,24 @@ namespace Smash_Forge
 
         public Endianness Endian;
 
-        public byte[] getBytes()
+        public byte[] GetBytes()
         {
             return data.ToArray();
         }
 
-        public void writeString(String s)
+        public void WriteString(string s)
         {
             char[] c = s.ToCharArray();
             for (int i = 0; i < c.Length; i++)
                 data.Add((byte)c[i]);
         }
 
-        public int size()
+        public int Size()
         {
             return data.Count;
         }
 
-        public void writeOutput(FileOutput d)
+        public void WriteOutput(FileOutput d)
         {
             foreach (RelocOffset o in d.Offsets)
             {

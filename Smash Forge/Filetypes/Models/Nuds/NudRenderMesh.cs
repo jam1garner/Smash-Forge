@@ -3,16 +3,16 @@ using SFGenericModel;
 using SFGenericModel.Materials;
 using SFGenericModel.RenderState;
 using SFGenericModel.VertexAttributes;
-using Smash_Forge.Filetypes.Models.Nuds;
 using System.Collections.Generic;
+using SmashForge.Filetypes.Models.Nuds;
 
-namespace Smash_Forge
+namespace SmashForge
 {
-    public class NudRenderMesh : GenericMesh<NUD.DisplayVertex>
+    public class NudRenderMesh : GenericMesh<Nud.DisplayVertex>
     {
         private RenderSettings renderSettings = new RenderSettings();
 
-        public NudRenderMesh(List<NUD.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices, PrimitiveType.Triangles)
+        public NudRenderMesh(List<Nud.DisplayVertex> vertices, List<int> vertexIndices) : base(vertices, vertexIndices, PrimitiveType.Triangles)
         {
 
         }
@@ -27,7 +27,7 @@ namespace Smash_Forge
             GLRenderSettings.SetRenderSettings(renderSettings);
         }
 
-        public void SetRenderSettings(NUD.Material material)
+        public void SetRenderSettings(Nud.Material material)
         {
             SetAlphaBlending(material);
             SetAlphaTesting(material);
@@ -42,7 +42,7 @@ namespace Smash_Forge
             renderSettings = new RenderSettings();
         }
 
-        private void SetFaceCulling(NUD.Material material)
+        private void SetFaceCulling(Nud.Material material)
         {
             bool enabled = true;
             CullFaceMode cullFaceMode = CullFaceMode.Back;
@@ -65,7 +65,7 @@ namespace Smash_Forge
             renderSettings.faceCullingSettings = new FaceCullingSettings(enabled, cullFaceMode);
         }
 
-        private void SetAlphaTesting(NUD.Material material)
+        private void SetAlphaTesting(Nud.Material material)
         {
 
             bool enabled = (material.AlphaTest == (int)NudEnums.AlphaTest.Enabled);
@@ -79,13 +79,13 @@ namespace Smash_Forge
             renderSettings.alphaTestSettings = new AlphaTestSettings(enabled, alphaFunc, refAlpha);
         }
 
-        private void SetDepthTesting(NUD.Material material)
+        private void SetDepthTesting(Nud.Material material)
         {
             bool depthMask = (material.SrcFactor != 4) && (material.SrcFactor != 51) && (material.SrcFactor != 50);
             renderSettings.depthTestSettings = new DepthTestSettings(true, depthMask, DepthFunction.Lequal);
         }
 
-        private void SetAlphaBlending(NUD.Material material)
+        private void SetAlphaBlending(Nud.Material material)
         {
             renderSettings.alphaBlendSettings.enabled = material.SrcFactor != 0 || material.DstFactor != 0;
             if (NudEnums.srcFactorByMatValue.ContainsKey(material.SrcFactor))

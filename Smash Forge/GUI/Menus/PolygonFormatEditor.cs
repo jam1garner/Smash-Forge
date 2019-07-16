@@ -8,24 +8,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class PolygonFormatEditor : Form
     {
         private Dictionary<string, int> WeightTypes = new Dictionary<string, int>()
         {
-            { "None", (int)NUD.Polygon.BoneTypes.NoBones},
-            { "Float", (int)NUD.Polygon.BoneTypes.Float},
-            { "Half Float", (int)NUD.Polygon.BoneTypes.HalfFloat},
-            { "Byte", (int)NUD.Polygon.BoneTypes.Byte}
+            { "None", (int)Nud.Polygon.BoneTypes.NoBones},
+            { "Float", (int)Nud.Polygon.BoneTypes.Float},
+            { "Half Float", (int)Nud.Polygon.BoneTypes.HalfFloat},
+            { "Byte", (int)Nud.Polygon.BoneTypes.Byte}
         };
         private Dictionary<string, int> NormalTypes = new Dictionary<string, int>()
         {
-            { "No Normals", (int)NUD.Polygon.VertexTypes.NoNormals},
-            { "Normals (Float)", (int)NUD.Polygon.VertexTypes.NormalsFloat},
-            { "Normals, Tan, Bi-Tan (Float)", (int)NUD.Polygon.VertexTypes.NormalsTanBiTanFloat},
-            { "Normals (Half Float)", (int)NUD.Polygon.VertexTypes.NormalsHalfFloat},
-            { "Normals, Tan, Bi-Tan (Half Float)", (int)NUD.Polygon.VertexTypes.NormalsTanBiTanHalfFloat}
+            { "No Normals", (int)Nud.Polygon.VertexTypes.NoNormals},
+            { "Normals (Float)", (int)Nud.Polygon.VertexTypes.NormalsFloat},
+            { "Normals, Tan, Bi-Tan (Float)", (int)Nud.Polygon.VertexTypes.NormalsTanBiTanFloat},
+            { "Normals (Half Float)", (int)Nud.Polygon.VertexTypes.NormalsHalfFloat},
+            { "Normals, Tan, Bi-Tan (Half Float)", (int)Nud.Polygon.VertexTypes.NormalsTanBiTanHalfFloat}
         };
         private PolygonFormatEditor()
         {
@@ -46,8 +46,8 @@ namespace Smash_Forge
             vertexColorCB.Checked = true;
         }
 
-        private NUD.Polygon poly;
-        public PolygonFormatEditor(NUD.Polygon poly) : this()
+        private Nud.Polygon poly;
+        public PolygonFormatEditor(Nud.Polygon poly) : this()
         {
             this.poly = poly;
 
@@ -81,23 +81,23 @@ namespace Smash_Forge
             int weightType = WeightTypes[(string)weightTypeComboBox.SelectedItem];
             int normalType = NormalTypes[(string)normalTypeComboBox.SelectedItem];
             poly.vertSize = weightType | normalType;
-            foreach (NUD.Vertex v in poly.vertices)
+            foreach (Nud.Vertex v in poly.vertices)
             {
-                if (weightType == (int)NUD.Polygon.BoneTypes.Float)
+                if (weightType == (int)Nud.Polygon.BoneTypes.Float)
                 {
                     for (int i = 0; i < v.boneIds.Count; ++i)
                         v.boneIds[i] = (int)v.boneIds[i];
                     for (int i = 0; i < v.boneWeights.Count; ++i)
                         v.boneWeights[i] = (float)v.boneWeights[i];
                 }
-                else if (weightType == (int)NUD.Polygon.BoneTypes.HalfFloat)
+                else if (weightType == (int)Nud.Polygon.BoneTypes.HalfFloat)
                 {
                     for (int i = 0; i < v.boneIds.Count; ++i)
                         v.boneIds[i] = (int)(short)v.boneIds[i];
                     for (int i = 0; i < v.boneWeights.Count; ++i)
                         v.boneWeights[i] = (float)v.boneWeights[i];
                 }
-                else if (weightType == (int)NUD.Polygon.BoneTypes.Byte)
+                else if (weightType == (int)Nud.Polygon.BoneTypes.Byte)
                 {
                     for (int i = 0; i < v.boneIds.Count; ++i)
                         v.boneIds[i] = (int)(byte)v.boneIds[i];
@@ -111,7 +111,7 @@ namespace Smash_Forge
 
             while (uvCountUpDown.Value > uvCount)
             {
-                foreach (NUD.Vertex v in poly.vertices)
+                foreach (Nud.Vertex v in poly.vertices)
                 {
                     if (uvCount > 0)
                         v.uv.Add(new OpenTK.Vector2(v.uv[0].X, v.uv[0].Y));
@@ -122,7 +122,7 @@ namespace Smash_Forge
             }
             while (uvCountUpDown.Value < uvCount)
             {
-                foreach (NUD.Vertex v in poly.vertices)
+                foreach (Nud.Vertex v in poly.vertices)
                 {
                     v.uv.RemoveAt(uvCount - 1);
                 }
@@ -134,7 +134,7 @@ namespace Smash_Forge
                 if (colorType == 0x0)
                 {
                     colorType = 0x2;
-                    foreach (NUD.Vertex v in poly.vertices)
+                    foreach (Nud.Vertex v in poly.vertices)
                         v.color = new OpenTK.Vector4(127, 127, 127, 127);
                 }
             }
@@ -143,7 +143,7 @@ namespace Smash_Forge
                 if (colorType != 0x0)
                 {
                     colorType = 0x0;
-                    foreach (NUD.Vertex v in poly.vertices)
+                    foreach (Nud.Vertex v in poly.vertices)
                         v.color = new OpenTK.Vector4(127, 127, 127, 127);
                 }
             }

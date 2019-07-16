@@ -12,7 +12,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using System.IO;
 using System.Security.Cryptography;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class FSKLTreePanel : EditorBase
     {

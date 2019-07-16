@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 
-namespace Smash_Forge.LIGH
+namespace SmashForge.LIGH
 {
     public class LighBin : FileBase
     {
@@ -170,7 +170,7 @@ namespace Smash_Forge.LIGH
                     f.writeFloat(lightFrames[i].effect.position[j]);
             }
 
-            return f.getBytes();
+            return f.GetBytes();
         }
     }
 

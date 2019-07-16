@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge
+﻿namespace SmashForge
 {
     partial class ModelViewport
     {
@@ -140,7 +140,7 @@
             // toolStripResetCamera
             // 
             this.toolStripResetCamera.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripResetCamera.Image = global::Smash_Forge.Properties.Resources.strip_camreset;
+            this.toolStripResetCamera.Image = global::SmashForge.Properties.Resources.strip_camreset;
             this.toolStripResetCamera.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripResetCamera.Name = "toolStripResetCamera";
             this.toolStripResetCamera.Size = new System.Drawing.Size(28, 28);
@@ -151,7 +151,7 @@
             // toolStripCameraSettings
             // 
             this.toolStripCameraSettings.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripCameraSettings.Image = global::Smash_Forge.Properties.Resources.strip_camsettings;
+            this.toolStripCameraSettings.Image = global::SmashForge.Properties.Resources.strip_camsettings;
             this.toolStripCameraSettings.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripCameraSettings.Name = "toolStripCameraSettings";
             this.toolStripCameraSettings.Size = new System.Drawing.Size(28, 28);
@@ -174,7 +174,7 @@
             // 
             this.modeBone.CheckOnClick = true;
             this.modeBone.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.modeBone.Image = global::Smash_Forge.Properties.Resources.icon_bone;
+            this.modeBone.Image = global::SmashForge.Properties.Resources.icon_bone;
             this.modeBone.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.modeBone.Name = "modeBone";
             this.modeBone.Size = new System.Drawing.Size(28, 28);
@@ -188,7 +188,7 @@
             this.modeMesh.CheckOnClick = true;
             this.modeMesh.CheckState = System.Windows.Forms.CheckState.Checked;
             this.modeMesh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.modeMesh.Image = global::Smash_Forge.Properties.Resources.icon_mesh;
+            this.modeMesh.Image = global::SmashForge.Properties.Resources.icon_mesh;
             this.modeMesh.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.modeMesh.Name = "modeMesh";
             this.modeMesh.Size = new System.Drawing.Size(28, 28);
@@ -200,7 +200,7 @@
             // 
             this.modePolygon.CheckOnClick = true;
             this.modePolygon.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.modePolygon.Image = global::Smash_Forge.Properties.Resources.icon_polygon;
+            this.modePolygon.Image = global::SmashForge.Properties.Resources.icon_polygon;
             this.modePolygon.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.modePolygon.Name = "modePolygon";
             this.modePolygon.Size = new System.Drawing.Size(28, 28);
@@ -218,7 +218,7 @@
             this.stripPos.Checked = true;
             this.stripPos.CheckState = System.Windows.Forms.CheckState.Checked;
             this.stripPos.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.stripPos.Image = global::Smash_Forge.Properties.Resources.strip_pos;
+            this.stripPos.Image = global::SmashForge.Properties.Resources.strip_pos;
             this.stripPos.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.stripPos.Name = "stripPos";
             this.stripPos.Size = new System.Drawing.Size(28, 28);
@@ -229,7 +229,7 @@
             // stripRot
             // 
             this.stripRot.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.stripRot.Image = global::Smash_Forge.Properties.Resources.strip_rot;
+            this.stripRot.Image = global::SmashForge.Properties.Resources.strip_rot;
             this.stripRot.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.stripRot.Name = "stripRot";
             this.stripRot.Size = new System.Drawing.Size(28, 28);
@@ -240,7 +240,7 @@
             // stripSca
             // 
             this.stripSca.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.stripSca.Image = global::Smash_Forge.Properties.Resources.strip_sca;
+            this.stripSca.Image = global::SmashForge.Properties.Resources.strip_sca;
             this.stripSca.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.stripSca.Name = "stripSca";
             this.stripSca.Size = new System.Drawing.Size(28, 28);
@@ -256,7 +256,7 @@
             // RenderButton
             // 
             this.RenderButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.RenderButton.Image = global::Smash_Forge.Properties.Resources.strip_render;
+            this.RenderButton.Image = global::SmashForge.Properties.Resources.strip_render;
             this.RenderButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.RenderButton.Name = "RenderButton";
             this.RenderButton.Size = new System.Drawing.Size(28, 28);
@@ -267,7 +267,7 @@
             // toolStripButton1
             // 
             this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButton1.Image = global::Smash_Forge.Properties.Resources.strip_render;
+            this.toolStripButton1.Image = global::SmashForge.Properties.Resources.strip_render;
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
             this.toolStripButton1.Size = new System.Drawing.Size(28, 28);
@@ -278,7 +278,7 @@
             // GIFButton
             // 
             this.GIFButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.GIFButton.Image = global::Smash_Forge.Properties.Resources.strip_gif;
+            this.GIFButton.Image = global::SmashForge.Properties.Resources.strip_gif;
             this.GIFButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.GIFButton.Name = "GIFButton";
             this.GIFButton.Size = new System.Drawing.Size(28, 28);

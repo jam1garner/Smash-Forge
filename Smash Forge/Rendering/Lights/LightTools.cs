@@ -8,10 +8,10 @@ using SALT.PARAMS;
 using SALT.Graphics;
 using System.Diagnostics;
 using System.Globalization;
-using Smash_Forge.Params;
+using SmashForge.Params;
 
 
-namespace Smash_Forge.Rendering.Lights
+namespace SmashForge.Rendering.Lights
 {
     class LightTools
     {

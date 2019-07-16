@@ -1,9 +1,9 @@
 ﻿using SFGraphics.Cameras;
-using Smash_Forge.Rendering;
 using System;
 using System.Windows.Forms;
+using SmashForge.Rendering;
 
-namespace Smash_Forge.GUI.Menus
+namespace SmashForge.Gui.Menus
 {
     public partial class CameraSettings : Form
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public struct pathFrame
     {
@@ -90,7 +90,7 @@ namespace Smash_Forge
                 f.writeFloat(Frames[i].z);
             }
 
-            return f.getBytes();
+            return f.GetBytes();
         }
     }
 }

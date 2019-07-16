@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge
+﻿namespace SmashForge
 {
     partial class DAEImportSettings
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class TegraX1Swizzle
     {

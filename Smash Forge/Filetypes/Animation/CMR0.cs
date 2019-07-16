@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using OpenTK;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class CMR0
     {

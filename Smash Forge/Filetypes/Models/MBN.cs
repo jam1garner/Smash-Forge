@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class MBN : FileBase
     {
@@ -391,7 +391,7 @@ namespace Smash_Forge
                                 }
                             }
                         }
-                        vertSize = fv.size();
+                        vertSize = fv.Size();
                         fv.align(32, 0xFF);
                     }
                 }
@@ -473,9 +473,9 @@ namespace Smash_Forge
 
             if (format != 4) f.align(32, 0xFF);
 
-            f.writeOutput(fv);
+            f.WriteOutput(fv);
 
-            return f.getBytes();
+            return f.GetBytes();
         }
 
         public void Save(string filename)
@@ -519,18 +519,18 @@ namespace Smash_Forge
         }
 
 
-        public NUD toNUD()
+        public Nud toNUD()
         {
-            NUD nud = new NUD();
+            Nud nud = new Nud();
             int j = 0;
             foreach (Mesh m in mesh)
             {
-                NUD.Mesh n_mesh = new NUD.Mesh();
+                Nud.Mesh n_mesh = new Nud.Mesh();
                 nud.Nodes.Add(n_mesh);
                 n_mesh.Text = "Mesh_" + j++;
                 foreach (List<int> i in m.faces)
                 {
-                    NUD.Polygon poly = new NUD.Polygon();
+                    Nud.Polygon poly = new Nud.Polygon();
                     n_mesh.Nodes.Add(poly);
                     poly.AddDefaultMaterial();
 
@@ -543,7 +543,7 @@ namespace Smash_Forge
                         if (!indexSim.Contains(v))
                         {
                             indexSim.Add(v);
-                            NUD.Vertex vert = new NUD.Vertex();
+                            Nud.Vertex vert = new Nud.Vertex();
                             vert.pos = v.pos;
                             vert.nrm = v.nrm;
                             vert.color = v.col;

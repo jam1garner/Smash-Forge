@@ -7,10 +7,10 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 using System.Diagnostics;
-using Smash_Forge.Rendering;
 using SFGraphics.Cameras;
+using SmashForge.Rendering;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class DropOutStack<T>
     {

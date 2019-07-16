@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace Smash_Forge.GUI
+namespace SmashForge.Gui
 {
     public partial class RenderSettingsMenu : Form
     {
@@ -115,9 +115,9 @@ namespace Smash_Forge.GUI
             stageLightingCB.Checked = Runtime.renderStageLighting;
             drawShadowCB.Checked = Runtime.drawModelShadow;
 
-            ambTB.Text = Runtime.ambItensity + "";
+            ambTB.Text = Runtime.ambIntensity + "";
             difTB.Text = Runtime.difIntensity + "";
-            spcTB.Text = Runtime.spcIntentensity + "";
+            spcTB.Text = Runtime.spcIntensity + "";
             frsTB.Text = Runtime.frsIntensity + "";
             refTB.Text = Runtime.refIntensity + "";
             depthTestCB.Checked = Runtime.useDepthTest;
@@ -424,7 +424,7 @@ namespace Smash_Forge.GUI
 
         private void spcTB_TextChanged(object sender, EventArgs e)
         {
-            Runtime.spcIntentensity = GuiTools.TryParseTBFloat(spcTB);
+            Runtime.spcIntensity = GuiTools.TryParseTBFloat(spcTB);
             MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
@@ -436,7 +436,7 @@ namespace Smash_Forge.GUI
 
         private void ambTB_TextChanged(object sender, EventArgs e)
         {
-            Runtime.ambItensity = GuiTools.TryParseTBFloat(ambTB);
+            Runtime.ambIntensity = GuiTools.TryParseTBFloat(ambTB);
             MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }
 
@@ -815,8 +815,8 @@ namespace Smash_Forge.GUI
                 DiscordSettings.enabled = enabledCheckbox.Checked;
                 if (DiscordSettings.enabled)
                 {
-                    DiscordSettings.DiscordController = new DiscordController();
-                    DiscordSettings.DiscordController.Initialize();
+                    DiscordSettings.discordController = new DiscordController();
+                    DiscordSettings.discordController.Initialize();
                     DiscordSettings.Update();
                 }
             }

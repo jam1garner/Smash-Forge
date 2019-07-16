@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class MaterialXML
     {
@@ -29,7 +29,7 @@ namespace Smash_Forge
             }
         }
 
-        public static void ExportMaterialAsXml(NUD n, string filename)
+        public static void ExportMaterialAsXml(Nud n, string filename)
         {
             XmlDocument doc = new XmlDocument();
 
@@ -40,12 +40,12 @@ namespace Smash_Forge
 
             int polyCount = 0;
 
-            foreach (NUD.Mesh m in n.Nodes)
+            foreach (Nud.Mesh m in n.Nodes)
             {
                 XmlNode meshnode = doc.CreateElement("mesh");
                 XmlAttribute name = doc.CreateAttribute("name"); name.Value = m.Text; meshnode.Attributes.Append(name);
                 mainNode.AppendChild(meshnode);
-                foreach (NUD.Polygon p in m.Nodes)
+                foreach (Nud.Polygon p in m.Nodes)
                 {
                     XmlNode polyNode = doc.CreateElement("polygon");
                     XmlAttribute pid = doc.CreateAttribute("id"); pid.Value = polyCount.ToString(); polyNode.Attributes.Append(pid);
@@ -61,9 +61,9 @@ namespace Smash_Forge
             doc.Save(filename);
         }
 
-        private static void WriteMaterials(XmlDocument doc, NUD.Polygon p, XmlNode polynode)
+        private static void WriteMaterials(XmlDocument doc, Nud.Polygon p, XmlNode polynode)
         {
-            foreach (NUD.Material mat in p.materials)
+            foreach (Nud.Material mat in p.materials)
             {
                 XmlNode matnode = doc.CreateElement("material");
                 polynode.AppendChild(matnode);
@@ -74,7 +74,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void WriteMatAttributes(XmlDocument doc, NUD.Material mat, XmlNode matNode)
+        private static void WriteMatAttributes(XmlDocument doc, Nud.Material mat, XmlNode matNode)
         {
             AddUintAttribute(doc, "flags", mat.Flags, matNode, true);
             AddIntAttribute(doc, "srcFactor", mat.SrcFactor, matNode, false);
@@ -86,9 +86,9 @@ namespace Smash_Forge
             AddIntAttribute(doc, "zbuffoff", mat.ZBufferOffset, matNode, false);
         }
 
-        private static void WriteTextureAttributes(XmlDocument doc, NUD.Material mat, XmlNode matnode)
+        private static void WriteTextureAttributes(XmlDocument doc, Nud.Material mat, XmlNode matnode)
         {
-            foreach (NUD.MatTexture tex in mat.textures)
+            foreach (Nud.MatTexture tex in mat.textures)
             {
                 XmlNode texnode = doc.CreateElement("texture");
 
@@ -103,7 +103,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void WriteMatParams(XmlDocument doc, NUD.Material mat, XmlNode matnode)
+        private static void WriteMatParams(XmlDocument doc, Nud.Material mat, XmlNode matnode)
         {
             foreach (KeyValuePair<string, float[]> materialProperty in mat.entries)
             {
@@ -155,7 +155,7 @@ namespace Smash_Forge
             node.Attributes.Append(attribute);
         }
 
-        public static void ImportMaterialAsXml(NUD n, string filename)
+        public static void ImportMaterialAsXml(Nud n, string filename)
         {
             // Creates a list of materials and then trys to apply the materials to the polygons. 
             int polyCount = CalculatePolygonCount(n);
@@ -163,7 +163,7 @@ namespace Smash_Forge
             XmlDocument doc = new XmlDocument();
             doc.Load(filename);
 
-            List<NUD.Material> materialList = new List<NUD.Material>();
+            List<Nud.Material> materialList = new List<Nud.Material>();
             List<int> matCountForPolyId = new List<int>();
 
             XmlNode main = doc.ChildNodes[0];
@@ -195,12 +195,12 @@ namespace Smash_Forge
             ApplyMaterials(n, materialList, matCountForPolyId);
         }
 
-        private static int CalculatePolygonCount(NUD n)
+        private static int CalculatePolygonCount(Nud n)
         {
             int polyCount = 0;
-            foreach (NUD.Mesh m in n.Nodes)
+            foreach (Nud.Mesh m in n.Nodes)
             {
-                foreach (NUD.Polygon p in m.Nodes)
+                foreach (Nud.Polygon p in m.Nodes)
                 {
                     polyCount++;
                 }
@@ -209,14 +209,14 @@ namespace Smash_Forge
             return polyCount;
         }
 
-        private static void ApplyMaterials(NUD n, List<NUD.Material> materialList, List<int> polyMatCount)
+        private static void ApplyMaterials(Nud n, List<Nud.Material> materialList, List<int> polyMatCount)
         {
             int matIndex = 0;
             int polyIndex = 0;
 
-            foreach (NUD.Mesh m in n.Nodes)
+            foreach (Nud.Mesh m in n.Nodes)
             {
-                foreach (NUD.Polygon p in m.Nodes)
+                foreach (Nud.Polygon p in m.Nodes)
                 {
                     p.materials.Clear();
                     for (int i = 0; i < polyMatCount[polyIndex]; i++)
@@ -233,13 +233,13 @@ namespace Smash_Forge
             }
         }
 
-        private static void ReadMaterials(List<NUD.Material> materialList, XmlNode polyNode)
+        private static void ReadMaterials(List<Nud.Material> materialList, XmlNode polyNode)
         {
             foreach (XmlNode matnode in polyNode.ChildNodes)
             {
                 if (matnode.Name.Equals("material"))
                 {
-                    NUD.Material mat = new NUD.Material();
+                    Nud.Material mat = new Nud.Material();
                     materialList.Add(mat);
 
                     ReadAttributes(matnode, mat);
@@ -255,7 +255,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void ReadAttributes(XmlNode materialNode, NUD.Material material)
+        private static void ReadAttributes(XmlNode materialNode, Nud.Material material)
         {
             int value = 0;
             foreach (XmlAttribute attribute in materialNode.Attributes)
@@ -299,12 +299,12 @@ namespace Smash_Forge
             }
         }
 
-        private static void ReadTextures(NUD.Material material, XmlNode textureNode)
+        private static void ReadTextures(Nud.Material material, XmlNode textureNode)
         {
             if (!(textureNode.Name.Equals("texture")))
                 return;
             
-            NUD.MatTexture matTexture = new NUD.MatTexture();
+            Nud.MatTexture matTexture = new Nud.MatTexture();
             material.textures.Add(matTexture);
 
             foreach (XmlAttribute attribute in textureNode.Attributes)
@@ -333,7 +333,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void ReadMatParams(XmlNode polyNode, NUD.Material material, XmlNode materialNode)
+        private static void ReadMatParams(XmlNode polyNode, Nud.Material material, XmlNode materialNode)
         {
             if (!materialNode.Name.Equals("param"))
                 return;

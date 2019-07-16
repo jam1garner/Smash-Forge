@@ -1,12 +1,12 @@
 ﻿using MeleeLib.DAT;
 using MeleeLib.GCX;
 using OpenTK;
-using Smash_Forge.Filetypes.Melee;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using SmashForge.Filetypes.Melee;
 
-namespace Smash_Forge.GUI.Melee
+namespace SmashForge.Gui.Melee
 {
     public partial class DOBJImportSettings : Form
     {

@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace Smash_Forge
+namespace SmashForge
 {
-    public partial class NUD
+    public partial class Nud
     {
         public class Polygon : TreeNode, IBoundableModel
         {

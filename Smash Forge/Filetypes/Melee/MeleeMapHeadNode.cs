@@ -3,7 +3,7 @@ using MeleeLib.DAT.Melee;
 using MeleeLib.DAT.Animation;
 using System.Windows.Forms;
 
-namespace Smash_Forge.Filetypes.Melee
+namespace SmashForge.Filetypes.Melee
 {
 
     public class MeleeMapModelNode : MeleeNode

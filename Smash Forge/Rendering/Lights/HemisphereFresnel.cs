@@ -9,7 +9,7 @@ using SALT.Graphics;
 using System.Diagnostics;
 using System.Globalization;
 
-namespace Smash_Forge.Rendering.Lights
+namespace SmashForge.Rendering.Lights
 {
     public class HemisphereFresnel
     {

@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class BCH_Animation : TreeNode
     {
@@ -18,7 +18,7 @@ namespace Smash_Forge
             // poopity doo da
             // headery deadery
             FileOutput o = new FileOutput();
-            o.writeString("BCH");
+            o.WriteString("BCH");
             o.align(4);
             o.writeByte(0x21); // version stuffs
             o.writeByte(0x21); // version stuffs
@@ -67,7 +67,7 @@ namespace Smash_Forge
             
             d_Main.writeInt(0); // Model
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
@@ -75,7 +75,7 @@ namespace Smash_Forge
 
             d_Main.writeInt(0); // Material
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
@@ -83,7 +83,7 @@ namespace Smash_Forge
 
             d_Main.writeInt(0); // Shader
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
@@ -91,7 +91,7 @@ namespace Smash_Forge
 
             d_Main.writeInt(0); // Texture
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
@@ -99,7 +99,7 @@ namespace Smash_Forge
 
             d_Main.writeInt(0); // MaterialLUT
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
@@ -107,7 +107,7 @@ namespace Smash_Forge
 
             d_Main.writeInt(0); // Lights
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
@@ -115,7 +115,7 @@ namespace Smash_Forge
 
             d_Main.writeInt(0); // Camera
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
@@ -123,7 +123,7 @@ namespace Smash_Forge
 
             d_Main.writeInt(0); // Fog
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
@@ -134,8 +134,8 @@ namespace Smash_Forge
                 // Names need to be in patricia tree.......
                 Dictionary<string, int> NameBank = new Dictionary<string, int>();
 
-                NameBank.Add("BustN", d_String.size());
-                d_String.writeString("BustN");
+                NameBank.Add("BustN", d_String.Size());
+                d_String.WriteString("BustN");
                 d_String.writeByte(0);
 
                 List<PatriciaTree.PatriciaTreeNode> Nodes = new List<PatriciaTree.PatriciaTreeNode>();
@@ -147,7 +147,7 @@ namespace Smash_Forge
                 foreach (Animation a in animations)
                     PatriciaTree.Insert(Nodes, new PatriciaTree.PatriciaTreeNode() { Name = a.Text }, maxlength);
 
-                int nameOff = 0xb4 + d_Main2.size();
+                int nameOff = 0xb4 + d_Main2.Size();
                 foreach (PatriciaTree.PatriciaTreeNode node in Nodes)
                 {
                     d_Main2.writeInt((int)node.ReferenceBit);
@@ -159,9 +159,9 @@ namespace Smash_Forge
                     }
                     else
                     {
-                        NameBank.Add(node.Name, d_String.size());
-                        d_Main2.WriteOffset(d_String.size(), d_String);
-                        d_String.writeString(node.Name);
+                        NameBank.Add(node.Name, d_String.Size());
+                        d_Main2.WriteOffset(d_String.Size(), d_String);
+                        d_String.WriteString(node.Name);
                         d_String.writeByte(0);
                     }
                 }
@@ -170,16 +170,16 @@ namespace Smash_Forge
 
                 // Okay, first create the animation data then create the table pointng to it side by side 
 
-                int dataOff = 0xb4 + d_Main2.size();
+                int dataOff = 0xb4 + d_Main2.Size();
                 foreach (Animation a in animations)
                 {
-                    d_Main2.WriteOffset(d_Main3.size(), d_Main2);
+                    d_Main2.WriteOffset(d_Main3.Size(), d_Main2);
 
                     // now create the actual animation data I guess
                     d_Main3.WriteOffset(NameBank[a.Text], d_String); // name offset
                     d_Main3.writeInt(0x2); // Flags TODO: What are these
                     d_Main3.writeFloat(a.FrameCount + 1);
-                    d_Main3.WriteOffset(d_Main3.size() + 12, d_Main3); // bone offset
+                    d_Main3.WriteOffset(d_Main3.Size() + 12, d_Main3); // bone offset
                     d_Main3.writeInt(a.Bones.Count); // bonecount
                     d_Main3.writeInt(0); // metadata nonsense
                     
@@ -187,16 +187,16 @@ namespace Smash_Forge
                     boneHeader.Endian = System.IO.Endianness.Little;
                     FileOutput keyData = new FileOutput();
                     keyData.Endian = System.IO.Endianness.Little;
-                    int start = d_Main3.size() + (a.Bones.Count * 4);
+                    int start = d_Main3.Size() + (a.Bones.Count * 4);
                     int track = 0;
                     foreach (Animation.KeyNode node in a.Bones)
                     {
-                        d_Main3.WriteOffset(start + boneHeader.size(), d_Main3); // bone offset
+                        d_Main3.WriteOffset(start + boneHeader.Size(), d_Main3); // bone offset
                         // name type and flags
                         if (!NameBank.ContainsKey(node.Text))
                         {
-                            NameBank.Add(node.Text, d_String.size());
-                            d_String.writeString(node.Text);
+                            NameBank.Add(node.Text, d_String.Size());
+                            d_String.WriteString(node.Text);
                             d_String.writeByte(0);
                         }
                         boneHeader.WriteOffset(NameBank[node.Text], d_String); // name offset
@@ -236,8 +236,8 @@ namespace Smash_Forge
                         WriteKeyData(node.YPOS, boneHeader, keyData, d_Main3, sta, ref track);
                         WriteKeyData(node.ZPOS, boneHeader, keyData, d_Main3, sta, ref track);
                     }
-                    d_Main3.writeOutput(boneHeader);
-                    d_Main3.writeOutput(keyData);
+                    d_Main3.WriteOutput(boneHeader);
+                    d_Main3.WriteOutput(keyData);
 
                 }
                 
@@ -249,7 +249,7 @@ namespace Smash_Forge
 
             d_Main.writeInt(0); // MaterialAnim
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
@@ -257,7 +257,7 @@ namespace Smash_Forge
 
             d_Main.writeInt(0); // VisAnim
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
@@ -265,7 +265,7 @@ namespace Smash_Forge
 
             d_Main.writeInt(0); // LightAnim
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
@@ -273,7 +273,7 @@ namespace Smash_Forge
 
             d_Main.writeInt(0); // CameraAnim
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
@@ -281,7 +281,7 @@ namespace Smash_Forge
 
             d_Main.writeInt(0); // FogAnim
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
@@ -289,39 +289,39 @@ namespace Smash_Forge
 
             d_Main.writeInt(0); // Scene
             d_Main.writeInt(0); //
-            d_Main.WriteOffset(0xB4 + d_Main2.size(), d_Main); //
+            d_Main.WriteOffset(0xB4 + d_Main2.Size(), d_Main); //
 
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
             d_Main2.writeInt(0);
 
-            d_Main.writeOutput(d_Main2);
-            d_Main.writeOutput(d_Main3);
+            d_Main.WriteOutput(d_Main2);
+            d_Main.WriteOutput(d_Main3);
 
-            int headSize = o.size();
+            int headSize = o.Size();
             o.writeIntAt(headSize, 0x08);
-            o.writeIntAt(d_Main.size(), 0x20);
-            o.writeOutput(d_Main);
+            o.writeIntAt(d_Main.Size(), 0x20);
+            o.WriteOutput(d_Main);
             o.align(4);
 
-            int stringSize = o.size();
+            int stringSize = o.Size();
             o.writeIntAt(stringSize, 0x0C);
-            o.writeIntAt(d_String.size(), 0x24);
-            o.writeOutput(d_String);
+            o.writeIntAt(d_String.Size(), 0x24);
+            o.WriteOutput(d_String);
             o.align(4);
 
-            int gpuSize = o.size();
-            o.writeIntAt(d_GPU.size() > 0 ? gpuSize : 0, 0x10);
-            o.writeIntAt(d_GPU.size(), 0x28);
-            o.writeOutput(d_GPU);
+            int gpuSize = o.Size();
+            o.writeIntAt(d_GPU.Size() > 0 ? gpuSize : 0, 0x10);
+            o.writeIntAt(d_GPU.Size(), 0x28);
+            o.WriteOutput(d_GPU);
             o.align(0x100);
 
-            int dataSize = o.size();
+            int dataSize = o.Size();
             o.writeIntAt(dataSize, 0x14);
             o.writeIntAt(dataSize, 0x18);
-            o.writeIntAt(d_Data.size(), 0x2C);
-            o.writeIntAt(d_Data.size(), 0x30);
-            o.writeOutput(d_Data);
+            o.writeIntAt(d_Data.Size(), 0x2C);
+            o.writeIntAt(d_Data.Size(), 0x30);
+            o.WriteOutput(d_Data);
 
             //Create Relocation Table
             // Flag is 7 bits
@@ -338,7 +338,7 @@ namespace Smash_Forge
                     if (off.output == d_Main3)
                         off.Value += headSize;
                     if (off.output == d_Main2)
-                        off.Value += d_Main2.size()+headSize;
+                        off.Value += d_Main2.Size()+headSize;
                 }
                 if (off.output == d_String)
                 {
@@ -362,10 +362,10 @@ namespace Smash_Forge
                 Reloc.writeInt(reloc);
             }
 
-            int relocSize = o.size();
+            int relocSize = o.Size();
             o.writeIntAt(relocSize, 0x1C);
-            o.writeIntAt(Reloc.size(), 0x34);
-            o.writeOutput(Reloc);
+            o.writeIntAt(Reloc.Size(), 0x34);
+            o.WriteOutput(Reloc);
 
             o.save(fname);
         }
@@ -380,7 +380,7 @@ namespace Smash_Forge
             else
             {
                 int off = (group.Keys.Count * 4);
-                boneHeader.WriteOffset(start + keyData.size(), d_Main3); // bone offset
+                boneHeader.WriteOffset(start + keyData.Size(), d_Main3); // bone offset
 
                 keyData.writeFloat(0);
                 keyData.writeFloat(group.FrameCount);
@@ -402,7 +402,7 @@ namespace Smash_Forge
                 keyData.writeFloat(1f); // frame scale
                 keyData.writeFloat(minf); // frame offset
 
-                keyData.WriteOffset(start + keyData.size() + 4, d_Main3); // useless flags
+                keyData.WriteOffset(start + keyData.Size() + 4, d_Main3); // useless flags
 
                 foreach (Animation.KeyFrame key in group.Keys)
                 {

@@ -7,7 +7,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using OpenTK;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class OBJ
     {
@@ -243,15 +243,15 @@ namespace Smash_Forge
                 return;
             }
         }
-        public NUD toNUD()
+        public Nud toNUD()
         {
-            NUD n = new NUD();
+            Nud n = new Nud();
 
             n.hasBones = false;
 
             foreach (OBJObject o in objects)
             {
-                NUD.Mesh m = new NUD.Mesh();
+                Nud.Mesh m = new Nud.Mesh();
                 m.Text = o.name;
                 m.singlebind = -1;
                 m.boneflag = 0x08;
@@ -260,7 +260,7 @@ namespace Smash_Forge
                 {
                     if (g.v.Count == 0) continue;
 
-                    NUD.Polygon p = new NUD.Polygon();
+                    Nud.Polygon p = new Nud.Polygon();
                     m.Nodes.Add(p);
                     m.Nodes.Add(p);
                     p.AddDefaultMaterial();
@@ -273,7 +273,7 @@ namespace Smash_Forge
                     for (int i = 0; i < g.v.Count; i++)
                     {
                         p.vertexIndices.Add(p.vertices.Count);
-                        NUD.Vertex v = new NUD.Vertex();
+                        Nud.Vertex v = new Nud.Vertex();
                         p.vertices.Add(v);
                         if (g.v.Count > i)
                             v.pos = this.v[g.v[i]] + Vector3.Zero;

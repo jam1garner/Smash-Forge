@@ -10,8 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using SmashForge.Rendering;
 
-namespace Smash_Forge.Filetypes.Melee
+namespace SmashForge.Filetypes.Melee
 {
     public class MeleeDataNode : MeleeNode
     {
@@ -118,10 +119,10 @@ namespace Smash_Forge.Filetypes.Melee
                                     MeleeJointAnimationNode n = new MeleeJointAnimationNode(a);
                                     Compiler.Compile(n.GetAsDATFile(), "temp.dat");
                                     if (script != null)
-                                        script.AnimationOffset = o.size();
+                                        script.AnimationOffset = o.Size();
                                     o.writeBytes(File.ReadAllBytes("temp.dat"));
                                     if (script != null)
-                                        script.AnimationSize = o.size() - script.AnimationOffset;
+                                        script.AnimationSize = o.Size() - script.AnimationOffset;
                                     o.align(0x20, 0xFF);
                                 }
                             if(File.Exists("temp.dat"))
@@ -223,9 +224,9 @@ namespace Smash_Forge.Filetypes.Melee
             }
 
             // Only initialize this once to improve frame rates.
-            Shader shader = Smash_Forge.Rendering.OpenTKSharedResources.shaders["Dat"];
+            Shader shader = OpenTKSharedResources.shaders["Dat"];
             if (Runtime.renderType != Runtime.RenderTypes.Shaded)
-                shader = Smash_Forge.Rendering.OpenTKSharedResources.shaders["DatDebug"];
+                shader = OpenTKSharedResources.shaders["DatDebug"];
             shader.UseProgram();
 
             // TODO: Why is this flipped?
@@ -252,7 +253,7 @@ namespace Smash_Forge.Filetypes.Melee
 
             shader.SetInt("renderType", (int)Runtime.renderType);
 
-            shader.SetTexture("UVTestPattern", Smash_Forge.Rendering.RenderTools.uvTestPattern, 10);
+            shader.SetTexture("UVTestPattern", RenderTools.uvTestPattern, 10);
 
             shader.SetBoolToInt("renderR", Runtime.renderR);
             shader.SetBoolToInt("renderG", Runtime.renderG);

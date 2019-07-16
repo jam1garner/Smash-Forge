@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge
+﻿namespace SmashForge
 {
 	partial class MainForm
 	{
@@ -580,7 +580,7 @@
             // 
             // dockPanel1
             // 
-            this.dockPanel1.BackgroundImage = global::Smash_Forge.Properties.Resources.ForgeBack;
+            this.dockPanel1.BackgroundImage = global::SmashForge.Properties.Resources.ForgeBack;
             this.dockPanel1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.dockPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dockPanel1.DockBottomPortion = 150D;

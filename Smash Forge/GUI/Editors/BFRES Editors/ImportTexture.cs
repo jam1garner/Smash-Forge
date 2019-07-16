@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Smash_Forge.GUI.Editors.BFRES_Editors
+namespace SmashForge.Gui.Editors.BFRES_Editors
 {
     public partial class ImportTexture : Form
     {

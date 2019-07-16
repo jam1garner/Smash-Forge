@@ -7,16 +7,17 @@ using SFGenericModel.Utils;
 using SFGenericModel;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Shaders;
-using Smash_Forge.Filetypes.Melee.Rendering;
-using Smash_Forge.GUI.Melee;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using Smash_Forge.Filetypes.Melee.Utils;
 using SFGenericModel.RenderState;
+using SmashForge.Filetypes.Melee.Rendering;
+using SmashForge.Filetypes.Melee.Utils;
+using SmashForge.Gui.Melee;
+using SmashForge.Rendering;
 
-namespace Smash_Forge.Filetypes.Melee
+namespace SmashForge.Filetypes.Melee
 {
     public class MeleeDataObjectNode : MeleeNode
     {
@@ -266,10 +267,10 @@ namespace Smash_Forge.Filetypes.Melee
             shader.SetVector2("bumpMapScale", new Vector2(1, 1));
             shader.SetVector2("specularScale", new Vector2(1, 1));
 
-            shader.SetTexture("diffuseTex0", Smash_Forge.Rendering.RenderTools.defaultTex, 0);
-            shader.SetTexture("diffuseTex1", Smash_Forge.Rendering.RenderTools.defaultTex, 1);
-            shader.SetTexture("bumpMapTex", Smash_Forge.Rendering.RenderTools.defaultTex, 2);
-            shader.SetTexture("specularTex", Smash_Forge.Rendering.RenderTools.defaultTex, 3);
+            shader.SetTexture("diffuseTex0", RenderTools.defaultTex, 0);
+            shader.SetTexture("diffuseTex1", RenderTools.defaultTex, 1);
+            shader.SetTexture("bumpMapTex", RenderTools.defaultTex, 2);
+            shader.SetTexture("specularTex", RenderTools.defaultTex, 3);
 
             bool hasBumpMap = false;
             bool hasSpecular = false;

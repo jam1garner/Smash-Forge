@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using MeleeLib.DAT;
 using MeleeLib.DAT.Script;
 using System.Windows.Forms;
-using Smash_Forge.GUI.Melee;
+using SmashForge.Gui.Melee;
 
-namespace Smash_Forge.Filetypes.Melee
+namespace SmashForge.Filetypes.Melee
 {
     public class MeleeFighterScriptNode : MeleeNode
     {

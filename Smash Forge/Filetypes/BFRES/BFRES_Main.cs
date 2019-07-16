@@ -10,14 +10,14 @@ using Syroot.NintenTools.Bfres;
 using Syroot.NintenTools.Bfres.GX2;
 using Syroot.NintenTools.Bfres.Helpers;
 using ResNSW = Syroot.NintenTools.NSW.Bfres;
-using Smash_Forge.Rendering;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects;
 using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.Utils;
+using SmashForge.Rendering;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class BFRES : TreeNode
     {

@@ -5,7 +5,7 @@ using OpenTK.Graphics.OpenGL;
 using SFGenericModel;
 using SFGenericModel.VertexAttributes;
 
-namespace Smash_Forge.Rendering.Meshes
+namespace SmashForge.Rendering.Meshes
 {
     class Mesh3D : GenericMesh<Vector3>
     {

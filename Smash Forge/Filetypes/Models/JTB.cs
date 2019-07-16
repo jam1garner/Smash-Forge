@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class JTB : FileBase
     {

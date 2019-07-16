@@ -8,7 +8,7 @@ using MeleeLib.DAT;
 using MeleeLib.DAT.Animation;
 using MeleeLib.DAT.MatAnim;
 
-namespace Smash_Forge.Filetypes.Melee
+namespace SmashForge.Filetypes.Melee
 {
     public class MeleeMaterialAnimationNode : MeleeNode
     {

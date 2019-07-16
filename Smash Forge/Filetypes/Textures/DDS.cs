@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class DDS
     {
@@ -30,7 +30,7 @@ namespace Smash_Forge
             NegZ
         }
 
-        [FlagsAttribute]
+        [Flags]
         public enum DDSD : uint
         {
             CAPS = 0x00000001,
@@ -42,7 +42,7 @@ namespace Smash_Forge
             LINEARSIZE = 0x00080000,
             DEPTH = 0x00800000
         }
-        [FlagsAttribute]
+        [Flags]
         public enum DDPF : uint
         {
             ALPHAPIXELS = 0x00000001,
@@ -52,14 +52,14 @@ namespace Smash_Forge
             YUV = 0x00000200,
             LUMINANCE = 0x00020000,
         }
-        [FlagsAttribute]
+        [Flags]
         public enum DDSCAPS : uint
         {
             COMPLEX = 0x00000008,
             TEXTURE = 0x00001000,
             MIPMAP = 0x00400000,
         }
-        [FlagsAttribute]
+        [Flags]
         public enum DDSCAPS2 : uint
         {
             CUBEMAP = 0x00000200,

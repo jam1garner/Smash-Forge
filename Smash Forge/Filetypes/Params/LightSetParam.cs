@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using SALT.PARAMS;
 using OpenTK;
-using Smash_Forge.Rendering.Lights;
+using SmashForge.Rendering.Lights;
 
-namespace Smash_Forge.Params
+namespace SmashForge.Params
 {
     public class LightSetParam
     {

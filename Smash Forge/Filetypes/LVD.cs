@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public abstract class LVDEntry
     {
@@ -84,10 +84,10 @@ namespace Smash_Forge
             f.writeHex(magic);
 
             f.writeByte(1);
-            f.writeString(_name);
+            f.WriteString(_name);
 
             f.writeByte(1);
-            f.writeString(_subname);
+            f.WriteString(_subname);
 
             f.writeByte(1);
             for (int i = 0; i < 3; i++)
@@ -103,7 +103,7 @@ namespace Smash_Forge
             f.writeInt(unk3);
 
             f.writeByte(1);
-            f.writeString(_boneName);
+            f.WriteString(_boneName);
         }
     }
 
@@ -1066,7 +1066,7 @@ namespace Smash_Forge
                 f.writeInt(0);
             }
 
-            return f.getBytes();
+            return f.GetBytes();
         }
 
         public static void GeneratePassthroughs(Collision c, bool PolyCheck = false)

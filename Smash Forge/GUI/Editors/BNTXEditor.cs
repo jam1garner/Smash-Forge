@@ -2,8 +2,6 @@
 using SFGraphics.GLObjects.Framebuffers;
 using SFGraphics.GLObjects.GLObjectManagement;
 using SFGraphics.GLObjects.Textures;
-using Smash_Forge.Rendering;
-using Smash_Forge.Rendering.Meshes;
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -11,8 +9,10 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using SmashForge.Rendering;
+using SmashForge.Rendering.Meshes;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class BNTXEditor : EditorBase
     {

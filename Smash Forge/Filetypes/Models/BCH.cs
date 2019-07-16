@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using OpenTK;
 using System.Drawing;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     /*
      * Everything in this class is adapted from gdkchan's Ohana3DS
@@ -564,7 +564,7 @@ namespace Smash_Forge
                 List<objDes> objDescriptors = new List<objDes>();
                 if (mbn == null)
                 {
-                    mbn = new Smash_Forge.MBN();
+                    mbn = new MBN();
                     for (int index = 0; index < verticesTableEntries; index++)
                         mbn.mesh.Add(new MBN.Mesh());
                     mbn.PreRender();

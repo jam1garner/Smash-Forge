@@ -7,18 +7,18 @@ using System.Security.Cryptography;
 using WeifenLuo.WinFormsUI.Docking;
 using System.Diagnostics;
 using System.Threading;
-using Smash_Forge.GUI.Menus;
-using Smash_Forge.GUI.Editors;
 using SALT.PARAMS;
 using SALT.Graphics;
 using System.ComponentModel;
-using Smash_Forge.Rendering;
-using Smash_Forge.Rendering.Lights;
 using System.Text.RegularExpressions;
-using Smash_Forge.Filetypes.Melee;
-using Smash_Forge.Filetypes.Melee.Utils;
+using SmashForge.Filetypes.Melee.Utils;
+using SmashForge.Filetypes.Melee;
+using SmashForge.Gui.Editors;
+using SmashForge.Gui.Menus;
+using SmashForge.Rendering;
+using SmashForge.Rendering.Lights;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class MainForm : FormBase
     {
@@ -72,7 +72,7 @@ namespace Smash_Forge
 
         private void AppIdle(object sender, EventArgs e)
         {
-            if (Smash_Forge.Update.Downloaded && Instance.greenArrowPictureBox.Image == null)
+            if (SmashForge.Update.Downloaded && Instance.greenArrowPictureBox.Image == null)
                 Instance.greenArrowPictureBox.Image = Resources.Resources.sexy_green_down_arrow;
             DiscordSettings.Update();
         }
@@ -87,11 +87,11 @@ namespace Smash_Forge
             Config.StartupFromFile(executableDir + "\\config.xml");
             DiscordSettings.startTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             dockPanel = dockPanel1;
-            DiscordSettings.DiscordController = new DiscordController();
-            DiscordSettings.DiscordController.Initialize();
+            DiscordSettings.discordController = new DiscordController();
+            DiscordSettings.discordController.Initialize();
             DiscordSettings.Update();
 
-            ThreadStart t = new ThreadStart(Smash_Forge.Update.CheckLatest);
+            ThreadStart t = new ThreadStart(SmashForge.Update.CheckLatest);
             Thread thread = new Thread(t);
             thread.Start();
 
@@ -383,7 +383,7 @@ namespace Smash_Forge
             modelContainer.Text = viewportTitle;
             mvp.Text = viewportTitle;
 
-            modelContainer.NUD = new NUD(pathNud);
+            modelContainer.NUD = new Nud(pathNud);
             if (modelContainer.NUD != null)
                 modelContainer.NUD.MergePoly();
 
@@ -723,7 +723,7 @@ namespace Smash_Forge
             Runtime.TargetVBN.unk_2 = 1;
         }
 
-        public void openMats(NUD.Polygon poly, string name)
+        public void openMats(Nud.Polygon poly, string name)
         {
             (new NUDMaterialEditor(poly) { ShowHint = DockState.DockLeft, Text = name }).Show();
         }
@@ -744,12 +744,12 @@ namespace Smash_Forge
 
         public void ClearWorkSpace(bool closeEditors = true)
         {
-            Runtime.killWorkspace = true;
+            Runtime.KillWorkspace = true;
 
             Runtime.ParamManager.Reset();
             hurtboxList.refresh();
             Runtime.Animnames.Clear();
-            Runtime.clearMoveset();
+            Runtime.ClearMoveset();
             animList.treeView1.Nodes.Clear();
 
             LightTools.areaLights.Clear();
@@ -766,7 +766,7 @@ namespace Smash_Forge
 
         private void renderSettingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            GUI.RenderSettingsMenu renderSettings = new GUI.RenderSettingsMenu();
+            Gui.RenderSettingsMenu renderSettings = new Gui.RenderSettingsMenu();
             renderSettings.Show();
         }
 
@@ -876,7 +876,7 @@ namespace Smash_Forge
 
                             // Model render size
                             ParamFile param = new ParamFile(Runtime.paramDir + "\\fighter\\fighter_param.bin");
-                            ParamEntry[] characterParams = ((ParamGroup)param.Groups[0])[CharacterParamManager.FIGHTER_ID[fighterName]];
+                            ParamEntry[] characterParams = ((ParamGroup)param.Groups[0])[CharacterParamManager.fighterId[fighterName]];
                             int modelScaleIndex = 44;
                             Runtime.modelScale = Convert.ToSingle(characterParams[modelScaleIndex].Value);
                         }
@@ -1127,7 +1127,7 @@ namespace Smash_Forge
             if (filename.EndsWith(".bch"))
             {
                 BCHan.Read(filename);
-                BCH bch = new Smash_Forge.BCH();
+                BCH bch = new BCH();
                 bch.Read(filename);
             }
 
@@ -1858,9 +1858,9 @@ namespace Smash_Forge
 
         private void greenArrowPictureBox_Click(object sender, EventArgs e)
         {
-            if (Smash_Forge.Update.Downloaded &&
+            if (SmashForge.Update.Downloaded &&
                 MessageBox.Show(
-                    $"Would you like to download the following update?\n{Smash_Forge.Update.DownloadedRelease.Name}\n{Smash_Forge.Update.DownloadedRelease.Body}",
+                    $"Would you like to download the following update?\n{SmashForge.Update.DownloadedRelease.Name}\n{SmashForge.Update.DownloadedRelease.Body}",
                     "Smash Forge Updater", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Process p = new Process();
@@ -1978,12 +1978,12 @@ namespace Smash_Forge
 
         private void toolStripMenuItem2_Click(object sender, EventArgs e)
         {
-            Runtime.clearMoveset();
+            Runtime.ClearMoveset();
         }
 
         private void exportParamsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Runtime.ParamManager.param == null)
+            if (Runtime.ParamManager.Param == null)
                 return;
 
             using (var sfd = new SaveFileDialog())
@@ -1996,7 +1996,7 @@ namespace Smash_Forge
                 {
                     try
                     {
-                        Runtime.ParamManager.param.Export(sfd.FileName);
+                        Runtime.ParamManager.Param.Export(sfd.FileName);
                     }
                     catch
                     {
@@ -2088,7 +2088,7 @@ namespace Smash_Forge
                         ModelContainer modelContainer = new ModelContainer();
                         if (File.Exists(ModelFolder + "normal.bch"))
                         {
-                            BCH bch = new Smash_Forge.BCH(ModelFolder + "normal.bch");
+                            BCH bch = new BCH(ModelFolder + "normal.bch");
                             if (bch.Models.Nodes.Count > 0 && File.Exists(ModelFolder + "normal.mbn"))
                                 ((BCH_Model)bch.Models.Nodes[0]).OpenMBN(new FileData(ModelFolder + "normal.mbn"));
                             modelContainer.Bch = bch;
@@ -2096,7 +2096,7 @@ namespace Smash_Forge
 
                         if (File.Exists(ofd.SelectedPath + "\\body\\c00\\" + "model.jtb"))
                         {
-                            modelContainer.JTB = new Smash_Forge.JTB(ofd.SelectedPath + "\\body\\c00\\" + "model.jtb");
+                            modelContainer.JTB = new JTB(ofd.SelectedPath + "\\body\\c00\\" + "model.jtb");
                         }
                         mvp.draw.Add(modelContainer);
                     }
@@ -2144,7 +2144,7 @@ namespace Smash_Forge
                     {
                         foreach (string filename in ofd.FileNames)
                         {
-                            HackyWiiUtoPS3NUT(new Smash_Forge.FileData(filename));
+                            HackyWiiUtoPS3NUT(new FileData(filename));
                         }
                     }
                 }

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using System.IO;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class MTAEditor : EditorBase
     {

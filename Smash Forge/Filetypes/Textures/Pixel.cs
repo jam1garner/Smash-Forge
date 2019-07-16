@@ -4,7 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class Pixel
     {
@@ -548,7 +548,7 @@ namespace Smash_Forge
                 }
             }
             
-            return o.getBytes();
+            return o.GetBytes();
         }
 
 
@@ -650,7 +650,7 @@ namespace Smash_Forge
                 }
             }
 
-            return o.getBytes();
+            return o.GetBytes();
         }
 
 

@@ -8,7 +8,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using OpenTK;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class RG_ETC1
     {
@@ -67,7 +67,7 @@ namespace Smash_Forge
                 }
             }
 
-            return o.getBytes();
+            return o.GetBytes();
         }
 
         public static byte[] GenETC1(Color[] colors)
@@ -187,7 +187,7 @@ namespace Smash_Forge
                 }
             }
 
-            return o.getBytes();
+            return o.GetBytes();
         }
 
         public enum ETC1_Quality

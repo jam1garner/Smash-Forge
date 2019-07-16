@@ -10,7 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Windows.Forms;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class DAT
     {
@@ -638,7 +638,7 @@ namespace Smash_Forge
             ModelContainer con = new ModelContainer();
             con.VBN = bones;
 
-            NUD nud = new NUD();
+            Nud nud = new Nud();
             con.NUD = nud;
 
             // create a nut?
@@ -665,7 +665,7 @@ namespace Smash_Forge
             foreach (var da in displayList)
             {
                 DOBJ data = (DOBJ)da.Tag;
-                NUD.Mesh mesh = new NUD.Mesh();
+                Nud.Mesh mesh = new Nud.Mesh();
                 mesh.Text = "Mesh_" + displayList.IndexOf(da);
 
                 texid = 0;
@@ -676,7 +676,7 @@ namespace Smash_Forge
 
                     texid++;
                 }
-                NUD.Polygon polygon = new NUD.Polygon();
+                Nud.Polygon polygon = new Nud.Polygon();
                 polygon.AddDefaultMaterial();
                 polygon.materials[0].textures[0].hash = 0x401B1000 + texid;
                 polygon.materials[0].CullMode = 2;
@@ -724,7 +724,7 @@ namespace Smash_Forge
                 foreach (Vertex vert in usedVertices)
                 {
                     // convert to nud vert
-                    NUD.Vertex nv = new NUD.Vertex();
+                    Nud.Vertex nv = new Nud.Vertex();
                     nv.pos = vert.pos;
                     nv.uv.Add(new Vector2(vert.tx0.X * data.material.texture.scale_w, (vert.tx0.Y * data.material.texture.scale_h)));
                     nv.nrm = vert.nrm;

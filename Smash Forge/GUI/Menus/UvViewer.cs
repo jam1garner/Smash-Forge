@@ -1,22 +1,22 @@
 ﻿using System;
 using System.Windows.Forms;
-using Smash_Forge.Rendering;
 using SFGraphics.GLObjects;
 using OpenTK.Graphics.OpenGL;
-using Smash_Forge.Rendering.Meshes;
 using SFGraphics.GLObjects.GLObjectManagement;
 using SFGraphics.GLObjects.Shaders;
 using OpenTK;
+using SmashForge.Rendering;
+using SmashForge.Rendering.Meshes;
 
-namespace Smash_Forge.GUI.Menus
+namespace SmashForge.Gui.Menus
 {
     public partial class UvViewer : Form
     {
-        private NUD sourceNud;
-        private NUD.Polygon polygonToRender;
+        private Nud sourceNud;
+        private Nud.Polygon polygonToRender;
         private NudRenderMesh forgeMesh;
 
-        public UvViewer(NUD sourceNud, NUD.Polygon polygonToRender)
+        public UvViewer(Nud sourceNud, Nud.Polygon polygonToRender)
         {
             // We need the nud to generate buffers due to the way nud rendering works.
             InitializeComponent();

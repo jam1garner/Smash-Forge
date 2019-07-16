@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Xml;
 using SFGraphics.GLObjects.Textures;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class Config
     {
@@ -84,7 +84,7 @@ namespace Smash_Forge
                         bool.TryParse(node.InnerText, out Runtime.renderFloorLines);
                         break;
                     case "zoom_speed":
-                        float.TryParse(node.InnerText, out Runtime.zoomspeed);
+                        float.TryParse(node.InnerText, out Runtime.zoomSpeed);
                         break;
                     case "zoom_modifier_multiplier":
                         float.TryParse(node.InnerText, out Runtime.zoomModifierScale);
@@ -409,7 +409,7 @@ namespace Smash_Forge
 
             AppendFloorSettings(doc, viewportNode);
 
-            viewportNode.AppendChild(createNode(doc, "zoom_speed", Runtime.zoomspeed.ToString()));
+            viewportNode.AppendChild(createNode(doc, "zoom_speed", Runtime.zoomSpeed.ToString()));
             viewportNode.AppendChild(createNode(doc, "zoom_modifier_multiplier", Runtime.zoomModifierScale.ToString()));
             viewportNode.AppendChild(createNode(doc, "fov", Runtime.fov.ToString()));
             viewportNode.AppendChild(createNode(doc, "render_depth", Runtime.renderDepth.ToString()));
@@ -488,7 +488,7 @@ namespace Smash_Forge
             XmlNode specularNode = doc.CreateElement("specular");
             parentNode.AppendChild(specularNode);
             specularNode.AppendChild(createNode(doc, "enabled", Runtime.renderSpecular.ToString()));
-            specularNode.AppendChild(createNode(doc, "intensity", Runtime.spcIntentensity.ToString()));
+            specularNode.AppendChild(createNode(doc, "intensity", Runtime.spcIntensity.ToString()));
 
             XmlNode fresnelNode = doc.CreateElement("fresnel");
             parentNode.AppendChild(fresnelNode);
@@ -502,7 +502,7 @@ namespace Smash_Forge
 
             XmlNode ambientNode = doc.CreateElement("ambient");
             parentNode.AppendChild(ambientNode);
-            ambientNode.AppendChild(createNode(doc, "intensity", Runtime.ambItensity.ToString()));
+            ambientNode.AppendChild(createNode(doc, "intensity", Runtime.ambIntensity.ToString()));
         }
 
         private static void AppendHitBoxHurtBoxRenderSettings(XmlDocument doc, XmlNode parentNode)

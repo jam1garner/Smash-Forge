@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 using OpenTK;
 using System.Drawing;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class MovesetManager
     {

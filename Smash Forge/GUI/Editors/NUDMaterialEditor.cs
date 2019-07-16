@@ -2,9 +2,6 @@
 using SFGraphics.GLObjects.GLObjectManagement;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.Utils;
-using Smash_Forge.Filetypes.Models.Nuds;
-using Smash_Forge.Rendering;
-using Smash_Forge.Rendering.Meshes;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,9 +9,12 @@ using System.Globalization;
 using System.IO;
 using System.Timers;
 using System.Windows.Forms;
+using SmashForge.Filetypes.Models.Nuds;
+using SmashForge.Rendering;
+using SmashForge.Rendering.Meshes;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class NUDMaterialEditor : DockContent
     {
@@ -84,8 +84,8 @@ namespace Smash_Forge
 
         public static Dictionary<string, Params.MatParam> materialParamList = new Dictionary<string, Params.MatParam>();
 
-        public NUD.Polygon currentPolygon;
-        public List<NUD.Material> currentMaterialList;
+        public Nud.Polygon currentPolygon;
+        public List<Nud.Material> currentMaterialList;
 
         private int currentMatIndex = 0;
         private string currentPropertyName = "";
@@ -107,7 +107,7 @@ namespace Smash_Forge
             InitializeComponent();
         }
 
-        public NUDMaterialEditor(NUD.Polygon p) : this()
+        public NUDMaterialEditor(Nud.Polygon p) : this()
         {
             currentPolygon = p;
             currentMaterialList = p.materials;
@@ -139,12 +139,12 @@ namespace Smash_Forge
             // Reuse the same context to avoid CPU bottlenecks.
             using (OpenTK.GameWindow gameWindow = OpenTKSharedResources.CreateGameWindowContext(64, 64))
             {
-                NUD.Material mat = currentMaterialList[currentMatIndex];
+                Nud.Material mat = currentMaterialList[currentMatIndex];
                 RenderMaterialTexturesAddToImageList(imageList, mat);
             }
         }
 
-        private static void RenderMaterialTexturesAddToImageList(ImageList imageList, NUD.Material mat)
+        private static void RenderMaterialTexturesAddToImageList(ImageList imageList, Nud.Material mat)
         {
             // Shaders weren't initialized.
             if (OpenTKSharedResources.SetupStatus != OpenTKSharedResources.SharedResourceStatus.Initialized)
@@ -247,7 +247,7 @@ namespace Smash_Forge
 
         public void FillForm()
         {
-            NUD.Material mat = currentMaterialList[currentMatIndex];
+            Nud.Material mat = currentMaterialList[currentMatIndex];
 
             InitializeComboBoxes(mat);
             InitializeTextBoxes(mat);
@@ -256,13 +256,13 @@ namespace Smash_Forge
             InitializePropertiesListView(mat);
         }
 
-        private void InitializeComboBoxes(NUD.Material mat)
+        private void InitializeComboBoxes(Nud.Material mat)
         {
             alphaFuncComboBox.SelectedItem = alphaFuncByMatValue[mat.AlphaFunction];
             cullModeComboBox.SelectedItem = cullModeByMatValue[mat.CullMode];
         }
 
-        private void InitializeCheckBoxes(NUD.Material mat)
+        private void InitializeCheckBoxes(Nud.Material mat)
         {
             shadowCB.Checked = mat.HasShadow;
             GlowCB.Checked = mat.Glow;
@@ -272,7 +272,7 @@ namespace Smash_Forge
             alphaTestCB_CheckedChanged(null, null);
         }
 
-        private void InitializeTextBoxes(NUD.Material mat)
+        private void InitializeTextBoxes(Nud.Material mat)
         {
             flagsTB.Text = mat.Flags.ToString("X");
             srcTB.Text = mat.SrcFactor + "";
@@ -281,7 +281,7 @@ namespace Smash_Forge
             zBufferTB.Text = mat.ZBufferOffset + "";
         }
 
-        private void InitializePropertiesListView(NUD.Material mat)
+        private void InitializePropertiesListView(Nud.Material mat)
         {
             propertiesListView.Items.Clear();
             propertiesListView.View = View.List;
@@ -295,7 +295,7 @@ namespace Smash_Forge
                 propertiesListView.SelectedIndices.Add(0);
         }
 
-        private void InitializeTextureListView(NUD.Material mat)
+        private void InitializeTextureListView(Nud.Material mat)
         {
             texturesListView.Items.Clear();
 
@@ -401,7 +401,7 @@ namespace Smash_Forge
 
         private void UpdateSelectedTextureControlValues(int index)
         {
-            NUD.MatTexture tex = currentMaterialList[currentMatIndex].textures[index];
+            Nud.MatTexture tex = currentMaterialList[currentMatIndex].textures[index];
             textureIdTB.Text = tex.hash.ToString("X");
 
             mapModeComboBox.SelectedItem = mapModeByMatValue[tex.mapMode];
@@ -570,7 +570,7 @@ namespace Smash_Forge
         {
             if (e.KeyCode == Keys.Delete || e.KeyCode == Keys.D)
             {
-                NUD.Material mat = currentMaterialList[currentMatIndex];
+                Nud.Material mat = currentMaterialList[currentMatIndex];
                 foreach (ListViewItem property in propertiesListView.SelectedItems)
                 {
                     mat.entries.Remove(property.Text);
@@ -753,7 +753,7 @@ namespace Smash_Forge
         {
             if (currentMaterialList[currentMatIndex].textures.Count < 4)
             {
-                currentMaterialList[currentMatIndex].textures.Add(NUD.MatTexture.GetDefault());
+                currentMaterialList[currentMatIndex].textures.Add(Nud.MatTexture.GetDefault());
                 FillForm();
             }
         }
@@ -764,10 +764,10 @@ namespace Smash_Forge
             matSelector.ShowDialog();
             if (matSelector.exitStatus == MaterialSelector.ExitStatus.Opened)
             {
-                List<NUD.Material> presetMaterials = ReadMaterialListFromPreset(matSelector.path);
+                List<Nud.Material> presetMaterials = ReadMaterialListFromPreset(matSelector.path);
 
                 // Store the original material to preserve Tex IDs. 
-                NUD.Material original = currentPolygon.materials[0].Clone();
+                Nud.Material original = currentPolygon.materials[0].Clone();
                 currentPolygon.materials = presetMaterials;
 
                 // Copy the old Tex IDs. 
@@ -780,12 +780,12 @@ namespace Smash_Forge
             }
         }
 
-        public static List<NUD.Material> ReadMaterialListFromPreset(string file)
+        public static List<Nud.Material> ReadMaterialListFromPreset(string file)
         {
             FileData matFile = new FileData(file);
             int soff = matFile.readInt();
 
-            NUD.PolyData pol = new NUD.PolyData()
+            Nud.PolyData pol = new Nud.PolyData()
             {
                 texprop1 = matFile.readInt(),
                 texprop2 = matFile.readInt(),
@@ -793,7 +793,7 @@ namespace Smash_Forge
                 texprop4 = matFile.readInt()
             };
 
-            List<NUD.Material> presetMaterials = NUD.ReadMaterials(matFile, pol, soff);
+            List<Nud.Material> presetMaterials = Nud.ReadMaterials(matFile, pol, soff);
             return presetMaterials;
         }
 
@@ -980,7 +980,7 @@ namespace Smash_Forge
             // Can only have two materials.
             if (currentMaterialList.Count < 2)
             {
-                currentMaterialList.Add(NUD.Material.GetDefault());
+                currentMaterialList.Add(Nud.Material.GetDefault());
                 currentMatIndex = 1;
                 FillForm();
                 UpdateMatComboBox();
@@ -1081,7 +1081,7 @@ namespace Smash_Forge
             FileOutput m = new FileOutput();
             FileOutput s = new FileOutput();
 
-            int[] c = NUD.WriteMaterial(m, currentMaterialList, s);
+            int[] c = Nud.WriteMaterial(m, currentMaterialList, s);
 
             FileOutput fin = new FileOutput();
 
@@ -1096,16 +1096,16 @@ namespace Smash_Forge
             for (int i = 0; i < 4 - c.Length; i++)
                 fin.writeInt(0);
 
-            fin.writeOutput(m);
+            fin.WriteOutput(m);
             fin.align(32, 0xFF);
-            fin.writeIntAt(fin.size(), 0);
-            fin.writeOutput(s);
+            fin.writeIntAt(fin.Size(), 0);
+            fin.WriteOutput(s);
             fin.save(fileName);
         }
 
         private void cullModeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            NUD.Material mat = currentMaterialList[currentMatIndex];
+            Nud.Material mat = currentMaterialList[currentMatIndex];
             if (matValueByCullModeName.ContainsKey(cullModeComboBox.SelectedItem.ToString()))
                 mat.CullMode = matValueByCullModeName[cullModeComboBox.SelectedItem.ToString()];
         }
@@ -1127,7 +1127,7 @@ namespace Smash_Forge
 
         private void texturesListView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            GUI.Menus.TextureSelector textureSelector = new GUI.Menus.TextureSelector();
+            Gui.Menus.TextureSelector textureSelector = new Gui.Menus.TextureSelector();
             textureSelector.ShowDialog();
 
             // Updating the text box will update the material texture.

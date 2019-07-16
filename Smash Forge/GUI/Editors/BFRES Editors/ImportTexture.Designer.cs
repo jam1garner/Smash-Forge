@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge.GUI.Editors.BFRES_Editors
+﻿namespace SmashForge.Gui.Editors.BFRES_Editors
 {
     partial class ImportTexture
     {

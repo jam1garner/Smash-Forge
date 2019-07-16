@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using OpenTK;
 using System.IO;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class Texlist : FileBase
     {
@@ -145,13 +145,13 @@ namespace Smash_Forge
             //strings
             foreach (var texture in textures)
             {
-                buf.writeString(texture.name);
+                buf.WriteString(texture.name);
                 buf.writeByte(0);
             }
 
             buf.writeByte(0);
 
-            return buf.getBytes();
+            return buf.GetBytes();
         }
     }
 }

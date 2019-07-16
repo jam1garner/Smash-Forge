@@ -1,11 +1,11 @@
 ﻿using MeleeLib.DAT;
-using Smash_Forge.Filetypes.Melee;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using SmashForge.Filetypes.Melee;
 
-namespace Smash_Forge.GUI.Melee
+namespace SmashForge.Gui.Melee
 {
     public partial class MeleeTextureSelector : Form
     {

@@ -1,7 +1,7 @@
 ﻿using MeleeLib.DAT;
 using System;
 
-namespace Smash_Forge.Filetypes.Melee
+namespace SmashForge.Filetypes.Melee
 {
     public class MeleeJointNode : MeleeNode
     {

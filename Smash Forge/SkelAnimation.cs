@@ -7,7 +7,7 @@ using OpenTK;
 // Will probably remove eventually
 // Still used for some converting...
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class KeyFrame
     {

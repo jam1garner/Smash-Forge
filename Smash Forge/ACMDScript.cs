@@ -9,7 +9,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Drawing;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class ForgeACMDScript
     {

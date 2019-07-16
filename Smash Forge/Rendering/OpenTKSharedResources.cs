@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using SFGraphics.GLObjects.Shaders;
 
 
-namespace Smash_Forge.Rendering
+namespace SmashForge.Rendering
 {
     static class OpenTKSharedResources
     {
@@ -17,14 +17,10 @@ namespace Smash_Forge.Rendering
         {
             Initialized,
             Failed,
-            Unitialized
+            Uninitialized
         }
 
-        public static SharedResourceStatus SetupStatus
-        {
-            get { return setupStatus; }
-        }
-        private static SharedResourceStatus setupStatus = SharedResourceStatus.Unitialized;
+        public static SharedResourceStatus SetupStatus { get; private set; } = SharedResourceStatus.Uninitialized;
 
         // Keep a context around to avoid setting up after making each context.
         public static GameWindow dummyResourceWindow;
@@ -37,7 +33,7 @@ namespace Smash_Forge.Rendering
         public static void InitializeSharedResources()
         {
             // Only setup once. This is checked multiple times to prevent crashes.
-            if (setupStatus == SharedResourceStatus.Initialized)
+            if (SetupStatus == SharedResourceStatus.Initialized)
                 return;
 
             try
@@ -53,12 +49,12 @@ namespace Smash_Forge.Rendering
                 GetOpenGLSystemInfo();
                 ShaderTools.SetUpShaders();
 
-                setupStatus = SharedResourceStatus.Initialized;
+                SetupStatus = SharedResourceStatus.Initialized;
             }
             catch (AccessViolationException)
             {
                 // Context creation failed.
-                setupStatus = SharedResourceStatus.Failed;
+                SetupStatus = SharedResourceStatus.Failed;
             }
         }
 
@@ -83,16 +79,17 @@ namespace Smash_Forge.Rendering
         private static void DebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
         {
             string debugMessage = Marshal.PtrToStringAnsi(message, length);
-            Debug.WriteLine(String.Format("{0} {1} {2}", severity, type, debugMessage));
+            Debug.WriteLine($"{severity} {type} {debugMessage}");
         }
 
         public static GameWindow CreateGameWindowContext(int width = 640, int height = 480)
         {
             GraphicsMode mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
 
-            GameWindow gameWindow = new GameWindow(width, height, mode, "", GameWindowFlags.Default);
-
-            gameWindow.Visible = false;
+            GameWindow gameWindow = new GameWindow(width, height, mode, "", GameWindowFlags.Default)
+            {
+                Visible = false
+            };
             gameWindow.MakeCurrent();
             return gameWindow;
         }
@@ -101,7 +98,7 @@ namespace Smash_Forge.Rendering
         {
             Runtime.renderer = GL.GetString(StringName.Renderer);
             Runtime.openGLVersion = GL.GetString(StringName.Version);
-            Runtime.GLSLVersion = GL.GetString(StringName.ShadingLanguageVersion);
+            Runtime.glslVersion = GL.GetString(StringName.ShadingLanguageVersion);
         }
     }
 }

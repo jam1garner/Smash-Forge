@@ -1,15 +1,15 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.Utils;
-using Smash_Forge.Rendering;
-using Smash_Forge.Rendering.Lights;
-using Smash_Forge.Rendering.Meshes;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using SmashForge.Rendering;
+using SmashForge.Rendering.Lights;
+using SmashForge.Rendering.Meshes;
 
-namespace Smash_Forge.GUI.Editors
+namespace SmashForge.Gui.Editors
 {
     public partial class LightSetEditor : Form
     {
@@ -71,7 +71,7 @@ namespace Smash_Forge.GUI.Editors
             using (Graphics graph = Graphics.FromImage(colorImage))
             {
                 Rectangle ImageSize = new Rectangle(0, 0, 64, 64);
-                graph.Clear(NUD.lightSetColorByIndex[groupIndex]);
+                graph.Clear(Nud.lightSetColorByIndex[groupIndex]);
             }
 
             return colorImage;
@@ -107,7 +107,7 @@ namespace Smash_Forge.GUI.Editors
             string name = groupIndex + "";
             try
             {
-                string colorName = NUD.lightSetColorByIndex[groupIndex].Name;
+                string colorName = Nud.lightSetColorByIndex[groupIndex].Name;
                 name += String.Format(" {0}", colorName);
             }
             catch (KeyNotFoundException)

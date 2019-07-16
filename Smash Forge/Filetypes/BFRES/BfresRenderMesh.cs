@@ -3,7 +3,7 @@ using SFGenericModel;
 using SFGenericModel.VertexAttributes;
 using System.Collections.Generic;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class BfresRenderMesh : GenericMesh<BFRES.DisplayVertex>
     {

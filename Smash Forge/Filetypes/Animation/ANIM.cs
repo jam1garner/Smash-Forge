@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using OpenTK;
 using System.Windows.Forms;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class ANIM
     {

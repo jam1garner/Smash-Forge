@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Smash_Forge.GUI.BFRES_Loaders
+namespace SmashForge.Gui.BFRES_Loaders
 {
     public partial class OdysseyCostumeLoader : Form
     {

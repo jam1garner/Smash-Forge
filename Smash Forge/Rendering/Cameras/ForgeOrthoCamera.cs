@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using System;
 
-namespace Smash_Forge.Rendering
+namespace SmashForge.Rendering
 {
     class ForgeOrthoCamera : ForgeCamera
     {

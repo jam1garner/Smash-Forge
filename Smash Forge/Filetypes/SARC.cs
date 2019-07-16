@@ -8,7 +8,7 @@ using Syroot.BinaryData;
 
 /* exelix's/MasterF0X's SARC library. Packing is not yet supported. */
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class SARC
     {

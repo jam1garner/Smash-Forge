@@ -11,7 +11,7 @@ using Syroot.NintenTools.NSW.Bfres.GFX;
 using Syroot.NintenTools.NSW.Bfres.Helpers;
 using Syroot.NintenTools.NSW.Bfres.Core;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class BFRES : TreeNode
     {

@@ -5,7 +5,7 @@ using OpenTK.Graphics;
 using System.IO;
 using System.Text;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class Lumen : FileBase
     {
@@ -100,7 +100,7 @@ namespace Smash_Forge
 
             public void Write(FileOutput o)
             {
-                Console.WriteLine($"unk_{(int)Type:X4} (size=0x{Size * 4:X4}) // offset=0x{o.size():X2}\n");
+                Console.WriteLine($"unk_{(int)Type:X4} (size=0x{Size * 4:X4}) // offset=0x{o.Size():X2}\n");
 
                 o.writeInt((int)Type);
                 o.writeInt(Size);
@@ -155,7 +155,7 @@ namespace Smash_Forge
 
             public void Write(FileOutput o)
             {
-                Console.WriteLine($"Properties {{ // offset=0x{o.size():X2}");
+                Console.WriteLine($"Properties {{ // offset=0x{o.Size():X2}");
                 Console.WriteLine($"\tunk0: 0x{unk0:X8}");
                 Console.WriteLine($"\tunk1: 0x{unk1:X8}");
                 Console.WriteLine($"\tunk2: 0x{unk2:X8}");
@@ -221,7 +221,7 @@ namespace Smash_Forge
 
             public void Write(FileOutput o)
             {
-                Console.WriteLine($"Properties2 {{ // offset=0x{o.size():X2}");
+                Console.WriteLine($"Properties2 {{ // offset=0x{o.Size():X2}");
                 Console.WriteLine($"\tnumShapes: 0x{numShapes:X8}");
                 Console.WriteLine($"\tunk1: 0x{unk1:X8}");
                 Console.WriteLine($"\tnumSprites: 0x{numSprites:X8}");
@@ -1218,7 +1218,7 @@ namespace Smash_Forge
             FileOutput tag = new FileOutput();
             tag.writeInt(Strings.Count);
 
-            Console.WriteLine($"Strings = [ // offset=0x{o.size():X2}");
+            Console.WriteLine($"Strings = [ // offset=0x{o.Size():X2}");
             for (int i = 0; i < Strings.Count; i++)
             {
                 var str = Strings[i];
@@ -1229,7 +1229,7 @@ namespace Smash_Forge
                 tag.writeInt(strBytes.Length);
                 tag.writeBytes(strBytes);
 
-                int padSize = 4 - (tag.size() % 4);
+                int padSize = 4 - (tag.Size() % 4);
                 for (int j = 0; j < padSize; j++)
                 {
                     tag.writeByte(0);
@@ -1238,13 +1238,13 @@ namespace Smash_Forge
             Console.WriteLine("]\n");
 
             o.writeInt((int)TagType.Symbols);
-            o.writeInt(tag.size() / 4);
-            o.writeOutput(tag);
+            o.writeInt(tag.Size() / 4);
+            o.WriteOutput(tag);
         }
 
         void writeColors(FileOutput o)
         {
-            Console.WriteLine($"Colors = [ // offset=0x{o.size():X2}");
+            Console.WriteLine($"Colors = [ // offset=0x{o.Size():X2}");
 
             o.writeInt((int)TagType.Colors);
             o.writeInt(Colors.Count * 2 + 1);
@@ -1253,7 +1253,7 @@ namespace Smash_Forge
             for (int i = 0; i < Colors.Count; i++)
             {
                 var color = Colors[i];
-                Console.WriteLine($"\t0x{i:X3}: #{(byte)(color.X * 255):X2}{(byte)(color.Z * 255):X2}{(byte)(color.Y * 255):X2}, {(byte)(color.W * 255):X2} // offset=0x{o.size():X2}");
+                Console.WriteLine($"\t0x{i:X3}: #{(byte)(color.X * 255):X2}{(byte)(color.Z * 255):X2}{(byte)(color.Y * 255):X2}, {(byte)(color.W * 255):X2} // offset=0x{o.Size():X2}");
                 o.writeShort((short)(color.X * 256));
                 o.writeShort((short)(color.Y * 256));
                 o.writeShort((short)(color.Z * 256));
@@ -1264,7 +1264,7 @@ namespace Smash_Forge
 
         void writePositions(FileOutput o)
         {
-            Console.WriteLine($"Positions = [ // offset=0x{o.size():X2}");
+            Console.WriteLine($"Positions = [ // offset=0x{o.Size():X2}");
 
             o.writeInt((int)TagType.Positions);
             o.writeInt(Positions.Count * 2 + 1);
@@ -1273,7 +1273,7 @@ namespace Smash_Forge
             for (int i = 0; i < Positions.Count; i++)
             {
                 var position = Positions[i];
-                Console.WriteLine($"\t0x{i:X4}: [{position.X}, {position.Y}] // offset=0x{o.size():X2}");
+                Console.WriteLine($"\t0x{i:X4}: [{position.X}, {position.Y}] // offset=0x{o.Size():X2}");
                 o.writeFloat(position.X);
                 o.writeFloat(position.Y);
             }
@@ -1282,7 +1282,7 @@ namespace Smash_Forge
 
         void writeTransforms(FileOutput o)
         {
-            Console.WriteLine($"Transforms = [ // offset=0x{o.size():X2}");
+            Console.WriteLine($"Transforms = [ // offset=0x{o.Size():X2}");
 
             o.writeInt((int)TagType.Transforms);
             o.writeInt(Transforms.Count * 6 + 1);
@@ -1292,7 +1292,7 @@ namespace Smash_Forge
             {
                 var transform = Transforms[i];
 
-                Console.WriteLine($"\t[{transform.M11:f2}, {transform.M21:f2}] // offset=0x{o.size():X2}");
+                Console.WriteLine($"\t[{transform.M11:f2}, {transform.M21:f2}] // offset=0x{o.Size():X2}");
                 Console.WriteLine($"\t[{transform.M12:f2}, {transform.M22:f2}]");
                 Console.WriteLine($"\t[{transform.M41:f2}, {transform.M42:f2}]\n");
                 o.writeFloat(transform.M11);
@@ -1308,7 +1308,7 @@ namespace Smash_Forge
 
         void writeBounds(FileOutput o)
         {
-            Console.WriteLine($"Bounds = [ // offset=0x{o.size():X2}");
+            Console.WriteLine($"Bounds = [ // offset=0x{o.Size():X2}");
 
             o.writeInt((int)TagType.Bounds);
             o.writeInt(Bounds.Count * 4 + 1);
@@ -1317,7 +1317,7 @@ namespace Smash_Forge
             for (int i = 0; i < Bounds.Count; i++)
             {
                 var bb = Bounds[i];
-                Console.WriteLine($"\t0x{i:X2}: {bb} // offset=0x{o.size():X2}");
+                Console.WriteLine($"\t0x{i:X2}: {bb} // offset=0x{o.Size():X2}");
 
                 o.writeFloat(bb.TopLeft.X);
                 o.writeFloat(bb.TopLeft.Y);
@@ -1330,7 +1330,7 @@ namespace Smash_Forge
 
         void writeAtlases(FileOutput o)
         {
-            Console.WriteLine($"TextureAtlases = [ // offset=0x{o.size():X2}");
+            Console.WriteLine($"TextureAtlases = [ // offset=0x{o.Size():X2}");
 
             o.writeInt((int)TagType.TextureAtlases);
             o.writeInt(Atlases.Count * 4 + 1);
@@ -1339,7 +1339,7 @@ namespace Smash_Forge
             for (int i = 0; i < Atlases.Count; i++)
             {
                 var atlas = Atlases[i];
-                Console.WriteLine($"\tatlas 0x{atlas.id:X2} {{  // offset=0x{o.size():X2}");
+                Console.WriteLine($"\tatlas 0x{atlas.id:X2} {{  // offset=0x{o.Size():X2}");
                 Console.WriteLine($"\t\t\"name\": \"{Strings[atlas.nameId]}\"");
                 Console.WriteLine($"\t\tdimensions: {atlas.width}x{atlas.height}");
                 Console.WriteLine("\t}\n");
@@ -1354,13 +1354,13 @@ namespace Smash_Forge
 
         void writeShapes(FileOutput o)
         {
-            Console.WriteLine($"Shapes = [ // offset=0x{o.size():X2}");
+            Console.WriteLine($"Shapes = [ // offset=0x{o.Size():X2}");
 
             for (int i = 0; i < Shapes.Count; i++)
             {
                 var shape = Shapes[i];
 
-                Console.WriteLine($"\tCharacterId: 0x{shape.CharacterId:X4} // offset=0x{o.size():X2}");
+                Console.WriteLine($"\tCharacterId: 0x{shape.CharacterId:X4} // offset=0x{o.Size():X2}");
                 Console.WriteLine($"\tUnk1: 0x{shape.Unk1:X8}");
                 Console.WriteLine($"\tBounds: {Bounds[shape.BoundsId]} (0x{shape.BoundsId:X2})");
                 Console.WriteLine($"\tUnk3: 0x{shape.Unk3:X8}");
@@ -1378,7 +1378,7 @@ namespace Smash_Forge
 
                 foreach (var graphic in shape.Graphics)
                 {
-                    Console.WriteLine($"\t\tGraphic {{ // offset=0x{o.size():X2}");
+                    Console.WriteLine($"\t\tGraphic {{ // offset=0x{o.Size():X2}");
                     Console.WriteLine($"\t\t\tAtlasId: {graphic.AtlasId}");
                     Console.WriteLine($"\t\t\tFillType: {graphic.FillType} (0x{(short)graphic.FillType:X2})");
 
@@ -1411,8 +1411,8 @@ namespace Smash_Forge
                         graphicTag.writeShort(0);
 
                     o.writeInt((int)TagType.Graphic);
-                    o.writeInt(graphicTag.size() / 4);
-                    o.writeOutput(graphicTag);
+                    o.writeInt(graphicTag.Size() / 4);
+                    o.WriteOutput(graphicTag);
                 }
 
                 Console.WriteLine("\t]\n");
@@ -1483,7 +1483,7 @@ namespace Smash_Forge
             o.writeInt((int)TagType.End);
             o.writeInt(0);
 
-            int padSize = (4 - (o.size() % 4)) % 4;
+            int padSize = (4 - (o.Size() % 4)) % 4;
             for (int i = 0; i < padSize; i++)
             {
                 o.writeByte(0);
@@ -1498,7 +1498,7 @@ namespace Smash_Forge
 
             Console.SetOut(oldOut);
             o.save(Filename);
-            return o.getBytes();
+            return o.GetBytes();
         }
 
         public override byte[] Rebuild()

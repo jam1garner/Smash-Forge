@@ -12,7 +12,7 @@ using Syroot.NintenTools.Yaz0;
 using ResNSW = Syroot.NintenTools.NSW.Bfres;
 
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public enum TrackType
     {

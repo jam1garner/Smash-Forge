@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 
-namespace Smash_Forge.GUI.Menus
+namespace SmashForge.Gui.Menus
 {
     public partial class ColorEditor : Form
     {

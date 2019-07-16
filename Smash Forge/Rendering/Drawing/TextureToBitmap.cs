@@ -2,10 +2,10 @@
 using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.Framebuffers;
 using SFGraphics.GLObjects.Textures;
-using Smash_Forge.Rendering.Meshes;
 using System.Drawing;
+using SmashForge.Rendering.Meshes;
 
-namespace Smash_Forge.Rendering
+namespace SmashForge.Rendering
 {
     static class TextureToBitmap
     {

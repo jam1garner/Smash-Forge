@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using Smash_Forge.Rendering.Meshes;
+using SmashForge.Rendering.Meshes;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class BntxTextureList : Form
     {

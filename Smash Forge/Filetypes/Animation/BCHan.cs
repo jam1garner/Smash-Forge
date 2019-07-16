@@ -5,7 +5,7 @@ using System.Diagnostics;
 using OpenTK;
 using System.Windows.Forms;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     /*
      * Everything in this class is adapted from gdkchan's Ohana3DS

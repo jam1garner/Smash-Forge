@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using SFTex = SFGraphics.GLObjects.Textures;
 
 
-namespace Smash_Forge
+namespace SmashForge
 {
     //Store FTEX instances in a container
     //This is to access them easier

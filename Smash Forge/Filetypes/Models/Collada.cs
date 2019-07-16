@@ -9,7 +9,7 @@ using OpenTK;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class Collada
     {
@@ -27,7 +27,7 @@ namespace Smash_Forge
         {
             Collada dae = new Collada(fileName);
 
-            NUD nud;
+            Nud nud;
             NUT nut;
 
             try
@@ -54,16 +54,16 @@ namespace Smash_Forge
             }
         }
 
-        private static void CreateNudNutFromDae(string fileName, ModelContainer container, bool importTexture, Collada dae, out NUD nud, out NUT nut)
+        private static void CreateNudNutFromDae(string fileName, ModelContainer container, bool importTexture, Collada dae, out Nud nud, out NUT nut)
         {
-            nud = new NUD();
+            nud = new Nud();
             nut = new NUT();
             Runtime.TextureContainers.Add(nut);
 
             Dictionary<string, NutTexture> existingTextures = new Dictionary<string, NutTexture>();
 
             // Controllers used for vertex skinning.
-            Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource = new Dictionary<string, List<NUD.Vertex>>();
+            Dictionary<string, List<Nud.Vertex>> vertexListBySkinSource = new Dictionary<string, List<Nud.Vertex>>();
             Dictionary<string, Matrix4> bindMatrixBySkinSource = new Dictionary<string, Matrix4>();
             foreach (ColladaController control in dae.library_controllers)
             {
@@ -75,7 +75,7 @@ namespace Smash_Forge
                     sources.Add("#" + s.id, s);
                 }
 
-                List<NUD.Vertex> verts = new List<NUD.Vertex>();
+                List<Nud.Vertex> verts = new List<Nud.Vertex>();
                 vertexListBySkinSource.Add(skin.source, verts);
                 bindMatrixBySkinSource.Add(skin.source, skin.mat);
 
@@ -84,7 +84,7 @@ namespace Smash_Forge
             }
 
             // Don't add duplicate meshes if they share a name.
-            Dictionary<string, NUD.Mesh> nudMeshByGeometryName = new Dictionary<string, NUD.Mesh>();
+            Dictionary<string, Nud.Mesh> nudMeshByGeometryName = new Dictionary<string, Nud.Mesh>();
 
             foreach (ColladaGeometry geom in dae.library_geometries)
             {
@@ -92,20 +92,20 @@ namespace Smash_Forge
             }
         }
 
-        private static void ConvertColladaGeom(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
+        private static void ConvertColladaGeom(string fileName, bool importTexture, Collada dae, Nud nud, NUT nut, Dictionary<string, List<Nud.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, Nud.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
         {
             ColladaMesh mesh = geom.mesh;
             ConvertColladaMesh(mesh, fileName, importTexture, dae, nud, nut, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom);
         }
 
-        private static void ConvertColladaMesh(ColladaMesh mesh, string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
+        private static void ConvertColladaMesh(ColladaMesh mesh, string fileName, bool importTexture, Collada dae, Nud nud, NUT nut, Dictionary<string, List<Nud.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, Nud.Mesh> nudMeshByGeometryName, ColladaGeometry geom)
         {
             Dictionary<string, ColladaSource> sources = GetVertexDataSources(mesh);
 
             ConvertColladaPoly(fileName, importTexture, dae, nud, nut, vertexListBySkinSource, bindMatrixBySkinSource, nudMeshByGeometryName, geom, mesh, sources);
         }
 
-        private static void ConvertColladaPoly(string fileName, bool importTexture, Collada dae, NUD nud, NUT nut, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, NUD.Mesh> nudMeshByGeometryName, ColladaGeometry geom, ColladaMesh mesh, Dictionary<string, ColladaSource> sources)
+        private static void ConvertColladaPoly(string fileName, bool importTexture, Collada dae, Nud nud, NUT nut, Dictionary<string, List<Nud.Vertex>> vertexListBySkinSource, Dictionary<string, Matrix4> bindMatrixBySkinSource, Dictionary<string, Nud.Mesh> nudMeshByGeometryName, ColladaGeometry geom, ColladaMesh mesh, Dictionary<string, ColladaSource> sources)
         {
             ColladaPolygons colladaPoly = mesh.polygons[0];
             if (colladaPoly.type != ColladaPrimitiveType.triangles)
@@ -126,7 +126,7 @@ namespace Smash_Forge
 
             // Check if the mesh already exists first.
             // Remove the initial numbers so that the names aren't unique.
-            NUD.Mesh nudMesh;
+            Nud.Mesh nudMesh;
             string nameWithoutNumber = RemoveInitialUnderscoreId(geom.name);
 
             if (nudMeshByGeometryName.ContainsKey(nameWithoutNumber))
@@ -135,14 +135,14 @@ namespace Smash_Forge
             }
             else
             {
-                nudMesh = new NUD.Mesh();
+                nudMesh = new Nud.Mesh();
                 nudMesh.Text = geom.name;
                 nud.Nodes.Add(nudMesh);
                 nudMeshByGeometryName.Add(nameWithoutNumber, nudMesh);
             }
 
             // Always add the polygon.
-            NUD.Polygon nudPolygon = new NUD.Polygon();
+            Nud.Polygon nudPolygon = new Nud.Polygon();
             nudPolygon.AddDefaultMaterial();
             nudMesh.Nodes.Add(nudPolygon);
 
@@ -155,7 +155,7 @@ namespace Smash_Forge
             // Many vertices share the same vertex data.
             // If there aren't any sources, we can't do anything meaningful anyway.
             int vertexDataLength = sources.First().Value.data.Length / sources.First().Value.stride;
-            NUD.Vertex[] vertexDataSource = new NUD.Vertex[vertexDataLength];
+            Nud.Vertex[] vertexDataSource = new Nud.Vertex[vertexDataLength];
 
             // Create vertices using the vertex indices in colladaPoly.p.
             for (int pIndex = 0; pIndex < colladaPoly.p.Length; pIndex++)
@@ -170,7 +170,7 @@ namespace Smash_Forge
                 if (vertexDataSource[vertexSourceIndex] == null)
                 {
                     // Create the vertex data from all of the inputs.
-                    NUD.Vertex v = ReadVertexSemantics(dae, vertexListBySkinSource, geom, mesh, colladaPoly, sources, nudPolygon, pIndex, maxOffset);
+                    Nud.Vertex v = ReadVertexSemantics(dae, vertexListBySkinSource, geom, mesh, colladaPoly, sources, nudPolygon, pIndex, maxOffset);
                     TransformVertexNormalAndPosition(dae, bindMatrixBySkinSource, geom, nodeTrans, v);
 
                     // Fill the vertex data into the vertex sources.
@@ -220,7 +220,7 @@ namespace Smash_Forge
             return sources;
         }
 
-        private static void TryReadTexture(string fileName, Collada dae, NUT nut, ColladaPolygons colladaPoly, NUD.Polygon npoly)
+        private static void TryReadTexture(string fileName, Collada dae, NUT nut, ColladaPolygons colladaPoly, Nud.Polygon npoly)
         {
             // Grab all that material data so we can apply images later.
             // TODO: It's inefficient to do it here, but it makes the code less gross.
@@ -304,9 +304,9 @@ namespace Smash_Forge
             return maxOffset;
         }
 
-        private static NUD.Vertex ReadVertexSemantics(Collada dae, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, ColladaGeometry geom, ColladaMesh mesh, ColladaPolygons colladaPoly, Dictionary<string, ColladaSource> sources, NUD.Polygon npoly, int pIndex, int maxoffset)
+        private static Nud.Vertex ReadVertexSemantics(Collada dae, Dictionary<string, List<Nud.Vertex>> vertexListBySkinSource, ColladaGeometry geom, ColladaMesh mesh, ColladaPolygons colladaPoly, Dictionary<string, ColladaSource> sources, Nud.Polygon npoly, int pIndex, int maxoffset)
         {
-            NUD.Vertex v = new NUD.Vertex();
+            Nud.Vertex v = new Nud.Vertex();
             foreach (ColladaInput input in colladaPoly.inputs)
             {
                 // The SemanticType for input is always SemanticType.Vertex.
@@ -317,7 +317,7 @@ namespace Smash_Forge
                 }
                 if (input.semanticType == SemanticType.VERTEX)
                 {
-                    v = new NUD.Vertex();
+                    v = new Nud.Vertex();
 
                     // Read the position, normals, texcoord, and vert color semantics.
                     foreach (ColladaInput vinput in mesh.vertices.inputs)
@@ -342,7 +342,7 @@ namespace Smash_Forge
             return v;
         }
 
-        private static void TransformVertexNormalAndPosition(Collada dae, Dictionary<string, Matrix4> bindMatrixBySkinSource, ColladaGeometry geom, Matrix4 nodeTrans, NUD.Vertex v)
+        private static void TransformVertexNormalAndPosition(Collada dae, Dictionary<string, Matrix4> bindMatrixBySkinSource, ColladaGeometry geom, Matrix4 nodeTrans, Nud.Vertex v)
         {
             // Transform some vectors.
             v.pos = Vector3.TransformPosition(v.pos, nodeTrans);
@@ -360,7 +360,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void AddBoneIdsAndWeights(Collada dae, Dictionary<string, List<NUD.Vertex>> vertexListBySkinSource, ColladaGeometry geom, ColladaPolygons colladaPoly, int i, int maxoffset, NUD.Vertex v)
+        private static void AddBoneIdsAndWeights(Collada dae, Dictionary<string, List<Nud.Vertex>> vertexListBySkinSource, ColladaGeometry geom, ColladaPolygons colladaPoly, int i, int maxoffset, Nud.Vertex v)
         {
             if (dae.library_controllers.Count > 0)
             {
@@ -755,12 +755,12 @@ namespace Smash_Forge
             }
         }
 
-        private static void AddMaterialsForEachUvChannel(NUD.Polygon npoly)
+        private static void AddMaterialsForEachUvChannel(Nud.Polygon npoly)
         {
             // Don't add more than 2 materials to a polygon.
             while (npoly.materials.Count < npoly.vertices[0].uv.Count && npoly.materials.Count < 2)
             {
-                NUD.Material material = NUD.Material.GetDefault();
+                Nud.Material material = Nud.Material.GetDefault();
                 npoly.materials.Add(material);
             }
         }
@@ -815,7 +815,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void SkinVerts(ModelContainer con, ColladaSkin skin, Dictionary<string, ColladaSource> sources, List<NUD.Vertex> verts)
+        private static void SkinVerts(ModelContainer con, ColladaSkin skin, Dictionary<string, ColladaSource> sources, List<Nud.Vertex> verts)
         {
             int v = 0;
             for (int i = 0; i < skin.weights.count; i++)
@@ -829,7 +829,7 @@ namespace Smash_Forge
                     return;
                 }
 
-                NUD.Vertex newVertex = new NUD.Vertex();
+                Nud.Vertex newVertex = new Nud.Vertex();
 
                 for (int j = 0; j < count; j++)
                 {
@@ -906,7 +906,7 @@ namespace Smash_Forge
             }
         }
 
-        private static void ReadSemantic(NUD.Vertex targetVert, ColladaInput input, int pIndex, Dictionary<string, ColladaSource> sources)
+        private static void ReadSemantic(Nud.Vertex targetVert, ColladaInput input, int pIndex, Dictionary<string, ColladaSource> sources)
         {
             ColladaSource colladaSource = sources[input.source];
             int startIndex = (pIndex * colladaSource.stride) + input.offset;
@@ -1565,7 +1565,7 @@ namespace Smash_Forge
                 Save(fname, con.DatMelee);
                 return;
             }
-            NUD nud = con.NUD;
+            Nud nud = con.NUD;
 
             if (con.Bfres != null)
             {
@@ -1596,9 +1596,9 @@ namespace Smash_Forge
             // geometry
 
             int num = 0;
-            foreach (NUD.Mesh mesh in nud.Nodes)
+            foreach (Nud.Mesh mesh in nud.Nodes)
             {
-                foreach (NUD.Polygon poly in mesh.Nodes)
+                foreach (Nud.Polygon poly in mesh.Nodes)
                 {
                     ColladaGeometry geom = new ColladaGeometry();
                     dae.library_geometries.Add(geom);
@@ -1663,7 +1663,7 @@ namespace Smash_Forge
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.POSITION });
                         List<string> d = new List<string>();
-                        foreach (NUD.Vertex v in poly.vertices)
+                        foreach (Nud.Vertex v in poly.vertices)
                         {
                             d.AddRange(new string[] { v.pos.X.ToString(), v.pos.Y.ToString(), v.pos.Z.ToString() });
                         }
@@ -1681,7 +1681,7 @@ namespace Smash_Forge
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.NORMAL });
                         List<string> d = new List<string>();
-                        foreach (NUD.Vertex v in poly.vertices)
+                        foreach (Nud.Vertex v in poly.vertices)
                         {
                             d.AddRange(new string[] { v.nrm.X.ToString(), v.nrm.Y.ToString(), v.nrm.Z.ToString() });
                         }
@@ -1699,7 +1699,7 @@ namespace Smash_Forge
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.TEXCOORD });
                         List<string> d = new List<string>();
-                        foreach (NUD.Vertex v in poly.vertices)
+                        foreach (Nud.Vertex v in poly.vertices)
                         {
                             d.AddRange(new string[] { v.uv[0].X.ToString(), v.uv[0].Y.ToString()});
                         }
@@ -1716,7 +1716,7 @@ namespace Smash_Forge
                         //src.name = mesh.name + "src1";
                         vertex.inputs.Add(new ColladaInput() { source = "#" + src.id, semanticType = SemanticType.COLOR });
                         List<string> d = new List<string>();
-                        foreach (NUD.Vertex v in poly.vertices)
+                        foreach (Nud.Vertex v in poly.vertices)
                         {
                             d.AddRange(new string[] { (v.color.X/128).ToString(), (v.color.Y / 128).ToString(), (v.color.Z / 128).ToString(), (v.color.W / 128).ToString() });
                         }
@@ -1817,7 +1817,7 @@ namespace Smash_Forge
                         List<string> d = new List<string>();
                         List<int> vcount = new List<int>();
                         List<int> vert = new List<int>();
-                        foreach (NUD.Vertex v in poly.vertices)
+                        foreach (Nud.Vertex v in poly.vertices)
                         {
                             int vc = 0;
                             for (int i = 0; i < v.boneIds.Count; i++)

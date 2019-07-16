@@ -2,7 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class FileData
     {

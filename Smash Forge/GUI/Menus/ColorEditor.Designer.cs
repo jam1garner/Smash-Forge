@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge.GUI.Menus
+﻿namespace SmashForge.Gui.Menus
 {
     partial class ColorEditor
     {

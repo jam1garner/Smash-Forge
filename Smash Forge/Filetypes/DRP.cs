@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Security.Cryptography;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class DRP : TreeNode
     {

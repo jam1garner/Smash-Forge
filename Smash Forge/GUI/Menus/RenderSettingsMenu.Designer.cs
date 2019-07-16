@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge.GUI
+﻿namespace SmashForge.Gui
 {
     partial class RenderSettingsMenu
     {
@@ -2230,7 +2230,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(565, 654);
             this.Controls.Add(this.tabControl1);
-            this.Icon = global::Smash_Forge.Resources.Resources.forge2;
+            this.Icon = global::SmashForge.Resources.Resources.forge2;
             this.Name = "RenderSettingsMenu";
             this.Text = "Render Settings";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.RenderSettingsMenu_FormClosed);

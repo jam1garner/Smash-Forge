@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class MeshMover : Form
     {
-        public NUD.Mesh mesh;
+        public Nud.Mesh mesh;
         public int prevValue = 5;
 
         public MeshMover()
@@ -40,9 +40,9 @@ namespace Smash_Forge
         public void Move(int type, float move)
         {
             // move mesh over
-            foreach (NUD.Polygon p in mesh.Nodes)
+            foreach (Nud.Polygon p in mesh.Nodes)
             {
-                foreach (NUD.Vertex v in p.vertices)
+                foreach (Nud.Vertex v in p.vertices)
                 {
                     // Rotate the mesh normals as well to preserve proper normal direction.
                     switch (type)
@@ -70,7 +70,7 @@ namespace Smash_Forge
                 }
             }
 
-            NUD n = (NUD)mesh.Parent;
+            Nud n = (Nud)mesh.Parent;
             n.UpdateRenderMeshes();
             MainForm.Instance.GetActiveModelViewport()?.glViewport?.Invalidate();
         }

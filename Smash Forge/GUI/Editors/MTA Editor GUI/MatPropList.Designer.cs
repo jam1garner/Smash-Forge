@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge.GUI
+﻿namespace SmashForge.Gui
 {
     partial class MatPropList
     {

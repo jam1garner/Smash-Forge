@@ -6,9 +6,6 @@ using SFGraphics.GLObjects.BufferObjects;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.Utils;
-using Smash_Forge.Filetypes.Models.Nuds;
-using Smash_Forge.Rendering;
-using Smash_Forge.Rendering.Lights;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -17,10 +14,13 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using SFGenericModel.Materials;
+using SmashForge.Filetypes.Models.Nuds;
+using SmashForge.Rendering;
+using SmashForge.Rendering.Lights;
 
-namespace Smash_Forge
+namespace SmashForge
 {
-    public partial class NUD : FileBase, IBoundableModel
+    public partial class Nud : FileBase, IBoundableModel
     {
         // OpenGL Buffers
         private UniformBlock bonesUbo;
@@ -80,14 +80,14 @@ namespace Smash_Forge
             Zero = 0xA
         }
 
-        public NUD()
+        public Nud()
         {
             SetupTreeNode();
         }
 
-        public NUD(string fname) : this()
+        public Nud(string filename) : this()
         {
-            Read(fname);
+            Read(filename);
         }
 
         public Vector4 BoundingSphere
@@ -299,7 +299,7 @@ namespace Smash_Forge
         public void GenerateBoundingSpheres()
         {
             foreach (Mesh m in Nodes)
-                m.generateBoundingSphere();
+                m.GenerateBoundingSphere();
 
             Vector3 cen1 = new Vector3(0,0,0), cen2 = new Vector3(0,0,0);
             double rad1 = 0, rad2 = 0;
@@ -485,7 +485,7 @@ namespace Smash_Forge
             shader.UseProgram();
             SetGlobalShaderUniforms(shader, camera, RenderTools.dummyTextures);
 
-            // Only draw polgons if the polygon and its parent are both checked.
+            // Only draw polygons if the polygon and its parent are both checked.
             Material previousMaterial = null;
             foreach (Polygon p in opaque)
             {
@@ -1244,9 +1244,9 @@ namespace Smash_Forge
             FileOutput d = new FileOutput(); // data
             d.Endian = Endianness.Big;
             if (Endian == Endianness.Big)
-                d.writeString("NDP3");
+                d.WriteString("NDP3");
             else if (Endian == Endianness.Little)
-                d.writeString("NDWD");
+                d.WriteString("NDWD");
 
             d.Endian = Endian;
             d.writeInt(0); //Filesize
@@ -1293,7 +1293,7 @@ namespace Smash_Forge
             FileOutput tempstring = new FileOutput();
             for (int i = 0; i < Nodes.Count; i++)
             {
-                str.writeString(Nodes[i].Text);
+                str.WriteString(Nodes[i].Text);
                 str.writeByte(0);
                 str.align(16);
             }
@@ -1307,9 +1307,9 @@ namespace Smash_Forge
                 foreach (float f in m.boundingSphere)
                     d.writeFloat(f);
 
-                d.writeInt(tempstring.size());
+                d.writeInt(tempstring.Size());
 
-                tempstring.writeString(m.Text);
+                tempstring.WriteString(m.Text);
                 tempstring.writeByte(0);
                 tempstring.align(16);
 
@@ -1317,14 +1317,14 @@ namespace Smash_Forge
                 d.writeUShort((ushort)m.boneflag); // Bind method
                 d.writeShort(m.singlebind); // Bone index
                 d.writeShort(m.Nodes.Count); // poly count
-                d.writeInt(obj.size() + 0x30 + Nodes.Count * 0x30); // position start for obj
+                d.writeInt(obj.Size() + 0x30 + Nodes.Count * 0x30); // position start for obj
 
                 // write obj info here...
                 foreach (Polygon p in m.Nodes)
                 {
-                    obj.writeInt(poly.size());
-                    obj.writeInt(vert.size());
-                    obj.writeInt(p.vertSize >> 4 > 0 ? vertadd.size() : 0);
+                    obj.writeInt(poly.Size());
+                    obj.writeInt(vert.Size());
+                    obj.writeInt(p.vertSize >> 4 > 0 ? vertadd.Size() : 0);
                     obj.writeShort(p.vertices.Count);
                     obj.writeByte(p.vertSize);
 
@@ -1359,41 +1359,41 @@ namespace Smash_Forge
                 }
             }
 
-            d.writeOutput(obj);
-            d.writeOutput(tex);
+            d.WriteOutput(obj);
+            d.WriteOutput(tex);
             d.align(16);
 
-            d.writeIntAt(d.size() - 0x30, 0x10);
-            d.writeIntAt(poly.size(), 0x14);
-            d.writeIntAt(vert.size(), 0x18);
-            d.writeIntAt(vertadd.size(), 0x1c);
+            d.writeIntAt(d.Size() - 0x30, 0x10);
+            d.writeIntAt(poly.Size(), 0x14);
+            d.writeIntAt(vert.Size(), 0x18);
+            d.writeIntAt(vertadd.Size(), 0x1c);
 
-            d.writeOutput(poly);
+            d.WriteOutput(poly);
 
-            int s = d.size();
+            int s = d.Size();
             d.align(16);
-            s = d.size() - s;
-            d.writeIntAt(poly.size() + s, 0x14);
+            s = d.Size() - s;
+            d.writeIntAt(poly.Size() + s, 0x14);
 
-            d.writeOutput(vert);
+            d.WriteOutput(vert);
 
-            s = d.size();
+            s = d.Size();
             d.align(16);
-            s = d.size() - s;
-            d.writeIntAt(vert.size() + s, 0x18);
+            s = d.Size() - s;
+            d.writeIntAt(vert.Size() + s, 0x18);
 
-            d.writeOutput(vertadd);
+            d.WriteOutput(vertadd);
 
-            s = d.size();
+            s = d.Size();
             d.align(16);
-            s = d.size() - s;
-            d.writeIntAt(vertadd.size() + s, 0x1c);
+            s = d.Size() - s;
+            d.writeIntAt(vertadd.Size() + s, 0x1c);
 
-            d.writeOutput(str);
+            d.WriteOutput(str);
 
-            d.writeIntAt(d.size(), 0x4);
+            d.writeIntAt(d.Size(), 0x4);
 
-            return d.getBytes();
+            return d.GetBytes();
         }
 
         private static void WriteUV(FileOutput d, Polygon poly)
@@ -1594,7 +1594,7 @@ namespace Smash_Forge
             int c = 0;
             foreach (Material mat in materials)
             {
-                offs[c++] = d.size();
+                offs[c++] = d.Size();
                 d.writeInt((int)mat.Flags);
                 d.writeInt(0); // padding
                 d.writeShort(mat.SrcFactor);
@@ -1644,9 +1644,9 @@ namespace Smash_Forge
                     float[] data;
                     mat.entries.TryGetValue(mat.entries.ElementAt(i).Key, out data);
                     d.writeInt(i == mat.entries.Count - 1 ? 0 : 16 + 4 * data.Length);
-                    d.writeInt(str.size());
+                    d.writeInt(str.Size());
 
-                    str.writeString(mat.entries.ElementAt(i).Key);
+                    str.WriteString(mat.entries.ElementAt(i).Key);
                     str.writeByte(0);
 
                     d.writeByte(0); d.writeByte(0); d.writeByte(0);
@@ -1741,7 +1741,7 @@ namespace Smash_Forge
 
         public MBN toMBN()
         {
-            MBN m = new Smash_Forge.MBN();
+            MBN m = new MBN();
 
             m.setDefaultDescriptor();
             List<MBN.Vertex> vertBank = new List<MBN.Vertex>();

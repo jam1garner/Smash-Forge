@@ -11,7 +11,7 @@ using OpenTK.Graphics.OpenGL;
 using System.IO;
 using System.Threading;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class NUS3BANKEditor : Form
     {
@@ -43,7 +43,7 @@ namespace Smash_Forge
             selected = b;
 
             soundListBox.Items.Clear();
-            foreach (NUS3BANK.NUS_TONE.TONE_META meta in b.tone.tones)
+            foreach (NUS3BANK.NUS_TONE.ToneMeta meta in b.tone.tones)
             {
                 soundListBox.Items.Add(meta);
             }
@@ -63,7 +63,7 @@ namespace Smash_Forge
 
             if (soundListBox.SelectedIndex >= 0)
             {
-                ((NUS3BANK.NUS_TONE.TONE_META)soundListBox.SelectedItem).Play();
+                ((NUS3BANK.NUS_TONE.ToneMeta)soundListBox.SelectedItem).Play();
             }
 
         }
@@ -82,10 +82,10 @@ namespace Smash_Forge
 
         private void iDSPToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
-            NUS3BANK.NUS_TONE.TONE_META meta = null;
+            NUS3BANK.NUS_TONE.ToneMeta meta = null;
             if (selected != null && soundListBox.SelectedIndex >= 0)
             {
-                meta = (NUS3BANK.NUS_TONE.TONE_META)soundListBox.SelectedItem;
+                meta = (NUS3BANK.NUS_TONE.ToneMeta)soundListBox.SelectedItem;
             }
             if (meta != null)
                 using (var sfd = new SaveFileDialog())
@@ -106,10 +106,10 @@ namespace Smash_Forge
 
         private void wAVToolStripMenuItem_Click(object sender, System.EventArgs e)
         {
-            NUS3BANK.NUS_TONE.TONE_META meta = null;
+            NUS3BANK.NUS_TONE.ToneMeta meta = null;
             if (selected != null && soundListBox.SelectedIndex >= 0)
             {
-                meta = (NUS3BANK.NUS_TONE.TONE_META)soundListBox.SelectedItem;
+                meta = (NUS3BANK.NUS_TONE.ToneMeta)soundListBox.SelectedItem;
             }
             if (meta != null)
             using (var sfd = new SaveFileDialog())

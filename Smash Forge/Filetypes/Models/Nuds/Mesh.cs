@@ -5,9 +5,9 @@ using OpenTK;
 using System.Windows.Forms;
 
 
-namespace Smash_Forge
+namespace SmashForge
 {
-    public partial class NUD : IBoundableModel
+    public partial class Nud : IBoundableModel
     {
         // typically a mesh will just have 1 polygon
         // but you can just use the mesh class without polygons
@@ -21,9 +21,8 @@ namespace Smash_Forge
             }
 
             // Used to generate a unique color for mesh viewport selection.
-            private static List<int> previousDisplayIds = new List<int>();
-            private int displayId = 0;
-            public int DisplayId { get { return displayId; } }
+            private static readonly List<int> previousDisplayIds = new List<int>();
+            public int DisplayId { get; private set; } = 0;
 
             public int boneflag = (int)BoneFlags.Rigged;
             public short singlebind = -1;
@@ -32,7 +31,7 @@ namespace Smash_Forge
             public bool billboard = false;
             public bool useNsc = false;
 
-            public bool sortByObjHeirarchy = true;
+            public bool sortByObjHierarchy = true;
             public float[] boundingSphere = new float[8];
             public float sortingDistance = 0;
 
@@ -54,7 +53,7 @@ namespace Smash_Forge
                     index = previousDisplayIds.Last();
                 index++;
                 previousDisplayIds.Add(index);
-                displayId = index;
+                DisplayId = index;
             }
 
             public Vector4 BoundingSphere
@@ -70,7 +69,7 @@ namespace Smash_Forge
                 ((Polygon)Nodes[0]).AddVertex(v);
             }
 
-            public void generateBoundingSphere()
+            public void GenerateBoundingSphere()
             {
                 Vector3 cen1 = new Vector3(0,0,0), cen2 = new Vector3(0,0,0);
                 double rad1 = 0, rad2 = 0;
@@ -210,7 +209,7 @@ namespace Smash_Forge
                 billboard = Text.Contains("BILLBOARD");
                 billboardY = Text.Contains("BILLBOARDYAXIS");
                 useNsc = Text.Contains("NSC");
-                sortByObjHeirarchy = Text.Contains("HIR");
+                sortByObjHierarchy = Text.Contains("HIR");
             }
         }
     }

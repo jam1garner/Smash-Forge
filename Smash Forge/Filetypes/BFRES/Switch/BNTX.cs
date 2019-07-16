@@ -13,7 +13,7 @@ using System.Diagnostics;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Textures.TextureFormats;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class Formats
     {

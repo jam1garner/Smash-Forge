@@ -1,16 +1,16 @@
 ﻿using System.Data;
 using System.IO;
-using Smash_Forge.GUI.Menus;
 using System.Windows.Forms;
-using Smash_Forge.Rendering;
+using SmashForge.Rendering;
 using OpenTK.Graphics.OpenGL;
-using Smash_Forge.Rendering.Meshes;
+using SmashForge.Rendering.Meshes;
 using SFGraphics.GLObjects.Shaders;
 using OpenTK;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.GLObjectManagement;
+using SmashForge.Gui.Menus;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class LMList : EditorBase
     {

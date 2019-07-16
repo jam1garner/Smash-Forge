@@ -7,13 +7,13 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class Skapon
     {
         // I'm completely totally serious
 
-        public static NUD Create(VBN vbn)
+        public static Nud Create(VBN vbn)
         {
             Dictionary<string, string> files = new Dictionary<string, string>();
             ZipArchive zip = ZipFile.OpenRead("lib\\Skapon.zip");
@@ -42,8 +42,8 @@ namespace Smash_Forge
                 }
             }
 
-            NUD nud = new NUD();
-            NUD.Mesh head = new NUD.Mesh();
+            Nud nud = new Nud();
+            Nud.Mesh head = new Nud.Mesh();
             nud.Nodes.Add(head);
             head.Text = "Skapon";
 
@@ -54,7 +54,7 @@ namespace Smash_Forge
             head.Nodes.Add(setToBone(scale(readPoly(files["foot.obj"]), 1, 1, 1), vbn.bones[vbn.boneIndex("RFootJ")], vbn));
             head.Nodes.Add(setToBone(scale(readPoly(files["foot.obj"]), -1, -1, -1), vbn.bones[vbn.boneIndex("LFootJ")], vbn));
 
-            foreach (NUD.Polygon p in head.Nodes)
+            foreach (Nud.Polygon p in head.Nodes)
             {
                 p.materials[0].textures[0].hash = 0x40000000 + randomNumber;
             }
@@ -64,9 +64,9 @@ namespace Smash_Forge
             return nud;
         }
 
-        public static NUD.Polygon scale(NUD.Polygon poly, float sx, float sy, float sz)
+        public static Nud.Polygon scale(Nud.Polygon poly, float sx, float sy, float sz)
         {
-            foreach (NUD.Vertex v in poly.vertices)
+            foreach (Nud.Vertex v in poly.vertices)
             {
                 v.pos.X = v.pos.X * sx;
                 v.pos.Y = v.pos.Y * sy;
@@ -77,9 +77,9 @@ namespace Smash_Forge
             return poly;
         }
 
-        public static NUD.Polygon setToBone(NUD.Polygon poly, Bone b, VBN vbn)
+        public static Nud.Polygon setToBone(Nud.Polygon poly, Bone b, VBN vbn)
         {
-            foreach (NUD.Vertex v in poly.vertices)
+            foreach (Nud.Vertex v in poly.vertices)
             {
                 v.boneIds.Clear();
                 v.boneIds.Add(vbn.bones.IndexOf(b));
@@ -91,22 +91,22 @@ namespace Smash_Forge
             return poly;
         }
 
-        public static NUD.Polygon readPoly(string input)
+        public static Nud.Polygon readPoly(string input)
         {
-            NUD.Polygon poly = new NUD.Polygon();
+            Nud.Polygon poly = new Nud.Polygon();
             poly.AddDefaultMaterial();
 
             string[] lines = input.Replace("  ", " ").Split('\n');
 
             int vi = 0;
-            NUD.Vertex v;
+            Nud.Vertex v;
             for (int i = 0; i < lines.Length; i++)
             {
                 string[] args = lines[i].Split(' ');
                 switch (args[0])
                 {
                     case "v":
-                        v = new NUD.Vertex();
+                        v = new Nud.Vertex();
                         v.pos.X = float.Parse(args[1]);
                         v.pos.Y = float.Parse(args[2]);
                         v.pos.Z = float.Parse(args[3]);
@@ -228,7 +228,7 @@ namespace Smash_Forge
 
             // model--------------------------------------------------------
             ModelContainer converted = dat.wrapToNUD();
-            NUD nud = converted.NUD;
+            Nud nud = converted.NUD;
             float sca = 0.6f;
 
 
@@ -297,14 +297,14 @@ namespace Smash_Forge
 
         }
 
-        public static void removeLowPolyNr(NUD n)
+        public static void removeLowPolyNr(Nud n)
         {
-            List<NUD.Mesh> toRemove = new List<NUD.Mesh>();
+            List<Nud.Mesh> toRemove = new List<Nud.Mesh>();
 
             for (int i = 15; i <= 32; i++)
-                toRemove.Add((NUD.Mesh)n.Nodes[i]);
+                toRemove.Add((Nud.Mesh)n.Nodes[i]);
 
-            foreach (NUD.Mesh m in toRemove)
+            foreach (Nud.Mesh m in toRemove)
                 n.Nodes.Remove(m);
         }
 
@@ -341,7 +341,7 @@ namespace Smash_Forge
                 }
             }
         }
-        public static void effectiveScale(NUD nud, VBN vbn, Matrix4 sca)
+        public static void effectiveScale(Nud nud, VBN vbn, Matrix4 sca)
         {
             foreach (Bone b in vbn.bones)
             {
@@ -353,11 +353,11 @@ namespace Smash_Forge
 
             vbn.reset();
 
-            foreach (NUD.Mesh mesh in nud.Nodes)
+            foreach (Nud.Mesh mesh in nud.Nodes)
             {
-                foreach (NUD.Polygon poly in mesh.Nodes)
+                foreach (Nud.Polygon poly in mesh.Nodes)
                 {
-                    foreach (NUD.Vertex v in poly.vertices)
+                    foreach (Nud.Vertex v in poly.vertices)
                     {
                         v.pos = Vector3.TransformVector(v.pos, sca);
                     }
@@ -366,7 +366,7 @@ namespace Smash_Forge
             nud.UpdateRenderMeshes();
         }
 
-        public static void ArrangeBones(VBN vbn, NUD nud)
+        public static void ArrangeBones(VBN vbn, Nud nud)
         {
             Dictionary<int, int> boneReorder = new Dictionary<int, int>();
             int i = 0;
@@ -405,11 +405,11 @@ namespace Smash_Forge
 
             // now fix the nud
 
-            foreach (NUD.Mesh mesh in nud.Nodes)
+            foreach (Nud.Mesh mesh in nud.Nodes)
             {
-                foreach (NUD.Polygon poly in mesh.Nodes)
+                foreach (Nud.Polygon poly in mesh.Nodes)
                 {
-                    foreach (NUD.Vertex v in poly.vertices)
+                    foreach (Nud.Vertex v in poly.vertices)
                     {
                         for (int k = 0; k < v.boneIds.Count; k++)
                         {

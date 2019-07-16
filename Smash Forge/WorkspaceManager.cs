@@ -9,7 +9,7 @@ using SALT.Moveset.MSC;
 using System.Xml;
 using SALT.PARAMS;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class WorkspaceManager
     {

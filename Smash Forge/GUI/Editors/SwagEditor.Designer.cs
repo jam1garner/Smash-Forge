@@ -1,4 +1,4 @@
-﻿namespace Smash_Forge
+﻿namespace SmashForge
 {
     partial class SwagEditor
     {
@@ -38,16 +38,16 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.label2 = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.boneButton9 = new Smash_Forge.BoneButton();
-            this.boneButton8 = new Smash_Forge.BoneButton();
-            this.boneButton7 = new Smash_Forge.BoneButton();
-            this.boneButton6 = new Smash_Forge.BoneButton();
-            this.boneButton5 = new Smash_Forge.BoneButton();
-            this.boneButton4 = new Smash_Forge.BoneButton();
-            this.boneButton3 = new Smash_Forge.BoneButton();
-            this.boneButton2 = new Smash_Forge.BoneButton();
+            this.boneButton9 = new BoneButton();
+            this.boneButton8 = new BoneButton();
+            this.boneButton7 = new BoneButton();
+            this.boneButton6 = new BoneButton();
+            this.boneButton5 = new BoneButton();
+            this.boneButton4 = new BoneButton();
+            this.boneButton3 = new BoneButton();
+            this.boneButton2 = new BoneButton();
             this.label1 = new System.Windows.Forms.Label();
-            this.boneButton1 = new Smash_Forge.BoneButton();
+            this.boneButton1 = new BoneButton();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.zMin = new System.Windows.Forms.NumericUpDown();

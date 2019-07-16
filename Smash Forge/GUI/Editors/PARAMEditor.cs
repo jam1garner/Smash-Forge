@@ -12,7 +12,7 @@ using SALT.PARAMS;
 using System.Text.RegularExpressions;
 using System.IO;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class PARAMEditor : EditorBase
     {

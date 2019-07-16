@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using System.Text.RegularExpressions;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class AnimListPanel : DockContent
     {

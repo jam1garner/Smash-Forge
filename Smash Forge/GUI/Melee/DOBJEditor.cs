@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MeleeLib.GCX;
 using MeleeLib.DAT;
-using Smash_Forge.Filetypes.Melee;
+using SmashForge.Filetypes.Melee;
 
-namespace Smash_Forge.GUI.Melee
+namespace SmashForge.Gui.Melee
 {
 
     public partial class DOBJEditor : Form

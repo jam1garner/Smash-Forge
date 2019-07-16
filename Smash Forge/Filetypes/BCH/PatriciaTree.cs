@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     // Taken from SPICA by gdkchan
     // https://github.com/gdkchan/SPICA/blob/f76384f673a7206858fb3c766f891ec9cc9977ee/SPICA/Formats/CtrH3D/H3DPatriciaTree.cs

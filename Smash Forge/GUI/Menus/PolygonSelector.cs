@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class PolygonSelector : Form
     {
@@ -17,7 +17,7 @@ namespace Smash_Forge
             InitializeComponent();
         }
 
-        public List<NUD.Polygon> selected = new List<NUD.Polygon>();
+        public List<Nud.Polygon> selected = new List<Nud.Polygon>();
         public bool finished = false;
         List<ModelContainer> ModelContainers;
 
@@ -29,10 +29,10 @@ namespace Smash_Forge
                 if (mc.NUD != null)
                 {
                     TreeNode model = new TreeNode($"Model {modelCount}") { Tag = mc.NUD };
-                    foreach (NUD.Mesh m in mc.NUD.Nodes)
+                    foreach (Nud.Mesh m in mc.NUD.Nodes)
                     {
                         TreeNode mesh = new TreeNode(m.Text) { Tag = m };
-                        foreach (NUD.Polygon p in m.Nodes)
+                        foreach (Nud.Polygon p in m.Nodes)
                         {
                             TreeNode poly = new TreeNode(p.Text) { Tag = p };
                             mesh.Nodes.Add(poly);
@@ -47,7 +47,7 @@ namespace Smash_Forge
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
         {
             bool isChecked = (e.Node).Checked;
-            if (e.Node.Tag is NUD)
+            if (e.Node.Tag is Nud)
             {
                 foreach (TreeNode mesh in e.Node.Nodes)
                 {
@@ -56,7 +56,7 @@ namespace Smash_Forge
                         poly.Checked = isChecked;
                 }
             }
-            if (e.Node.Tag is NUD.Mesh)
+            if (e.Node.Tag is Nud.Mesh)
                 foreach (TreeNode poly in e.Node.Nodes)
                     poly.Checked = isChecked;
         }
@@ -67,7 +67,7 @@ namespace Smash_Forge
                 foreach (TreeNode mesh in model.Nodes)
                     foreach (TreeNode poly in mesh.Nodes)
                         if (poly.Checked)
-                            selected.Add((NUD.Polygon)poly.Tag);
+                            selected.Add((Nud.Polygon)poly.Tag);
             finished = true;
             Close();
         }
@@ -78,7 +78,7 @@ namespace Smash_Forge
             Close();
         }
 
-        public static List<NUD.Polygon> Popup(List<ModelContainer> ModelContainer)
+        public static List<Nud.Polygon> Popup(List<ModelContainer> ModelContainer)
         {
             PolygonSelector selector = new PolygonSelector() { ModelContainers = ModelContainer};
             selector.ShowDialog();

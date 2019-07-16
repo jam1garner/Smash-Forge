@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Smash_Forge.Rendering
+namespace SmashForge.Rendering
 {
     public static class BatchRendering
     {

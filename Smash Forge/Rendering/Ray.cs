@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using SFGraphics.Cameras;
 
 
-namespace Smash_Forge.Rendering
+namespace SmashForge.Rendering
 {
     public class Ray
     {

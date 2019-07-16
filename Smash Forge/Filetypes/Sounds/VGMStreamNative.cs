@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     /// <summary>
     /// Class for VGMStream native calls.

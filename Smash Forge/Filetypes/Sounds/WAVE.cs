@@ -10,7 +10,7 @@ using System.IO;
 using OpenTK.Audio;
 using OpenTK.Audio.OpenAL;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class WAVE
     {
@@ -82,9 +82,9 @@ namespace Smash_Forge
             FileOutput o = new FileOutput();
             o.Endian = Endianness.Little;
 
-            o.writeString("RIFF");
+            o.WriteString("RIFF");
             o.writeInt(0);
-            o.writeString("WAVEfmt ");
+            o.WriteString("WAVEfmt ");
 
             o.writeInt(0x10);
             o.writeShort(1);
@@ -94,17 +94,17 @@ namespace Smash_Forge
             o.writeShort(2);
             o.writeShort(0x10);
 
-            o.writeString("data");
+            o.WriteString("data");
             o.writeInt(buffer.Length);
 
             for (int i = 0; i < buffer.Length / 2; i++)
                 o.writeShort(buffer[i]);
 
-            o.writeIntAt(o.size() - 8, 4);
+            o.writeIntAt(o.Size() - 8, 4);
 
             VGMStreamNative.CloseVGMStream(vgm);
             File.Delete("temp.idsp");
-            return o.getBytes();
+            return o.GetBytes();
         }
 
         public void Read(string fname)

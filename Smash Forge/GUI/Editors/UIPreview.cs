@@ -10,10 +10,10 @@ using System.Windows.Forms;
 using OpenTK;
 using WeifenLuo.WinFormsUI.Docking;
 using OpenTK.Graphics.OpenGL;
-using Smash_Forge.Rendering;
-using Smash_Forge.Rendering.Meshes;
+using SmashForge.Rendering;
+using SmashForge.Rendering.Meshes;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class UIPreview : DockContent
     {

@@ -3,15 +3,15 @@ using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.Framebuffers;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects.Textures;
-using Smash_Forge.Filetypes.Models.Nuds;
-using Smash_Forge.Rendering.Meshes;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
+using SmashForge.Filetypes.Models.Nuds;
+using SmashForge.Rendering.Meshes;
 
-namespace Smash_Forge.Rendering
+namespace SmashForge.Rendering
 {
     static class MaterialPreviewRendering
     {
@@ -61,7 +61,7 @@ namespace Smash_Forge.Rendering
 
                 foreach (string file in Directory.EnumerateFiles(MainForm.executableDir + "\\materials", "*.nmt", SearchOption.AllDirectories))
                 {
-                    NUD.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
+                    Nud.Material material = NUDMaterialEditor.ReadMaterialListFromPreset(file)[0];
                     string presetName = Path.GetFileNameWithoutExtension(file);
                     RenderMaterialPresetToFile(presetName, material, dummyTextures);
                 }
@@ -85,7 +85,7 @@ namespace Smash_Forge.Rendering
             ShaderTools.CreateAndAddShader("NudSphere", nudMatShaders);
         }
 
-        private static void RenderMaterialPresetToFile(string presetName, NUD.Material material, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
+        private static void RenderMaterialPresetToFile(string presetName, Nud.Material material, Dictionary<NudEnums.DummyTexture, Texture> dummyTextures)
         {
             // Setup new dimensions.
             GL.Viewport(0, 0, width, height);

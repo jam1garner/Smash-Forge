@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.GLObjects.Textures.TextureFormats;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class TextureSurface
     {
@@ -425,7 +425,7 @@ namespace Smash_Forge
                 }
                 else if (Version >= 0x0200)
                 {
-                    o.writeUInt((uint)(headerLength + data.size()));
+                    o.writeUInt((uint)(headerLength + data.Size()));
                 }
                 headerLength -= headerSize;
                 o.writeInt(0);
@@ -449,11 +449,11 @@ namespace Smash_Forge
                 {
                     for (byte mipLevel = 0; mipLevel < mipmapCount; ++mipLevel)
                     {
-                        int ds = data.size();
+                        int ds = data.Size();
                         data.writeBytes(texture.surfaces[surfaceLevel].mipmaps[mipLevel]);
                         data.align(0x10);
                         if (mipmapCount > 1 && surfaceLevel == 0)
-                            o.writeInt(data.size() - ds);
+                            o.writeInt(data.Size() - ds);
                     }
                 }
                 o.align(0x10);
@@ -475,15 +475,15 @@ namespace Smash_Forge
 
                 if (Version < 0x0200)
                 {
-                    o.writeOutput(data);
+                    o.WriteOutput(data);
                     data = new FileOutput();
                 }
             }
 
             if (Version >= 0x0200)
-                o.writeOutput(data);
+                o.WriteOutput(data);
 
-            return o.getBytes();
+            return o.GetBytes();
         }
 
         public override void Read(string filename)

@@ -11,7 +11,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class ATKD_Editor : EditorBase
     {

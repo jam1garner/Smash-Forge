@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using OpenTK;
 using System.IO;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class OMOOld
     {
@@ -397,7 +397,7 @@ namespace Smash_Forge
             FileOutput t2 = new FileOutput();
             t2.Endian = Endianness.Big;
 
-            o.writeString("OMO ");
+            o.WriteString("OMO ");
             o.writeShort(1); //idk
             o.writeShort(3);//idk
 
@@ -414,7 +414,7 @@ namespace Smash_Forge
             o.writeInt(0);
             o.writeInt(0);
 
-            o.writeIntAt(o.size(), 0x14);
+            o.writeIntAt(o.Size(), 0x14);
 
 
             // ASSESSMENT
@@ -576,7 +576,7 @@ namespace Smash_Forge
                 //else hash = (int)FileData.crc12(getNodeId(vbn, nodeid[i]).Text);
                 o.writeInt(flag); // flags...
                 o.writeInt(hash); //hash
-                o.writeInt(t1.size()); // Offset in 1 table
+                o.writeInt(t1.Size()); // Offset in 1 table
                 o.writeInt(t2Size); // Offset in 2 table
 
                 // calculate size needed
@@ -641,11 +641,11 @@ namespace Smash_Forge
                 }
             }
 
-            o.writeIntAt(o.size(), 0x18);
+            o.writeIntAt(o.Size(), 0x18);
 
-            o.writeOutput(t1);
+            o.WriteOutput(t1);
 
-            o.writeIntAt(o.size(), 0x1C);
+            o.writeIntAt(o.Size(), 0x1C);
 
             // INTERPOLATION
 
@@ -688,13 +688,13 @@ namespace Smash_Forge
                 }
                 if (!go)
                 {
-                    o.writeShortAt(t2.size(), 0x12);
+                    o.writeShortAt(t2.Size(), 0x12);
                     go = true;
                 }
             }
 
-            o.writeOutput(t2);
-            return o.getBytes();
+            o.WriteOutput(t2);
+            return o.GetBytes();
         }
 
         public static void createOMO(Animation a, VBN vbn, String fname)
@@ -736,7 +736,7 @@ namespace Smash_Forge
             FileOutput t2 = new FileOutput();
             t2.Endian = Endianness.Big;
 
-            o.writeString("OMO ");
+            o.WriteString("OMO ");
             o.writeShort(1); //idk
             o.writeShort(3);//idk
 
@@ -753,7 +753,7 @@ namespace Smash_Forge
             o.writeInt(0);
             o.writeInt(0);
 
-            o.writeIntAt(o.size(), 0x14);
+            o.writeIntAt(o.Size(), 0x14);
             
             // ASSESSMENT
             Vector3[] maxT = new Vector3[a.Bones.Count], minT = new Vector3[a.Bones.Count];
@@ -966,7 +966,7 @@ namespace Smash_Forge
                 //hash = (int)FileData.crc32(getNodeId(nodeid.get(i)).name);
                 o.writeInt(flag); // flags...
                 o.writeInt(hash); //hash
-                o.writeInt(t1.size()); // Offset in 1 table
+                o.writeInt(t1.Size()); // Offset in 1 table
                 o.writeInt(t2Size); // Offset in 2 table
 
                 // calculate size needed
@@ -1031,11 +1031,11 @@ namespace Smash_Forge
                 }
             }
 
-            o.writeIntAt(o.size(), 0x18);
+            o.writeIntAt(o.Size(), 0x18);
 
-            o.writeOutput(t1);
+            o.WriteOutput(t1);
 
-            o.writeIntAt(o.size(), 0x1C);
+            o.writeIntAt(o.Size(), 0x1C);
 
             // INTERPOLATION
 
@@ -1102,13 +1102,13 @@ namespace Smash_Forge
 
                 if (go)
                 {
-                    o.writeShortAt(t2.size(), 0x12);
+                    o.writeShortAt(t2.Size(), 0x12);
                     go = false;
                 }
             }
             
-            o.writeOutput(t2);
-            return o.getBytes();
+            o.WriteOutput(t2);
+            return o.GetBytes();
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class DDS_Decompress
     {

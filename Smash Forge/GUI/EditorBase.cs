@@ -9,7 +9,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.ComponentModel;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class EditorBase : DockContent
     {

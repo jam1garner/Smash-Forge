@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 
-namespace Smash_Forge.Rendering
+namespace SmashForge.Rendering
 {
     class ForgePerspCamera : ForgeCamera
     {

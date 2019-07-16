@@ -7,13 +7,13 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.IO;
 using Syroot.NintenTools.MarioKart8.Collisions;
-using Smash_Forge.Rendering;
 using System.Windows.Forms;
 using System.Windows;
 using System.Drawing;
 using SFGraphics.GLObjects.Shaders;
+using SmashForge.Rendering;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class KCL : TreeNode
     {

@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using WeifenLuo.WinFormsUI.Docking;
 using OpenTK;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class LVDEditor : DockContent
     {

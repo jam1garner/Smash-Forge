@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System.Collections.Generic;
 
-namespace Smash_Forge.Filetypes.Models.Nuds
+namespace SmashForge.Filetypes.Models.Nuds
 {
     public static class NudEnums
     {

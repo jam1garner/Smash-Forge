@@ -11,7 +11,7 @@ using WeifenLuo.WinFormsUI.Docking;
 using SALT.Moveset.AnimCMD;
 using System.Text.RegularExpressions;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class HurtboxList : DockContent
     {
@@ -65,7 +65,7 @@ namespace Smash_Forge
                 hurtboxData.Rows.Add("Z Stretch", hurtbox.Z2);
                 hurtboxData.Rows.Add("Zone", hurtbox.Zone == Hurtbox.LW_ZONE ? "Low" : hurtbox.Zone == Hurtbox.HI_ZONE ? "High" : "Mid");
 
-                Runtime.SelectedHurtboxID = hurtbox.ID;
+                Runtime.SelectedHurtboxID = hurtbox.Id;
             }
         }
 
@@ -117,7 +117,7 @@ namespace Smash_Forge
                     hurtbox.Zone = Hurtbox.HI_ZONE;
 
                 if (hurtbox.X == hurtbox.X2 && hurtbox.Y == hurtbox.Y2 && hurtbox.Z == hurtbox.Z2)
-                    hurtbox.isSphere = true;
+                    hurtbox.IsSphere = true;
 
                 Runtime.ParamManager.SaveHurtboxes();
 

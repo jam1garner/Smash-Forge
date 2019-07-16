@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Security.Cryptography;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class Update
     {

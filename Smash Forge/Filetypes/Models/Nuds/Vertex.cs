@@ -2,9 +2,9 @@
 using OpenTK;
 
 
-namespace Smash_Forge
+namespace SmashForge
 {
-    public partial class NUD
+    public partial class Nud
     {
         public class Vertex
         {

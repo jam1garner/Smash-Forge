@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class _3DS
     {
@@ -166,7 +166,7 @@ namespace Smash_Forge
                         }
                 }
 
-            return o.getBytes();
+            return o.GetBytes();
         }
 
         public static int[] shift = { 0x00, 0x01, 0x04, 0x05, 0x10, 0x11, 0x14, 0x15 };

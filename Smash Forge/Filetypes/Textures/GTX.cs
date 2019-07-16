@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class GTX
     {

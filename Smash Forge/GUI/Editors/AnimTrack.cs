@@ -12,7 +12,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.IO;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class AnimTrack : DockContent
     {

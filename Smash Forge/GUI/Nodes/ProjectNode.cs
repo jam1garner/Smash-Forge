@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class ProjectExplorerNode : TreeNode
     {

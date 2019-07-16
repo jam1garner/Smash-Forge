@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.Cameras;
-using Smash_Forge.Filetypes.Models.Nuds;
+using SmashForge.Filetypes.Models.Nuds;
 
-namespace Smash_Forge.Rendering
+namespace SmashForge.Rendering
 {
     static class RenderTools
     {

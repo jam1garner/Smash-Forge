@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using Smash_Forge.Rendering;
+using SmashForge.Rendering;
 using SFGraphics.GLObjects.Textures;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class BNTXMaterialTextureEditor : Form
     {

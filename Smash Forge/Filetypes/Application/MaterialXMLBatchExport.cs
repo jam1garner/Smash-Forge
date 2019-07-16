@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using Smash_Forge.Filetypes.Melee;
-using Smash_Forge.Filetypes.Melee.Utils;
+using SmashForge.Filetypes.Melee;
+using SmashForge.Filetypes.Melee.Utils;
 
-namespace Smash_Forge.Filetypes
+namespace SmashForge.Filetypes
 {
     class MaterialXmlBatchExport
     {
@@ -51,7 +51,7 @@ namespace Smash_Forge.Filetypes
         private static void SaveNudXml(string sourceDir, string outputDir, string file)
         {
             string xmlName = ModelViewport.ConvertDirSeparatorsToUnderscore(file, sourceDir);
-            NUD nud = new NUD(file);
+            Nud nud = new Nud(file);
             string outputFileName = $"{ outputDir }\\{ xmlName }.xml";
             MaterialXML.ExportMaterialAsXml(nud, outputFileName);
         }

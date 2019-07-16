@@ -4,7 +4,7 @@ using OpenTK.Graphics.OpenGL;
 using SFGraphics.GLObjects.Textures;
 using System.Drawing;
 
-namespace Smash_Forge.Filetypes.Melee.Rendering
+namespace SmashForge.Filetypes.Melee.Rendering
 {
     public class MeleeRenderTexture
     {

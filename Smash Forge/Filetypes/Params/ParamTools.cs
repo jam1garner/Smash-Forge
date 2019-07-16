@@ -8,7 +8,7 @@ using System.IO;
 using System.Windows.Forms;
 
 
-namespace Smash_Forge.Params
+namespace SmashForge.Params
 {
     class ParamTools
     {

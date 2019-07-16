@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class _3DSTexEditor : EditorBase
     {
@@ -167,7 +167,7 @@ namespace Smash_Forge
             o.writeByte(formatSelector.SelectedIndex);
             o.writeByte(1);
             o.writeShort(0);
-            o.writeString(nameBox.Text);
+            o.WriteString(nameBox.Text);
             for (int i = 0; i < 0x74 - nameBox.Text.Length; i++)
                 o.writeByte(0);
 

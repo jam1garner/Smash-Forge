@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public static class Shared
     {

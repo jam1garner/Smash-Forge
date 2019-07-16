@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class DAT_Animation
     {

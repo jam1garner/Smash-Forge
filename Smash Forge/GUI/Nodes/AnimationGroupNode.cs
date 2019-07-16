@@ -9,7 +9,7 @@ using System.ComponentModel;
 
 using System.IO;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class AnimationGroupNode : TreeNode
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using OpenTK;
 using System.IO;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class OMO : FileBase
     {

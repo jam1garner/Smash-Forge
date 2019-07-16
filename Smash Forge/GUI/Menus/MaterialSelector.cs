@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class MaterialSelector : Form
     {

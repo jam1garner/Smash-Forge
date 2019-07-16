@@ -11,7 +11,7 @@ using System.IO;
 using WeifenLuo.WinFormsUI.Docking;
 using SALT.Moveset.AnimCMD;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public partial class ACMDEditor : DockContent
     {

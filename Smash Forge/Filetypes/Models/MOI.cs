@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class MOI : FileBase
     {
@@ -92,7 +92,7 @@ namespace Smash_Forge
             foreach (Entry entry in entries)
             {
                 nameOffsets.Add(nameTableOffset + nameTable.pos());
-                nameTable.writeString(entry.name);
+                nameTable.WriteString(entry.name);
                 nameTable.writeBytes(new byte[4 - (entry.name.Length % 4)]); //Pad to next word
             }
             while (nameTable.pos() % 0x10 != 0)
@@ -105,9 +105,9 @@ namespace Smash_Forge
                 foreach (int value in entry.values)
                     f.writeInt(value);
 
-            f.writeBytes(nameTable.getBytes());
+            f.writeBytes(nameTable.GetBytes());
 
-            return f.getBytes();
+            return f.GetBytes();
         }
 
         public byte[] RebuildOtherEntries(FileOutput f, int startOffset)
@@ -118,7 +118,7 @@ namespace Smash_Forge
             foreach (Entry entry in otherEntries)
             {
                 nameOffsets.Add(nameTableOffset + nameTable.pos());
-                nameTable.writeString(entry.name);
+                nameTable.WriteString(entry.name);
                 nameTable.writeBytes(new byte[4 - (entry.name.Length % 4)]); //Pad to next word
             }
             while (nameTable.pos() % 0x10 != 0)
@@ -131,9 +131,9 @@ namespace Smash_Forge
                 foreach (int value in entry.values)
                     f.writeInt(value);
 
-            f.writeBytes(nameTable.getBytes());
+            f.writeBytes(nameTable.GetBytes());
 
-            return f.getBytes();
+            return f.GetBytes();
         }
 
         public override byte[] Rebuild()
@@ -153,7 +153,7 @@ namespace Smash_Forge
             f.writeBytes(entryData);
             f.writeBytes(RebuildOtherEntries(new FileOutput(),f.pos()));
 
-            return f.getBytes();
+            return f.GetBytes();
         }
 
         public override void Read(string filename)

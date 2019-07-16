@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using SFGraphics.Utils;
 
-namespace Smash_Forge.Rendering.Lights
+namespace SmashForge.Rendering.Lights
 {
 
     public class DirectionalLight

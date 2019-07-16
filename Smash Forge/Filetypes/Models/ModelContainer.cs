@@ -5,18 +5,18 @@ using SFGraphics.Cameras;
 using SFGraphics.GLObjects.Shaders;
 using SFGraphics.GLObjects.Textures;
 using SFGraphics.Utils;
-using Smash_Forge.Filetypes.Melee;
-using Smash_Forge.Rendering;
-using Smash_Forge.Rendering.Lights;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using SmashForge.Filetypes.Melee;
+using SmashForge.Rendering;
+using SmashForge.Rendering.Lights;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class ModelContainer : TreeNode
     {
-        public NUD NUD
+        public Nud NUD
         {
             get
             {
@@ -30,7 +30,7 @@ namespace Smash_Forge
                 Refresh();
             }
         }
-        private NUD nud;
+        private Nud nud;
 
         public NUT NUT
         {
@@ -236,7 +236,7 @@ namespace Smash_Forge
         {
             ImageKey = "folder";
             SelectedImageKey = "folder";
-            nud = new NUD();
+            nud = new Nud();
             nut = new NUT();
             mta = new MTA();
             MOI = new MOI();
@@ -482,9 +482,9 @@ namespace Smash_Forge
 
             shader.SetBoolToInt("useNormalMap", Runtime.renderNormalMap);
 
-            shader.SetFloat("ambientIntensity", Runtime.ambItensity);
+            shader.SetFloat("ambientIntensity", Runtime.ambIntensity);
             shader.SetFloat("diffuseIntensity", Runtime.difIntensity);
-            shader.SetFloat("specularIntensity", Runtime.spcIntentensity);
+            shader.SetFloat("specularIntensity", Runtime.spcIntensity);
             shader.SetFloat("fresnelIntensity", Runtime.frsIntensity);
             shader.SetFloat("reflectionIntensity", Runtime.refIntensity);
 

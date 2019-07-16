@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WeifenLuo.WinFormsUI.Docking;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     class DiscordSettings
     {
@@ -24,7 +24,7 @@ namespace Smash_Forge
         public static string userNamedMod = "ModNameHere";
         public static bool showCurrentWindow;
         public static bool showTimeElapsed;
-        public static DiscordController DiscordController;
+        public static DiscordController discordController;
 
         public static void Update()
         {
@@ -36,7 +36,7 @@ namespace Smash_Forge
                 
             if (imageKeyMode == ImageKeyMode.Default)
             {
-                DiscordController.presence = new DiscordRpc.RichPresence()
+                discordController.presence = new DiscordRpc.RichPresence()
                 {
                     smallImageKey = "",
                     smallImageText = "",
@@ -46,7 +46,7 @@ namespace Smash_Forge
             }
             else if (imageKeyMode == ImageKeyMode.UserPicked)
             {
-                DiscordController.presence = new DiscordRpc.RichPresence()
+                discordController.presence = new DiscordRpc.RichPresence()
                 {
                     smallImageKey = "",
                     smallImageText = "",
@@ -66,7 +66,7 @@ namespace Smash_Forge
                 if (lastFileOpened.EndsWith("omo") || lastFileOpened.EndsWith("anim") || lastFileOpened.EndsWith("pac"))
                     key = "big_icon_anim";
 
-                DiscordController.presence = new DiscordRpc.RichPresence()
+                discordController.presence = new DiscordRpc.RichPresence()
                 {
                     smallImageKey = "",
                     smallImageText = "",
@@ -76,22 +76,22 @@ namespace Smash_Forge
             }
 
             if (!useUserModName)
-                DiscordController.presence.state = "Working on a mod";
+                discordController.presence.state = "Working on a mod";
             else
-                DiscordController.presence.state = $"Working on {userNamedMod}";
+                discordController.presence.state = $"Working on {userNamedMod}";
 
             if (showCurrentWindow)
             {
                 if (MainForm.dockPanel.ActiveContent != null)
                 {
                     string tabName = ((DockContent)MainForm.dockPanel.ActiveContent).Text;
-                    DiscordController.presence.details = $"{tabName}";
+                    discordController.presence.details = $"{tabName}";
                 }
             }
 
             if (showTimeElapsed)
-                DiscordController.presence.startTimestamp = startTime;
-            DiscordRpc.UpdatePresence(DiscordController.presence);
+                discordController.presence.startTimestamp = startTime;
+            DiscordRpc.UpdatePresence(discordController.presence);
         }
 
         //Temporary, don't save to config

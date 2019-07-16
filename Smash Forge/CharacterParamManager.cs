@@ -9,18 +9,18 @@ using System.IO;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace Smash_Forge
+namespace SmashForge
 {
     public class CharacterParamManager
     {
-        private List<csvSpecialBubble> SpecialBubbleData { get; set; }
+        private List<CsvSpecialBubble> SpecialBubbleData { get; set; }
 
-        public string character { get; set; }
-        public ParamFile param { get; set; }
+        public string Character { get; set; }
+        public ParamFile Param { get; set; }
         public SortedList<int, MoveData> MovesData { get; set; }
-        public SortedList<int, ECB> ECBs { get; set; }
+        public SortedList<int, Ecb> EcBs { get; set; }
         public SortedList<int, Hurtbox> Hurtboxes { get; set; }
-        public SortedList<int, LedgeGrabbox> LedgeGrabboxes { get; set; }
+        public SortedList<int, LedgeGrabBox> LedgeGrabboxes { get; set; }
 
         public SortedList<int, SpecialBubble> SpecialBubbles { get; set; }
 
@@ -35,64 +35,64 @@ namespace Smash_Forge
             
             try
             {
-                param = new ParamFile(file);
+                Param = new ParamFile(file);
 
                 if (character != null)
-                    this.character = character;
+                    this.Character = character;
                 else
-                    this.character = Path.GetFileNameWithoutExtension(file.Replace("fighter_param_vl_", ""));
+                    this.Character = Path.GetFileNameWithoutExtension(file.Replace("fighter_param_vl_", ""));
 
                 //Move data (FAF, Intangibility)
 
-                for (int id = 0; id < ((ParamGroup)param.Groups[0]).Chunks.Length; id++)
+                for (int id = 0; id < ((ParamGroup)Param.Groups[0]).Chunks.Length; id++)
                 {
                     MoveData m = new MoveData();
                     m.Index = id;
-                    m.FAF = Convert.ToInt32(((ParamGroup)param.Groups[0])[id][2].Value);
-                    m.IntangibilityStart = Convert.ToInt32(((ParamGroup)param.Groups[0])[id][3].Value);
-                    m.IntangibilityEnd = Convert.ToInt32(((ParamGroup)param.Groups[0])[id][4].Value);
+                    m.Faf = Convert.ToInt32(((ParamGroup)Param.Groups[0])[id][2].Value);
+                    m.IntangibilityStart = Convert.ToInt32(((ParamGroup)Param.Groups[0])[id][3].Value);
+                    m.IntangibilityEnd = Convert.ToInt32(((ParamGroup)Param.Groups[0])[id][4].Value);
 
                     MovesData.Add(id, m);
                 }
 
                 //ECB
 
-                for (int id = 0; id < ((ParamGroup)param.Groups[3]).Chunks.Length; id++)
+                for (int id = 0; id < ((ParamGroup)Param.Groups[3]).Chunks.Length; id++)
                 {
-                    ECB ecb = new ECB();
-                    ecb.ID = id;
-                    ecb.Bone = Convert.ToInt32(((ParamGroup)param.Groups[3])[id][0].Value);
-                    ecb.X = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][1].Value);
-                    ecb.Y = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][2].Value);
-                    ecb.Z = Convert.ToSingle(((ParamGroup)param.Groups[3])[id][3].Value);
+                    Ecb ecb = new Ecb();
+                    ecb.Id = id;
+                    ecb.Bone = Convert.ToInt32(((ParamGroup)Param.Groups[3])[id][0].Value);
+                    ecb.X = Convert.ToSingle(((ParamGroup)Param.Groups[3])[id][1].Value);
+                    ecb.Y = Convert.ToSingle(((ParamGroup)Param.Groups[3])[id][2].Value);
+                    ecb.Z = Convert.ToSingle(((ParamGroup)Param.Groups[3])[id][3].Value);
 
-                    ECBs.Add(id, ecb);
+                    EcBs.Add(id, ecb);
                 }
 
                 //Hurtboxes
 
-                for (int id = 0; id < ((ParamGroup)param.Groups[4]).Chunks.Length; id++)
+                for (int id = 0; id < ((ParamGroup)Param.Groups[4]).Chunks.Length; id++)
                 {
                     Hurtbox hurtbox = new Hurtbox();
-                    hurtbox.ID = id;
-                    hurtbox.X = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][0].Value);
-                    hurtbox.Y = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][1].Value);
-                    hurtbox.Z = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][2].Value);
+                    hurtbox.Id = id;
+                    hurtbox.X = Convert.ToSingle(((ParamGroup)Param.Groups[4])[id][0].Value);
+                    hurtbox.Y = Convert.ToSingle(((ParamGroup)Param.Groups[4])[id][1].Value);
+                    hurtbox.Z = Convert.ToSingle(((ParamGroup)Param.Groups[4])[id][2].Value);
 
-                    hurtbox.X2 = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][3].Value);
-                    hurtbox.Y2 = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][4].Value);
-                    hurtbox.Z2 = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][5].Value);
+                    hurtbox.X2 = Convert.ToSingle(((ParamGroup)Param.Groups[4])[id][3].Value);
+                    hurtbox.Y2 = Convert.ToSingle(((ParamGroup)Param.Groups[4])[id][4].Value);
+                    hurtbox.Z2 = Convert.ToSingle(((ParamGroup)Param.Groups[4])[id][5].Value);
 
-                    hurtbox.Size = Convert.ToSingle(((ParamGroup)param.Groups[4])[id][6].Value);
-                    hurtbox.Bone = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][7].Value);
-                    hurtbox.Part = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][8].Value);
-                    hurtbox.Zone = Convert.ToInt32(((ParamGroup)param.Groups[4])[id][9].Value);
+                    hurtbox.Size = Convert.ToSingle(((ParamGroup)Param.Groups[4])[id][6].Value);
+                    hurtbox.Bone = Convert.ToInt32(((ParamGroup)Param.Groups[4])[id][7].Value);
+                    hurtbox.Part = Convert.ToInt32(((ParamGroup)Param.Groups[4])[id][8].Value);
+                    hurtbox.Zone = Convert.ToInt32(((ParamGroup)Param.Groups[4])[id][9].Value);
 
                     if (hurtbox.X == hurtbox.X2 && hurtbox.Y == hurtbox.Y2 && hurtbox.Z == hurtbox.Z2)
                     {
                         // It can't be anything but a sphere. I think some part of the param might
                         // control this so this might be a crude detection method. This fixes Bowser Jr at least.
-                        hurtbox.isSphere = true;
+                        hurtbox.IsSphere = true;
                     }
 
                     Hurtboxes.Add(id, hurtbox);
@@ -100,14 +100,14 @@ namespace Smash_Forge
 
                 //Ledge grabboxes
 
-                for (int id = 0; id < ((ParamGroup)param.Groups[6]).Chunks.Length; id++)
+                for (int id = 0; id < ((ParamGroup)Param.Groups[6]).Chunks.Length; id++)
                 {
-                    LedgeGrabbox l = new LedgeGrabbox();
-                    l.ID = id;
-                    l.Z1 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][0].Value);
-                    l.Y1 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][1].Value);
-                    l.Z2 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][2].Value);
-                    l.Y2 = Convert.ToSingle(((ParamGroup)param.Groups[6])[id][3].Value);
+                    LedgeGrabBox l = new LedgeGrabBox();
+                    l.Id = id;
+                    l.Z1 = Convert.ToSingle(((ParamGroup)Param.Groups[6])[id][0].Value);
+                    l.Y1 = Convert.ToSingle(((ParamGroup)Param.Groups[6])[id][1].Value);
+                    l.Z2 = Convert.ToSingle(((ParamGroup)Param.Groups[6])[id][2].Value);
+                    l.Y2 = Convert.ToSingle(((ParamGroup)Param.Groups[6])[id][3].Value);
 
                     LedgeGrabboxes.Add(id, l);
                 }
@@ -115,25 +115,25 @@ namespace Smash_Forge
                 //Special Bubbles, these are used in certain moves as trigger/reflect/absorb bubbles and shields such as counters or reflectors
 
                 //Read the data from the csv file that contains the param group, entry and values as well as the character and animation
-                foreach(csvSpecialBubble sb in SpecialBubbleData)
+                foreach(CsvSpecialBubble sb in SpecialBubbleData)
                 {
-                    if(sb.Character == this.character)
+                    if(sb.Character == this.Character)
                     {
                         try
                         {
-                            SpecialBubbles.Add(sb.ID, new SpecialBubble()
+                            SpecialBubbles.Add(sb.Id, new SpecialBubble()
                             {
                                 Animations = sb.Animation.ToLower().Split('|').ToList(),
-                                Type = (SpecialBubble.BubbleType)sb.Type,
-                                X = sb.X != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup-1])[sb.ParamEntry][sb.X].Value) : 0,
-                                Y = sb.Y != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Y].Value) : 0,
-                                Z = sb.Z != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Z].Value) : 0,
-                                X2 = sb.X2 != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.X2].Value) : 0,
-                                Y2 = sb.Y2 != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Y2].Value) : 0,
-                                Z2 = sb.Z2 != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Z2].Value) : 0,
-                                Size = sb.Size != -1 ? Convert.ToSingle(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Size].Value) : 0,
-                                Bone = sb.SetBone ? sb.Bone :(sb.Bone != -1 ? Convert.ToInt32(((ParamGroup)param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Bone].Value) : 0),
-                                ID = sb.ID,
+                                type = (SpecialBubble.BubbleType)sb.Type,
+                                X = sb.X != -1 ? Convert.ToSingle(((ParamGroup)Param.Groups[sb.ParamGroup-1])[sb.ParamEntry][sb.X].Value) : 0,
+                                Y = sb.Y != -1 ? Convert.ToSingle(((ParamGroup)Param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Y].Value) : 0,
+                                Z = sb.Z != -1 ? Convert.ToSingle(((ParamGroup)Param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Z].Value) : 0,
+                                X2 = sb.X2 != -1 ? Convert.ToSingle(((ParamGroup)Param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.X2].Value) : 0,
+                                Y2 = sb.Y2 != -1 ? Convert.ToSingle(((ParamGroup)Param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Y2].Value) : 0,
+                                Z2 = sb.Z2 != -1 ? Convert.ToSingle(((ParamGroup)Param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Z2].Value) : 0,
+                                Size = sb.Size != -1 ? Convert.ToSingle(((ParamGroup)Param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Size].Value) : 0,
+                                Bone = sb.SetBone ? sb.Bone :(sb.Bone != -1 ? Convert.ToInt32(((ParamGroup)Param.Groups[sb.ParamGroup - 1])[sb.ParamEntry][sb.Bone].Value) : 0),
+                                Id = sb.Id,
                                 StartFrame = sb.StartFrame,
                                 EndFrame = sb.EndFrame
                             });
@@ -156,13 +156,13 @@ namespace Smash_Forge
         public void Reset()
         {
             if (SpecialBubbleData == null)
-                SpecialBubbleData = csvSpecialBubble.Read(Path.Combine(MainForm.executableDir, "characterSpecialBubbles.csv"));
+                SpecialBubbleData = CsvSpecialBubble.Read(Path.Combine(MainForm.executableDir, "characterSpecialBubbles.csv"));
 
             Hurtboxes = new SortedList<int, Hurtbox>();
             MovesData = new SortedList<int, MoveData>();
-            LedgeGrabboxes = new SortedList<int, LedgeGrabbox>();
-            ECBs = new SortedList<int, ECB>();
-            param = null;
+            LedgeGrabboxes = new SortedList<int, LedgeGrabBox>();
+            EcBs = new SortedList<int, Ecb>();
+            Param = null;
             SpecialBubbles = new SortedList<int, SpecialBubble>();
         }
 
@@ -173,41 +173,41 @@ namespace Smash_Forge
 
         public void SaveHurtboxes()
         {
-            if (param == null)
+            if (Param == null)
                 return;
 
-            for (int id = 0; id < ((ParamGroup)param.Groups[4]).Chunks.Length; id++)
+            for (int id = 0; id < ((ParamGroup)Param.Groups[4]).Chunks.Length; id++)
             {
-                ((ParamGroup)param.Groups[4])[id][0].Value = Convert.ToSingle(Hurtboxes[id].X);
-                ((ParamGroup)param.Groups[4])[id][1].Value = Convert.ToSingle(Hurtboxes[id].Y);
-                ((ParamGroup)param.Groups[4])[id][2].Value = Convert.ToSingle(Hurtboxes[id].Z);
+                ((ParamGroup)Param.Groups[4])[id][0].Value = Convert.ToSingle(Hurtboxes[id].X);
+                ((ParamGroup)Param.Groups[4])[id][1].Value = Convert.ToSingle(Hurtboxes[id].Y);
+                ((ParamGroup)Param.Groups[4])[id][2].Value = Convert.ToSingle(Hurtboxes[id].Z);
 
-                ((ParamGroup)param.Groups[4])[id][3].Value = Convert.ToSingle(Hurtboxes[id].X2);
-                ((ParamGroup)param.Groups[4])[id][4].Value = Convert.ToSingle(Hurtboxes[id].Y2);
-                ((ParamGroup)param.Groups[4])[id][5].Value = Convert.ToSingle(Hurtboxes[id].Z2);
+                ((ParamGroup)Param.Groups[4])[id][3].Value = Convert.ToSingle(Hurtboxes[id].X2);
+                ((ParamGroup)Param.Groups[4])[id][4].Value = Convert.ToSingle(Hurtboxes[id].Y2);
+                ((ParamGroup)Param.Groups[4])[id][5].Value = Convert.ToSingle(Hurtboxes[id].Z2);
 
-                ((ParamGroup)param.Groups[4])[id][6].Value = Convert.ToSingle(Hurtboxes[id].Size);
-                ((ParamGroup)param.Groups[4])[id][7].Value = Convert.ToUInt32(Hurtboxes[id].Bone);
+                ((ParamGroup)Param.Groups[4])[id][6].Value = Convert.ToSingle(Hurtboxes[id].Size);
+                ((ParamGroup)Param.Groups[4])[id][7].Value = Convert.ToUInt32(Hurtboxes[id].Bone);
                 //((ParamGroup)param.Groups[4])[id][8].Value = Convert.ToUInt32(Hurtboxes[id].Part);
-                ((ParamGroup)param.Groups[4])[id][9].Value = Convert.ToUInt32(Hurtboxes[id].Zone);
+                ((ParamGroup)Param.Groups[4])[id][9].Value = Convert.ToUInt32(Hurtboxes[id].Zone);
             }
         }
 
-        public void RenderHurtboxes(float Frame, int scriptId, ForgeACMDScript ACMDScript, VBN VBN)
+        public void RenderHurtboxes(float frame, int scriptId, ForgeACMDScript acmdScript, VBN vbn)
         {
             if (Hurtboxes.Count > 0)
             {
                 GL.Enable(EnableCap.DepthTest);
                 GL.Enable(EnableCap.Blend);
 
-                if (ACMDScript != null)
+                if (acmdScript != null)
                 {
-                    if (ACMDScript.BodyIntangible)
+                    if (acmdScript.BodyIntangible)
                         return;
                 }
 
                 if (scriptId != -1)
-                    if (Frame + 1 >= MovesData[scriptId].IntangibilityStart && Frame + 1 < MovesData[scriptId].IntangibilityEnd)
+                    if (frame + 1 >= MovesData[scriptId].IntangibilityStart && frame + 1 < MovesData[scriptId].IntangibilityEnd)
                         return;
 
                 foreach (var pair in Hurtboxes)
@@ -217,12 +217,12 @@ namespace Smash_Forge
                         continue;
 
                     var va = new Vector3(h.X, h.Y, h.Z);
-                    Bone b = ForgeACMDScript.getBone(h.Bone, VBN);
+                    Bone b = ForgeACMDScript.getBone(h.Bone, vbn);
                     if (b == null) continue; 
 
-                    if (ACMDScript != null)
+                    if (acmdScript != null)
                     {
-                        if (ACMDScript.IntangibleBones.Contains(h.Bone))
+                        if (acmdScript.IntangibleBones.Contains(h.Bone))
                             continue;
                     }
 
@@ -246,15 +246,15 @@ namespace Smash_Forge
                         }
                     }
 
-                    if (ACMDScript != null)
+                    if (acmdScript != null)
                     {
-                        if (ACMDScript.SuperArmor)
+                        if (acmdScript.SuperArmor)
                             GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, 0x73, 0x0a, 0x43));
 
-                        if (ACMDScript.BodyInvincible)
+                        if (acmdScript.BodyInvincible)
                             GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Color.White));
 
-                        if (ACMDScript.InvincibleBones.Contains(h.Bone))
+                        if (acmdScript.InvincibleBones.Contains(h.Bone))
                             GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Color.White));
                     }
 
@@ -262,7 +262,7 @@ namespace Smash_Forge
 
                     //if (h.Bone != -1)va2 = Vector3.Transform(va2, b.transform);
 
-                    if (h.isSphere)
+                    if (h.IsSphere)
                     {
                         Rendering.ShapeDrawing.drawSphereTransformedVisible(va, h.Size, 30, b.transform);
                     }
@@ -270,10 +270,10 @@ namespace Smash_Forge
                     {
                         Rendering.ShapeDrawing.drawReducedCylinderTransformed(va, va2, h.Size, b.transform);
                     }
-                    if (Runtime.SelectedHurtboxID == h.ID)
+                    if (Runtime.SelectedHurtboxID == h.Id)
                     {
                         GL.Color4(Color.FromArgb(Runtime.hurtboxAlpha, Runtime.hurtboxColorSelected));
-                        if (h.isSphere)
+                        if (h.IsSphere)
                         {
                             Rendering.ShapeDrawing.drawWireframeSphereTransformedVisible(va, h.Size, 20, b.transform);
                         }
@@ -289,7 +289,7 @@ namespace Smash_Forge
             }
         }
 
-        public static Dictionary<string, int> FIGHTER_ID = new Dictionary<string, int>
+        public static Dictionary<string, int> fighterId = new Dictionary<string, int>
         {
             {"miifighter", 0},
             {"miiswordsman", 1},
@@ -361,7 +361,7 @@ namespace Smash_Forge
 
     public class Hurtbox
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public int Bone { get; set; }
         public float Size { get; set; }
         public float X { get; set; }
@@ -371,7 +371,7 @@ namespace Smash_Forge
         public float Y2 { get; set; }
         public float Z2 { get; set; }
         public int Zone { get; set; }
-        public bool isSphere { get; set; } = false;
+        public bool IsSphere { get; set; } = false;
 
         public const int LW_ZONE = 0;
         public const int N_ZONE = 1;
@@ -386,14 +386,14 @@ namespace Smash_Forge
     public class MoveData
     {
         public int Index { get; set; }
-        public int FAF { get; set; }
+        public int Faf { get; set; }
         public int IntangibilityStart { get; set; }
         public int IntangibilityEnd { get; set; }
     }
 
-    public class LedgeGrabbox
+    public class LedgeGrabBox
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public float Z1 { get; set; }
         public float Y1 { get; set; }
         public float Z2 { get; set; }
@@ -409,9 +409,9 @@ namespace Smash_Forge
         }
     }
 
-    public class ECB
+    public class Ecb
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
         public int Bone { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
@@ -431,7 +431,7 @@ namespace Smash_Forge
         }
 
         public List<string> Animations { get; set; }
-        public int ID { get; set; }
+        public int Id { get; set; }
         public int Bone { get; set; } = 0;
         public float Size { get; set; }
         public float X { get; set; }
@@ -440,20 +440,20 @@ namespace Smash_Forge
         public float X2 { get; set; }
         public float Y2 { get; set; }
         public float Z2 { get; set; }
-        public bool isSphere {
+        public bool IsSphere {
             get
             {
                 return X2 == 0 && Y2 == 0 && Z2 == 0;
             }
         }
 
-        public BubbleType Type;
+        public BubbleType type;
 
         public Color Color
         {
             get
             {
-                switch (Type)
+                switch (type)
                 {
                     case BubbleType.COUNTER:
                         return Runtime.counterBubbleColor;
@@ -474,7 +474,7 @@ namespace Smash_Forge
         public int EndFrame { get; set; }
     }
 
-    class csvSpecialBubble
+    class CsvSpecialBubble
     {
         public string Character { get; set; }
         public string Animation { get; set; }
@@ -482,7 +482,7 @@ namespace Smash_Forge
         public int ParamGroup { get; set; }
         public int ParamEntry { get; set; }
 
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         //If value == -1 then set it to 0
         public int Bone { get; set; } = 0;
@@ -502,12 +502,12 @@ namespace Smash_Forge
 
         public bool SetBone { get; set; } //Bone has an ! at the start, this means bone value is given on csv and it isn't on params nor default 0
 
-        public static List<csvSpecialBubble> Read(string filename)
+        public static List<CsvSpecialBubble> Read(string filename)
         {
             StreamReader reader = new StreamReader(File.OpenRead(filename));
             bool firstLine = false;
 
-            List<csvSpecialBubble> list = new List<csvSpecialBubble>();
+            List<CsvSpecialBubble> list = new List<CsvSpecialBubble>();
 
             while (!reader.EndOfStream)
             {
@@ -521,11 +521,11 @@ namespace Smash_Forge
 
                 string[] values = line.Split(',');
 
-                list.Add(new csvSpecialBubble()
+                list.Add(new CsvSpecialBubble()
                 {
                     Character = values[0],
                     Animation = values[1],
-                    ID = Convert.ToInt32(values[2]),
+                    Id = Convert.ToInt32(values[2]),
                     ParamGroup = Convert.ToInt32(values[3]),
                     ParamEntry = Convert.ToInt32(values[4]),
                     Bone = Convert.ToInt32(values[5].Replace("!", "")),
