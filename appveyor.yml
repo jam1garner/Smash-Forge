@@ -30,7 +30,6 @@ deploy:
     branch: master
 
 install:
-  - git submodule update --init --recursive
 
 after_build:
   - 7z a "Smash-Forge-Latest_Commit.zip" "%APPVEYOR_BUILD_FOLDER%\Smash Forge\bin\Release\Smash Forge.exe"
