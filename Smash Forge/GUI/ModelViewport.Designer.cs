@@ -430,16 +430,13 @@
             this.glViewport.TabIndex = 0;
             this.glViewport.VSync = false;
             this.glViewport.Load += new System.EventHandler(this.glViewport_Load);
-            this.glViewport.Click += new System.EventHandler(this.glViewport_Click);
             this.glViewport.Paint += new System.Windows.Forms.PaintEventHandler(this.glViewport_Paint);
-            this.glViewport.Enter += new System.EventHandler(this.glViewport_Enter);
             this.glViewport.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.glViewport_KeyPress);
             this.glViewport.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseClick);
             this.glViewport.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseDown);
             this.glViewport.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseMove);
             this.glViewport.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glViewport_MouseUp);
             this.glViewport.Resize += new System.EventHandler(this.glViewport_Resize);
-            this.glViewport.LostFocus += new System.EventHandler(this.glViewport_LostFocus);
             // 
             // viewportPanel
             // 

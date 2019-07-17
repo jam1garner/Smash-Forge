@@ -37,7 +37,6 @@ namespace SmashForge
 
         // Frame rate control
         private Thread renderThread;
-        private bool renderThreadShouldRun = false;
         private bool isOpen = true;
 
         // The texture that will be blurred for bloom.
@@ -463,7 +462,7 @@ namespace SmashForge
         {
             // Frame time control.
             glViewport.VSync = Runtime.enableVSync;
-            renderThread = new Thread(new ThreadStart(RenderAndAnimationLoop));
+            renderThread = new Thread(RenderAndAnimationLoop);
             renderThread.Start();
         }
 
@@ -472,35 +471,24 @@ namespace SmashForge
             if (IsDisposed)
                 return;
 
-            // TODO: We don't really need two timers.
-            Stopwatch renderStopwatch = Stopwatch.StartNew();
-            Stopwatch animationStopwatch = Stopwatch.StartNew();
+            Stopwatch frameTimer = Stopwatch.StartNew();
 
             // Wait for UI to load before triggering paint events.
-            int waitTimeMs = 500;
+            const int waitTimeMs = 500;
             Thread.Sleep(waitTimeMs);
 
             glViewport.Invalidate();
 
-            int frameUpdateInterval = 5;
-            int animationUpdateInterval = 16;
+            const int frameUpdateInterval = 16;
 
             while (isOpen)
             {             
-                // Always refresh the viewport when animations are playing.
-                if (renderThreadShouldRun || isPlaying)
+                if (frameTimer.ElapsedMilliseconds >= frameUpdateInterval)
                 {
-                    if (renderStopwatch.ElapsedMilliseconds >= frameUpdateInterval)
-                    {
-                        glViewport.Invalidate();
-                        renderStopwatch.Restart();
-                    }
-
-                    if (animationStopwatch.ElapsedMilliseconds >= animationUpdateInterval)
-                    {
+                    frameTimer.Restart();
+                    if (isPlaying)
                         UpdateAnimationFrame();
-                        animationStopwatch.Restart();
-                    }
+                    glViewport.Invalidate();
                 }
             }
         }
@@ -683,11 +671,6 @@ namespace SmashForge
             }
         }
 
-        private void glViewport_LostFocus(object sender, EventArgs e)
-        {
-            renderThreadShouldRun = false;
-        }
-
         private void ResizeTexturesAndBuffers()
         {
             SetUpBuffersAndTextures();
@@ -706,10 +689,6 @@ namespace SmashForge
             int currentFrame = animationTrackBar.Value;
 
             SetAnimationsToFrame(currentFrame);
-
-            // If the render thread isn't triggering updates, update the viewport manually.
-            if (!renderThreadShouldRun || !isPlaying)
-                glViewport.Invalidate();
         }
 
         private void SetAnimationsToFrame(int frameNum)
@@ -1568,15 +1547,9 @@ namespace SmashForge
             }
         }
 
-        private void glViewport_Click(object sender, EventArgs e)
-        {
-            // Prevent render updates from being suspended when switching back from another window.
-            renderThreadShouldRun = true;
-        }
-
         private void glViewport_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (!(Mouse.GetState().LeftButton == OpenTK.Input.ButtonState.Pressed))
+            if (Mouse.GetState().LeftButton != OpenTK.Input.ButtonState.Pressed)
                 return;
             if (atkdEditor != null && atkdEditor.isRendered && atkdEditor.selectedPart > 0)
             {
@@ -1953,37 +1926,6 @@ namespace SmashForge
                 ParamTools.BatchExportParamValuesAsCsv("stprm");
         }
 
-        private void RenderStageModels(string stageFolder, string outputPath, string sourcePath)
-        {
-            string renderPath = stageFolder + "//render";
-            if (Directory.Exists(renderPath))
-            {
-                if (File.Exists(renderPath + "//light_set_param.bin"))
-                {
-                    try
-                    {
-                        Runtime.lightSetParam = new LightSetParam(renderPath + "//light_set_param.bin");
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.WriteLine(e.Message);
-                    }
-
-                }
-            }
-
-            string modelPath = stageFolder + "//model//";
-            if (Directory.Exists(modelPath))
-            {
-                // We can assume one NUD per folder. 
-                string[] nudFileNames = Directory.GetFiles(modelPath, "*.nud", SearchOption.AllDirectories);
-                foreach (string nudFile in nudFileNames)
-                {
-                    BatchRenderViewportToFile(nudFile, sourcePath, outputPath);
-                }
-            }
-        }
-
         public void SaveScreenRender(bool saveAlpha = false)
         {
             // Set these dimensions back again before normal rendering so the viewport doesn't look glitchy.
@@ -2095,8 +2037,6 @@ namespace SmashForge
         {
             foreach (AreaLight light in LightTools.areaLights)
             {
-                Color color = Color.White;
-
                 ShapeDrawing.DrawRectangularPrism(new Vector3(light.positionX, light.positionY, light.positionZ),
                     light.scaleX, light.scaleY, light.scaleZ, true);
             }
@@ -2208,17 +2148,6 @@ namespace SmashForge
             int spacing = 8;
             glViewport.Width = viewportPanel.Width - spacing;
             glViewport.Height = viewportPanel.Height - spacing;
-        }
-
-        private void glViewport_Enter(object sender, EventArgs e)
-        {
-            // Only render when the control is focused, so the GUI remains responsive.
-            renderThreadShouldRun = true;
-        }
-
-        private void glViewport_Leave(object sender, EventArgs e)
-        {
-            renderThreadShouldRun = false;
         }
 
         private void RefreshGlTextures()
